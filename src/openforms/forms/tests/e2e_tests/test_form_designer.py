@@ -46,15 +46,15 @@ async def drag_and_drop_component(page: Page, component: str):
     await page.mouse.up()
 
 
-async def open_component_options_modal(page: Page, label: str):
+async def open_component_options_modal(page: Page, label: str, exact: bool = False):
     """
     Find the component in the builder with the given label and click the edit icon
     to bring up the options modal.
     """
     # hover over component to bring up action icons
-    await page.get_by_text(label).hover()
+    await page.get_by_text(label, exact=exact).hover()
     # formio doesn't have accessible roles here, so use CSS selector
-    await page.locator('css=[ref="editComponent"]').locator("visible=true").click()
+    await page.locator('css=[ref="editComponent"]').locator("visible=true").last.click()
     # check that the modal is open now
     await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
@@ -87,12 +87,14 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                             "key": "field1",
                             "label": "Field 1",
                             "description": "Description 1",
+                            "tooltip": "Tooltip 1",
                         },
                         {
                             "type": "select",
                             "key": "field2",
                             "label": "Field 2",
                             "description": "Description 2",
+                            "tooltip": "Tooltip 2",
                             "data": {
                                 "values": [
                                     {"value": "option1", "label": "Option 1"},
@@ -141,10 +143,18 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 translation2 = page.locator(
                     f'css=[name="{_translations_data_path}[1]{self.translations_translation_suffix}"]'
                 )
+                literal3 = page.locator(
+                    f'css=[name="{_translations_data_path}[2]{self.translations_literal_suffix}"]'
+                )
+                translation3 = page.locator(
+                    f'css=[name="{_translations_data_path}[2]{self.translations_translation_suffix}"]'
+                )
                 await expect(literal1).to_have_value("Field 1")
                 await expect(translation1).to_have_value("")
                 await expect(literal2).to_have_value("Description 1")
                 await expect(translation2).to_have_value("")
+                await expect(literal3).to_have_value("Tooltip 1")
+                await expect(translation3).to_have_value("")
 
                 # edit textfield label literal
                 await page.get_by_role("link", name=self._translate("Basis")).click()
@@ -161,17 +171,23 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                     label_literal = literal1
                     label_translation = translation1
                     description_literal = literal2
-                    descrition_translation = translation2
+                    description_translation = translation2
+                    tooltip_literal = literal3
+                    tooltip_translation = translation3
                 else:
-                    label_literal = literal2
-                    label_translation = translation2
+                    label_literal = literal3
+                    label_translation = translation3
                     description_literal = literal1
-                    descrition_translation = translation1
+                    description_translation = translation1
+                    tooltip_literal = literal2
+                    tooltip_translation = translation2
 
                 await expect(label_literal).to_have_value("Field label")
                 await expect(label_translation).to_have_value("")
                 await expect(description_literal).to_have_value("Description 1")
-                await expect(descrition_translation).to_have_value("")
+                await expect(description_translation).to_have_value("")
+                await expect(tooltip_literal).to_have_value("Tooltip 1")
+                await expect(tooltip_translation).to_have_value("")
 
                 # enter translations and save
                 await label_translation.fill("Veldlabel")
@@ -1068,3 +1084,118 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             error_node = page.locator("css=.error")
             await expect(error_node).not_to_be_visible()
+
+
+class FormDesignerTooltipTests(E2ETestCase):
+    async def test_tooltip_fields_are_present(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright tooltip test",
+                name_nl="Playwright tooltip test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright tooltip test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {"type": "bsn", "key": "bsn", "label": "BSN 1"},
+                        {"type": "checkbox", "key": "checkbox", "label": "Checkbox 1"},
+                        {"type": "currency", "key": "currency", "label": "Currency 1"},
+                        {"type": "date", "key": "date", "label": "Date 1"},
+                        {
+                            "type": "datetime",
+                            "key": "dateTime",
+                            "label": "Date / Time 1",
+                        },
+                        {"type": "email", "key": "email", "label": "Email 1"},
+                        {"type": "file", "key": "file", "label": "File Upload 1"},
+                        {"type": "iban", "key": "iban", "label": "IBAN 1"},
+                        {
+                            "type": "licenseplate",
+                            "key": "licenseplate",
+                            "label": "License plate 1",
+                        },
+                        {"type": "number", "key": "number", "label": "Number 1"},
+                        {"type": "password", "key": "password", "label": "Password 1"},
+                        {
+                            "type": "phoneNumber",
+                            "key": "phoneNumber",
+                            "label": "Phone Number 1",
+                        },
+                        {"type": "postcode", "key": "postcode", "label": "Postcode 1"},
+                        {"type": "radio", "key": "radio", "label": "Radio 1"},
+                        {"type": "select", "key": "select", "label": "Select 1"},
+                        {
+                            "type": "selectboxes",
+                            "key": "selectBoxes",
+                            "label": "Select Boxes 1",
+                        },
+                        {
+                            "type": "signature",
+                            "key": "signature",
+                            "label": "Signature 1",
+                        },
+                        {"type": "textarea", "key": "textArea", "label": "Text Area 1"},
+                        {"type": "time", "key": "time", "label": "Time 1"},
+                        {
+                            "type": "fieldset",
+                            "key": "fieldset",
+                            "label": "Field Set 1",
+                            "components": [
+                                {
+                                    "type": "datagrid",
+                                    "key": "datagrid",
+                                    "label": "Repeating group",
+                                },
+                                {
+                                    "type": "textfield",
+                                    "key": "textField",
+                                    "label": "Text Field 1",
+                                },
+                            ],
+                        },
+                    ]
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            labels = [
+                "BSN 1",
+                "Checkbox 1",
+                "Currency 1",
+                "Date 1",
+                "Date / Time 1",
+                "Email 1",
+                "File Upload 1",
+                "IBAN 1",
+                "License plate 1",
+                "Number 1",
+                "Password 1",
+                "Phone Number 1",
+                "Postcode 1",
+                "Radio 1",
+                "Select 1",
+                "Select Boxes 1",
+                "Signature 1",
+                "Text Area 1",
+                "Text Field 1",
+                "Time 1",
+            ]
+
+            for label in labels:
+                with self.subTest(label=label):
+                    await open_component_options_modal(page, label, exact=True)
+                    await expect(page.get_by_label("Tooltip")).to_be_visible()
+                    await page.get_by_role("button", name="Annuleren").first.click()

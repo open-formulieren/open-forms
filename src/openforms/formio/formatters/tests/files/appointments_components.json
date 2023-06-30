@@ -201,12 +201,6 @@
                 "showProducts": true
             }
         },
-
-
-
-
-
-
         {
             "id": "e1vezz3",
             "key": "appointmentLocation",
@@ -407,8 +401,6 @@
                 "showLocations": true
             }
         },
-
-
         {
             "id": "e1vezz5",
             "key": "appointmentDate",
@@ -609,11 +601,6 @@
                 "showDates": true
             }
         },
-
-
-
-
-
         {
             "id": "e1vezz7",
             "key": "appointmentTime",

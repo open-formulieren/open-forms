@@ -8,6 +8,7 @@ import {
   KEY,
   LABEL_REQUIRED,
   REQUIRED,
+  TOOLTIP,
 } from './edit/options';
 import {TRANSLATIONS} from './edit/tabs';
 import {localiseSchema} from './i18n';
@@ -39,6 +40,7 @@ const EDIT_FORM_TABS = [
           KEY,
           GROUP_LABEL,
           DESCRIPTION,
+          TOOLTIP,
           HIDDEN,
           CLEAR_ON_HIDE,
           IS_SENSITIVE_DATA,

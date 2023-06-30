@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 
-import {CLEAR_ON_HIDE, HIDDEN, KEY, LABEL} from 'components/form/edit/options';
+import {CLEAR_ON_HIDE, HIDDEN, KEY, LABEL, TOOLTIP} from 'components/form/edit/options';
 import {ADVANCED, TRANSLATIONS} from 'components/form/edit/tabs';
 
 import {localiseSchema} from './i18n';
@@ -13,6 +13,7 @@ const FIELDSET_BASIC = {
   components: [
     LABEL,
     KEY,
+    TOOLTIP,
     HIDDEN,
     CLEAR_ON_HIDE,
     {
