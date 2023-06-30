@@ -1,5 +1,6 @@
-from datetime import date, datetime
+from datetime import datetime, time
 
+from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
 from openforms.formio.typing import Component
@@ -28,10 +29,12 @@ class DemoAppointment(BasePlugin):
         return [AppointmentLocation(identifier="1", name="Test location")]
 
     def get_dates(self, products, location, start_at=None, end_at=None):
-        return [date(2023, 1, 1)]
+        return [timezone.localdate()]
 
     def get_times(self, products, location, day):
-        return [datetime(2023, 1, 1, 12, 0)]
+        today = timezone.localdate()
+        times = (time(12, 0), time(15, 15), time(15, 45))
+        return [timezone.make_aware(datetime.combine(today, _time)) for _time in times]
 
     def get_required_customer_fields(
         self,
@@ -72,7 +75,7 @@ class DemoAppointment(BasePlugin):
             other={"Some": "<h1>Data</h1>"},
         )
 
-    def check_config(self):
+    def check_config(self):  # pragma: no cover
         """
         Demo config is always valid.
         """
