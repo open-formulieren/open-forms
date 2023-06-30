@@ -1,6 +1,8 @@
 import logging
+from contextlib import contextmanager
 from datetime import date, datetime, timedelta
-from typing import List, Optional
+from functools import wraps
+from typing import Callable, List, Optional, ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils.html import format_html
@@ -11,6 +13,7 @@ from zeep.client import Client
 from zeep.exceptions import Error as ZeepError
 from zgw_consumers.concurrent import parallel
 
+from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from ...base import (
@@ -28,6 +31,8 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import get_client
+from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
+from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
 logger = logging.getLogger(__name__)
@@ -35,6 +40,36 @@ logger = logging.getLogger(__name__)
 
 def squash_ids(lst):
     return ",".join([i.identifier for i in lst])
+
+
+@contextmanager
+def log_soap_errors(template: str, *args):
+    try:
+        yield
+    except (ZeepError, RequestException) as e:
+        logger.exception(template, *args, exc_info=e)
+        raise GracefulJCCError("SOAP call failed") from e
+    except Exception as exc:
+        raise JCCError from exc
+
+
+Param = ParamSpec("Param")
+T = TypeVar("T")
+FuncT = Callable[Param, T]
+
+
+def with_graceful_default(default: T):
+    def decorator(func: FuncT) -> FuncT:
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> T:
+            try:
+                return func(*args, **kwargs)
+            except GracefulJCCError:
+                return default
+
+        return wrapper
+
+    return decorator
 
 
 @register("jcc")
@@ -47,6 +82,7 @@ class JccAppointment(BasePlugin):
 
     verbose_name = _("JCC")
 
+    @with_graceful_default(default=[])
     def get_available_products(
         self,
         current_products: list[AppointmentProduct] | None = None,
@@ -59,7 +95,7 @@ class JccAppointment(BasePlugin):
             )
 
         client = get_client()
-        try:
+        with log_soap_errors("Could not retrieve available products"):
             if current_products:
                 current_product_ids = squash_ids(current_products)
                 result = client.service.getGovAvailableProductsByProduct(
@@ -67,11 +103,6 @@ class JccAppointment(BasePlugin):
                 )
             else:
                 result = client.service.getGovAvailableProducts()
-        except (ZeepError, RequestException) as e:
-            logger.exception("Could not retrieve available products", exc_info=e)
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         return [
             AppointmentProduct(
@@ -81,7 +112,7 @@ class JccAppointment(BasePlugin):
         ]
 
     def _get_all_locations(self, client: Client) -> list[AppointmentLocation]:
-        try:
+        with log_soap_errors("Could not retrieve location IDs"):
             location_ids = client.service.getGovLocations()
             with parallel() as pool:
                 details = pool.map(
@@ -92,11 +123,6 @@ class JccAppointment(BasePlugin):
                 )
             # evaluate the generator
             details = list(details)
-        except (ZeepError, RequestException) as e:
-            logger.exception("Could not retrieve location IDs", exc_info=e)
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         locations = [
             AppointmentLocation(
@@ -111,34 +137,27 @@ class JccAppointment(BasePlugin):
 
         return locations
 
+    @with_graceful_default(default=[])
     def get_locations(
         self,
         products: list[AppointmentProduct] | None = None,
     ) -> list[AppointmentLocation]:
         client = get_client()
-
         if products is None:
             return self._get_all_locations(client)
 
         product_ids = squash_ids(products)
-
-        try:
+        with log_soap_errors(
+            "Could not retrieve locations for products '%s'", product_ids
+        ):
             result = client.service.getGovLocationsForProduct(productID=product_ids)
-        except (ZeepError, RequestException) as e:
-            logger.exception(
-                "Could not retrieve locations for products '%s'",
-                product_ids,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         return [
             AppointmentLocation(entry["locationID"], entry["locationDesc"])
             for entry in result
         ]
 
+    @with_graceful_default(default=[])
     def get_dates(
         self,
         products: List[AppointmentProduct],
@@ -152,7 +171,13 @@ class JccAppointment(BasePlugin):
         start_at = start_at or date.today()
         end_at = end_at or (start_at + timedelta(days=14))
 
-        try:
+        with log_soap_errors(
+            "Could not retrieve dates for products '%s' at location '%s' between %s - %s",
+            product_ids,
+            location,
+            start_at,
+            end_at,
+        ):
             max_end_date = client.service.getGovLatestPlanDate(productId=product_ids)
             if end_at > max_end_date:
                 end_at = max_end_date
@@ -165,19 +190,8 @@ class JccAppointment(BasePlugin):
                 appDuration=0,
             )
             return days
-        except (ZeepError, RequestException) as e:
-            logger.exception(
-                "Could not retrieve dates for products '%s' at location '%s' between %s - %s",
-                product_ids,
-                location,
-                start_at,
-                end_at,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
+    @with_graceful_default(default=[])
     def get_times(
         self,
         products: List[AppointmentProduct],
@@ -187,25 +201,34 @@ class JccAppointment(BasePlugin):
         product_ids = squash_ids(products)
 
         client = get_client()
-        try:
-            times = client.service.getGovAvailableTimesPerDay(
+        with log_soap_errors(
+            "Could not retrieve times for products '%s' at location '%s' on %s",
+            product_ids,
+            location,
+            day,
+        ):
+            return client.service.getGovAvailableTimesPerDay(
                 date=day,
                 productID=product_ids,
                 locationID=location.identifier,
                 appDuration=0,
             )
-            return times
-        except (ZeepError, RequestException) as e:
-            logger.exception(
-                "Could not retrieve times for products '%s' at location '%s' on %s",
-                product_ids,
-                location,
-                day,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
+
+    @with_graceful_default(default=[])
+    def get_required_customer_fields(
+        self,
+        products: list[AppointmentProduct],
+    ) -> list[Component]:
+        product_ids = squash_ids(products)
+
+        client = get_client()
+        with log_soap_errors(
+            "Could not retrieve required fields for products '%s'", product_ids
+        ):
+            field_names = client.service.GetRequiredClientFields(productID=product_ids)
+
+        last_name = FIELD_TO_FORMIO_COMPONENT[CustomerFields.last_name]
+        return [last_name] + [FIELD_TO_FORMIO_COMPONENT[field] for field in field_names]
 
     def create_appointment(
         self,

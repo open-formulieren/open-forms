@@ -1,0 +1,9 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.genericCBS.org/GenericCBS/">
+   <soapenv:Body>
+      <getGovAvailableDaysResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <Result xmlns="">Birthday</Result>
+         <Result xmlns="">MainTel</Result>
+         <Result xmlns="">Email</Result>
+      </getGovAvailableDaysResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

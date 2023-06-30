@@ -5,6 +5,7 @@ from .views import (
     DatesListView,
     LocationsListView,
     ProductsListView,
+    RequiredCustomerFieldsListView,
     TimesListView,
 )
 
@@ -13,6 +14,11 @@ urlpatterns = [
     path("locations", LocationsListView.as_view(), name="appointments-locations-list"),
     path("dates", DatesListView.as_view(), name="appointments-dates-list"),
     path("times", TimesListView.as_view(), name="appointments-times-list"),
+    path(
+        "customer-fields",
+        RequiredCustomerFieldsListView.as_view(),
+        name="appointments-customer-fields",
+    ),
     path(
         "<uuid:submission_uuid>/cancel",
         CancelAppointmentView.as_view(),

@@ -3,6 +3,7 @@ import logging
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+from drf_spectacular.plumbing import build_array_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -12,8 +13,9 @@ from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
-from openforms.api.serializers import ExceptionSerializer
+from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.views import ListMixin
+from openforms.formio.api.schema import FORMIO_COMPONENT_SCHEMA
 from openforms.logging import logevent
 from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
@@ -27,6 +29,7 @@ from ..models import AppointmentsConfig
 from ..utils import delete_appointment_for_submission, get_plugin
 from .serializers import (
     CancelAppointmentInputSerializer,
+    CustomerFieldsInputSerializer,
     DateInputSerializer,
     DateSerializer,
     LocationInputSerializer,
@@ -230,6 +233,62 @@ class TimesListView(ListMixin, APIView):
                 [product], location, serializer.validated_data["date"]
             )
         return [{"time": time} for time in times]
+
+
+@extend_schema(
+    summary=_("Get required customer field details for a given product"),
+    parameters=[
+        OpenApiParameter(
+            "product_id",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("ID of the product, may be repeated for multiple products."),
+            required=True,
+        ),
+    ],
+    responses={
+        200: OpenApiResponse(
+            response=build_array_type(FORMIO_COMPONENT_SCHEMA, min_length=1),
+            description=_("Customer fields list as Form.io components."),
+        ),
+        400: OpenApiResponse(
+            response=ValidationErrorSerializer,
+            description=_("Invalid input parameters."),
+        ),
+        403: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Insufficient permissions."),
+        ),
+    },
+)
+class RequiredCustomerFieldsListView(APIView):
+    """
+    Retrieve the customer fields required for the appointment.
+
+    Note that this requires valid querystring parameters to get results. You will get
+    an HTTP 400 on invalid input parameters.
+
+    The required fields are returned as an array of Form.io component definitions,
+    with ready to use component keys, labels and relevant validators.
+    """
+
+    authentication_classes = ()
+    permission_classes = [AnyActiveSubmissionPermission]
+
+    def get(self, request, *args, **kwargs):
+        input_serializer = CustomerFieldsInputSerializer(data=self.request.query_params)
+        input_serializer.is_valid(raise_exception=True)
+
+        product = input_serializer.validated_data["product_id"]
+        plugin = get_plugin()
+
+        with elasticapm.capture_span(
+            name="get-required-customer-fields",
+            span_type="app.appointments.get_required_customer_fields",
+        ):
+            fields = plugin.get_required_customer_fields([product])
+
+        return Response(fields)
 
 
 @extend_schema(

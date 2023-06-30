@@ -1,6 +1,7 @@
 from django.urls import reverse
 
 import requests_mock
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.logging.models import TimelineLogProxy
@@ -10,6 +11,7 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 from ....constants import AppointmentDetailsStatus
 from ....tests.factories import AppointmentInfoFactory
 from ..client import QmaticException
+from ..constants import CustomerFields
 from .factories import QmaticConfigFactory
 from .test_plugin import MockConfigMixin, mock_response
 
@@ -189,6 +191,42 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             f"{self.endpoint}?product_id=1&location_id=1&date=2016-12-06"
         )
         self.assertEqual(response.status_code, 403)
+
+
+class CustomerFieldsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.submission = SubmissionFactory.create()
+        cls.endpoint = reverse("api:appointments-customer-fields")
+
+    def setUp(self):
+        super().setUp()
+
+        self._add_submission_to_session(self.submission)
+        self.qmatic_config.required_customer_fields = [CustomerFields.last_name]
+
+    def test_return_list_of_formio_components(self):
+        response = self.client.get(self.endpoint, {"product_id": "not-relevant"})
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["type"], "textfield")
+        self.assertEqual(results[0]["key"], "lastName")
+
+    def test_returns_400_on_missing_param(self):
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_returns_403_when_no_active_sessions(self):
+        self._clear_session()
+
+        response = self.client.get(self.endpoint, {"product_id": "not-relevant"})
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):

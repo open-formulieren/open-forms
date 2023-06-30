@@ -97,6 +97,90 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/appointments/customer-fields:
+    get:
+      operationId: appointments_customer_fields_retrieve
+      description: |-
+        Retrieve the customer fields required for the appointment.
+
+        Note that this requires valid querystring parameters to get results. You will get
+        an HTTP 400 on invalid input parameters.
+
+        The required fields are returned as an array of Form.io component definitions,
+        with ready to use component keys, labels and relevant validators.
+      summary: Get required customer field details for a given product
+      parameters:
+      - in: query
+        name: product_id
+        schema:
+          type: string
+        description: ID of the product, may be repeated for multiple products.
+        required: true
+      tags:
+      - appointments
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  description: A single Form.io component. The `type`, `key` and `label`
+                    properties are guaranteed to be present and non-empty.
+                  properties:
+                    type:
+                      type: string
+                      description: Component type
+                    key:
+                      type: string
+                      description: Form field name
+                    label:
+                      type: string
+                      description: Form field label
+                  additionalProperties: {}
+                  title: Form.io component
+                minLength: 1
+          description: Customer fields list as Form.io components.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: Invalid input parameters.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Insufficient permissions.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/appointments/dates:
     get:
       operationId: appointments_dates_list
