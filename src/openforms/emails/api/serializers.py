@@ -23,6 +23,14 @@ class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
         if content := data.get("content"):
             data["content"] = self._add_cosign_templatetag(content)
 
+            for language_code, translations in data.get("translations", {}).items():
+                if not (translated_content := translations.get("content")):
+                    continue
+
+                data["translations"][language_code][
+                    "content"
+                ] = self._add_cosign_templatetag(translated_content)
+
         return super().to_internal_value(data)
 
     def _add_cosign_templatetag(self, content):
@@ -31,9 +39,7 @@ class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
         if not is_import:
             return content
 
-        pattern = re.compile(r"\{%\s?cosign_information\s?%\}")
-        match = pattern.search(content)
-
+        match = re.search(r"\{%\s?cosign_information\s?%\}", content)
         if not match:
             content = add_cosign_info_templatetag(content)
 
