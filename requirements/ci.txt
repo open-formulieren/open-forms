@@ -213,7 +213,7 @@ django-appconf==1.0.4
     #   django-cookie-consent
     #   django-log-outgoing-requests
     #   django-timeline-logger
-django-autoslug==1.9.8
+django-autoslug==1.9.9
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
