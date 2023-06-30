@@ -82,6 +82,7 @@ class JccAppointment(BasePlugin):
 
     verbose_name = _("JCC")
 
+    @with_graceful_default(default=[])
     def get_available_products(
         self,
         current_products: list[AppointmentProduct] | None = None,
@@ -94,7 +95,7 @@ class JccAppointment(BasePlugin):
             )
 
         client = get_client()
-        try:
+        with log_soap_errors("Could not retrieve available products"):
             if current_products:
                 current_product_ids = squash_ids(current_products)
                 result = client.service.getGovAvailableProductsByProduct(
@@ -102,11 +103,6 @@ class JccAppointment(BasePlugin):
                 )
             else:
                 result = client.service.getGovAvailableProducts()
-        except (ZeepError, RequestException) as e:
-            logger.exception("Could not retrieve available products", exc_info=e)
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         return [
             AppointmentProduct(
@@ -116,7 +112,7 @@ class JccAppointment(BasePlugin):
         ]
 
     def _get_all_locations(self, client: Client) -> list[AppointmentLocation]:
-        try:
+        with log_soap_errors("Could not retrieve location IDs"):
             location_ids = client.service.getGovLocations()
             with parallel() as pool:
                 details = pool.map(
@@ -127,11 +123,6 @@ class JccAppointment(BasePlugin):
                 )
             # evaluate the generator
             details = list(details)
-        except (ZeepError, RequestException) as e:
-            logger.exception("Could not retrieve location IDs", exc_info=e)
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         locations = [
             AppointmentLocation(
@@ -146,34 +137,27 @@ class JccAppointment(BasePlugin):
 
         return locations
 
+    @with_graceful_default(default=[])
     def get_locations(
         self,
         products: list[AppointmentProduct] | None = None,
     ) -> list[AppointmentLocation]:
         client = get_client()
-
         if products is None:
             return self._get_all_locations(client)
 
         product_ids = squash_ids(products)
-
-        try:
+        with log_soap_errors(
+            "Could not retrieve locations for products '%s'", product_ids
+        ):
             result = client.service.getGovLocationsForProduct(productID=product_ids)
-        except (ZeepError, RequestException) as e:
-            logger.exception(
-                "Could not retrieve locations for products '%s'",
-                product_ids,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         return [
             AppointmentLocation(entry["locationID"], entry["locationDesc"])
             for entry in result
         ]
 
+    @with_graceful_default(default=[])
     def get_dates(
         self,
         products: List[AppointmentProduct],
@@ -187,7 +171,13 @@ class JccAppointment(BasePlugin):
         start_at = start_at or date.today()
         end_at = end_at or (start_at + timedelta(days=14))
 
-        try:
+        with log_soap_errors(
+            "Could not retrieve dates for products '%s' at location '%s' between %s - %s",
+            product_ids,
+            location,
+            start_at,
+            end_at,
+        ):
             max_end_date = client.service.getGovLatestPlanDate(productId=product_ids)
             if end_at > max_end_date:
                 end_at = max_end_date
@@ -200,19 +190,8 @@ class JccAppointment(BasePlugin):
                 appDuration=0,
             )
             return days
-        except (ZeepError, RequestException) as e:
-            logger.exception(
-                "Could not retrieve dates for products '%s' at location '%s' between %s - %s",
-                product_ids,
-                location,
-                start_at,
-                end_at,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
+    @with_graceful_default(default=[])
     def get_times(
         self,
         products: List[AppointmentProduct],
@@ -222,8 +201,13 @@ class JccAppointment(BasePlugin):
         product_ids = squash_ids(products)
 
         client = get_client()
-        try:
-            times = client.service.getGovAvailableTimesPerDay(
+        with log_soap_errors(
+            "Could not retrieve times for products '%s' at location '%s' on %s",
+            product_ids,
+            location,
+            day,
+        ):
+            return client.service.getGovAvailableTimesPerDay(
                 date=day,
                 productID=product_ids,
                 locationID=location.identifier,
