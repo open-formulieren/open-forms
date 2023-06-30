@@ -2,6 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from .fields import ProductIDField
+
 
 class ProductSerializer(serializers.Serializer):
     code = serializers.CharField(label=_("code"), help_text=_("Product code"))
@@ -57,4 +59,10 @@ class TimeSerializer(serializers.Serializer):
 class CancelAppointmentInputSerializer(serializers.Serializer):
     email = serializers.EmailField(
         label=_("email"), help_text=_("Email given when making the appointment")
+    )
+
+
+class CustomerFieldsInputSerializer(serializers.Serializer):
+    product_id = ProductIDField(
+        help_text=_("ID of the product to get required fields for")
     )

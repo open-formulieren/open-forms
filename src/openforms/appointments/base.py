@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from rest_framework import serializers
 
+from openforms.formio.typing import Component
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -149,6 +150,20 @@ class BasePlugin(ABC, AbstractBasePlugin):
         :param location: An :class:`AppointmentLocation`, as obtained from `get_locations`.
         :param day: A :class:`date` to retrieve available times for.
         :returns: List of available :class:`datetime`.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_required_customer_fields(
+        self,
+        products: list[AppointmentProduct],
+    ) -> list[Component]:  # pragma: no cover
+        """
+        Given a list of products, return the additional required customer fields.
+
+        The fields are returned as a Form.io components array, including possible useful
+        autocomplete attributes. This should make it easy to render the fields using
+        existing tooling.
         """
         raise NotImplementedError()
 
