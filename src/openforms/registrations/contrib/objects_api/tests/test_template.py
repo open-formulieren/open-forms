@@ -41,6 +41,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_api_global_config = ObjectsAPIConfigFactory(
             objects_service__api_root="https://objecten.nl/api/v1/",
             objects_service__oas="https://objecten.nl/api/v1/schema/openapi.yaml",
+            productaanvraag_type="terugbelnotitie",
         )
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
