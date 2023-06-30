@@ -473,6 +473,9 @@ class TestAppointmentPlugin(BasePlugin):
     def get_times(self, products, location, day):
         return [datetime(2021, 1, 1, 12, 0)]
 
+    def get_required_customer_fields(self, products):
+        return []
+
     def create_appointment(self, products, location, start_at, client, remarks=None):
         return "1"
 

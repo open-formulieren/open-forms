@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
+
+from openforms.formio.typing import Component
 
 from ...base import (
     AppointmentDetails,
@@ -30,6 +32,17 @@ class DemoAppointment(BasePlugin):
 
     def get_times(self, products, location, day):
         return [datetime(2023, 1, 1, 12, 0)]
+
+    def get_required_customer_fields(
+        self,
+        products: list[AppointmentProduct],
+    ) -> list[Component]:
+        last_name: Component = {
+            "type": "textfield",
+            "key": "lastName",
+            "label": gettext("Last name"),
+        }
+        return [last_name]
 
     def create_appointment(self, products, location, start_at, client, remarks=None):
         print(
