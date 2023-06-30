@@ -1,22 +1,20 @@
 from django import forms
 
+from openforms.utils.form_fields import (
+    CheckboxChoicesArrayField,
+    get_arrayfield_choices,
+)
+
 from .models import GlobalConfiguration
 from .widgets import PluginConfigurationTextAreaReact
 
 
-def get_upload_file_types():
-    model_field = GlobalConfiguration._meta.get_field("form_upload_default_file_types")
-    return model_field.base_field.choices
-
-
-class UploadFileTypesField(forms.MultipleChoiceField):
-    widget = forms.CheckboxSelectMultiple
-
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("choices", get_upload_file_types)
-        for kwarg in ("base_field", "max_length"):
-            kwargs.pop(kwarg)
-        super().__init__(*args, **kwargs)
+class UploadFileTypesField(CheckboxChoicesArrayField):
+    @staticmethod
+    def get_field_choices():
+        return get_arrayfield_choices(
+            GlobalConfiguration, "form_upload_default_file_types"
+        )
 
 
 class GlobalConfigurationAdminForm(forms.ModelForm):
