@@ -194,7 +194,11 @@ def import_form_data(
 
             serializer_kwargs = {
                 "data": entry,
-                "context": {"request": request, "form": created_form},
+                "context": {
+                    "request": request,
+                    "form": created_form,
+                    "is_import": True,
+                },
             }
 
             if resource == "forms" and existing_form_instance:
