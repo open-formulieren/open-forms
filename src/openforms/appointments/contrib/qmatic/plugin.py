@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from dateutil.parser import isoparse
 from requests.exceptions import RequestException
 
+from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from ...base import (
@@ -26,6 +27,7 @@ from ...exceptions import (
 )
 from ...registry import register
 from .client import QmaticClient, QmaticException
+from .constants import FIELD_TO_FORMIO_COMPONENT
 from .models import QmaticConfig
 
 logger = logging.getLogger(__name__)
@@ -182,6 +184,18 @@ class QmaticAppointment(BasePlugin):
             datetime.combine(day, time.fromisoformat(entry))
             for entry in response.json()["times"]
         ]
+
+    def get_required_customer_fields(
+        self,
+        products: list[AppointmentProduct],
+    ) -> list[Component]:
+        config = QmaticConfig.get_solo()
+        assert isinstance(config, QmaticConfig)
+        components = [
+            FIELD_TO_FORMIO_COMPONENT[field]
+            for field in config.required_customer_fields
+        ]
+        return components
 
     def create_appointment(
         self,

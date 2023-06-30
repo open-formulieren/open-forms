@@ -1,6 +1,7 @@
 from datetime import date, datetime, timezone
 
 from django.test import SimpleTestCase, TestCase
+from django.utils.translation import gettext as _
 
 import requests_mock
 from hypothesis import given, strategies as st
@@ -14,6 +15,7 @@ from ....base import (
     AppointmentProduct,
 )
 from ....exceptions import AppointmentException
+from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import QmaticAppointment
 from .factories import ServiceFactory
 from .utils import MockConfigMixin, mock_response
@@ -129,6 +131,50 @@ class PluginTests(MockConfigMixin, TestCase):
 
         self.assertEqual(len(times), 16)
         self.assertEqual(times[0], datetime(2016, 12, 6, 9, 0, 0))
+
+    def test_get_required_customer_fields(self):
+        self.qmatic_config.required_customer_fields = [
+            CustomerFields.last_name,
+            CustomerFields.birthday,
+            CustomerFields.phone_number,
+            CustomerFields.email,
+        ]
+        product = AppointmentProduct(
+            identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
+        )
+
+        fields = self.plugin.get_required_customer_fields([product])
+
+        self.assertEqual(len(fields), 4)
+        last_name, dob, tel, email = fields
+
+        with self.subTest("Last name"):
+            self.assertEqual(last_name["type"], "textfield")
+            self.assertEqual(last_name["key"], "lastName")
+            self.assertEqual(last_name["label"], _("Last name"))
+            self.assertEqual(last_name["autocomplete"], "family-name")
+            self.assertEqual(last_name["validate"]["maxLength"], 200)
+
+        with self.subTest("Date of birth"):
+            self.assertEqual(dob["type"], "date")
+            self.assertEqual(dob["key"], "dateOfBirth")
+            self.assertEqual(dob["label"], _("Birthday"))
+            self.assertEqual(dob["openForms"]["widget"], "inputGroup")
+            self.assertEqual(dob["autocomplete"], "bday")
+
+        with self.subTest("Telephone number"):
+            self.assertEqual(tel["type"], "phoneNumber")
+            self.assertEqual(tel["key"], "phone")
+            self.assertEqual(tel["label"], _("Phone number"))
+            self.assertEqual(tel["autocomplete"], "tel")
+            self.assertEqual(tel["validate"]["maxLength"], 50)
+
+        with self.subTest("Email address"):
+            self.assertEqual(email["type"], "email")
+            self.assertEqual(email["key"], "email")
+            self.assertEqual(email["label"], _("Email address"))
+            self.assertEqual(email["autocomplete"], "email")
+            self.assertEqual(email["validate"]["maxLength"], 255)
 
     @requests_mock.Mocker()
     def test_create_appointment(self, m):
@@ -329,3 +375,18 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_times(
                 products=[product], location=location, day=date(2023, 6, 22)
             )
+
+
+class ConfigurationTests(SimpleTestCase):
+    def test_all_customer_fields_have_required_formio_properties(self):
+        for field in CustomerFields:
+
+            if field == "externalId":
+                continue
+
+            with self.subTest(f"{field=}"):
+                component = FIELD_TO_FORMIO_COMPONENT[field]
+
+                self.assertIn("type", component)
+                self.assertIn("key", component)
+                self.assertIn("label", component)

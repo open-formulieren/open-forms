@@ -34,11 +34,18 @@ class MockConfigMixin:
         main_config_patcher.start()
         self.addCleanup(main_config_patcher.stop)  # type: ignore
 
-        qmatic_config = QmaticConfig(service=self.service)
-        self.api_root = qmatic_config.service.api_root
-        jcc_config_patcher = patch(
-            "openforms.appointments.contrib.qmatic.client.QmaticConfig.get_solo",
-            return_value=qmatic_config,
-        )
-        jcc_config_patcher.start()
-        self.addCleanup(jcc_config_patcher.stop)  # type: ignore
+        self.qmatic_config = QmaticConfig(service=self.service)
+        self.api_root = self.qmatic_config.service.api_root
+        qmatic_config_patchers = [
+            patch(
+                "openforms.appointments.contrib.qmatic.client.QmaticConfig.get_solo",
+                return_value=self.qmatic_config,
+            ),
+            patch(
+                "openforms.appointments.contrib.qmatic.plugin.QmaticConfig.get_solo",
+                return_value=self.qmatic_config,
+            ),
+        ]
+        for patcher in qmatic_config_patchers:
+            patcher.start()
+            self.addCleanup(patcher.stop)  # type: ignore
