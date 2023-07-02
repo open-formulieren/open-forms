@@ -13,6 +13,7 @@ import {
   KEY,
   LABEL_REQUIRED,
   PRESENTATION,
+  TOOLTIP,
 } from './edit/options';
 import {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {localiseSchema} from './i18n';
@@ -56,6 +57,7 @@ const EDIT_FORM_TABS = {
         LABEL_REQUIRED,
         KEY,
         DESCRIPTION,
+        TOOLTIP,
         PRESENTATION,
         HIDDEN,
         CLEAR_ON_HIDE,

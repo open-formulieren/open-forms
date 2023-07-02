@@ -1154,6 +1154,7 @@ class FormDesignerTooltipTests(E2ETestCase):
                                 },
                             ],
                         },
+                        {"type": "map", "key": "map", "label": "Map 1"},
                     ]
                 },
             )
@@ -1192,6 +1193,7 @@ class FormDesignerTooltipTests(E2ETestCase):
                 "Text Area 1",
                 "Text Field 1",
                 "Time 1",
+                "Map 1",
             ]
 
             for label in labels:
