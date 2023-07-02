@@ -201,7 +201,13 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 # find and click translations tab
                 await page.get_by_role("link", name="Vertalingen").click()
 
-                expected_literals = ["Field 2", "Description 2", "Option 1", "Option 2"]
+                expected_literals = [
+                    "Field 2",
+                    "Description 2",
+                    "Tooltip 2",
+                    "Option 1",
+                    "Option 2",
+                ]
                 for index, literal in enumerate(expected_literals):
                     with self.subTest(literal=literal, index=index):
                         literal_loc = page.locator(

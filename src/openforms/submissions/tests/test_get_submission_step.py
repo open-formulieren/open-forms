@@ -431,6 +431,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                         "type": "editgrid",
                         "key": "repeatingGroup1",
                         "label": "Herhalende groep 1",
+                        "tooltip": "Tip 1",
                         "groupLabel": "Element",
                         "components": [
                             {"type": "textfield", "label": "Tekst 1", "key": "text1"},
@@ -439,6 +440,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                     {
                         "type": "radio",
                         "key": "radio1",
+                        "tooltip": "De uitsteekschijf van deze week",
                         "values": [{"value": 1, "label": "Een"}, {"value": 2}],
                     },
                     {
@@ -457,6 +459,8 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                     "Tekst 1": "Text 1",
                     "Een": "One",
                     "Keuze 1": "1st Choice",
+                    "Tip 1": "First tip",
+                    "De uitsteekschijf van deze week": "Radio Giraffe's tip of the week",
                 }
             },
         )
@@ -476,6 +480,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         expected = {
             "repeatingGroup1": {
                 "label": "Repeating group 1",
+                "tooltip": "First tip",
                 "groupLabel": "Item",
             },
             "text1": {
@@ -491,6 +496,10 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                     self.assertEqual(component[prop], text)
 
         self.assertEqual(wrapped_configuration["radio1"]["values"][0]["label"], "One")
+        self.assertEqual(
+            wrapped_configuration["radio1"]["tooltip"],
+            "Radio Giraffe's tip of the week",
+        )
         self.assertEqual(
             wrapped_configuration["select1"]["data"]["values"][0]["label"], "1st Choice"
         )
