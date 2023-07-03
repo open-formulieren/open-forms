@@ -31,6 +31,12 @@ const DESCRIPTION = {
   label: 'Description',
 };
 
+const TOOLTIP = {
+  type: 'textfield',
+  key: 'tooltip',
+  label: 'Tooltip',
+};
+
 const SHOW_IN_SUMMARY = {
   type: 'checkbox',
   key: 'showInSummary',
@@ -254,6 +260,7 @@ export {
   LABEL,
   KEY,
   DESCRIPTION,
+  TOOLTIP,
   OPTIONS_CHOICES,
   SHOW_IN_SUMMARY,
   SHOW_IN_EMAIL,

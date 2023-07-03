@@ -11,6 +11,7 @@ import {
   MULTIPLE,
   OPTIONS_CHOICES,
   PRESENTATION,
+  TOOLTIP,
 } from './edit/options';
 import DEFAULT_TABS, {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {localiseSchema} from './i18n';
@@ -49,6 +50,7 @@ class SelectField extends Select {
         LABEL_REQUIRED,
         KEY,
         DESCRIPTION,
+        TOOLTIP,
         PRESENTATION,
         MULTIPLE,
         HIDDEN,

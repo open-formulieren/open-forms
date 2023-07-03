@@ -19,6 +19,7 @@ import {
   READ_ONLY,
   REGEX_VALIDATION,
   REQUIRED,
+  TOOLTIP,
 } from './options';
 import {getValidationEditForm} from './validationEditFormUtils';
 
@@ -33,6 +34,7 @@ const BASIC = {
     LABEL_REQUIRED,
     KEY,
     DESCRIPTION,
+    TOOLTIP,
     PRESENTATION,
     MULTIPLE,
     HIDDEN,
@@ -92,6 +94,7 @@ const CHOICES_BASIC = {
     LABEL_REQUIRED,
     KEY,
     DESCRIPTION,
+    TOOLTIP,
     PRESENTATION,
     MULTIPLE,
     HIDDEN,

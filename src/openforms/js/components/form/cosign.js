@@ -12,6 +12,7 @@ import {
   KEY,
   LABEL_REQUIRED,
   PRESENTATION,
+  TOOLTIP,
 } from './edit/options';
 import DEFAULT_TABS, {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {localiseSchema} from './i18n';
@@ -50,6 +51,7 @@ class CoSignField extends FormioEmail {
         LABEL_REQUIRED,
         KEY,
         DESCRIPTION,
+        TOOLTIP,
         {
           type: 'select',
           key: 'authPlugin',
