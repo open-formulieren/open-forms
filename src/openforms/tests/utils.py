@@ -1,6 +1,10 @@
 import contextlib
+import cProfile
+import io
 import os
+import pstats
 import socket
+from pstats import SortKey
 
 from django.conf import settings
 from django.test import override_settings
@@ -49,3 +53,16 @@ def surpress_output(stdchannel, dest_filename):
     finally:
         os.dup2(oldstdchannel, stdchannel.fileno())
         dest_file.close()
+
+
+@contextlib.contextmanager
+def c_profile(sort_by=SortKey.CUMULATIVE):  # pragma: no cover
+    """
+    Profile a block of code with cProfile.
+    """
+    with cProfile.Profile() as pr:
+        yield
+        s = io.StringIO()
+        ps = pstats.Stats(pr, stream=s).sort_stats(sort_by)
+        ps.print_stats()
+        print(s.getvalue())
