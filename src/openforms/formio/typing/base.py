@@ -17,6 +17,8 @@ from .dates import DateConstraintConfiguration
 class Validate(TypedDict, total=False):
     required: bool
     maxLength: int
+    min: int | float
+    max: int | float
 
 
 class OpenFormsConfig(TypedDict, total=False):
