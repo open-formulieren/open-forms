@@ -78,6 +78,7 @@ celery==5.2.7
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery-once
+    #   django-yubin
     #   flower
 celery-once==3.0.1
     # via
@@ -358,7 +359,7 @@ django-treebeard==4.5.1
     #   -r requirements/base.txt
 django-webtest==1.9.7
     # via -r requirements/test-tools.in
-django-yubin==1.7.1
+django-yubin==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -506,11 +507,6 @@ kombu==5.2.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-lockfile==0.12.2
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   django-yubin
 lxml==4.9.1
     # via
     #   -c requirements/base.txt

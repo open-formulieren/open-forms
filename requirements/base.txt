@@ -39,6 +39,7 @@ celery==5.2.7
     # via
     #   -r requirements/base.in
     #   celery-once
+    #   django-yubin
     #   flower
 celery-once==3.0.1
     # via -r requirements/base.in
@@ -210,7 +211,7 @@ django-tinymce==3.4.0
     # via -r requirements/base.in
 django-treebeard==4.5.1
     # via -r requirements/base.in
-django-yubin==1.7.1
+django-yubin==2.0.0
     # via -r requirements/base.in
 djangorestframework==3.13.1
     # via
@@ -277,8 +278,6 @@ jsonschema==4.17.3
     #   drf-spectacular
 kombu==5.2.3
     # via celery
-lockfile==0.12.2
-    # via django-yubin
 lxml==4.9.1
     # via
     #   -r requirements/base.in
