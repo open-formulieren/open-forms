@@ -81,6 +81,10 @@ class JccAppointment(BasePlugin):
     """
 
     verbose_name = _("JCC")
+    supports_multiple_products = (
+        True  # see 4.13 bookGovAppointment and 3.1 AppointmentDetailsType
+    )
+    # Note - customer fields may be different per product!
 
     @with_graceful_default(default=[])
     def get_available_products(

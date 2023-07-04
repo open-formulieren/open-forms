@@ -5803,8 +5803,16 @@ components:
           title: Is appointment form
           description: Boolean indicating if the form is an appointment form, using
             the new flow.
+        supportsMultipleProducts:
+          type: boolean
+          nullable: true
+          readOnly: true
+          title: Multiple products supported?
+          description: If not supported, only one product/service can be booked at
+            once and the UI may not allow the user to select multiple products.
       required:
       - isAppointment
+      - supportsMultipleProducts
     AppointmentProduct:
       type: object
       properties:
