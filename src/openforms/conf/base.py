@@ -349,7 +349,7 @@ SENDFILE_URL = PRIVATE_MEDIA_URL
 #
 # Sending EMAIL
 #
-EMAIL_BACKEND = "django_yubin.smtp_queue.EmailBackend"
+EMAIL_BACKEND = "django_yubin.backends.QueuedEmailBackend"
 EMAIL_HOST = config("EMAIL_HOST", default="localhost")
 EMAIL_PORT = config(
     "EMAIL_PORT", default=25
@@ -673,10 +673,6 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.utils.tasks.clear_session_store",
         # https://docs.celeryproject.org/en/v4.4.7/userguide/periodic-tasks.html#crontab-schedules
         "schedule": crontab(minute=0, hour=0),
-    },
-    "send-emails": {
-        "task": "openforms.utils.tasks.send_emails",
-        "schedule": config("BEAT_SEND_EMAIL_INTERVAL", default=20),  # every 20 seconds
     },
     "retry-submissions-processing": {
         "task": "openforms.submissions.tasks.retry_processing_submissions",
