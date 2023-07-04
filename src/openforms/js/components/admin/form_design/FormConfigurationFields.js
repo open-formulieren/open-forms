@@ -77,7 +77,7 @@ const FormConfigurationFields = ({
     translationEnabled,
     submissionAllowed,
     suspensionAllowed,
-    appointmentEnabled,
+    appointmentOptions,
   } = form;
 
   const intl = useIntl();
@@ -217,7 +217,7 @@ const FormConfigurationFields = ({
                 plugin => plugin.assuranceLevels.length && selectedAuthPlugins.includes(plugin.id)
               )
               .map(plugin => (
-                <li>
+                <li key={plugin.id}>
                   <label htmlFor={`form.authenticationBackendOptions.${plugin.id}.loa`}>
                     {plugin.label}
                   </label>
@@ -368,7 +368,7 @@ const FormConfigurationFields = ({
       {new_appointments_enabled && (
         <FormRow>
           <Checkbox
-            name="form.appointmentEnabled"
+            name="form.appointmentOptions.isAppointment"
             label={
               <FormattedMessage
                 defaultMessage="Appointment enabled"
@@ -381,8 +381,8 @@ const FormConfigurationFields = ({
                 description="Form appointment enabled field help text"
               />
             }
-            checked={appointmentEnabled}
-            onChange={event => onCheckboxChange(event, appointmentEnabled)}
+            checked={appointmentOptions?.isAppointment}
+            onChange={event => onCheckboxChange(event, appointmentOptions?.isAppointment)}
           />
         </FormRow>
       )}
@@ -401,7 +401,9 @@ FormConfigurationFields.propTypes = {
     translationEnabled: PropTypes.bool.isRequired,
     submissionAllowed: PropTypes.oneOf(SUMBISSION_ALLOWED_CHOICES.map(opt => opt[0])),
     suspensionAllowed: PropTypes.bool.isRequired,
-    appointmentEnabled: PropTypes.bool.isRequired,
+    appointmentOptions: PropTypes.shape({
+      isAppointment: PropTypes.bool.isRequired,
+    }),
     authenticationBackendOptions: PropTypes.object,
   }).isRequired,
   onChange: PropTypes.func.isRequired,

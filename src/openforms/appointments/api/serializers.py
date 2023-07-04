@@ -5,6 +5,15 @@ from rest_framework import serializers
 from .fields import ProductIDField
 
 
+class AppointmentOptionsSerializer(serializers.Serializer):
+    is_appointment = serializers.BooleanField(
+        label=_("Is appointment form"),
+        help_text=_(
+            "Boolean indicating if the form is an appointment form, using the new flow."
+        ),
+    )
+
+
 class ProductSerializer(serializers.Serializer):
     code = serializers.CharField(label=_("code"), help_text=_("Product code"))
     identifier = serializers.CharField(

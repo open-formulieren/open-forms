@@ -68,7 +68,7 @@ class Form(models.Model):
     )
     translation_enabled = models.BooleanField(_("translation enabled"), default=False)
 
-    # backend integration - which registration to use?
+    # registration
     registration_backend = RegistrationBackendChoiceField(
         _("registration backend"), blank=True
     )
@@ -76,11 +76,13 @@ class Form(models.Model):
         _("registration backend options"), default=dict, blank=True, null=True
     )
 
+    # payments
     payment_backend = PaymentBackendChoiceField(_("payment backend"), blank=True)
     payment_backend_options = models.JSONField(
         _("payment backend options"), default=dict, blank=True, null=True
     )
 
+    # authentication
     authentication_backends = AuthenticationBackendMultiSelectField(
         _("authentication backend(s)"), blank=True
     )
@@ -90,6 +92,18 @@ class Form(models.Model):
     authentication_backend_options = models.JSONField(
         _("per form authentication backend config"), default=dict, blank=True
     )
+
+    # appointments
+    is_appointment = models.BooleanField(
+        _("appointment enabled"),
+        default=False,
+        help_text=_(
+            "Mark the form as an appointment form. "
+            "Appointment forms do not support form designer steps."
+        ),
+    )
+
+    # submission
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),
         help_text=_(
@@ -273,11 +287,6 @@ class Form(models.Model):
             "Amount of days when all submissions of this form will be permanently deleted. "
             "Leave blank to use value in General Configuration."
         ),
-    )
-    appointment_enabled = models.BooleanField(
-        _("appointment enabled"),
-        default=False,
-        help_text=_("This is experimental mode for appointments"),
     )
 
     objects = FormManager()
