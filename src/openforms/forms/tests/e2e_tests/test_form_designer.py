@@ -377,6 +377,12 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             # Test that the key also changed
             await expect(key_input).to_have_value("test")
 
+            # Check file name mentions templating
+            await page.get_by_role("link", name="Bestand").click()
+            await expect(
+                page.locator("label").filter(has_text="Bestandsnaamssjabloon")
+            ).to_be_visible()
+
     async def test_key_unique_across_steps(self):
         @sync_to_async
         def setUpTestData():
