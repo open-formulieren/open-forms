@@ -612,7 +612,7 @@ ADMIN_INDEX_DISPLAY_DROP_DOWN_MENU_CONDITION_FUNCTION = (
 )
 
 #
-# DJANGO-AXES (4.0+)
+# DJANGO-AXES (6.0+)
 #
 AXES_CACHE = "axes"  # refers to CACHES setting
 # The number of login attempts allowed before a record is created for the
@@ -623,16 +623,11 @@ AXES_FAILURE_LIMIT = 10
 # an integer, will be interpreted as a number of hours. Default: None
 AXES_COOLOFF_TIME = 1
 # The number of reverse proxies
-AXES_PROXY_COUNT = NUM_PROXIES - 1 if NUM_PROXIES else None
-# If True only locks based on user id and never locks by IP if attempts limit
-# exceed, otherwise utilize the existing IP and user locking logic Default:
-# False
-AXES_ONLY_USER_FAILURES = True
+AXES_IPWARE_PROXY_COUNT = NUM_PROXIES - 1 if NUM_PROXIES else None
 # If set, specifies a template to render when a user is locked out. Template
 # receives cooloff_time and failure_limit as context variables. Default: None
 AXES_LOCKOUT_TEMPLATE = "account_blocked.html"
-AXES_USE_USER_AGENT = True  # Default: False
-AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = True  # Default: False
+AXES_LOCKOUT_PARAMETERS = [["ip_address", "user_agent", "username"]]
 AXES_BEHIND_REVERSE_PROXY = IS_HTTPS
 
 # The default meta precedence order

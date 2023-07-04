@@ -218,7 +218,7 @@ django-autoslug==1.9.9
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-axes==5.31.0
+django-axes[ipware]==6.0.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -276,7 +276,7 @@ django-hijack==3.1.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-ipware==3.0.1
+django-ipware==5.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

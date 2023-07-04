@@ -137,7 +137,7 @@ django-appconf==1.0.4
     #   django-timeline-logger
 django-autoslug==1.9.9
     # via -r requirements/base.in
-django-axes==5.31.0
+django-axes[ipware]==6.0.5
     # via -r requirements/base.in
 django-better-admin-arrayfield==1.4.2
     # via
@@ -167,7 +167,7 @@ django-formtools==2.3
     # via maykin-django-two-factor-auth
 django-hijack==3.1.6
     # via -r requirements/base.in
-django-ipware==3.0.1
+django-ipware==5.0.0
     # via django-axes
 django-log-outgoing-requests==0.4.0
     # via -r requirements/base.in

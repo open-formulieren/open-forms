@@ -245,6 +245,10 @@
                 "accesslog"
             ],
             [
+                "axes",
+                "accessfailurelog"
+            ],
+            [
                 "cookie_consent",
                 "logitem"
             ],

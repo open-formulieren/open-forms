@@ -709,6 +709,26 @@
                 "accessattempt"
             ],
             [
+                "add_accessfailurelog",
+                "axes",
+                "accessfailurelog"
+            ],
+            [
+                "change_accessfailurelog",
+                "axes",
+                "accessfailurelog"
+            ],
+            [
+                "delete_accessfailurelog",
+                "axes",
+                "accessfailurelog"
+            ],
+            [
+                "view_accessfailurelog",
+                "axes",
+                "accessfailurelog"
+            ],
+            [
                 "add_accesslog",
                 "axes",
                 "accesslog"
@@ -927,26 +947,6 @@
                 "view_message",
                 "django_yubin",
                 "message"
-            ],
-            [
-                "add_queuedmessage",
-                "django_yubin",
-                "queuedmessage"
-            ],
-            [
-                "change_queuedmessage",
-                "django_yubin",
-                "queuedmessage"
-            ],
-            [
-                "delete_queuedmessage",
-                "django_yubin",
-                "queuedmessage"
-            ],
-            [
-                "view_queuedmessage",
-                "django_yubin",
-                "queuedmessage"
             ],
             [
                 "add_confirmationemailtemplate",
