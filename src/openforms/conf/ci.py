@@ -6,6 +6,11 @@ Continuous integration settings module.
 import os
 import warnings
 
+# Importing the idna module has an IO side-effect to load the data, which is a rather
+# big file. Pre-loading this in the settings file populates the python module cache,
+# preventing flakiness in hypothesis tests that hit this code path.
+import idna  # noqa: F401
+
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SECRET_KEY", "dummy")
 # Do not log requests in CI/tests:
