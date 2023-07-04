@@ -1,5 +1,6 @@
 import logging
 import os.path
+import pathlib
 import re
 from collections import defaultdict
 from dataclasses import dataclass
@@ -30,6 +31,7 @@ from openforms.submissions.models import (
     SubmissionStep,
     TemporaryFileUpload,
 )
+from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import JSONObject
 from openforms.utils.glom import _glom_path_to_str
 
@@ -214,7 +216,11 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             glom(component, "fileMaxSize", default="") or settings.MAX_FILE_UPLOAD_SIZE
         )
 
-        base_name = glom(component, "file.name", default="")
+        base_name = render_from_string(
+            source=glom(component, "file.name", default=""),
+            context={"fileName": pathlib.Path(upload.file_name).stem},
+            backend=sandbox_backend,
+        )
 
         if upload.file_size > file_max_size:
             raise RequestEntityTooLarge(
