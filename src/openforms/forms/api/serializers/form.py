@@ -6,6 +6,7 @@ from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
@@ -102,6 +103,12 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     )
     payment_options = PaymentOptionsReadOnlyField()
 
+    appointment_options = AppointmentOptionsSerializer(
+        source="*",
+        required=False,
+        allow_null=True,
+    )
+
     literals = FormLiteralsSerializer(source="*", required=False)
     submissions_removal_options = SubmissionsRemovalOptionsSerializer(
         source="*", required=False
@@ -139,6 +146,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "payment_backend",
             "payment_backend_options",
             "payment_options",
+            "appointment_options",
             "literals",
             "product",
             "slug",
@@ -160,7 +168,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "include_confirmation_page_content_in_pdf",
             "required_fields_with_asterisk",
             "translations",
-            "appointment_enabled",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
             "cosign_login_info",
@@ -188,7 +195,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "required_fields_with_asterisk",
             "submission_allowed",
             "suspension_allowed",
-            "appointment_enabled",
+            "appointment_options",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
             "cosign_login_info",

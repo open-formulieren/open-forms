@@ -42,6 +42,9 @@ class QmaticAppointment(BasePlugin):
     """
 
     verbose_name = _("Qmatic")
+    # See "Book an appointment for multiple customers and multiple services" in the
+    # documentation.
+    supports_multiple_products = True
 
     def get_available_products(
         self,

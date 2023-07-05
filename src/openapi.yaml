@@ -5795,6 +5795,24 @@ components:
       - dark
       - light
       type: string
+    AppointmentOptions:
+      type: object
+      properties:
+        isAppointment:
+          type: boolean
+          title: Is appointment form
+          description: Boolean indicating if the form is an appointment form, using
+            the new flow.
+        supportsMultipleProducts:
+          type: boolean
+          nullable: true
+          readOnly: true
+          title: Multiple products supported?
+          description: If not supported, only one product/service can be booked at
+            once and the UI may not allow the user to select multiple products.
+      required:
+      - isAppointment
+      - supportsMultipleProducts
     AppointmentProduct:
       type: object
       properties:
@@ -6304,6 +6322,10 @@ components:
           items:
             $ref: '#/components/schemas/PaymentOption'
           readOnly: true
+        appointmentOptions:
+          allOf:
+          - $ref: '#/components/schemas/AppointmentOptions'
+          nullable: true
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
@@ -6380,9 +6402,6 @@ components:
           readOnly: true
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
-        appointmentEnabled:
-          type: boolean
-          description: This is experimental mode for appointments
         resumeLinkLifetime:
           type: integer
           readOnly: true
@@ -7658,6 +7677,10 @@ components:
           items:
             $ref: '#/components/schemas/PaymentOption'
           readOnly: true
+        appointmentOptions:
+          allOf:
+          - $ref: '#/components/schemas/AppointmentOptions'
+          nullable: true
         literals:
           $ref: '#/components/schemas/FormLiterals'
         product:
@@ -7734,9 +7757,6 @@ components:
           readOnly: true
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
-        appointmentEnabled:
-          type: boolean
-          description: This is experimental mode for appointments
         resumeLinkLifetime:
           type: integer
           readOnly: true

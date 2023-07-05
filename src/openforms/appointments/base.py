@@ -80,6 +80,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
     """
 
     configuration_options = EmptyOptions
+    supports_multiple_products: bool = False
 
     @abstractmethod
     def get_available_products(

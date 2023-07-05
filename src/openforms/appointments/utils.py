@@ -29,8 +29,9 @@ logger = logging.getLogger()
 
 def get_plugin() -> BasePlugin:
     """returns plugin selected in AppointmentsConfig"""
-    plugin = AppointmentsConfig.get_solo().plugin
-    if not plugin:
+    config = AppointmentsConfig.get_solo()
+    assert isinstance(config, AppointmentsConfig)
+    if not (plugin := config.plugin):
         raise ValueError("No plugin is specified in AppointmentsConfig")
 
     return register[plugin]

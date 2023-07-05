@@ -25,7 +25,6 @@ import {getUniqueRandomString} from 'utils/random';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {APIContext, FormContext} from './Context';
-import {FeatureFlagsContext} from './Context';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
@@ -106,7 +105,7 @@ const initialFormState = {
     autoLoginAuthenticationBackend: '',
     authenticationBackendOptions: {},
     translations: {},
-    appointmentEnabled: false,
+    appointmentOptions: {isAppointment: false},
   },
   newForm: true,
   formSteps: [],
@@ -164,7 +163,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   logicRules: 'logic-rules',
   priceRules: 'product-payment',
   variables: 'variables',
-  appointmentEnabled: 'form',
+  appointmentOptions: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
@@ -915,7 +914,6 @@ StepsFieldSet.propTypes = {
  */
 const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   const {csrftoken} = useContext(APIContext);
-  const {new_appointments_enabled} = useContext(FeatureFlagsContext);
   const initialState = {
     ...initialFormState,
     form: {
@@ -1207,7 +1205,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
               <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
             </Tab>
-            {!new_appointments_enabled && (
+            {!state.form.appointmentOptions?.isAppointment && (
               <Tab>
                 <FormattedMessage
                   defaultMessage="Appointments"
@@ -1316,7 +1314,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             />
           </TabPanel>
 
-          {!new_appointments_enabled && (
+          {!state.form.appointmentOptions?.isAppointment && (
             <TabPanel>
               <Appointments
                 onChange={event => {

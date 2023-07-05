@@ -1,8 +1,44 @@
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.forms.models import Form
+
+from ..base import BasePlugin
+from ..utils import get_plugin
 from .fields import ProductIDField
+
+
+class AppointmentOptionsSerializer(serializers.Serializer):
+    # TODO: validate that appointments cannot be enabled if there's no plugin configured
+    is_appointment = serializers.BooleanField(
+        label=_("Is appointment form"),
+        help_text=_(
+            "Boolean indicating if the form is an appointment form, using the new flow."
+        ),
+    )
+    supports_multiple_products = serializers.SerializerMethodField(
+        label=_("Multiple products supported?"),
+        help_text=_(
+            "If not supported, only one product/service can be booked at once and the "
+            "UI may not allow the user to select multiple products."
+        ),
+    )
+
+    @cached_property
+    def _appointment_plugin(self) -> BasePlugin | None:
+        try:
+            return get_plugin()
+        except ValueError:  # appointments plugin is not configured
+            return None
+
+    def get_supports_multiple_products(self, obj: Form) -> bool | None:
+        # not an appointment -> don't bother looking up plugin configuration
+        if not obj.is_appointment:
+            return None
+        plugin = self._appointment_plugin
+        return plugin.supports_multiple_products if plugin else None
 
 
 class ProductSerializer(serializers.Serializer):
