@@ -59,6 +59,7 @@ celery==5.2.7
     #   -c requirements/base.in
     #   -r requirements/base.txt
     #   celery-once
+    #   django-yubin
     #   flower
 celery-once==3.0.1
     # via
@@ -181,7 +182,7 @@ django-autoslug==1.9.9
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-axes==5.31.0
+django-axes[ipware]==6.0.5
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -238,7 +239,7 @@ django-hijack==3.1.6
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-ipware==3.0.1
+django-ipware==5.0.0
     # via
     #   -r requirements/base.txt
     #   django-axes
@@ -310,7 +311,7 @@ django-treebeard==4.5.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-yubin==1.7.1
+django-yubin==2.0.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -421,10 +422,6 @@ kombu==5.2.3
     # via
     #   -r requirements/base.txt
     #   celery
-lockfile==0.12.2
-    # via
-    #   -r requirements/base.txt
-    #   django-yubin
 lxml==4.9.1
     # via
     #   -c requirements/base.in

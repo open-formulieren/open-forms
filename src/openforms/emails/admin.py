@@ -4,15 +4,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from django_yubin.admin import (
-    Log as YubinLogAdmin,
-    Message as YubinMessageAdmin,
-    QueuedMessage as YubinQueuedMessageAdmin,
+    LogAdmin as YubinLogAdmin,
+    MessageAdmin as YubinMessageAdmin,
 )
-from django_yubin.models import (
-    Log as YubinLog,
-    Message as YubinMessage,
-    QueuedMessage as YubinQueuedMessage,
-)
+from django_yubin.models import Log as YubinLog, Message as YubinMessage
 from modeltranslation.admin import TranslationAdmin
 
 from ..utils.admin import ReadOnlyAdminMixin
@@ -51,7 +46,7 @@ class EmailTestAdminView(UserIsStaffMixin, PermissionRequiredMixin, FormView):
 class LogReadOnlyAdmin(ReadOnlyAdminMixin, YubinLogAdmin):
     readonly_fields = [
         "message",
-        "result",
+        "action",
         "date",
         "log_message",
     ]
@@ -66,7 +61,7 @@ class MessageReadOnlyAdmin(ReadOnlyAdminMixin, YubinMessageAdmin):
         "to_address",
         "from_address",
         "subject",
-        "encoded_message",
+        "message_data",
         "date_created",
         "date_sent",
     ]
@@ -74,17 +69,3 @@ class MessageReadOnlyAdmin(ReadOnlyAdminMixin, YubinMessageAdmin):
 
 admin.site.unregister(YubinMessage)
 admin.site.register(YubinMessage, MessageReadOnlyAdmin)
-
-
-class QueuedMessageReadOnlyAdmin(ReadOnlyAdminMixin, YubinQueuedMessageAdmin):
-    readonly_fields = [
-        "message",
-        "priority",
-        "deferred",
-        "retries",
-        "date_queued",
-    ]
-
-
-admin.site.unregister(YubinQueuedMessage)
-admin.site.register(YubinQueuedMessage, QueuedMessageReadOnlyAdmin)

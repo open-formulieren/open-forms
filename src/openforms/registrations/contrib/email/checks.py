@@ -8,7 +8,7 @@ from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 
 def check_config():
-    if settings.EMAIL_BACKEND == "django_yubin.smtp_queue.EmailBackend":
+    if settings.EMAIL_BACKEND == "django_yubin.backends.QueuedEmailBackend":
         backend = yubin_settings.USE_BACKEND
     else:
         backend = settings.EMAIL_BACKEND

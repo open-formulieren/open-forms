@@ -69,7 +69,7 @@ class CheckEmailSettingsFunctionTests(TestCase):
     @override_settings(
         **replace(
             smtp_settings,
-            EMAIL_BACKEND="django_yubin.smtp_queue.EmailBackend",
+            EMAIL_BACKEND="django_yubin.backends.QueuedEmailBackend",
         )
     )
     def test_init_yubin(self):

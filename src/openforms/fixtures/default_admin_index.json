@@ -245,6 +245,10 @@
                 "accesslog"
             ],
             [
+                "axes",
+                "accessfailurelog"
+            ],
+            [
                 "cookie_consent",
                 "logitem"
             ],
@@ -259,10 +263,6 @@
             [
                 "django_yubin",
                 "message"
-            ],
-            [
-                "django_yubin",
-                "queuedmessage"
             ],
             [
                 "logging",
