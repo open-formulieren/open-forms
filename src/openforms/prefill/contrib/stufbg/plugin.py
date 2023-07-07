@@ -16,6 +16,7 @@ from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 
 from ...base import BasePlugin
+from ...constants import IdentifierRoles
 from ...registry import register
 
 logger = logging.getLogger(__name__)
@@ -120,18 +121,33 @@ class StufBgPrefill(BasePlugin):
 
         return response_dict
 
-    def get_prefill_values(
-        self, submission: Submission, attributes: List[str]
-    ) -> Dict[str, Any]:
+    def get_identifier_value(
+        self, submission: Submission, identifier_role: str
+    ) -> str | None:
+        if not submission.is_authenticated:
+            return
+
         if (
-            not submission.is_authenticated
-            or submission.auth_info.attribute != AuthAttribute.bsn
+            identifier_role == IdentifierRoles.main
+            and submission.auth_info.attribute == self.requires_auth
         ):
+            return submission.auth_info.value
+
+        if identifier_role == IdentifierRoles.authorised_person:
+            return submission.auth_info.machtigen.get("value")
+
+    def get_prefill_values(
+        self,
+        submission: Submission,
+        attributes: List[str],
+        identifier_role: str = "main",
+    ) -> Dict[str, Any]:
+        if not (bsn_value := self.get_identifier_value(submission, identifier_role)):
             #  If there is no bsn we can't prefill any values so just return
             logger.info("No BSN associated with submission, cannot prefill.")
             return {}
 
-        return self._get_values_for_bsn(submission.auth_info.value, attributes)
+        return self._get_values_for_bsn(bsn_value, attributes)
 
     def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
         """

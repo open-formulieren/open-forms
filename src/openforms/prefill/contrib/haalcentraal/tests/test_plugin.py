@@ -9,6 +9,7 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.models import Service
 from zgw_consumers.test import mock_service_oas_get
 
+from ....registry import register
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -105,7 +106,9 @@ class HaalCentraalPluginTests:
 
         submission = SubmissionFactory.create(auth_info__value="999990676")
         assert submission.is_authenticated
-        values = HaalCentraalPrefill.get_prefill_values(
+
+        haalcentraal_plugin = register["haalcentraal"]
+        values = haalcentraal_plugin.get_prefill_values(
             submission,
             attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
         )
@@ -120,7 +123,8 @@ class HaalCentraalPluginTests:
         submission = SubmissionFactory.create(auth_info__value="999990676")
         assert submission.is_authenticated
 
-        values = HaalCentraalPrefill.get_prefill_values(
+        haalcentraal_plugin = register["haalcentraal"]
+        values = haalcentraal_plugin.get_prefill_values(
             submission,
             attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
         )
@@ -207,10 +211,13 @@ class HaalCentraalEmptyConfigTests(TestCase):
     def test_get_prefill_values(self):
         attributes = self.config.get_attributes()
 
+        haalcentraal_plugin = register["haalcentraal"]
+
         with self.subTest("unauthenticated submission"):
             submission = SubmissionFactory.build()
             assert not submission.is_authenticated
-            values = HaalCentraalPrefill.get_prefill_values(
+
+            values = haalcentraal_plugin.get_prefill_values(
                 submission, attributes=(attributes.naam_voornamen,)
             )
 
@@ -220,7 +227,7 @@ class HaalCentraalEmptyConfigTests(TestCase):
             submission = SubmissionFactory.create(auth_info__value="999990676")
             assert submission.is_authenticated
 
-            values = HaalCentraalPrefill.get_prefill_values(
+            values = haalcentraal_plugin.get_prefill_values(
                 submission, attributes=(attributes.naam_voornamen,)
             )
 

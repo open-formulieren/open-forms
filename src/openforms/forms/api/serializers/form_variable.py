@@ -123,6 +123,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
             "service_fetch_configuration",
             "prefill_plugin",
             "prefill_attribute",
+            "prefill_identifier_role",
             "data_type",
             "data_format",
             "is_sensitive_data",

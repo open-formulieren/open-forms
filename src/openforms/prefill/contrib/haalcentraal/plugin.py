@@ -1,5 +1,4 @@
 import logging
-from collections.abc import Sequence
 from typing import Any, Iterable, Optional
 
 from django.urls import reverse
@@ -15,6 +14,7 @@ from openforms.prefill.contrib.haalcentraal.constants import Attributes
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
+from ...constants import IdentifierRoles
 from ...registry import register
 from .models import HaalCentraalConfig
 
@@ -72,25 +72,35 @@ class HaalCentraalPrefill(BasePlugin):
 
         return values
 
-    @classmethod
-    def get_prefill_values(
-        cls, submission: Submission, attributes: Sequence[str]
-    ) -> dict[str, Any]:
+    def get_identifier_value(
+        self, submission: Submission, identifier_role: str
+    ) -> str | None:
+        if not submission.is_authenticated:
+            return
+
         if (
-            not submission.is_authenticated
-            or submission.auth_info.attribute != AuthAttribute.bsn
+            identifier_role == IdentifierRoles.main
+            and submission.auth_info.attribute == self.requires_auth
         ):
-            #  If there is no bsn we can't prefill any values so just return
-            logger.info("No BSN associated with submission, cannot prefill.")
+            return submission.auth_info.value
+
+        if identifier_role == IdentifierRoles.authorised_person:
+            return submission.auth_info.machtigen.get("value")
+
+    def get_prefill_values(
+        self,
+        submission: Submission,
+        attributes: list[str],
+        identifier_role: str = "main",
+    ) -> dict[str, Any]:
+        if (config := get_config()) is None:
             return {}
 
-        config = get_config()
-        if config is None:
+        if not (bsn_value := self.get_identifier_value(submission, identifier_role)):
+            logger.info("No appropriate identifier found on the submission.")
             return {}
 
-        return cls._get_values_for_bsn(
-            config, submission, submission.auth_info.value, attributes
-        )
+        return self._get_values_for_bsn(config, submission, bsn_value, attributes)
 
     @classmethod
     def get_co_sign_values(

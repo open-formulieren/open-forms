@@ -27,7 +27,7 @@ class DemoPrefill(BasePlugin):
 
     @staticmethod
     def get_prefill_values(
-        submission: Submission, attributes: List[str]
+        submission: Submission, attributes: List[str], identifier_role: str
     ) -> Dict[str, Any]:
         """
         Given the requested attributes, look up the appropriate values and return them.

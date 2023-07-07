@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 choices=[("main", "Main"), ("authorised_person", "Authorised person")],
                 default="main",
-                help_text="The role of the identifier. Used to distinguish between the 'main' identifier and the identifiers of someone logging in on behalf of someone/something else.",
+                help_text="In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?",
                 max_length=100,
                 verbose_name="prefill identifier role",
             ),

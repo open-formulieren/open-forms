@@ -15,6 +15,7 @@ from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
+from ...constants import IdentifierRoles
 from ...registry import register
 from .constants import Attributes
 
@@ -39,17 +40,32 @@ class KVK_KVKNumberPrefill(BasePlugin):
     def get_available_attributes(self) -> list[tuple[str, str]]:
         return Attributes.choices
 
+    def get_identifier_value(
+        self, submission: Submission, identifier_role: str
+    ) -> str | None:
+        if not submission.is_authenticated:
+            return
+
+        if (
+            identifier_role == IdentifierRoles.main
+            and submission.auth_info.attribute == self.requires_auth
+        ):
+            return submission.auth_info.value
+
     def get_prefill_values(
-        self, submission: Submission, attributes: List[str]
+        self,
+        submission: Submission,
+        attributes: List[str],
+        identifier_role: str = "main",
     ) -> Dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
-        if submission.auth_info.attribute != AuthAttribute.kvk:
+        if not (kvk_value := self.get_identifier_value(submission, identifier_role)):
             return {}
 
         client = KVKProfileClient()
 
         try:
-            result = client.query(submission.auth_info.value)
+            result = client.query(kvk_value)
         except (RequestException, ClientError, KVKClientError):
             return {}
 

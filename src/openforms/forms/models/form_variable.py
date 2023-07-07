@@ -164,8 +164,8 @@ class FormVariable(models.Model):
     prefill_identifier_role = models.CharField(
         verbose_name=_("prefill identifier role"),
         help_text=_(
-            "The role of the identifier. Used to distinguish between the 'main' identifier and "
-            "the identifiers of someone logging in on behalf of someone/something else."
+            "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD "
+            "Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
         ),
         choices=IdentifierRoles.choices,
         default=IdentifierRoles.main,
