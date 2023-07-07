@@ -227,7 +227,7 @@ django-digid-eherkenning==0.8.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-filter==2.4.0
+django-filter==23.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt

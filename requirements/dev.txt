@@ -296,7 +296,7 @@ django-digid-eherkenning==0.8.0
     #   -r requirements/ci.txt
 django-extensions==3.0.7
     # via -r requirements/dev.in
-django-filter==2.4.0
+django-filter==23.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
