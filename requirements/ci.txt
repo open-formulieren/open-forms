@@ -272,7 +272,7 @@ django-formtools==2.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-django-two-factor-auth
-django-hijack==3.1.6
+django-hijack==3.4.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
