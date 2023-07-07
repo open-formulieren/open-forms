@@ -769,7 +769,7 @@ semantic-version==2.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-sentry-sdk[django]==1.17.0
+sentry-sdk[django]==1.27.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

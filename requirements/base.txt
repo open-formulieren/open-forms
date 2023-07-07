@@ -402,7 +402,7 @@ self-certifi==1.0.0
     # via -r requirements/base.in
 semantic-version==2.10.0
     # via -r requirements/base.in
-sentry-sdk[django]==1.17.0
+sentry-sdk[django]==1.27.1
     # via -r requirements/base.in
 simplejson==3.17.6
     # via mail-parser
