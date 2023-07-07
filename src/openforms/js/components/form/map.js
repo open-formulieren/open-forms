@@ -62,6 +62,80 @@ const EDIT_FORM_TABS = {
         HIDDEN,
         CLEAR_ON_HIDE,
         {...IS_SENSITIVE_DATA, defaultValue: true},
+        {
+          type: 'number',
+          key: 'defaultZoom',
+          label: 'Default zoom level.',
+          description: 'Default zoom level for the leaflet map.',
+          validate: {
+            min: 1,
+            max: 18,
+          },
+        },
+        {
+          type: 'columns',
+          input: false,
+          label: 'starting location',
+          key: 'startPop',
+          tooltip: 'The Latitude and Longitude of the starting point of the map component.',
+          defaultValue: [{lat: '', lng: ''}],
+          columns: [
+            {
+              components: [
+                {
+                  label: 'Latitude',
+                  key: 'lat',
+                  input: true,
+                  type: 'number',
+                  decimalLimit: 7,
+                  delimiter: false,
+                  requireDecimal: true,
+                  tableView: false,
+                  inputFormat: 'plain',
+                  truncateMultipleSpaces: false,
+                  defaultValue: 52.1326332,
+                  validate: {
+                    min: -90,
+                    max: 90
+                  }
+                },
+              ],
+              width: 6,
+              offset: 0,
+              push: 0,
+              pull: 0,
+              size: 'md',
+              currentWidth: 6,
+            },
+            {
+              components: [
+                {
+                  label: 'Longitude',
+                  key: 'lng',
+                  input: true,
+                  type: 'number',
+                  decimalLimit: 7,
+                  delimiter: false,
+                  requireDecimal: true,
+                  tableView: false,
+                  inputFormat: 'plain',
+                  truncateMultipleSpaces: false,
+                  defaultValue: 5.291266,
+                  validate: {
+                    min: -180,
+                    max: 180
+                  }
+                },
+              ],
+              width: 6,
+              offset: 0,
+              push: 0,
+              pull: 0,
+              size: 'md',
+              currentWidth: 6,
+            },
+          ],
+        },
         DEFAULT_VALUE,
       ],
     },
