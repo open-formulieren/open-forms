@@ -230,7 +230,7 @@ drf-polymorphic==1.0.0
     # via -r requirements/base.in
 drf-spectacular==0.25.1
     # via -r requirements/base.in
-elastic-apm==6.7.2
+elastic-apm==6.17.0
     # via -r requirements/base.in
 et-xmlfile==1.1.0
     # via openpyxl

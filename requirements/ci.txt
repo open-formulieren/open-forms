@@ -397,7 +397,7 @@ drf-spectacular==0.25.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-elastic-apm==6.7.2
+elastic-apm==6.17.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
