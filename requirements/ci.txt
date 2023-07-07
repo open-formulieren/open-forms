@@ -348,7 +348,7 @@ django-timeline-logger==3.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-tinymce==3.4.0
+django-tinymce==3.6.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
