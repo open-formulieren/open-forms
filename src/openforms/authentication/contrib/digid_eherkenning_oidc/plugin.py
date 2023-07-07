@@ -152,14 +152,17 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
 
     def add_claims_to_sessions_if_not_cosigning(self, claim, request):
         # set the session auth key only if we're not co-signing
-        if claim and CO_SIGN_PARAMETER not in request.GET:
-            config = OpenIDConnectDigiDMachtigenConfig.get_solo()
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": claim[config.vertegenwoordigde_claim_name],
-                "machtigen": request.session[DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY],
-            }
+        if not claim or CO_SIGN_PARAMETER in request.GET:
+            return
+
+        config = OpenIDConnectDigiDMachtigenConfig.get_solo()
+        machtigen_data = request.session[DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY]
+        request.session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": claim[config.vertegenwoordigde_claim_name],
+            "machtigen": {"value": machtigen_data.get(config.gemachtigde_claim_name)},
+        }
 
     def get_label(self) -> str:
         return "DigiD Machtigen"
@@ -179,16 +182,22 @@ class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
 
     def add_claims_to_sessions_if_not_cosigning(self, claim, request):
         # set the session auth key only if we're not co-signing
-        if claim and CO_SIGN_PARAMETER not in request.GET:
-            config = self.config_class.get_solo()
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": claim[config.vertegenwoordigde_company_claim_name],
-                "machtigen": request.session[
-                    EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
-                ],
-            }
+        if not claim or CO_SIGN_PARAMETER in request.GET:
+            return
+
+        config = self.config_class.get_solo()
+        machtigen_data = request.session[
+            EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
+        ]
+        request.session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": claim[config.vertegenwoordigde_company_claim_name],
+            "machtigen": {
+                # TODO So far the only possibility is that this is a BSN.
+                "value": machtigen_data.get(config.gemachtigde_person_claim_name)
+            },
+        }
 
     def get_label(self) -> str:
         return "eHerkenning bewindvoering"
