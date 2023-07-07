@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from autoslug import AutoSlugField
 
 from openforms.formio.utils import iter_components
+from openforms.utils.helpers import truncate_str_if_needed
 
 from ..models import Form
 from ..tasks import detect_formiojs_configuration_snake_case
@@ -102,6 +103,9 @@ class FormDefinition(models.Model):
             callback = partial(detect_formiojs_configuration_snake_case.delay, self.id)
         transaction.on_commit(callback)
 
+    def get_charfield_max_length(self, field_name: str) -> int:
+        return self._meta.get_field(field_name).max_length
+
     @transaction.atomic
     def copy(self):
         copy = deepcopy(self)
@@ -114,6 +118,17 @@ class FormDefinition(models.Model):
             else ""
         )
         copy.slug = _("{slug}-copy").format(slug=self.slug)
+
+        # truncate name and internal name if needed
+        copy.name = truncate_str_if_needed(
+            self.name, copy.name, self.get_charfield_max_length("name")
+        )
+        copy.internal_name = truncate_str_if_needed(
+            self.internal_name,
+            copy.internal_name,
+            self.get_charfield_max_length("internal_name"),
+        )
+
         copy.save()
         return copy
 
