@@ -51,3 +51,19 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
             kwargs={"uuid": instance.uuid},
             request=request,
         )
+
+
+class MapSearchLatLng(serializers.Serializer):
+    lat = serializers.FloatField(label=_("Latitude"))
+    lng = serializers.FloatField(label=_("Longitude"))
+
+
+class MapSearchRD(serializers.Serializer):
+    x = serializers.FloatField(label=_("X"))
+    y = serializers.FloatField(label=_("Y"))
+
+
+class MapSearchSerializer(serializers.Serializer):
+    label = serializers.CharField(label=_("weergave naam"))
+    latLng = MapSearchLatLng()
+    rd = MapSearchRD()

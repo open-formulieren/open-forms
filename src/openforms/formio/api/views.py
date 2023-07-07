@@ -1,24 +1,35 @@
 import os
+import re
+import logging
+from django.http import HttpResponseBadRequest
+import requests
 
 from django.conf import settings
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework.request import Request
+from rest_framework import permissions, serializers
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.parsers import MaxFilesizeMultiPartParser
+from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.submissions.api.renderers import PlainTextErrorRenderer
 from openforms.submissions.attachments import clean_mime_type
 from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.utils import add_upload_to_session
 
-from .serializers import TemporaryFileUploadSerializer
+from .serializers import MapSearchSerializer, TemporaryFileUploadSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema(
@@ -86,3 +97,72 @@ class TemporaryFileUploadView(GenericAPIView):
             request.accepted_media_type = PlainTextErrorRenderer.media_type
         response = super().finalize_response(request, response, *args, **kwargs)
         return response
+
+
+@extend_schema(
+    summary=_("List BAG address suggestions."),
+    parameters=[
+        OpenApiParameter(
+            "q",
+            OpenApiTypes.STR,
+            OpenApiParameter.QUERY,
+            description=_("The search query we send to the pdok locatie server api."),
+            required=True,
+        )
+    ],
+    responses={
+        200: MapSearchSerializer,
+        status.HTTP_400_BAD_REQUEST: ValidationErrorSerializer,
+        status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
+    },
+)
+class MapSearchView(GenericAPIView):
+    serializer_class = MapSearchSerializer
+    # permission_classes = [AnyActiveSubmissionPermission]
+    renderer_classes = [CamelCaseJSONRenderer]
+
+    def get(self, request: Request, *args, **kwargs):
+        query = request.GET.get("q")
+        if not query:
+            return HttpResponseBadRequest(_("Missing query parameter 'q'"))
+
+        url = f"{settings.PDOK_LOCATIE_SERVER_URL}freee"
+        data = {"q": query}
+
+        try:
+            bag_data = requests.get(url, params=data)
+        except requests.exceptions.RequestException as e:
+            logger.exception(f"couldn't retrieve pdok data: {e}")
+
+        locations = []
+
+        if bag_data.status_code is status.HTTP_200_OK:
+            if response := bag_data.json().get("response"):
+                docs = response.get("docs")
+                if docs:
+                    for doc in docs:
+                        weergavenaam = doc.get("weergavenaam")
+                        latLng = {"lat": None, "lng": None}
+                        rd = {"x": None, "y": None}
+
+                        centroide_ll = doc.get("centroide_ll")
+                        if centroide_ll:
+                            lng, lat = re.findall("\d+\.\d+", centroide_ll)
+                            latLng.update({"lat": lat, "lng": lng})
+
+                        centroide_rd = doc.get("centroide_rd")
+                        if centroide_rd:
+                            x, y = re.findall("\d+\.\d+", centroide_rd)
+                            rd.update({"x": x, "y": y})
+
+                        locations.append(
+                            {"label": weergavenaam, "latLng": latLng, "rd": rd}
+                        )
+
+        return Response(
+            self.serializer_class(
+                instance=locations,
+                context={"request": request},
+                many=True,
+            ).data
+        )
