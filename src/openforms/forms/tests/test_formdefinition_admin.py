@@ -48,7 +48,7 @@ class FormDefinitionAdminTests(WebTest):
         form["_selected_action"].checked = True
         response = form.submit("submit", value="0")
 
-        form_definition_copy = FormDefinition.objects.last()
+        form_definition_copy = FormDefinition.objects.order_by("pk").last()
 
         self.assertEqual(FormDefinition.objects.count(), 2)
         self.assertRedirects(response, reverse("admin:forms_formdefinition_changelist"))
