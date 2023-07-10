@@ -14,7 +14,7 @@ import Select from 'components/admin/forms/Select';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {get} from 'utils/fetch';
 
-import {DATATYPES_CHOICES} from './constants';
+import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
 import Variable from './types';
 import {variableHasErrors} from './utils';
 
@@ -89,6 +89,7 @@ const VariableRow = ({index, variable}) => {
       <td>{getFormDefinitionName(variable.formDefinition)}</td>
       <td>{variable.prefillPlugin}</td>
       <td>{variable.prefillAttribute}</td>
+      <td>{variable.prefillIdentifierRole || 'main'}</td>
       <td>{variable.dataType}</td>
       <td>
         <SensitiveData isSensitive={variable.isSensitiveData} />
@@ -110,13 +111,6 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
   const {availablePrefillPlugins} = formContext.plugins;
   const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
   const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
-
-  const formSteps = formContext.formSteps;
-  const formStepsChoices = formSteps.map(step => {
-    if (step.formDefinition) return [step.formDefinition, step.name];
-
-    return [step._generatedId, step.name];
-  });
 
   const onValueChanged = e => {
     onChange(variable.key, e.target.name, e.target.value);
@@ -196,6 +190,17 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
+        <Field name="prefillIdentifierRole" errors={variable.errors?.prefillIdentifierRole}>
+          <Select
+            name="prefillIdentifierRole"
+            choices={IDENTIFIER_ROLE_CHOICES}
+            value={variable.prefillIdentifierRole || 'main'}
+            onChange={onValueChanged}
+            translateChoices
+          />
+        </Field>
+      </td>
+      <td>
         <Field name="dataType" errors={variable.errors?.dataType}>
           <Select
             name="dataType"
@@ -265,6 +270,14 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
           <FormattedMessage
             defaultMessage="Prefill attribute"
             description="Variable table prefill attribute title"
+          />
+        }
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Prefill identifier role"
+            description="Variable table identifier role attribute title"
           />
         }
       />
