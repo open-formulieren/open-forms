@@ -380,7 +380,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             # Check file name mentions templating
             await page.get_by_role("link", name="Bestand").click()
             await expect(
-                page.locator("label").filter(has_text="Bestandsnaamssjabloon")
+                page.locator("label").filter(has_text="Bestandsnaamsjabloon")
             ).to_be_visible()
 
     async def test_key_unique_across_steps(self):

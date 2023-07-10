@@ -1629,7 +1629,7 @@ class SubmissionAttachmentTest(TestCase):
             }
         ]
 
-        upload = TemporaryFileUploadFactory.create()
+        upload = TemporaryFileUploadFactory.create(file_name="pixel.gif")
 
         data = {
             "someFile": [
@@ -1638,7 +1638,7 @@ class SubmissionAttachmentTest(TestCase):
                     "data": {
                         "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
-                        "name": upload.file_name,
+                        "name": "pixel.gif",
                         "size": upload.file_size,
                         "baseUrl": "http://server",
                         "project": "",
@@ -1646,9 +1646,9 @@ class SubmissionAttachmentTest(TestCase):
                     # ignored formio generated data
                     # "name": "formio generated -guid- filename.foo",
                     # "size": upload.file_size,
-                    # "type": "image/jpg",
+                    # "type": "image/gif",
                     "storage": "url",
-                    "originalName": upload.file_name,
+                    "originalName": "pixel.gif",
                 }
             ],
         }
@@ -1658,7 +1658,6 @@ class SubmissionAttachmentTest(TestCase):
         result = attach_uploads_to_submission_step(submission.steps[0])
         self.assertEqual(len(result), 1)
 
-        attachment_basename = Path(result[0][0].file_name).stem
-        upload_basename = Path(upload.file_name).stem
+        attachment_filename = result[0][0].file_name
 
-        self.assertEqual(attachment_basename, f"prefix_{upload_basename}_postfix")
+        self.assertEqual(attachment_filename, "prefix_pixel_postfix.gif")

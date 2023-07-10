@@ -38,7 +38,7 @@
   "Day": "Dag",
   "Year": "Jaar",
   "File Name": "Bestandsnaam",
-  "File Name Template": "Bestandsnaamssjabloon",
+  "File Name Template": "Bestandsnaamsjabloon",
   "Specify template for name of uploaded file(s). <code>{‍{ fileName }‍}</code> contains the original filename.": "Geef het sjabloon voor de bestandsnamen van geüploade bestanden. <code>{‍{ fileName }‍}</code> bevat de originele bestandsnaam.",
   "Size": "Grootte",
   "Size (mobile)": "Grootte (mobiel)",
