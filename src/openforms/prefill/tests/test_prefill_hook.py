@@ -12,12 +12,12 @@ from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import PluginNotEnabled
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from .. import inject_prefill, prefill_variables
 from ..contrib.demo.plugin import DemoPrefill
-from ..registry import Registry
+from ..registry import Registry, register as prefill_register
 
 register = Registry()
 
@@ -116,6 +116,105 @@ def apply_prefill(configuration: dict, submission: "Submission", register=None) 
 
 
 class PrefillHookTests(TransactionTestCase):
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalPrefill.get_prefill_values",
+        return_value={"naam.voornamen": "John", "naam.geslachtsnaam": "Dodo"},
+    )
+    def test_fetch_values_with_multiple_bsn(self, m_bsn):
+        components = [
+            {
+                "key": "mainPersonName",
+                "type": "textfield",
+                "prefill": {
+                    "plugin": "haalcentraal",
+                    "attribute": "naam.voornamen",
+                    "identifierRole": "main",
+                },
+            },
+            {
+                "key": "authorisedPersonSurname",
+                "type": "textfield",
+                "prefill": {
+                    "plugin": "haalcentraal",
+                    "attribute": "naam.geslachtsnaam",
+                    "identifierRole": "authorised_person",
+                },
+            },
+        ]
+        submission = SubmissionFactory.from_components(components_list=components)
+
+        apply_prefill(
+            configuration={"components": components},
+            submission=submission,
+            register=prefill_register,
+        )
+
+        name_main = SubmissionValueVariable.objects.get(key="mainPersonName")
+        surname_authorised_person = SubmissionValueVariable.objects.get(
+            key="authorisedPersonSurname"
+        )
+
+        self.assertEqual(name_main.value, "John")
+        self.assertEqual(surname_authorised_person.value, "Dodo")
+
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalPrefill.get_prefill_values",
+        return_value={"naam.voornamen": "John", "naam.geslachtsnaam": "Dodo"},
+    )
+    @patch(
+        "openforms.prefill.contrib.kvk.plugin.KVK_KVKNumberPrefill.get_prefill_values",
+        return_value={"bezoekadres.postcode": "1111 AA"},
+    )
+    def test_fetch_values_with_kvk_and_bsn(self, m_kvk, m_bsn):
+        components = [
+            {
+                "key": "companyPostcode",
+                "type": "postcode",
+                "prefill": {
+                    "plugin": "kvk-kvknumber",
+                    "attribute": "bezoekadres.postcode",
+                    "identifier": "main",
+                },
+            },
+            {
+                "key": "authorisedPersonSurname",
+                "type": "textfield",
+                "prefill": {
+                    "plugin": "haalcentraal",
+                    "attribute": "naam.geslachtsnaam",
+                    "identifier": "authorised_person",
+                },
+            },
+            {
+                "key": "authorisedPersonName",
+                "type": "textfield",
+                "prefill": {
+                    "plugin": "haalcentraal",
+                    "attribute": "naam.voornamen",
+                    "identifier": "authorised_person",
+                },
+            },
+        ]
+        submission = SubmissionFactory.from_components(components_list=components)
+
+        apply_prefill(
+            configuration={"components": components},
+            submission=submission,
+            register=prefill_register,
+        )
+
+        postcode_main = SubmissionValueVariable.objects.get(key="companyPostcode")
+        name_authorised_person = SubmissionValueVariable.objects.get(
+            key="authorisedPersonName"
+        )
+        surname_authorised_person = SubmissionValueVariable.objects.get(
+            key="authorisedPersonSurname"
+        )
+
+        self.assertEqual(postcode_main.value, "1111 AA")
+        self.assertEqual(name_authorised_person.value, "John")
+        self.assertEqual(surname_authorised_person.value, "Dodo")
+
     def test_applying_prefill_plugins(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
@@ -232,7 +331,7 @@ class PrefillHookTests(TransactionTestCase):
         @register("demo")
         class EmptyPrefillPlug(DemoPrefill):
             @staticmethod
-            def get_prefill_values(submission, attributes):
+            def get_prefill_values(submission, attributes, identifier_role):
                 return {}
 
         apply_prefill(
@@ -444,7 +543,7 @@ class PrefillHookTests(TransactionTestCase):
         @register("postcode")
         class HavePlugin(DemoPrefill):
             @staticmethod
-            def get_prefill_values(submission, attributes):
+            def get_prefill_values(submission, attributes, identifier_role):
                 return {"static": "1015CJ"}
 
         new_configuration = apply_prefill(
