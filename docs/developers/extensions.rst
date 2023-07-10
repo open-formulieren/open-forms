@@ -25,7 +25,8 @@ The flow works as follows:
 
    * The authentication plugins in Open Forms extract the user information from the payload and add it to the session
      under the :const:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key.
-   * The `mozilla-django-oidc`_ saves the access token to the session, under the key ``oidc_access_token``.
+   * The `mozilla-django-oidc`_ saves the access token to the session, under the key ``oidc_access_token``. See the
+     method ``store_tokens``.
    * The :class:`AuthenticationReturnView` of the authentication plugins fires a signal to notify that the authentication
      was successful if the :const:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key is present in the session.
 
@@ -51,4 +52,4 @@ The flow works as follows:
 .. _token exchange: https://www.keycloak.org/docs/latest/securing_apps/#_token-exchange
 .. _open-forms-ext-token-exchange: https://github.com/open-formulieren/open-forms-ext-token-exchange
 .. _custom authentication class: https://requests.readthedocs.io/en/latest/user/advanced/#custom-authentication
-.. _mozilla-django-oidc: https://github.com/mozilla/mozilla-django-oidc/blob/2.0.0/mozilla_django_oidc/auth.py#L300
+.. _mozilla-django-oidc: https://github.com/mozilla/mozilla-django-oidc/blob/2.0.0/mozilla_django_oidc/auth.py
