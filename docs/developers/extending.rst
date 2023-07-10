@@ -82,7 +82,7 @@ Configurable options
 Extensions cannot require modifications to the Django settings of Open Forms. Any run-time configuration option can
 be specified as:
 
-#. Deployment time environment variables. See `plugin.py:35 <https://github.com/open-formulieren/demo-extension/blob/main/demo_extension/plugin.py>`_.
+#. Deployment time environment variables. See `plugin.py:35 <https://github.com/open-formulieren/demo-extension/blob/main/demo_extension/plugin.py#L35>`_.
 
 #. Dynamic options using ``django-solo``, with the advantage that configuration can be
    modified at runtime through the Admin interface. See `models.py`_ and `admin.py`_ in the demo plugin.

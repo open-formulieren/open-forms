@@ -147,7 +147,7 @@ django-camunda==0.13.0
     # via -r requirements/base.in
 django-capture-tag==1.0
     # via -r requirements/base.in
-django-colorfield==0.9.0
+django-colorfield==0.7.0
     # via -r requirements/base.in
 django-cookie-consent==0.4.0
     # via -r requirements/base.in
@@ -165,7 +165,7 @@ django-filter==2.4.0
     # via -r requirements/base.in
 django-formtools==2.3
     # via maykin-django-two-factor-auth
-django-hijack==3.4.1
+django-hijack==3.1.6
     # via -r requirements/base.in
 django-ipware==5.0.0
     # via django-axes
@@ -197,7 +197,7 @@ django-simple-certmanager==1.3.0
     # via
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.1.0
+django-solo==2.0.0
     # via
     #   -r requirements/base.in
     #   django-camunda

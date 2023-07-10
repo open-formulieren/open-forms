@@ -235,7 +235,7 @@ django-capture-tag==1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-colorfield==0.9.0
+django-colorfield==0.7.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -272,7 +272,7 @@ django-formtools==2.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-django-two-factor-auth
-django-hijack==3.4.1
+django-hijack==3.1.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -336,7 +336,7 @@ django-simple-certmanager==1.3.0
     #   -r requirements/base.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.1.0
+django-solo==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
