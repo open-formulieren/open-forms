@@ -209,7 +209,7 @@ django-timeline-logger==2.1.0
     # via -r requirements/base.in
 django-tinymce==3.4.0
     # via -r requirements/base.in
-django-treebeard==4.5.1
+django-treebeard==4.7
     # via -r requirements/base.in
 django-yubin==2.0.0
     # via -r requirements/base.in
