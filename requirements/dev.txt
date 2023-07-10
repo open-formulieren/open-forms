@@ -264,7 +264,7 @@ django-capture-tag==1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-colorfield==0.7.0
+django-colorfield==0.9.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
