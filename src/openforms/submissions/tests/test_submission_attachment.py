@@ -1617,3 +1617,47 @@ class SubmissionAttachmentTest(TestCase):
 
         self.assertEqual(len(result), 1)
         self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
+
+    def test_attachment_applies_filename_template(self):
+        components = [
+            {
+                "key": "someFile",
+                "file": {
+                    "name": "prefix_{{ fileName }}_postfix",
+                },
+                "type": "file",
+            }
+        ]
+
+        upload = TemporaryFileUploadFactory.create(file_name="pixel.gif")
+
+        data = {
+            "someFile": [
+                {
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "pixel.gif",
+                        "size": upload.file_size,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    # ignored formio generated data
+                    # "name": "formio generated -guid- filename.foo",
+                    # "size": upload.file_size,
+                    # "type": "image/gif",
+                    "storage": "url",
+                    "originalName": "pixel.gif",
+                }
+            ],
+        }
+
+        submission = SubmissionFactory.from_components(components, data)
+
+        result = attach_uploads_to_submission_step(submission.steps[0])
+        self.assertEqual(len(result), 1)
+
+        attachment_filename = result[0][0].file_name
+
+        self.assertEqual(attachment_filename, "prefix_pixel_postfix.gif")

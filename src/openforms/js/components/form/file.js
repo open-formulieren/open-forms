@@ -2,7 +2,6 @@ import {Formio} from 'formiojs';
 
 import {get} from 'utils/fetch';
 import jsonScriptToVar from 'utils/json-script';
-import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {DEFAULT_VALUE} from './edit/options';
 import {ADVANCED, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION_BASIC} from './edit/tabs';
@@ -92,9 +91,10 @@ const FILE_TAB = {
       type: 'textfield',
       input: true,
       key: 'file.name',
-      label: 'File Name',
+      label: 'File Name Template',
       placeholder: '(optional)',
-      tooltip: 'Specify template for name of uploaded file(s).',
+      tooltip:
+        'Specify template for name of uploaded file(s). <code>{‍{ fileName }‍}</code> contains the original filename.',
       weight: 25,
     },
     {

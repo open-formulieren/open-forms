@@ -41,7 +41,7 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertIn("<p>My Message</p>", content)
         self.assertIn("<table", content)
 
-        # TODO test html validness?
+        # TODO test html validity?
         self.assertEqual(len(message.attachments), 1)
         file = message.attachments[0]
         self.assertEqual(file[0], "file.bin")
