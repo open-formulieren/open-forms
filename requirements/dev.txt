@@ -305,7 +305,7 @@ django-formtools==2.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-django-hijack==3.1.6
+django-hijack==3.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
