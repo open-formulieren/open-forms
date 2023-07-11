@@ -353,19 +353,19 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
         self.assertEqual(times, [])
 
+    @c_profile()
     @requests_mock.Mocker()
     @given(st.integers(min_value=400, max_value=499))
     def test_get_times_client_error(self, m, status_code):
-        with c_profile():
-            m.get(requests_mock.ANY, status_code=status_code)
-            product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-            location = AppointmentLocation(identifier="1", name="Bahamas")
+        m.get(requests_mock.ANY, status_code=status_code)
+        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+        location = AppointmentLocation(identifier="1", name="Bahamas")
 
-            times = self.plugin.get_times(
-                products=[product], location=location, day=date(2023, 6, 22)
-            )
+        times = self.plugin.get_times(
+            products=[product], location=location, day=date(2023, 6, 22)
+        )
 
-            self.assertEqual(times, [])
+        self.assertEqual(times, [])
 
     @requests_mock.Mocker()
     def test_get_times_unexpected_exception(self, m):

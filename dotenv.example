@@ -16,6 +16,10 @@ TWO_FACTOR_FORCE_OTP_ADMIN=no
 
 # CSP_REPORT_ONLY=yes
 
+# NOTE - this is a last resort. When developing with hypothesis tests, you want to have
+# tight deadlines to ensure your test itself is not too slow.
+# HYPOTHESIS_PROFILE=ci
+
 # Profiling
 # PROFILE=yes
 # DEBUG=no
