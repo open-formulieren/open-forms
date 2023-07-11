@@ -30,7 +30,6 @@ attrs==20.3.0
     #   glom
     #   hypothesis
     #   jsonschema
-    #   pytest
     #   zeep
 babel==2.9.1
     # via sphinx
@@ -412,7 +411,9 @@ et-xmlfile==1.1.0
     #   -r requirements/base.txt
     #   openpyxl
 exceptiongroup==1.0.4
-    # via hypothesis
+    # via
+    #   hypothesis
+    #   pytest
 face==20.1.1
     # via
     #   -c requirements/base.txt
@@ -628,8 +629,6 @@ psycopg2==2.8.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-py==1.11.0
-    # via pytest
 pycodestyle==2.10.0
     # via flake8
 pycparser==2.20
@@ -672,7 +671,7 @@ pyrsistent==0.17.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   jsonschema
-pytest==6.2.4
+pytest==7.4.0
     # via -r requirements/test-tools.in
 python-dateutil==2.8.1
     # via
@@ -869,10 +868,10 @@ tinycss2==1.1.0
     #   cairosvg
     #   cssselect2
     #   weasyprint
-toml==0.10.2
-    # via pytest
 tomli==1.2.1
-    # via black
+    # via
+    #   black
+    #   pytest
 tornado==6.3.2
     # via
     #   -c requirements/base.txt

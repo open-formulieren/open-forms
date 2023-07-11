@@ -33,7 +33,6 @@ attrs==20.3.0
     #   glom
     #   hypothesis
     #   jsonschema
-    #   pytest
     #   zeep
 autopep8==1.5.7
     # via django-silk
@@ -459,6 +458,7 @@ exceptiongroup==1.0.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   hypothesis
+    #   pytest
 face==20.1.1
     # via
     #   -c requirements/ci.txt
@@ -734,11 +734,6 @@ psycopg2==2.8.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-py==1.11.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   pytest
 pycodestyle==2.10.0
     # via
     #   -c requirements/ci.txt
@@ -798,7 +793,7 @@ pyrsistent==0.17.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   jsonschema
-pytest==6.2.4
+pytest==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1044,17 +1039,14 @@ tinycss2==1.1.0
     #   cssselect2
     #   weasyprint
 toml==0.10.2
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   autopep8
-    #   pytest
+    # via autopep8
 tomli==1.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   black
     #   build
+    #   pytest
 tornado==6.3.2
     # via
     #   -c requirements/ci.txt
