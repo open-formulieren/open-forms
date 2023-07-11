@@ -353,7 +353,7 @@ django-tinymce==3.4.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-treebeard==4.5.1
+django-treebeard==4.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
