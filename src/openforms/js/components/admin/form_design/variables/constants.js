@@ -1,4 +1,5 @@
-import {defineMessage} from 'react-intl';
+import React from 'react';
+import {FormattedMessage, defineMessage} from 'react-intl';
 
 const COMPONENT_DATATYPES = {
   date: 'date',
@@ -115,10 +116,23 @@ const IDENTIFIER_ROLE_CHOICES = [
   ],
 ];
 
+const IDENTIFIER_ROLE_LABELS = {
+  main: (
+    <FormattedMessage defaultMessage="Main" description="Choices (main/authorised person) label" />
+  ),
+  authorised_person: (
+    <FormattedMessage
+      defaultMessage="Authorised person"
+      description="Choices (main/authorised person) label"
+    />
+  ),
+};
+
 export {
   COMPONENT_DATATYPES,
   VARIABLE_SOURCES,
   DATATYPES_CHOICES,
   EMPTY_VARIABLE,
   IDENTIFIER_ROLE_CHOICES,
+  IDENTIFIER_ROLE_LABELS,
 };

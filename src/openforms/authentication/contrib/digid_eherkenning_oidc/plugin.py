@@ -155,7 +155,7 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
         if not claim or CO_SIGN_PARAMETER in request.GET:
             return
 
-        config = OpenIDConnectDigiDMachtigenConfig.get_solo()
+        config = self.config_class.get_solo()
         machtigen_data = request.session[DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY]
         request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": self.identifier,

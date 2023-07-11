@@ -120,7 +120,7 @@ class PrefillHookTests(TransactionTestCase):
         "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalPrefill.get_prefill_values",
         return_value={"naam.voornamen": "John", "naam.geslachtsnaam": "Dodo"},
     )
-    def test_fetch_values_with_multiple_bsn(self, m_bsn):
+    def test_fetch_values_with_multiple_people(self, m_haal_centraal):
         components = [
             {
                 "key": "mainPersonName",
@@ -165,7 +165,7 @@ class PrefillHookTests(TransactionTestCase):
         "openforms.prefill.contrib.kvk.plugin.KVK_KVKNumberPrefill.get_prefill_values",
         return_value={"bezoekadres.postcode": "1111 AA"},
     )
-    def test_fetch_values_with_kvk_and_bsn(self, m_kvk, m_bsn):
+    def test_fetch_values_with_legal_entity_and_person(self, m_kvk, m_haal_centraal):
         components = [
             {
                 "key": "companyPostcode",

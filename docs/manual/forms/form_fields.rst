@@ -136,8 +136,8 @@ Prefill
 -------
 
 * **Plugin**: Welke prefill plugin te gebruiken om data op te halen over de persoon/het bedrijf die ingelogd is.
-* **Pluginattribuut**: Welke attribuut van de prefill-backend data te gebruiken om deze component te prefillen.
-* **Identifier rol**: In het geval dat de gebruiker met DigiD Machtigen en eHerkenning Bewindvoering heeft ingelogd, moeten de gegevens gerelateerd aan het 'hoofd identifier' worden gebruikt, of die gerelateerd aan de gemachtigde persoon?
+* **Pluginattribuut**: Welk attribuut van de prefill-backend data te gebruiken om deze component voorin te vullen.
+* **Identifier rol**: In het geval dat de gebruiker met DigiD Machtigen of eHerkenning Bewindvoering heeft ingelogd: van welke rol moeten de gegevens gebruikt worden, die van de 'hoofd identifier' worden gebruikt, of die van de gemachtigde persoon?
 
 
 Globale configuratieopties

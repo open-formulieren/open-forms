@@ -151,10 +151,7 @@ def prefill_variables(submission: "Submission", register=None) -> None:
         attribute_name = variable.form_variable.prefill_attribute
         identifier_role = variable.form_variable.prefill_identifier_role
 
-        if not grouped_fields[plugin_id].get(identifier_role):
-            grouped_fields[plugin_id][identifier_role] = []
-
-        grouped_fields[plugin_id][identifier_role].append(attribute_name)
+        grouped_fields[plugin_id].setdefault(identifier_role, []).append(attribute_name)
 
     results = _fetch_prefill_values(grouped_fields, submission, register)
 

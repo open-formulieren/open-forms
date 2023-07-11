@@ -14,7 +14,7 @@ import Select from 'components/admin/forms/Select';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {get} from 'utils/fetch';
 
-import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
+import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES, IDENTIFIER_ROLE_LABELS} from './constants';
 import Variable from './types';
 import {variableHasErrors} from './utils';
 
@@ -89,7 +89,9 @@ const VariableRow = ({index, variable}) => {
       <td>{getFormDefinitionName(variable.formDefinition)}</td>
       <td>{variable.prefillPlugin}</td>
       <td>{variable.prefillAttribute}</td>
-      <td>{variable.prefillIdentifierRole || 'main'}</td>
+      <td>
+        {IDENTIFIER_ROLE_LABELS[variable.prefillIdentifierRole] || IDENTIFIER_ROLE_LABELS.main}
+      </td>
       <td>{variable.dataType}</td>
       <td>
         <SensitiveData isSensitive={variable.isSensitiveData} />
