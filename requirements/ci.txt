@@ -291,7 +291,7 @@ django-log-outgoing-requests==0.4.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-modeltranslation==0.18.5
+django-modeltranslation==0.18.11
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -940,8 +940,12 @@ tornado==6.3.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   flower
-typing-extensions==4.4.0
-    # via pyee
+typing-extensions==4.7.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-modeltranslation
+    #   pyee
 tzlocal==2.1
     # via
     #   -c requirements/base.txt
