@@ -440,6 +440,11 @@ drf-spectacular==0.25.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+ecs-logging==2.0.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   elastic-apm
 elastic-apm==6.17.0
     # via
     #   -c requirements/ci.txt
@@ -1125,6 +1130,11 @@ wheel==0.38.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pip-tools
+wrapt==1.15.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   elastic-apm
 xmlsec==1.3.10
     # via
     #   -c requirements/ci.txt
