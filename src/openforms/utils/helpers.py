@@ -1,3 +1,12 @@
+from django.db import models
+
+
+def get_charfield_max_length(
+    model_or_instance: models.Model | type[models.Model], field_name: str
+) -> int:
+    return model_or_instance._meta.get_field(field_name).max_length
+
+
 def truncate_str_if_needed(original_str: str, new_str: str, max_length: int) -> str:
     """
     Given the original string and the new string, return either the original one if
