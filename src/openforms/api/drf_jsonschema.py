@@ -44,7 +44,7 @@ class PrimaryKeyRelatedAsChoicesFieldConverter(PrimaryKeyRelatedFieldConverter):
 
 @converter
 class NullBooleanFieldConverter(BooleanFieldConverter):
-    field_class = [serializers.BooleanField, serializers.NullBooleanField]
+    field_class = [serializers.BooleanField]
 
     def convert(self, field):
         result = super().convert(field)

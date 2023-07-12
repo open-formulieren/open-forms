@@ -403,7 +403,7 @@ django-yubin==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-djangorestframework==3.13.1
+djangorestframework==3.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
