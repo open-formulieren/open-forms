@@ -70,16 +70,11 @@ class GlobalConfigurationAdmin(
                     "form_display_required_with_asterisk",
                     "form_upload_default_file_types",
                     "hide_non_applicable_steps",
-                )
-            },
-        ),
-        (
-            _("Form map component options"),
-            {
-                "fields": (
-                    "form_map_default_zoom_level",
-                    "form_map_default_latitude",
-                    "form_map_default_longitude",
+                    (
+                        "form_map_default_zoom_level",
+                        "form_map_default_latitude",
+                        "form_map_default_longitude",
+                    ),
                 )
             },
         ),

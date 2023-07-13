@@ -77,15 +77,26 @@ const EDIT_FORM_TABS = {
               if: [
                 {
                   or: [
-                    {all : [[{var: "data.initialCenter.lat"}, {var: "data.initialCenter.lng"}], {"!!": {var: ""}}]},
-                    {none : [[{var: "data.initialCenter.lat"}, {var: "data.initialCenter.lng"}], {"!!": {var: ""}}]}
-                  ]
+                    {
+                      all: [
+                        [{var: 'data.initialCenter.lat'}, {var: 'data.initialCenter.lng'}],
+                        {'!!': {var: ''}},
+                      ],
+                    },
+                    {
+                      none: [
+                        [{var: 'data.initialCenter.lat'}, {var: 'data.initialCenter.lng'}],
+                        {'!!': {var: ''}},
+                      ],
+                    },
+                  ],
                 },
                 true,
-                'Longitude and Longitude needs to be both configured or not.'
-              ]
+                'Longitude and Longitude needs to be both configured or not.',
+              ],
             },
-            custom: 'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Longitude and Longitude needs to be both configured or not."',
+            custom:
+              'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Longitude and Longitude needs to be both configured or not."',
           },
           components: [
             {
@@ -108,7 +119,8 @@ const EDIT_FORM_TABS = {
               validate: {
                 min: -90,
                 max: 90,
-                custom: 'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Longitude or delete the current Latitude."',
+                custom:
+                  'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Longitude or delete the current Latitude."',
               },
             },
             {
@@ -120,7 +132,8 @@ const EDIT_FORM_TABS = {
               validate: {
                 min: -180,
                 max: 180,
-                custom: 'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Latitude or delete the current Longitude."',
+                custom:
+                  'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Latitude or delete the current Longitude."',
               },
             },
           ],
