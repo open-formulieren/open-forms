@@ -14,7 +14,7 @@ import Select from 'components/admin/forms/Select';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {get} from 'utils/fetch';
 
-import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES, IDENTIFIER_ROLE_LABELS} from './constants';
+import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
 import Variable from './types';
 import {variableHasErrors} from './utils';
 
@@ -66,6 +66,7 @@ Td.propTypes = {
 };
 
 const VariableRow = ({index, variable}) => {
+  const intl = useIntl();
   const formContext = useContext(FormContext);
   const formSteps = formContext.formSteps;
 
@@ -90,7 +91,9 @@ const VariableRow = ({index, variable}) => {
       <td>{variable.prefillPlugin}</td>
       <td>{variable.prefillAttribute}</td>
       <td>
-        {IDENTIFIER_ROLE_LABELS[variable.prefillIdentifierRole] || IDENTIFIER_ROLE_LABELS.main}
+        {intl.formatMessage(
+          IDENTIFIER_ROLE_CHOICES[variable.prefillIdentifierRole] || IDENTIFIER_ROLE_CHOICES.main
+        )}
       </td>
       <td>{variable.dataType}</td>
       <td>
@@ -195,7 +198,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         <Field name="prefillIdentifierRole" errors={variable.errors?.prefillIdentifierRole}>
           <Select
             name="prefillIdentifierRole"
-            choices={IDENTIFIER_ROLE_CHOICES}
+            choices={Object.entries(IDENTIFIER_ROLE_CHOICES)}
             value={variable.prefillIdentifierRole || 'main'}
             onChange={onValueChanged}
             translateChoices

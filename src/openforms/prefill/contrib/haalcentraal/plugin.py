@@ -16,6 +16,7 @@ from openforms.submissions.models import Submission
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
 from ...registry import register
+from ...types import IdentifierRole
 from .models import HaalCentraalConfig
 
 logger = logging.getLogger(__name__)
@@ -72,35 +73,37 @@ class HaalCentraalPrefill(BasePlugin):
 
         return values
 
+    @classmethod
     def get_identifier_value(
-        self, submission: Submission, identifier_role: str
+        cls, submission: Submission, identifier_role: IdentifierRole
     ) -> str | None:
         if not submission.is_authenticated:
             return
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == self.requires_auth
+            and submission.auth_info.attribute == cls.requires_auth
         ):
             return submission.auth_info.value
 
         if identifier_role == IdentifierRoles.authorised_person:
-            return submission.auth_info.machtigen.get("value")
+            return submission.auth_info.machtigen.get("identifier_value")
 
+    @classmethod
     def get_prefill_values(
-        self,
+        cls,
         submission: Submission,
         attributes: list[str],
-        identifier_role: str = "main",
+        identifier_role: IdentifierRole = IdentifierRoles.main,
     ) -> dict[str, Any]:
         if (config := get_config()) is None:
             return {}
 
-        if not (bsn_value := self.get_identifier_value(submission, identifier_role)):
+        if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
             logger.info("No appropriate identifier found on the submission.")
             return {}
 
-        return self._get_values_for_bsn(config, submission, bsn_value, attributes)
+        return cls._get_values_for_bsn(config, submission, bsn_value, attributes)
 
     @classmethod
     def get_co_sign_values(

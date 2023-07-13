@@ -137,7 +137,9 @@ Prefill
 
 * **Plugin**: Welke prefill plugin te gebruiken om data op te halen over de persoon/het bedrijf die ingelogd is.
 * **Pluginattribuut**: Welk attribuut van de prefill-backend data te gebruiken om deze component voorin te vullen.
-* **Identifier rol**: In het geval dat de gebruiker met DigiD Machtigen of eHerkenning Bewindvoering heeft ingelogd: van welke rol moeten de gegevens gebruikt worden, die van de 'hoofd identifier' worden gebruikt, of die van de gemachtigde persoon?
+* **Identifier rol**: Bij DigiD Machtigen of eHekerkenning zijn meerdere rollen actief: de gemachtigde (persoon die het
+  formulier invult), of de 'geauthenticeerde' (persoon of bedrijf voor wie het formulier ingevuld wordt). Deze optie stelt in
+  voor welke van deze rollen de relevante gegevens voor het geselecteerde attribuut opgevraagd worden.
 
 
 Globale configuratieopties

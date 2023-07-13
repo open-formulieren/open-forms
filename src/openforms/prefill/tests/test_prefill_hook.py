@@ -16,6 +16,7 @@ from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from .. import inject_prefill, prefill_variables
+from ..constants import IdentifierRoles
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry, register as prefill_register
 
@@ -128,7 +129,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.voornamen",
-                    "identifierRole": "main",
+                    "identifierRole": IdentifierRoles.main,
                 },
             },
             {
@@ -137,7 +138,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.geslachtsnaam",
-                    "identifierRole": "authorised_person",
+                    "identifierRole": IdentifierRoles.authorised_person,
                 },
             },
         ]
@@ -173,7 +174,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "kvk-kvknumber",
                     "attribute": "bezoekadres.postcode",
-                    "identifier": "main",
+                    "identifier": IdentifierRoles.main,
                 },
             },
             {
@@ -182,7 +183,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.geslachtsnaam",
-                    "identifier": "authorised_person",
+                    "identifier": IdentifierRoles.authorised_person,
                 },
             },
             {
@@ -191,7 +192,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.voornamen",
-                    "identifier": "authorised_person",
+                    "identifier": IdentifierRoles.authorised_person,
                 },
             },
         ]

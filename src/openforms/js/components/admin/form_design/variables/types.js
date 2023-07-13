@@ -8,7 +8,7 @@ const Variable = PropTypes.shape({
   source: PropTypes.string,
   prefillPlugin: PropTypes.string,
   prefillAttribute: PropTypes.string,
-  prefillIdentifierRole: PropTypes.string,
+  prefillIdentifierRole: PropTypes.oneOf(['main', 'authorised_person']),
   dataType: PropTypes.string,
   dataFormat: PropTypes.string,
   isSensitiveData: PropTypes.bool,

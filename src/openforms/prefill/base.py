@@ -1,6 +1,7 @@
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from openforms.plugins.plugin import AbstractBasePlugin
+from openforms.prefill.constants import IdentifierRoles
 from openforms.submissions.models import Submission
 
 
@@ -19,7 +20,7 @@ class BasePlugin(AbstractBasePlugin):
         self,
         submission: Submission,
         attributes: List[str],
-        identifier_role: str = "main",
+        identifier_role: str = IdentifierRoles.main,
     ) -> Dict[str, Any]:
         """
         Given the requested attributes, look up the appropriate values and return them.

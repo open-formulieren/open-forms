@@ -99,33 +99,15 @@ const EMPTY_VARIABLE = {
   serviceFetchConfiguration: null,
 };
 
-const IDENTIFIER_ROLE_CHOICES = [
-  [
-    'main',
-    defineMessage({
-      description: 'Choices (main/authorised person) label',
-      defaultMessage: 'Main',
-    }),
-  ],
-  [
-    'authorised_person',
-    defineMessage({
-      description: 'Choices (main/authorised person) label',
-      defaultMessage: 'Authorised person',
-    }),
-  ],
-];
-
-const IDENTIFIER_ROLE_LABELS = {
-  main: (
-    <FormattedMessage defaultMessage="Main" description="Choices (main/authorised person) label" />
-  ),
-  authorised_person: (
-    <FormattedMessage
-      defaultMessage="Authorised person"
-      description="Choices (main/authorised person) label"
-    />
-  ),
+const IDENTIFIER_ROLE_CHOICES = {
+  main: defineMessage({
+    description: 'Choices (main/authorised person) label',
+    defaultMessage: 'Main',
+  }),
+  authorised_person: defineMessage({
+    description: 'Choices (main/authorised person) label',
+    defaultMessage: 'Authorised person',
+  }),
 };
 
 export {
@@ -134,5 +116,4 @@ export {
   DATATYPES_CHOICES,
   EMPTY_VARIABLE,
   IDENTIFIER_ROLE_CHOICES,
-  IDENTIFIER_ROLE_LABELS,
 };

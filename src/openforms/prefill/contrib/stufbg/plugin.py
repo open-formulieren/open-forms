@@ -134,13 +134,13 @@ class StufBgPrefill(BasePlugin):
             return submission.auth_info.value
 
         if identifier_role == IdentifierRoles.authorised_person:
-            return submission.auth_info.machtigen.get("value")
+            return submission.auth_info.machtigen.get("identifier_value")
 
     def get_prefill_values(
         self,
         submission: Submission,
         attributes: List[str],
-        identifier_role: str = "main",
+        identifier_role: str = IdentifierRoles.main,
     ) -> Dict[str, Any]:
         if not (bsn_value := self.get_identifier_value(submission, identifier_role)):
             #  If there is no bsn we can't prefill any values so just return

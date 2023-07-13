@@ -156,12 +156,14 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
             return
 
         config = self.config_class.get_solo()
-        machtigen_data = request.session[DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY]
+        machtigen_data = request.session[self.session_key]
         request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
             "value": claim[config.vertegenwoordigde_claim_name],
-            "machtigen": {"value": machtigen_data.get(config.gemachtigde_claim_name)},
+            "machtigen": {
+                "identifier_value": machtigen_data.get(config.gemachtigde_claim_name)
+            },
         }
 
     def get_label(self) -> str:
@@ -186,16 +188,16 @@ class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
             return
 
         config = self.config_class.get_solo()
-        machtigen_data = request.session[
-            EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
-        ]
+        machtigen_data = request.session[self.session_key]
         request.session[FORM_AUTH_SESSION_KEY] = {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
             "value": claim[config.vertegenwoordigde_company_claim_name],
             "machtigen": {
                 # TODO So far the only possibility is that this is a BSN.
-                "value": machtigen_data.get(config.gemachtigde_person_claim_name)
+                "identifier_value": machtigen_data.get(
+                    config.gemachtigde_person_claim_name
+                )
             },
         }
 

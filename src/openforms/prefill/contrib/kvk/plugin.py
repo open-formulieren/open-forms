@@ -56,7 +56,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
         self,
         submission: Submission,
         attributes: List[str],
-        identifier_role: str = "main",
+        identifier_role: str = IdentifierRoles.main,
     ) -> Dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
         if not (kvk_value := self.get_identifier_value(submission, identifier_role)):
