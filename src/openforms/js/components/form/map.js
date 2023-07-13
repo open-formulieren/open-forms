@@ -63,78 +63,75 @@ const EDIT_FORM_TABS = {
         CLEAR_ON_HIDE,
         {...IS_SENSITIVE_DATA, defaultValue: true},
         {
-          type: 'number',
-          key: 'defaultZoom',
-          label: 'Default zoom level.',
-          description: 'Default zoom level for the leaflet map.',
-          validate: {
-            min: 1,
-            max: 18,
+          type: 'panel',
+          title: 'Default map configuration options',
+          key: 'defaultMapConfig',
+          clearOnHide: true,
+          conditional: {
+            show: false,
+            when: 'useConfigDefaultMapSettings',
+            eq: true,
           },
-        },
-        {
-          type: 'columns',
-          input: false,
-          label: 'starting location',
-          key: 'startPop',
-          tooltip: 'The Latitude and Longitude of the starting point of the map component.',
-          defaultValue: [{lat: '', lng: ''}],
-          columns: [
-            {
-              components: [
+          validate: {
+            json: {
+              if: [
                 {
-                  label: 'Latitude',
-                  key: 'lat',
-                  input: true,
-                  type: 'number',
-                  decimalLimit: 7,
-                  delimiter: false,
-                  requireDecimal: true,
-                  tableView: false,
-                  inputFormat: 'plain',
-                  truncateMultipleSpaces: false,
-                  defaultValue: 52.1326332,
-                  validate: {
-                    min: -90,
-                    max: 90
-                  }
+                  or: [
+                    {all : [[{var: "data.initialCenter.lat"}, {var: "data.initialCenter.lng"}], {"!!": {var: ""}}]},
+                    {none : [[{var: "data.initialCenter.lat"}, {var: "data.initialCenter.lng"}], {"!!": {var: ""}}]}
+                  ]
                 },
-              ],
-              width: 6,
-              offset: 0,
-              push: 0,
-              pull: 0,
-              size: 'md',
-              currentWidth: 6,
+                true,
+                'Longitude and Longitude needs to be both configured or not.'
+              ]
+            },
+            custom: 'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Longitude and Longitude needs to be both configured or not."',
+          },
+          components: [
+            {
+              type: 'number',
+              key: 'defaultZoom',
+              label: 'Zoom level.',
+              description: 'Default zoom level for the leaflet map.',
+              validate: {
+                integer: true,
+                min: TILE_LAYERS.options.minZoom,
+                max: TILE_LAYERS.options.maxZoom,
+              },
             },
             {
-              components: [
-                {
-                  label: 'Longitude',
-                  key: 'lng',
-                  input: true,
-                  type: 'number',
-                  decimalLimit: 7,
-                  delimiter: false,
-                  requireDecimal: true,
-                  tableView: false,
-                  inputFormat: 'plain',
-                  truncateMultipleSpaces: false,
-                  defaultValue: 5.291266,
-                  validate: {
-                    min: -180,
-                    max: 180
-                  }
-                },
-              ],
-              width: 6,
-              offset: 0,
-              push: 0,
-              pull: 0,
-              size: 'md',
-              currentWidth: 6,
+              label: 'Latitude',
+              key: 'initialCenter.lat',
+              type: 'number',
+              decimalLimit: 6,
+              requireDecimal: true,
+              validate: {
+                min: -90,
+                max: 90,
+                custom: 'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Longitude or delete the current Latitude."',
+              },
+            },
+            {
+              label: 'Longitude',
+              key: 'initialCenter.lng',
+              type: 'number',
+              decimalLimit: 6,
+              requireDecimal: true,
+              validate: {
+                min: -180,
+                max: 180,
+                custom: 'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Latitude or delete the current Longitude."',
+              },
             },
           ],
+        },
+        {
+          type: 'checkbox',
+          input: true,
+          key: 'useConfigDefaultMapSettings',
+          label: 'Use globally configured map component settings',
+          tooltip:
+            'When this is checked, the map component settings configured in the global settings will be used.',
         },
         DEFAULT_VALUE,
       ],

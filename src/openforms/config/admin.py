@@ -74,6 +74,16 @@ class GlobalConfigurationAdmin(
             },
         ),
         (
+            _("Form map component options"),
+            {
+                "fields": (
+                    "form_map_default_zoom_level",
+                    "form_map_default_latitude",
+                    "form_map_default_longitude",
+                )
+            },
+        ),
+        (
             _("Organization configuration"),
             {
                 "fields": (

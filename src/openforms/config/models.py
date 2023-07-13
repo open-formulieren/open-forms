@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from colorfield.fields import ColorField
 from django_better_admin_arrayfield.models.fields import ArrayField
@@ -220,6 +221,28 @@ class GlobalConfiguration(SingletonModel):
             "input are hidden from the progress indicator display (by default, they "
             "are displayed but marked as non-applicable.)"
         ),
+    )
+    form_map_default_zoom_level = models.IntegerField(
+        verbose_name=_("The default zoom level for the leaflet map."),
+        validators=[MinValueValidator(0.0), MaxValueValidator(13.0)],
+        default=13,
+        blank=True,
+    )
+    form_map_default_latitude = models.DecimalField(
+        verbose_name=_("The default latitude for the leaflet map."),
+        validators=[MinValueValidator(-180.0), MaxValueValidator(180.0)],
+        max_digits=10,
+        decimal_places=7,
+        default=52.1326332,
+        blank=True,
+    )
+    form_map_default_longitude = models.DecimalField(
+        verbose_name=_("The default longitude for the leaflet map."),
+        validators=[MinValueValidator(-90.0), MaxValueValidator(90.0)],
+        max_digits=9,
+        decimal_places=7,
+        default=5.291266,
+        blank=True,
     )
     # 'subdomain' styling & content configuration
     # FIXME: do not expose this field via the API to non-admin users! There is not
@@ -604,6 +627,13 @@ class GlobalConfiguration(SingletonModel):
                 raise ValidationError(
                     _("Cannot connect to ClamAV: %(error)s" % {"error": result.error})
                 )
+
+        if bool(self.form_map_default_latitude) != bool(
+            self.form_map_default_longitude
+        ):
+            raise ValidationError(
+                _("Longitude and Longitude needs to be both configured or not.")
+            )
 
         return super().clean()
 

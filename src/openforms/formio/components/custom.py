@@ -4,7 +4,10 @@ from typing import Callable
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
+from rest_framework.request import Request
+
 from openforms.authentication.constants import AuthAttribute
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
@@ -62,6 +65,15 @@ class Datetime(BasePlugin):
 @register("map")
 class Map(BasePlugin):
     formatter = MapFormatter
+
+    @staticmethod
+    def rewrite_for_request(component, request: Request):
+        if component.get("useConfigDefaultMapSettings", False):
+            config = GlobalConfiguration.get_solo()
+            assert isinstance(config, GlobalConfiguration)
+            component["defaultZoom"] = config.form_map_default_zoom_level
+            component["initialCenter"]["lat"] = config.form_map_default_latitude
+            component["initialCenter"]["lng"] = config.form_map_default_longitude
 
 
 @register("postcode")
