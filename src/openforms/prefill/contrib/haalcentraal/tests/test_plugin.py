@@ -12,6 +12,7 @@ from zgw_consumers.test import mock_service_oas_get
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ....constants import IdentifierRoles
 from ....registry import register
 from ..constants import Attributes, HaalCentraalVersion
 from ..models import VERSION_TO_ATTRIBUTES_MAP, HaalCentraalConfig
@@ -118,6 +119,42 @@ class HaalCentraalPluginTests:
         }
         self.assertEqual(values, expected)  # type: ignore
 
+    def test_prefill_values_not_authenticated(self):
+        attributes = self.config.get_attributes()
+
+        submission = SubmissionFactory.create()
+        assert not submission.is_authenticated
+
+        haalcentraal_plugin = register["haalcentraal"]
+        values = haalcentraal_plugin.get_prefill_values(
+            submission,
+            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+        )
+        self.assertEqual(values, {})  # type: ignore
+
+    def test_prefill_values_for_gemachtigde(self):
+        attributes = self.config.get_attributes()
+
+        submission = SubmissionFactory.create(
+            auth_info__value="111111111",
+            auth_info__machtigen={"identifier_value": "999990676"},
+        )
+        assert submission.is_authenticated
+
+        haalcentraal_plugin = register["haalcentraal"]
+        values = haalcentraal_plugin.get_prefill_values(
+            submission,
+            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+            identifier_role=IdentifierRoles.authorised_person,
+        )
+        self.assertEqual(
+            values,
+            {
+                "naam.voornamen": "Cornelia Francisca",
+                "naam.geslachtsnaam": "Wiegman",
+            },
+        )  # type: ignore
+
     def test_person_not_found_returns_empty(self):
         attributes = self.config.get_attributes()
         submission = SubmissionFactory.create(auth_info__value="999990676")
@@ -160,6 +197,14 @@ class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
         )
         super().test_person_not_found_returns_empty()
 
+    def test_prefill_values_for_gemachtigde(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v1-full.json"),
+        )
+        super().test_prefill_values_for_gemachtigde()
+
 
 class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
     version = HaalCentraalVersion.haalcentraal20
@@ -189,6 +234,14 @@ class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
             json={"personen": []},
         )
         super().test_person_not_found_returns_empty()
+
+    def test_prefill_values_for_gemachtigde(self):
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
+        )
+        super().test_prefill_values_for_gemachtigde()
 
 
 class HaalCentraalEmptyConfigTests(TestCase):

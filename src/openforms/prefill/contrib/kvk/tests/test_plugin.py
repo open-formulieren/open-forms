@@ -39,6 +39,19 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         }
         self.assertEqual(values, expected)
 
+    def test_get_prefill_values_not_authenticated(self):
+        plugin = KVK_KVKNumberPrefill(identifier="kvk")
+
+        submission = SubmissionFactory()
+        assert not submission.is_authenticated
+
+        values = plugin.get_prefill_values(
+            submission,
+            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
+        )
+        expected = {}
+        self.assertEqual(values, expected)
+
     @requests_mock.Mocker()
     def test_get_prefill_values_vve(self, m):
         mock_service_oas_get(m, "https://basisprofiel/", service="basisprofiel_openapi")

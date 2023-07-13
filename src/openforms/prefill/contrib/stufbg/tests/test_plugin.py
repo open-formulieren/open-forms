@@ -5,6 +5,7 @@ from django.test import TestCase, tag
 from requests import RequestException
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.prefill.constants import IdentifierRoles
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
@@ -177,6 +178,41 @@ class StufBgPrefillTests(TestCase):
         values = self.plugin.get_prefill_values(self.submission, ["geboortedatum"])
 
         self.assertEqual(values["geboortedatum"], "19600701")
+
+    def test_prefill_values_not_authenticated(self):
+        client_patcher = mock_stufbg_client("StufBgResponse.xml")
+        self.addCleanup(client_patcher.stop)
+        attributes = [c.value for c in FieldChoices]
+        submission = SubmissionFactory()
+
+        assert not submission.is_authenticated
+
+        values = self.plugin.get_prefill_values(submission, attributes)
+
+        self.assertEqual(values, {})
+
+    def test_get_available_attributes_for_gemachtigde(self):
+        client_patcher = mock_stufbg_client("StufBgResponse.xml")
+        self.addCleanup(client_patcher.stop)
+        attributes = [c.value for c in FieldChoices]
+        submission = SubmissionFactory(
+            auth_info__value="111111111",
+            auth_info__machtigen={"identifier_value": "999992314"},
+        )
+
+        values = self.plugin.get_prefill_values(
+            submission, attributes, IdentifierRoles.authorised_person
+        )
+
+        self.assertEqual(values["bsn"], "999992314")
+        self.assertEqual(values["voornamen"], "Media")
+        self.assertEqual(values["geslachtsnaam"], "Maykin")
+        self.assertEqual(values["straatnaam"], "Keizersgracht")
+        self.assertEqual(values["huisnummer"], "117")
+        self.assertEqual(values["huisletter"], "A")
+        self.assertEqual(values["huisnummertoevoeging"], "B")
+        self.assertEqual(values["postcode"], "1015 CJ")
+        self.assertEqual(values["woonplaatsNaam"], "Amsterdam")
 
 
 class StufBgCheckTests(TestCase):

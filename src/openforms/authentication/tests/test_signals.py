@@ -290,7 +290,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
                 "plugin": "digid_machtigen_oidc",
                 "attribute": "bsn",
                 "value": "123123123",
-                "machtigen": {"value": "123456782"},
+                "machtigen": {"identifier_value": "123456782"},
             }
         }
 
@@ -299,7 +299,9 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         submission.refresh_from_db()
 
         self.assertTrue(submission.is_authenticated)
-        self.assertEqual(submission.auth_info.machtigen["value"], "123456782")
+        self.assertEqual(
+            submission.auth_info.machtigen["identifier_value"], "123456782"
+        )
 
 
 class SetCosignDataTests(APITestCase):
