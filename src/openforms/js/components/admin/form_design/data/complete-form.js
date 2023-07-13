@@ -46,6 +46,18 @@ const getStepReference = (stepsByGeneratedId, stepIdentifier, stepAttribute = 'u
 };
 
 /**
+ * Convert empty str value for a field to null.
+ */
+const normalizeLimit = (draft, field) => {
+  const removalOptions = draft.form?.submissionsRemovalOptions;
+  if (!removalOptions) return;
+  const currentValue = removalOptions?.[field];
+  if (currentValue === '') {
+    removalOptions[field] = null;
+  }
+};
+
+/**
  * Save the form itself without any related objects.
  */
 const saveForm = async (state, csrftoken) => {
@@ -54,11 +66,17 @@ const saveForm = async (state, csrftoken) => {
     form: {uuid},
   } = state;
   const formDetails = produce(state, draft => {
-    return {
+    const form = {
       ...draft.form,
       literals: draft.literals,
       authenticationBackends: draft.selectedAuthPlugins,
     };
+
+    normalizeLimit(draft, 'successfulSubmissionsRemovalLimit');
+    normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
+    normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
+    normalizeLimit(draft, 'allSubmissionsRemovalLimit');
+    return form;
   });
 
   const createOrUpdate = isNewForm ? post : put;
