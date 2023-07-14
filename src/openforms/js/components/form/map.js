@@ -114,7 +114,6 @@ const EDIT_FORM_TABS = {
               label: 'Latitude',
               key: 'initialCenter.lat',
               type: 'number',
-              decimalLimit: 6,
               requireDecimal: true,
               validate: {
                 min: -90,
@@ -127,7 +126,6 @@ const EDIT_FORM_TABS = {
               label: 'Longitude',
               key: 'initialCenter.lng',
               type: 'number',
-              decimalLimit: 6,
               requireDecimal: true,
               validate: {
                 min: -180,

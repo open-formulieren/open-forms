@@ -31,7 +31,6 @@ from openforms.utils.translations import runtime_gettext
 
 from .constants import CSPDirective, UploadFileType
 from .utils import verify_clamav_connection
-from .validators import FloatValidator
 
 
 @ensure_default_language()
@@ -233,10 +232,6 @@ class GlobalConfiguration(SingletonModel):
         validators=[
             MinValueValidator(-180.0),
             MaxValueValidator(180.0),
-            FloatValidator(
-                max_digits=10,
-                decimal_places=7,
-            ),
         ],
         default=52.132633,
         blank=True,
@@ -247,10 +242,6 @@ class GlobalConfiguration(SingletonModel):
         validators=[
             MinValueValidator(-90.0),
             MaxValueValidator(90.0),
-            FloatValidator(
-                max_digits=9,
-                decimal_places=7,
-            ),
         ],
         default=5.291266,
         blank=True,
