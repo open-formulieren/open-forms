@@ -7,6 +7,7 @@ from django.test import TransactionTestCase
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext as _
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
@@ -16,6 +17,7 @@ from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from .. import inject_prefill, prefill_variables
+from ..base import BasePlugin
 from ..constants import IdentifierRoles
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry, register as prefill_register
@@ -598,3 +600,28 @@ class PrefillHookTests(TransactionTestCase):
             submission=submission,
             register=register,
         )
+
+    def test_demo_prefill_get_identifier_not_authenticated(self):
+        plugin = DemoPrefill(identifier="demo")
+
+        submission = SubmissionFactory.create()
+        assert not submission.is_authenticated
+
+        result = plugin.get_identifier_value(submission, IdentifierRoles.main)
+
+        self.assertIsNone(result)
+
+    def test_demo_prefill_get_identifier_authenticated(self):
+        class TestPlugin(BasePlugin):
+            requires_auth = AuthAttribute.bsn
+
+        plugin = TestPlugin(identifier="test")
+
+        submission = SubmissionFactory.create(
+            auth_info__value="123123123", auth_info__attribute=AuthAttribute.bsn
+        )
+        assert submission.is_authenticated
+
+        result = plugin.get_identifier_value(submission, IdentifierRoles.main)
+
+        self.assertEqual("123123123", result)
