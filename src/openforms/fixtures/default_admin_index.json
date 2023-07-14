@@ -5,6 +5,7 @@
         "order": 0,
         "name": "Accounts",
         "slug": "accounts",
+        "translations":{"en":"Accounts", "nl":"Accounts"},
         "models": [
             [
                 "accounts",
@@ -51,6 +52,7 @@
         "order": 1,
         "name": "Formulieren",
         "slug": "formulieren",
+        "translations":{"en":"Forms", "nl":"Formulieren"},
         "models": [
             [
                 "emails",
@@ -85,6 +87,7 @@
         "order": 2,
         "name": "Inzendingen",
         "slug": "inzendingen",
+        "translations":{"en":"Submissions", "nl":"Inzendingen"},
         "models": [
             [
                 "appointments",
@@ -115,6 +118,7 @@
         "order": 3,
         "name": "Producten",
         "slug": "producten",
+        "translations":{"en":"Products", "nl":"Producten"},
         "models": [
             [
                 "products",
@@ -129,6 +133,7 @@
         "order": 4,
         "name": "Configuratie",
         "slug": "configuratie",
+        "translations":{"en":"Configuration", "nl":"Configuratie"},
         "models": [
             [
                 "admin_index",
@@ -235,6 +240,7 @@
         "order": 5,
         "name": "Logs",
         "slug": "logs",
+        "translations":{"en":"Logs", "nl":"Logs"},
         "models": [
             [
                 "axes",
@@ -293,6 +299,7 @@
         "order": 6,
         "name": "Handige links",
         "slug": "handige-links",
+        "translations":{"en":"Useful links", "nl":"Handige links"},
         "models": []
     }
 },
@@ -304,6 +311,7 @@
             "configuratie"
         ],
         "name": "Test email backend",
+        "translations":{"en":"Test email backend", "nl":"E-mail-backend testen"},
         "link": "/admin/email/test/"
     }
 },
@@ -315,6 +323,7 @@
             "handige-links"
         ],
         "name": "API Documentatie",
+        "translations":{"en":"API Documentation", "nl":"API Documentatie"},
         "link": "/api/docs/"
     }
 },
@@ -326,6 +335,7 @@
             "handige-links"
         ],
         "name": "Documentatie",
+        "translations":{"en":"Documentation", "nl":"Documentatie"},
         "link": "http://open-forms.readthedocs.io/"
     }
 },
@@ -337,6 +347,7 @@
             "handige-links"
         ],
         "name": "Github",
+        "translations":{"en":"Github", "nl":"Github"},
         "link": "https://github.com/open-formulieren/open-forms"
     }
 },
@@ -348,6 +359,7 @@
             "configuratie"
         ],
         "name": "Configuratie overzicht",
+        "translations":{"en":"Configuration overview", "nl":"Configuratie overzicht"},
         "link": "/admin/config/overview/"
     }
 }

@@ -168,7 +168,7 @@ django==3.2.20
     #   open-forms-ext-token-exchange
     #   sentry-sdk
     #   zgw-consumers
-django-admin-index==2.0.0
+django-admin-index==3.1.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
