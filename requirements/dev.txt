@@ -423,7 +423,7 @@ docutils==0.16
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
-drf-jsonschema-serializer==1.0.0
+drf-jsonschema-serializer==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
