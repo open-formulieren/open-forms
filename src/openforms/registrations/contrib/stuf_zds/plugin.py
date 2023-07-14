@@ -28,6 +28,7 @@ from stuf.stuf_zds.models import StufZDSConfig
 
 from ...registry import register
 from ...utils import execute_unless_result_exists
+from .utils import flatten_data
 
 logger = logging.getLogger(__name__)
 
@@ -246,6 +247,8 @@ class StufZDSRegistration(BasePlugin):
             extra_data = get_unmapped_data(
                 submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
             )
+            # The extraElement tag of StUF-ZDS expects primitive types
+            extra_data = flatten_data(extra_data)
 
             if internal_reference := submission.registration_result.get(
                 "temporary_internal_reference",
