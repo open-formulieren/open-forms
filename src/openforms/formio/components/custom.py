@@ -72,6 +72,7 @@ class Map(BasePlugin):
             config = GlobalConfiguration.get_solo()
             assert isinstance(config, GlobalConfiguration)
             component["defaultZoom"] = config.form_map_default_zoom_level
+            component.setdefault("initialCenter", {})
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 

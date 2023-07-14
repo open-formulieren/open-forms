@@ -228,41 +228,6 @@ class AdminTests(WebTest):
             "Cannot connect to ClamAV: Cannot connect!",
         )
 
-    @override_settings(LANGUAGE_CODE="en")
-    def test_map_configuration_with_missing_lat(self):
-        url = reverse("admin:config_globalconfiguration_change", args=(1,))
-
-        change_page = self.app.get(url)
-        change_page.form["form_map_default_longitude"] = "52.132633"
-        change_page.form["form_map_default_latitude"] = ""
-
-        response = change_page.form.submit()
-        self.assertEqual(200, response.status_code)
-
-        html_soup = response.html
-
-        error_node = html_soup.find("p", attrs={"class": "errornote"})
-
-        self.assertIn("Please correct the error below", error_node.text)
-
-        list_errors = html_soup.find("ul", attrs={"class": "errorlist"})
-
-        self.assertEqual(
-            list(list_errors.children)[0].text,
-            "Longitude and Longitude needs to be both configured or not.",
-        )
-
-    @override_settings(LANGUAGE_CODE="en")
-    def test_map_configuration_with_lat_and_lng_missing(self):
-        url = reverse("admin:config_globalconfiguration_change", args=(1,))
-
-        change_page = self.app.get(url)
-        change_page.form["form_map_default_longitude"] = ""
-        change_page.form["form_map_default_latitude"] = ""
-
-        response = change_page.form.submit()
-        self.assertEqual(302, response.status_code)
-
 
 class GlobalConfirmationEmailTests(TestCase):
     def setUp(self):

@@ -29,6 +29,9 @@ const ATTRIBUTION = `
     <a href="https://www.verbeterdekaart.nl">Verbeter de kaart</a>
 `;
 
+const latLngValidation =
+  'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "You need to configure both longitude and latitude."';
+
 const TILE_LAYERS = {
   url: `${TILES}/EPSG:28992/{z}/{x}/{y}.png`,
   options: {
@@ -72,32 +75,6 @@ const EDIT_FORM_TABS = {
             when: 'useConfigDefaultMapSettings',
             eq: true,
           },
-          validate: {
-            json: {
-              if: [
-                {
-                  or: [
-                    {
-                      all: [
-                        [{var: 'data.initialCenter.lat'}, {var: 'data.initialCenter.lng'}],
-                        {'!!': {var: ''}},
-                      ],
-                    },
-                    {
-                      none: [
-                        [{var: 'data.initialCenter.lat'}, {var: 'data.initialCenter.lng'}],
-                        {'!!': {var: ''}},
-                      ],
-                    },
-                  ],
-                },
-                true,
-                'Longitude and Longitude needs to be both configured or not.',
-              ],
-            },
-            custom:
-              'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Longitude and Longitude needs to be both configured or not."',
-          },
           components: [
             {
               type: 'number',
@@ -118,8 +95,7 @@ const EDIT_FORM_TABS = {
               validate: {
                 min: -90,
                 max: 90,
-                custom:
-                  'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Longitude or delete the current Latitude."',
+                custom: latLngValidation,
               },
             },
             {
@@ -130,8 +106,7 @@ const EDIT_FORM_TABS = {
               validate: {
                 min: -180,
                 max: 180,
-                custom:
-                  'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "Both Latitude and Longitude are required, either fill in the Latitude or delete the current Longitude."',
+                custom: latLngValidation,
               },
             },
           ],
@@ -142,7 +117,7 @@ const EDIT_FORM_TABS = {
           key: 'useConfigDefaultMapSettings',
           label: 'Use globally configured map component settings',
           tooltip:
-            'When this is checked, the map component settings configured in the global settings will be used.',
+            'When this is checked, the map component settings configured in the global configuration will be used.',
         },
         DEFAULT_VALUE,
       ],

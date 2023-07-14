@@ -223,9 +223,8 @@ class GlobalConfiguration(SingletonModel):
     )
     form_map_default_zoom_level = models.IntegerField(
         verbose_name=_("The default zoom level for the leaflet map."),
-        validators=[MinValueValidator(0.0), MaxValueValidator(13.0)],
+        validators=[MinValueValidator(0), MaxValueValidator(13)],
         default=13,
-        blank=True,
     )
     form_map_default_latitude = models.FloatField(
         verbose_name=_("The default latitude for the leaflet map."),
@@ -233,9 +232,7 @@ class GlobalConfiguration(SingletonModel):
             MinValueValidator(-180.0),
             MaxValueValidator(180.0),
         ],
-        default=52.132633,
-        blank=True,
-        null=True,
+        default=52.1326332,
     )
     form_map_default_longitude = models.FloatField(
         verbose_name=_("The default longitude for the leaflet map."),
@@ -244,8 +241,6 @@ class GlobalConfiguration(SingletonModel):
             MaxValueValidator(90.0),
         ],
         default=5.291266,
-        blank=True,
-        null=True,
     )
     # 'subdomain' styling & content configuration
     # FIXME: do not expose this field via the API to non-admin users! There is not
@@ -630,13 +625,6 @@ class GlobalConfiguration(SingletonModel):
                 raise ValidationError(
                     _("Cannot connect to ClamAV: %(error)s" % {"error": result.error})
                 )
-
-        if bool(self.form_map_default_latitude) != bool(
-            self.form_map_default_longitude
-        ):
-            raise ValidationError(
-                _("Longitude and Longitude needs to be both configured or not.")
-            )
 
         return super().clean()
 

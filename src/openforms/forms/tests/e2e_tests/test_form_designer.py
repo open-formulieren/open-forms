@@ -1222,20 +1222,16 @@ class FormDesignerMapComponentTests(E2ETestCase):
             # set up a form
             form = FormFactory.create(
                 name="Playwright map test",
-                name_nl="Playwright map test",
                 generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright map test",
                 formstep__form_definition__configuration={
                     "components": [
                         {
+                            "type": "map",
                             "key": "map",
+                            "label": "Map 1",
                             "lat": 52.1326332,
                             "lng": 5.291266,
-                            "type": "map",
-                            "label": "Map 1",
-                            "openForms": {},
                             "defaultZoom": 1,
-                            "defaultValue": 9,
                             "initialCenter": {"lat": 52.132123, "lng": 12.123123},
                             "useConfigDefaultMapSettings": False,
                         }
@@ -1257,6 +1253,7 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
+            # both fields are required so we clear one.
             await page.get_by_label("Latitude").clear()
 
             await page.get_by_role("button", name="Opslaan").first.click()
@@ -1270,9 +1267,7 @@ class FormDesignerMapComponentTests(E2ETestCase):
             # set up a form
             form = FormFactory.create(
                 name="Playwright map test",
-                name_nl="Playwright map test",
                 generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright map test",
                 formstep__form_definition__configuration={
                     "components": [
                         {
@@ -1305,6 +1300,7 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
+            # both fields are required so we clear one.
             await page.get_by_label("Longitude").clear()
 
             await page.get_by_role("button", name="Opslaan").first.click()
