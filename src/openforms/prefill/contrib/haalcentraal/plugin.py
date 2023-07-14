@@ -14,9 +14,8 @@ from openforms.prefill.contrib.haalcentraal.constants import Attributes
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
-from ...constants import IdentifierRoles
+from ...constants import IdentifierRole, IdentifierRoles
 from ...registry import register
-from ...types import IdentifierRole
 from .models import HaalCentraalConfig
 
 logger = logging.getLogger(__name__)

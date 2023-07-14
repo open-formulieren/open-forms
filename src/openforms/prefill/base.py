@@ -1,8 +1,9 @@
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from openforms.plugins.plugin import AbstractBasePlugin
-from openforms.prefill.constants import IdentifierRoles
 from openforms.submissions.models import Submission
+
+from .constants import IdentifierRole, IdentifierRoles
 
 
 class BasePlugin(AbstractBasePlugin):
@@ -59,7 +60,7 @@ class BasePlugin(AbstractBasePlugin):
         )  # pragma: nocover
 
     def get_identifier_value(
-        self, submission: Submission, identifier_role: str
+        self, submission: Submission, identifier_role: IdentifierRole
     ) -> str | None:
         """
         Given a submission and the role of the identifier, return the value of the identifier.
@@ -71,6 +72,11 @@ class BasePlugin(AbstractBasePlugin):
         :param identifier_role: A string with one of the choices in :class:`IdentifierRoles`
         :return: The value for the identifier
         """
-        raise NotImplementedError(
-            "You must implement the 'get_identifier_value' method."
-        )  # pragma: nocover
+        if not submission.is_authenticated:
+            return
+
+        if (
+            identifier_role == IdentifierRoles.main
+            and submission.auth_info.attribute == self.requires_auth
+        ):
+            return submission.auth_info.value
