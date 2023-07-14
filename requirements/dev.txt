@@ -383,7 +383,7 @@ django-solo==2.1.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-timeline-logger==2.1.0
+django-timeline-logger==3.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
