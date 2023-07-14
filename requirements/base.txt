@@ -205,7 +205,7 @@ django-solo==2.1.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-timeline-logger==2.1.0
+django-timeline-logger==3.0.0
     # via -r requirements/base.in
 django-tinymce==3.4.0
     # via -r requirements/base.in
