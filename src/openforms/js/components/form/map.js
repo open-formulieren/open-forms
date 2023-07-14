@@ -29,6 +29,9 @@ const ATTRIBUTION = `
     <a href="https://www.verbeterdekaart.nl">Verbeter de kaart</a>
 `;
 
+const latLngValidation =
+  'valid = (Boolean(data.initialCenter.lat) === Boolean(data.initialCenter.lng)) ? true: "You need to configure both longitude and latitude."';
+
 const TILE_LAYERS = {
   url: `${TILES}/EPSG:28992/{z}/{x}/{y}.png`,
   options: {
@@ -62,6 +65,60 @@ const EDIT_FORM_TABS = {
         HIDDEN,
         CLEAR_ON_HIDE,
         {...IS_SENSITIVE_DATA, defaultValue: true},
+        {
+          type: 'panel',
+          title: 'Default map configuration options',
+          key: 'defaultMapConfig',
+          clearOnHide: true,
+          conditional: {
+            show: false,
+            when: 'useConfigDefaultMapSettings',
+            eq: true,
+          },
+          components: [
+            {
+              type: 'number',
+              key: 'defaultZoom',
+              label: 'Zoom level.',
+              description: 'Default zoom level for the leaflet map.',
+              validate: {
+                integer: true,
+                min: TILE_LAYERS.options.minZoom,
+                max: TILE_LAYERS.options.maxZoom,
+              },
+            },
+            {
+              label: 'Latitude',
+              key: 'initialCenter.lat',
+              type: 'number',
+              requireDecimal: true,
+              validate: {
+                min: -90,
+                max: 90,
+                custom: latLngValidation,
+              },
+            },
+            {
+              label: 'Longitude',
+              key: 'initialCenter.lng',
+              type: 'number',
+              requireDecimal: true,
+              validate: {
+                min: -180,
+                max: 180,
+                custom: latLngValidation,
+              },
+            },
+          ],
+        },
+        {
+          type: 'checkbox',
+          input: true,
+          key: 'useConfigDefaultMapSettings',
+          label: 'Use globally configured map component settings',
+          tooltip:
+            'When this is checked, the map component settings configured in the global configuration will be used.',
+        },
         DEFAULT_VALUE,
       ],
     },

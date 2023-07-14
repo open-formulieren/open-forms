@@ -221,6 +221,27 @@ class GlobalConfiguration(SingletonModel):
             "are displayed but marked as non-applicable.)"
         ),
     )
+    form_map_default_zoom_level = models.IntegerField(
+        verbose_name=_("The default zoom level for the leaflet map."),
+        validators=[MinValueValidator(0), MaxValueValidator(13)],
+        default=13,
+    )
+    form_map_default_latitude = models.FloatField(
+        verbose_name=_("The default latitude for the leaflet map."),
+        validators=[
+            MinValueValidator(-180.0),
+            MaxValueValidator(180.0),
+        ],
+        default=52.1326332,
+    )
+    form_map_default_longitude = models.FloatField(
+        verbose_name=_("The default longitude for the leaflet map."),
+        validators=[
+            MinValueValidator(-90.0),
+            MaxValueValidator(90.0),
+        ],
+        default=5.291266,
+    )
     # 'subdomain' styling & content configuration
     # FIXME: do not expose this field via the API to non-admin users! There is not
     # sufficient input validation to protect against the SVG attack surface. The SVG

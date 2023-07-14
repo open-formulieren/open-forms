@@ -1213,3 +1213,97 @@ class FormDesignerTooltipTests(E2ETestCase):
                     await open_component_options_modal(page, label, exact=True)
                     await expect(page.get_by_label("Tooltip")).to_be_visible()
                     await page.get_by_role("button", name="Annuleren").first.click()
+
+
+class FormDesignerMapComponentTests(E2ETestCase):
+    async def test_map_component_without_latitude(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright map test",
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "map",
+                            "key": "map",
+                            "label": "Map 1",
+                            "lat": 52.1326332,
+                            "lng": 5.291266,
+                            "defaultZoom": 1,
+                            "initialCenter": {"lat": 52.132123, "lng": 12.123123},
+                            "useConfigDefaultMapSettings": False,
+                        }
+                    ]
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            await open_component_options_modal(page, "Map 1", exact=True)
+            # both fields are required so we clear one.
+            await page.get_by_label("Latitude").clear()
+
+            await page.get_by_role("button", name="Opslaan").first.click()
+
+            error_node = page.locator("css=.error")
+            await expect(error_node).to_be_visible()
+
+    async def test_map_component_without_longitude(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright map test",
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "key": "map",
+                            "lat": 52.1326332,
+                            "lng": 5.291266,
+                            "type": "map",
+                            "label": "Map 1",
+                            "openForms": {},
+                            "defaultZoom": 1,
+                            "defaultValue": 9,
+                            "initialCenter": {"lat": 52.132123, "lng": 12.123123},
+                            "useConfigDefaultMapSettings": False,
+                        }
+                    ]
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            await open_component_options_modal(page, "Map 1", exact=True)
+            # both fields are required so we clear one.
+            await page.get_by_label("Longitude").clear()
+
+            await page.get_by_role("button", name="Opslaan").first.click()
+
+            error_node = page.locator("css=.error")
+            await expect(error_node).to_be_visible()
