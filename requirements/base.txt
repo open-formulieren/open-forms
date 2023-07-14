@@ -128,7 +128,7 @@ django==3.2.20
     #   mozilla-django-oidc-db
     #   sentry-sdk
     #   zgw-consumers
-django-admin-index==2.0.0
+django-admin-index==3.1.0
     # via -r requirements/base.in
 django-appconf==1.0.4
     # via
