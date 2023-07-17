@@ -19,6 +19,7 @@ from openforms.submissions.attachments import (
 )
 from openforms.submissions.constants import UPLOADS_SESSION_KEY
 from openforms.submissions.models import TemporaryFileUpload
+from openforms.submissions.models.submission_files import SubmissionFileAttachment
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -190,6 +191,24 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         for path in paths:
             self.assertFalse(os.path.exists(path))
+
+    def test_delete_temporary_file_attachement_deletes_the_saved_one_as_well(self):
+        upload = TemporaryFileUploadFactory.create()
+        saved_upload = SubmissionFileAttachmentFactory.create(temporary_file=upload)
+        url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
+
+        # add it to the session
+        self._add_upload_to_session(upload)
+
+        # make sure the two files exist
+        self.assertEqual(TemporaryFileUpload.objects.get(), upload)
+        self.assertEqual(SubmissionFileAttachment.objects.get(), saved_upload)
+
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(TemporaryFileUpload.objects.exists())
+        self.assertFalse(SubmissionFileAttachment.objects.exists())
 
     def test_cleanup_unclaimed_temporary_uploaded_files(self):
         with freeze_time("2020-06-01 10:00"):
