@@ -7091,6 +7091,13 @@ components:
           description: Which attribute from the prefill response should be used to
             fill this variable
           maxLength: 200
+        prefillIdentifierRole:
+          allOf:
+          - $ref: '#/components/schemas/PrefillIdentifierRoleEnum'
+          description: In case that multiple identifiers are returned (in the case
+            of eHerkenning bewindvoering and DigiD Machtigen), should the prefill
+            data related to the main identifier be used, or that related to the authorised
+            person?
         dataType:
           allOf:
           - $ref: '#/components/schemas/DataTypeEnum'
@@ -7929,6 +7936,11 @@ components:
       required:
       - id
       - label
+    PrefillIdentifierRoleEnum:
+      enum:
+      - main
+      - authorised_person
+      type: string
     PrefillPlugin:
       type: object
       properties:

@@ -6,13 +6,29 @@ from django.urls import reverse
 import requests_mock
 from furl import furl
 from rest_framework import status
+from rest_framework.test import APIRequestFactory
 
 from digid_eherkenning_oidc_generics.models import (
     OpenIDConnectDigiDMachtigenConfig,
+    OpenIDConnectEHerkenningBewindvoeringConfig,
     OpenIDConnectPublicConfig,
+)
+from openforms.authentication.constants import (
+    CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
+    AuthAttribute,
+)
+from openforms.authentication.contrib.digid_eherkenning_oidc.constants import (
+    DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY,
+    EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY,
+)
+from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
+    DigiDMachtigenOIDCAuthentication,
+    EHerkenningBewindvoeringOIDCAuthentication,
 )
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
 default_config = dict(
     enabled=True,
@@ -318,3 +334,115 @@ class DigiDMachtigenOIDCTests(TestCase):
             f"http://testserver{reverse('digid_machtigen_oidc:oidc_authentication_callback')}",
         )
         self.assertEqual(query_params["kc_idp_hint"], "oidc-digid-machtigen")
+
+
+class AddClaimsToSessionTests(SubmissionsMixin, TestCase):
+    def test_handle_return_without_claim_eherkenning_bewindvoering(self):
+        factory = APIRequestFactory()
+        request = factory.get("/xyz")
+        request.session = {}
+
+        plugin = EHerkenningBewindvoeringOIDCAuthentication(identifier="boh")
+        plugin.add_claims_to_sessions_if_not_cosigning(claim="", request=request)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, request.session)
+
+    def test_handle_return_with_cosign_param_eherkenning_bewindvoering(self):
+        factory = APIRequestFactory()
+        request = factory.get(f"/xyz?{CO_SIGN_PARAMETER}=tralala")
+        request.session = {}
+
+        plugin = EHerkenningBewindvoeringOIDCAuthentication(identifier="boh")
+        plugin.add_claims_to_sessions_if_not_cosigning(claim="tralala", request=request)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, request.session)
+
+    def test_handle_return_without_claim_digid_machtigen(self):
+        factory = APIRequestFactory()
+        request = factory.get("/xyz")
+        request.session = {}
+
+        plugin = DigiDMachtigenOIDCAuthentication(identifier="boh")
+        plugin.add_claims_to_sessions_if_not_cosigning(claim="", request=request)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, request.session)
+
+    def test_handle_return_with_cosign_param_digi_machtigen(self):
+        factory = APIRequestFactory()
+        request = factory.get(f"/xyz?{CO_SIGN_PARAMETER}=tralala")
+        request.session = {}
+
+        plugin = DigiDMachtigenOIDCAuthentication(identifier="boh")
+        plugin.add_claims_to_sessions_if_not_cosigning(claim="tralala", request=request)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, request.session)
+
+    def test_handle_return_eherkenning_bewindvoering(self):
+        factory = APIRequestFactory()
+        request = factory.get("/xyz")
+        request.session = {
+            EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY: {
+                "aanvrager.bsn": "222222222"
+            }
+        }
+
+        plugin = EHerkenningBewindvoeringOIDCAuthentication(identifier="boh")
+
+        with patch(
+            "openforms.authentication.contrib.digid_eherkenning_oidc.plugin.OpenIDConnectEHerkenningBewindvoeringConfig.get_solo",
+            return_value=OpenIDConnectEHerkenningBewindvoeringConfig(
+                vertegenwoordigde_company_claim_name="gemachtige.kvk",
+                gemachtigde_person_claim_name="aanvrager.bsn",
+            ),
+        ):
+            plugin.add_claims_to_sessions_if_not_cosigning(
+                claim={
+                    "gemachtige.kvk": "111111111",
+                },
+                request=request,
+            )
+
+        self.assertIn(FORM_AUTH_SESSION_KEY, request.session)
+        self.assertEqual(
+            {
+                "plugin": "boh",
+                "attribute": AuthAttribute.kvk,
+                "value": "111111111",
+                "machtigen": {"identifier_value": "222222222"},
+            },
+            request.session[FORM_AUTH_SESSION_KEY],
+        )
+
+    def test_handle_return_digid_machtigen(self):
+        factory = APIRequestFactory()
+        request = factory.get("/xyz")
+        request.session = {
+            DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY: {"aanvrager.bsn": "222222222"}
+        }
+
+        plugin = DigiDMachtigenOIDCAuthentication(identifier="boh")
+
+        with patch(
+            "openforms.authentication.contrib.digid_eherkenning_oidc.plugin.OpenIDConnectDigiDMachtigenConfig.get_solo",
+            return_value=OpenIDConnectDigiDMachtigenConfig(
+                vertegenwoordigde_claim_name="gemachtige.bsn",
+                gemachtigde_claim_name="aanvrager.bsn",
+            ),
+        ):
+            plugin.add_claims_to_sessions_if_not_cosigning(
+                claim={
+                    "gemachtige.bsn": "111111111",
+                },
+                request=request,
+            )
+
+        self.assertIn(FORM_AUTH_SESSION_KEY, request.session)
+        self.assertEqual(
+            {
+                "plugin": "boh",
+                "attribute": AuthAttribute.bsn,
+                "value": "111111111",
+                "machtigen": {"identifier_value": "222222222"},
+            },
+            request.session[FORM_AUTH_SESSION_KEY],
+        )

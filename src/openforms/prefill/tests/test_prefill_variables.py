@@ -54,7 +54,9 @@ class PrefillVariablesTests(TestCase):
     @patch(
         "openforms.prefill._fetch_prefill_values",
         return_value={
-            "demo": {"random_string": "Not so random string", "random_number": 123}
+            "demo": {
+                "main": {"random_string": "Not so random string", "random_number": 123}
+            }
         },
     )
     def test_applying_prefill_plugins(self, m_prefill):
@@ -88,8 +90,8 @@ class PrefillVariablesTests(TestCase):
     @patch(
         "openforms.prefill._fetch_prefill_values",
         return_value={
-            "postcode": {"static": "1015CJ"},
-            "birthDate": {"static": "19990615"},
+            "postcode": {"main": {"static": "1015CJ"}},
+            "birthDate": {"main": {"static": "19990615"}},
         },
     )
     def test_normalization_applied(self, m_prefill):

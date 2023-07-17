@@ -45,6 +45,7 @@ const makeNewVariableFromComponent = (component, formDefinition) => {
     serviceFetchConfiguration: null,
     prefillPlugin: component.prefill?.plugin || '',
     prefillAttribute: component.prefill?.attribute || '',
+    prefillIdentifierRole: component.prefill?.identifierRole || 'main',
     dataType: getComponentDatatype(component),
     initialValue: getDefaultValue(component),
     _id: component.id,

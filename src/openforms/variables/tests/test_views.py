@@ -6,6 +6,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.prefill.constants import IdentifierRoles
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.registry import Registry
@@ -72,6 +73,7 @@ class GetStaticVariablesViewTest(APITestCase):
                 "service_fetch_configuration": None,
                 "prefill_plugin": "",
                 "prefill_attribute": "",
+                "prefill_identifier_role": IdentifierRoles.main,
                 "data_type": FormVariableDataTypes.datetime,
                 "data_format": "",
                 "is_sensitive_data": False,

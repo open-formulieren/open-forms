@@ -308,6 +308,25 @@ const PREFILL = {
       refreshOn: 'prefill.plugin',
       clearOnRefresh: true,
     },
+    {
+      type: 'select',
+      key: 'prefill.identifierRole',
+      label: 'Identifier role',
+      description:
+        'In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD ' +
+        'Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?',
+      dataSrc: 'values',
+      data: {
+        values: [
+          {label: 'Main', value: 'main'},
+          {label: 'Authorised person', value: 'authorised_person'},
+        ],
+      },
+      defaultValue: 'main',
+      validate: {
+        required: true,
+      },
+    },
   ],
 };
 

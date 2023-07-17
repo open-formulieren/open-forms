@@ -249,7 +249,7 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
     @patch(
         "openforms.prefill._fetch_prefill_values",
         return_value={
-            "postcode": {"static": "1015CJ"},
+            "postcode": {"main": {"static": "1015CJ"}},
         },
     )
     def test_flow_with_badly_structure_prefill_data(self, m_prefill):

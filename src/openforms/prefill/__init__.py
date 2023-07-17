@@ -31,10 +31,10 @@ So, to recap:
 """
 import logging
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict
 
 import elasticapm
-from glom import Path, PathAccessError, glom
+from glom import Path, PathAccessError, assign, glom
 from zgw_consumers.concurrent import parallel
 
 from openforms.plugins.exceptions import PluginNotEnabled
@@ -56,30 +56,47 @@ def _fetch_prefill_values(
     )
 
     @elasticapm.capture_span(span_type="app.prefill")
-    def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
-        plugin_id, fields = item
-        plugin = register[plugin_id]
+    def invoke_plugin(
+        item: tuple[str, str, list[str]]
+    ) -> tuple[str, str, dict[str, Any]]:
+        plugin_id, identifier_role, fields = item
 
+        plugin = register[plugin_id]
         if not plugin.is_enabled:
             raise PluginNotEnabled()
 
         try:
-            values = plugin.get_prefill_values(submission, fields)
+            values = plugin.get_prefill_values(submission, fields, identifier_role)
         except Exception as e:
             logger.exception(f"exception in prefill plugin '{plugin_id}'")
             logevent.prefill_retrieve_failure(submission, plugin, e)
-            return plugin_id, {}
+            values = {}
         else:
             if values:
                 logevent.prefill_retrieve_success(submission, plugin, fields)
             else:
                 logevent.prefill_retrieve_empty(submission, plugin, fields)
-            return plugin_id, values
+
+        return plugin_id, identifier_role, values
+
+    invoke_plugin_args = []
+    for plugin_id, field_groups in grouped_fields.items():
+        for identifier_role, fields in field_groups.items():
+            invoke_plugin_args.append((plugin_id, identifier_role, fields))
 
     with parallel() as executor:
-        results = executor.map(invoke_plugin, grouped_fields.items())
+        results = executor.map(invoke_plugin, invoke_plugin_args)
 
-    return dict(results)
+    collected_results = {}
+    for plugin_id, identifier_role, values_dict in list(results):
+        assign(
+            collected_results,
+            Path(plugin_id, identifier_role),
+            values_dict,
+            missing=dict,
+        )
+
+    return collected_results
 
 
 def inject_prefill(
@@ -139,11 +156,13 @@ def prefill_variables(submission: "Submission", register=None) -> None:
     state = submission.load_submission_value_variables_state()
     variables_to_prefill = state.get_prefill_variables()
 
-    grouped_fields = defaultdict(list)
+    grouped_fields = defaultdict(lambda: defaultdict(list))
     for variable in variables_to_prefill:
-        grouped_fields[variable.form_variable.prefill_plugin].append(
-            variable.form_variable.prefill_attribute
-        )
+        plugin_id = variable.form_variable.prefill_plugin
+        attribute_name = variable.form_variable.prefill_attribute
+        identifier_role = variable.form_variable.prefill_identifier_role
+
+        grouped_fields[plugin_id][identifier_role].append(attribute_name)
 
     results = _fetch_prefill_values(grouped_fields, submission, register)
 
@@ -155,6 +174,7 @@ def prefill_variables(submission: "Submission", register=None) -> None:
                 results,
                 Path(
                     variable.form_variable.prefill_plugin,
+                    variable.form_variable.prefill_identifier_role,
                     variable.form_variable.prefill_attribute,
                 ),
             )

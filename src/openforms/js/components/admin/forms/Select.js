@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {useIntl} from 'react-intl';
 
-import {getTranslatedChoices} from 'utils/i18n';
-
 import {PrefixContext} from './Context';
 
 const BLANK_OPTION = ['', '------'];

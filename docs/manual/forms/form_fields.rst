@@ -132,6 +132,15 @@ Registratie
   naar het achterliggende registratie systeem, dan kunt u hier een attribuut
   kiezen dat beschikbaar is in het achterliggende registratie systeem.
 
+Prefill
+-------
+
+* **Plugin**: Welke prefill plugin te gebruiken om data op te halen over de persoon/het bedrijf die ingelogd is.
+* **Pluginattribuut**: Welk attribuut van de prefill-backend data te gebruiken om deze component voorin te vullen.
+* **Identifier rol**: Bij DigiD Machtigen of eHekerkenning zijn meerdere rollen actief: de gemachtigde (persoon die het
+  formulier invult), of de 'geauthenticeerde' (persoon of bedrijf voor wie het formulier ingevuld wordt). Deze optie stelt in
+  voor welke van deze rollen de relevante gegevens voor het geselecteerde attribuut opgevraagd worden.
+
 
 Globale configuratieopties
 ==========================

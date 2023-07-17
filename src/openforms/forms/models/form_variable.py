@@ -15,6 +15,7 @@ from openforms.formio.utils import (
     is_layout_component,
     iter_components,
 )
+from openforms.prefill.constants import IdentifierRoles
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.utils import check_initial_value
 
@@ -87,6 +88,12 @@ class FormVariableManager(models.Manager):
                         default="",
                         skip_exc=KeyError,
                     ),
+                    prefill_identifier_role=glom(
+                        component,
+                        Path("prefill", "identifierRole"),
+                        default=IdentifierRoles.main,
+                        skip_exc=KeyError,
+                    ),
                     key=component["key"],
                     name=component.get("label") or component["key"],
                     is_sensitive_data=component.get("isSensitiveData", False),
@@ -153,6 +160,16 @@ class FormVariable(models.Model):
         ),
         blank=True,
         max_length=200,
+    )
+    prefill_identifier_role = models.CharField(
+        verbose_name=_("prefill identifier role"),
+        help_text=_(
+            "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD "
+            "Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
+        ),
+        choices=IdentifierRoles.choices,
+        default=IdentifierRoles.main,
+        max_length=100,
     )
     data_type = models.CharField(
         verbose_name=_("data type"),

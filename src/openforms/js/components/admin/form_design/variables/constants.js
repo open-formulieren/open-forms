@@ -1,4 +1,5 @@
-import {defineMessage} from 'react-intl';
+import React from 'react';
+import {FormattedMessage, defineMessage} from 'react-intl';
 
 const COMPONENT_DATATYPES = {
   date: 'date',
@@ -91,10 +92,28 @@ const EMPTY_VARIABLE = {
   source: VARIABLE_SOURCES.userDefined,
   prefillPlugin: '',
   prefillAttribute: '',
+  prefillIdentifierRole: 'main',
   isSensitiveData: false,
   dataType: 'string',
   initial_value: '',
   serviceFetchConfiguration: null,
 };
 
-export {COMPONENT_DATATYPES, VARIABLE_SOURCES, DATATYPES_CHOICES, EMPTY_VARIABLE};
+const IDENTIFIER_ROLE_CHOICES = {
+  main: defineMessage({
+    description: 'Choices (main/authorised person) label',
+    defaultMessage: 'Main',
+  }),
+  authorised_person: defineMessage({
+    description: 'Choices (main/authorised person) label',
+    defaultMessage: 'Authorised person',
+  }),
+};
+
+export {
+  COMPONENT_DATATYPES,
+  VARIABLE_SOURCES,
+  DATATYPES_CHOICES,
+  EMPTY_VARIABLE,
+  IDENTIFIER_ROLE_CHOICES,
+};
