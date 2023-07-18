@@ -833,7 +833,7 @@ pytz==2022.2.1
     #   o365
     #   tzlocal
     #   zeep
-pyyaml==5.4.1
+pyyaml==6.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
