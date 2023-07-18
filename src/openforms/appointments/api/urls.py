@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     CancelAppointmentView,
+    CreateAppointmentView,
     DatesListView,
     LocationsListView,
     ProductsListView,
@@ -19,6 +20,7 @@ urlpatterns = [
         RequiredCustomerFieldsListView.as_view(),
         name="appointments-customer-fields",
     ),
+    path("appointments", CreateAppointmentView.as_view(), name="appointments-create"),
     path(
         "<uuid:submission_uuid>/cancel",
         CancelAppointmentView.as_view(),
