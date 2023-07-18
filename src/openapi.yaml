@@ -97,6 +97,83 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/appointments/appointments:
+    post:
+      operationId: appointments_appointments_create
+      summary: Create an appointment
+      tags:
+      - appointments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: Invalid submission data.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Invalid or missing submission in session.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        5XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: Unable to cancel appointment.
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
   /api/v2/appointments/customer-fields:
     get:
       operationId: appointments_customer_fields_retrieve
@@ -5795,6 +5872,56 @@ components:
       - dark
       - light
       type: string
+    Appointment:
+      type: object
+      properties:
+        submission:
+          type: string
+          format: uri
+          description: The submission that made the appointment
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/_AppointmentProduct'
+        location:
+          type: string
+          title: Location ID
+          description: Identifier of the location in the selected plugin.
+          maxLength: 128
+        date:
+          type: string
+          format: date
+        datetime:
+          type: string
+          format: date-time
+          title: Appointment time
+          description: Date and time of the appointment
+        contactDetails:
+          type: object
+          additionalProperties: {}
+          description: Additional contact detail field values.
+        privacyPolicyAccepted:
+          type: boolean
+          writeOnly: true
+        statusUrl:
+          type: string
+          format: uri
+          readOnly: true
+          title: status check endpoint
+          description: The API endpoint where the background processing status can
+            be checked. After calling the completion endpoint, this status URL should
+            be polled to report the processing status back to the end-user. Note that
+            the endpoint contains a token which invalidates on state changes and after
+            one day.
+      required:
+      - contactDetails
+      - date
+      - datetime
+      - location
+      - privacyPolicyAccepted
+      - products
+      - statusUrl
+      - submission
     AppointmentOptions:
       type: object
       properties:
@@ -8628,6 +8755,21 @@ components:
       required:
       - isValid
       - messages
+    _AppointmentProduct:
+      type: object
+      properties:
+        productId:
+          type: string
+          description: Identifier of the product in the selected plugin.
+          maxLength: 128
+        amount:
+          type: integer
+          maximum: 32767
+          minimum: 1
+          description: Number of times (amount of people) the product is ordered
+      required:
+      - amount
+      - productId
   securitySchemes:
     cookieAuth:
       type: apiKey
