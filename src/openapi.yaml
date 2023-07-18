@@ -1288,8 +1288,7 @@ paths:
         Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
 
         - `internalName`
-        - `registrationBackend`
-        - `registrationBackendOptions`
+        - `registrationBackends`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -1354,8 +1353,7 @@ paths:
         for internal form configuration. These fields are:
 
         - `internalName`
-        - `registrationBackend`
-        - `registrationBackendOptions`
+        - `registrationBackends`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -1864,8 +1862,7 @@ paths:
         Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
 
         - `internalName`
-        - `registrationBackend`
-        - `registrationBackendOptions`
+        - `registrationBackends`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -1936,8 +1933,7 @@ paths:
         for internal form configuration. These fields are:
 
         - `internalName`
-        - `registrationBackend`
-        - `registrationBackendOptions`
+        - `registrationBackends`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -2012,8 +2008,7 @@ paths:
         for internal form configuration. These fields are:
 
         - `internalName`
-        - `registrationBackend`
-        - `registrationBackendOptions`
+        - `registrationBackends`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -6660,7 +6655,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6678,13 +6673,10 @@ components:
           readOnly: true
         translationEnabled:
           type: boolean
-        registrationBackend:
-          type: string
-          maxLength: 100
-        registrationBackendOptions:
-          type: object
-          additionalProperties: {}
-          nullable: true
+        registrationBackends:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormRegistrationBackend'
         authenticationBackends:
           type: array
           items:
@@ -7059,7 +7051,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7226,7 +7218,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7308,6 +7300,29 @@ components:
       - price
       - url
       - uuid
+    FormRegistrationBackend:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The key to use to refer to this configuration in form logic.
+          maxLength: 50
+        name:
+          type: string
+          description: A recognisable name for this backend configuration.
+          maxLength: 255
+        backend:
+          type: string
+          title: Registration backend
+          maxLength: 100
+        options:
+          type: object
+          additionalProperties: {}
+          title: Registration backend options
+      required:
+      - backend
+      - key
+      - name
     FormStep:
       type: object
       properties:
@@ -8046,7 +8061,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -8064,13 +8079,10 @@ components:
           readOnly: true
         translationEnabled:
           type: boolean
-        registrationBackend:
-          type: string
-          maxLength: 100
-        registrationBackendOptions:
-          type: object
-          additionalProperties: {}
-          nullable: true
+        registrationBackends:
+          type: array
+          items:
+            $ref: '#/components/schemas/FormRegistrationBackend'
         authenticationBackends:
           type: array
           items:
