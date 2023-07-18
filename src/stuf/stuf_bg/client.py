@@ -5,7 +5,7 @@ import xmltodict
 from glom import glom
 
 from openforms.logging.logevent import stuf_bg_request, stuf_bg_response
-from stuf.constants import EndpointType
+from soap.constants import EndpointType
 from stuf.models import StufService
 
 from ..client import BaseClient

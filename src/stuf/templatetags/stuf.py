@@ -5,7 +5,8 @@ from typing import Any, Literal
 from django.template import Library
 from django.utils import dateformat, timezone
 
-from ..constants import EndpointSecurity
+from soap.constants import EndpointSecurity
+
 from ..models import StufService
 
 register = Library()

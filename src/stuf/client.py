@@ -21,7 +21,8 @@ from django.template import loader
 from requests import Session
 from requests.models import Response
 
-from .constants import SOAP_VERSION_CONTENT_TYPES, EndpointType
+from soap.constants import SOAP_VERSION_CONTENT_TYPES, EndpointType
+
 from .models import StufService
 
 logger = logging.getLogger(__name__)

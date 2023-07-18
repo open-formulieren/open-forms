@@ -18,9 +18,9 @@ from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
+from soap.constants import STUF_ZDS_EXPIRY_MINUTES, EndpointType
 
 from ..client import BaseClient
-from ..constants import STUF_ZDS_EXPIRY_MINUTES, EndpointType
 from ..models import StufService
 from ..xml import fromstring
 

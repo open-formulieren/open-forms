@@ -4,7 +4,8 @@ from django.test import SimpleTestCase
 from freezegun import freeze_time
 from lxml import etree
 
-from ..constants import EndpointSecurity
+from soap.constants import EndpointSecurity
+
 from .factories import StufServiceFactory
 
 

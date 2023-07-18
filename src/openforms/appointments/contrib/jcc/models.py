@@ -12,7 +12,7 @@ class JccConfig(SingletonModel):
     """
 
     service = models.OneToOneField(
-        "stuf.SoapService",
+        "soap.SoapService",
         on_delete=models.PROTECT,
         related_name="+",
         null=True,

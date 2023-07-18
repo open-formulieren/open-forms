@@ -176,6 +176,7 @@ INSTALLED_APPS = [
     "privates",
     "simple_certmanager",
     "zgw_consumers",
+    "soap",
     "stuf",
     "stuf.stuf_bg",
     "stuf.stuf_zds",

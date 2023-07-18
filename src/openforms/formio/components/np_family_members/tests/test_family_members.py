@@ -16,7 +16,7 @@ from openforms.formio.service import get_dynamic_configuration
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.template import render_from_string
-from stuf.constants import EndpointType
+from soap.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
 
