@@ -24,7 +24,6 @@ from openforms.formio.typing import CosignComponent
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
-from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
@@ -68,14 +67,6 @@ class Form(models.Model):
         "forms.Category", null=True, blank=True, on_delete=models.PROTECT
     )
     translation_enabled = models.BooleanField(_("translation enabled"), default=False)
-
-    # registration
-    registration_backend = RegistrationBackendChoiceField(
-        _("registration backend"), blank=True
-    )
-    registration_backend_options = models.JSONField(
-        _("registration backend options"), default=dict, blank=True, null=True
-    )
 
     # payments
     payment_backend = PaymentBackendChoiceField(_("payment backend"), blank=True)
