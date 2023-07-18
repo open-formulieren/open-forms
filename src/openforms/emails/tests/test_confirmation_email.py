@@ -15,9 +15,9 @@ from django.utils.translation import gettext as _
 
 from openforms.appointments.base import (
     AppointmentDetails,
-    AppointmentLocation,
-    AppointmentProduct,
     BasePlugin,
+    Location,
+    Product,
 )
 from openforms.appointments.constants import AppointmentDetailsStatus
 from openforms.appointments.contrib.demo.plugin import DemoAppointment
@@ -460,12 +460,12 @@ class PaymentConfirmationEmailTests(TestCase):
 class TestAppointmentPlugin(BasePlugin):
     def get_available_products(self, current_products=None):
         return [
-            AppointmentProduct(identifier="1", name="Test product 1"),
-            AppointmentProduct(identifier="2", name="Test product 2"),
+            Product(identifier="1", name="Test product 1"),
+            Product(identifier="2", name="Test product 2"),
         ]
 
     def get_locations(self, products):
-        return [AppointmentLocation(identifier="1", name="Test location")]
+        return [Location(identifier="1", name="Test location")]
 
     def get_dates(self, products, location, start_at=None, end_at=None):
         return [date(2021, 1, 1)]
@@ -486,10 +486,10 @@ class TestAppointmentPlugin(BasePlugin):
         return AppointmentDetails(
             identifier=identifier,
             products=[
-                AppointmentProduct(identifier="1", name="Test product 1 & 2"),
-                AppointmentProduct(identifier="2", name="Test product 3"),
+                Product(identifier="1", name="Test product 1 & 2"),
+                Product(identifier="2", name="Test product 3"),
             ],
-            location=AppointmentLocation(
+            location=Location(
                 identifier="1",
                 name="Test location",
                 city="Teststad",

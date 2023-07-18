@@ -5,12 +5,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from openforms.formio.typing import Component
 
-from ...base import (
-    AppointmentDetails,
-    AppointmentLocation,
-    AppointmentProduct,
-    BasePlugin,
-)
+from ...base import AppointmentDetails, BasePlugin, Location, Product
 from ...registry import register
 
 
@@ -21,12 +16,12 @@ class DemoAppointment(BasePlugin):
 
     def get_available_products(self, current_products=None):
         return [
-            AppointmentProduct(identifier="1", name="Test product 1"),
-            AppointmentProduct(identifier="2", name="Test product 2"),
+            Product(identifier="1", name="Test product 1"),
+            Product(identifier="2", name="Test product 2"),
         ]
 
     def get_locations(self, products=None):
-        return [AppointmentLocation(identifier="1", name="Test location")]
+        return [Location(identifier="1", name="Test location")]
 
     def get_dates(self, products, location, start_at=None, end_at=None):
         return [timezone.localdate()]
@@ -38,7 +33,7 @@ class DemoAppointment(BasePlugin):
 
     def get_required_customer_fields(
         self,
-        products: list[AppointmentProduct],
+        products: list[Product],
     ) -> list[Component]:
         last_name: Component = {
             "type": "textfield",
@@ -47,7 +42,7 @@ class DemoAppointment(BasePlugin):
         }
         return [last_name]
 
-    def create_appointment(self, products, location, start_at, client, remarks=None):
+    def create_appointment(self, products, location, start_at, client, remarks=""):
         print(
             "Create appointment \n",
             f"products: {products}\n",
@@ -65,10 +60,10 @@ class DemoAppointment(BasePlugin):
         return AppointmentDetails(
             identifier=identifier,
             products=[
-                AppointmentProduct(identifier="1", name="Test product 1"),
-                AppointmentProduct(identifier="2", name="Test product 2"),
+                Product(identifier="1", name="Test product 1"),
+                Product(identifier="2", name="Test product 2"),
             ],
-            location=AppointmentLocation(identifier="1", name="Test location"),
+            location=Location(identifier="1", name="Test location"),
             start_at=datetime(2021, 1, 1, 12, 0),
             end_at=datetime(2021, 1, 1, 12, 15),
             remarks="Remarks",

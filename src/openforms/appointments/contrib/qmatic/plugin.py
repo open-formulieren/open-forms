@@ -1,7 +1,6 @@
 import json
 import logging
 from datetime import date, datetime, time
-from typing import List, Optional
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse
@@ -13,13 +12,7 @@ from requests.exceptions import RequestException
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ...base import (
-    AppointmentClient,
-    AppointmentDetails,
-    AppointmentLocation,
-    AppointmentProduct,
-    BasePlugin,
-)
+from ...base import AppointmentDetails, BasePlugin, Customer, Location, Product
 from ...exceptions import (
     AppointmentCreateFailed,
     AppointmentDeleteFailed,
@@ -48,9 +41,9 @@ class QmaticAppointment(BasePlugin):
 
     def get_available_products(
         self,
-        current_products: list[AppointmentProduct] | None = None,
+        current_products: list[Product] | None = None,
         location_id: str = "",
-    ) -> list[AppointmentProduct]:
+    ) -> list[Product]:
         """
         Retrieve all available products and services to create an appointment for.
 
@@ -71,15 +64,15 @@ class QmaticAppointment(BasePlugin):
         # NOTE: Filter out products that are not active or public.
 
         return [
-            AppointmentProduct(entry["publicId"], entry["name"])
+            Product(entry["publicId"], entry["name"])
             for entry in response.json()["serviceList"]
             if entry["publicEnabled"] and entry["active"]
         ]
 
     def get_locations(
         self,
-        products: list[AppointmentProduct] | None = None,
-    ) -> List[AppointmentLocation]:
+        products: list[Product] | None = None,
+    ) -> list[Location]:
         products = products or []
         product_ids = [product.identifier for product in products]
 
@@ -112,18 +105,18 @@ class QmaticAppointment(BasePlugin):
         # non-physical addresses.
 
         return [
-            AppointmentLocation(entry["publicId"], entry["name"])
+            Location(entry["publicId"], entry["name"])
             for entry in response.json()["branchList"]
             if entry["addressZip"]
         ]
 
     def get_dates(
         self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
-        start_at: Optional[date] = None,
-        end_at: Optional[date] = None,
-    ) -> List[date]:
+        products: list[Product],
+        location: Location,
+        start_at: date | None = None,
+        end_at: date | None = None,
+    ) -> list[date]:
         """
         Retrieve all available dates for given ``products`` and ``location``.
 
@@ -156,10 +149,10 @@ class QmaticAppointment(BasePlugin):
 
     def get_times(
         self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
+        products: list[Product],
+        location: Location,
         day: date,
-    ) -> List[datetime]:
+    ) -> list[datetime]:
         if len(products) != 1:
             return []
 
@@ -190,7 +183,7 @@ class QmaticAppointment(BasePlugin):
 
     def get_required_customer_fields(
         self,
-        products: list[AppointmentProduct],
+        products: list[Product],
     ) -> list[Component]:
         config = QmaticConfig.get_solo()
         assert isinstance(config, QmaticConfig)
@@ -202,12 +195,12 @@ class QmaticAppointment(BasePlugin):
 
     def create_appointment(
         self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
+        products: list[Product],
+        location: Location,
         start_at: datetime,
-        client: AppointmentClient,
+        client: Customer,
         remarks: str = "",
-    ) -> Optional[str]:
+    ) -> str | None:
 
         qmatic_client = QmaticClient()
         if len(products) != 1:
@@ -279,10 +272,10 @@ class QmaticAppointment(BasePlugin):
             result = AppointmentDetails(
                 identifier=identifier,
                 products=[
-                    AppointmentProduct(identifier=entry["publicId"], name=entry["name"])
+                    Product(identifier=entry["publicId"], name=entry["name"])
                     for entry in details["services"]
                 ],
-                location=AppointmentLocation(
+                location=Location(
                     identifier=details["branch"]["publicId"],
                     name=details["branch"]["name"],
                     address=" ".join(
