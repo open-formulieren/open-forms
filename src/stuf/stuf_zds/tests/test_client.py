@@ -12,7 +12,7 @@ from simple_certmanager.models import Certificate
 
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.tests.utils import can_connect
-from stuf.constants import EndpointType
+from soap.constants import EndpointType
 
 from ...tests.factories import StufServiceFactory
 from ..client import StufZDSClient

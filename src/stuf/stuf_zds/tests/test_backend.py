@@ -12,7 +12,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
     SubmissionReportFactory,
 )
-from stuf.constants import SOAPVersion
+from soap.constants import SOAPVersion
 from stuf.tests.factories import StufServiceFactory
 
 from ..client import PaymentStatus, StufZDSClient

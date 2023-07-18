@@ -1,7 +1,7 @@
 from django.core.management import BaseCommand
 
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient
-from stuf.models import SoapService
+from soap.models import SoapService
 
 
 class Command(BaseCommand):

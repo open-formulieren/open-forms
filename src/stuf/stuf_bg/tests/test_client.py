@@ -16,7 +16,7 @@ from lxml import etree
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
-from stuf.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
+from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.stuf_zds.client import nsmap

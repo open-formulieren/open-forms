@@ -8,7 +8,7 @@ import requests_mock
 from hypothesis import given, strategies as st
 
 from openforms.utils.tests.logging import disable_logging
-from stuf.tests.factories import SoapServiceFactory
+from soap.tests.factories import SoapServiceFactory
 
 from ....base import AppointmentDetails, Customer, Location, Product
 from ....exceptions import AppointmentException

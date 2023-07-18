@@ -186,22 +186,22 @@
             ],
             [
                 "add_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [
                 "change_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [
                 "delete_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [
                 "view_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [
@@ -1365,22 +1365,22 @@
             ],
             [
                 "add_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [
                 "change_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [
                 "delete_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [
                 "view_soapservice",
-                "stuf",
+                "soap",
                 "soapservice"
             ],
             [

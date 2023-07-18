@@ -15,10 +15,10 @@ from django.test import SimpleTestCase
 import requests_mock
 from privates.test import temp_private_root
 
+from soap.constants import EndpointSecurity
 from stuf.xml import fromstring
 
 from ..client import BaseClient
-from ..constants import EndpointSecurity
 from .factories import StufServiceFactory
 
 

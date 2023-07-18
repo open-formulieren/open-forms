@@ -4,7 +4,7 @@ from unittest.mock import patch
 from zeep.client import Client
 
 from openforms.utils.tests.cache import clear_caches
-from stuf.tests.factories import SoapServiceFactory
+from soap.tests.factories import SoapServiceFactory
 
 from ....models import AppointmentsConfig
 from ..models import JccConfig

@@ -2,7 +2,8 @@ from uuid import uuid4
 
 from django.test import SimpleTestCase, TestCase
 
-from stuf.tests.factories import SoapServiceFactory, StufServiceFactory
+from soap.tests.factories import SoapServiceFactory
+from stuf.tests.factories import StufServiceFactory
 
 
 class SoapServiceTest(TestCase):

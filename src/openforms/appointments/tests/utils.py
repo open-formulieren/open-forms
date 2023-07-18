@@ -2,7 +2,7 @@ import os
 
 from django.conf import settings
 
-from stuf.tests.factories import SoapServiceFactory
+from soap.tests.factories import SoapServiceFactory
 
 from ..contrib.jcc.models import JccConfig
 from ..models import AppointmentsConfig
