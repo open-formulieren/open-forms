@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from soap.models import SoapService
+from .models import SoapService
 
 
 @admin.register(SoapService)
@@ -37,4 +37,3 @@ class SoapServiceAdmin(admin.ModelAdmin):
 
     class Meta:
         model = SoapService
-        fields = "__all__"
