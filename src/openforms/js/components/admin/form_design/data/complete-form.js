@@ -68,19 +68,20 @@ const saveForm = async (state, csrftoken) => {
     newForm: isNewForm,
     form: {uuid},
   } = state;
-  const formDetails = produce(state, draft => {
-    const form = {
+  const cleanedState = produce(state, draft => {
+    normalizeLimit(draft, 'successfulSubmissionsRemovalLimit');
+    normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
+    normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
+    normalizeLimit(draft, 'allSubmissionsRemovalLimit');
+  });
+
+  const formDetails = produce(cleanedState, draft => {
+    return {
       ...draft.form,
       // FIXME - should not be required in backend for form designer
       name: draft.form?.translations?.[DEFAULT_LANGUAGE]?.name,
       authenticationBackends: draft.selectedAuthPlugins,
     };
-
-    normalizeLimit(draft, 'successfulSubmissionsRemovalLimit');
-    normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
-    normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
-    normalizeLimit(draft, 'allSubmissionsRemovalLimit');
-    return form;
   });
 
   const createOrUpdate = isNewForm ? post : put;
