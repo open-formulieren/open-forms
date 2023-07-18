@@ -28,7 +28,7 @@ class ProductListTests(SubmissionsMixin, APITestCase):
             ),
         )
         config_patcher.start()
-        self.addCleanup(config_patcher.stop)  # type: ignore
+        self.addCleanup(config_patcher.stop)
         self._add_submission_to_session(self.submission)
 
         response = self.client.get(self.endpoint)
