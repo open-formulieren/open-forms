@@ -74,7 +74,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             ],
         )
 
-    @patch("openforms.submissions.api.viewsets.on_completion")
+    @patch("openforms.submissions.api.mixins.on_completion")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission(self, mock_on_completion):
         form = FormFactory.create(
@@ -256,7 +256,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validation.GlobalConfiguration.get_solo",
+            "openforms.submissions.api.fields.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(ask_privacy_consent=True),
         ):
             response = self.client.post(
@@ -307,7 +307,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validation.GlobalConfiguration.get_solo",
+            "openforms.submissions.api.fields.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(ask_privacy_consent=False),
         ):
             response = self.client.post(

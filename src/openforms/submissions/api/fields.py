@@ -1,6 +1,13 @@
 from functools import reduce
 
+from django.utils.translation import gettext_lazy as _
+
+from rest_framework import serializers
+from rest_framework.fields import BooleanField, ChoiceField
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
+
+from openforms.config.models import GlobalConfiguration
+from openforms.forms.constants import SubmissionAllowedChoices
 
 
 class NestedRelatedField(NestedHyperlinkedRelatedField):
@@ -53,3 +60,30 @@ class URLRelatedField(NestedHyperlinkedRelatedField):
 
     def get_url(self, obj, view_name, request, format):
         return obj
+
+
+def check_privacy_policy_accepted(value: bool) -> None:
+    config = GlobalConfiguration.get_solo()
+    assert isinstance(config, GlobalConfiguration)
+    privacy_policy_valid = value if config.ask_privacy_consent else True
+    if not privacy_policy_valid:
+        raise serializers.ValidationError(_("Privacy policy must be accepted."))
+
+
+class PrivacyPolicyAcceptedField(BooleanField):
+    default_validators = [check_privacy_policy_accepted]
+
+
+# TODO: ideally this should be moved into a permission-check in the view rather than
+# input validation, as the end-user cannot correct this 'mistake'.
+class SubmissionAllowedField(ChoiceField):
+    default_error_messages = {"invalid": _("Submission of this form is not allowed.")}
+
+    def __init__(self, *args, **kwargs):
+        kwargs["choices"] = SubmissionAllowedChoices.choices
+        super().__init__(*args, **kwargs)
+
+    def to_internal_value(self, form_configuration_value: SubmissionAllowedChoices):
+        if form_configuration_value != SubmissionAllowedChoices.yes:
+            self.fail("invalid")
+        return form_configuration_value

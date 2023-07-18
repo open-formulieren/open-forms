@@ -10,18 +10,10 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.api.utils import mark_experimental
-from openforms.config.models import GlobalConfiguration
-from openforms.forms.constants import SubmissionAllowedChoices
 
 from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
-
-
-def check_privacy_policy_accepted(value: bool) -> None:
-    config = GlobalConfiguration.get_solo()
-    privacy_policy_valid = value if config.ask_privacy_consent else True
-    if not privacy_policy_valid:
-        raise serializers.ValidationError(_("Privacy policy must be accepted."))
+from .fields import PrivacyPolicyAcceptedField, SubmissionAllowedField
 
 
 @mark_experimental
@@ -35,20 +27,9 @@ class CompletionValidationSerializer(serializers.Serializer):
             )
         ],
     )
-    submission_allowed = serializers.ChoiceField(
-        choices=SubmissionAllowedChoices.choices,
-    )
-    privacy_policy_accepted = serializers.BooleanField(
-        validators=[check_privacy_policy_accepted]
-    )
+    submission_allowed = SubmissionAllowedField()
+    privacy_policy_accepted = PrivacyPolicyAcceptedField()
     contains_blocked_steps = serializers.BooleanField()
-
-    # TODO: Move permission check-like validators to view?
-    def validate_submission_allowed(self, submission_allowed):
-        if submission_allowed != SubmissionAllowedChoices.yes:
-            raise serializers.ValidationError(
-                _("Submission of this form is not allowed.")
-            )
 
     def validate_contains_blocked_steps(self, value):
         if value:

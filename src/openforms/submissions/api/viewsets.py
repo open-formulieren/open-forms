@@ -5,7 +5,6 @@ from uuid import UUID
 
 from django.db import transaction
 from django.db.models import Exists, OuterRef
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -16,7 +15,6 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 
 from openforms.api import pagination
 from openforms.api.authentication import AnonCSRFSessionAuthentication
@@ -36,19 +34,16 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
-from ..signals import submission_complete, submission_cosigned, submission_start
+from ..signals import submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
-from ..tasks import on_completion
 from ..tasks.co_sign import on_cosign
-from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
     check_form_status,
     initialise_user_defined_variables,
-    persist_user_defined_variables,
     remove_submission_from_session,
-    remove_submission_uploads_from_session,
 )
+from .mixins import SubmissionCompletionMixin
 from .permissions import (
     ActiveSubmissionPermission,
     CanNavigateBetweenSubmissionStepsPermission,
@@ -119,7 +114,10 @@ def cleanup_deactivated_form_session(request: Request, submission: Submission):
     ),
 )
 class SubmissionViewSet(
-    PermissionFilterMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet
+    PermissionFilterMixin,
+    SubmissionCompletionMixin,
+    mixins.CreateModelMixin,
+    viewsets.ReadOnlyModelViewSet,
 ):
     queryset = (
         Submission.objects.select_related("form", "form__product")
@@ -303,31 +301,8 @@ class SubmissionViewSet(
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        # dispatch signal for modules to tap into
-        submission_complete.send(sender=self.__class__, request=self.request)
+        status_url = self._complete_submission(submission)
 
-        submission.calculate_price(save=False)
-        submission.completed_on = timezone.now()
-        submission.save()
-
-        persist_user_defined_variables(submission, self.request)
-
-        logevent.form_submit_success(submission)
-
-        remove_submission_from_session(submission, self.request.session)
-        remove_submission_uploads_from_session(submission, self.request.session)
-
-        # after committing the database transaction where the submissions completion is
-        # stored, start processing the completion.
-        transaction.on_commit(lambda: on_completion(submission.id))
-
-        token = submission_status_token_generator.make_token(submission)
-        status_url = self.request.build_absolute_uri(
-            reverse(
-                "api:submission-status",
-                kwargs={"uuid": submission.uuid, "token": token},
-            )
-        )
         out_serializer = SubmissionCompletionSerializer(
             instance={"status_url": status_url}
         )
