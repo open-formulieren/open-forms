@@ -106,8 +106,7 @@ class TemporaryFileView(DestroyAPIView):
     def perform_destroy(self, instance):
         # delete files from disc as well if they had been already
         # saved when trying to access the next form step
-        if instance.attachments.exists():
-            instance.attachments.all().delete()
+        instance.attachments.all().delete()
 
         remove_upload_from_session(instance, self.request.session)
         instance.delete()
