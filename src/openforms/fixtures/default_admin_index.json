@@ -3,9 +3,12 @@
     "model": "admin_index.appgroup",
     "fields": {
         "order": 0,
+        "translations": {
+            "en": "Accounts",
+            "nl": "Accounts"
+        },
         "name": "Accounts",
         "slug": "accounts",
-        "translations":{"en":"Accounts", "nl":"Accounts"},
         "models": [
             [
                 "accounts",
@@ -50,9 +53,12 @@
     "model": "admin_index.appgroup",
     "fields": {
         "order": 1,
+        "translations": {
+            "en": "Forms",
+            "nl": "Formulieren"
+        },
         "name": "Formulieren",
         "slug": "formulieren",
-        "translations":{"en":"Forms", "nl":"Formulieren"},
         "models": [
             [
                 "emails",
@@ -85,9 +91,12 @@
     "model": "admin_index.appgroup",
     "fields": {
         "order": 2,
+        "translations": {
+            "en": "Submissions",
+            "nl": "Inzendingen"
+        },
         "name": "Inzendingen",
         "slug": "inzendingen",
-        "translations":{"en":"Submissions", "nl":"Inzendingen"},
         "models": [
             [
                 "appointments",
@@ -115,10 +124,13 @@
 {
     "model": "admin_index.appgroup",
     "fields": {
-        "order": 3,
+        "order": 4,
+        "translations": {
+            "en": "Products",
+            "nl": "Producten"
+        },
         "name": "Producten",
         "slug": "producten",
-        "translations":{"en":"Products", "nl":"Producten"},
         "models": [
             [
                 "products",
@@ -130,10 +142,13 @@
 {
     "model": "admin_index.appgroup",
     "fields": {
-        "order": 4,
+        "order": 5,
+        "translations": {
+            "en": "Configuration",
+            "nl": "Configuratie"
+        },
         "name": "Configuratie",
         "slug": "configuratie",
-        "translations":{"en":"Configuration", "nl":"Configuratie"},
         "models": [
             [
                 "admin_index",
@@ -237,10 +252,13 @@
 {
     "model": "admin_index.appgroup",
     "fields": {
-        "order": 5,
+        "order": 6,
+        "translations": {
+            "en": "Logs",
+            "nl": "Logs"
+        },
         "name": "Logs",
         "slug": "logs",
-        "translations":{"en":"Logs", "nl":"Logs"},
         "models": [
             [
                 "axes",
@@ -248,11 +266,11 @@
             ],
             [
                 "axes",
-                "accesslog"
+                "accessfailurelog"
             ],
             [
                 "axes",
-                "accessfailurelog"
+                "accesslog"
             ],
             [
                 "cookie_consent",
@@ -296,22 +314,58 @@
 {
     "model": "admin_index.appgroup",
     "fields": {
-        "order": 6,
+        "order": 7,
+        "translations": {
+            "en": "Useful links",
+            "nl": "Handige links"
+        },
         "name": "Handige links",
         "slug": "handige-links",
-        "translations":{"en":"Useful links", "nl":"Handige links"},
         "models": []
+    }
+},
+{
+    "model": "admin_index.appgroup",
+    "fields": {
+        "order": 3,
+        "translations": {
+            "en": "Appointments",
+            "nl": "Afspraken"
+        },
+        "name": "Afspraken",
+        "slug": "afspraken",
+        "models": [
+            [
+                "appointments",
+                "appointment"
+            ],
+            [
+                "appointments",
+                "appointmentinfo"
+            ],
+            [
+                "appointments",
+                "appointmentproduct"
+            ],
+            [
+                "appointments",
+                "appointmentsconfig"
+            ]
+        ]
     }
 },
 {
     "model": "admin_index.applink",
     "fields": {
         "order": 0,
+        "translations": {
+            "en": "Test email backend",
+            "nl": "E-mail-backend testen"
+        },
         "app_group": [
             "configuratie"
         ],
         "name": "Test email backend",
-        "translations":{"en":"Test email backend", "nl":"E-mail-backend testen"},
         "link": "/admin/email/test/"
     }
 },
@@ -319,11 +373,14 @@
     "model": "admin_index.applink",
     "fields": {
         "order": 1,
+        "translations": {
+            "en": "API Documentation",
+            "nl": "API Documentatie"
+        },
         "app_group": [
             "handige-links"
         ],
         "name": "API Documentatie",
-        "translations":{"en":"API Documentation", "nl":"API Documentatie"},
         "link": "/api/docs/"
     }
 },
@@ -331,11 +388,14 @@
     "model": "admin_index.applink",
     "fields": {
         "order": 2,
+        "translations": {
+            "en": "Documentation",
+            "nl": "Documentatie"
+        },
         "app_group": [
             "handige-links"
         ],
         "name": "Documentatie",
-        "translations":{"en":"Documentation", "nl":"Documentatie"},
         "link": "http://open-forms.readthedocs.io/"
     }
 },
@@ -343,11 +403,14 @@
     "model": "admin_index.applink",
     "fields": {
         "order": 3,
+        "translations": {
+            "en": "Github",
+            "nl": "Github"
+        },
         "app_group": [
             "handige-links"
         ],
         "name": "Github",
-        "translations":{"en":"Github", "nl":"Github"},
         "link": "https://github.com/open-formulieren/open-forms"
     }
 },
@@ -355,11 +418,14 @@
     "model": "admin_index.applink",
     "fields": {
         "order": 4,
+        "translations": {
+            "en": "Configuration overview",
+            "nl": "Configuratie overzicht"
+        },
         "app_group": [
             "configuratie"
         ],
         "name": "Configuratie overzicht",
-        "translations":{"en":"Configuration overview", "nl":"Configuratie overzicht"},
         "link": "/admin/config/overview/"
     }
 }
