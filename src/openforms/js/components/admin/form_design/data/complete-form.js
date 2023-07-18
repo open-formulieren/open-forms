@@ -65,18 +65,19 @@ const saveForm = async (state, csrftoken) => {
     newForm: isNewForm,
     form: {uuid},
   } = state;
-  const formDetails = produce(state, draft => {
-    const form = {
-      ...draft.form,
-      literals: draft.literals,
-      authenticationBackends: draft.selectedAuthPlugins,
-    };
-
+  const cleanedState = produce(state, draft => {
     normalizeLimit(draft, 'successfulSubmissionsRemovalLimit');
     normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
     normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
     normalizeLimit(draft, 'allSubmissionsRemovalLimit');
-    return form;
+  });
+
+  const formDetails = produce(cleanedState, draft => {
+    return {
+      ...draft.form,
+      literals: draft.literals,
+      authenticationBackends: draft.selectedAuthPlugins,
+    };
   });
 
   const createOrUpdate = isNewForm ? post : put;
