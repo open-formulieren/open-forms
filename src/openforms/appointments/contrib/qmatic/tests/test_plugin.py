@@ -9,12 +9,7 @@ from hypothesis import given, strategies as st
 from openforms.tests.utils import c_profile
 from openforms.utils.tests.logging import disable_logging
 
-from ....base import (
-    AppointmentClient,
-    AppointmentDetails,
-    AppointmentLocation,
-    AppointmentProduct,
-)
+from ....base import AppointmentDetails, Customer, Location, Product
 from ....exceptions import AppointmentException
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import QmaticAppointment
@@ -62,7 +57,7 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_locations(self, m):
-        product = AppointmentProduct(
+        product = Product(
             identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
         )
 
@@ -92,10 +87,10 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_dates(self, m):
-        product = AppointmentProduct(
+        product = Product(
             identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
         )
-        location = AppointmentLocation(
+        location = Location(
             identifier="f364d92b7fa07a48c4ecc862de30c47", name="Branch 1"
         )
         day = date(2016, 12, 6)
@@ -115,10 +110,10 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_times(self, m):
-        product = AppointmentProduct(
+        product = Product(
             identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
         )
-        location = AppointmentLocation(
+        location = Location(
             identifier="f364d92b7fa07a48c4ecc862de30c47", name="Branch 1"
         )
         day = date(2016, 12, 6)
@@ -140,7 +135,7 @@ class PluginTests(MockConfigMixin, TestCase):
             CustomerFields.phone_number,
             CustomerFields.email,
         ]
-        product = AppointmentProduct(
+        product = Product(
             identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
         )
 
@@ -179,13 +174,13 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_create_appointment(self, m):
-        product = AppointmentProduct(
+        product = Product(
             identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
         )
-        location = AppointmentLocation(
+        location = Location(
             identifier="f364d92b7fa07a48c4ecc862de30c47", name="Branch 1"
         )
-        client = AppointmentClient(last_name="Doe", birthdate=date(1980, 1, 1))
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
         day = datetime(2016, 12, 6, 9, 0, 0)
 
         m.post(
@@ -313,8 +308,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @given(st.integers(min_value=500, max_value=511))
     def test_get_dates_server_error(self, m, status_code):
         m.get(requests_mock.ANY, status_code=status_code)
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         dates = self.plugin.get_dates(products=[product], location=location)
 
@@ -324,8 +319,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @given(st.integers(min_value=400, max_value=499))
     def test_get_dates_client_error(self, m, status_code):
         m.get(requests_mock.ANY, status_code=status_code)
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         dates = self.plugin.get_dates(products=[product], location=location)
 
@@ -334,8 +329,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_get_dates_unexpected_exception(self, m):
         m.get(requests_mock.ANY, exc=IOError("tubes are closed"))
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_dates(products=[product], location=location)
@@ -344,8 +339,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @given(st.integers(min_value=500, max_value=511))
     def test_get_times_server_error(self, m, status_code):
         m.get(requests_mock.ANY, status_code=status_code)
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         times = self.plugin.get_times(
             products=[product], location=location, day=date(2023, 6, 22)
@@ -358,8 +353,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @given(st.integers(min_value=400, max_value=499))
     def test_get_times_client_error(self, m, status_code):
         m.get(requests_mock.ANY, status_code=status_code)
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         times = self.plugin.get_times(
             products=[product], location=location, day=date(2023, 6, 22)
@@ -370,8 +365,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_get_times_unexpected_exception(self, m):
         m.get(requests_mock.ANY, exc=IOError("tubes are closed"))
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_times(

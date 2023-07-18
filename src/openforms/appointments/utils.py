@@ -14,7 +14,7 @@ from openforms.forms.models import Form, FormStep
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 
-from .base import AppointmentClient, AppointmentLocation, AppointmentProduct, BasePlugin
+from .base import BasePlugin, Customer, Location, Product
 from .constants import AppointmentDetailsStatus
 from .exceptions import (
     AppointmentCreateFailed,
@@ -117,15 +117,15 @@ def book_appointment_for_submission(submission: Submission) -> None:
             "No registration attempted because of incomplete information. "
         )
 
-    product = AppointmentProduct(
+    product = Product(
         identifier=appointment_data["productIDAndName"]["value"]["identifier"],
         name=appointment_data["productIDAndName"]["value"]["name"],
     )
-    location = AppointmentLocation(
+    location = Location(
         identifier=appointment_data["locationIDAndName"]["value"]["identifier"],
         name=appointment_data["locationIDAndName"]["value"]["name"],
     )
-    appointment_client = AppointmentClient(
+    appointment_client = Customer(
         last_name=appointment_data["clientLastName"]["value"],
         birthdate=datetime.strptime(
             appointment_data["clientDateOfBirth"]["value"], "%Y-%m-%d"

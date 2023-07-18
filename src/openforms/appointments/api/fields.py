@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from ..base import AppointmentProduct
+from ..base import Product
 
 
 class ProductIDField(serializers.CharField):
@@ -10,9 +10,9 @@ class ProductIDField(serializers.CharField):
         kwargs.setdefault("label", _("product ID"))
         super().__init__(*args, **kwargs)
 
-    def run_validation(self, data) -> AppointmentProduct:
+    def run_validation(self, data) -> Product:
         """
         Normalize to dataclass instance.
         """
         value = super().run_validation(data)
-        return AppointmentProduct(identifier=value, code="", name="")
+        return Product(identifier=value, code="", name="")

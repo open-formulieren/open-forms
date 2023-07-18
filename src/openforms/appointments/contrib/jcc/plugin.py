@@ -2,7 +2,7 @@ import logging
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
 from functools import wraps
-from typing import Callable, List, Optional, ParamSpec, TypeVar
+from typing import Callable, List, ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils.html import format_html
@@ -16,13 +16,7 @@ from zgw_consumers.concurrent import parallel
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ...base import (
-    AppointmentClient,
-    AppointmentDetails,
-    AppointmentLocation,
-    AppointmentProduct,
-    BasePlugin,
-)
+from ...base import AppointmentDetails, BasePlugin, Customer, Location, Product
 from ...exceptions import (
     AppointmentCreateFailed,
     AppointmentDeleteFailed,
@@ -89,9 +83,9 @@ class JccAppointment(BasePlugin):
     @with_graceful_default(default=[])
     def get_available_products(
         self,
-        current_products: list[AppointmentProduct] | None = None,
+        current_products: list[Product] | None = None,
         location_id: str = "",
-    ) -> list[AppointmentProduct]:
+    ) -> list[Product]:
         if location_id:
             logger.debug(
                 "Plugin does not support filtering products by location.",
@@ -109,13 +103,11 @@ class JccAppointment(BasePlugin):
                 result = client.service.getGovAvailableProducts()
 
         return [
-            AppointmentProduct(
-                entry["productId"], entry["productDesc"], entry["productCode"]
-            )
+            Product(entry["productId"], entry["productDesc"], entry["productCode"])
             for entry in result
         ]
 
-    def _get_all_locations(self, client: Client) -> list[AppointmentLocation]:
+    def _get_all_locations(self, client: Client) -> list[Location]:
         with log_soap_errors("Could not retrieve location IDs"):
             location_ids = client.service.getGovLocations()
             with parallel() as pool:
@@ -129,7 +121,7 @@ class JccAppointment(BasePlugin):
             details = list(details)
 
         locations = [
-            AppointmentLocation(
+            Location(
                 identifier=identifier,
                 name=entry["locationDesc"],
                 address=entry["address"],
@@ -144,8 +136,8 @@ class JccAppointment(BasePlugin):
     @with_graceful_default(default=[])
     def get_locations(
         self,
-        products: list[AppointmentProduct] | None = None,
-    ) -> list[AppointmentLocation]:
+        products: list[Product] | None = None,
+    ) -> list[Location]:
         client = get_client()
         if products is None:
             return self._get_all_locations(client)
@@ -157,17 +149,16 @@ class JccAppointment(BasePlugin):
             result = client.service.getGovLocationsForProduct(productID=product_ids)
 
         return [
-            AppointmentLocation(entry["locationID"], entry["locationDesc"])
-            for entry in result
+            Location(entry["locationID"], entry["locationDesc"]) for entry in result
         ]
 
     @with_graceful_default(default=[])
     def get_dates(
         self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
-        start_at: Optional[date] = None,
-        end_at: Optional[date] = None,
+        products: List[Product],
+        location: Location,
+        start_at: date | None = None,
+        end_at: date | None = None,
     ) -> List[date]:
         client = get_client()
         product_ids = squash_ids(products)
@@ -198,8 +189,8 @@ class JccAppointment(BasePlugin):
     @with_graceful_default(default=[])
     def get_times(
         self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
+        products: List[Product],
+        location: Location,
         day: date,
     ) -> List[datetime]:
         product_ids = squash_ids(products)
@@ -221,7 +212,7 @@ class JccAppointment(BasePlugin):
     @with_graceful_default(default=[])
     def get_required_customer_fields(
         self,
-        products: list[AppointmentProduct],
+        products: list[Product],
     ) -> list[Component]:
         product_ids = squash_ids(products)
 
@@ -236,10 +227,10 @@ class JccAppointment(BasePlugin):
 
     def create_appointment(
         self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
+        products: List[Product],
+        location: Location,
         start_at: datetime,
-        client: AppointmentClient,
+        client: Customer,
         remarks: str = "",
     ) -> str:
         product_ids = squash_ids(products)
@@ -324,9 +315,7 @@ class JccAppointment(BasePlugin):
             for pid in details.productID.split(","):
                 product = client.service.getGovProductDetails(productID=pid)
 
-                app_products.append(
-                    AppointmentProduct(identifier=pid, name=product.description)
-                )
+                app_products.append(Product(identifier=pid, name=product.description))
 
             qrcode_base64 = create_base64_qrcode(qrcode)
 
@@ -340,7 +329,7 @@ class JccAppointment(BasePlugin):
             result = AppointmentDetails(
                 identifier=identifier,
                 products=app_products,
-                location=AppointmentLocation(
+                location=Location(
                     identifier=details.locationID,
                     name=location.locationDesc,
                     address=location.address,

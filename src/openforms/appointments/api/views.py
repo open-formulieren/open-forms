@@ -23,7 +23,7 @@ from openforms.submissions.api.permissions import (
 )
 from openforms.submissions.models import Submission
 
-from ..base import AppointmentLocation, AppointmentProduct
+from ..base import Location, Product
 from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
 from ..models import AppointmentsConfig
 from ..utils import delete_appointment_for_submission, get_plugin
@@ -103,7 +103,7 @@ class LocationsListView(ListMixin, APIView):
         if not is_valid:
             return []
 
-        product = AppointmentProduct(
+        product = Product(
             identifier=serializer.validated_data["product_id"], code="", name=""
         )
 
@@ -155,10 +155,10 @@ class DatesListView(ListMixin, APIView):
         if not is_valid:
             return []
 
-        product = AppointmentProduct(
+        product = Product(
             identifier=serializer.validated_data["product_id"], code="", name=""
         )
-        location = AppointmentLocation(
+        location = Location(
             identifier=serializer.validated_data["location_id"], name=""
         )
 
@@ -218,10 +218,10 @@ class TimesListView(ListMixin, APIView):
         if not is_valid:
             return []
 
-        product = AppointmentProduct(
+        product = Product(
             identifier=serializer.validated_data["product_id"], code="", name=""
         )
-        location = AppointmentLocation(
+        location = Location(
             identifier=serializer.validated_data["location_id"], name=""
         )
 

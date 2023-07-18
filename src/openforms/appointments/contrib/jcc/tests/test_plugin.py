@@ -10,12 +10,7 @@ from hypothesis import given, strategies as st
 from openforms.utils.tests.logging import disable_logging
 from stuf.tests.factories import SoapServiceFactory
 
-from ....base import (
-    AppointmentClient,
-    AppointmentDetails,
-    AppointmentLocation,
-    AppointmentProduct,
-)
+from ....base import AppointmentDetails, Customer, Location, Product
 from ....exceptions import AppointmentException
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
@@ -56,9 +51,7 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_available_product_products(self, m):
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
 
         m.post(
             "http://example.com/soap11",
@@ -117,9 +110,7 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_locations(self, m):
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
 
         m.post(
             "http://example.com/soap11",
@@ -133,10 +124,8 @@ class PluginTests(MockConfigMixin, TestCase):
         self.assertEqual(locations[0].name, "Maykin Media")
 
     def test_get_dates(self):
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
-        location = AppointmentLocation(identifier="1", name="Maykin Media")
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
 
         with requests_mock.mock() as m:
             m.post(
@@ -154,10 +143,8 @@ class PluginTests(MockConfigMixin, TestCase):
             )
 
     def test_get_times(self):
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
-        location = AppointmentLocation(identifier="1", name="Maykin Media")
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
         test_date = date(2021, 8, 23)
 
         with requests_mock.mock() as m:
@@ -176,9 +163,7 @@ class PluginTests(MockConfigMixin, TestCase):
             "http://example.com/soap11",
             text=mock_response("getRequiredClientFieldsResponse.xml"),
         )
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
 
         fields = self.plugin.get_required_customer_fields([product])
 
@@ -215,11 +200,9 @@ class PluginTests(MockConfigMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_create_appointment(self, m):
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
-        location = AppointmentLocation(identifier="1", name="Maykin Media")
-        client = AppointmentClient(last_name="Doe", birthdate=date(1980, 1, 1))
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
 
         m.post(
             "http://example.com/soap11",
@@ -319,7 +302,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @given(st.integers(min_value=500, max_value=511))
     def test_get_locations_server_error(self, m, status_code):
         m.post(requests_mock.ANY, status_code=status_code)
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+        product = Product(identifier="k@pu77", name="Kaputt")
 
         locations = self.plugin.get_locations()
         self.assertEqual(locations, [])
@@ -330,7 +313,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_get_locations_unexpected_exception(self, m):
         m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+        product = Product(identifier="k@pu77", name="Kaputt")
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_locations()
@@ -365,8 +348,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @given(st.integers(min_value=500, max_value=511))
     def test_get_dates_server_error(self, m, status_code):
         m.post(requests_mock.ANY, status_code=status_code)
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         dates = self.plugin.get_dates(products=[product], location=location)
 
@@ -375,8 +358,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_get_dates_unexpected_exception(self, m):
         m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_dates(products=[product], location=location)
@@ -385,8 +368,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @given(st.integers(min_value=500, max_value=511))
     def test_get_times_server_error(self, m, status_code):
         m.post(requests_mock.ANY, status_code=status_code)
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         times = self.plugin.get_times(
             products=[product], location=location, day=date(2023, 6, 22)
@@ -397,8 +380,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_get_times_unexpected_exception(self, m):
         m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
-        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
-        location = AppointmentLocation(identifier="1", name="Bahamas")
+        product = Product(identifier="k@pu77", name="Kaputt")
+        location = Location(identifier="1", name="Bahamas")
 
         with self.assertRaises(AppointmentException):
             self.plugin.get_times(
