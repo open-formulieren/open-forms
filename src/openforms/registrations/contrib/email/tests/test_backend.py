@@ -304,7 +304,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 {"key": "foo", "type": "textfield", "label": "foo"},
             ],
             form__name="Foo's bar",
-            form__registration_backend="email",
             public_registration_reference="XYZ",
         )
         email_form_options = dict(

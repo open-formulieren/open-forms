@@ -11,9 +11,10 @@ from ..utils import get_registration_email_templates
 class RenderRegistrationEmailTests(TestCase):
     def test_only_global_template_used(self):
         submission = SubmissionFactory.create(
+            form__registration_backend="email",
             form__registration_backend_options={
                 "to_emails": ["test@test.nl"],
-            }
+            },
         )
 
         with patch(
@@ -34,10 +35,11 @@ class RenderRegistrationEmailTests(TestCase):
 
     def test_can_overwrite_just_subject(self):
         submission = SubmissionFactory.create(
+            form__registration_backend="email",
             form__registration_backend_options={
                 "to_emails": ["test@test.nl"],
                 "email_subject": "Custom subject",
-            }
+            },
         )
 
         with patch(
@@ -58,13 +60,14 @@ class RenderRegistrationEmailTests(TestCase):
 
     def test_can_overwrite_all_templates(self):
         submission = SubmissionFactory.create(
+            form__registration_backend="email",
             form__registration_backend_options={
                 "to_emails": ["test@test.nl"],
                 "email_subject": "Custom subject",
                 "email_payment_subject": "Custom Payment Subject",
                 "email_content_template_html": "Custom HTML template",
                 "email_content_template_text": "Custom text template",
-            }
+            },
         )
 
         with patch(

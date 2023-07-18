@@ -25,7 +25,7 @@ from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .checks import check_config
 from .config import EmailOptionsSerializer
-from .constants import AttachmentFormat
+from .constants import PLUGIN_ID, AttachmentFormat
 from .models import EmailConfig
 from .utils import get_registration_email_templates
 
@@ -38,7 +38,7 @@ class EmailOptions(TypedDict):
     email_subject: Optional[str]
 
 
-@register("email")
+@register(PLUGIN_ID)
 class EmailRegistration(BasePlugin):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer

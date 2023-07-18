@@ -16,7 +16,7 @@ from glom import glom
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
-from openforms.forms.models import FormStep
+from openforms.forms.models import FormRegistrationBackend, FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.template import openforms_backend, render_from_string
 from openforms.typing import JSONObject
@@ -737,3 +737,8 @@ class Submission(models.Model):
             return True
 
         return False
+
+    @cached_property
+    def registration_backend(self) -> FormRegistrationBackend:
+        # TODO evaluate formlogic
+        return self.form.registration_backends.first()

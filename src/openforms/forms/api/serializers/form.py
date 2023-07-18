@@ -2,7 +2,7 @@ from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-from rest_framework.exceptions import ErrorDetail
+from rest_framework.exceptions import ErrorDetail, ValidationError
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
@@ -19,7 +19,7 @@ from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
-from ...models import Category, Form
+from ...models import Category, Form, FormRegistrationBackend
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
 
@@ -43,6 +43,40 @@ class FormLiteralsSerializer(serializers.Serializer):
     begin_text = ButtonTextSerializer(raw_field="begin_text", required=False)
     change_text = ButtonTextSerializer(raw_field="change_text", required=False)
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
+
+
+class FormRegistrationBackendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FormRegistrationBackend
+        fields = [
+            "key",
+            "name",
+            "backend",
+            "options",
+        ]
+
+    def get_fields(self):
+        fields = super().get_fields()
+        fields["backend"].choices = registration_register.get_choices()
+        return fields
+
+    def validate(self, attrs):
+        if "backend" not in attrs:
+            # performing nested PATCH
+            return attrs
+        plugin = registration_register[attrs["backend"]]
+        if not plugin.configuration_options:
+            return attrs
+
+        serializer = plugin.configuration_options(data=attrs["options"])
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            detail = {"options": e.detail}
+            raise serializers.ValidationError(detail) from e
+        # serializer does some normalization, so make sure to update the data
+        attrs["options"] = serializer.data
+        return attrs
 
 
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
@@ -128,6 +162,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
     translations = ModelTranslationsSerializer()
 
+    registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
+
     class Meta:
         model = Form
         fields = (
@@ -136,8 +172,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "internal_name",
             "login_required",
             "translation_enabled",
-            "registration_backend",
-            "registration_backend_options",
+            "registration_backends",
             "authentication_backends",
             "authentication_backend_options",
             "login_options",
@@ -217,10 +252,13 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
+        registration_backends = validated_data.pop("registration_backends", [])
         instance = super().create(validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+        for backend in registration_backends:
+            FormRegistrationBackend.objects.create(form=instance, **backend)
         return instance
 
     @transaction.atomic()
@@ -228,10 +266,37 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
+        registration_backends = validated_data.pop("registration_backends", None)
         instance = super().update(instance, validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+        if registration_backends is None:
+            return instance
+
+        if len(registration_backends) != instance.registration_backends.count():
+            raise ValidationError("Ambiguous PATCH")
+
+        for i, (new_values, backend) in enumerate(
+            zip(registration_backends, instance.registration_backends.all())
+        ):
+            new_values.setdefault("backend", backend.backend)
+            new_values.setdefault("key", backend.key)
+            new_values.setdefault("name", backend.name)
+            serializer = FormRegistrationBackendSerializer(
+                instance=backend, data=new_values
+            )
+            try:
+                serializer.is_valid(raise_exception=True)
+            except serializers.ValidationError as e:
+                # wrap detail in dict so we can attach it to the field
+                # DRF will create the .invalidParams with a dotted path to nested fields
+                # like registrationBackendOptions.toEmails.0 if the first email was invalid
+                detail = {f"registrationBackends.{i}": e.detail}
+                raise serializers.ValidationError(detail) from e
+            else:
+                serializer.save()
+
         return instance
 
     def get_fields(self):
@@ -249,12 +314,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
     def validate(self, attrs):
         super().validate(attrs)
-        self.validate_backend_options(
-            attrs,
-            "registration_backend",
-            "registration_backend_options",
-            registration_register,
-        )
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register
         )

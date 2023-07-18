@@ -22,14 +22,14 @@ def extract_submission_reference(submission: Submission) -> str:
     :arg submission: :class:`Submission` instance to extract the reference for
     :raises NoSubmissionReference: if no reference could be extracted.
     """
-    form = submission.form
-    backend = form.registration_backend
-    registry = form._meta.get_field("registration_backend").registry
+    backend = submission.registration_backend
 
     if not backend:
         raise NoSubmissionReference(
             "There is no backend configured for the form, nothing to extract."
         )
+
+    registry = backend._meta.get_field("backend").registry
 
     if not submission.registration_status == RegistrationStatuses.success:
         raise NoSubmissionReference(
@@ -40,7 +40,7 @@ def extract_submission_reference(submission: Submission) -> str:
         raise NoSubmissionReference("No result data saved, nothing to extract.")
 
     # figure out which plugin to call for extraction
-    plugin = registry[backend]
+    plugin = registry[backend.backend]
 
     try:
         return plugin.get_reference_from_result(result)
@@ -49,12 +49,10 @@ def extract_submission_reference(submission: Submission) -> str:
 
 
 def get_registration_plugin(submission: Submission) -> BasePlugin | None:
-
-    form = submission.form
-    backend = form.registration_backend
+    backend = submission.registration_backend
 
     if not backend:
         return
 
-    registry = form._meta.get_field("registration_backend").registry
-    return registry[backend]
+    registry = backend._meta.get_field("backend").registry
+    return registry[backend.backend]
