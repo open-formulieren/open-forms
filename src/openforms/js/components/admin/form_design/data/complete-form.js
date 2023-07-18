@@ -61,6 +61,32 @@ const normalizeLimit = (draft, field) => {
 };
 
 /**
+ * Mutate the draft state in case the form is an appointment form.
+ */
+const handleAppointmentForm = draft => {
+  const {
+    form: {
+      appointmentOptions: {isAppointment = false},
+    },
+  } = draft;
+  if (!isAppointment) return;
+
+  // appointment forms have very limited functionality, which is why we clear any
+  // lingering configuration if a form is turned into an appointment form
+  draft.form.registrationBackend = '';
+  draft.form.registrationBackendOptions = {};
+  draft.form.product = null;
+  draft.form.paymentBackend = '';
+
+  // clear any steps, variables and logic rules
+  draft.stepsToDelete = draft.formSteps.map(step => step.url).filter(Boolean);
+  draft.formSteps = [];
+  draft.logicRules = [];
+  draft.priceRules = [];
+  draft.formVariables = [];
+};
+
+/**
  * Save the form itself without any related objects.
  */
 const saveForm = async (state, csrftoken) => {
@@ -73,6 +99,7 @@ const saveForm = async (state, csrftoken) => {
     normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
     normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
     normalizeLimit(draft, 'allSubmissionsRemovalLimit');
+    handleAppointmentForm(draft);
   });
 
   const formDetails = produce(cleanedState, draft => {
@@ -103,7 +130,7 @@ const saveForm = async (state, csrftoken) => {
 
   // update with the backend generated data, like UUID and URL. Note that this is a noop
   // for form updates.
-  const newState = produce(state, draft => {
+  const newState = produce(cleanedState, draft => {
     const {uuid, url} = response.data;
     draft.form.uuid = uuid;
     draft.form.url = url;

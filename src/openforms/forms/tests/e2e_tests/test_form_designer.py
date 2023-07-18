@@ -1311,6 +1311,15 @@ class FormDesignerMapComponentTests(E2ETestCase):
 
 
 class AppointmentFormTests(E2ETestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(clear_caches)
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+        config.enable_new_appointments = True
+        config.save()
+
     async def test_appointment_form_nukes_irrelevant_configuration(self):
         @sync_to_async
         def setUpTestData():
@@ -1337,6 +1346,15 @@ class AppointmentFormTests(E2ETestCase):
         async with browser_page() as page:
             await self._admin_login(page)
             await page.goto(str(admin_url))
+
+            await page.get_by_label("Appointment enabled").click()
+
+            with phase("save form changes to backend"):
+                await page.get_by_role("button", name="Save", exact=True).click()
+                changelist_url = str(
+                    furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+                )
+                await expect(page).to_have_url(changelist_url)
 
         @sync_to_async
         def assertState():
