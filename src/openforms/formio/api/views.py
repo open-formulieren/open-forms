@@ -1,21 +1,20 @@
+import logging
 import os
 import re
-import logging
-from django.http import HttpResponseBadRequest
-import requests
 
 from django.conf import settings
+from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework import permissions, serializers
+from rest_framework.response import Response
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.parsers import MaxFilesizeMultiPartParser
@@ -27,7 +26,6 @@ from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.utils import add_upload_to_session
 
 from .serializers import MapSearchSerializer, TemporaryFileUploadSerializer
-
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +116,7 @@ class TemporaryFileUploadView(GenericAPIView):
 )
 class MapSearchView(GenericAPIView):
     serializer_class = MapSearchSerializer
-    # permission_classes = [AnyActiveSubmissionPermission]
+    permission_classes = [AnyActiveSubmissionPermission]
     renderer_classes = [CamelCaseJSONRenderer]
 
     def get(self, request: Request, *args, **kwargs):
@@ -126,7 +124,7 @@ class MapSearchView(GenericAPIView):
         if not query:
             return HttpResponseBadRequest(_("Missing query parameter 'q'"))
 
-        url = f"{settings.PDOK_LOCATIE_SERVER_URL}freee"
+        url = f"{settings.PDOK_LOCATIE_SERVER_URL}free"
         data = {"q": query}
 
         try:
@@ -138,25 +136,34 @@ class MapSearchView(GenericAPIView):
 
         if bag_data.status_code is status.HTTP_200_OK:
             if response := bag_data.json().get("response"):
-                docs = response.get("docs")
-                if docs:
+                if docs := response.get("docs"):
                     for doc in docs:
                         weergavenaam = doc.get("weergavenaam")
-                        latLng = {"lat": None, "lng": None}
-                        rd = {"x": None, "y": None}
 
                         centroide_ll = doc.get("centroide_ll")
-                        if centroide_ll:
-                            lng, lat = re.findall("\d+\.\d+", centroide_ll)
-                            latLng.update({"lat": lat, "lng": lng})
+                        if not centroide_ll:
+                            logger.info(
+                                f"pdok locatie server didn't have 'centroide_ll'"
+                            )
+                            break
+
+                        lng, lat = re.findall("\d+\.\d+", centroide_ll)
 
                         centroide_rd = doc.get("centroide_rd")
-                        if centroide_rd:
-                            x, y = re.findall("\d+\.\d+", centroide_rd)
-                            rd.update({"x": x, "y": y})
+                        if not centroide_rd:
+                            logger.info(
+                                f"pdok locatie server didn't have 'centroide_rd'"
+                            )
+                            break
+
+                        x, y = re.findall("\d+\.\d+", centroide_rd)
 
                         locations.append(
-                            {"label": weergavenaam, "latLng": latLng, "rd": rd}
+                            {
+                                "label": weergavenaam,
+                                "latLng": {"lat": lat, "lng": lng},
+                                "rd": {"x": x, "y": y},
+                            }
                         )
 
         return Response(
