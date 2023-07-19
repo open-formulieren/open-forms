@@ -351,7 +351,7 @@ class CancelAppointmentView(GenericAPIView):
 @extend_schema(
     summary=_("Create an appointment"),
     responses={
-        201: None,  # TODO
+        201: AppointmentSerializer,
         400: OpenApiResponse(
             response=ValidationErrorSerializer,
             description=_("Invalid submission data."),

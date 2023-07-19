@@ -113,7 +113,11 @@ paths:
       - cookieAuth: []
       responses:
         '201':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+          description: ''
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
