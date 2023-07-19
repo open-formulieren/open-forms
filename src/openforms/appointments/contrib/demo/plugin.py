@@ -14,7 +14,7 @@ class DemoAppointment(BasePlugin):
     verbose_name = _("Demo")
     is_demo_plugin = True
 
-    def get_available_products(self, current_products=None):
+    def get_available_products(self, current_products=None, location_id: str = ""):
         return [
             Product(identifier="1", name="Test product 1"),
             Product(identifier="2", name="Test product 2"),
@@ -39,6 +39,10 @@ class DemoAppointment(BasePlugin):
             "type": "textfield",
             "key": "lastName",
             "label": gettext("Last name"),
+            "validate": {
+                "required": True,
+                "maxLength": 20,
+            },
         }
         return [last_name]
 

@@ -26,6 +26,7 @@ from .dynamic_config import (
 from .registry import register
 from .typing import Component
 from .utils import iter_components, iterate_data_with_components
+from .validation import validate_formio_data
 from .variables import inject_variables
 
 __all__ = [
@@ -37,6 +38,7 @@ __all__ = [
     "rewrite_formio_components_for_request",
     "FormioData",
     "iterate_data_with_components",
+    "validate_formio_data",
 ]
 
 

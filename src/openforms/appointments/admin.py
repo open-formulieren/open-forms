@@ -11,20 +11,24 @@ from solo.admin import SingletonModelAdmin
 from .base import BasePlugin
 from .constants import AppointmentDetailsStatus
 from .fields import AppointmentBackendChoiceField
-from .models import AppointmentInfo, AppointmentsConfig
+from .models import Appointment, AppointmentInfo, AppointmentProduct, AppointmentsConfig
 from .registry import register
 from .utils import get_plugin
 
 
-@admin.register(AppointmentsConfig)
-class AppointmentsConfigAdmin(SingletonModelAdmin):
+class PluginFieldMixin:
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if isinstance(db_field, AppointmentBackendChoiceField):
             field_copy = copy(db_field)
             field_copy.choices = register.get_choices()
-            return super().formfield_for_dbfield(field_copy, request, **kwargs)
+            return super().formfield_for_dbfield(field_copy, request, **kwargs)  # type: ignore
+        return super().formfield_for_dbfield(db_field, request, **kwargs)  # type: ignore
 
-        elif db_field.name == "limit_to_location":
+
+@admin.register(AppointmentsConfig)
+class AppointmentsConfigAdmin(PluginFieldMixin, SingletonModelAdmin):
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == "limit_to_location":
             try:
                 plugin = get_plugin()
             except ValueError:
@@ -87,3 +91,20 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
         return format_html_join(" | ", '<a href="{}">{}</a>', links)
 
     get_object_actions.short_description = _("Appointment actions")
+
+
+class AppointmentProductInline(admin.TabularInline):
+    model = AppointmentProduct
+    extra = 0
+
+
+@admin.register(Appointment)
+class AppointmentAdmin(PluginFieldMixin, admin.ModelAdmin):
+    list_display = ("submission", "location", "datetime", "plugin")
+    list_filter = ("plugin", "datetime")
+    list_select_related = ("submission",)
+    search_fields = ("submission__uuid",)
+    date_hierarchy = "datetime"
+    ordering = ("-datetime", "-pk")
+    raw_id_fields = ("submission",)
+    inlines = [AppointmentProductInline]

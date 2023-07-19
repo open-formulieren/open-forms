@@ -1,11 +1,18 @@
+from django.db import transaction
 from django.utils.functional import cached_property
+from django.utils.timezone import localdate
 from django.utils.translation import gettext_lazy as _
 
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from openforms.formio.service import validate_formio_data
 from openforms.forms.models import Form
+from openforms.submissions.api.fields import PrivacyPolicyAcceptedField
 
-from ..base import BasePlugin
+from ..base import BasePlugin, Product
+from ..models import Appointment, AppointmentProduct, AppointmentsConfig
 from ..utils import get_plugin
 from .fields import ProductIDField
 
@@ -102,3 +109,170 @@ class CustomerFieldsInputSerializer(serializers.Serializer):
     product_id = ProductIDField(
         help_text=_("ID of the product to get required fields for")
     )
+
+
+class AppointmentProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AppointmentProduct
+        fields = ("product_id", "amount")
+        ref_name = "_AppointmentProduct"
+
+
+class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
+    products = AppointmentProductSerializer(
+        many=True,
+        label=_("Products"),
+    )
+    date = serializers.DateField(label=_("date"))
+    privacy_policy_accepted = PrivacyPolicyAcceptedField(write_only=True)
+    status_url = serializers.SerializerMethodField(
+        label=_("status check endpoint"),
+        read_only=True,
+        help_text=_(
+            "The API endpoint where the background processing status can be checked. "
+            "After calling the completion endpoint, this status URL should be polled "
+            "to report the processing status back to the end-user. Note that the "
+            "endpoint contains a token which invalidates on state changes and after "
+            "one day."
+        ),
+    )
+
+    _status_url: str  # set by the view
+
+    class Meta:
+        model = Appointment
+        fields = (
+            "submission",
+            "products",
+            "location",
+            "date",
+            "datetime",
+            "contact_details",
+            "privacy_policy_accepted",
+            "status_url",
+        )
+        extra_kwargs = {
+            "submission": {
+                "view_name": "api:submission-detail",
+                "lookup_field": "uuid",
+            },
+            "contact_details": {
+                "required": True,
+                "allow_null": False,
+            },
+        }
+
+    def validate(self, attrs: dict) -> dict:
+        date = attrs.pop("date")
+        expected_date = localdate(attrs["datetime"])
+        if date != expected_date:
+            raise serializers.ValidationError(
+                {
+                    "date": _(
+                        "The provided date does not match the full appointment datetime."
+                    )
+                }
+            )
+
+        config = AppointmentsConfig.get_solo()
+        assert isinstance(config, AppointmentsConfig)
+        plugin = get_plugin()
+        # normalize to data class instances to call plugin methods
+        products = [
+            Product(identifier=product["product_id"], name="")
+            for product in attrs["products"]
+        ]
+
+        # validate the amount of products
+        if not plugin.supports_multiple_products and len(products) > 1:
+            raise serializers.ValidationError(
+                {
+                    "products": _(
+                        "Appointments for multiple products are not supported."
+                    ),
+                }
+            )
+
+        # now run 'expensive' validations requiring network IO
+
+        # 1. get the available products from the plugin and check them
+        available_products = plugin.get_available_products(
+            location_id=config.limit_to_location
+        )
+        available_product_ids = set(p.identifier for p in available_products)
+
+        product_errors = []
+        for product in products:
+            valid_product = product.identifier in available_product_ids
+            product_errors.append(
+                {}
+                if valid_product
+                else {"product_id": _("Product is unknown in the appointment backend.")}
+            )
+        if any(err != {} for err in product_errors):
+            raise serializers.ValidationError({"products": product_errors})
+
+        # 2. Products are valid, check the location now.
+        location_error = serializers.ValidationError(
+            {"location": _("The requested location is not available.")}
+        )
+        if (location_id := config.limit_to_location) and attrs[
+            "location"
+        ] != location_id:
+            raise location_error
+        locations = {
+            location.identifier: location for location in plugin.get_locations(products)
+        }
+        if not (_location := locations.get(attrs["location"])):
+            raise location_error
+
+        # 3. Validate against the available dates
+        dates = plugin.get_dates(products, _location, start_at=date, end_at=date)
+        if date not in dates:
+            raise serializers.ValidationError(
+                {"date": _("The selected date is not available (anymore).")}
+            )
+
+        # 4. Validate appointment start time against available time slots
+        datetimes = plugin.get_times(products, _location, day=date)
+        if attrs["datetime"] not in datetimes:
+            raise serializers.ValidationError(
+                {"datetime": _("The selected datetime is not available (anymore).")}
+            )
+
+        # 5. Validate contact details against product
+        contact_details_meta = plugin.get_required_customer_fields(products)
+        try:
+            validate_formio_data(contact_details_meta, attrs["contact_details"])
+        except serializers.ValidationError as errors:
+            raise serializers.ValidationError({"contactDetails": errors.detail})
+
+        # expose additional metadata
+        attrs.update(
+            {
+                "plugin": plugin.identifier,
+                "contact_details_meta": contact_details_meta,
+            }
+        )
+        return attrs
+
+    @transaction.atomic
+    def create(self, validated_data) -> Appointment:
+        privacy_policy_accepted = validated_data.pop("privacy_policy_accepted")
+        products = validated_data.pop("products")
+
+        appointment = super().create(validated_data)
+
+        appointment.submission.privacy_policy_accepted = privacy_policy_accepted
+
+        # handle nested products
+        appointment_products = [
+            AppointmentProduct(appointment=appointment, **kwargs) for kwargs in products
+        ]
+        AppointmentProduct.objects.bulk_create(appointment_products)
+
+        return appointment
+
+    @extend_schema_field(OpenApiTypes.URI)
+    def get_status_url(self, obj) -> str:
+        return self.context["request"].build_absolute_uri(self._status_url)

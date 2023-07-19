@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 import requests_mock
 from hypothesis import given, strategies as st
 
+from openforms.formio.validation import build_validation_chain
 from openforms.tests.utils import c_profile
 from openforms.utils.tests.logging import disable_logging
 
@@ -387,3 +388,14 @@ class ConfigurationTests(SimpleTestCase):
                 self.assertIn("type", component)
                 self.assertIn("key", component)
                 self.assertIn("label", component)
+
+    def test_can_create_validation_chain_for_formio_fields(self):
+        for component in FIELD_TO_FORMIO_COMPONENT.values():
+            assert "key" in component
+            with self.subTest(component=component["key"]):
+                try:
+                    build_validation_chain(component)
+                except Exception as exc:
+                    raise self.failureException(
+                        "Could not create validation chain"
+                    ) from exc

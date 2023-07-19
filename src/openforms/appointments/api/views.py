@@ -7,7 +7,7 @@ from drf_spectacular.plumbing import build_array_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
@@ -17,6 +17,7 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.api.views import ListMixin
 from openforms.formio.api.schema import FORMIO_COMPONENT_SCHEMA
 from openforms.logging import logevent
+from openforms.submissions.api.mixins import SubmissionCompletionMixin
 from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
     AnyActiveSubmissionPermission,
@@ -25,9 +26,13 @@ from openforms.submissions.models import Submission
 
 from ..base import Location, Product
 from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
-from ..models import AppointmentsConfig
+from ..models import Appointment, AppointmentsConfig
 from ..utils import delete_appointment_for_submission, get_plugin
+from .parsers import AppointmentCreateCamelCaseJSONParser
+from .permissions import AppointmentCreatePermission
+from .renderers import AppointmentCreateJSONRenderer
 from .serializers import (
+    AppointmentSerializer,
     CancelAppointmentInputSerializer,
     CustomerFieldsInputSerializer,
     DateInputSerializer,
@@ -341,3 +346,38 @@ class CancelAppointmentView(GenericAPIView):
             raise CancelAppointmentFailed() from exc
 
         return Response(status=HTTP_204_NO_CONTENT)
+
+
+@extend_schema(
+    summary=_("Create an appointment"),
+    responses={
+        201: None,  # TODO
+        400: OpenApiResponse(
+            response=ValidationErrorSerializer,
+            description=_("Invalid submission data."),
+        ),
+        403: OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Invalid or missing submission in session."),
+        ),
+        "5XX": OpenApiResponse(
+            response=ExceptionSerializer,
+            description=_("Unable to cancel appointment."),
+        ),
+    },
+)
+class CreateAppointmentView(SubmissionCompletionMixin, CreateAPIView):
+    authentication_classes = (AnonCSRFSessionAuthentication,)
+    permission_classes = [AnyActiveSubmissionPermission, AppointmentCreatePermission]
+    serializer_class = AppointmentSerializer
+    parser_classes = [AppointmentCreateCamelCaseJSONParser]
+    renderer_classes = [AppointmentCreateJSONRenderer]
+
+    def perform_create(self, serializer: AppointmentSerializer):
+        super().perform_create(serializer)
+
+        appointment: Appointment = serializer.instance  # type: ignore
+
+        status_url = self._complete_submission(appointment.submission)
+        # set the attribute so the response serializer can emit the status URL again
+        serializer._status_url = status_url

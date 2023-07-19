@@ -28,6 +28,10 @@ class FormFactory(factory.django.DjangoModelFactory):
                 factory_related_name="form",
             ),
         )
+        is_appointment_form = factory.Trait(
+            generate_minimal_setup=False,  # there are no form steps
+            is_appointment=True,
+        )
 
 
 class FormDefinitionFactory(factory.django.DjangoModelFactory):
