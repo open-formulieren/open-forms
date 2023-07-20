@@ -7,10 +7,11 @@ from zeep.exceptions import Error as ZeepError
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.xml import fromstring
 
 from ....constants import AppointmentDetailsStatus
 from ....tests.factories import AppointmentInfoFactory
-from .utils import MockConfigMixin, mock_response
+from .utils import MockConfigMixin, get_xpath, mock_response
 
 
 class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
@@ -62,13 +63,33 @@ class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             text=mock_response("getGovLocationsForProductResponse.xml"),
         )
 
-        response = self.client.get(f"{self.endpoint}?product_id=79")
+        response = self.client.get(self.endpoint, {"product_id": "79"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
         location = response.json()[0]
         self.assertEqual(location["identifier"], "1")
         self.assertEqual(location["name"], "Maykin Media")
+
+    @requests_mock.Mocker()
+    def test_get_locations_multiple_products(self, m):
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationsForProductResponse.xml"),
+        )
+        response = self.client.get(self.endpoint, {"product_id": ["79", "38"]})
+
+        self.assertEqual(response.status_code, 200)
+        xml_doc = fromstring(m.last_request.body)
+        request = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:getGovLocationsForProductRequest",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+        ids = sorted(product_ids.split(","))
+        self.assertEqual(ids, ["38", "79"])
 
     def test_get_locations_returns_400_when_no_product_id_is_given(self):
         response = self.client.get(self.endpoint)

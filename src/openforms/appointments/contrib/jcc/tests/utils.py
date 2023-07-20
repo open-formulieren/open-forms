@@ -63,3 +63,13 @@ class MockConfigMixin:
         )
         build_client_patcher.start()
         self.addCleanup(build_client_patcher.stop)  # type: ignore
+
+
+NSMAP = {
+    "soap-env": "http://schemas.xmlsoap.org/soap/envelope/",
+    "ns0": "http://www.genericCBS.org/GenericCBS/",
+}
+
+
+def get_xpath(doc, xpath: str):
+    return doc.xpath(xpath, namespaces=NSMAP)

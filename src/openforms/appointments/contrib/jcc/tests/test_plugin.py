@@ -18,16 +18,7 @@ from ....exceptions import AppointmentException
 from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
-from .utils import WSDL, MockConfigMixin, mock_response
-
-NSMAP = {
-    "soap-env": "http://schemas.xmlsoap.org/soap/envelope/",
-    "ns0": "http://www.genericCBS.org/GenericCBS/",
-}
-
-
-def get_xpath(doc, xpath: str):
-    return doc.xpath(xpath, namespaces=NSMAP)
+from .utils import WSDL, MockConfigMixin, get_xpath, mock_response
 
 
 @disable_logging()
