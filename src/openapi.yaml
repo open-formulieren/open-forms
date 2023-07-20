@@ -1200,68 +1200,6 @@ paths:
         schema:
           type: string
         required: true
-  /api/v2/formio/mapsearch:
-    get:
-      operationId: formio_mapsearch_retrieve
-      summary: List BAG address suggestions.
-      parameters:
-      - in: query
-        name: q
-        schema:
-          type: string
-        description: The search query we send to the pdok locatieserver api.
-        required: true
-      tags:
-      - formio
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MapSearch'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationError'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Exception'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
   /api/v2/forms:
     get:
       operationId: forms_list
@@ -2913,6 +2851,68 @@ paths:
             Content-Language:
               $ref: '#/components/headers/Content-Language'
         '405':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/geo/address-search:
+    get:
+      operationId: geo_address_search_retrieve
+      summary: List BAG address suggestions.
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: The search query we send to the pdok locatieserver api.
+        required: true
+      tags:
+      - geo
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MapSearch'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '401':
           content:
             application/json:
               schema:

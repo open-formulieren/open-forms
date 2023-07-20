@@ -209,6 +209,7 @@ INSTALLED_APPS = [
     "openforms.submissions",
     "openforms.logging.apps.LoggingAppConfig",
     "openforms.contrib.brp",
+    "openforms.contrib.kadaster",
     "openforms.contrib.kvk",
     "openforms.contrib.bag.apps.BAGConfig",
     "openforms.contrib.microsoft.apps.MicrosoftApp",

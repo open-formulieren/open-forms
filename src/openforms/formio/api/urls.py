@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import MapSearchView, TemporaryFileUploadView
+from .views import TemporaryFileUploadView
 
 app_name = "formio"
 
@@ -9,10 +9,5 @@ urlpatterns = [
         "fileupload",
         TemporaryFileUploadView.as_view(),
         name="temporary-file-upload",
-    ),
-    path(
-        "mapsearch",
-        MapSearchView.as_view(),
-        name="map-search",
     ),
 ]

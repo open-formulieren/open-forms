@@ -20,7 +20,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
     def tearDown(self):
         self._clear_session()
 
-    @patch("openforms.formio.api.views.requests")
+    @patch("openforms.contrib.kadaster.api.views.requests")
     def test_call_with_query_parameter_utrecht(self, mock_requests):
         # mock the response
         mock_response = MagicMock()
@@ -52,7 +52,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         }
 
         mock_requests.get.return_value = mock_response
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
@@ -72,23 +72,23 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         )
 
     def test_call_with_no_active_submission(self):
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_call_with_no_query_parameter(self):
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @patch("openforms.formio.api.views.requests")
+    @patch("openforms.contrib.kadaster.api.views.requests")
     def test_call_with_api_get_bag_data_exception(self, mock_requests):
         mock_requests.side_effect = requests.exceptions.RequestException
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
@@ -98,7 +98,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         body = response.json()
         self.assertEqual(body, [])
 
-    @patch("openforms.formio.api.views.requests")
+    @patch("openforms.contrib.kadaster.api.views.requests")
     def test_call_with_api_return_something_other_then_200(self, mock_requests):
         # mock the response
         mock_response = MagicMock()
@@ -112,7 +112,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         }
 
         mock_requests.get.return_value = mock_response
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
@@ -122,7 +122,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         body = response.json()
         self.assertEqual(body, [])
 
-    @patch("openforms.formio.api.views.requests")
+    @patch("openforms.contrib.kadaster.api.views.requests")
     def test_call_with_api_return_data_not_having_response(self, mock_requests):
         # mock the response
         mock_response = MagicMock()
@@ -130,7 +130,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         mock_response.json.return_value = {}
 
         mock_requests.get.return_value = mock_response
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
@@ -140,7 +140,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         body = response.json()
         self.assertEqual(body, [])
 
-    @patch("openforms.formio.api.views.requests")
+    @patch("openforms.contrib.kadaster.api.views.requests")
     def test_call_with_api_return_data_not_having_docs(self, mock_requests):
         # mock the response
         mock_response = MagicMock()
@@ -155,7 +155,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         }
 
         mock_requests.get.return_value = mock_response
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
@@ -165,7 +165,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         body = response.json()
         self.assertEqual(body, [])
 
-    @patch("openforms.formio.api.views.requests")
+    @patch("openforms.contrib.kadaster.api.views.requests")
     def test_call_with_api_return_data_not_having_centroide_ll(self, mock_requests):
         # mock the response
         mock_response = MagicMock()
@@ -196,7 +196,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         }
 
         mock_requests.get.return_value = mock_response
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
@@ -206,7 +206,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         body = response.json()
         self.assertEqual(body, [])
 
-    @patch("openforms.formio.api.views.requests")
+    @patch("openforms.contrib.kadaster.api.views.requests")
     def test_call_with_api_return_data_not_having_centroide_rd(self, mock_requests):
         # mock the response
         mock_response = MagicMock()
@@ -237,7 +237,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         }
 
         mock_requests.get.return_value = mock_response
-        url = reverse("api:formio:map-search")
+        url = reverse("api:geo:address-search")
 
         self._add_submission_to_session(self.submission)
 
