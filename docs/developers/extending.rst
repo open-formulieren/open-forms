@@ -171,7 +171,7 @@ or use the relevant docker-compose command variants.
 **Running all the services with docker-compose**
 
 You can create your own ``docker-compose.yml`` inspired by the Open Forms docker-compose
-configuration, or use the `docker-compose.override.yml <https://docs.docker.com/compose/extends/#understanding-multiple-compose-files>`_
+configuration, or use the `docker-compose.override.yml <https://docs.docker.com/compose/multiple-compose-files/extends/>`_
 approach. Typically you will want to modify the image names and any additional
 environment variables your extensions require.
 
