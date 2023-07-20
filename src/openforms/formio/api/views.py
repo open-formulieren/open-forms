@@ -104,7 +104,7 @@ class TemporaryFileUploadView(GenericAPIView):
             "q",
             OpenApiTypes.STR,
             OpenApiParameter.QUERY,
-            description=_("The search query we send to the pdok locatie server api."),
+            description=_("The search query we send to the pdok locatieserver api."),
             required=True,
         )
     ],
@@ -130,42 +130,47 @@ class MapSearchView(GenericAPIView):
         try:
             bag_data = requests.get(url, params=data)
         except requests.exceptions.RequestException as e:
-            logger.exception(f"couldn't retrieve pdok data: {e}")
+            logger.exception(f"couldn't retrieve pdok locatieserver data: {e}")
 
         locations = []
 
-        if bag_data.status_code is status.HTTP_200_OK:
-            if response := bag_data.json().get("response"):
-                if docs := response.get("docs"):
-                    for doc in docs:
-                        weergavenaam = doc.get("weergavenaam")
+        if not (
+            (bag_data.status_code == status.HTTP_200_OK)
+            and (response := bag_data.json().get("response"))
+            and (docs := response.get("docs"))
+        ):
+            # no response with docs: return empty
+            return Response(
+                self.serializer_class(
+                    instance=[],
+                    context={"request": request},
+                    many=True,
+                ).data
+            )
 
-                        centroide_ll = doc.get("centroide_ll")
-                        if not centroide_ll:
-                            logger.info(
-                                f"pdok locatie server didn't have 'centroide_ll'"
-                            )
-                            break
+        def parse_doc(doc: dict) -> dict | None:
+            """Parse a doc from pdok response into location"""
+            try:
+                lng, lat = re.findall(r"\d+\.\d+", doc.get("centroide_ll", ""))
+            except ValueError:
+                logger.info(
+                    f"Malformed centroide_ll in pdok locatieserver response: {doc}"
+                )
+                return
+            try:
+                x, y = re.findall(r"\d+\.\d+", doc.get("centroide_rd", ""))
+            except ValueError:
+                logger.info(
+                    f"Malformed centroide_rd in pdok locatieserver response: {doc}"
+                )
+                return
+            return {
+                "label": doc.get("weergavenaam", ""),
+                "latLng": {"lat": lat, "lng": lng},
+                "rd": {"x": x, "y": y},
+            }
 
-                        lng, lat = re.findall("\d+\.\d+", centroide_ll)
-
-                        centroide_rd = doc.get("centroide_rd")
-                        if not centroide_rd:
-                            logger.info(
-                                f"pdok locatie server didn't have 'centroide_rd'"
-                            )
-                            break
-
-                        x, y = re.findall("\d+\.\d+", centroide_rd)
-
-                        locations.append(
-                            {
-                                "label": weergavenaam,
-                                "latLng": {"lat": lat, "lng": lng},
-                                "rd": {"x": x, "y": y},
-                            }
-                        )
-
+        locations = [loc for doc in docs if (loc := parse_doc(doc))]
         return Response(
             self.serializer_class(
                 instance=locations,

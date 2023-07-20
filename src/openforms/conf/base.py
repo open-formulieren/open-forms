@@ -1182,7 +1182,7 @@ LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
 )  # number of hours
 
-# Pdok api locatie server urldeddddddd77487
+# Pdok api locatieserver url
 PDOK_LOCATIE_SERVER_URL = config(
     "PDOK_LOCATIE_SERVER_URL", "https://api.pdok.nl/bzk/locatieserver/search/v3_1/"
 )

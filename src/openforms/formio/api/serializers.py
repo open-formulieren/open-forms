@@ -53,17 +53,17 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
         )
 
 
-class MapSearchLatLng(serializers.Serializer):
+class MapSearchLatitudeLongitudeSerializer(serializers.Serializer):
     lat = serializers.FloatField(label=_("Latitude"))
     lng = serializers.FloatField(label=_("Longitude"))
 
 
-class MapSearchRD(serializers.Serializer):
+class MapSearchRijksDriehoekSerializer(serializers.Serializer):
     x = serializers.FloatField(label=_("X"))
     y = serializers.FloatField(label=_("Y"))
 
 
 class MapSearchSerializer(serializers.Serializer):
     label = serializers.CharField(label=_("weergave naam"))
-    latLng = MapSearchLatLng()
-    rd = MapSearchRD()
+    latLng = MapSearchLatitudeLongitudeSerializer()
+    rd = MapSearchRijksDriehoekSerializer()
