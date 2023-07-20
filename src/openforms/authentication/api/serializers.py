@@ -16,9 +16,7 @@ class TextChoiceSerializer(serializers.Serializer):
 
 class AuthPluginSerializer(PluginBaseSerializer):
     # serializer for form builder
-    provides_auth = serializers.ListField(
-        child=serializers.CharField(label=_("Authentication attribute")),
-        source="get_provides_auth",
+    provides_auth = serializers.CharField(
         label=_("Provides authentication attributes"),
         help_text=_("The authentication attribute provided by this plugin."),
     )

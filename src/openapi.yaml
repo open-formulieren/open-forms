@@ -5970,7 +5970,7 @@ components:
           type: string
           description: The human-readable name for a plugin.
         providesAuth:
-          type: array
+          type: string
           items:
             type: string
             title: Authentication attribute

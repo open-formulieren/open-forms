@@ -19,39 +19,25 @@ class SingleLoA(TextChoices):
     mordac = ("∞", "Stare into the Sun")
 
 
-class NoAuthPlugin(BasePlugin):
-    provides_auth = None
-    verbose_name = "NoAuthPlugin"
-
-
 class SingleAuthPlugin(BasePlugin):
     provides_auth = AuthAttribute.bsn
     verbose_name = "SingleAuthPlugin"
     assurance_levels = SingleLoA
 
 
-class MultiAuthPlugin(BasePlugin):
-    provides_auth = [AuthAttribute.bsn, AuthAttribute.kvk]
-    verbose_name = "MultiAuthPlugin"
-
-
 class DemoAuthPlugin(BasePlugin):
-    provides_auth = [AuthAttribute.bsn, AuthAttribute.kvk]
+    provides_auth = AuthAttribute.bsn
     verbose_name = "DemoAuthPlugin"
     is_demo_plugin = True
 
 
 register = Registry()
-register("plugin1")(NoAuthPlugin)
-register("plugin2")(SingleAuthPlugin)
-register("plugin3")(MultiAuthPlugin)
-register("plugin4")(DemoAuthPlugin)
+register("plugin1")(SingleAuthPlugin)
+register("plugin2")(DemoAuthPlugin)
 
 
 class AuthTests(APITestCase):
-    endpoints = [
-        reverse_lazy("api:authentication-plugin-list"),
-    ]
+    endpoint = reverse_lazy("api:authentication-plugin-list")
 
     def setUp(self):
         super().setUp()
@@ -61,32 +47,26 @@ class AuthTests(APITestCase):
         self.addCleanup(patcher.stop)
 
     def test_forbidden_not_authenticated(self):
-        for endpoint in self.endpoints:
-            with self.subTest(endpoint=endpoint):
-                response = self.client.get(endpoint)
+        response = self.client.get(self.endpoint)
 
-                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_forbidden_authenticated_but_not_staff(self):
         user = UserFactory.create(is_staff=False)
         self.client.force_authenticate(user=user)
 
-        for endpoint in self.endpoints:
-            with self.subTest(endpoint=endpoint):
-                response = self.client.get(endpoint)
+        response = self.client.get(self.endpoint)
 
-                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_authenticated_and_staff(self):
         other_user = UserFactory.create(is_staff=True)
 
         self.client.force_authenticate(user=other_user)
 
-        for endpoint in self.endpoints:
-            with self.subTest(endpoint=endpoint):
-                response = self.client.get(endpoint)
+        response = self.client.get(self.endpoint)
 
-                self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class ResponseTests(APITestCase):
@@ -109,37 +89,25 @@ class ResponseTests(APITestCase):
         config.enable_demo_plugins = False
         config.save()
 
-    def test_plugin_list(self):
+    def test_single_auth_plugin(self):
         endpoint = reverse("api:authentication-plugin-list")
         response = self.client.get(endpoint)
 
         expected = [
             {
                 "id": "plugin1",
-                "label": "NoAuthPlugin",
-                "providesAuth": [],
-                "assuranceLevels": [],
-            },
-            {
-                "id": "plugin2",
                 "label": "SingleAuthPlugin",
-                "providesAuth": ["bsn"],
+                "providesAuth": "bsn",
                 "assuranceLevels": [
                     {"label": "low", "value": "low"},
                     {"label": "Stare into the Sun", "value": "∞"},
                 ],
-            },
-            {
-                "id": "plugin3",
-                "label": "MultiAuthPlugin",
-                "providesAuth": ["bsn", "kvk"],
-                "assuranceLevels": [],
-            },
+            }
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected)
 
-    def test_demo_plugin_list(self):
+    def test_demo_plugin(self):
         config = GlobalConfiguration.get_solo()
         config.enable_demo_plugins = True
         config.save()
@@ -150,29 +118,17 @@ class ResponseTests(APITestCase):
         expected = [
             {
                 "id": "plugin1",
-                "label": "NoAuthPlugin",
-                "providesAuth": [],
-                "assuranceLevels": [],
-            },
-            {
-                "id": "plugin2",
                 "label": "SingleAuthPlugin",
-                "providesAuth": ["bsn"],
+                "providesAuth": "bsn",
                 "assuranceLevels": [
                     {"label": "low", "value": "low"},
                     {"label": "Stare into the Sun", "value": "∞"},
                 ],
             },
             {
-                "id": "plugin3",
-                "label": "MultiAuthPlugin",
-                "providesAuth": ["bsn", "kvk"],
-                "assuranceLevels": [],
-            },
-            {
-                "id": "plugin4",
+                "id": "plugin2",
                 "label": "DemoAuthPlugin",
-                "providesAuth": ["bsn", "kvk"],
+                "providesAuth": "bsn",
                 "assuranceLevels": [],
             },
         ]

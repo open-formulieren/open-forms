@@ -411,7 +411,7 @@ FormConfigurationFields.propTypes = {
     PropTypes.shape({
       id: PropTypes.string,
       label: PropTypes.string,
-      providesAuth: PropTypes.arrayOf(PropTypes.string),
+      providesAuth: PropTypes.string,
     })
   ),
   selectedAuthPlugins: PropTypes.array.isRequired,

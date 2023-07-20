@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, Optional, TypedDict
 
 from django.db.models import TextChoices
 from django.http import HttpRequest, HttpResponse
@@ -37,7 +37,7 @@ class Choice(TypedDict):
 
 
 class BasePlugin(AbstractBasePlugin):
-    provides_auth: list[AuthAttribute] | AuthAttribute | None = None
+    provides_auth: AuthAttribute
     assurance_levels: type[TextChoices] = TextChoices
     return_method = "GET"
     is_for_gemachtigde = False
@@ -107,14 +107,6 @@ class BasePlugin(AbstractBasePlugin):
             is_for_gemachtigde=self.is_for_gemachtigde,
         )
         return info
-
-    def get_provides_auth(self) -> List[str]:
-        if not self.provides_auth:
-            return []
-        elif isinstance(self.provides_auth, str):
-            return [self.provides_auth]
-        else:
-            return list(self.provides_auth)
 
     def get_assurance_levels(self) -> list[Choice]:
         return [
