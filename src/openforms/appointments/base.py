@@ -29,9 +29,10 @@ class Product:
     identifier: str
     name: str
     code: str | None = None
+    amount: int = 1
 
     def __str__(self):
-        return self.identifier
+        return f"{self.identifier} x {self.amount}"
 
 
 @dataclass()

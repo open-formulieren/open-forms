@@ -9,6 +9,7 @@ from hypothesis import given, strategies as st
 
 from openforms.formio.validation import build_validation_chain
 from openforms.utils.tests.logging import disable_logging
+from openforms.utils.xml import fromstring
 from soap.tests.factories import SoapServiceFactory
 
 from ....base import AppointmentDetails, Customer, Location, Product
@@ -16,6 +17,15 @@ from ....exceptions import AppointmentException
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
 from .utils import WSDL, MockConfigMixin, mock_response
+
+NSMAP = {
+    "soap-env": "http://schemas.xmlsoap.org/soap/envelope/",
+    "ns0": "http://www.genericCBS.org/GenericCBS/",
+}
+
+
+def get_xpath(doc, xpath: str):
+    return doc.xpath(xpath, namespaces=NSMAP)
 
 
 @disable_logging()
@@ -215,6 +225,38 @@ class PluginTests(MockConfigMixin, TestCase):
         )
 
         self.assertEqual(result, "1234567890")
+
+    @requests_mock.Mocker()
+    def test_create_appointment_multiple_products(self, m):
+        product1 = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        product2 = Product(
+            identifier="5",
+            code="RIJAAN",
+            name="Rijbewijs aanvraag (Drivers license)",
+            amount=2,
+        )
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("bookGovAppointmentResponse.xml"),
+        )
+
+        result = self.plugin.create_appointment(
+            [product1, product2],
+            location,
+            datetime(2021, 8, 23, 8, 0, 0),
+            client,
+        )
+
+        self.assertEqual(result, "1234567890")
+        xml_doc = fromstring(m.last_request.body)
+        product_ids = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:bookGovAppointmentRequest/appDetail/productID",
+        )[0].text
+        self.assertEqual(product_ids, "1,5,5")
 
     @requests_mock.Mocker()
     def test_delete_appointment(self, m):

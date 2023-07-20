@@ -32,8 +32,11 @@ from .models import JccConfig
 logger = logging.getLogger(__name__)
 
 
-def squash_ids(lst):
-    return ",".join([i.identifier for i in lst])
+def squash_ids(products: list[Product]):
+    # When more of the same product are required (amount > 1), the ID needs to be
+    # repeated.
+    all_ids = sum(([product.identifier] * product.amount for product in products), [])
+    return ",".join(all_ids)
 
 
 @contextmanager
@@ -227,7 +230,7 @@ class JccAppointment(BasePlugin):
 
     def create_appointment(
         self,
-        products: List[Product],
+        products: list[Product],
         location: Location,
         start_at: datetime,
         client: Customer,
