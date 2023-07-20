@@ -3,7 +3,7 @@ from datetime import date
 from django.core.management import BaseCommand
 from django.core.management.base import CommandError
 
-from ...base import AppointmentClient
+from ...base import Customer
 from ...registry import register
 from ...utils import get_plugin
 
@@ -116,7 +116,7 @@ class Command(BaseCommand):
 
         # Customer
 
-        customer = AppointmentClient(last_name="Doe", birthdate=date(1970, 1, 1))
+        customer = Customer(last_name="Doe", birthdate=date(1970, 1, 1))
 
         # Book
 
