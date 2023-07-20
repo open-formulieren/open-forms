@@ -12,7 +12,7 @@ from openforms.utils.tests.logging import disable_logging
 from openforms.utils.xml import fromstring
 from soap.tests.factories import SoapServiceFactory
 
-from ....base import AppointmentDetails, Customer, Location, Product
+from ....base import AppointmentDetails, Customer, CustomerDetails, Location, Product
 from ....exceptions import AppointmentException
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
@@ -236,8 +236,12 @@ class PluginTests(MockConfigMixin, TestCase):
             amount=2,
         )
         location = Location(identifier="1", name="Maykin Media")
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
-
+        customer = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
         m.post(
             "http://example.com/soap11",
             text=mock_response("bookGovAppointmentResponse.xml"),
@@ -247,16 +251,23 @@ class PluginTests(MockConfigMixin, TestCase):
             [product1, product2],
             location,
             datetime(2021, 8, 23, 8, 0, 0),
-            client,
+            customer,
         )
 
         self.assertEqual(result, "1234567890")
         xml_doc = fromstring(m.last_request.body)
-        product_ids = get_xpath(
+        appointment = get_xpath(
             xml_doc,
-            "/soap-env:Envelope/soap-env:Body/ns0:bookGovAppointmentRequest/appDetail/productID",
-        )[0].text
+            "/soap-env:Envelope/soap-env:Body/ns0:bookGovAppointmentRequest/appDetail",
+        )[
+            0
+        ]  # type: ignore
+        product_ids = get_xpath(appointment, "productID")[0].text  # type: ignore
         self.assertEqual(product_ids, "1,5,5")
+        last_name = get_xpath(appointment, "clientLastName")[0].text  # type: ignore
+        self.assertEqual(last_name, "Doe")
+        dob = get_xpath(appointment, "clientDateOfBirth")[0].text  # type: ignore
+        self.assertEqual(dob, "1980-01-01")
 
     @requests_mock.Mocker()
     def test_delete_appointment(self, m):

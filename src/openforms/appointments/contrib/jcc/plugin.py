@@ -1,4 +1,5 @@
 import logging
+import warnings
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
 from functools import wraps
@@ -16,7 +17,14 @@ from zgw_consumers.concurrent import parallel
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ...base import AppointmentDetails, BasePlugin, Customer, Location, Product
+from ...base import (
+    AppointmentDetails,
+    BasePlugin,
+    Customer,
+    CustomerDetails,
+    Location,
+    Product,
+)
 from ...exceptions import (
     AppointmentCreateFailed,
     AppointmentDeleteFailed,
@@ -25,7 +33,7 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import get_client
-from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
+from .constants import FIELD_TO_FORMIO_COMPONENT, FIELD_TO_XML_NAME, CustomerFields
 from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
@@ -233,10 +241,31 @@ class JccAppointment(BasePlugin):
         products: list[Product],
         location: Location,
         start_at: datetime,
-        client: Customer,
+        client: CustomerDetails[CustomerFields] | Customer,
         remarks: str = "",
     ) -> str:
         product_ids = squash_ids(products)
+
+        # Phasing out Customer in favour of CustomerDetails, so convert to the new type
+        if isinstance(client, Customer):
+            warnings.warn(
+                "Fixed customer fields via the Customer class are deprecated, use "
+                "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
+                DeprecationWarning,
+            )
+            client = CustomerDetails(
+                details={
+                    CustomerFields.last_name: client.last_name,
+                    CustomerFields.birthday: client.birthdate.isoformat(),
+                    # Phone number is often required for appointment,
+                    # use fake phone number if no client phone number
+                    CustomerFields.main_tel: client.phonenumber or "0123456789",
+                }
+            )
+
+        customer_details = {
+            FIELD_TO_XML_NAME[key]: value for key, value in client.details.items()
+        }
 
         jcc_client = get_client()
         try:
@@ -244,26 +273,11 @@ class JccAppointment(BasePlugin):
             appointment_details = factory.AppointmentDetailsType(
                 locationID=location.identifier,
                 productID=product_ids,
-                clientLastName=client.last_name,
-                clientDateOfBirth=client.birthdate,
                 appStartTime=start_at,
                 appEndTime=start_at,  # Required but unused by the service.
+                **customer_details,
                 isClientVerified=False,
                 isRecurring=False,
-                # Phone number is often required for appointment,
-                # use fake phone number if no client phone number
-                clientTel=client.phonenumber or "0123456789",
-                # Optional fields.
-                # These might be needed. Depends on `GetRequiredClientFields`
-                #
-                # clientID=bsn,
-                # clientSex="M/F",
-                # clientInitials="",
-                # clientAddress="",
-                # clientPostalCode="",
-                # clientCity="",
-                # clientCountry="",
-                # clientMail="",
                 appointmentDesc=remarks,
                 # caseID": "",
             )

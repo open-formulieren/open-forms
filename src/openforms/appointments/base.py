@@ -2,8 +2,9 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import List
+from typing import Generic, List, TypeVar
 
+from django.db.models import TextChoices
 from django.urls import reverse
 
 from rest_framework import serializers
@@ -11,6 +12,7 @@ from rest_framework import serializers
 from openforms.formio.typing import Component
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
+from openforms.typing import JSONPrimitive
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.urls import build_absolute_uri
 
@@ -49,6 +51,10 @@ class Location:
 
 @dataclass()
 class Customer:
+    """
+    Deprecated in favour of the :class:`CustomerDetails`.
+    """
+
     last_name: str
     birthdate: date
     initials: str | None = None
@@ -56,6 +62,16 @@ class Customer:
 
     def __str__(self):
         return self.last_name
+
+
+F = TypeVar("F", bound=TextChoices)
+# generic type for the plugin-specific enum of field names
+
+
+@dataclass
+class CustomerDetails(Generic[F]):
+    # these should realistically only be string values, as they are user input stored as JSON.
+    details: dict[F, JSONPrimitive]
 
 
 @dataclass()
@@ -175,7 +191,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         products: list[Product],
         location: Location,
         start_at: datetime,
-        client: Customer,
+        client: CustomerDetails | Customer,
         remarks: str = "",
     ) -> str:  # pragma: no cover
         """
