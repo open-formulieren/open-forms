@@ -2,6 +2,7 @@ import base64
 import io
 import logging
 import re
+import warnings
 from datetime import datetime
 from typing import List, Optional
 
@@ -64,6 +65,11 @@ def get_formatted_phone_number(phone_number: Optional[str]) -> Optional[str]:
 
 @elasticapm.capture_span(span_type="app.appointments.book")
 def book_appointment_for_submission(submission: Submission) -> None:
+    warnings.warn(
+        "Old-style appointments are deprecated, please update the form to use "
+        "the reworked appointments.",
+        DeprecationWarning,
+    )
     try:
         # Delete the previous appointment info if there is one since
         #   since a new one will be created
