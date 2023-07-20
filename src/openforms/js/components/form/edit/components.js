@@ -35,4 +35,11 @@ const ALLOW_NEGATIVE = {
   key: 'allowNegative',
 };
 
-export {DECIMAL_PLACES, MIN_VALUE, MAX_VALUE, ALLOW_NEGATIVE};
+const SUFFIX = {
+  type: 'textfield',
+  input: true,
+  key: 'suffix',
+  label: 'A short indicator to discribe the field value.',
+};
+
+export {DECIMAL_PLACES, MIN_VALUE, MAX_VALUE, ALLOW_NEGATIVE, SUFFIX};
