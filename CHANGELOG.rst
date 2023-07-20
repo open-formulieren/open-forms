@@ -92,24 +92,24 @@ Detailed changes
 
 * Retrieve data from external registrations (aka service fetch):
 
-    * [#2680] Added API endpoint to expose available services for service fetch.
-    * [#2661, #2693, #2834, #2835] Added user friendly UI to configure "external data retrieval".
-    * [#2681] Added logic logging of service fetch to allow better debugging of form logic.
-    * [#2694] Updated interpolation format to double bracket, making it possible to use
-      Django template engine filters.
+  * [#2680] Added API endpoint to expose available services for service fetch.
+  * [#2661, #2693, #2834, #2835] Added user friendly UI to configure "external data retrieval".
+  * [#2681] Added logic logging of service fetch to allow better debugging of form logic.
+  * [#2694] Updated interpolation format to double bracket, making it possible to use
+    Django template engine filters.
 
 * [#1530] Introduced a new co-sign component
 
-    * Implemented a new flow for co-signing so that the co-signer receives a request via
-      email.
-    * The submission is only registered when co-signing is completed.
-    * Ensure the co-signer also receives the confirmation email.
-    * The existing component is deprecated.
+  * Implemented a new flow for co-signing so that the co-signer receives a request via
+    email.
+  * The submission is only registered when co-signing is completed.
+  * Ensure the co-signer also receives the confirmation email.
+  * The existing component is deprecated.
 
 * Background task processing
 
-    * [#2927] Added Celery worker monitoring tooling (for devops/infra).
-    * [#3068] Added soft and hard task timeout settings for background workers.
+  * [#2927] Added Celery worker monitoring tooling (for devops/infra).
+  * [#3068] Added soft and hard task timeout settings for background workers.
 
 * [#2826] The form builder now validates the format of dates in logic rules.
 * [#2789] The submission pause/save modal text is now configurable.
