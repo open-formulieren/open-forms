@@ -2,6 +2,7 @@ import re
 from datetime import date, datetime
 
 from django.test import SimpleTestCase, TestCase
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
@@ -9,13 +10,16 @@ from hypothesis import given, strategies as st
 
 from openforms.formio.validation import build_validation_chain
 from openforms.utils.tests.logging import disable_logging
+from openforms.utils.xml import fromstring
 from soap.tests.factories import SoapServiceFactory
 
-from ....base import AppointmentDetails, Customer, Location, Product
+from ....base import AppointmentDetails, Customer, CustomerDetails, Location, Product
+from ....core import book
 from ....exceptions import AppointmentException
+from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
-from .utils import WSDL, MockConfigMixin, mock_response
+from .utils import WSDL, MockConfigMixin, get_xpath, mock_response
 
 
 @disable_logging()
@@ -143,20 +147,22 @@ class PluginTests(MockConfigMixin, TestCase):
                 [date(2021, 8, 19), date(2021, 8, 20), date(2021, 8, 23)],
             )
 
-    def test_get_times(self):
+    @requests_mock.mock()
+    def test_get_times(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
         test_date = date(2021, 8, 23)
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
+        )
 
-        with requests_mock.mock() as m:
-            m.post(
-                "http://example.com/soap11",
-                text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
-            )
+        times = self.plugin.get_times([product], location, test_date)
 
-            times = self.plugin.get_times([product], location, test_date)
-            self.assertEqual(len(times), 106)
-            self.assertEqual(times[0], datetime(2021, 8, 23, 8, 0, 0))
+        self.assertEqual(len(times), 106)
+        # 8 AM in summer in AMS -> 6 AM in UTC
+        ams_expected_time = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        self.assertEqual(times[0], ams_expected_time)
 
     @requests_mock.Mocker()
     def test_get_required_customer_fields(self, m):
@@ -164,9 +170,16 @@ class PluginTests(MockConfigMixin, TestCase):
             "http://example.com/soap11",
             text=mock_response("getRequiredClientFieldsResponse.xml"),
         )
-        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        products = [
+            Product(identifier="1", code="PASAAN", name="Paspoort aanvraag"),
+            Product(
+                identifier="5",
+                code="RIJAAN",
+                name="Rijbewijs aanvraag (Drivers license)",
+            ),
+        ]
 
-        fields = self.plugin.get_required_customer_fields([product])
+        fields = self.plugin.get_required_customer_fields(products)
 
         self.assertEqual(len(fields), 4)
         last_name, dob, tel, email = fields
@@ -199,6 +212,17 @@ class PluginTests(MockConfigMixin, TestCase):
             self.assertEqual(email["autocomplete"], "email")
             self.assertEqual(email["validate"]["maxLength"], 254)
 
+        with self.subTest("SOAP request"):
+            xml_doc = fromstring(m.last_request.body)
+            request = get_xpath(
+                xml_doc,
+                "/soap-env:Envelope/soap-env:Body/ns0:GetRequiredClientFieldsRequest",
+            )[  # type: ignore
+                0
+            ]
+            product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+            self.assertEqual(product_ids, "1,5")
+
     @requests_mock.Mocker()
     def test_create_appointment(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
@@ -215,6 +239,87 @@ class PluginTests(MockConfigMixin, TestCase):
         )
 
         self.assertEqual(result, "1234567890")
+
+    @requests_mock.Mocker()
+    def test_create_appointment_multiple_products(self, m):
+        product1 = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        product2 = Product(
+            identifier="5",
+            code="RIJAAN",
+            name="Rijbewijs aanvraag (Drivers license)",
+            amount=2,
+        )
+        location = Location(identifier="1", name="Maykin Media")
+        customer = CustomerDetails(
+            details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            }
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("bookGovAppointmentResponse.xml"),
+        )
+
+        result = self.plugin.create_appointment(
+            [product1, product2],
+            location,
+            datetime(2021, 8, 23, 8, 0, 0),
+            customer,
+        )
+
+        self.assertEqual(result, "1234567890")
+        xml_doc = fromstring(m.last_request.body)
+        appointment = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:bookGovAppointmentRequest/appDetail",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(appointment, "productID")[0].text  # type: ignore
+        self.assertEqual(product_ids, "1,5,5")
+        last_name = get_xpath(appointment, "clientLastName")[0].text  # type: ignore
+        self.assertEqual(last_name, "Doe")
+        dob = get_xpath(appointment, "clientDateOfBirth")[0].text  # type: ignore
+        self.assertEqual(dob, "1980-01-01")
+
+    @requests_mock.Mocker()
+    def test_book_through_model(self, m):
+        appointment = AppointmentFactory.create(
+            plugin="jcc",
+            contact_details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            },
+        )
+        AppointmentProductFactory.create(
+            appointment=appointment, product_id="1", amount=1
+        )
+        AppointmentProductFactory.create(
+            appointment=appointment, product_id="5", amount=2
+        )
+        assert appointment.products.count() == 2
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("bookGovAppointmentResponse.xml"),
+        )
+
+        app_id = book(appointment)
+
+        self.assertEqual(app_id, "1234567890")
+        xml_doc = fromstring(m.last_request.body)
+        appointment = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:bookGovAppointmentRequest/appDetail",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(appointment, "productID")[0].text  # type: ignore
+        self.assertEqual(product_ids, "1,5,5")
+        last_name = get_xpath(appointment, "clientLastName")[0].text  # type: ignore
+        self.assertEqual(last_name, "Doe")
+        dob = get_xpath(appointment, "clientDateOfBirth")[0].text  # type: ignore
+        self.assertEqual(dob, "1980-01-01")
 
     @requests_mock.Mocker()
     def test_delete_appointment(self, m):

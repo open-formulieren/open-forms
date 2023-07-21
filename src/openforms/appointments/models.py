@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.timezone import localdate
@@ -120,6 +121,7 @@ class Appointment(models.Model):
     )
     contact_details_meta = models.JSONField(
         _("contact details meta"),
+        encoder=DjangoJSONEncoder,
         default=list,
         help_text=_(
             "Contact detail field definitions, depending on the required fields in the "
@@ -128,6 +130,7 @@ class Appointment(models.Model):
     )
     contact_details = models.JSONField(
         _("contact details"),
+        encoder=DjangoJSONEncoder,
         default=dict,
         help_text=_("Additional contact detail field values."),
     )

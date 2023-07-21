@@ -1,9 +1,10 @@
 import logging
+import warnings
 
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
-from drf_spectacular.plumbing import build_array_type
+from drf_spectacular.plumbing import build_array_type, build_basic_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -24,7 +25,6 @@ from openforms.submissions.api.permissions import (
 )
 from openforms.submissions.models import Submission
 
-from ..base import Location, Product
 from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
 from ..models import Appointment, AppointmentsConfig
 from ..utils import delete_appointment_for_submission, get_plugin
@@ -45,6 +45,35 @@ from .serializers import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def warn_serializer_validation_deprecation():
+    warnings.warn(
+        "Starting with Open Forms 3.0, input validation will raise HTTP 400 instead "
+        "of returning an empty result list.",
+        DeprecationWarning,
+    )
+
+
+# TODO: see openforms.validations.api.serializers.ValidatorsFilterSerializer.as_openapi_params
+# and https://github.com/open-formulieren/open-forms/issues/611
+
+PRODUCT_QUERY_PARAMETER = OpenApiParameter(
+    name="product_id",
+    type=build_array_type(build_basic_type(str), min_length=1),
+    location=OpenApiParameter.QUERY,
+    description=_("ID of the product, repeat for multiple products."),
+    required=True,
+    style="form",
+    explode=True,
+)
+LOCATION_QUERY_PARAMETER = OpenApiParameter(
+    "location_id",
+    OpenApiTypes.STR,
+    OpenApiParameter.QUERY,
+    description=_("ID of the location"),
+    required=True,
+)
 
 
 @extend_schema(
@@ -72,19 +101,9 @@ class ProductsListView(ListMixin, APIView):
             return plugin.get_available_products(**kwargs)
 
 
-# The serializer + @extend_schema approach for querystring params is not ideal, the
-# issue to refactor this is here: https://github.com/open-formulieren/open-forms/issues/611
 @extend_schema(
     summary=_("List available locations for a given product"),
-    parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product"),
-            required=True,
-        ),
-    ],
+    parameters=[PRODUCT_QUERY_PARAMETER],
 )
 class LocationsListView(ListMixin, APIView):
     """
@@ -106,36 +125,21 @@ class LocationsListView(ListMixin, APIView):
         # Instead, we just return an empty result list which populates dropdowns with
         # empty options.
         if not is_valid:
+            warn_serializer_validation_deprecation()
             return []
-
-        product = Product(
-            identifier=serializer.validated_data["product_id"], code="", name=""
-        )
-
+        products = serializer.validated_data["product_id"]
         plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-locations", span_type="app.appointments.get_locations"
         ):
-            return plugin.get_locations([product])
+            return plugin.get_locations(products)
 
 
 @extend_schema(
     summary=_("List available dates for a given location and product"),
     parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product"),
-            required=True,
-        ),
-        OpenApiParameter(
-            "location_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the location"),
-            required=True,
-        ),
+        PRODUCT_QUERY_PARAMETER,
+        LOCATION_QUERY_PARAMETER,
     ],
 )
 class DatesListView(ListMixin, APIView):
@@ -158,40 +162,25 @@ class DatesListView(ListMixin, APIView):
         # Instead, we just return an empty result list which populates dropdowns with
         # empty options.
         if not is_valid:
+            warn_serializer_validation_deprecation()
             return []
 
-        product = Product(
-            identifier=serializer.validated_data["product_id"], code="", name=""
-        )
-        location = Location(
-            identifier=serializer.validated_data["location_id"], name=""
-        )
+        products = serializer.validated_data["product_id"]
+        location = serializer.validated_data["location_id"]
 
         plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-dates", span_type="app.appointments.get_dates"
         ):
-            dates = plugin.get_dates([product], location)
+            dates = plugin.get_dates(products, location)
         return [{"date": date} for date in dates]
 
 
 @extend_schema(
     summary=_("List available times for a given location, product, and date"),
     parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product"),
-            required=True,
-        ),
-        OpenApiParameter(
-            "location_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the location"),
-            required=True,
-        ),
+        PRODUCT_QUERY_PARAMETER,
+        LOCATION_QUERY_PARAMETER,
         OpenApiParameter(
             "date",
             OpenApiTypes.DATE,
@@ -221,36 +210,24 @@ class TimesListView(ListMixin, APIView):
         # Instead, we just return an empty result list which populates dropdowns with
         # empty options.
         if not is_valid:
+            warn_serializer_validation_deprecation()
             return []
 
-        product = Product(
-            identifier=serializer.validated_data["product_id"], code="", name=""
-        )
-        location = Location(
-            identifier=serializer.validated_data["location_id"], name=""
-        )
+        products = serializer.validated_data["product_id"]
+        location = serializer.validated_data["location_id"]
+        date = serializer.validated_data["date"]
 
         plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-times", span_type="app.appointments.get_times"
         ):
-            times = plugin.get_times(
-                [product], location, serializer.validated_data["date"]
-            )
+            times = plugin.get_times(products, location, date)
         return [{"time": time} for time in times]
 
 
 @extend_schema(
     summary=_("Get required customer field details for a given product"),
-    parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product, may be repeated for multiple products."),
-            required=True,
-        ),
-    ],
+    parameters=[PRODUCT_QUERY_PARAMETER],
     responses={
         200: OpenApiResponse(
             response=build_array_type(FORMIO_COMPONENT_SCHEMA, min_length=1),
@@ -284,14 +261,14 @@ class RequiredCustomerFieldsListView(APIView):
         input_serializer = CustomerFieldsInputSerializer(data=self.request.query_params)
         input_serializer.is_valid(raise_exception=True)
 
-        product = input_serializer.validated_data["product_id"]
+        products = input_serializer.validated_data["product_id"]
         plugin = get_plugin()
 
         with elasticapm.capture_span(
             name="get-required-customer-fields",
             span_type="app.appointments.get_required_customer_fields",
         ):
-            fields = plugin.get_required_customer_fields([product])
+            fields = plugin.get_required_customer_fields(products)
 
         return Response(fields)
 

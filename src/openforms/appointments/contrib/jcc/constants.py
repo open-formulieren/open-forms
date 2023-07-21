@@ -93,7 +93,7 @@ _GENDER_FIELD: RadioComponent = {
 }
 
 
-FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
+FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
     CustomerFields.last_name: {
         "type": "textfield",
         "key": CustomerFields.last_name.value,
@@ -208,8 +208,26 @@ FIELD_TO_FORMIO_COMPONENT: dict[str, Component] = {
     },
 }
 
-# sanity check
+FIELD_TO_XML_NAME: dict[CustomerFields, str] = {
+    CustomerFields.last_name: "clientLastName",
+    CustomerFields.address: "clientAddress",
+    CustomerFields.birthday: "clientDateOfBirth",
+    CustomerFields.city: "clientCity",
+    CustomerFields.email: "clientMail",
+    CustomerFields.initials: "clientInitials",
+    CustomerFields.sex: "clientSex",
+    CustomerFields.main_tel: "clientTel",
+    CustomerFields.mobile_tel: "clientTel",
+    CustomerFields.any_tel: "clientTel",
+    CustomerFields.postal_code: "clientPostalCode",
+    CustomerFields.ID: "clientID",
+}
+
+# sanity checks
 for member in CustomerFields.values:
     assert (
         member in FIELD_TO_FORMIO_COMPONENT
     ), f"Missing field '{member}' in FIELD_TO_FORMIO_COMPONENT mapping"
+    assert (
+        member in FIELD_TO_XML_NAME
+    ), f"Missing field '{member}' in FIELD_TO_XML_NAME mapping"

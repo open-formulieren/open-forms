@@ -1,13 +1,16 @@
 import logging
+import warnings
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
 from functools import wraps
 from typing import Callable, List, ParamSpec, TypeVar
 
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+import pytz
 from requests.exceptions import RequestException
 from zeep.client import Client
 from zeep.exceptions import Error as ZeepError
@@ -16,7 +19,14 @@ from zgw_consumers.concurrent import parallel
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ...base import AppointmentDetails, BasePlugin, Customer, Location, Product
+from ...base import (
+    AppointmentDetails,
+    BasePlugin,
+    Customer,
+    CustomerDetails,
+    Location,
+    Product,
+)
 from ...exceptions import (
     AppointmentCreateFailed,
     AppointmentDeleteFailed,
@@ -25,15 +35,20 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import get_client
-from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
+from .constants import FIELD_TO_FORMIO_COMPONENT, FIELD_TO_XML_NAME, CustomerFields
 from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
 logger = logging.getLogger(__name__)
 
+TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
 
-def squash_ids(lst):
-    return ",".join([i.identifier for i in lst])
+
+def squash_ids(products: list[Product]):
+    # When more of the same product are required (amount > 1), the ID needs to be
+    # repeated.
+    all_ids = sum(([product.identifier] * product.amount for product in products), [])
+    return ",".join(all_ids)
 
 
 @contextmanager
@@ -192,7 +207,7 @@ class JccAppointment(BasePlugin):
         products: List[Product],
         location: Location,
         day: date,
-    ) -> List[datetime]:
+    ) -> list[datetime]:
         product_ids = squash_ids(products)
 
         client = get_client()
@@ -202,12 +217,17 @@ class JccAppointment(BasePlugin):
             location,
             day,
         ):
-            return client.service.getGovAvailableTimesPerDay(
+            naive_datetimes = client.service.getGovAvailableTimesPerDay(
                 date=day,
                 productID=product_ids,
                 locationID=location.identifier,
                 appDuration=0,
             )
+            # JCC returns datetimes without TZ information, so we can assume that it's
+            # in Europe/Amsterdam
+        return [
+            timezone.make_aware(dt, timezone=TIMEZONE_AMS) for dt in naive_datetimes
+        ]
 
     @with_graceful_default(default=[])
     def get_required_customer_fields(
@@ -227,13 +247,34 @@ class JccAppointment(BasePlugin):
 
     def create_appointment(
         self,
-        products: List[Product],
+        products: list[Product],
         location: Location,
         start_at: datetime,
-        client: Customer,
+        client: CustomerDetails[CustomerFields] | Customer,
         remarks: str = "",
     ) -> str:
         product_ids = squash_ids(products)
+
+        # Phasing out Customer in favour of CustomerDetails, so convert to the new type
+        if isinstance(client, Customer):
+            warnings.warn(
+                "Fixed customer fields via the Customer class are deprecated, use "
+                "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
+                DeprecationWarning,
+            )
+            client = CustomerDetails(
+                details={
+                    CustomerFields.last_name: client.last_name,
+                    CustomerFields.birthday: client.birthdate.isoformat(),
+                    # Phone number is often required for appointment,
+                    # use fake phone number if no client phone number
+                    CustomerFields.main_tel: client.phonenumber or "0123456789",
+                }
+            )
+
+        customer_details = {
+            FIELD_TO_XML_NAME[key]: value for key, value in client.details.items()
+        }
 
         jcc_client = get_client()
         try:
@@ -241,26 +282,11 @@ class JccAppointment(BasePlugin):
             appointment_details = factory.AppointmentDetailsType(
                 locationID=location.identifier,
                 productID=product_ids,
-                clientLastName=client.last_name,
-                clientDateOfBirth=client.birthdate,
                 appStartTime=start_at,
                 appEndTime=start_at,  # Required but unused by the service.
+                **customer_details,
                 isClientVerified=False,
                 isRecurring=False,
-                # Phone number is often required for appointment,
-                # use fake phone number if no client phone number
-                clientTel=client.phonenumber or "0123456789",
-                # Optional fields.
-                # These might be needed. Depends on `GetRequiredClientFields`
-                #
-                # clientID=bsn,
-                # clientSex="M/F",
-                # clientInitials="",
-                # clientAddress="",
-                # clientPostalCode="",
-                # clientCity="",
-                # clientCountry="",
-                # clientMail="",
                 appointmentDesc=remarks,
                 # caseID": "",
             )

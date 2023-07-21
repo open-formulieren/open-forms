@@ -33,6 +33,7 @@ from .factories import AppointmentInfoFactory
 from .utils import setup_jcc
 
 
+# Deprecated/legacy tests
 class BookAppointmentForSubmissionTest(TestCase):
     @classmethod
     def setUpTestData(cls):

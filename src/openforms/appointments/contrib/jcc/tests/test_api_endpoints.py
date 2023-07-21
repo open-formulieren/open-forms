@@ -7,10 +7,11 @@ from zeep.exceptions import Error as ZeepError
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.xml import fromstring
 
 from ....constants import AppointmentDetailsStatus
 from ....tests.factories import AppointmentInfoFactory
-from .utils import MockConfigMixin, mock_response
+from .utils import MockConfigMixin, get_xpath, mock_response
 
 
 class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
@@ -62,13 +63,32 @@ class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             text=mock_response("getGovLocationsForProductResponse.xml"),
         )
 
-        response = self.client.get(f"{self.endpoint}?product_id=79")
+        response = self.client.get(self.endpoint, {"product_id": "79"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
         location = response.json()[0]
         self.assertEqual(location["identifier"], "1")
         self.assertEqual(location["name"], "Maykin Media")
+
+    @requests_mock.Mocker()
+    def test_get_locations_multiple_products(self, m):
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationsForProductResponse.xml"),
+        )
+        response = self.client.get(self.endpoint, {"product_id": ["38", "79"]})
+
+        self.assertEqual(response.status_code, 200)
+        xml_doc = fromstring(m.last_request.body)
+        request = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:getGovLocationsForProductRequest",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+        self.assertEqual(product_ids, "38,79")
 
     def test_get_locations_returns_400_when_no_product_id_is_given(self):
         response = self.client.get(self.endpoint)
@@ -78,7 +98,9 @@ class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
 
     def test_get_locations_returns_403_when_no_active_sessions(self):
         self._clear_session()
-        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        response = self.client.get(
+            self.endpoint, {"product_id": "1", "location_id": "1"}
+        )
         self.assertEqual(response.status_code, 403)
 
 
@@ -104,13 +126,40 @@ class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             ],
         )
 
-        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        response = self.client.get(
+            self.endpoint, {"product_id": "1", "location_id": "1"}
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
             [{"date": "2021-08-19"}, {"date": "2021-08-20"}, {"date": "2021-08-23"}],
         )
+
+    @requests_mock.Mocker()
+    def test_get_dates_multiple_products(self, m):
+        m.post(
+            "http://example.com/soap11",
+            [
+                {"text": mock_response("getGovLatestPlanDateResponse.xml")},
+                {"text": mock_response("getGovAvailableDaysResponse.xml")},
+            ],
+        )
+
+        response = self.client.get(
+            self.endpoint, {"product_id": ["1", "2"], "location_id": "1"}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        xml_doc = fromstring(m.last_request.body)
+        request = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:getGovAvailableDaysRequest",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+        self.assertEqual(product_ids, "1,2")
 
     def test_get_dates_returns_400_when_missing_query_params(self):
         for query_param in [{}, {"product_id": 79}, {"location_id": 1}]:
@@ -121,7 +170,13 @@ class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
 
     def test_get_dates_returns_403_when_no_active_sessions(self):
         self._clear_session()
-        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        response = self.client.get(
+            self.endpoint,
+            {
+                "product_id": "1",
+                "location_id": "1",
+            },
+        )
         self.assertEqual(response.status_code, 403)
 
 
@@ -146,12 +201,35 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
         )
 
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+            self.endpoint, {"product_id": "1", "location_id": "1", "date": "2021-8-23"}
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 106)
         self.assertEqual(response.json()[0], {"time": "2021-08-23T08:00:00+02:00"})
+
+    @requests_mock.Mocker()
+    def test_get_times_multiple_products(self, m):
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
+        )
+
+        response = self.client.get(
+            self.endpoint,
+            {"product_id": ["1", "2"], "location_id": "1", "date": "2021-8-23"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        xml_doc = fromstring(m.last_request.body)
+        request = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:getGovAvailableTimesPerDayRequest",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+        self.assertEqual(product_ids, "1,2")
 
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [
@@ -170,7 +248,7 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     def test_get_times_returns_403_when_no_active_sessions(self):
         self._clear_session()
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+            self.endpoint, {"product_id": "1", "location_id": "1", "date": "2021-8-23"}
         )
         self.assertEqual(response.status_code, 403)
 

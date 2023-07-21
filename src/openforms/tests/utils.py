@@ -31,14 +31,14 @@ def can_connect(hostname: str):
 
 
 @contextlib.contextmanager
-def surpress_output(stdchannel, dest_filename):
+def supress_output(stdchannel, dest_filename):
     """
     A context manager to temporarily redirect stdout or stderr
 
     e.g.:
 
 
-    with surpress_output(sys.stderr, os.devnull):
+    with supress_output(sys.stderr, os.devnull):
         if compiler.has_function('clock_gettime', libraries=['rt']):
             libraries.append('rt')
 

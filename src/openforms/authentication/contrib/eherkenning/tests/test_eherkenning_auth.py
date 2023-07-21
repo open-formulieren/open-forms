@@ -21,7 +21,7 @@ from simple_certmanager.models import Certificate
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.tests.utils import surpress_output
+from openforms.tests.utils import supress_output
 from openforms.utils.tests.cache import clear_caches
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -307,7 +307,7 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
             }
         )
 
-        with surpress_output(sys.stderr, os.devnull):
+        with supress_output(sys.stderr, os.devnull):
             response = self.client.get(url, follow=True)
 
         self.assertRedirects(
@@ -370,7 +370,7 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
             }
         )
 
-        with surpress_output(sys.stderr, os.devnull):
+        with supress_output(sys.stderr, os.devnull):
             response = self.client.get(url, follow=True)
 
         self.assertRedirects(
@@ -523,7 +523,7 @@ class CoSignLoginAuthenticationTests(
             }
         )
 
-        with surpress_output(sys.stderr, os.devnull):
+        with supress_output(sys.stderr, os.devnull):
             response = self.client.get(url)
 
         self.assertRedirects(

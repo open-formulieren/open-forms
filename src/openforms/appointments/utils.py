@@ -2,6 +2,7 @@ import base64
 import io
 import logging
 import re
+import warnings
 from datetime import datetime
 from typing import List, Optional
 
@@ -21,19 +22,19 @@ from .exceptions import (
     AppointmentDeleteFailed,
     AppointmentRegistrationFailed,
 )
-from .models import AppointmentInfo, AppointmentsConfig
+from .models import Appointment, AppointmentInfo, AppointmentsConfig
 from .registry import register
 
 logger = logging.getLogger()
 
 
-def get_plugin() -> BasePlugin:
+def get_plugin(plugin: str = "") -> BasePlugin:
     """returns plugin selected in AppointmentsConfig"""
-    config = AppointmentsConfig.get_solo()
-    assert isinstance(config, AppointmentsConfig)
-    if not (plugin := config.plugin):
-        raise ValueError("No plugin is specified in AppointmentsConfig")
-
+    if not plugin:
+        config = AppointmentsConfig.get_solo()
+        assert isinstance(config, AppointmentsConfig)
+        if not (plugin := config.plugin):
+            raise ValueError("No plugin is specified in AppointmentsConfig")
     return register[plugin]
 
 
@@ -64,6 +65,11 @@ def get_formatted_phone_number(phone_number: Optional[str]) -> Optional[str]:
 
 @elasticapm.capture_span(span_type="app.appointments.book")
 def book_appointment_for_submission(submission: Submission) -> None:
+    warnings.warn(
+        "Old-style appointments are deprecated, please update the form to use "
+        "the reworked appointments.",
+        DeprecationWarning,
+    )
     try:
         # Delete the previous appointment info if there is one since
         #   since a new one will be created
@@ -173,7 +179,7 @@ def cancel_previous_submission_appointment(submission: Submission) -> None:
     """
     Given a submission, check if there's a previous appointment to cancel.
     """
-    if not submission.previous_submission:
+    if not (previous_submission := submission.previous_submission):
         logger.debug(
             "Submission %s has no known previous appointment to cancel", submission.uuid
         )
@@ -181,7 +187,7 @@ def cancel_previous_submission_appointment(submission: Submission) -> None:
 
     # check if there's anything to cancel at all
     try:
-        appointment_info = submission.previous_submission.appointment_info
+        appointment_info = previous_submission.appointment_info
     except AppointmentInfo.DoesNotExist:
         logger.debug(
             "Submission %s has no known previous appointment to cancel", submission.uuid
@@ -197,7 +203,9 @@ def cancel_previous_submission_appointment(submission: Submission) -> None:
         )
         return
 
-    plugin = get_plugin()
+    # check for new-style appointments
+    appointment = Appointment.objects.filter(submission=previous_submission).first()
+    plugin = get_plugin(plugin=appointment.plugin if appointment else "")
 
     logger.debug(
         "Attempting to cancel appointment %s of submission %s",
@@ -207,7 +215,7 @@ def cancel_previous_submission_appointment(submission: Submission) -> None:
     logevent.appointment_cancel_start(appointment_info, plugin)
 
     try:
-        delete_appointment_for_submission(submission.previous_submission)
+        delete_appointment_for_submission(previous_submission, plugin=plugin)
     except AppointmentDeleteFailed:
         logger.warning(
             "Deleting the appointment %s of submission %s failed",

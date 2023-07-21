@@ -5,7 +5,8 @@ from celery_once import QueueOnce
 from openforms.celery import app
 from openforms.submissions.models import Submission
 
-from .exceptions import AppointmentRegistrationFailed
+from .core import book_for_submission
+from .exceptions import AppointmentRegistrationFailed, NoAppointmentForm
 from .models import AppointmentInfo
 from .utils import book_appointment_for_submission
 
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
     ignore_result=False,
     once={"graceful": True},  # do not spam error monitoring
 )
-def maybe_register_appointment(submission_id: int) -> None:
+def maybe_register_appointment(submission_id: int) -> None | str:
     """
     Register an appointment for the submission IF relevant.
 
@@ -31,7 +32,7 @@ def maybe_register_appointment(submission_id: int) -> None:
     should find its way back to the end-user.
     """
     logger.info("Registering appointment for submission %d (if needed!)", submission_id)
-    submission = Submission.objects.get(id=submission_id)
+    submission = Submission.objects.select_related("form").get(id=submission_id)
 
     try:
         appointment_id = submission.appointment_info.appointment_id
@@ -45,6 +46,21 @@ def maybe_register_appointment(submission_id: int) -> None:
             )
             return
 
+    # Try the new appointments implementation first
+    try:
+        return book_for_submission(submission=submission)
+    except NoAppointmentForm:
+        pass
+    except AppointmentRegistrationFailed as exc:
+        logger.info(
+            "Appointment registration failed, aborting workflow.",
+            exc_info=exc,
+            extra={"submission": submission_id},
+        )
+        raise
+
+    # otherwise, fall back to the old form
+    logger.info("Attempting old appointment booking for submission %r", submission_id)
     try:
         book_appointment_for_submission(submission)
     except AppointmentRegistrationFailed as exc:
