@@ -8,6 +8,10 @@ class AppointmentException(Exception):
     pass
 
 
+class NoAppointmentForm(AppointmentException):
+    pass
+
+
 class AppointmentDeleteFailed(AppointmentException):
     pass
 

@@ -5,8 +5,8 @@ from celery_once import QueueOnce
 from openforms.celery import app
 from openforms.submissions.models import Submission
 
-from .core import NoAppointmentForm, book_for_submission
-from .exceptions import AppointmentRegistrationFailed
+from .core import book_for_submission
+from .exceptions import AppointmentRegistrationFailed, NoAppointmentForm
 from .models import AppointmentInfo
 from .utils import book_appointment_for_submission
 

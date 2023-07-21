@@ -13,16 +13,16 @@ from openforms.submissions.models import Submission
 
 from .base import BasePlugin, CustomerDetails, Location, Product
 from .constants import AppointmentDetailsStatus
-from .exceptions import AppointmentCreateFailed, AppointmentRegistrationFailed
+from .exceptions import (
+    AppointmentCreateFailed,
+    AppointmentRegistrationFailed,
+    NoAppointmentForm,
+)
 from .models import Appointment, AppointmentInfo
 from .registry import register
 from .utils import cancel_previous_submission_appointment
 
-__all__ = ["book_for_submission", "NoAppointmentForm"]
-
-
-class NoAppointmentForm(Exception):
-    pass
+__all__ = ["book_for_submission"]
 
 
 def _get_plugin(appointment: Appointment) -> BasePlugin:
