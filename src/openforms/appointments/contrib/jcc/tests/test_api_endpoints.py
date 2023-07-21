@@ -98,7 +98,9 @@ class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
 
     def test_get_locations_returns_403_when_no_active_sessions(self):
         self._clear_session()
-        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        response = self.client.get(
+            self.endpoint, {"product_id": "1", "location_id": "1"}
+        )
         self.assertEqual(response.status_code, 403)
 
 
@@ -168,7 +170,13 @@ class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
 
     def test_get_dates_returns_403_when_no_active_sessions(self):
         self._clear_session()
-        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        response = self.client.get(
+            self.endpoint,
+            {
+                "product_id": "1",
+                "location_id": "1",
+            },
+        )
         self.assertEqual(response.status_code, 403)
 
 
@@ -193,7 +201,7 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
         )
 
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+            self.endpoint, {"product_id": "1", "location_id": "1", "date": "2021-8-23"}
         )
 
         self.assertEqual(response.status_code, 200)
@@ -217,7 +225,7 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     def test_get_times_returns_403_when_no_active_sessions(self):
         self._clear_session()
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+            self.endpoint, {"product_id": "1", "location_id": "1", "date": "2021-8-23"}
         )
         self.assertEqual(response.status_code, 403)
 
