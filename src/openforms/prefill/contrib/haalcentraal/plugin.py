@@ -52,7 +52,6 @@ class HaalCentraalPrefill(BasePlugin):
     ) -> dict[str, Any]:
         client = config.build_client()
         assert client is not None
-        # FIXME: typing info on protocol
         client.context = PreRequestClientContext(submission=submission)
 
         data = client.find_person(bsn, attributes=attributes)

@@ -4,28 +4,40 @@ from typing import Protocol
 
 from requests import RequestException
 from zds_client import ClientError
-from zgw_consumers.client import ZGWClient
 
+from openforms.pre_requests.clients import PreRequestClientContext, PreRequestZGWClient
 from openforms.typing import JSONObject
 
 logger = logging.getLogger(__name__)
 
 
 class HaalCentraalClient(Protocol):
-    def __init__(self, service_client: ZGWClient):  # pragma: no cover
+    context: PreRequestClientContext | None
+
+    def __init__(self, service_client: PreRequestZGWClient):  # pragma: no cover
         ...
 
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
         ...
 
 
-class HaalCentraalV1Client:
+class BaseClient:
+    def __init__(self, service_client: PreRequestZGWClient):
+        self.service_client = service_client
+
+    @property
+    def context(self) -> PreRequestClientContext | None:
+        return self.service_client.context
+
+    @context.setter
+    def context(self, context: PreRequestClientContext) -> None:
+        self.service_client.context = context
+
+
+class HaalCentraalV1Client(BaseClient):
     """
     Haal Centraal 1.3 compatible client.
     """
-
-    def __init__(self, service_client: ZGWClient):
-        self.service_client = service_client
 
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
         try:
@@ -44,13 +56,10 @@ class HaalCentraalV1Client:
         return data
 
 
-class HaalCentraalV2Client:
+class HaalCentraalV2Client(BaseClient):
     """
     Haal Centraal 2.0 compatible client.
     """
-
-    def __init__(self, service_client: ZGWClient):
-        self.service_client = service_client
 
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
         attributes: Sequence[str] = kwargs.pop("attributes")

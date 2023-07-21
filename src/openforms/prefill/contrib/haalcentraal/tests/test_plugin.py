@@ -1,5 +1,5 @@
 from typing import Literal
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase, TestCase
 
@@ -9,6 +9,8 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.models import Service
 from zgw_consumers.test import mock_service_oas_get
 
+from openforms.pre_requests.base import PreRequestHookBase
+from openforms.pre_requests.registry import Registry
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -127,6 +129,29 @@ class HaalCentraalPluginTests:
 
         self.assertEqual(values, {})  # type: ignore
 
+    def test_pre_request_hooks_called(self):
+        pre_req_register = Registry()
+        mock = MagicMock()
+
+        @pre_req_register("test")
+        class PreRequestHook(PreRequestHookBase):
+            def __call__(self, *args, **kwargs):
+                mock(*args, **kwargs)
+
+        with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
+            attributes = self.config.get_attributes()
+            submission = SubmissionFactory.create(auth_info__value="999990676")
+            haalcentraal_plugin = register["haalcentraal"]
+
+            haalcentraal_plugin.get_prefill_values(
+                submission,
+                attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+            )
+
+            mock.assert_called_once()
+            context = mock.call_args.kwargs["context"]
+            self.assertIsNotNone(context)  # type: ignore
+
 
 class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
     version = HaalCentraalVersion.haalcentraal13
@@ -155,6 +180,14 @@ class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
             status_code=404,
         )
         super().test_person_not_found_returns_empty()
+
+    def test_pre_request_hooks_called(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v1-full.json"),
+        )
+        super().test_pre_request_hooks_called()
 
 
 class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
@@ -185,6 +218,14 @@ class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
             json={"personen": []},
         )
         super().test_person_not_found_returns_empty()
+
+    def test_pre_request_hooks_called(self):
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
+        )
+        super().test_pre_request_hooks_called()
 
 
 class HaalCentraalEmptyConfigTests(TestCase):
