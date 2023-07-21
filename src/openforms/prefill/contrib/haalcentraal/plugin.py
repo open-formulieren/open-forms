@@ -152,18 +152,21 @@ class HaalCentraalPrefill(BasePlugin):
         )
 
     def check_config(self):
-        try:
-            config = HaalCentraalConfig.get_solo()
-            assert isinstance(config, HaalCentraalConfig)
-            if not config.service:
-                raise InvalidPluginConfiguration(_("Service not selected"))
+        """
+        The purpose of this fuction is to simply check the connection to the
+        service, so we are using dummy data and an endpoint which does not exist.
+        We want to avoid calls to the national registration by using bsn numbers.
+        """
+        config = HaalCentraalConfig.get_solo()
+        assert isinstance(config, HaalCentraalConfig)
+        if not config.service:
+            raise InvalidPluginConfiguration(_("Service not selected"))
 
-            client = config.service.build_client()
-            # FIXME: haal centraal v2 client does not support GET methods
-            client.retrieve("test", "test")
+        client = config.build_client()
+        assert client is not None
+        try:
+            client.make_config_test_request()
         except ClientError as e:
-            if e.args[0].get("status") == 404:
-                return
             raise InvalidPluginConfiguration(
                 _("Client error: {exception}").format(exception=e)
             )

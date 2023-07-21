@@ -8,6 +8,8 @@ from zgw_consumers.client import ZGWClient
 
 from openforms.typing import JSONObject
 
+from .constants import AttributesV2
+
 logger = logging.getLogger(__name__)
 
 
@@ -16,6 +18,9 @@ class HaalCentraalClient(Protocol):
         ...
 
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
+        ...
+
+    def make_config_test_request(self) -> None:  # pragma: no cover
         ...
 
 
@@ -42,6 +47,14 @@ class HaalCentraalV1Client:
             return
 
         return data
+
+    def make_config_test_request(self):
+        try:
+            self.service_client.retrieve("test", "test")
+        except ClientError as e:
+            if e.args[0].get("status") == 404:
+                return
+            raise
 
 
 class HaalCentraalV2Client:
@@ -79,3 +92,22 @@ class HaalCentraalV2Client:
             return
 
         return data["personen"][0]
+
+    def make_config_test_request(self):
+        try:
+            self.service_client.operation(
+                "test",
+                data={
+                    "type": "RaadpleegMetBurgerservicenummer",
+                    "burgerservicenummer": ["test"],
+                    "fields": [AttributesV2.burgerservicenummer],
+                },
+                url="test",
+                request_kwargs={
+                    "headers": {"Content-Type": "application/json; charset=utf-8"}
+                },
+            )
+        except ClientError as e:
+            if e.args[0].get("status") == 400:
+                return
+            raise
