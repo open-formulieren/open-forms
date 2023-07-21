@@ -67,8 +67,11 @@ class LocationSerializer(serializers.Serializer):
 
 
 class LocationInputSerializer(serializers.Serializer):
-    product_id = serializers.CharField(
-        label=_("product ID"), help_text=_("ID of the product to get locations for")
+    product_id = serializers.ListField(
+        child=ProductIDField(help_text=_("ID of the product to get locations for")),
+        label=_("Product IDs"),
+        help_text=_("One or more product IDs to get available locations for."),
+        min_length=1,
     )
 
 

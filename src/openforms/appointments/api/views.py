@@ -1,9 +1,10 @@
 import logging
+import warnings
 
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
-from drf_spectacular.plumbing import build_array_type
+from drf_spectacular.plumbing import build_array_type, build_basic_type
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -47,6 +48,25 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
+def warn_serializer_validation_deprecation():
+    warnings.warn(
+        "Starting with Open Forms 3.0, input validation will raise HTTP 400 instead "
+        "of returning an empty result list.",
+        DeprecationWarning,
+    )
+
+
+PRODUCT_QUERY_PARAMETER = OpenApiParameter(
+    name="product_id",
+    type=build_array_type(build_basic_type(str), min_length=1),
+    location=OpenApiParameter.QUERY,
+    description=_("ID of the product, repeat for multiple products."),
+    required=True,
+    style="form",
+    explode=True,
+)
+
+
 @extend_schema(
     summary=_("List available products"),
 )
@@ -76,15 +96,7 @@ class ProductsListView(ListMixin, APIView):
 # issue to refactor this is here: https://github.com/open-formulieren/open-forms/issues/611
 @extend_schema(
     summary=_("List available locations for a given product"),
-    parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product"),
-            required=True,
-        ),
-    ],
+    parameters=[PRODUCT_QUERY_PARAMETER],
 )
 class LocationsListView(ListMixin, APIView):
     """
@@ -106,17 +118,14 @@ class LocationsListView(ListMixin, APIView):
         # Instead, we just return an empty result list which populates dropdowns with
         # empty options.
         if not is_valid:
+            warn_serializer_validation_deprecation()
             return []
-
-        product = Product(
-            identifier=serializer.validated_data["product_id"], code="", name=""
-        )
-
+        products = serializer.validated_data["product_id"]
         plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-locations", span_type="app.appointments.get_locations"
         ):
-            return plugin.get_locations([product])
+            return plugin.get_locations(products)
 
 
 @extend_schema(
