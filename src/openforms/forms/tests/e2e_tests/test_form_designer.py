@@ -9,6 +9,7 @@ from furl import furl
 from playwright.async_api import Page, expect
 
 from openforms.config.models import GlobalConfiguration
+from openforms.products.tests.factories import ProductFactory
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.utils.tests.cache import clear_caches
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
@@ -1307,3 +1308,65 @@ class FormDesignerMapComponentTests(E2ETestCase):
 
             error_node = page.locator("css=.error")
             await expect(error_node).to_be_visible()
+
+
+class AppointmentFormTests(E2ETestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(clear_caches)
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+        config.enable_new_appointments = True
+        config.save()
+
+    async def test_appointment_form_nukes_irrelevant_configuration(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright appointment test",
+                generate_minimal_setup=True,
+                is_appointment=False,
+                registration_backend="email",
+                registration_backend_options={
+                    "to_emails": ["foo@example.com"],
+                },
+                product=ProductFactory.create(),
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            await page.get_by_label("Appointment enabled").click()
+
+            with phase("save form changes to backend"):
+                await page.get_by_role("button", name="Save", exact=True).click()
+                changelist_url = str(
+                    furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+                )
+                await expect(page).to_have_url(changelist_url)
+
+        @sync_to_async
+        def assertState():
+            form.refresh_from_db()
+
+            self.assertTrue(form.is_appointment)
+            self.assertFalse(form.formstep_set.exists())
+            self.assertFalse(form.formvariable_set.exists())
+            self.assertEqual(form.registration_backend, "")
+            self.assertEqual(form.registration_backend_options, {})
+            self.assertEqual(form.payment_backend, "")
+            self.assertEqual(form.payment_backend_options, {})
+            self.assertIsNone(form.product)
+
+        await assertState()

@@ -1124,6 +1124,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   // dev/debug helper
   const activeTab = new URLSearchParams(window.location.search).get('tab');
 
+  const {isAppointment = false} = state.form.appointmentOptions;
+
   return (
     <ValidationErrorsProvider errors={state.validationErrors}>
       <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} formUrl={formUrl} />
@@ -1169,43 +1171,51 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             <Tab hasErrors={state.tabsWithErrors.includes('form')}>
               <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
             </Tab>
-            <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
-              <FormattedMessage
-                defaultMessage="Steps and fields"
-                description="Form design tab title"
-              />
-            </Tab>
+            {!isAppointment && (
+              <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
+                <FormattedMessage
+                  defaultMessage="Steps and fields"
+                  description="Form design tab title"
+                />
+              </Tab>
+            )}
             <Tab hasErrors={state.tabsWithErrors.includes('submission-confirmation')}>
               <FormattedMessage
                 defaultMessage="Confirmation"
                 description="Form confirmation options tab title"
               />
             </Tab>
-            <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
-              <FormattedMessage
-                defaultMessage="Registration"
-                description="Form registration options tab title"
-              />
-            </Tab>
+            {!isAppointment && (
+              <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
+                <FormattedMessage
+                  defaultMessage="Registration"
+                  description="Form registration options tab title"
+                />
+              </Tab>
+            )}
             <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
               <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
             </Tab>
-            <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
-              <FormattedMessage
-                defaultMessage="Product & payment"
-                description="Product & payments tab title"
-              />
-            </Tab>
+            {!isAppointment && (
+              <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
+                <FormattedMessage
+                  defaultMessage="Product & payment"
+                  description="Product & payments tab title"
+                />
+              </Tab>
+            )}
             <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
               <FormattedMessage
                 defaultMessage="Data removal"
                 description="Data removal tab title"
               />
             </Tab>
-            <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
-              <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
-            </Tab>
-            {!state.form.appointmentOptions?.isAppointment && (
+            {!isAppointment && (
+              <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
+                <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
+              </Tab>
+            )}
+            {!isAppointment && (
               <Tab>
                 <FormattedMessage
                   defaultMessage="Appointments"
@@ -1213,9 +1223,11 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
                 />
               </Tab>
             )}
-            <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
-              <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
-            </Tab>
+            {!isAppointment && (
+              <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
+                <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
+              </Tab>
+            )}
           </TabList>
 
           <TabPanel>
@@ -1230,32 +1242,34 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             />
           </TabPanel>
 
-          <TabPanel>
-            <Fieldset
-              title={
-                <FormattedMessage
-                  defaultMessage="Form design"
-                  description="Form design/editor fieldset title"
+          {!isAppointment && (
+            <TabPanel>
+              <Fieldset
+                title={
+                  <FormattedMessage
+                    defaultMessage="Form design"
+                    description="Form design/editor fieldset title"
+                  />
+                }
+              >
+                <StepsFieldSet
+                  steps={state.formSteps}
+                  loadingErrors={state.errors.loadingErrors}
+                  onEdit={onStepEdit}
+                  onComponentMutated={onComponentMutated}
+                  onFieldChange={onStepFieldChange}
+                  onDelete={onStepDelete}
+                  onReorder={onStepReorder}
+                  onReplace={onStepReplace}
+                  onAdd={e => {
+                    e.preventDefault();
+                    dispatch({type: 'ADD_STEP'});
+                  }}
+                  submitting={state.submitting}
                 />
-              }
-            >
-              <StepsFieldSet
-                steps={state.formSteps}
-                loadingErrors={state.errors.loadingErrors}
-                onEdit={onStepEdit}
-                onComponentMutated={onComponentMutated}
-                onFieldChange={onStepFieldChange}
-                onDelete={onStepDelete}
-                onReorder={onStepReorder}
-                onReplace={onStepReplace}
-                onAdd={e => {
-                  e.preventDefault();
-                  dispatch({type: 'ADD_STEP'});
-                }}
-                submitting={state.submitting}
-              />
-            </Fieldset>
-          </TabPanel>
+              </Fieldset>
+            </TabPanel>
+          )}
 
           <TabPanel>
             <Confirmation
@@ -1268,34 +1282,38 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             />
           </TabPanel>
 
-          <TabPanel>
-            <RegistrationFields
-              backends={state.availableRegistrationBackends}
-              selectedBackend={state.form.registrationBackend}
-              backendOptions={state.form.registrationBackendOptions}
-              onChange={onFieldChange}
-            />
-          </TabPanel>
+          {!isAppointment && (
+            <TabPanel>
+              <RegistrationFields
+                backends={state.availableRegistrationBackends}
+                selectedBackend={state.form.registrationBackend}
+                backendOptions={state.form.registrationBackendOptions}
+                onChange={onFieldChange}
+              />
+            </TabPanel>
+          )}
 
           <TabPanel>
             <TextLiterals onChange={onFieldChange} translations={state.form.translations} />
           </TabPanel>
 
-          <TabPanel>
-            <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
-            <PaymentFields
-              backends={state.availablePaymentBackends}
-              selectedBackend={state.form.paymentBackend}
-              backendOptions={state.form.paymentBackendOptions}
-              onChange={onFieldChange}
-            />
-            <PriceLogic
-              rules={state.priceRules}
-              onChange={onPriceRuleChange}
-              onDelete={index => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
-              onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
-            />
-          </TabPanel>
+          {!isAppointment && (
+            <TabPanel>
+              <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
+              <PaymentFields
+                backends={state.availablePaymentBackends}
+                selectedBackend={state.form.paymentBackend}
+                backendOptions={state.form.paymentBackendOptions}
+                onChange={onFieldChange}
+              />
+              <PriceLogic
+                rules={state.priceRules}
+                onChange={onPriceRuleChange}
+                onDelete={index => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
+                onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
+              />
+            </TabPanel>
+          )}
 
           <TabPanel>
             <DataRemoval
@@ -1304,17 +1322,19 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             />
           </TabPanel>
 
-          <TabPanel>
-            <FormLogic
-              logicRules={state.logicRules}
-              onChange={onRuleChange}
-              onServiceFetchAdd={onServiceFetchAdd}
-              onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-              onAdd={() => dispatch({type: 'ADD_RULE'})}
-            />
-          </TabPanel>
+          {!isAppointment && (
+            <TabPanel>
+              <FormLogic
+                logicRules={state.logicRules}
+                onChange={onRuleChange}
+                onServiceFetchAdd={onServiceFetchAdd}
+                onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                onAdd={() => dispatch({type: 'ADD_RULE'})}
+              />
+            </TabPanel>
+          )}
 
-          {!state.form.appointmentOptions?.isAppointment && (
+          {!isAppointment && (
             <TabPanel>
               <Appointments
                 onChange={event => {
@@ -1327,19 +1347,21 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             </TabPanel>
           )}
 
-          <TabPanel>
-            <VariablesEditor
-              variables={state.formVariables}
-              onAdd={() => dispatch({type: 'ADD_USER_DEFINED_VARIABLE'})}
-              onDelete={key => dispatch({type: 'DELETE_USER_DEFINED_VARIABLE', payload: key})}
-              onChange={(key, propertyName, propertyValue) =>
-                dispatch({
-                  type: 'CHANGE_USER_DEFINED_VARIABLE',
-                  payload: {key, propertyName, propertyValue},
-                })
-              }
-            />
-          </TabPanel>
+          {!isAppointment && (
+            <TabPanel>
+              <VariablesEditor
+                variables={state.formVariables}
+                onAdd={() => dispatch({type: 'ADD_USER_DEFINED_VARIABLE'})}
+                onDelete={key => dispatch({type: 'DELETE_USER_DEFINED_VARIABLE', payload: key})}
+                onChange={(key, propertyName, propertyValue) =>
+                  dispatch({
+                    type: 'CHANGE_USER_DEFINED_VARIABLE',
+                    payload: {key, propertyName, propertyValue},
+                  })
+                }
+              />
+            </TabPanel>
+          )}
         </Tabs>
       </FormContext.Provider>
 
