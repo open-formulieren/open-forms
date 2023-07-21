@@ -208,6 +208,29 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
         self.assertEqual(len(response.json()), 106)
         self.assertEqual(response.json()[0], {"time": "2021-08-23T08:00:00+02:00"})
 
+    @requests_mock.Mocker()
+    def test_get_times_multiple_products(self, m):
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
+        )
+
+        response = self.client.get(
+            self.endpoint,
+            {"product_id": ["1", "2"], "location_id": "1", "date": "2021-8-23"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        xml_doc = fromstring(m.last_request.body)
+        request = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:getGovAvailableTimesPerDayRequest",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+        self.assertEqual(product_ids, "1,2")
+
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [
             {},

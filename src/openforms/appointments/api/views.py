@@ -25,7 +25,6 @@ from openforms.submissions.api.permissions import (
 )
 from openforms.submissions.models import Submission
 
-from ..base import Location, Product
 from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
 from ..models import Appointment, AppointmentsConfig
 from ..utils import delete_appointment_for_submission, get_plugin
@@ -180,20 +179,8 @@ class DatesListView(ListMixin, APIView):
 @extend_schema(
     summary=_("List available times for a given location, product, and date"),
     parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product"),
-            required=True,
-        ),
-        OpenApiParameter(
-            "location_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the location"),
-            required=True,
-        ),
+        PRODUCT_QUERY_PARAMETER,
+        LOCATION_QUERY_PARAMETER,
         OpenApiParameter(
             "date",
             OpenApiTypes.DATE,
@@ -223,22 +210,18 @@ class TimesListView(ListMixin, APIView):
         # Instead, we just return an empty result list which populates dropdowns with
         # empty options.
         if not is_valid:
+            warn_serializer_validation_deprecation()
             return []
 
-        product = Product(
-            identifier=serializer.validated_data["product_id"], code="", name=""
-        )
-        location = Location(
-            identifier=serializer.validated_data["location_id"], name=""
-        )
+        products = serializer.validated_data["product_id"]
+        location = serializer.validated_data["location_id"]
+        date = serializer.validated_data["date"]
 
         plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-times", span_type="app.appointments.get_times"
         ):
-            times = plugin.get_times(
-                [product], location, serializer.validated_data["date"]
-            )
+            times = plugin.get_times(products, location, date)
         return [{"time": time} for time in times]
 
 

@@ -90,12 +90,13 @@ class DateSerializer(serializers.Serializer):
 
 
 class TimeInputSerializer(serializers.Serializer):
-    product_id = serializers.CharField(
-        label=_("product ID"), help_text=_("ID of the product to get times for")
+    product_id = serializers.ListField(
+        child=ProductIDField(help_text=_("ID of the product to get times for")),
+        label=_("Product IDs"),
+        help_text=_("One or more product IDs to get available times for."),
+        min_length=1,
     )
-    location_id = serializers.CharField(
-        label=_("location ID"), help_text=_("ID of the location to get times for")
-    )
+    location_id = LocationIDField(help_text=_("ID of the location to get times for"))
     date = serializers.DateField(label=_("date"), help_text=_("Date to get times for"))
 
 
