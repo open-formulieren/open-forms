@@ -8,12 +8,15 @@ from privates.test import temp_private_root
 from requests import ConnectTimeout
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
+from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionValueVariableFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
 from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_history
@@ -2682,3 +2685,124 @@ class StufZDSPluginTests(StUFZDSTestBase):
         submission.refresh_from_db()
 
         self.assertEqual(submission.public_registration_reference, "ZAAK-FOOO")
+
+    @patch("celery.app.task.Task.request")
+    def test_user_defined_variables(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+            ],
+            form__name="my-form",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
+            submitted_data={
+                "voornaam": "Foo",
+            },
+            language_code="en",
+            completed=True,
+        )
+
+        user_var_string = FormVariableFactory.create(
+            form=submission.form,
+            key="userDefinedVarString",
+            source=FormVariableSources.user_defined,
+        )
+        SubmissionValueVariableFactory.create(
+            key="userDefinedVarString",
+            submission=submission,
+            form_variable=user_var_string,
+            value="value",
+        )
+        user_var_json = FormVariableFactory.create(
+            form=submission.form,
+            key="userDefinedVarJson",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.object,
+        )
+        SubmissionValueVariableFactory.create(
+            key="userDefinedVarJson",
+            submission=submission,
+            form_variable=user_var_json,
+            value={"key1": "value1", "key2": ["value2"]},
+        )
+        user_var_array = FormVariableFactory.create(
+            form=submission.form,
+            key="userDefinedVarArray",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.array,
+        )
+        SubmissionValueVariableFactory.create(
+            key="userDefinedVarArray",
+            submission=submission,
+            form_variable=user_var_array,
+            value=["value1", {"key1": "value2"}],
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        # Needed for the PDF report
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        plugin.register_submission(submission, serializer.validated_data)
+
+        xml_request_body = xml_from_request_history(m, 0)
+
+        self.assertXPathEquals(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarString']",
+            "value",
+        )
+        self.assertXPathEquals(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarArray.0']",
+            "value1",
+        )
+        self.assertXPathEquals(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarArray.1.key1']",
+            "value2",
+        )
+        self.assertXPathEquals(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarJson.key1']",
+            "value1",
+        )
+        self.assertXPathEquals(
+            xml_request_body,
+            "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarJson.key2.0']",
+            "value2",
+        )
