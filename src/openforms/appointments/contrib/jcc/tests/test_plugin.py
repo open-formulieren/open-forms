@@ -2,6 +2,7 @@ import re
 from datetime import date, datetime
 
 from django.test import SimpleTestCase, TestCase
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
@@ -146,20 +147,22 @@ class PluginTests(MockConfigMixin, TestCase):
                 [date(2021, 8, 19), date(2021, 8, 20), date(2021, 8, 23)],
             )
 
-    def test_get_times(self):
+    @requests_mock.mock()
+    def test_get_times(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
         test_date = date(2021, 8, 23)
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
+        )
 
-        with requests_mock.mock() as m:
-            m.post(
-                "http://example.com/soap11",
-                text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
-            )
+        times = self.plugin.get_times([product], location, test_date)
 
-            times = self.plugin.get_times([product], location, test_date)
-            self.assertEqual(len(times), 106)
-            self.assertEqual(times[0], datetime(2021, 8, 23, 8, 0, 0))
+        self.assertEqual(len(times), 106)
+        # 8 AM in summer in AMS -> 6 AM in UTC
+        ams_expected_time = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        self.assertEqual(times[0], ams_expected_time)
 
     @requests_mock.Mocker()
     def test_get_required_customer_fields(self, m):

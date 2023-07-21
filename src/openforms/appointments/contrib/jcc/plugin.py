@@ -6,9 +6,11 @@ from functools import wraps
 from typing import Callable, List, ParamSpec, TypeVar
 
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+import pytz
 from requests.exceptions import RequestException
 from zeep.client import Client
 from zeep.exceptions import Error as ZeepError
@@ -38,6 +40,8 @@ from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
 logger = logging.getLogger(__name__)
+
+TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
 
 
 def squash_ids(products: list[Product]):
@@ -203,7 +207,7 @@ class JccAppointment(BasePlugin):
         products: List[Product],
         location: Location,
         day: date,
-    ) -> List[datetime]:
+    ) -> list[datetime]:
         product_ids = squash_ids(products)
 
         client = get_client()
@@ -213,12 +217,17 @@ class JccAppointment(BasePlugin):
             location,
             day,
         ):
-            return client.service.getGovAvailableTimesPerDay(
+            naive_datetimes = client.service.getGovAvailableTimesPerDay(
                 date=day,
                 productID=product_ids,
                 locationID=location.identifier,
                 appDuration=0,
             )
+            # JCC returns datetimes without TZ information, so we can assume that it's
+            # in Europe/Amsterdam
+        return [
+            timezone.make_aware(dt, timezone=TIMEZONE_AMS) for dt in naive_datetimes
+        ]
 
     @with_graceful_default(default=[])
     def get_required_customer_fields(
