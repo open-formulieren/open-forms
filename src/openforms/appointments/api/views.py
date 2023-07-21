@@ -227,15 +227,7 @@ class TimesListView(ListMixin, APIView):
 
 @extend_schema(
     summary=_("Get required customer field details for a given product"),
-    parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product, may be repeated for multiple products."),
-            required=True,
-        ),
-    ],
+    parameters=[PRODUCT_QUERY_PARAMETER],
     responses={
         200: OpenApiResponse(
             response=build_array_type(FORMIO_COMPONENT_SCHEMA, min_length=1),
@@ -269,14 +261,14 @@ class RequiredCustomerFieldsListView(APIView):
         input_serializer = CustomerFieldsInputSerializer(data=self.request.query_params)
         input_serializer.is_valid(raise_exception=True)
 
-        product = input_serializer.validated_data["product_id"]
+        products = input_serializer.validated_data["product_id"]
         plugin = get_plugin()
 
         with elasticapm.capture_span(
             name="get-required-customer-fields",
             span_type="app.appointments.get_required_customer_fields",
         ):
-            fields = plugin.get_required_customer_fields([product])
+            fields = plugin.get_required_customer_fields(products)
 
         return Response(fields)
 

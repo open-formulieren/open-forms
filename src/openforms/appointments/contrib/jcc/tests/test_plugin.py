@@ -167,9 +167,16 @@ class PluginTests(MockConfigMixin, TestCase):
             "http://example.com/soap11",
             text=mock_response("getRequiredClientFieldsResponse.xml"),
         )
-        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        products = [
+            Product(identifier="1", code="PASAAN", name="Paspoort aanvraag"),
+            Product(
+                identifier="5",
+                code="RIJAAN",
+                name="Rijbewijs aanvraag (Drivers license)",
+            ),
+        ]
 
-        fields = self.plugin.get_required_customer_fields([product])
+        fields = self.plugin.get_required_customer_fields(products)
 
         self.assertEqual(len(fields), 4)
         last_name, dob, tel, email = fields
@@ -201,6 +208,17 @@ class PluginTests(MockConfigMixin, TestCase):
             self.assertEqual(email["label"], _("Email address"))
             self.assertEqual(email["autocomplete"], "email")
             self.assertEqual(email["validate"]["maxLength"], 254)
+
+        with self.subTest("SOAP request"):
+            xml_doc = fromstring(m.last_request.body)
+            request = get_xpath(
+                xml_doc,
+                "/soap-env:Envelope/soap-env:Body/ns0:GetRequiredClientFieldsRequest",
+            )[  # type: ignore
+                0
+            ]
+            product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+            self.assertEqual(product_ids, "1,5")
 
     @requests_mock.Mocker()
     def test_create_appointment(self, m):

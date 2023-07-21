@@ -111,8 +111,13 @@ class CancelAppointmentInputSerializer(serializers.Serializer):
 
 
 class CustomerFieldsInputSerializer(serializers.Serializer):
-    product_id = ProductIDField(
-        help_text=_("ID of the product to get required fields for")
+    product_id = serializers.ListField(
+        child=ProductIDField(
+            help_text=_("ID of the product to get required fields for")
+        ),
+        label=_("Product IDs"),
+        help_text=_("One or more product IDs to get required fields for."),
+        min_length=1,
     )
 
 

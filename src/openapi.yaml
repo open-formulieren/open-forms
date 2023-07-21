@@ -194,9 +194,14 @@ paths:
       - in: query
         name: product_id
         schema:
-          type: string
-        description: ID of the product, may be repeated for multiple products.
+          type: array
+          items:
+            type: string
+          minLength: 1
+        description: ID of the product, repeat for multiple products.
         required: true
+        explode: true
+        style: form
       tags:
       - appointments
       responses:
@@ -281,9 +286,14 @@ paths:
       - in: query
         name: product_id
         schema:
-          type: string
-        description: ID of the product
+          type: array
+          items:
+            type: string
+          minLength: 1
+        description: ID of the product, repeat for multiple products.
         required: true
+        explode: true
+        style: form
       tags:
       - appointments
       responses:
@@ -396,9 +406,14 @@ paths:
       - in: query
         name: product_id
         schema:
-          type: string
-        description: ID of the product
+          type: array
+          items:
+            type: string
+          minLength: 1
+        description: ID of the product, repeat for multiple products.
         required: true
+        explode: true
+        style: form
       tags:
       - appointments
       responses:
