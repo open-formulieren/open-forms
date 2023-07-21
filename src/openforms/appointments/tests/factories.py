@@ -6,7 +6,7 @@ import factory.fuzzy
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..constants import AppointmentDetailsStatus
-from ..models import Appointment, AppointmentInfo, AppointmentProduct
+from ..models import AppointmentInfo
 
 
 class AppointmentInfoFactory(factory.django.DjangoModelFactory):

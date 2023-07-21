@@ -77,7 +77,7 @@ class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             "http://example.com/soap11",
             text=mock_response("getGovLocationsForProductResponse.xml"),
         )
-        response = self.client.get(self.endpoint, {"product_id": ["79", "38"]})
+        response = self.client.get(self.endpoint, {"product_id": ["38", "79"]})
 
         self.assertEqual(response.status_code, 200)
         xml_doc = fromstring(m.last_request.body)
@@ -88,8 +88,7 @@ class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             0
         ]
         product_ids = get_xpath(request, "productID")[0].text  # type: ignore
-        ids = sorted(product_ids.split(","))
-        self.assertEqual(ids, ["38", "79"])
+        self.assertEqual(product_ids, "38,79")
 
     def test_get_locations_returns_400_when_no_product_id_is_given(self):
         response = self.client.get(self.endpoint)
@@ -125,13 +124,40 @@ class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             ],
         )
 
-        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        response = self.client.get(
+            self.endpoint, {"product_id": "1", "location_id": "1"}
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
             [{"date": "2021-08-19"}, {"date": "2021-08-20"}, {"date": "2021-08-23"}],
         )
+
+    @requests_mock.Mocker()
+    def test_get_dates_multiple_products(self, m):
+        m.post(
+            "http://example.com/soap11",
+            [
+                {"text": mock_response("getGovLatestPlanDateResponse.xml")},
+                {"text": mock_response("getGovAvailableDaysResponse.xml")},
+            ],
+        )
+
+        response = self.client.get(
+            self.endpoint, {"product_id": ["1", "2"], "location_id": "1"}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        xml_doc = fromstring(m.last_request.body)
+        request = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:getGovAvailableDaysRequest",
+        )[  # type: ignore
+            0
+        ]
+        product_ids = get_xpath(request, "productID")[0].text  # type: ignore
+        self.assertEqual(product_ids, "1,2")
 
     def test_get_dates_returns_400_when_missing_query_params(self):
         for query_param in [{}, {"product_id": 79}, {"location_id": 1}]:

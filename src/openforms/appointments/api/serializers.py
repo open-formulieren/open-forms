@@ -14,7 +14,7 @@ from openforms.submissions.api.fields import PrivacyPolicyAcceptedField
 from ..base import BasePlugin, Product
 from ..models import Appointment, AppointmentProduct, AppointmentsConfig
 from ..utils import get_plugin
-from .fields import ProductIDField
+from .fields import LocationIDField, ProductIDField
 
 
 class AppointmentOptionsSerializer(serializers.Serializer):
@@ -76,12 +76,13 @@ class LocationInputSerializer(serializers.Serializer):
 
 
 class DateInputSerializer(serializers.Serializer):
-    product_id = serializers.CharField(
-        label=_("product ID"), help_text=_("ID of the product to get dates for")
+    product_id = serializers.ListField(
+        child=ProductIDField(help_text=_("ID of the product to get dates for")),
+        label=_("Product IDs"),
+        help_text=_("One or more product IDs to get available dates for."),
+        min_length=1,
     )
-    location_id = serializers.CharField(
-        label=_("location ID"), help_text=_("ID of the location to get dates for")
-    )
+    location_id = LocationIDField(help_text=_("ID of the location to get dates for"))
 
 
 class DateSerializer(serializers.Serializer):

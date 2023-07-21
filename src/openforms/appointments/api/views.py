@@ -56,6 +56,9 @@ def warn_serializer_validation_deprecation():
     )
 
 
+# TODO: see openforms.validations.api.serializers.ValidatorsFilterSerializer.as_openapi_params
+# and https://github.com/open-formulieren/open-forms/issues/611
+
 PRODUCT_QUERY_PARAMETER = OpenApiParameter(
     name="product_id",
     type=build_array_type(build_basic_type(str), min_length=1),
@@ -64,6 +67,13 @@ PRODUCT_QUERY_PARAMETER = OpenApiParameter(
     required=True,
     style="form",
     explode=True,
+)
+LOCATION_QUERY_PARAMETER = OpenApiParameter(
+    "location_id",
+    OpenApiTypes.STR,
+    OpenApiParameter.QUERY,
+    description=_("ID of the location"),
+    required=True,
 )
 
 
@@ -92,8 +102,6 @@ class ProductsListView(ListMixin, APIView):
             return plugin.get_available_products(**kwargs)
 
 
-# The serializer + @extend_schema approach for querystring params is not ideal, the
-# issue to refactor this is here: https://github.com/open-formulieren/open-forms/issues/611
 @extend_schema(
     summary=_("List available locations for a given product"),
     parameters=[PRODUCT_QUERY_PARAMETER],
@@ -131,20 +139,8 @@ class LocationsListView(ListMixin, APIView):
 @extend_schema(
     summary=_("List available dates for a given location and product"),
     parameters=[
-        OpenApiParameter(
-            "product_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the product"),
-            required=True,
-        ),
-        OpenApiParameter(
-            "location_id",
-            OpenApiTypes.STR,
-            OpenApiParameter.QUERY,
-            description=_("ID of the location"),
-            required=True,
-        ),
+        PRODUCT_QUERY_PARAMETER,
+        LOCATION_QUERY_PARAMETER,
     ],
 )
 class DatesListView(ListMixin, APIView):
@@ -167,20 +163,17 @@ class DatesListView(ListMixin, APIView):
         # Instead, we just return an empty result list which populates dropdowns with
         # empty options.
         if not is_valid:
+            warn_serializer_validation_deprecation()
             return []
 
-        product = Product(
-            identifier=serializer.validated_data["product_id"], code="", name=""
-        )
-        location = Location(
-            identifier=serializer.validated_data["location_id"], name=""
-        )
+        products = serializer.validated_data["product_id"]
+        location = serializer.validated_data["location_id"]
 
         plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-dates", span_type="app.appointments.get_dates"
         ):
-            dates = plugin.get_dates([product], location)
+            dates = plugin.get_dates(products, location)
         return [{"date": date} for date in dates]
 
 
