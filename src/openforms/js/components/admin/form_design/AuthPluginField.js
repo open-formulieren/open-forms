@@ -13,13 +13,13 @@ const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, e
       <FormattedMessage
         description="Auth plugin provided attributes suffix"
         defaultMessage="(provides {attrs})"
-        values={{attrs: plugin.providesAuth.join(', ')}}
+        values={{attrs: plugin.providesAuth}}
       />
     );
     const label = (
       <>
         {plugin.label}
-        {plugin.providesAuth.length ? <> {providedAttributes}</> : null}
+        {<> {providedAttributes}</>}
       </>
     );
 

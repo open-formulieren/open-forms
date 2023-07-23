@@ -5990,10 +5990,7 @@ components:
           type: string
           description: The human-readable name for a plugin.
         providesAuth:
-          type: array
-          items:
-            type: string
-            title: Authentication attribute
+          type: string
           title: Provides authentication attributes
           description: The authentication attribute provided by this plugin.
         assuranceLevels:
