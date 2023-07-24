@@ -105,7 +105,7 @@ click-repl==0.2.0
     # via
     #   -r requirements/base.txt
     #   celery
-cryptography==41.0.1
+cryptography==41.0.2
     # via
     #   -r requirements/base.txt
     #   django-simple-certmanager
@@ -125,7 +125,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.19
+django==3.2.20
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -485,7 +485,7 @@ phonenumbers==8.12.29
     #   -c requirements/base.in
     #   -r requirements/base.txt
     #   maykin-django-two-factor-auth
-pillow==9.3.0
+pillow==10.0.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
