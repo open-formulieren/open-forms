@@ -82,7 +82,8 @@
   "2Z/hNo": {
     "defaultMessage": "Type",
     "description": "Camunda complex process var 'type' label",
-    "originalDefault": "Type"
+    "originalDefault": "Type",
+    "isTranslated": true
   },
   "2boL55": {
     "defaultMessage": "Query-parameters",
@@ -154,10 +155,16 @@
     "description": "Label for add button used in MappingArrayInput",
     "originalDefault": "Add another value"
   },
+  "5ZI59Y": {
+    "defaultMessage": "Main/machtiger",
+    "description": "Choices (main/authorised person) label",
+    "originalDefault": "Main"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
-    "originalDefault": "minus"
+    "originalDefault": "minus",
+    "isTranslated": true
   },
   "5zieWh": {
     "defaultMessage": "Naam van de formulierdefinitie die in deze stap gebruikt wordt.",
@@ -177,7 +184,8 @@
   "6ZW12a": {
     "defaultMessage": "Request body",
     "description": "Service fetch configuration modal form request body field label",
-    "originalDefault": "Request body"
+    "originalDefault": "Request body",
+    "isTranslated": true
   },
   "6hApJ7": {
     "defaultMessage": "Ingelogd blijven",
@@ -252,7 +260,8 @@
   "8VqmbG": {
     "defaultMessage": "Type",
     "description": "JSON editor: 'type' header label",
-    "originalDefault": "Type"
+    "originalDefault": "Type",
+    "isTranslated": true
   },
   "8hSjw4": {
     "defaultMessage": "Component {label} ({key}) steunt op een niet-bestaande component key {missingKey} in de eenvoudige logica.",
@@ -387,7 +396,8 @@
   "BrGg65": {
     "defaultMessage": "plus",
     "description": "\"+\" operator description",
-    "originalDefault": "plus"
+    "originalDefault": "plus",
+    "isTranslated": true
   },
   "BrsG4w": {
     "defaultMessage": "dan is de prijs",
@@ -482,7 +492,8 @@
   "Ev+T9r": {
     "defaultMessage": "in",
     "description": "\"in\" operator description",
-    "originalDefault": "in"
+    "originalDefault": "in",
+    "isTranslated": true
   },
   "F+cPJR": {
     "defaultMessage": "de lijst",
@@ -807,7 +818,8 @@
   "O3l+pQ": {
     "defaultMessage": "Type",
     "description": "JSON datatype selector label",
-    "originalDefault": "Type"
+    "originalDefault": "Type",
+    "isTranslated": true
   },
   "OB48En": {
     "defaultMessage": "Design token waarden",
@@ -824,6 +836,11 @@
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
   },
+  "OibWN2": {
+    "defaultMessage": "Prefill-bron",
+    "description": "Variable table identifier role attribute title",
+    "originalDefault": "Prefill identifier role"
+  },
   "OobRu3": {
     "defaultMessage": "Geavanceerd",
     "description": "Advanced logic type",
@@ -832,7 +849,8 @@
   "Orf0vr": {
     "defaultMessage": "Update",
     "description": "Update service fetch configuration button label",
-    "originalDefault": "Update"
+    "originalDefault": "Update",
+    "isTranslated": true
   },
   "OvqnXR": {
     "defaultMessage": "Ja",
@@ -877,12 +895,18 @@
   "PtZ96W": {
     "defaultMessage": "Alias",
     "description": "Manage process vars alias column title",
-    "originalDefault": "Alias"
+    "originalDefault": "Alias",
+    "isTranslated": true
   },
   "PwUKIe": {
     "defaultMessage": "(biedt {attrs} aan)",
     "description": "Auth plugin provided attributes suffix",
     "originalDefault": "(provides {attrs})"
+  },
+  "Q7oBP/": {
+    "defaultMessage": "Gemachtigde",
+    "description": "Choices (main/authorised person) label",
+    "originalDefault": "Authorised person"
   },
   "QAbqb6": {
     "defaultMessage": "Regel toevoegen",
@@ -1052,12 +1076,14 @@
   "WQCs+M": {
     "defaultMessage": "Product",
     "description": "Product fieldset title",
-    "originalDefault": "Product"
+    "originalDefault": "Product",
+    "isTranslated": true
   },
   "WUTOwp": {
     "defaultMessage": "Service",
     "description": "Service fetch configuration modal form Service field label",
-    "originalDefault": "Service"
+    "originalDefault": "Service",
+    "isTranslated": true
   },
   "WdVKZw": {
     "defaultMessage": "Logica",
@@ -1202,7 +1228,8 @@
   "c1XyJ4": {
     "defaultMessage": "Component",
     "description": "Component variables tab title",
-    "originalDefault": "Component"
+    "originalDefault": "Component",
+    "isTranslated": true
   },
   "cDbGU2": {
     "defaultMessage": "bewaartermijn voor sessies",
@@ -1222,7 +1249,8 @@
   "cV72I+": {
     "defaultMessage": "Product",
     "description": "Form product label",
-    "originalDefault": "Product"
+    "originalDefault": "Product",
+    "isTranslated": true
   },
   "cZbqaM": {
     "defaultMessage": "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven de startknop(pen).",

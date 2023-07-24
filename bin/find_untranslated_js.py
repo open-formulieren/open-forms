@@ -13,6 +13,8 @@ def main():
         # skip translated messages
         if trans_object["defaultMessage"] != trans_object["originalDefault"]:
             continue
+        if trans_object.get("isTranslated", False):
+            continue
 
         print(
             f"ID '{unique_id}' appears untranslated, defaultMessage: {trans_object['originalDefault']}"

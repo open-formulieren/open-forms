@@ -255,6 +255,7 @@
   "Decimal Places": "Decimalen",
   "Allow negative values": "Laat negatieve waarden toe",
   "Allow negative values.": "Laat negatieve waarden toe.",
+  "A short indicator to discribe the field value.": "Korte beschrijvende indicatie voor waarden, bijvoorbeeld 'm&lt;sup&gt;3&lt;/sup&gt;'.",
   "Invalid BSN": "Ongeldig BSN",
   "Invalid RSIN": "Ongeldig RSIN",
   "Invalid Phone Number": "Ongeldig telefoonnummer",

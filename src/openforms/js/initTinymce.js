@@ -74,8 +74,11 @@
   }
 
   ready(function () {
-    if (!tinyMCE) {
-      throw 'tinyMCE is not loaded. If you customized TINYMCE_JS_URL, double-check its content.';
+    // this module is loaded as part of a larger bundle, even on pages intended to not
+    // load the tinymce library.
+    if (!window.tinyMCE) {
+      return;
+      // throw 'tinyMCE is not loaded. If you customized TINYMCE_JS_URL, double-check its content.';
     }
     // initialize the TinyMCE editors on load
     initializeTinyMCE(document);
