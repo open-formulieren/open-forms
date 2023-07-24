@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-26 15:49+0200\n"
+"POT-Creation-Date: 2023-07-24 11:57+0200\n"
 "PO-Revision-Date: 2023-06-26 14:08+0018\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -857,7 +857,7 @@ msgstr "Ongeldig antwoord: {exception}"
 #: openforms/config/views.py:156 openforms/config/views.py:172
 #: openforms/contrib/bag/client.py:81 openforms/contrib/kvk/checks.py:17
 #: openforms/payments/contrib/ogone/plugin.py:148
-#: openforms/prefill/contrib/haalcentraal/plugin.py:162
+#: openforms/prefill/contrib/haalcentraal/plugin.py:161
 #: openforms/prefill/contrib/kvk/plugin.py:119
 #: openforms/prefill/contrib/stufbg/plugin.py:209
 #: openforms/registrations/contrib/camunda/plugin.py:168
@@ -5847,12 +5847,12 @@ msgstr "De API-versie aangeboden door de geselecteerde service."
 msgid "Haal Centraal configuration"
 msgstr "Haal Centraal configuratie"
 
-#: openforms/prefill/contrib/haalcentraal/plugin.py:147
+#: openforms/prefill/contrib/haalcentraal/plugin.py:146
 #: openforms/prefill/contrib/stufbg/plugin.py:173
 msgid "Service not selected"
 msgstr "Service is niet geselecteerd."
 
-#: openforms/prefill/contrib/haalcentraal/plugin.py:156
+#: openforms/prefill/contrib/haalcentraal/plugin.py:155
 #: openforms/prefill/contrib/kvk/plugin.py:102
 #: openforms/prefill/contrib/stufbg/plugin.py:185
 #: openforms/registrations/contrib/objects_api/checks.py:38
