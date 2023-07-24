@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-31 11:10+0200\n"
+"POT-Creation-Date: 2023-07-24 11:38+0200\n"
 "PO-Revision-Date: 2023-03-01 16:35+0018\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -855,7 +855,7 @@ msgstr "Ongeldig antwoord: {exception}"
 #: openforms/prefill/contrib/stufbg/plugin.py:209
 #: openforms/registrations/contrib/camunda/plugin.py:167
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:128
-#: openforms/registrations/contrib/objects_api/plugin.py:185
+#: openforms/registrations/contrib/objects_api/plugin.py:192
 #: openforms/registrations/contrib/stuf_zds/plugin.py:361
 #: openforms/registrations/contrib/zgw_apis/plugin.py:323
 msgid "Configuration"
@@ -3335,30 +3335,30 @@ msgstr ""
 "Ongeldige componentvariabele: er bestaat geen component met de opgegeven "
 "sleutel in de formulierdefinitie."
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:27
+#: openforms/forms/api/serializers/logic/action_serializers.py:25
 msgid "property key"
 msgstr "attribuutsleutel"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:29
+#: openforms/forms/api/serializers/logic/action_serializers.py:27
 msgid "The Form.io component property to alter, identified by `component.key`"
 msgstr ""
 "Het Form.io component attribute dat gewijzigd moet worden, geïdentificeerd "
 "door `component.key`"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:33
+#: openforms/forms/api/serializers/logic/action_serializers.py:31
 #: openforms/submissions/admin.py:40
 msgid "type"
 msgstr "type"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:34
+#: openforms/forms/api/serializers/logic/action_serializers.py:32
 msgid "The type of the value field"
 msgstr "Het type van het waardeveld"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:42
+#: openforms/forms/api/serializers/logic/action_serializers.py:40
 msgid "value of the property"
 msgstr "waarde van het attribuut"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:44
+#: openforms/forms/api/serializers/logic/action_serializers.py:42
 msgid ""
 "Valid JSON determining the new value of the specified property. For example: "
 "`true` or `false`."
@@ -3366,13 +3366,13 @@ msgstr ""
 "De JSON die de nieuwe waarde van het gespecificeerde attribuut bepaald. "
 "Bijvoorbeeld: `true` of `false`."
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:59
+#: openforms/forms/api/serializers/logic/action_serializers.py:57
 #: openforms/payments/api/serializers.py:39
 #: openforms/submissions/templates/admin/submissions/submission/logs.html:42
 msgid "Value"
 msgstr "Waarde"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:61
+#: openforms/forms/api/serializers/logic/action_serializers.py:59
 msgid ""
 "A valid JsonLogic expression describing the value. This may refer to (other) "
 "Form.io components."
@@ -3380,24 +3380,24 @@ msgstr ""
 "Een JSON-logic expressie die de waarde beschrijft. Deze mag naar (andere) "
 "Form.io componenten verwijzen."
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:70
+#: openforms/forms/api/serializers/logic/action_serializers.py:68
 msgid "service_fetch_configuration"
 msgstr "Registratie-bevragenconfiguratie"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:77
+#: openforms/forms/api/serializers/logic/action_serializers.py:75
 #: openforms/registrations/contrib/camunda/serializers.py:174
 msgid "Type"
 msgstr "Type"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:78
+#: openforms/forms/api/serializers/logic/action_serializers.py:76
 msgid "Action type for this particular action."
 msgstr "Soort actie"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:97
+#: openforms/forms/api/serializers/logic/action_serializers.py:95
 msgid "Form.io component"
 msgstr "Form.io component"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:99
+#: openforms/forms/api/serializers/logic/action_serializers.py:97
 #, python-brace-format
 msgid ""
 "Key of the Form.io component that the action applies to. This field is "
@@ -3406,11 +3406,11 @@ msgstr ""
 "Sleutel van de Form.io-component waarop de actie van toepassing is. Dit veld "
 "is verplicht voor de actietypes {action_types} - anders is het optioneel. "
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:113
+#: openforms/forms/api/serializers/logic/action_serializers.py:111
 msgid "Key of the target variable"
 msgstr "Sleutel van de bestemmingsvariabele"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:115
+#: openforms/forms/api/serializers/logic/action_serializers.py:113
 #, python-brace-format
 msgid ""
 "Key of the target variable whose value will be changed. This field is "
@@ -3419,13 +3419,13 @@ msgstr ""
 "Sleutel van de variabele die aangepast wordt door de actie. Dit veld is "
 "verplicht voor de actietypes {action_types} - anders is het optioneel."
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:133
-#: openforms/forms/api/serializers/logic/action_serializers.py:143
+#: openforms/forms/api/serializers/logic/action_serializers.py:129
+#: openforms/forms/api/serializers/logic/action_serializers.py:139
 #: openforms/forms/models/form_step.py:58
 msgid "form step"
 msgstr "formulierstap"
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:135
+#: openforms/forms/api/serializers/logic/action_serializers.py:131
 #, python-format
 msgid ""
 "The form step that will be affected by the action. This field is required if "
@@ -3434,7 +3434,7 @@ msgstr ""
 "De formulierstap die wordt beïnvloed door de actie. Dit veld is verplicht "
 "als het actietype `%(action_type)s` is, anders optioneel."
 
-#: openforms/forms/api/serializers/logic/action_serializers.py:145
+#: openforms/forms/api/serializers/logic/action_serializers.py:141
 #, python-format
 msgid ""
 "The UUID of the form step that will be affected by the action. This field is "
@@ -7041,7 +7041,7 @@ msgid "Apply/check the logic rules specified on the form step."
 msgstr ""
 "Pas de logische regels toe die zijn gespecificeerd in de formulierstap."
 
-#: openforms/submissions/attachments.py:286
+#: openforms/submissions/attachments.py:289
 #, python-brace-format
 msgid "Upload {uuid} exceeds the maximum upload size of {max_size}b"
 msgstr ""
@@ -7630,7 +7630,7 @@ msgid "This form is currently undergoing maintenance. Please try again later."
 msgstr ""
 "Dit formulier is momenteel in onderhoud. Gelieve later opnieuw te proberen."
 
-#: openforms/submissions/views.py:212 openforms/submissions/views.py:224
+#: openforms/submissions/views.py:219 openforms/submissions/views.py:231
 msgid "File access denied."
 msgstr "Bestandstoegang geblokkeerd."
 
