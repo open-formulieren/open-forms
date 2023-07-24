@@ -21,8 +21,9 @@ export const BLOCK_FORM_BUILDER = 'form-builder';
 export const ELEMENT_CONTAINER = 'container';
 
 onLoaded(() => {
-  const featureFlags = jsonScriptToVar('feature-flags');
   const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
+  const featureFlags = FORM_BUILDERS.length ? jsonScriptToVar('feature-flags') : {};
+
   [...FORM_BUILDERS].forEach(node => {
     const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, 'configuration-input');
     const componentTranslationsInput = BEM.getChildBEMNode(
