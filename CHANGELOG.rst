@@ -2,6 +2,149 @@
 Changelog
 =========
 
+2.3.0-alpha.0 (2023-07-24)
+==========================
+
+Upgrade procedure
+-----------------
+
+Ensure that your current version of Open Forms is at least version 2.1.3 before
+upgrading.
+
+Version 2.3.0 does not contain breaking changes and therefore upgrading should be
+straightforward.
+
+Major features
+--------------
+
+**📅 Appointments**
+
+We are introducing an all-new, optimized appointment booking flow, allowing you to make
+appointments for multiple products and/or people in one go! The new user interface
+focuses on better accessibility and a more fluent experience, while increasing the
+flexibility for the organization managing appointments.
+
+This feature is currently in preview and only JCC is operational - but we're aiming to
+finish support for QMatic in the full release.
+
+**🧐 Prefill with DigiD Machtigen/Bewindvoering**
+
+Open Forms supports logging in with your own credentials on behalf of someone else (
+you are then the authorisee, while "someone else" is the authoriser). Up until now,
+prefill could only retrieve the data of the authoriser. Starting now, you can select
+from which role the data should be prefilled, so you can retrieve this for all roles
+at the same time!
+
+**🗺️ Map component**
+
+We are giving some the geo integration/map component some well-deserved love. The first
+steps allow configuring the maps to your organization by setting a default initial
+center and zoom level (global defaults), rather than initializing on the middle of the
+Netherlands. You can even customize these defaults on a *per component* basis, for
+example when your organization handles multiple districts.
+
+More is coming!
+
+Detailed changes
+----------------
+
+**New features**
+
+* [#2471] Added a new appointments flow next to the existing one.
+
+  .. note::
+
+     You can opt-in to this flow by enabling the feature flag in the global
+     configuration and then mark a form as being an "appointment form". Currently
+     only JCC is fully implemented. Note that the entire feature has "preview"
+     status and is only suitable for testing (with known issues).
+
+  * [#3193] Added API endpoint to retrieve required customer fields meta-information.
+
+    * Implemented retrieving this for JCC plugin.
+    * Implemented configuring the fields in the admin for QMatic.
+
+  * Added appointment meta-information to form detail enpdoint.
+  * Validate the input data against the configured plugin.
+  * Appointment submissions now have their own data model and entry in the admin.
+  * Extended existing endpoints to support retrieving locations/dates/times for
+    multiple products.
+  * Defining an appointment form disables/clears the irrelevant form designer aspects.
+  * [#3275] Added support for multi-product appointments in JCC.
+
+* [#3215] Support prefilling data of the authorisee with DigiD machtigen and
+  eHerkenning Bewindvoering.
+
+* Form designer
+
+  * [#1508] Added hidden option for legacy cosign component.
+  * [#1882] Added minimum/maximum value options to the currency component.
+  * [#1892] Added tooltips to (relevant) form components in the designer.
+  * [#1890] Added support for upload file name templating, you can now add pre- and
+    suffixes.
+  * [#2175] You can now configure the default zoom level and initial map center for the
+    map component, with a global default.
+  * [#3045] You can now provide a suffix for number components, e.g. to hint about the
+    expected unit.
+
+* [#3238] The StUF-ZDS registration backend now has well-defined behaviour for
+  non-primitive variable values, including user-defined variables.
+
+**Bugfixes**
+
+* Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
+* [#3195] Fixed hardcoded ``productaanvraag_type`` in default Objects API template to
+  use configuration option.
+* [#3182] Fixed importing forms from before 2.2.0 due to missing
+  ``{% cosign_information %}`` tag in confirmation email templates.
+* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+  tracked.
+* [#3161] Fixed not being able to reset form-specific data removal settings to the
+  empty value so that the global configuration is used again.
+* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+  removes the upload again.
+* Fixed CI builds (bump PyYAML, docs build).
+* [#3258] Fixed labels for Haal Centraal prefill attributes.
+* Fixed the broken Token Exchange extension (pre-request plugins) in the Haal Centraal
+  plugin.
+* [#3130] Fixed a crash when copying form-definitions with very long names.
+* [#3166] Fixed Haal Centraal plugin configuration test.
+*
+
+**Project maintenance**
+
+* Bumped dependencies to get their latest security fixes.
+* Removed MacOS CI job due to broken system-level dependencies.
+* Added utility to profile code with ``cProfile``.
+* Sped up tests by pre-loading the OAS schema and worked on other flakiness issues.
+* [#3242] Set up a CI profile for hypothesis.
+* [#586] Extracted the SOAP service configuration from the StUF app into its own app.
+* [#3189] Refactored authentication plugins ``provides_auth`` datatypes.
+* [#3049] Upgraded a number of dependencies in preparation for Django 4.2:
+
+  * django-autoslug
+  * django-yubin
+  * django-axes
+  * django-colorfield
+  * django-hijack
+  * django-redis
+  * django-treebeard
+  * django-filter
+  * elastic-apm
+  * sentry-sdk
+  * django-solo
+  * django-timeline-logger
+  * drf-jsonschema-serializer
+  * django-admin-index
+  * django-tinymce
+  * djangorestframework-camel-case
+
+
+.. note:: We only provided best-effort developer environment support for the MacOS
+   platform. This is now costing too much resources as there are no actual MacOS users
+   in the development team.
+
+
 2.2.0 "Èspelès" (2023-06-26)
 ============================
 
@@ -207,6 +350,8 @@ Detailed changes
 * [#3070] Fixed the confirmation email template not being copied along when copying a form.
 * Fixed Matomo not using the configured Site ID correctly.
 * [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
+* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+  variable names.
 
 **Documentation**
 
@@ -219,6 +364,7 @@ Detailed changes
 * Added a note on refactor and small changes for contributors.
 * [#2940] Improved SDK embedding configuration documentation.
 * Documented solution for "IDP not found" DigiD error.
+* [#2884] Documented how to set up service fetch.
 
 **Project maintenance**
 
