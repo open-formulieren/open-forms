@@ -32,17 +32,20 @@ class ActionDict(TypedDict):
 
 
 def compile_action_operation(action: ActionDict) -> "ActionOperation":
-    return ActionOperation.from_action(action)
+    action_type = action["action"]["type"]
+    cls = ACTION_TYPE_MAPPING[action_type]
+    return cls.from_action(action)
 
 
 class ActionOperation:
     rule: FormLogic
 
-    @staticmethod
-    def from_action(action: ActionDict) -> "ActionOperation":
-        action_type = action["action"]["type"]
-        cls = ACTION_TYPE_MAPPING[action_type]
-        return cls.from_action(action)
+    @classmethod
+    def from_action(cls, action: ActionDict) -> "ActionOperation":
+        """
+        Constructor from an ActionDict
+        """
+        pass
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
@@ -263,10 +266,33 @@ class ServiceFetchAction(ActionOperation):
         }
 
 
-ACTION_TYPE_MAPPING: Mapping[str, Type[ActionOperation]] = {
+@dataclass
+class SetRegistrationBackendAction(ActionOperation):
+    registration_backend_key: str
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> "SetRegistrationBackendAction":
+        return cls(registration_backend_key=action["action"]["value"])
+
+    def apply(
+        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+    ) -> None:
+        step.submission.registration_backend = self.registration_backend_key
+
+    def get_action_log_data(self, *args, **kwargs) -> JSONObject:
+        return {
+            "type_display": LogicActionTypes.get_label(
+                LogicActionTypes.set_registration_backend
+            ),
+            "registration_backend_key": self.registration_backend_key,
+        }
+
+
+ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, Type[ActionOperation]] = {
     LogicActionTypes.property: PropertyAction,
     LogicActionTypes.disable_next: DisableNextAction,
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
     LogicActionTypes.variable: VariableAction,
     LogicActionTypes.fetch_from_service: ServiceFetchAction,
+    LogicActionTypes.set_registration_backend: SetRegistrationBackendAction,
 }

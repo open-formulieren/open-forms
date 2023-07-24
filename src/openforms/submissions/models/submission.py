@@ -738,7 +738,21 @@ class Submission(models.Model):
 
         return False
 
-    @cached_property
+    _registration_backend: str | FormRegistrationBackend | None = None
+
+    @property
     def registration_backend(self) -> FormRegistrationBackend:
-        # TODO evaluate formlogic
-        return self.form.registration_backends.first()
+        match self._registration_backend:
+            case str(key):
+                self._registration_backend = self.form.registration_backends.get(
+                    key=key
+                )
+            case None:
+                self._registration_backend = self.form.registration_backends.first()
+            case _:
+                pass
+        return self._registration_backend
+
+    @registration_backend.setter
+    def registration_backend(self, value: str | FormRegistrationBackend):
+        self._registration_backend = value
