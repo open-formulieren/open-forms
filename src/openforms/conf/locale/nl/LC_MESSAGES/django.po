@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-26 15:49+0200\n"
-"PO-Revision-Date: 2023-06-26 14:08+0018\n"
+"POT-Creation-Date: 2023-07-24 14:37+0200\n"
+"PO-Revision-Date: 2023-07-24 14:36+0018\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -250,7 +250,7 @@ msgstr "stafstatus"
 msgid "Designates whether the user can log into this admin site."
 msgstr "Bepaalt of de gebruiker zich op deze beheerwebsite kan aanmelden."
 
-#: openforms/accounts/models.py:53 openforms/forms/models/form.py:196
+#: openforms/accounts/models.py:53 openforms/forms/models/form.py:210
 msgid "active"
 msgstr "actief"
 
@@ -278,8 +278,8 @@ msgstr ""
 "De voorkeurstaal voor de (beheer) gebruikersinterface. Wanneer geen waarde "
 "ingesteld is, worden de browserinstellingen gebruikt."
 
-#: openforms/accounts/models.py:81 openforms/forms/models/form.py:507
-#: openforms/forms/models/form_version.py:62 stuf/models.py:39
+#: openforms/accounts/models.py:81 openforms/forms/models/form.py:516
+#: openforms/forms/models/form_version.py:62 soap/models.py:39
 msgid "user"
 msgstr "gebruiker"
 
@@ -644,153 +644,287 @@ msgstr ""
 "je een actieve inzending in je sessie dient te hebben of ingelogd moet zijn "
 "in de beheerinterface."
 
-#: openforms/appointments/admin.py:36
+#: openforms/appointments/admin.py:40
 msgid "Please configure the plugin first"
 msgstr "Stel eerst de plugin in"
 
-#: openforms/appointments/admin.py:80 openforms/config/models.py:141
+#: openforms/appointments/admin.py:84 openforms/config/models.py:141
 msgid "Change"
 msgstr "Wijzigen"
 
-#: openforms/appointments/admin.py:81
+#: openforms/appointments/admin.py:85
 #: openforms/config/templates/admin/config/overview.html:57
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: openforms/appointments/admin.py:89
+#: openforms/appointments/admin.py:93
 msgid "Appointment actions"
 msgstr "Afspraakacties"
 
-#: openforms/appointments/api/serializers.py:7
+#: openforms/appointments/api/fields.py:10
+msgid "Product ID"
+msgstr "Product-ID"
+
+#: openforms/appointments/api/fields.py:23
+msgid "Location ID"
+msgstr "Locatie-ID"
+
+#: openforms/appointments/api/serializers.py:23
+msgid "Is appointment form"
+msgstr "Is afsrpaakformulier"
+
+#: openforms/appointments/api/serializers.py:25
+msgid ""
+"Boolean indicating if the form is an appointment form, using the new flow."
+msgstr ""
+"Vlag die aangeeft of het formulier een afspraakformulier is (nieuwe flow)."
+
+#: openforms/appointments/api/serializers.py:29
+msgid "Multiple products supported?"
+msgstr "Ondersteunt meerdere producten?"
+
+#: openforms/appointments/api/serializers.py:31
+msgid ""
+"If not supported, only one product/service can be booked at once and the UI "
+"may not allow the user to select multiple products."
+msgstr ""
+"Wanneer er geen ondersteuning is voor meerdere producten, dan kan er maar "
+"één product per afspraak geboekt worden. De UI moet voorkomen dat de "
+"gebruiker meerdere producten kan selecteren."
+
+#: openforms/appointments/api/serializers.py:52
 msgid "code"
 msgstr "code"
 
-#: openforms/appointments/api/serializers.py:7
+#: openforms/appointments/api/serializers.py:52
 msgid "Product code"
 msgstr "Productcode"
 
-#: openforms/appointments/api/serializers.py:9
-#: openforms/appointments/api/serializers.py:19
+#: openforms/appointments/api/serializers.py:54
+#: openforms/appointments/api/serializers.py:64
 msgid "identifier"
 msgstr "Unieke identificatie"
 
-#: openforms/appointments/api/serializers.py:9
-#: openforms/appointments/api/views.py:76
-#: openforms/appointments/api/views.py:121
-#: openforms/appointments/api/views.py:177
+#: openforms/appointments/api/serializers.py:54
 msgid "ID of the product"
 msgstr "Unieke sleutel van het product"
 
-#: openforms/appointments/api/serializers.py:11
-#: openforms/appointments/api/serializers.py:21
+#: openforms/appointments/api/serializers.py:56
+#: openforms/appointments/api/serializers.py:66
 #: openforms/forms/admin/form.py:242
 #: openforms/forms/admin/form_definition.py:68
 #: openforms/forms/models/category.py:13 openforms/forms/models/form.py:53
-#: openforms/forms/models/form_definition.py:42
-#: openforms/forms/models/form_variable.py:120
+#: openforms/forms/models/form_definition.py:43
+#: openforms/forms/models/form_variable.py:127
 #: openforms/multidomain/models.py:7 openforms/products/models/product.py:22
 #: openforms/registrations/contrib/zgw_apis/models.py:31
 msgid "name"
 msgstr "naam"
 
-#: openforms/appointments/api/serializers.py:11
+#: openforms/appointments/api/serializers.py:56
 msgid "Product name"
 msgstr "Productnaam"
 
-#: openforms/appointments/api/serializers.py:19
-#: openforms/appointments/api/views.py:128
-#: openforms/appointments/api/views.py:184
+#: openforms/appointments/api/serializers.py:64
+#: openforms/appointments/api/views.py:74
 msgid "ID of the location"
 msgstr "Unieke sleutel van de locatie"
 
-#: openforms/appointments/api/serializers.py:21
+#: openforms/appointments/api/serializers.py:66
 msgid "Location name"
 msgstr "Locatienaam"
 
-#: openforms/appointments/api/serializers.py:26
-#: openforms/appointments/api/serializers.py:32
-#: openforms/appointments/api/serializers.py:45
-msgid "product ID"
-msgstr "product ID"
-
-#: openforms/appointments/api/serializers.py:26
+#: openforms/appointments/api/serializers.py:71
 msgid "ID of the product to get locations for"
 msgstr "Unieke sleutel van het product om locaties op te halen"
 
-#: openforms/appointments/api/serializers.py:32
+#: openforms/appointments/api/serializers.py:72
+#: openforms/appointments/api/serializers.py:81
+#: openforms/appointments/api/serializers.py:95
+#: openforms/appointments/api/serializers.py:118
+msgid "Product IDs"
+msgstr "Product-IDs"
+
+#: openforms/appointments/api/serializers.py:73
+msgid "One or more product IDs to get available locations for."
+msgstr ""
+"Unieke sleutel(s) van één of meer product(en) om locaties voor op te halen."
+
+#: openforms/appointments/api/serializers.py:80
 msgid "ID of the product to get dates for"
 msgstr "Unieke sleutel van het product om datums op te halen"
 
-#: openforms/appointments/api/serializers.py:35
-#: openforms/appointments/api/serializers.py:48
-msgid "location ID"
-msgstr "Locatie ID"
+#: openforms/appointments/api/serializers.py:82
+msgid "One or more product IDs to get available dates for."
+msgstr ""
+"Unieke sleutel(s) van één of meer product(en) om datums voor op te halen."
 
-#: openforms/appointments/api/serializers.py:35
+#: openforms/appointments/api/serializers.py:85
 msgid "ID of the location to get dates for"
 msgstr "Unieke sleutel van de locatie om datums op te halen"
 
-#: openforms/appointments/api/serializers.py:40
-#: openforms/appointments/api/serializers.py:50
+#: openforms/appointments/api/serializers.py:89
+#: openforms/appointments/api/serializers.py:100
+#: openforms/appointments/api/serializers.py:136
 msgid "date"
 msgstr "datum"
 
-#: openforms/appointments/api/serializers.py:45
+#: openforms/appointments/api/serializers.py:94
 msgid "ID of the product to get times for"
 msgstr "Unieke sleutel van het product om tijden op te halen"
 
-#: openforms/appointments/api/serializers.py:48
+#: openforms/appointments/api/serializers.py:96
+msgid "One or more product IDs to get available times for."
+msgstr ""
+"Unieke sleutel(s) van één of meer product(en) om tijden voor op te halen."
+
+#: openforms/appointments/api/serializers.py:99
 msgid "ID of the location to get times for"
 msgstr "Unieke sleutel van de locatie om tijden op te halen"
 
-#: openforms/appointments/api/serializers.py:50
+#: openforms/appointments/api/serializers.py:100
 msgid "Date to get times for"
 msgstr "Datum om tijden voor op te halen"
 
-#: openforms/appointments/api/serializers.py:54
+#: openforms/appointments/api/serializers.py:104
 msgid "time"
 msgstr "tijd"
 
-#: openforms/appointments/api/serializers.py:59
+#: openforms/appointments/api/serializers.py:109
 msgid "email"
 msgstr "e-mail"
 
-#: openforms/appointments/api/serializers.py:59
+#: openforms/appointments/api/serializers.py:109
 msgid "Email given when making the appointment"
 msgstr "E-mailadres gebruikt bij het maken van de afspraak"
 
-#: openforms/appointments/api/views.py:43 openforms/products/api/viewsets.py:12
+#: openforms/appointments/api/serializers.py:116
+msgid "ID of the product to get required fields for"
+msgstr "Unieke sleutel van het product om verplichte velden voor op te halen."
+
+#: openforms/appointments/api/serializers.py:119
+msgid "One or more product IDs to get required fields for."
+msgstr ""
+"Unieke sleutel(s) van één of meer product(en) om verplichte velden voor op "
+"te halen."
+
+#: openforms/appointments/api/serializers.py:134
+#: openforms/emails/templates/emails/templatetags/appointment_information.html:7
+#: openforms/emails/templates/emails/templatetags/appointment_information.txt:3
+#: openforms/products/models/product.py:37
+msgid "Products"
+msgstr "Producten"
+
+#: openforms/appointments/api/serializers.py:139
+#: openforms/submissions/api/serializers.py:354
+msgid "status check endpoint"
+msgstr "status controle endpoint"
+
+#: openforms/appointments/api/serializers.py:142
+#: openforms/submissions/api/serializers.py:356
+msgid ""
+"The API endpoint where the background processing status can be checked. "
+"After calling the completion endpoint, this status URL should be polled to "
+"report the processing status back to the end-user. Note that the endpoint "
+"contains a token which invalidates on state changes and after one day."
+msgstr ""
+"Het API-eindpunt waar de achtergrondverwerkingsstatus kan worden "
+"gecontroleerd. Nadat het voltooiingseindpunt is aangeroepen, moet deze "
+"status-URL worden opgevraagd om de verwerkingsstatus terug te rapporteren "
+"aan de eindgebruiker. Houd er rekening mee dat het eindpunt een token bevat "
+"dat ongeldig wordt bij statuswijzigingen en na één dag."
+
+#: openforms/appointments/api/serializers.py:182
+msgid "The provided date does not match the full appointment datetime."
+msgstr ""
+"De opgegeven datum komt niet overeen met de volledige afspraak-datumtijd."
+
+#: openforms/appointments/api/serializers.py:201
+msgid "Appointments for multiple products are not supported."
+msgstr "Het is niet mogelijk om afspraken met meerdere producten te maken."
+
+#: openforms/appointments/api/serializers.py:220
+msgid "Product is unknown in the appointment backend."
+msgstr "Dit product kon niet gevonden worden."
+
+#: openforms/appointments/api/serializers.py:227
+msgid "The requested location is not available."
+msgstr "De opgegeven locatie is niet beschikbaar."
+
+#: openforms/appointments/api/serializers.py:243
+msgid "The selected date is not available (anymore)."
+msgstr "De geselecteerde datum is niet (meer) beschikbaar."
+
+#: openforms/appointments/api/serializers.py:250
+msgid "The selected datetime is not available (anymore)."
+msgstr "Het geselecteerde tijdstip is niet (langer) beschikbaar."
+
+#: openforms/appointments/api/views.py:65
+msgid "ID of the product, repeat for multiple products."
+msgstr "Product-ID, herhaal deze parameter voor meerdere producten."
+
+#: openforms/appointments/api/views.py:80 openforms/products/api/viewsets.py:12
 msgid "List available products"
 msgstr "Producten weergeven"
 
-#: openforms/appointments/api/views.py:70
+#: openforms/appointments/api/views.py:105
 msgid "List available locations for a given product"
 msgstr "Toon alle beschikbare locaties voor het opgegeven product"
 
-#: openforms/appointments/api/views.py:115
+#: openforms/appointments/api/views.py:139
 msgid "List available dates for a given location and product"
 msgstr "Toon alle beschikbare datums voor de opgegeven locatie en product"
 
-#: openforms/appointments/api/views.py:171
+#: openforms/appointments/api/views.py:180
 msgid "List available times for a given location, product, and date"
 msgstr "Lijst van beschikbare tijden op opgegeven locatie, product en datum"
 
-#: openforms/appointments/api/views.py:191
+#: openforms/appointments/api/views.py:188
 msgid "The date"
 msgstr "De datum"
 
-#: openforms/appointments/api/views.py:236
+#: openforms/appointments/api/views.py:229
+msgid "Get required customer field details for a given product"
+msgstr ""
+"Haal de verplichte klantgegevensvelden op voor één of meerdere producten."
+
+#: openforms/appointments/api/views.py:234
+msgid "Customer fields list as Form.io components."
+msgstr "Lijst van klantgegevensvelden, als Form.io componentdefinities."
+
+#: openforms/appointments/api/views.py:238
+msgid "Invalid input parameters."
+msgstr "Ongeldige input-parameters."
+
+#: openforms/appointments/api/views.py:242
+msgid "Insufficient permissions."
+msgstr "Onvoldoende rechten."
+
+#: openforms/appointments/api/views.py:277
 msgid "Cancel an appointment"
 msgstr "Annuleer een afspraak"
 
-#: openforms/appointments/api/views.py:242
+#: openforms/appointments/api/views.py:283
 msgid "Unable to verify ownership of the appointment."
 msgstr "Kan het eigendom van de afspraak niet verifiëren."
 
-#: openforms/appointments/api/views.py:246
-#: openforms/appointments/exceptions.py:29
+#: openforms/appointments/api/views.py:287
+#: openforms/appointments/api/views.py:342
+#: openforms/appointments/exceptions.py:33
 msgid "Unable to cancel appointment."
 msgstr "Afspraak annuleren lukt niet."
+
+#: openforms/appointments/api/views.py:329
+msgid "Create an appointment"
+msgstr "Registreer een afspraak"
+
+#: openforms/appointments/api/views.py:334
+msgid "Invalid submission data."
+msgstr "Ongeldige inzendingsgegevens."
+
+#: openforms/appointments/api/views.py:338
+msgid "Invalid or missing submission in session."
+msgstr "Ongeldige of ontbrekende inzending in de sessie."
 
 #: openforms/appointments/apps.py:7
 msgid "Appointments"
@@ -819,51 +953,120 @@ msgstr "Geannuleerd"
 msgid "Demo appointment plugin"
 msgstr "Demo-afspraakplugin"
 
-#: openforms/appointments/contrib/demo/plugin.py:16
+#: openforms/appointments/contrib/demo/plugin.py:14
 #: openforms/authentication/contrib/demo/plugin.py:48
 #: openforms/payments/contrib/demo/plugin.py:11
 #: openforms/prefill/contrib/demo/plugin.py:21
 msgid "Demo"
 msgstr "Demo"
 
+#: openforms/appointments/contrib/demo/plugin.py:41
+#: openforms/appointments/contrib/jcc/constants.py:20
+#: openforms/appointments/contrib/qmatic/constants.py:21
+#: stuf/stuf_bg/constants.py:23
+msgid "Last name"
+msgstr "Achternaam"
+
 #: openforms/appointments/contrib/jcc/apps.py:7
 msgid "JCC appointment plugin"
 msgstr "JCC-Afspraken plugin"
+
+#: openforms/appointments/contrib/jcc/constants.py:25
+msgid "Address"
+msgstr "Adres"
+
+#: openforms/appointments/contrib/jcc/constants.py:30
+#: openforms/appointments/contrib/qmatic/constants.py:45
+msgid "Birthday"
+msgstr "Geboortedatum"
+
+#: openforms/appointments/contrib/jcc/constants.py:35
+#: openforms/appointments/contrib/qmatic/constants.py:28
+msgid "City"
+msgstr "Stad"
+
+#: openforms/appointments/contrib/jcc/constants.py:40
+#: openforms/appointments/contrib/qmatic/constants.py:22
+#: openforms/emails/forms.py:24
+msgid "Email address"
+msgstr "e-mailadres"
+
+#: openforms/appointments/contrib/jcc/constants.py:45
+msgid "Initials"
+msgstr "Initialen"
+
+#: openforms/appointments/contrib/jcc/constants.py:50
+msgid "Sex"
+msgstr "Geslacht"
+
+#: openforms/appointments/contrib/jcc/constants.py:55
+msgid "Main phone number"
+msgstr "Hoofdtelefoonnummer"
+
+#: openforms/appointments/contrib/jcc/constants.py:62
+msgid "Mobile phone number"
+msgstr "Mobiele telefoonnummer"
+
+#: openforms/appointments/contrib/jcc/constants.py:69
+msgid "AnyTel"
+msgstr "Telefoonnummer"
+
+#: openforms/appointments/contrib/jcc/constants.py:71
+#: openforms/appointments/contrib/qmatic/constants.py:30
+#: stuf/stuf_bg/constants.py:30
+msgid "Postal code"
+msgstr "Postcode"
+
+#: openforms/appointments/contrib/jcc/constants.py:76
+#: openforms/plugins/api/serializers.py:9
+#: openforms/prefill/api/serializers.py:32
+#: openforms/registrations/api/serializers.py:32
+#: openforms/validations/api/serializers.py:58
+msgid "ID"
+msgstr "ID"
+
+#: openforms/appointments/contrib/jcc/constants.py:90
+msgid "Male"
+msgstr "Man"
+
+#: openforms/appointments/contrib/jcc/constants.py:91
+msgid "Female"
+msgstr "Vrouw"
 
 #: openforms/appointments/contrib/jcc/models.py:24
 msgid "JCC configuration"
 msgstr "JCC configuratie"
 
-#: openforms/appointments/contrib/jcc/plugin.py:48
+#: openforms/appointments/contrib/jcc/plugin.py:92
 msgid "JCC"
 msgstr "JCC"
 
-#: openforms/appointments/contrib/jcc/plugin.py:306
+#: openforms/appointments/contrib/jcc/plugin.py:348
 msgid "QR-code"
 msgstr "QR-code"
 
-#: openforms/appointments/contrib/jcc/plugin.py:340
-#: openforms/appointments/contrib/qmatic/plugin.py:298
+#: openforms/appointments/contrib/jcc/plugin.py:382
+#: openforms/appointments/contrib/qmatic/plugin.py:308
 #: openforms/contrib/bag/client.py:74 stuf/stuf_zds/client.py:357
 #, python-brace-format
 msgid "Invalid response: {exception}"
 msgstr "Ongeldig antwoord: {exception}"
 
-#: openforms/appointments/contrib/jcc/plugin.py:346
-#: openforms/appointments/contrib/qmatic/plugin.py:304
+#: openforms/appointments/contrib/jcc/plugin.py:388
+#: openforms/appointments/contrib/qmatic/plugin.py:314
 #: openforms/config/templates/admin/config/overview.html:4
 #: openforms/config/templates/admin/config/overview.html:9
 #: openforms/config/templates/admin/config/overview.html:15
 #: openforms/config/views.py:156 openforms/config/views.py:172
 #: openforms/contrib/bag/client.py:81 openforms/contrib/kvk/checks.py:17
 #: openforms/payments/contrib/ogone/plugin.py:148
-#: openforms/prefill/contrib/haalcentraal/plugin.py:162
-#: openforms/prefill/contrib/kvk/plugin.py:119
-#: openforms/prefill/contrib/stufbg/plugin.py:209
+#: openforms/prefill/contrib/haalcentraal/plugin.py:176
+#: openforms/prefill/contrib/kvk/plugin.py:135
+#: openforms/prefill/contrib/stufbg/plugin.py:225
 #: openforms/registrations/contrib/camunda/plugin.py:168
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:125
 #: openforms/registrations/contrib/objects_api/plugin.py:230
-#: openforms/registrations/contrib/stuf_zds/plugin.py:376
+#: openforms/registrations/contrib/stuf_zds/plugin.py:379
 #: openforms/registrations/contrib/zgw_apis/plugin.py:408
 msgid "Configuration"
 msgstr "Configuratie"
@@ -872,11 +1075,44 @@ msgstr "Configuratie"
 msgid "Qmatic appointment plugin"
 msgstr "Qmatic afspraken plugin"
 
-#: openforms/appointments/contrib/qmatic/models.py:20
+#: openforms/appointments/contrib/qmatic/constants.py:20
+#: stuf/stuf_bg/constants.py:22
+msgid "First name"
+msgstr "Voornaam"
+
+#: openforms/appointments/contrib/qmatic/constants.py:23
+msgid "Phone number"
+msgstr "Telefoonnummer"
+
+#: openforms/appointments/contrib/qmatic/constants.py:25
+msgid "Street name and number"
+msgstr "Straatnaam en nummer"
+
+#: openforms/appointments/contrib/qmatic/constants.py:27
+msgid "Address line 2"
+msgstr "Adresregel 2"
+
+#: openforms/appointments/contrib/qmatic/constants.py:29
+msgid "State"
+msgstr "Provincie"
+
+#: openforms/appointments/contrib/qmatic/constants.py:31
+msgid "Country"
+msgstr "Land"
+
+#: openforms/appointments/contrib/qmatic/constants.py:33
+msgid "Identification number"
+msgstr "BSN"
+
+#: openforms/appointments/contrib/qmatic/constants.py:36
+msgid "Unique customer identification/account number"
+msgstr "Uniek klantidentificatienummer"
+
+#: openforms/appointments/contrib/qmatic/models.py:32
 msgid "Calendar API"
 msgstr "Kalender API"
 
-#: openforms/appointments/contrib/qmatic/models.py:26
+#: openforms/appointments/contrib/qmatic/models.py:38
 msgid ""
 "The Qmatic Orchestra Calendar Public Appointment API service. Example: "
 "https://example.com:8443/calendar-backend/public/api/v1/"
@@ -884,79 +1120,29 @@ msgstr ""
 "De Qmatic Orchestra Calendar Public Appointment API service. Voorbeeld: "
 "https://example.com:8443/calendar-backend/public/api/v1/"
 
-#: openforms/appointments/contrib/qmatic/models.py:34
+#: openforms/appointments/contrib/qmatic/models.py:44
+msgid "Required customer fields"
+msgstr "Verplichte klantgegevensvelden"
+
+#: openforms/appointments/contrib/qmatic/models.py:46
+msgid ""
+"Select the customer fields for the contact details step. Fields that you "
+"select here are REQUIRED fields for the user making the appointment. You "
+"must have at least one field to be able to identify the customer."
+msgstr ""
+"Selecteer de gewenste klantgegevensvelden. Aangevinkte velden zijn "
+"VERPLICHTE velden voor de eindgebruiker die een afspraak maakt. Qmatic "
+"vereist minimaal één veld om de klant te kunnen identificeren."
+
+#: openforms/appointments/contrib/qmatic/models.py:58
 msgid "Qmatic configuration"
 msgstr "Qmatic configuratie"
 
-#: openforms/appointments/contrib/qmatic/plugin.py:42
+#: openforms/appointments/contrib/qmatic/plugin.py:37
 msgid "Qmatic"
 msgstr "Qmatic"
 
-#: openforms/appointments/models.py:11
-msgid "appointment plugin"
-msgstr "afspraakplugin"
-
-#: openforms/appointments/models.py:13
-msgid "location"
-msgstr "locatie"
-
-#: openforms/appointments/models.py:17
-msgid ""
-"If configured, only products connected to this location are exposed. "
-"Additionally, the user can only select this location for the appointment."
-msgstr ""
-"Indien ingesteld, dan worden enkel producten aan deze locatie gekoppeld "
-"beschikbaar gemaakt. Ook kan de gebruiker alleen deze locatie kiezen."
-
-#: openforms/appointments/models.py:23
-msgid "Appointment configuration"
-msgstr "Afspraakconfiguratie"
-
-#: openforms/appointments/models.py:34
-msgid "status"
-msgstr "status"
-
-#: openforms/appointments/models.py:39
-msgid "appointment ID"
-msgstr "afspraak ID"
-
-#: openforms/appointments/models.py:44
-msgid "error information"
-msgstr "fout informatie"
-
-#: openforms/appointments/models.py:48
-msgid "start time"
-msgstr "starttijd"
-
-#: openforms/appointments/models.py:51
-msgid "Start time of the appointment"
-msgstr "Starttijd van de afspraak"
-
-#: openforms/appointments/models.py:58
-msgid "The submission that made the appointment"
-msgstr "De inzending bij deze afspraak"
-
-#: openforms/appointments/models.py:62
-#: openforms/forms/models/form_version.py:54
-msgid "created"
-msgstr "aangemaakt"
-
-#: openforms/appointments/models.py:64
-msgid "Timestamp when the appointment details were created"
-msgstr "Tijdstip wanneer de afspraakdetails zijn gemaakt "
-
-#: openforms/appointments/models.py:68 openforms/appointments/models.py:69
-#: openforms/emails/templates/emails/templatetags/appointment_information.html:3
-#: openforms/emails/templates/emails/templatetags/appointment_information.txt:1
-msgid "Appointment information"
-msgstr "Afspraak informatie"
-
-#: openforms/appointments/utils.py:108
-#, python-brace-format
-msgid "The following appointment fields should be filled out: {fields}"
-msgstr "De volgende afspraakvelden dienen ingevuld te worden: {fields}"
-
-#: openforms/appointments/utils.py:156
+#: openforms/appointments/core.py:100 openforms/appointments/utils.py:163
 msgid ""
 "A technical error occurred while we tried to book your appointment. Please "
 "verify if all the data is correct or try again later."
@@ -964,96 +1150,241 @@ msgstr ""
 "Er deed zich een technische fout voor tijdens het boeken van uw afspraak. "
 "Gelieve de gegevens te controleren op correctheid of probeer later opnieuw."
 
-#: openforms/appointments/utils.py:301
+#: openforms/appointments/models.py:16
+msgid "appointment plugin"
+msgstr "afspraakplugin"
+
+#: openforms/appointments/models.py:18
+msgid "location"
+msgstr "locatie"
+
+#: openforms/appointments/models.py:22
+msgid ""
+"If configured, only products connected to this location are exposed. "
+"Additionally, the user can only select this location for the appointment."
+msgstr ""
+"Indien ingesteld, dan worden enkel producten aan deze locatie gekoppeld "
+"beschikbaar gemaakt. Ook kan de gebruiker alleen deze locatie kiezen."
+
+#: openforms/appointments/models.py:28
+msgid "Appointment configuration"
+msgstr "Afspraakconfiguratie"
+
+#: openforms/appointments/models.py:39
+msgid "status"
+msgstr "status"
+
+#: openforms/appointments/models.py:44
+msgid "appointment ID"
+msgstr "afspraak ID"
+
+#: openforms/appointments/models.py:49
+msgid "error information"
+msgstr "fout informatie"
+
+#: openforms/appointments/models.py:53
+msgid "start time"
+msgstr "starttijd"
+
+#: openforms/appointments/models.py:56
+msgid "Start time of the appointment"
+msgstr "Starttijd van de afspraak"
+
+#: openforms/appointments/models.py:63 openforms/appointments/models.py:104
+msgid "The submission that made the appointment"
+msgstr "De inzending bij deze afspraak"
+
+#: openforms/appointments/models.py:67
+#: openforms/forms/models/form_version.py:54
+msgid "created"
+msgstr "aangemaakt"
+
+#: openforms/appointments/models.py:69
+msgid "Timestamp when the appointment details were created"
+msgstr "Tijdstip wanneer de afspraakdetails zijn gemaakt "
+
+#: openforms/appointments/models.py:73 openforms/appointments/models.py:74
+#: openforms/emails/templates/emails/templatetags/appointment_information.html:3
+#: openforms/emails/templates/emails/templatetags/appointment_information.txt:1
+msgid "Appointment information"
+msgstr "Afspraak informatie"
+
+#: openforms/appointments/models.py:107 openforms/authentication/models.py:14
+msgid "plugin"
+msgstr "plugin"
+
+#: openforms/appointments/models.py:109
+msgid ""
+"The plugin active at the time of creation. This determines the context to "
+"interpret the submitted data."
+msgstr ""
+"Plugin waarmee de afspraak geregistreerd is. Afspraakgegevens worden binnen "
+"de context van deze plugin geïnterpreteerd."
+
+#: openforms/appointments/models.py:114
+msgid "location ID"
+msgstr "Locatie ID"
+
+#: openforms/appointments/models.py:116
+msgid "Identifier of the location in the selected plugin."
+msgstr ""
+"Unieke identificatie van de geselecteerde locatie in de gebruikte plugin."
+
+#: openforms/appointments/models.py:119
+msgid "appointment time"
+msgstr "afspraaktijdstip"
+
+#: openforms/appointments/models.py:120
+msgid "Date and time of the appointment"
+msgstr "Starttijd van de afspraak."
+
+#: openforms/appointments/models.py:123
+msgid "contact details meta"
+msgstr "Metainformatie klantgegevens"
+
+#: openforms/appointments/models.py:127
+msgid ""
+"Contact detail field definitions, depending on the required fields in the "
+"selected plugin. Recorded for historical purposes."
+msgstr ""
+"Metagegevens verplichte klantgegevens, afhankelijk van de verplichte velden "
+"in de gebruikte plugin."
+
+#: openforms/appointments/models.py:132
+msgid "contact details"
+msgstr "Klantgegevens"
+
+#: openforms/appointments/models.py:135
+msgid "Additional contact detail field values."
+msgstr "Ingevulde waarden voor de verplichte klantgegevens."
+
+#: openforms/appointments/models.py:139 openforms/appointments/models.py:160
+msgid "appointment"
+msgstr "afspraak"
+
+#: openforms/appointments/models.py:140
+msgid "appointments"
+msgstr "afspraken"
+
+#: openforms/appointments/models.py:161
+msgid "Appointment for this product order."
+msgstr "Afspraak waar de productbestelling bij hoort."
+
+#: openforms/appointments/models.py:164
+msgid "product ID"
+msgstr "product ID"
+
+#: openforms/appointments/models.py:166
+msgid "Identifier of the product in the selected plugin."
+msgstr "Unieke identificatie van het product in de gebruikte plugin."
+
+#: openforms/appointments/models.py:169
+msgid "amount"
+msgstr "aantal personen"
+
+#: openforms/appointments/models.py:170
+msgid "Number of times (amount of people) the product is ordered"
+msgstr "Aantal keer (= personen) dat het product besteld is."
+
+#: openforms/appointments/models.py:175
+msgid "appointment product"
+msgstr "afspraakproduct"
+
+#: openforms/appointments/models.py:176
+msgid "appointment products"
+msgstr "afspraakproducten"
+
+#: openforms/appointments/utils.py:115
+#, python-brace-format
+msgid "The following appointment fields should be filled out: {fields}"
+msgstr "De volgende afspraakvelden dienen ingevuld te worden: {fields}"
+
+#: openforms/appointments/utils.py:310
 msgid "(updated)"
 msgstr "(bijgewerkt)"
 
 #: openforms/authentication/api/serializers.py:20
-msgid "Authentication attribute"
-msgstr "Authenticatie attribuut"
-
-#: openforms/authentication/api/serializers.py:22
 msgid "Provides authentication attributes"
 msgstr "Levert authenticatie attributen"
 
-#: openforms/authentication/api/serializers.py:23
+#: openforms/authentication/api/serializers.py:21
 msgid "The authentication attribute provided by this plugin."
 msgstr "Het authenticatie attribuut geleverd door deze plugin."
 
-#: openforms/authentication/api/serializers.py:27
+#: openforms/authentication/api/serializers.py:25
 msgid "Levels of assurance"
 msgstr "Betrouwbaarheidsniveaus"
 
-#: openforms/authentication/api/serializers.py:28
+#: openforms/authentication/api/serializers.py:26
 msgid "The levels of assurance this plugin defines."
 msgstr "De beschikbare betrouwbaarheidsniveaus voor de plugin."
 
-#: openforms/authentication/api/serializers.py:34
+#: openforms/authentication/api/serializers.py:32
 msgid "Title"
 msgstr "Titel"
 
-#: openforms/authentication/api/serializers.py:35
+#: openforms/authentication/api/serializers.py:33
 msgid "Display title (for accessibility)"
 msgstr "Weergave titel (voor toegankelijkheid)"
 
-#: openforms/authentication/api/serializers.py:39
+#: openforms/authentication/api/serializers.py:37
 msgid "Image URL"
 msgstr "Afbeelding URL"
 
-#: openforms/authentication/api/serializers.py:39
+#: openforms/authentication/api/serializers.py:37
 msgid "URL to the logo image"
 msgstr "Logo URL"
 
-#: openforms/authentication/api/serializers.py:42
+#: openforms/authentication/api/serializers.py:40
 msgid "Click URL"
 msgstr "Actie URL"
 
-#: openforms/authentication/api/serializers.py:43
+#: openforms/authentication/api/serializers.py:41
 msgid "Information link to the authentication provider"
 msgstr "Website URL van de authenticatie provider"
 
-#: openforms/authentication/api/serializers.py:48
+#: openforms/authentication/api/serializers.py:46
 msgid "Login logo appearance"
 msgstr "Login-logoweergave"
 
-#: openforms/authentication/api/serializers.py:49
+#: openforms/authentication/api/serializers.py:47
 msgid "The appearance of the login logo (dark/light)"
 msgstr "Visueel voorkomen van het inloglogo (donker/licht)"
 
-#: openforms/authentication/api/serializers.py:54
+#: openforms/authentication/api/serializers.py:52
 msgid "..."
 msgstr "..."
 
-#: openforms/authentication/api/serializers.py:59
+#: openforms/authentication/api/serializers.py:57
 #: openforms/dmn/api/serializers.py:15 openforms/payments/api/serializers.py:25
 msgid "Identifier"
 msgstr "Unieke identificatie"
 
-#: openforms/authentication/api/serializers.py:62
+#: openforms/authentication/api/serializers.py:60
 #: openforms/payments/api/serializers.py:27
 msgid "Button label"
 msgstr "Knop label"
 
-#: openforms/authentication/api/serializers.py:65
+#: openforms/authentication/api/serializers.py:63
 msgid "Login URL"
 msgstr "Login URL"
 
-#: openforms/authentication/api/serializers.py:67
+#: openforms/authentication/api/serializers.py:65
 msgid "URL to start login flow, expects 'next' GET-parameter with return url"
 msgstr ""
 "URL om het login proces te starten. Deze URL verwacht een `next` query "
 "parameter met de terugkeer URL."
 
-#: openforms/authentication/api/serializers.py:72
-#: openforms/authentication/api/serializers.py:73
+#: openforms/authentication/api/serializers.py:70
+#: openforms/authentication/api/serializers.py:71
 msgid "Optional logo"
 msgstr "Optioneel logo"
 
-#: openforms/authentication/api/serializers.py:78
+#: openforms/authentication/api/serializers.py:76
 msgid "Is for gemachtigde"
 msgstr "Is voor gemachtigde"
 
-#: openforms/authentication/api/serializers.py:80
+#: openforms/authentication/api/serializers.py:78
 msgid ""
 "This authorization method can be used to log in on behalf of another person "
 "or company"
@@ -1162,7 +1493,7 @@ msgstr "eHerkenning via OpenID Connect"
 msgid "DigiD Machtigen via OpenID Connect"
 msgstr "DigiD Machtigen via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:173
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:178
 msgid "eHerkenning bewindvoering via OpenID Connect"
 msgstr "eHerkenning bewindvoering via OpenID Connect"
 
@@ -1214,11 +1545,11 @@ msgstr "Authenticatieplugin die uitval simuleert."
 msgid "Demo Outage"
 msgstr "Uitval simulatie (test)"
 
-#: openforms/authentication/contrib/outage/plugin.py:30
+#: openforms/authentication/contrib/outage/plugin.py:31
 msgid "BSN Outage"
 msgstr "BSN Uitval (test)"
 
-#: openforms/authentication/contrib/outage/plugin.py:40
+#: openforms/authentication/contrib/outage/plugin.py:41
 msgid "KvK Outage"
 msgstr "KvK Uitval (test)"
 
@@ -1250,10 +1581,6 @@ msgstr "Doorgaan als medewerker"
 msgid "Use either BSN or KvK"
 msgstr "Geef een BSN of KvK-nummer op"
 
-#: openforms/authentication/models.py:14
-msgid "plugin"
-msgstr "plugin"
-
 #: openforms/authentication/models.py:15 openforms/authentication/views.py:256
 msgid "Identifier of the authentication plugin."
 msgstr "Unieke identificatie van de authenticatieplugin"
@@ -1266,7 +1593,7 @@ msgstr "attribuut"
 msgid "Name of the attribute returned by the authentication plugin."
 msgstr "Naam van het attribuut voorzien door de authenticatieplugin"
 
-#: openforms/authentication/models.py:25 openforms/config/models.py:627
+#: openforms/authentication/models.py:25 openforms/config/models.py:648
 #: openforms/submissions/models/submission_value_variable.py:272
 #: openforms/validations/api/serializers.py:14
 msgid "value"
@@ -1339,7 +1666,7 @@ msgid "Demo plugins require an active admin session."
 msgstr "Om demo-plugins te gebruiken moet je als beheerder ingelogd zijn."
 
 #: openforms/authentication/static_variables/static_variables.py:19
-#: stuf/admin.py:75
+#: soap/admin.py:25
 msgid "Authentication"
 msgstr "Authenticatie"
 
@@ -1542,40 +1869,40 @@ msgstr "Knop labels"
 msgid "General form options"
 msgstr "Standaardformulieropties"
 
-#: openforms/config/admin.py:77
+#: openforms/config/admin.py:82
 msgid "Organization configuration"
 msgstr "Organisatie configuratie"
 
-#: openforms/config/admin.py:92
+#: openforms/config/admin.py:97
 msgid "Privacy"
 msgstr "Privacy"
 
-#: openforms/config/admin.py:102
+#: openforms/config/admin.py:107
 msgid "Sessions"
 msgstr "Sessies"
 
-#: openforms/config/admin.py:111
+#: openforms/config/admin.py:116
 msgid "Data removal"
 msgstr "Gegevens schonen"
 
-#: openforms/config/admin.py:124
+#: openforms/config/admin.py:129
 msgid "Search engines"
 msgstr "Zoekmachines"
 
-#: openforms/config/admin.py:125
+#: openforms/config/admin.py:130
 msgid "Plugin configuration"
 msgstr "Pluginconfiguratie"
 
-#: openforms/config/admin.py:126
+#: openforms/config/admin.py:131
 #: openforms/submissions/rendering/constants.py:11
 msgid "Registration"
 msgstr "Registratie"
 
-#: openforms/config/admin.py:128
+#: openforms/config/admin.py:133
 msgid "Virus scan"
 msgstr "Virusscan"
 
-#: openforms/config/admin.py:139
+#: openforms/config/admin.py:144
 msgid "Feature flags & fields for testing"
 msgstr "Feature flags, test- en ontwikkelinstellingen"
 
@@ -1671,7 +1998,7 @@ msgstr ""
 "Hyperlinks in (bevestigings)e-mails worden verwijderd, tenzij het domein "
 "hier opgegeven is."
 
-#: openforms/config/models.py:59 openforms/forms/models/form.py:94
+#: openforms/config/models.py:59 openforms/forms/models/form.py:108
 msgid "submission confirmation template"
 msgstr "Bevestigingspagina tekst"
 
@@ -1766,7 +2093,7 @@ msgid ""
 msgstr ""
 "Het label van de knop op de overzichtspagina om naar de vorige stap te gaan."
 
-#: openforms/config/models.py:139 openforms/forms/models/form.py:166
+#: openforms/config/models.py:139 openforms/forms/models/form.py:180
 msgid "change text"
 msgstr "Stap wijzigen-label"
 
@@ -1776,7 +2103,7 @@ msgid ""
 msgstr ""
 "Het label de link op de overzichtspagina om een bepaalde stap te wijzigen"
 
-#: openforms/config/models.py:148 openforms/forms/models/form.py:176
+#: openforms/config/models.py:148 openforms/forms/models/form.py:190
 msgid "confirm text"
 msgstr "Formulier verzenden-label"
 
@@ -1791,7 +2118,7 @@ msgid ""
 msgstr ""
 "Het label van de knop op de overzichtspagina om het formulier in te dienen"
 
-#: openforms/config/models.py:157 openforms/forms/models/form.py:146
+#: openforms/config/models.py:157 openforms/forms/models/form.py:160
 msgid "begin text"
 msgstr "Formulier starten-label"
 
@@ -1893,11 +2220,27 @@ msgstr ""
 "toepassing zijn verborgen. Standaard zijn deze zichtbaar maar gemarkeerd als "
 "n.v.t."
 
-#: openforms/config/models.py:236
+#: openforms/config/models.py:225
+msgid "The default zoom level for the leaflet map."
+msgstr "Standaard zoomniveau voor kaartmateriaal."
+
+#: openforms/config/models.py:230
+msgid "The default latitude for the leaflet map."
+msgstr ""
+"Standaard latitude voor kaartmateriaal (in coördinatenstelsel EPSG:4326/WGS "
+"84)."
+
+#: openforms/config/models.py:238
+msgid "The default longitude for the leaflet map."
+msgstr ""
+"Standaard longitude voor kaartmateriaal (in coördinatenstelsel EPSG:4326/WGS "
+"84)."
+
+#: openforms/config/models.py:257
 msgid "municipality logo"
 msgstr "gemeentelogo"
 
-#: openforms/config/models.py:240
+#: openforms/config/models.py:261
 msgid ""
 "Upload the municipality logo, visible to users filling out forms. We advise "
 "dimensions around 150px by 75px. SVG's are allowed."
@@ -1905,33 +2248,33 @@ msgstr ""
 "Upload het logo van de gemeente dat zichtbaar is op de formuliere website. "
 "We adviseren de dimensies van 150 x 75 pixels. SVG-bestanden zijn toegestaan."
 
-#: openforms/config/models.py:245
+#: openforms/config/models.py:266
 msgid "favicon"
 msgstr "favicon"
 
-#: openforms/config/models.py:249
+#: openforms/config/models.py:270
 msgid ""
 "Allow the uploading of a favicon, .png .jpg .svg and .ico are compatible."
 msgstr ""
 "Upload het favicon voor de applicatie. Enkel .png, .jpg, .svg en .ico "
 "bestanden zijn toegestaan."
 
-#: openforms/config/models.py:253
+#: openforms/config/models.py:274
 msgid "main website link"
 msgstr "hoofdsite link"
 
-#: openforms/config/models.py:256
+#: openforms/config/models.py:277
 msgid ""
 "URL to the main website. Used for the 'back to municipality website' link."
 msgstr ""
 "URL naar de hoofdsite van de organisatie. Wordt gebruikt voor 'terug naar de "
 "gemeente website' link."
 
-#: openforms/config/models.py:260
+#: openforms/config/models.py:281
 msgid "organization name"
 msgstr "organisatienaam"
 
-#: openforms/config/models.py:264
+#: openforms/config/models.py:285
 msgid ""
 "The name of your organization that will be used as label for elements like "
 "the logo."
@@ -1939,11 +2282,11 @@ msgstr ""
 "De naam van de organisatie/gemeente - dit wordt gebruikt in label bij "
 "elementen zoals het logo en de link terug naar de website."
 
-#: openforms/config/models.py:285
+#: openforms/config/models.py:306
 msgid "design token values"
 msgstr "design token waarden"
 
-#: openforms/config/models.py:289
+#: openforms/config/models.py:310
 msgid ""
 "Values of various style parameters, such as border radii, background "
 "colors... Note that this is advanced usage. Any available but un-specified "
@@ -1957,24 +2300,24 @@ msgstr ""
 "latest/installation/form_hosting.html#run-time-configuration voor "
 "documentatie."
 
-#: openforms/config/models.py:297
+#: openforms/config/models.py:318
 msgid "theme CSS class name"
 msgstr "Thema CSS class name"
 
-#: openforms/config/models.py:299
+#: openforms/config/models.py:320
 msgid "If provided, this class name will be set on the <html> element."
 msgstr ""
 "Indien ingevuld, dan wordt deze class name aan het <html> element toegevoegd."
 
-#: openforms/config/models.py:302
+#: openforms/config/models.py:323
 msgid "theme stylesheet URL"
 msgstr "Stylesheet-URL thema"
 
-#: openforms/config/models.py:308
+#: openforms/config/models.py:329
 msgid "The URL must point to a CSS resource (.css extension)."
 msgstr "De URL moet naar een CSS bestand wijzen (.css extensie)."
 
-#: openforms/config/models.py:312
+#: openforms/config/models.py:333
 msgid ""
 "The URL stylesheet with theme-specific rules for your organization. This "
 "will be included as final stylesheet, overriding previously defined styles. "
@@ -1988,11 +2331,11 @@ msgstr ""
 "`style-src` CSP configuratie moet toevoegen. Voorbeeldwaarde: https://unpkg."
 "com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
 
-#: openforms/config/models.py:319
+#: openforms/config/models.py:340
 msgid "theme stylesheet"
 msgstr "Stylesheet thema"
 
-#: openforms/config/models.py:324
+#: openforms/config/models.py:345
 msgid ""
 "A stylesheet with theme-specific rules for your organization. This will be "
 "included as final stylesheet, overriding previously defined styles. If both "
@@ -2004,21 +2347,21 @@ msgstr ""
 "stylesheet-URL en -bestand opgeeft, dan wordt het bestand na de URL "
 "ingeladen."
 
-#: openforms/config/models.py:334
+#: openforms/config/models.py:355
 msgid "admin session timeout"
 msgstr "beheersessie time-out"
 
-#: openforms/config/models.py:338
+#: openforms/config/models.py:359
 msgid ""
 "Amount of time in minutes the admin can be inactive for before being logged "
 "out"
 msgstr "Tijd in minuten voordat de sessie van een beheerder verloopt."
 
-#: openforms/config/models.py:342
+#: openforms/config/models.py:363
 msgid "form session timeout"
 msgstr "formuliersessie time-out"
 
-#: openforms/config/models.py:349
+#: openforms/config/models.py:370
 #, python-format
 msgid ""
 "Due to DigiD requirements this value has to be less than or equal to "
@@ -2026,17 +2369,17 @@ msgid ""
 msgstr ""
 "Om veiligheidsredenen mag de waarde niet groter zijn %(limit_value)s minuten."
 
-#: openforms/config/models.py:354
+#: openforms/config/models.py:375
 msgid ""
 "Amount of time in minutes a user filling in a form can be inactive for "
 "before being logged out"
 msgstr "Tijd in minuten voordat de sessie van een gebruiker verloopt."
 
-#: openforms/config/models.py:360
+#: openforms/config/models.py:381
 msgid "Payment Order ID prefix"
 msgstr "Betalings-order ID prefix"
 
-#: openforms/config/models.py:365
+#: openforms/config/models.py:386
 #, python-brace-format
 msgid ""
 "Prefix to apply to generated numerical order IDs. Alpha-numerical only, "
@@ -2045,11 +2388,11 @@ msgstr ""
 "Voorvoegsel voor gegenereerde numerieke bestellingsnummers. Enkel "
 "alfanumerieke karakters toegestaan en de placeholder \"{year}\"."
 
-#: openforms/config/models.py:372
+#: openforms/config/models.py:393
 msgid "ask privacy consent"
 msgstr "vraag toestemming om gegevens te verwerken"
 
-#: openforms/config/models.py:375
+#: openforms/config/models.py:396
 msgid ""
 "If enabled, the user will have to agree to the privacy policy before "
 "submitting a form."
@@ -2057,19 +2400,19 @@ msgstr ""
 "Indien ingeschakeld, moet de gebruiker akkoord gaan met het privacybeleid "
 "voordat hij een formulier indient."
 
-#: openforms/config/models.py:379
+#: openforms/config/models.py:400
 msgid "privacy policy URL"
 msgstr "Privacybeleid URL"
 
-#: openforms/config/models.py:379
+#: openforms/config/models.py:400
 msgid "URL to the privacy policy"
 msgstr "URL naar het privacybeleid op uw eigen website"
 
-#: openforms/config/models.py:382
+#: openforms/config/models.py:403
 msgid "privacy policy label"
 msgstr "Privacybeleid label"
 
-#: openforms/config/models.py:385
+#: openforms/config/models.py:406
 msgid ""
 "The label of the checkbox that prompts the user to agree to the privacy "
 "policy."
@@ -2077,29 +2420,29 @@ msgstr ""
 "Het label van het selectievakje dat de gebruiker vraagt om akkoord te gaan "
 "met het privacybeleid. "
 
-#: openforms/config/models.py:401
+#: openforms/config/models.py:422
 msgid "enable demo plugins"
 msgstr "demo plugins inschakelen"
 
-#: openforms/config/models.py:403
+#: openforms/config/models.py:424
 msgid "If enabled, the admin allows selection of demo backend plugins."
 msgstr "Indien ingeschakeld kunnen demo plugins worden worden geselecteerd."
 
-#: openforms/config/models.py:407
+#: openforms/config/models.py:428
 msgid "enable service fetch"
 msgstr "Bevragen registraties inschakelen"
 
-#: openforms/config/models.py:409
+#: openforms/config/models.py:430
 msgid "Allow use of unfinished, unstable service fetch feature."
 msgstr ""
 "Schakel de EXPERIMENTELE \"externe registraties bevragen\" functionaliteit "
 "in. Deze functionaliteit is aan wijzigingen onderhevig."
 
-#: openforms/config/models.py:413
+#: openforms/config/models.py:434
 msgid "enable new formio builder"
 msgstr "nieuwe formio builder inschakelen"
 
-#: openforms/config/models.py:416
+#: openforms/config/models.py:437
 msgid ""
 "Use the experimental Form.io component builder implementation. Note that "
 "this falls back to the existing builder for components that are not "
@@ -2109,20 +2452,20 @@ msgstr ""
 "valt terug op de bestaande builder voor componenttypes die nog niet "
 "geïmplementeerd zijn."
 
-#: openforms/config/models.py:422
+#: openforms/config/models.py:443
 msgid "enable new appointments"
 msgstr "nieuwe afsprakenmodule inschakelen"
 
-#: openforms/config/models.py:424
+#: openforms/config/models.py:445
 msgid "Enable using the new appointment form flow."
 msgstr ""
 "Vink deze optie aan om het nieuwe afsprakenformulier beschikbaar te maken."
 
-#: openforms/config/models.py:428
+#: openforms/config/models.py:449
 msgid "default test BSN"
 msgstr "Standaard test BSN"
 
-#: openforms/config/models.py:433
+#: openforms/config/models.py:454
 msgid ""
 "When provided, submissions that are started will have this BSN set as "
 "default for the session. Useful to test/demo prefill functionality."
@@ -2130,11 +2473,11 @@ msgstr ""
 "Indien opgegeven dan krijgen inzendingen dit BSN automatisch mee. "
 "Voornamelijk bedoeld voor test doeleinden."
 
-#: openforms/config/models.py:438
+#: openforms/config/models.py:459
 msgid "default test KvK Number"
 msgstr "Standaard test KvK-nummer"
 
-#: openforms/config/models.py:443
+#: openforms/config/models.py:464
 msgid ""
 "When provided, submissions that are started will have this KvK Number set as "
 "default for the session. Useful to test/demo prefill functionality."
@@ -2142,84 +2485,84 @@ msgstr ""
 "Indien opgegeven dan krijgen inzendingen dit KvK-nummer automatisch mee. "
 "Voornamelijk bedoeld voor test doeleinden."
 
-#: openforms/config/models.py:449
+#: openforms/config/models.py:470
 msgid "display SDK information"
 msgstr "toon SDK informatie"
 
-#: openforms/config/models.py:451
+#: openforms/config/models.py:472
 msgid "When enabled, information about the used SDK is displayed."
 msgstr ""
 "Wanneer dit ingeschakeld is wordt informatie over de gebruikte SDK getoond."
 
-#: openforms/config/models.py:456 openforms/forms/models/form.py:208
+#: openforms/config/models.py:477 openforms/forms/models/form.py:222
 msgid "successful submission removal limit"
 msgstr "bewaartermijn voor voltooide inzendingen."
 
-#: openforms/config/models.py:460
+#: openforms/config/models.py:481
 msgid "Amount of days successful submissions will remain before being removed"
 msgstr "Aantal dagen dat een voltooide inzending bewaard blijft."
 
-#: openforms/config/models.py:464 openforms/forms/models/form.py:218
+#: openforms/config/models.py:485 openforms/forms/models/form.py:232
 msgid "successful submissions removal method"
 msgstr "opschoonmethode voor voltooide inzendingen"
 
-#: openforms/config/models.py:468
+#: openforms/config/models.py:489
 msgid "How successful submissions will be removed after the limit"
 msgstr ""
 "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models.py:471 openforms/forms/models/form.py:228
+#: openforms/config/models.py:492 openforms/forms/models/form.py:242
 msgid "incomplete submission removal limit"
 msgstr "bewaartermijn voor sessies"
 
-#: openforms/config/models.py:475
+#: openforms/config/models.py:496
 msgid "Amount of days incomplete submissions will remain before being removed"
 msgstr "Aantal dagen dat een sessie bewaard blijft."
 
-#: openforms/config/models.py:479 openforms/forms/models/form.py:238
+#: openforms/config/models.py:500 openforms/forms/models/form.py:252
 msgid "incomplete submissions removal method"
 msgstr "opschoonmethode voor sessies."
 
-#: openforms/config/models.py:483
+#: openforms/config/models.py:504
 msgid "How incomplete submissions will be removed after the limit"
 msgstr "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models.py:486 openforms/forms/models/form.py:248
-#: openforms/forms/models/form.py:258
+#: openforms/config/models.py:507 openforms/forms/models/form.py:262
+#: openforms/forms/models/form.py:272
 msgid "errored submission removal limit"
 msgstr "bewaartermijn voor niet voltooide inzendingen inzendingen"
 
-#: openforms/config/models.py:490
+#: openforms/config/models.py:511
 msgid "Amount of days errored submissions will remain before being removed"
 msgstr ""
 "Aantal dagen dat een niet voltooide inzendingen (door fouten in de "
 "afhandeling) bewaard blijft."
 
-#: openforms/config/models.py:494
+#: openforms/config/models.py:515
 msgid "errored submissions removal method"
 msgstr "opschoonmethode voor niet voltooide inzendingen"
 
-#: openforms/config/models.py:498
+#: openforms/config/models.py:519
 msgid "How errored submissions will be removed after the"
 msgstr ""
 "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) "
 "worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models.py:501 openforms/forms/models/form.py:268
+#: openforms/config/models.py:522 openforms/forms/models/form.py:282
 msgid "all submissions removal limit"
 msgstr "bewaartermijn van inzendingen"
 
-#: openforms/config/models.py:504
+#: openforms/config/models.py:525
 msgid "Amount of days when all submissions will be permanently deleted"
 msgstr ""
 "Aantal dagen dat een inzending bewaard blijft voordat deze definitief "
 "verwijderd wordt."
 
-#: openforms/config/models.py:508
+#: openforms/config/models.py:529
 msgid "default registration backend attempt limit"
 msgstr "limiet aantal registratiepogingen"
 
-#: openforms/config/models.py:512
+#: openforms/config/models.py:533
 msgid ""
 "How often we attempt to register the submission at the registration backend "
 "before giving up"
@@ -2227,11 +2570,11 @@ msgstr ""
 "Stel in hoe vaak het systeem een inzending probeert af te leveren bij de "
 "registratie-backend voor er opgegeven wordt."
 
-#: openforms/config/models.py:517
+#: openforms/config/models.py:538
 msgid "plugin configuration"
 msgstr "pluginconfiguratie"
 
-#: openforms/config/models.py:521
+#: openforms/config/models.py:542
 msgid ""
 "Configuration of plugins for authentication, payments, prefill, "
 "registrations and validation"
@@ -2239,11 +2582,11 @@ msgstr ""
 "Configuratie van plugins voor authenticatie, betaalproviders, prefill, "
 "registraties en validaties."
 
-#: openforms/config/models.py:528
+#: openforms/config/models.py:549
 msgid "Allow form page indexing"
 msgstr "Laat indexeren van formulierpagina's toe"
 
-#: openforms/config/models.py:531
+#: openforms/config/models.py:552
 msgid ""
 "Whether form detail pages may be indexed and displayed in search engine "
 "result lists. Disable this to prevent listing."
@@ -2251,11 +2594,11 @@ msgstr ""
 "Geeft aan of formulierpagina's geïndexeerd én getoond mogen worden in de "
 "resultaten van zoekmachines. Schakel dit uit om weergave te voorkomen."
 
-#: openforms/config/models.py:537
+#: openforms/config/models.py:558
 msgid "Enable virus scan"
 msgstr "Virusscan inschakelen"
 
-#: openforms/config/models.py:540
+#: openforms/config/models.py:561
 msgid ""
 "Whether the files uploaded by the users should be scanned by ClamAV virus "
 "scanner.In case a file is found to be infected, the file is deleted."
@@ -2263,83 +2606,83 @@ msgstr ""
 "Indien aangevinkt, dan worden uploads van eindgebruikers op virussen "
 "gescand. Geïnfecteerde bestanden worden meteen verwijdered en geblokkeerd."
 
-#: openforms/config/models.py:545
+#: openforms/config/models.py:566
 msgid "ClamAV server hostname"
 msgstr "ClamAV server hostname"
 
-#: openforms/config/models.py:547
+#: openforms/config/models.py:568
 msgid "Hostname or IP address where ClamAV is running."
 msgstr "Hostname of IP-adres waarop de ClamAV service bereikbaar is."
 
-#: openforms/config/models.py:552
+#: openforms/config/models.py:573
 msgid "ClamAV port number"
 msgstr "ClamAV poortnummer"
 
-#: openforms/config/models.py:553
+#: openforms/config/models.py:574
 msgid "The TCP port on which ClamAV is listening."
 msgstr "Poortnummer (TCP) waarop de ClamAV service luistert."
 
-#: openforms/config/models.py:561
+#: openforms/config/models.py:582
 msgid "ClamAV socket timeout"
 msgstr "ClamAV-connectie timeout"
 
-#: openforms/config/models.py:562
+#: openforms/config/models.py:583
 msgid "ClamAV socket timeout expressed in seconds (optional)."
 msgstr "ClamAV socket timeout, in seconden."
 
-#: openforms/config/models.py:569
+#: openforms/config/models.py:590
 msgid "General configuration"
 msgstr "Algemene configuratie"
 
-#: openforms/config/models.py:594
+#: openforms/config/models.py:615
 msgid "ClamAV host and port need to be configured if virus scan is enabled."
 msgstr ""
 "De ClamAV host en poortnummer moeten ingesteld zijn om virusscannen in te "
 "schakelen."
 
-#: openforms/config/models.py:605
+#: openforms/config/models.py:626
 #, python-format
 msgid "Cannot connect to ClamAV: %(error)s"
 msgstr "Kon niet verbinden met de antivirus-service: %(error)s"
 
-#: openforms/config/models.py:621
+#: openforms/config/models.py:642
 msgid "directive"
 msgstr "directive"
 
-#: openforms/config/models.py:623
+#: openforms/config/models.py:644
 msgid "CSP header directive"
 msgstr "CSP header directive"
 
-#: openforms/config/models.py:629
+#: openforms/config/models.py:650
 msgid "CSP header value"
 msgstr "CSP header waarde"
 
-#: openforms/config/models.py:643
+#: openforms/config/models.py:664
 msgid "color"
 msgstr "kleur"
 
-#: openforms/config/models.py:645
+#: openforms/config/models.py:666
 msgid "Color in RGB hex format (#RRGGBB)"
 msgstr "Kleur in RGB hex-formaat (#RRGGBB)"
 
-#: openforms/config/models.py:648 openforms/contrib/microsoft/models.py:11
-#: stuf/models.py:12
+#: openforms/config/models.py:669 openforms/contrib/microsoft/models.py:11
+#: soap/models.py:12
 msgid "label"
 msgstr "label"
 
-#: openforms/config/models.py:650
+#: openforms/config/models.py:671
 msgid "Human readable label for reference"
 msgstr "Label ter referentie"
 
-#: openforms/config/models.py:654
+#: openforms/config/models.py:675
 msgid "text editor color preset"
 msgstr "WYSIWYG-editor tekstkleur"
 
-#: openforms/config/models.py:655
+#: openforms/config/models.py:676
 msgid "text editor color presets"
 msgstr "WYSIWYG-editor tekstkleuren"
 
-#: openforms/config/models.py:666
+#: openforms/config/models.py:687
 msgid "Example"
 msgstr "Voorbeeld"
 
@@ -2461,7 +2804,7 @@ msgid "Validation plugin config: {config}"
 msgstr "Validatieplugin configuratie: {config}"
 
 #: openforms/contrib/kvk/checks.py:38
-#: openforms/prefill/contrib/kvk/plugin.py:109
+#: openforms/prefill/contrib/kvk/plugin.py:125
 msgid "Response not a dictionary"
 msgstr "Antwoord is geen object"
 
@@ -2470,7 +2813,7 @@ msgid "Response does not contain results"
 msgstr "Antwoord bevat geen resultaten"
 
 #: openforms/contrib/kvk/checks.py:48
-#: openforms/prefill/contrib/kvk/plugin.py:113
+#: openforms/prefill/contrib/kvk/plugin.py:129
 #, python-brace-format
 msgid "Did not find kvkNummer='{kvk}' in results"
 msgstr "Kon KvK-nummer {kvk} niet vinden in de resultaten."
@@ -2529,7 +2872,7 @@ msgstr "KvK vestigingsnummer"
 msgid "Microsoft code & configuration"
 msgstr "Microsof code en configuratie"
 
-#: openforms/contrib/microsoft/models.py:13 stuf/models.py:14
+#: openforms/contrib/microsoft/models.py:13 soap/models.py:14
 msgid "Human readable label to identify services"
 msgstr "Eenvoudige naam om services te identificeren"
 
@@ -2679,7 +3022,7 @@ msgstr "v{version} (versie tag: {version_tag})"
 msgid "n/a"
 msgstr "n.v.t."
 
-#: openforms/emails/admin.py:33
+#: openforms/emails/admin.py:28
 msgid "Email connection test"
 msgstr "E-mail verbindingstest"
 
@@ -2715,10 +3058,6 @@ msgstr ""
 "Indien het bericht niet aankomt, controleer de Django-yubin wachtrij en "
 "periodieke acties."
 
-#: openforms/emails/forms.py:24
-msgid "Email address"
-msgstr "e-mailadres"
-
 #: openforms/emails/models.py:28
 msgid "Subject of the email message"
 msgstr "Onderwerp van het e-mailbericht"
@@ -2732,8 +3071,8 @@ msgstr ""
 "ingediende formuliergegevens worden weergegeven. "
 
 #: openforms/emails/models.py:52 openforms/forms/admin/form_logic.py:27
-#: openforms/forms/models/form.py:291
-#: openforms/forms/models/form_variable.py:105
+#: openforms/forms/models/form.py:300
+#: openforms/forms/models/form_variable.py:112
 #: openforms/forms/models/form_version.py:44
 msgid "form"
 msgstr "formulier"
@@ -2902,12 +3241,6 @@ msgid "Saved form %(tt_openvariable)s form_name %(tt_closevariable)s"
 msgstr ""
 "Opgeslagen formulier %(tt_openvariable)s form_name %(tt_closevariable)s"
 
-#: openforms/emails/templates/emails/templatetags/appointment_information.html:7
-#: openforms/emails/templates/emails/templatetags/appointment_information.txt:3
-#: openforms/products/models/product.py:37
-msgid "Products"
-msgstr "Producten"
-
 #: openforms/emails/templates/emails/templatetags/appointment_information.html:15
 #: openforms/emails/templates/emails/templatetags/appointment_information.txt:6
 msgid "Location"
@@ -3031,8 +3364,33 @@ msgid "This domain is not in the global netloc allowlist: {netloc}"
 msgstr ""
 "Dit domein is niet aanwezig in de toegestane lijst van domeinen: {netloc}"
 
+#: openforms/formio/api/schema.py:13
+#: openforms/forms/api/serializers/logic/action_serializers.py:98
+msgid "Form.io component"
+msgstr "Form.io component"
+
+#: openforms/formio/api/schema.py:15
+msgid ""
+"A single Form.io component. The `type`, `key` and `label` properties are "
+"guaranteed to be present and non-empty."
+msgstr ""
+"Een Form.io componentdefinitie. De `type`-, `key`- en `label`-eigenschappen "
+"zijn gegarandeerd aanwezig en niet-leeg."
+
+#: openforms/formio/api/schema.py:21
+msgid "Component type"
+msgstr "Componenttype"
+
+#: openforms/formio/api/schema.py:25
+msgid "Form field name"
+msgstr "Componentsleutel"
+
+#: openforms/formio/api/schema.py:29
+msgid "Form field label"
+msgstr "Componentlabel"
+
 #: openforms/formio/api/serializers.py:30
-#: openforms/payments/api/serializers.py:36 stuf/models.py:17
+#: openforms/payments/api/serializers.py:36 soap/models.py:17
 msgid "URL"
 msgstr "URL"
 
@@ -3112,7 +3470,7 @@ msgstr ""
 msgid "Formio integration"
 msgstr "Form.io-integratie"
 
-#: openforms/formio/components/custom.py:123
+#: openforms/formio/components/custom.py:132
 msgid "Selecting family members is currently not available."
 msgstr "Het selecteren van gezinsleden is momenteel niet beschikbaar."
 
@@ -3192,6 +3550,10 @@ msgstr "Weergeven in bevestigingsmail"
 #: openforms/formio/rendering/default.py:276
 msgid "Item"
 msgstr "Item"
+
+#: openforms/formio/validation.py:33
+msgid "You must provide a non-empty value."
+msgstr "Je moet een niet-lege waarde opgeven."
 
 #: openforms/forms/admin/category.py:33
 msgid "form count"
@@ -3335,7 +3697,7 @@ msgstr "Formulier definities zijn aangemaakt met de volgende URL-delen: {}"
 msgid "UUID of the form the definition is used in."
 msgstr "UUID van het formulier waarin de definitie gebruikt wordt."
 
-#: openforms/forms/api/serializers/form.py:74
+#: openforms/forms/api/serializers/form.py:75
 msgid ""
 "The authentication backend to which the user will be automatically "
 "redirected upon starting the form. The chosen backend must be present in "
@@ -3344,32 +3706,32 @@ msgstr ""
 "De authenticatie-plugin waar de gebruiker automatisch heen gestuurd wordt "
 "bij het starten van het formulier."
 
-#: openforms/forms/api/serializers/form.py:81
+#: openforms/forms/api/serializers/form.py:82
 #: openforms/forms/models/category.py:19
 msgid "category"
 msgstr "categorie"
 
-#: openforms/forms/api/serializers/form.py:87
+#: openforms/forms/api/serializers/form.py:88
 msgid "URL to the category in the Open Forms API"
 msgstr "URL naar de formuliercategorie in de Open Forms API"
 
-#: openforms/forms/api/serializers/form.py:90
+#: openforms/forms/api/serializers/form.py:91
 msgid "product"
 msgstr "product"
 
-#: openforms/forms/api/serializers/form.py:96
+#: openforms/forms/api/serializers/form.py:97
 msgid "URL to the product in the Open Forms API"
 msgstr "URL van het product in de Open Formulieren API"
 
-#: openforms/forms/api/serializers/form.py:115
+#: openforms/forms/api/serializers/form.py:122
 msgid "Resume link lifetime"
 msgstr "Geldigheidsduur \"formulier hervatten\"-link"
 
-#: openforms/forms/api/serializers/form.py:117
+#: openforms/forms/api/serializers/form.py:124
 msgid "The number of days that the resume link is valid for."
 msgstr "Het aantal dagen dat de link geldig blijft."
 
-#: openforms/forms/api/serializers/form.py:300
+#: openforms/forms/api/serializers/form.py:307
 msgid ""
 "The `auto_login_authentication_backend` must be one of the selected backends "
 "from `authentication_backends`"
@@ -3377,7 +3739,7 @@ msgstr ""
 "De `auto_login_authentication_backend` moet één van de backends uit "
 "`authentication_backends` zijn."
 
-#: openforms/forms/api/serializers/form.py:356
+#: openforms/forms/api/serializers/form.py:363
 msgid "The file that contains the form, form definitions and form steps."
 msgstr ""
 "Het bestand dat het formulier, de formulier definities en de "
@@ -3448,13 +3810,13 @@ msgstr ""
 "De variabelesleutel mag niet gelijk zijn aan een van de volgende waarden: "
 "{static_data}."
 
-#: openforms/forms/api/serializers/form_variable.py:149
+#: openforms/forms/api/serializers/form_variable.py:150
 #, python-brace-format
 msgid ""
 "The service fetch configuration with identifier {config_id} does not exist"
 msgstr "De servicebevragenconfiguratie met ID {config_id} bestaat niet"
 
-#: openforms/forms/api/serializers/form_variable.py:176
+#: openforms/forms/api/serializers/form_variable.py:177
 msgid ""
 "Invalid component variable: no component with corresponding key present in "
 "the form definition."
@@ -3519,10 +3881,6 @@ msgstr "Type"
 #: openforms/forms/api/serializers/logic/action_serializers.py:79
 msgid "Action type for this particular action."
 msgstr "Soort actie"
-
-#: openforms/forms/api/serializers/logic/action_serializers.py:98
-msgid "Form.io component"
-msgstr "Form.io component"
 
 #: openforms/forms/api/serializers/logic/action_serializers.py:100
 #, python-brace-format
@@ -4083,8 +4441,8 @@ msgid "When {trigger}"
 msgstr "Als {trigger}"
 
 #: openforms/forms/models/category.py:10 openforms/forms/models/form.py:52
-#: openforms/forms/models/form.py:494
-#: openforms/forms/models/form_definition.py:41
+#: openforms/forms/models/form.py:503
+#: openforms/forms/models/form_definition.py:42
 #: openforms/forms/models/form_step.py:17
 #: openforms/forms/models/form_version.py:42 openforms/forms/models/logic.py:11
 #: openforms/forms/models/pricing_logic.py:30 openforms/payments/models.py:78
@@ -4105,17 +4463,17 @@ msgid "categories"
 msgstr "categorieën"
 
 #: openforms/forms/models/form.py:55
-#: openforms/forms/models/form_definition.py:44
+#: openforms/forms/models/form_definition.py:45
 msgid "internal name"
 msgstr "interne naam"
 
 #: openforms/forms/models/form.py:58
-#: openforms/forms/models/form_definition.py:47
+#: openforms/forms/models/form_definition.py:48
 msgid "internal name for management purposes"
 msgstr "interne naam voor beheerdoeleinden "
 
 #: openforms/forms/models/form.py:61
-#: openforms/forms/models/form_definition.py:50
+#: openforms/forms/models/form_definition.py:51
 msgid "slug"
 msgstr "URL-deel"
 
@@ -4123,7 +4481,7 @@ msgstr "URL-deel"
 msgid "translation enabled"
 msgstr "meertaligheid ingeschakeld"
 
-#: openforms/forms/models/form.py:73 openforms/forms/models/form.py:322
+#: openforms/forms/models/form.py:73 openforms/forms/models/form.py:331
 msgid "registration backend"
 msgstr "registratie backend"
 
@@ -4131,27 +4489,39 @@ msgstr "registratie backend"
 msgid "registration backend options"
 msgstr "registratie backend opties"
 
-#: openforms/forms/models/form.py:79 openforms/forms/models/form.py:334
+#: openforms/forms/models/form.py:80 openforms/forms/models/form.py:343
 msgid "payment backend"
 msgstr "betaalprovider backend"
 
-#: openforms/forms/models/form.py:81
+#: openforms/forms/models/form.py:82
 msgid "payment backend options"
 msgstr "betaalprovider backend opties"
 
-#: openforms/forms/models/form.py:85 openforms/forms/models/form.py:350
+#: openforms/forms/models/form.py:87 openforms/forms/models/form.py:359
 msgid "authentication backend(s)"
 msgstr "authenticatie backend(s)"
 
-#: openforms/forms/models/form.py:88
+#: openforms/forms/models/form.py:90
 msgid "automatic login"
 msgstr "automatisch inloggen"
 
-#: openforms/forms/models/form.py:91
+#: openforms/forms/models/form.py:93
 msgid "per form authentication backend config"
 msgstr "formulierspecifieke authenticatie-instellingen"
 
-#: openforms/forms/models/form.py:96
+#: openforms/forms/models/form.py:98
+msgid "appointment enabled"
+msgstr "Afspraakformulier"
+
+#: openforms/forms/models/form.py:101
+msgid ""
+"Mark the form as an appointment form. Appointment forms do not support form "
+"designer steps."
+msgstr ""
+"Markeer het formulier als een afspraakformulier. Afspraakformulieren kunnen "
+"geen stappen hebben in de form designer - de structuur ligt vast."
+
+#: openforms/forms/models/form.py:110
 msgid ""
 "The content of the submission confirmation page. It can contain variables "
 "that will be templated from the submitted form data. If not specified, the "
@@ -4161,12 +4531,12 @@ msgstr ""
 "de ingediende formuliergegevens worden weergegeven. Indien niet opgegeven "
 "dan wordt de globale bevestingspagina gebruikt."
 
-#: openforms/forms/models/form.py:105
-#: openforms/submissions/api/serializers.py:125
+#: openforms/forms/models/form.py:119
+#: openforms/submissions/api/serializers.py:124
 msgid "submission allowed"
 msgstr "inzenden toegestaan"
 
-#: openforms/forms/models/form.py:109
+#: openforms/forms/models/form.py:123
 msgid ""
 "Whether the user is allowed to submit this form or not, and whether the "
 "overview page should be shown if they are not."
@@ -4174,50 +4544,50 @@ msgstr ""
 "Geeft aan of de gebruiker het formulier kan verzenden en of de "
 "overzichtspagina getoond wordt als het formulier niet verzonden kan worden."
 
-#: openforms/forms/models/form.py:115
+#: openforms/forms/models/form.py:129
 msgid "suspension allowed"
 msgstr "tussentijds opslaan"
 
-#: openforms/forms/models/form.py:117
+#: openforms/forms/models/form.py:131
 msgid "Whether the user is allowed to suspend this form or not."
 msgstr ""
 "Geeft aan of de gebruiker het formulier tussentijds kan opslaan/pauzeren of "
 "niet."
 
-#: openforms/forms/models/form.py:120
+#: openforms/forms/models/form.py:134
 msgid "show progress indicator"
 msgstr "toon formulier stappen"
 
-#: openforms/forms/models/form.py:123
+#: openforms/forms/models/form.py:137
 msgid "Whether the step progression should be displayed in the UI or not."
 msgstr ""
 "Indien aangevinkt dan worden de stappen van het formulier aan de gebruiker "
 "getoond."
 
-#: openforms/forms/models/form.py:127
+#: openforms/forms/models/form.py:141
 msgid "display main website link"
 msgstr "toon hoofdsite link"
 
-#: openforms/forms/models/form.py:130
+#: openforms/forms/models/form.py:144
 msgid ""
 "Display the link to the main website on the submission confirmation page."
 msgstr "Toon de link naar de hoofdsite op de bevestigingspagina na inzenden."
 
-#: openforms/forms/models/form.py:134
+#: openforms/forms/models/form.py:148
 msgid "include confirmation page content in PDF"
 msgstr "voeg de \"bevestigingspaginatekst\" toe in de bevestigings-PDF"
 
-#: openforms/forms/models/form.py:136
+#: openforms/forms/models/form.py:150
 msgid "Display the instruction from the confirmation page in the PDF."
 msgstr ""
 "Vink aan om de inhoud van het \"bevestigingspaginatekst\"-veld toe te voegen "
 "aan de PDF met gegevens ter bevestiging."
 
-#: openforms/forms/models/form.py:139
+#: openforms/forms/models/form.py:153
 msgid "send confirmation email"
 msgstr "verstuur bevestigingsmail"
 
-#: openforms/forms/models/form.py:141
+#: openforms/forms/models/form.py:155
 msgid ""
 "Whether a confirmation email should be sent to the end user filling in the "
 "form."
@@ -4225,7 +4595,7 @@ msgstr ""
 "Geef aan of er een bevestigingsmail naar de formulierinzender verstuurd "
 "dient te worden."
 
-#: openforms/forms/models/form.py:150
+#: openforms/forms/models/form.py:164
 msgid ""
 "The text that will be displayed at the start of the form to indicate the "
 "user can begin to fill in the form. Leave blank to get value from global "
@@ -4234,11 +4604,11 @@ msgstr ""
 "Het label van de knop om het formulier te starten. Laat leeg om de waarde "
 "van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:156
+#: openforms/forms/models/form.py:170
 msgid "previous text"
 msgstr "Vorige stap-label"
 
-#: openforms/forms/models/form.py:160
+#: openforms/forms/models/form.py:174
 msgid ""
 "The text that will be displayed in the overview page to go to the previous "
 "step. Leave blank to get value from global configuration."
@@ -4246,7 +4616,7 @@ msgstr ""
 "Het label van de knop op de overzichtspagina om naar de vorige stap te gaan. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:170
+#: openforms/forms/models/form.py:184
 msgid ""
 "The text that will be displayed in the overview page to change a certain "
 "step. Leave blank to get value from global configuration."
@@ -4254,7 +4624,7 @@ msgstr ""
 "Het label de link op de overzichtspagina om een bepaalde stap te wijzigen. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:180
+#: openforms/forms/models/form.py:194
 msgid ""
 "The text that will be displayed in the overview page to confirm the form is "
 "filled in correctly. Leave blank to get value from global configuration."
@@ -4262,11 +4632,11 @@ msgstr ""
 "Het label van de knop op de overzichtspagina om het formulier in te dienen. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:188
+#: openforms/forms/models/form.py:202
 msgid "explanation template"
 msgstr "Toelichtingssjabloon"
 
-#: openforms/forms/models/form.py:190
+#: openforms/forms/models/form.py:204
 msgid ""
 "Content that will be shown on the start page of the form, below the title "
 "and above the log in text."
@@ -4274,15 +4644,15 @@ msgstr ""
 "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven "
 "de startknop(pen)."
 
-#: openforms/forms/models/form.py:198
+#: openforms/forms/models/form.py:212
 msgid "maintenance mode"
 msgstr "onderhoudsmodus"
 
-#: openforms/forms/models/form.py:201
+#: openforms/forms/models/form.py:215
 msgid "Users will not be able to start the form if it is in maintenance mode."
 msgstr "Gebruikers kunnen een formulier in onderhoudsmodus niet starten."
 
-#: openforms/forms/models/form.py:213
+#: openforms/forms/models/form.py:227
 msgid ""
 "Amount of days successful submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -4290,7 +4660,7 @@ msgstr ""
 "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de "
 "waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:223
+#: openforms/forms/models/form.py:237
 msgid ""
 "How successful submissions of this form will be removed after the limit. "
 "Leave blank to use value in General Configuration."
@@ -4298,7 +4668,7 @@ msgstr ""
 "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn. "
 "Laat leeg om de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:233
+#: openforms/forms/models/form.py:247
 msgid ""
 "Amount of days incomplete submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -4306,7 +4676,7 @@ msgstr ""
 "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de "
 "algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:243
+#: openforms/forms/models/form.py:257
 msgid ""
 "How incomplete submissions of this form will be removed after the limit. "
 "Leave blank to use value in General Configuration."
@@ -4314,7 +4684,7 @@ msgstr ""
 "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn. Laat leeg om "
 "de waarde van de algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:253
+#: openforms/forms/models/form.py:267
 msgid ""
 "Amount of days errored submissions of this form will remain before being "
 "removed. Leave blank to use value in General Configuration."
@@ -4323,7 +4693,7 @@ msgstr ""
 "afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene "
 "configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:263
+#: openforms/forms/models/form.py:277
 msgid ""
 "How errored submissions of this form will be removed after the limit. Leave "
 "blank to use value in General Configuration."
@@ -4332,7 +4702,7 @@ msgstr ""
 "worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de "
 "algemene configuratie te gebruiken."
 
-#: openforms/forms/models/form.py:273
+#: openforms/forms/models/form.py:287
 msgid ""
 "Amount of days when all submissions of this form will be permanently "
 "deleted. Leave blank to use value in General Configuration."
@@ -4341,112 +4711,104 @@ msgstr ""
 "verwijderd wordt. Laat leeg om de waarde van de algemene configuratie te "
 "gebruiken."
 
-#: openforms/forms/models/form.py:278
-msgid "appointment enabled"
-msgstr "Afspraakformulier"
-
-#: openforms/forms/models/form.py:280
-msgid "This is experimental mode for appointments"
-msgstr "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie"
-
-#: openforms/forms/models/form.py:292
+#: openforms/forms/models/form.py:301
 msgid "forms"
 msgstr "formulieren"
 
-#: openforms/forms/models/form.py:296
+#: openforms/forms/models/form.py:305
 #, python-brace-format
 msgid "{name} (deleted)"
 msgstr "{name} (verwijderd)"
 
-#: openforms/forms/models/form.py:331 openforms/forms/models/form.py:344
+#: openforms/forms/models/form.py:340 openforms/forms/models/form.py:353
 #, python-brace-format
 msgid "{backend} (invalid)"
 msgstr "{backend} (ongeldig)"
 
-#: openforms/forms/models/form.py:390 openforms/forms/models/form.py:392
-#: openforms/forms/models/form_definition.py:110
-#: openforms/forms/models/form_definition.py:112
+#: openforms/forms/models/form.py:399 openforms/forms/models/form.py:401
+#: openforms/forms/models/form_definition.py:111
+#: openforms/forms/models/form_definition.py:113
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr "{name} (kopie)"
 
-#: openforms/forms/models/form.py:396
-#: openforms/forms/models/form_definition.py:116
+#: openforms/forms/models/form.py:405
+#: openforms/forms/models/form_definition.py:117
 #, python-brace-format
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
 
-#: openforms/forms/models/form.py:478
+#: openforms/forms/models/form.py:487
 #, python-brace-format
 msgid "Restored form version {version} (from {created})."
 msgstr "Formulierversie {version} hersteld (van {created})."
 
-#: openforms/forms/models/form.py:496
+#: openforms/forms/models/form.py:505
 msgid "export content"
 msgstr "Exportinhoud"
 
-#: openforms/forms/models/form.py:498
+#: openforms/forms/models/form.py:507
 msgid "Zip file containing all the exported forms."
 msgstr "Het ZIP-bestand met daarin alle geëxporteerde formulieren."
 
-#: openforms/forms/models/form.py:501
+#: openforms/forms/models/form.py:510
 msgid "date time requested"
 msgstr "Moment van aanvraag"
 
-#: openforms/forms/models/form.py:502
+#: openforms/forms/models/form.py:511
 msgid "The date and time on which the bulk export was requested."
 msgstr "De datum en tijdstip waarop de bulk export aangevraagd is."
 
-#: openforms/forms/models/form.py:508
+#: openforms/forms/models/form.py:517
 msgid "The user that requested the download."
 msgstr "De gebruiker die de download heeft aangevraagd."
 
-#: openforms/forms/models/form.py:515
+#: openforms/forms/models/form.py:524
 msgid "forms export"
 msgstr "formulierenexport"
 
-#: openforms/forms/models/form.py:516
+#: openforms/forms/models/form.py:525
 msgid "forms exports"
 msgstr "Formulierexports"
 
-#: openforms/forms/models/form.py:519
+#: openforms/forms/models/form.py:528
 #, python-format
 msgid "Bulk export requested by %(username)s on %(datetime)s"
 msgstr "Bulk-export aangevraagd door %(username)s op %(datetime)s"
 
-#: openforms/forms/models/form_definition.py:53
+#: openforms/forms/models/form_definition.py:54
 msgid "Form.io configuration"
 msgstr "Form.io configuratie"
 
-#: openforms/forms/models/form_definition.py:54
+#: openforms/forms/models/form_definition.py:55
 msgid "The form definition as Form.io JSON schema"
 msgstr "De formulier definitie als Form.io JSON schema"
 
-#: openforms/forms/models/form_definition.py:58
+#: openforms/forms/models/form_definition.py:59
 msgid "login required"
 msgstr "inloggen verplicht"
 
-#: openforms/forms/models/form_definition.py:63
+#: openforms/forms/models/form_definition.py:64
 msgid "is reusable"
 msgstr "is herbruikbaar"
 
-#: openforms/forms/models/form_definition.py:70
+#: openforms/forms/models/form_definition.py:71
 msgid "number of Formio components"
 msgstr "Aantal Form.io-componenten"
 
-#: openforms/forms/models/form_definition.py:72
+#: openforms/forms/models/form_definition.py:73
 msgid "The total number of Formio components used in the configuration"
 msgstr "Het totaal aantal Formio-componenten gebruikt in de configuratie"
 
-#: openforms/forms/models/form_definition.py:76
+#: openforms/forms/models/form_definition.py:77
 msgid "Component translations"
 msgstr "Componentvertalingen"
 
-#: openforms/forms/models/form_definition.py:77
+#: openforms/forms/models/form_definition.py:78
 msgid "Translations for literals used in components"
 msgstr "Vertalingen voor teksten/labels die in componenten gebruikt worden."
 
-#: openforms/forms/models/form_definition.py:147
+#: openforms/forms/models/form_definition.py:159
 msgid ""
 "This form definition cannot be removed because it is used in one or more "
 "forms."
@@ -4454,11 +4816,11 @@ msgstr ""
 "Deze formulier definitie kan niet verwijderd worden omdat deze in één of "
 "meerdere formulieren gebruikt wordt."
 
-#: openforms/forms/models/form_definition.py:195
+#: openforms/forms/models/form_definition.py:207
 msgid "Form definition"
 msgstr "Formulier definitie"
 
-#: openforms/forms/models/form_definition.py:196
+#: openforms/forms/models/form_definition.py:208
 msgid "Form definitions"
 msgstr "formulier definities"
 
@@ -4499,7 +4861,7 @@ msgstr "formulierstappen"
 msgid "{form_name} step {order}: {definition_name}"
 msgstr "{form_name} stap {order}: {definition_name}"
 
-#: openforms/forms/models/form_variable.py:32
+#: openforms/forms/models/form_variable.py:33
 msgid ""
 "Invalid variable key. It must only contain alphanumeric characters, "
 "underscores, dots and dashes and should not be ended by dash or dot."
@@ -4508,106 +4870,120 @@ msgstr ""
 "liggende streepjes, punten en streepjes bevatten en mag niet eindigen met "
 "een streepje of punt."
 
-#: openforms/forms/models/form_variable.py:106
+#: openforms/forms/models/form_variable.py:113
 msgid "Form to which this variable is related"
 msgstr "Formulier waarbij deze variabele hoort"
 
-#: openforms/forms/models/form_variable.py:111
+#: openforms/forms/models/form_variable.py:118
 msgid "form definition"
 msgstr "Formulierdefinitie"
 
-#: openforms/forms/models/form_variable.py:113
+#: openforms/forms/models/form_variable.py:120
 msgid ""
 "Form definition to which this variable is related. This is kept as metadata"
 msgstr "Formulierdefinitie waarbij deze variabele hoort."
 
-#: openforms/forms/models/form_variable.py:121
+#: openforms/forms/models/form_variable.py:128
 msgid "Name of the variable"
 msgstr "Variabelenaam"
 
-#: openforms/forms/models/form_variable.py:124
+#: openforms/forms/models/form_variable.py:131
 #: openforms/submissions/models/submission_value_variable.py:268
 msgid "key"
 msgstr "sleutel"
 
-#: openforms/forms/models/form_variable.py:125
+#: openforms/forms/models/form_variable.py:132
 msgid "Key of the variable, should be unique with the form."
 msgstr "Sleutel van de variabele, uniek binnen het formulier."
 
-#: openforms/forms/models/form_variable.py:129
+#: openforms/forms/models/form_variable.py:136
 #: openforms/submissions/models/submission_value_variable.py:278
 msgid "source"
 msgstr "bron"
 
-#: openforms/forms/models/form_variable.py:131
+#: openforms/forms/models/form_variable.py:138
 msgid ""
 "Where will the data that will be associated with this variable come from"
 msgstr "Oorsprong van de gegevens die in deze variabele opgeslagen worden"
 
-#: openforms/forms/models/form_variable.py:137 openforms/variables/models.py:81
+#: openforms/forms/models/form_variable.py:144 openforms/variables/models.py:81
 msgid "service fetch configuration"
 msgstr "Servicebevragingconfiguratie"
 
-#: openforms/forms/models/form_variable.py:144
+#: openforms/forms/models/form_variable.py:151
 msgid "prefill plugin"
 msgstr "prefillplugin"
 
-#: openforms/forms/models/form_variable.py:145
+#: openforms/forms/models/form_variable.py:152
 msgid "Which, if any, prefill plugin should be used"
 msgstr "Prefill-plugin om gegevens op te halen"
 
-#: openforms/forms/models/form_variable.py:150
+#: openforms/forms/models/form_variable.py:157
 msgid "prefill attribute"
 msgstr "prefillattribuut"
 
-#: openforms/forms/models/form_variable.py:152
+#: openforms/forms/models/form_variable.py:159
 msgid ""
 "Which attribute from the prefill response should be used to fill this "
 "variable"
 msgstr "Attribuut uit de prefill-response om de waarde mee te vullen"
 
-#: openforms/forms/models/form_variable.py:158
+#: openforms/forms/models/form_variable.py:165
+msgid "prefill identifier role"
+msgstr "Prefill-bron"
+
+#: openforms/forms/models/form_variable.py:167
+msgid ""
+"In case that multiple identifiers are returned (in the case of eHerkenning "
+"bewindvoering and DigiD Machtigen), should the prefill data related to the "
+"main identifier be used, or that related to the authorised person?"
+msgstr ""
+"Indien meerdere unieke identificaties beschikbaar zijn (bijvoorbeeld bij "
+"eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten "
+"dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
+
+#: openforms/forms/models/form_variable.py:175
 msgid "data type"
 msgstr "datatype"
 
-#: openforms/forms/models/form_variable.py:159
+#: openforms/forms/models/form_variable.py:176
 msgid "The type of the value that will be associated with this variable"
 msgstr "Datatype van de waarden voor deze variabele"
 
-#: openforms/forms/models/form_variable.py:164
+#: openforms/forms/models/form_variable.py:181
 msgid "data format"
 msgstr "dataformaat"
 
-#: openforms/forms/models/form_variable.py:166
+#: openforms/forms/models/form_variable.py:183
 msgid "The format of the value that will be associated with this variable"
 msgstr "Formaat van de waarden voor deze variabele"
 
-#: openforms/forms/models/form_variable.py:172
+#: openforms/forms/models/form_variable.py:189
 msgid "is sensitive data"
 msgstr "is privacy-gevoelig"
 
-#: openforms/forms/models/form_variable.py:173
+#: openforms/forms/models/form_variable.py:190
 msgid "Will this variable be associated with sensitive data?"
 msgstr ""
 "Geef aan of de variabele (mogelijks) privacy-gevoelige waarden zal hebben."
 
-#: openforms/forms/models/form_variable.py:177
+#: openforms/forms/models/form_variable.py:194
 msgid "initial value"
 msgstr "beginwaarde"
 
-#: openforms/forms/models/form_variable.py:178
+#: openforms/forms/models/form_variable.py:195
 msgid "The initial value for this field"
 msgstr "De beginwaarde voor dit veld"
 
-#: openforms/forms/models/form_variable.py:186
+#: openforms/forms/models/form_variable.py:203
 msgid "Form variable"
 msgstr "Formuliervariabele"
 
-#: openforms/forms/models/form_variable.py:187
+#: openforms/forms/models/form_variable.py:204
 msgid "Form variables"
 msgstr "Formuliervariabelen"
 
-#: openforms/forms/models/form_variable.py:218
+#: openforms/forms/models/form_variable.py:235
 #, python-brace-format
 msgid "Form variable '{key}'"
 msgstr "Formuliervariabele '{key}'"
@@ -5568,7 +5944,7 @@ msgstr "Bestelling ID"
 msgid "Order ID stored with payment provider."
 msgstr "Bestelling ID meegestuurd naar externe betaalprovider."
 
-#: openforms/payments/models.py:104 openforms/submissions/api/serializers.py:94
+#: openforms/payments/models.py:104 openforms/submissions/api/serializers.py:93
 msgid "payment amount"
 msgstr "bedrag"
 
@@ -5752,13 +6128,6 @@ msgstr ""
 msgid "Not found. The slug did not point to a live plugin."
 msgstr "Niet gevonden. Het URL-deel verwees niet naar een actieve plugin."
 
-#: openforms/plugins/api/serializers.py:9
-#: openforms/prefill/api/serializers.py:32
-#: openforms/registrations/api/serializers.py:32
-#: openforms/validations/api/serializers.py:58
-msgid "ID"
-msgstr "ID"
-
 #: openforms/plugins/api/serializers.py:10
 #: openforms/validations/api/serializers.py:59
 msgid "The unique plugin identifier"
@@ -5815,6 +6184,14 @@ msgstr "Geen plugin met ID '{plugin}' gevonden"
 msgid "Prefill"
 msgstr "Prefill"
 
+#: openforms/prefill/constants.py:8
+msgid "Main"
+msgstr "Main/machtiger"
+
+#: openforms/prefill/constants.py:9
+msgid "Authorised person"
+msgstr "Gemachtigde"
+
 #: openforms/prefill/contrib/demo/apps.py:8
 msgid "Demo prefill plugin"
 msgstr "Demo prefillplugin"
@@ -5847,14 +6224,14 @@ msgstr "De API-versie aangeboden door de geselecteerde service."
 msgid "Haal Centraal configuration"
 msgstr "Haal Centraal configuratie"
 
-#: openforms/prefill/contrib/haalcentraal/plugin.py:147
-#: openforms/prefill/contrib/stufbg/plugin.py:173
+#: openforms/prefill/contrib/haalcentraal/plugin.py:162
+#: openforms/prefill/contrib/stufbg/plugin.py:189
 msgid "Service not selected"
 msgstr "Service is niet geselecteerd."
 
-#: openforms/prefill/contrib/haalcentraal/plugin.py:156
-#: openforms/prefill/contrib/kvk/plugin.py:102
-#: openforms/prefill/contrib/stufbg/plugin.py:185
+#: openforms/prefill/contrib/haalcentraal/plugin.py:170
+#: openforms/prefill/contrib/kvk/plugin.py:118
+#: openforms/prefill/contrib/stufbg/plugin.py:201
 #: openforms/registrations/contrib/objects_api/checks.py:38
 #, python-brace-format
 msgid "Client error: {exception}"
@@ -5864,11 +6241,11 @@ msgstr "Client fout: {exception}"
 msgid "KvK prefill plugin"
 msgstr "KvK prefillplugin"
 
-#: openforms/prefill/contrib/kvk/plugin.py:35
+#: openforms/prefill/contrib/kvk/plugin.py:36
 msgid "KvK Company by KvK number"
 msgstr "KvK Bedrijf via KvK-nummer"
 
-#: openforms/prefill/contrib/kvk/plugin.py:97
+#: openforms/prefill/contrib/kvk/plugin.py:113
 #, python-brace-format
 msgid "Configuration error: {exception}"
 msgstr "Configuratiefout: {exception}"
@@ -5877,16 +6254,16 @@ msgstr "Configuratiefout: {exception}"
 msgid "StUF-BG prefill plugin"
 msgstr "StUF-BG prefillplugin"
 
-#: openforms/prefill/contrib/stufbg/plugin.py:94
+#: openforms/prefill/contrib/stufbg/plugin.py:95
 msgid "StUF-BG"
 msgstr "StUF-BG"
 
-#: openforms/prefill/contrib/stufbg/plugin.py:192
+#: openforms/prefill/contrib/stufbg/plugin.py:208
 #, python-brace-format
 msgid "SyntaxError in response: {exception}"
 msgstr "Structuurfout in antwoord: {exception}"
 
-#: openforms/prefill/contrib/stufbg/plugin.py:202
+#: openforms/prefill/contrib/stufbg/plugin.py:218
 #, python-brace-format
 msgid "Unexpected response: expected '{message}' SOAP response"
 msgstr "Onverwacht antwoord: Verwacht '{message}' SOAP antwoord"
@@ -6467,7 +6844,7 @@ msgid "MSGraphService not selected"
 msgstr "Microsoft Graph service is niet ingesteld."
 
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:110
-#: openforms/registrations/contrib/stuf_zds/plugin.py:370
+#: openforms/registrations/contrib/stuf_zds/plugin.py:373
 #, python-brace-format
 msgid "Could not connect: {exception}"
 msgstr "Kan geen verbinding maken: {exception}"
@@ -6694,36 +7071,36 @@ msgstr "Objecten API configuratie"
 msgid "Objects API registration"
 msgstr "Objecten API registratie"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:38
+#: openforms/registrations/contrib/stuf_zds/plugin.py:39
 #: stuf/stuf_zds/models.py:30
 msgid "Municipality code to register zaken"
 msgstr "Gemeentecode om zaken aan te maken"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:43
+#: openforms/registrations/contrib/stuf_zds/plugin.py:44
 msgid "Zaaktype code for newly created Zaken in StUF-ZDS"
 msgstr "Zaaktype code voor nieuw aangemaakte zaken via StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:47
+#: openforms/registrations/contrib/stuf_zds/plugin.py:48
 msgid "Zaaktype description for newly created Zaken in StUF-ZDS"
 msgstr "Zaaktype omschrijving voor nieuw aangemaakt zaken via StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:52
+#: openforms/registrations/contrib/stuf_zds/plugin.py:53
 msgid "Zaaktype status code for newly created zaken in StUF-ZDS"
 msgstr "Zaaktype status code voor nieuw aangemaakte zaken via StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:56
+#: openforms/registrations/contrib/stuf_zds/plugin.py:57
 msgid "Zaaktype status omschrijving for newly created zaken in StUF-ZDS"
 msgstr "Zaaktype status omschrijving voor nieuw aangemaakte zaken via StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:61
+#: openforms/registrations/contrib/stuf_zds/plugin.py:62
 msgid "Documenttype description for newly created zaken in StUF-ZDS"
 msgstr "Documenttype omschrijving voor nieuw aangemaakt zaken via StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:65
+#: openforms/registrations/contrib/stuf_zds/plugin.py:66
 msgid "Document confidentiality level"
 msgstr "Vertrouwelijkheidaanduiding documenten"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:71
+#: openforms/registrations/contrib/stuf_zds/plugin.py:72
 msgid ""
 "Indication of the level to which extend the dossier of the ZAAK is meant to "
 "be public. This is set on the documents created for the ZAAK."
@@ -6732,15 +7109,15 @@ msgstr ""
 "openbaarheid bestemd is. Dit wordt toegepast op de zaakdocumenten die "
 "aangemaakt worden."
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:158
+#: openforms/registrations/contrib/stuf_zds/plugin.py:159
 msgid "StUF-ZDS"
 msgstr "StUF-ZDS"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:350
+#: openforms/registrations/contrib/stuf_zds/plugin.py:353
 msgid "StufService not selected"
 msgstr "StUF-service is niet ingesteld"
 
-#: openforms/registrations/contrib/stuf_zds/plugin.py:353
+#: openforms/registrations/contrib/stuf_zds/plugin.py:356
 #, python-brace-format
 msgid "StufService missing setting '{name}'"
 msgstr "StUF-service instelling '{name}' ontbreekt"
@@ -7001,32 +7378,40 @@ msgstr "Formuliersleutel"
 msgid "submission logs"
 msgstr "inzendinglogboek"
 
-#: openforms/submissions/api/serializers.py:82
+#: openforms/submissions/api/fields.py:70
+msgid "Privacy policy must be accepted."
+msgstr "U moet het privacybeleid accepteren."
+
+#: openforms/submissions/api/fields.py:80
+msgid "Submission of this form is not allowed."
+msgstr "Het is niet mogelijk om dit formulier in te zenden."
+
+#: openforms/submissions/api/serializers.py:81
 msgid "payment required"
 msgstr "betaling benodigd"
 
-#: openforms/submissions/api/serializers.py:83
+#: openforms/submissions/api/serializers.py:82
 msgid "Whether the registration requires payment."
 msgstr "Geeft aan of de registratie betaling vereist."
 
-#: openforms/submissions/api/serializers.py:88
+#: openforms/submissions/api/serializers.py:87
 msgid "user has paid"
 msgstr "gebruiker heeft betaald"
 
-#: openforms/submissions/api/serializers.py:90
+#: openforms/submissions/api/serializers.py:89
 msgid "Whether the user has completed the required payment."
 msgstr "Indicatie of de gebruiker de betaling heeft voldaan."
 
-#: openforms/submissions/api/serializers.py:99
+#: openforms/submissions/api/serializers.py:98
 msgid "Amount (to be) paid"
 msgstr "Het te betalen bedrag"
 
-#: openforms/submissions/api/serializers.py:115
+#: openforms/submissions/api/serializers.py:114
 #: openforms/submissions/models/submission_step.py:126
 msgid "Submission steps"
 msgstr "Inzendingsstappen"
 
-#: openforms/submissions/api/serializers.py:119
+#: openforms/submissions/api/serializers.py:118
 msgid ""
 "Details of every form step of this submission's form, tracking the progress "
 "and other meta-data of each particular step."
@@ -7034,7 +7419,7 @@ msgstr ""
 "Details van elke formulierstap van deze inzending waarmee de voortgang en "
 "andere gegevens van elke stap bekeken kan worden."
 
-#: openforms/submissions/api/serializers.py:128
+#: openforms/submissions/api/serializers.py:127
 msgid ""
 "Whether the user is allowed to submit this form and whether the user should "
 "see the overview page."
@@ -7042,30 +7427,30 @@ msgstr ""
 "Geeft aan of de gebruiker het formulier kan verzenden en of de gebruiker de "
 "overzichtspagina kan zien."
 
-#: openforms/submissions/api/serializers.py:135
+#: openforms/submissions/api/serializers.py:134
 msgid "payment information"
 msgstr "betaalinformatie"
 
-#: openforms/submissions/api/serializers.py:141
+#: openforms/submissions/api/serializers.py:140
 msgid "is authenticated"
 msgstr "Is geauthenticeerd"
 
-#: openforms/submissions/api/serializers.py:143
+#: openforms/submissions/api/serializers.py:142
 msgid "Whether the user was authenticated when creating this submission."
 msgstr ""
 "Geeft aan of de gebruiker geauthenticeerd was bij het starten van de "
 "inzending."
 
-#: openforms/submissions/api/serializers.py:215
+#: openforms/submissions/api/serializers.py:214
 #: openforms/submissions/models/submission_step.py:102
 msgid "data"
 msgstr "gegevens"
 
-#: openforms/submissions/api/serializers.py:265
+#: openforms/submissions/api/serializers.py:264
 msgid "form data"
 msgstr "Formuliergegevens"
 
-#: openforms/submissions/api/serializers.py:268
+#: openforms/submissions/api/serializers.py:267
 msgid ""
 "The Form.io submission data object. This will be merged with the full form "
 "submission data, including data from other steps, to evaluate the configured "
@@ -7075,37 +7460,20 @@ msgstr ""
 "inzendingsgegevens, inclusief de gegevens van de andere stappen, om de "
 "geconfigureerde formulier logica uit te voeren."
 
-#: openforms/submissions/api/serializers.py:279
+#: openforms/submissions/api/serializers.py:278
 msgid "Contact email address"
 msgstr "Contact e-mailadres"
 
-#: openforms/submissions/api/serializers.py:281
+#: openforms/submissions/api/serializers.py:280
 msgid "The email address where the 'magic' resume link should be sent to"
 msgstr ""
 "Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet worden"
 
-#: openforms/submissions/api/serializers.py:355
-msgid "status check endpoint"
-msgstr "status controle endpoint"
-
-#: openforms/submissions/api/serializers.py:357
-msgid ""
-"The API endpoint where the background processing status can be checked. "
-"After calling the completion endpoint, this status URL should be polled to "
-"report the processing status back to the end-user. Note that the endpoint "
-"contains a token which invalidates on state changes and after one day."
-msgstr ""
-"Het API-eindpunt waar de achtergrondverwerkingsstatus kan worden "
-"gecontroleerd. Nadat het voltooiingseindpunt is aangeroepen, moet deze "
-"status-URL worden opgevraagd om de verwerkingsstatus terug te rapporteren "
-"aan de eindgebruiker. Houd er rekening mee dat het eindpunt een token bevat "
-"dat ongeldig wordt bij statuswijzigingen en na één dag."
-
-#: openforms/submissions/api/serializers.py:368
+#: openforms/submissions/api/serializers.py:367
 msgid "background processing status"
 msgstr "achtergrondproces status"
 
-#: openforms/submissions/api/serializers.py:372
+#: openforms/submissions/api/serializers.py:371
 msgid ""
 "The async task state, managed by the async task queue. Once the status is "
 "`done`, check the `result` field for the outcome."
@@ -7113,11 +7481,11 @@ msgstr ""
 "De asynchrone taakstatus, beheerd door de asynchrone taakwachtrij. Zodra de "
 "status 'klaar' is, controleert u het veld 'resultaat' voor de uitkomst."
 
-#: openforms/submissions/api/serializers.py:377
+#: openforms/submissions/api/serializers.py:376
 msgid "background processing result"
 msgstr "achtergrondproces resultaat"
 
-#: openforms/submissions/api/serializers.py:382
+#: openforms/submissions/api/serializers.py:381
 msgid ""
 "The result from the background processing. This field only has a value if "
 "the processing has completed (both successfully or with errors)."
@@ -7125,19 +7493,19 @@ msgstr ""
 "Het resultaat van de achtergrondverwerking. Dit veld heeft alleen een waarde "
 "als de verwerking is voltooid (zowel met succes als met fouten)."
 
-#: openforms/submissions/api/serializers.py:389
+#: openforms/submissions/api/serializers.py:388
 msgid "Error information"
 msgstr "Fout informatie"
 
-#: openforms/submissions/api/serializers.py:393
+#: openforms/submissions/api/serializers.py:392
 msgid "Error feedback in case the processing did not complete successfully."
 msgstr "Foutfeedback in het geval de verwerking niet succesvol is voltooid."
 
-#: openforms/submissions/api/serializers.py:399
+#: openforms/submissions/api/serializers.py:398
 msgid "Public reference"
 msgstr "Publieke referentie"
 
-#: openforms/submissions/api/serializers.py:404
+#: openforms/submissions/api/serializers.py:403
 msgid ""
 "The public registration reference, sourced from the registration backend or "
 "otherwise uniquely generated in case the backend could not provide it."
@@ -7146,20 +7514,20 @@ msgstr ""
 "anderszins uniek gegenereerd voor het geval de backend deze niet kan "
 "verstrekken."
 
-#: openforms/submissions/api/serializers.py:410
+#: openforms/submissions/api/serializers.py:409
 msgid "Confirmation page content"
 msgstr "Bevestigingspagina tekst"
 
-#: openforms/submissions/api/serializers.py:412
+#: openforms/submissions/api/serializers.py:411
 msgid "Body text of the confirmation page. May contain HTML!"
 msgstr ""
 "Inhoud van de bevestigingspagina. Hierin mogen HTML-karakers woren opgenomen."
 
-#: openforms/submissions/api/serializers.py:415
+#: openforms/submissions/api/serializers.py:414
 msgid "Report download URL"
 msgstr "Document download URL"
 
-#: openforms/submissions/api/serializers.py:419
+#: openforms/submissions/api/serializers.py:418
 msgid ""
 "Download URL for the generated PDF report. Note that this contain a "
 "timestamped token generated by the backend."
@@ -7167,11 +7535,11 @@ msgstr ""
 "Download-URL voor het gegenereerde PDF document. Let op: Deze URL bevat een "
 "tijdgebaseerd token dat door de backend wordt gegenereerd."
 
-#: openforms/submissions/api/serializers.py:424
+#: openforms/submissions/api/serializers.py:423
 msgid "Payment URL"
 msgstr "Betaalpagina URL"
 
-#: openforms/submissions/api/serializers.py:428
+#: openforms/submissions/api/serializers.py:427
 msgid ""
 "URL to retrieve the payment information. Note that this (will) contain(s) a "
 "timestamped token generated by the backend."
@@ -7179,57 +7547,57 @@ msgstr ""
 "URL om de betalingsinformatie op te halen. Let op: Deze URL bevat een "
 "tijdgebaseerd token dat door de backend wordt gegenereerd."
 
-#: openforms/submissions/api/serializers.py:442
+#: openforms/submissions/api/serializers.py:441
 msgid "is co-signed?"
 msgstr "Is mede-ondertekend?"
 
-#: openforms/submissions/api/serializers.py:443
+#: openforms/submissions/api/serializers.py:442
 msgid "Indicator whether the submission has been co-signed or not."
 msgstr "Geeft aan of de inzending is mede-ondertekend."
 
-#: openforms/submissions/api/serializers.py:446
+#: openforms/submissions/api/serializers.py:445
 msgid "Co-signer display"
 msgstr "Mede-ondertekenaar weergave"
 
-#: openforms/submissions/api/serializers.py:447
+#: openforms/submissions/api/serializers.py:446
 msgid "Co-signer representation string for the UI."
 msgstr "Mede-ondertekenaar weergave in de UI."
 
-#: openforms/submissions/api/serializers.py:464
+#: openforms/submissions/api/serializers.py:463
 msgid "Display name of the component."
 msgstr "Weergavenaam van de component"
 
-#: openforms/submissions/api/serializers.py:468
+#: openforms/submissions/api/serializers.py:467
 msgid "Raw value of the component."
 msgstr "JSON-waarde van de component"
 
-#: openforms/submissions/api/serializers.py:472
+#: openforms/submissions/api/serializers.py:471
 msgid "Configuration of the component."
 msgstr "Componentconfiguratie"
 
-#: openforms/submissions/api/serializers.py:479
+#: openforms/submissions/api/serializers.py:478
 msgid "Slug of the form definition used in the form step."
 msgstr "Slug van de formulierdefinitie horend bij de stap."
 
-#: openforms/submissions/api/serializers.py:483
+#: openforms/submissions/api/serializers.py:482
 msgid "Name of the form definition used in the form step."
 msgstr "Naam van de formulierdefinitie horend bij de stap."
 
-#: openforms/submissions/api/serializers.py:492
+#: openforms/submissions/api/serializers.py:491
 #: openforms/submissions/models/submission.py:220
 msgid "privacy policy accepted"
 msgstr "Privacybeleid geaccepteerd"
 
-#: openforms/submissions/api/serializers.py:493
+#: openforms/submissions/api/serializers.py:492
 msgid "Whether the co-signer has accepted the privacy policy"
 msgstr ""
 "Indicator of de mede-ondertekenaar het privacybeleid geaccepteerd heeft."
 
-#: openforms/submissions/api/serializers.py:506
+#: openforms/submissions/api/serializers.py:504
 msgid "download report url"
 msgstr "Download-URL PDF"
 
-#: openforms/submissions/api/serializers.py:508
+#: openforms/submissions/api/serializers.py:506
 msgid ""
 "The URL where the submission report can be downloaded. Note that this "
 "contain a timestamped token generated by the backend."
@@ -7237,20 +7605,12 @@ msgstr ""
 "Download-URL voor het gegenereerde PDF document. Let op: deze URL bevat een "
 "tijdgebaseerd token dat door de backend wordt gegenereerd."
 
-#: openforms/submissions/api/validation.py:24
-msgid "Privacy policy must be accepted."
-msgstr "U moet het privacybeleid accepteren."
-
-#: openforms/submissions/api/validation.py:34
+#: openforms/submissions/api/validation.py:26
 #, python-format
 msgid "Not all applicable steps have been completed: %(value)s"
 msgstr "Er zijn onvolledige stappen gevonden: %(value)s"
 
-#: openforms/submissions/api/validation.py:50
-msgid "Submission of this form is not allowed."
-msgstr "Het is niet mogelijk om dit formulier in te zenden."
-
-#: openforms/submissions/api/validation.py:57
+#: openforms/submissions/api/validation.py:38
 msgid ""
 "Submission of this form is not allowed due to the answers submitted in a "
 "step."
@@ -7324,11 +7684,11 @@ msgstr ""
 "Toegang tot dit endpoint vereist een actieve formulier inzending. Niet "
 "gekoppelde bestanden worden automatisch verwijderd na {expire_days} dag(en)"
 
-#: openforms/submissions/api/viewsets.py:95
+#: openforms/submissions/api/viewsets.py:90
 msgid "List active submissions"
 msgstr "Actieve inzendingen weergeven"
 
-#: openforms/submissions/api/viewsets.py:97
+#: openforms/submissions/api/viewsets.py:92
 msgid ""
 "Active submissions are submissions whose ID is in the user session. This "
 "endpoint returns user-bound submissions. Note that you get different results "
@@ -7339,19 +7699,19 @@ msgstr ""
 "gekoppeld zijn aan de gebruiker. Het antwoord hangt dus af van de actieve "
 "sessie."
 
-#: openforms/submissions/api/viewsets.py:103
+#: openforms/submissions/api/viewsets.py:98
 msgid "Retrieve submission details"
 msgstr "Inzending detail weergeven"
 
-#: openforms/submissions/api/viewsets.py:104
+#: openforms/submissions/api/viewsets.py:99
 msgid "Get the state of a single submission in the user session."
 msgstr "Haal de status op van een enkele inzending op van de gebruikerssessie."
 
-#: openforms/submissions/api/viewsets.py:107
+#: openforms/submissions/api/viewsets.py:102
 msgid "Start a submission"
 msgstr "Inzending starten"
 
-#: openforms/submissions/api/viewsets.py:109
+#: openforms/submissions/api/viewsets.py:104
 msgid ""
 "Start a submission for a particular form. The submission is added to the "
 "user session."
@@ -7359,57 +7719,57 @@ msgstr ""
 "Start een inzending voor een specifiek formulier. De inzending wordt "
 "onderdeel van de gebruikerssessie."
 
-#: openforms/submissions/api/viewsets.py:182
+#: openforms/submissions/api/viewsets.py:180
 msgid "Retrieve co-sign state"
 msgstr "Haal mede-ondertekeningstatus op"
 
-#: openforms/submissions/api/viewsets.py:204
+#: openforms/submissions/api/viewsets.py:202
 msgid "Co-sign submission"
 msgstr "inzending mede-ondertekenen"
 
-#: openforms/submissions/api/viewsets.py:224
+#: openforms/submissions/api/viewsets.py:222
 msgid "The submission must be completed before being able to co-sign it."
 msgstr ""
 "Het formulier moet volledig ingevuld zijn voor u het kunt mede-ondertekenen."
 
-#: openforms/submissions/api/viewsets.py:230
+#: openforms/submissions/api/viewsets.py:228
 #, python-brace-format
 msgid "You need to be logged in with {auth_plugin}"
 msgstr "U moet met {auth_plugin} ingelogd zijn"
 
-#: openforms/submissions/api/viewsets.py:260
+#: openforms/submissions/api/viewsets.py:258
 msgid "Complete a submission"
 msgstr "Inzending voltooien"
 
-#: openforms/submissions/api/viewsets.py:337
+#: openforms/submissions/api/viewsets.py:312
 msgid "Get the submission processing status"
 msgstr "De verwerkingsstatus van de inzending ophalen"
 
-#: openforms/submissions/api/viewsets.py:349
+#: openforms/submissions/api/viewsets.py:324
 msgid "Time-based authentication token"
 msgstr "Op tijd gebaseerde authenticatietoken"
 
-#: openforms/submissions/api/viewsets.py:378
+#: openforms/submissions/api/viewsets.py:353
 msgid "Suspend a submission"
 msgstr "Inzending onderbreken"
 
-#: openforms/submissions/api/viewsets.py:400
+#: openforms/submissions/api/viewsets.py:375
 msgid "Suspending this form is not allowed."
 msgstr "Het is niet mogelijk om dit formulier te pauzeren."
 
-#: openforms/submissions/api/viewsets.py:416
+#: openforms/submissions/api/viewsets.py:391
 msgid "Summary page data"
 msgstr "Gegevenssamenvatting"
 
-#: openforms/submissions/api/viewsets.py:417
+#: openforms/submissions/api/viewsets.py:392
 msgid "Retrieve the data to display in the submission summary page."
 msgstr "Haal alle inzendinggegevens om op een overzichtspagina weer te geven."
 
-#: openforms/submissions/api/viewsets.py:441
+#: openforms/submissions/api/viewsets.py:416
 msgid "Retrieve step details"
 msgstr "Stap details weergeven"
 
-#: openforms/submissions/api/viewsets.py:443
+#: openforms/submissions/api/viewsets.py:418
 msgid ""
 "The details of a particular submission step always return the related form "
 "step configuration. If there is no data yet for the step, the ID will be "
@@ -7419,25 +7779,25 @@ msgstr ""
 "formulierstap configuratie terug. Indien er nog geen gegevens zijn voor de "
 "stap dan zal het ID `null` zijn."
 
-#: openforms/submissions/api/viewsets.py:513
+#: openforms/submissions/api/viewsets.py:488
 msgid "Invalid form step reference given."
 msgstr "Ongeldige formulierstapverwijzing."
 
-#: openforms/submissions/api/viewsets.py:523
-#: openforms/submissions/api/viewsets.py:581
+#: openforms/submissions/api/viewsets.py:498
+#: openforms/submissions/api/viewsets.py:556
 msgid "Store submission step data"
 msgstr "Inzendingsstap gegevens bewaren"
 
-#: openforms/submissions/api/viewsets.py:615
+#: openforms/submissions/api/viewsets.py:590
 msgid "Apply/check form logic"
 msgstr "Pas formulier logica toe"
 
-#: openforms/submissions/api/viewsets.py:616
+#: openforms/submissions/api/viewsets.py:591
 msgid "Apply/check the logic rules specified on the form step."
 msgstr ""
 "Pas de logische regels toe die zijn gespecificeerd in de formulierstap."
 
-#: openforms/submissions/attachments.py:222
+#: openforms/submissions/attachments.py:228
 #, python-brace-format
 msgid "Upload {uuid} exceeds the maximum upload size of {max_size}b"
 msgstr ""
@@ -8912,6 +9272,74 @@ msgstr "Een JQ-expressie moet een string zijn."
 msgid "The expression could not be compiled ({err})."
 msgstr "De expressie kon niet gecompileerd worden ({err})."
 
+#: soap/apps.py:7
+msgid "SOAP Settings & Services"
+msgstr "SOAP instellingen & services"
+
+#: soap/constants.py:8
+msgid "Basic authentication"
+msgstr "Basic authentication"
+
+#: soap/constants.py:9
+msgid "SOAP extension: WS-Security"
+msgstr "SOAP uitbreiding: WS-Security"
+
+#: soap/constants.py:10
+msgid "Both"
+msgstr "Beide"
+
+#: soap/models.py:19
+msgid "URL of the service to connect to."
+msgstr "URL naar de service om mee te verbinden."
+
+#: soap/models.py:23
+msgid "SOAP version"
+msgstr "SOAP versie"
+
+#: soap/models.py:27
+msgid "The SOAP version to use for the message envelope."
+msgstr "De SOAP versie gebruikt in de berichten envelop."
+
+#: soap/models.py:31
+msgid "Security"
+msgstr "Beveiliging"
+
+#: soap/models.py:35
+msgid "The security to use for messages sent to the endpoints."
+msgstr "De beveiliging om berichten te versturen naar de endpoints."
+
+#: soap/models.py:42
+msgid "Username to use in the XML security context."
+msgstr "Gebruikersnaam voor de XML security context."
+
+#: soap/models.py:45
+msgid "password"
+msgstr "wachtwoord"
+
+#: soap/models.py:48
+msgid "Password to use in the XML security context."
+msgstr "Wachtwoord voor de XML security context."
+
+#: soap/models.py:56
+msgid ""
+"The SSL certificate file used for client identification. If left empty, "
+"mutual TLS is disabled."
+msgstr ""
+"Het SSL-certificaat bestand dat gebruikt wordt voor client-side "
+"identificatie. Indien leeg wordt mutual TLS uitschakeld."
+
+#: soap/models.py:65
+msgid "The SSL/TLS certificate of the server"
+msgstr "Het SSL/TLS-certificaat van de server"
+
+#: soap/models.py:71
+msgid "SOAP service"
+msgstr "SOAP service"
+
+#: soap/models.py:72
+msgid "SOAP services"
+msgstr "SOAP service"
+
 #: stuf/admin.py:30
 msgid "StUF parameters"
 msgstr "StUF parameters"
@@ -8924,153 +9352,89 @@ msgstr "Verbinding"
 msgid "StUF Settings & Services"
 msgstr "StUF Instellingen & Services"
 
-#: stuf/constants.py:8
-msgid "Basic authentication"
-msgstr "Basic authentication"
-
-#: stuf/constants.py:9
-msgid "SOAP extension: WS-Security"
-msgstr "SOAP uitbreiding: WS-Security"
-
-#: stuf/constants.py:10
-msgid "Both"
-msgstr "Beide"
-
-#: stuf/models.py:19
-msgid "URL of the service to connect to."
-msgstr "URL naar de service om mee te verbinden."
-
-#: stuf/models.py:23
-msgid "SOAP version"
-msgstr "SOAP versie"
-
-#: stuf/models.py:27
-msgid "The SOAP version to use for the message envelope."
-msgstr "De SOAP versie gebruikt in de berichten envelop."
-
-#: stuf/models.py:31
-msgid "Security"
-msgstr "Beveiliging"
-
-#: stuf/models.py:35
-msgid "The security to use for messages sent to the endpoints."
-msgstr "De beveiliging om berichten te versturen naar de endpoints."
-
-#: stuf/models.py:42
-msgid "Username to use in the XML security context."
-msgstr "Gebruikersnaam voor de XML security context."
-
-#: stuf/models.py:45
-msgid "password"
-msgstr "wachtwoord"
-
-#: stuf/models.py:48
-msgid "Password to use in the XML security context."
-msgstr "Wachtwoord voor de XML security context."
-
-#: stuf/models.py:56
-msgid ""
-"The SSL certificate file used for client identification. If left empty, "
-"mutual TLS is disabled."
-msgstr ""
-"Het SSL-certificaat bestand dat gebruikt wordt voor client-side "
-"identificatie. Indien leeg wordt mutual TLS uitschakeld."
-
-#: stuf/models.py:65
-msgid "The SSL/TLS certificate of the server"
-msgstr "Het SSL/TLS-certificaat van de server"
-
-#: stuf/models.py:71
-msgid "SOAP service"
-msgstr "SOAP service"
-
-#: stuf/models.py:72
-msgid "SOAP services"
-msgstr "SOAP service"
-
-#: stuf/models.py:92
+#: stuf/models.py:13
 msgid "The soap service this stuf service uses"
 msgstr "De SOAP-service die deze StUF-service gebruikt."
 
-#: stuf/models.py:96
+#: stuf/models.py:17
 msgid "receiving organisation"
 msgstr "ontvangende organisatie"
 
-#: stuf/models.py:97
+#: stuf/models.py:18
 msgid "Field 'ontvanger organisatie' in StUF"
 msgstr "Veld 'ontvanger organisatie' in StUF-berichten"
 
-#: stuf/models.py:102
+#: stuf/models.py:23
 msgid "receiving application"
 msgstr "ontvangende applicatie"
 
-#: stuf/models.py:103
+#: stuf/models.py:24
 msgid "Field 'ontvanger applicatie' in StUF"
 msgstr "Veld 'ontvanger applicatie' in StUF-berichten"
 
-#: stuf/models.py:107
+#: stuf/models.py:28
 msgid "receiving administration"
 msgstr "ontvangende administratie"
 
-#: stuf/models.py:108
+#: stuf/models.py:29
 msgid "Field 'ontvanger administratie' in StUF"
 msgstr "Veld 'ontvanger administratie' in StUF-berichten"
 
-#: stuf/models.py:113
+#: stuf/models.py:34
 msgid "receiving user"
 msgstr "ontvangende gebruiker"
 
-#: stuf/models.py:114
+#: stuf/models.py:35
 msgid "Field 'ontvanger gebruiker' in StUF"
 msgstr "Veld 'ontvanger gebruiker' in StUF-berichten"
 
-#: stuf/models.py:120
+#: stuf/models.py:41
 msgid "sending organisation"
 msgstr "versturende organisatie"
 
-#: stuf/models.py:121
+#: stuf/models.py:42
 msgid "Field 'zender organisatie' in StUF"
 msgstr "Veld 'zender organisatie' in StUF-berichten"
 
-#: stuf/models.py:126
+#: stuf/models.py:47
 msgid "sending application"
 msgstr "versturende applicatie"
 
-#: stuf/models.py:127
+#: stuf/models.py:48
 msgid "Field 'zender applicatie' in StUF"
 msgstr "Veld 'zender applicatie' in StUF-berichten"
 
-#: stuf/models.py:131
+#: stuf/models.py:52
 msgid "sending administration"
 msgstr "versturende administratie"
 
-#: stuf/models.py:132
+#: stuf/models.py:53
 msgid "Field 'zender administratie' in StUF"
 msgstr "Veld 'zender administratie' in StUF-berichten"
 
-#: stuf/models.py:137
+#: stuf/models.py:58
 msgid "sending user"
 msgstr "versturende gebruiker"
 
-#: stuf/models.py:138
+#: stuf/models.py:59
 msgid "Field 'zender gebruiker' in StUF"
 msgstr "Veld 'zender gebruiker' in StUF-berichten"
 
-#: stuf/models.py:144
+#: stuf/models.py:65
 msgid "endpoint BeantwoordVraag"
 msgstr "endpoint BeantwoordVraag"
 
-#: stuf/models.py:147
+#: stuf/models.py:68
 msgid ""
 "Endpoint for synchronous request messages, usually '[...]/BeantwoordVraag'"
 msgstr ""
 "Endpoint voor synchrone vraagberichten, typisch '[...]/BeantwoordVraag'."
 
-#: stuf/models.py:151
+#: stuf/models.py:72
 msgid "endpoint VrijeBerichten"
 msgstr "endpoint VrijeBerichten"
 
-#: stuf/models.py:154
+#: stuf/models.py:75
 msgid ""
 "Endpoint for synchronous free messages, usually '[...]/"
 "VerwerkSynchroonVrijBericht' or '[...]/VrijeBerichten'."
@@ -9078,30 +9442,22 @@ msgstr ""
 "Endpoint voor synchrone vrije berichten, typisch '[...]/"
 "VerwerkSynchroonVrijBericht' of '[...]/VrijeBerichten'."
 
-#: stuf/models.py:158
+#: stuf/models.py:79
 msgid "endpoint OntvangAsynchroon"
 msgstr "endpoint OntvangAsynchroon"
 
-#: stuf/models.py:161
+#: stuf/models.py:82
 msgid "Endpoint for asynchronous messages, usually '[...]/OntvangAsynchroon'."
 msgstr ""
 "Endpoint voor a-synchrone berichten, typisch '[...]/OntvangAsynchroon'."
 
-#: stuf/models.py:166
+#: stuf/models.py:87
 msgid "StUF service"
 msgstr "StUF-service"
 
-#: stuf/models.py:167
+#: stuf/models.py:88
 msgid "StUF services"
 msgstr "StUF-services"
-
-#: stuf/stuf_bg/constants.py:22
-msgid "First name"
-msgstr "Voornaam"
-
-#: stuf/stuf_bg/constants.py:23
-msgid "Last name"
-msgstr "Achternaam"
 
 #: stuf/stuf_bg/constants.py:24
 msgid "Last name prefix"
@@ -9122,10 +9478,6 @@ msgstr "Huisletter"
 #: stuf/stuf_bg/constants.py:29
 msgid "House number addition"
 msgstr "Huisnummertoevoeging"
-
-#: stuf/stuf_bg/constants.py:30
-msgid "Postal code"
-msgstr "Postcode"
 
 #: stuf/stuf_bg/constants.py:31
 msgid "Residence name"
@@ -9214,6 +9566,12 @@ msgstr "Gemeentecode"
 #: stuf/stuf_zds/models.py:45
 msgid "StUF-ZDS configuration"
 msgstr "StUF-ZDS configuratie"
+
+#~ msgid "Authentication attribute"
+#~ msgstr "Authenticatie attribuut"
+
+#~ msgid "This is experimental mode for appointments"
+#~ msgstr "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie"
 
 #~ msgid ""
 #~ "The form specific confirmation email template is not set up correctly and "
