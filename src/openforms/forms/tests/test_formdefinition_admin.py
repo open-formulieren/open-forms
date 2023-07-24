@@ -60,3 +60,22 @@ class FormDefinitionAdminTests(WebTest):
             form_definition_copy.internal_name,
             "This is a really long long name for formde\u2026 (copy)",
         )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_copy_saves_translated_name_for_all_the_languages(self):
+        form_definition = FormDefinitionFactory.create(
+            name="A name for formdefinition",
+            name_nl="A Dutch name for the formdefinition",
+            name_en="A name for formdefinition",
+        )
+        form_definition.copy()
+
+        form_definition_copy = FormDefinition.objects.order_by("pk").last()
+
+        self.assertEqual(form_definition_copy.name, "A name for formdefinition (copy)")
+        self.assertEqual(
+            form_definition_copy.name_en, "A name for formdefinition (copy)"
+        )
+        self.assertEqual(
+            form_definition_copy.name_nl, "A Dutch name for the formdefinition (kopie)"
+        )
