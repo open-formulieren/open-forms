@@ -106,6 +106,11 @@ class HaalCentraalFindPersonTests:
 
         self.assertIsNone(raw_data)  # type: ignore
 
+    def test_default_client_context(self):
+        client = self.config.build_client()
+
+        self.assertIsNone(client.context)  # type: ignore
+
 
 class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
     version = HaalCentraalVersion.haalcentraal13
