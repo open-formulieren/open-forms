@@ -2,6 +2,30 @@
 Changelog
 =========
 
+2.1.5 (2023-07-26)
+==================
+
+Periodic bugfix release
+
+* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+  variable names.
+* Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
+* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
+* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+  tracked.
+* [#3161] Fixed not being able to reset form-specific data removal settings to the
+  empty value so that the global configuration is used again.
+* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+  removes the upload again.
+* Fixed CI builds (bump PyYAML, docs build).
+* [#3258] Fixed labels for Haal Centraal prefill attributes.
+* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
+* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
+  inside a container (fieldset, repeating group).
+* [#3302] Fixed an issue causing uploaded images not to be resized.
+* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
+* Bumped dependencies to get their latest security fixes
+
 2.1.4 (2023-06-21)
 ==================
 
