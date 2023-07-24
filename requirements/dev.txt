@@ -690,7 +690,7 @@ phonenumbers==8.12.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-pillow==9.3.0
+pillow==10.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -755,7 +755,7 @@ pyflakes==3.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flake8
-pygments==2.9.0
+pygments==2.15.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
