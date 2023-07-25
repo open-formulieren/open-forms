@@ -176,6 +176,7 @@ jobs:
   e2etests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         browser:
           - chromium
