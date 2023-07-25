@@ -146,13 +146,17 @@ class ComponentNode(Node):
         value = glom(self.step.data, path, default=None)
         return value
 
+    @property
+    def prefix(self) -> str:
+        return self.configuration_path or "components"
+
     def get_children(self) -> Iterator["ComponentNode"]:
         """
         Yield the child components if this component is a container type.
         """
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration=self.component,
-            prefix=self.configuration_path or "components",
+            prefix=self.prefix,
             recursive=False,
         ):
             yield ComponentNode.build_node(

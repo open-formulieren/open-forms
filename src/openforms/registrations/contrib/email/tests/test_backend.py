@@ -3,7 +3,7 @@ from decimal import Decimal
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -14,6 +14,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.submissions.attachments import attach_uploads_to_submission_step
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
@@ -22,6 +23,7 @@ from openforms.submissions.tests.factories import (
     SubmissionReportFactory,
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
+    TemporaryFileUploadFactory,
 )
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 from openforms.variables.constants import FormVariableSources
@@ -775,3 +777,113 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         self.assertIn("User defined var 1: test1", message_text)
         self.assertIn("User defined var 2: test2", message_text)
+
+    @tag("gh-3144")
+    def test_file_attachments_in_registration_email(self):
+        submission = SubmissionFactory.create()
+        attachment1 = TemporaryFileUploadFactory.create(
+            file_name="normalAttachment.png"
+        )
+        attachment2 = TemporaryFileUploadFactory.create(
+            file_name="attachmentInFieldset.png"
+        )
+        attachment3 = TemporaryFileUploadFactory.create(
+            file_name="attachmentInRepeatingGroup.png"
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step__form_definition__configuration={
+                "components": [
+                    {"key": "normalAttachment", "type": "file"},
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "components": [
+                            {"key": "attachmentInRepeatingGroup", "type": "file"}
+                        ],
+                    },
+                    {
+                        "key": "fieldset",
+                        "type": "fieldset",
+                        "components": [{"key": "attachmentInFieldset", "type": "file"}],
+                    },
+                ]
+            },
+            data={
+                "normalAttachment": [
+                    {
+                        "url": f"http://openforms.nl/api/v2/submissions/files/{attachment1.uuid}",
+                        "data": {
+                            "url": f"http://openforms.nl/api/v2/submissions/files/{attachment1.uuid}",
+                            "form": "",
+                            "name": "test2.pdf",
+                            "size": 9324,
+                            "baseUrl": "http://openforms.nl/api/v2/",
+                            "project": "",
+                        },
+                        "name": "test2-b3909e62-983a-4027-9b5f-eca148f081d7.pdf",
+                        "size": 9324,
+                        "type": "application/pdf",
+                        "storage": "url",
+                        "originalName": "test.pdf",
+                    }
+                ],
+                "attachmentInFieldset": [
+                    {
+                        "url": f"http://openforms.nl/api/v2/submissions/files/{attachment2.uuid}",
+                        "data": {
+                            "url": f"http://openforms.nl/api/v2/submissions/files/{attachment2.uuid}",
+                            "form": "",
+                            "name": "test2.pdf",
+                            "size": 9324,
+                            "baseUrl": "http://openforms.nl/api/v2/",
+                            "project": "",
+                        },
+                        "name": "test2-b3909e62-983a-4027-9b5f-eca148f081d7.pdf",
+                        "size": 9324,
+                        "type": "application/pdf",
+                        "storage": "url",
+                        "originalName": "test.pdf",
+                    }
+                ],
+                "repeatingGroup": [
+                    {
+                        "attachmentInRepeatingGroup": [
+                            {
+                                "url": f"http://openforms.nl/api/v2/submissions/files/{attachment3.uuid}",
+                                "data": {
+                                    "url": f"http://openforms.nl/api/v2/submissions/files/{attachment3.uuid}",
+                                    "form": "",
+                                    "name": "test2.pdf",
+                                    "size": 9324,
+                                    "baseUrl": "http://openforms.nl/api/v2/",
+                                    "project": "",
+                                },
+                                "name": "test2-b3909e62-983a-4027-9b5f-eca148f081d7.pdf",
+                                "size": 9324,
+                                "type": "application/pdf",
+                                "storage": "url",
+                                "originalName": "test.pdf",
+                            }
+                        ]
+                    }
+                ],
+            },
+        )
+        attach_uploads_to_submission_step(submission_step)
+
+        subject, body_html, body_text = EmailRegistration.render_registration_email(
+            submission, is_payment_update=False
+        )
+
+        with self.subTest("Normal attachment"):
+            self.assertIn("normalAttachment.png", body_text)
+            self.assertIn("normalAttachment.png", body_html)
+
+        with self.subTest("Attachment in repeating group"):
+            self.assertIn("attachmentInRepeatingGroup.png", body_text)
+            self.assertIn("attachmentInRepeatingGroup.png", body_html)
+
+        with self.subTest("Attachment in fieldset"):
+            self.assertIn("attachmentInFieldset.png", body_text)
+            self.assertIn("attachmentInFieldset.png", body_html)
