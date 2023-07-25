@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, override
 
 from autoslug import AutoSlugField
 
@@ -108,7 +108,6 @@ class FormDefinition(models.Model):
         copy = deepcopy(self)
         copy.pk = None
         copy.uuid = uuid.uuid4()
-        copy.name = _("{name} (copy)").format(name=self.name)
         copy.internal_name = (
             _("{name} (copy)").format(name=self.internal_name)
             if self.internal_name
@@ -117,16 +116,26 @@ class FormDefinition(models.Model):
         copy.slug = _("{slug}-copy").format(slug=self.slug)
 
         # truncate name and internal name if needed
-        copy.name = truncate_str_if_needed(
-            self.name, copy.name, get_charfield_max_length(self, "name")
-        )
         copy.internal_name = truncate_str_if_needed(
             self.internal_name,
             copy.internal_name,
             get_charfield_max_length(self, "internal_name"),
         )
 
+        # name is handled by modeltranslation library and we want to make sure
+        # it's translated for all the available languages
+        language_codes = [item[0] for item in settings.LANGUAGES]
+        for lang in language_codes:
+            with override(lang):
+                copy.name = _("{name} (copy)").format(name=self.name)
+
+                # truncate name if needed
+                copy.name = truncate_str_if_needed(
+                    self.name, copy.name, get_charfield_max_length(self, "name")
+                )
+
         copy.save()
+
         return copy
 
     @property
