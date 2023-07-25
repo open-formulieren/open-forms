@@ -71,6 +71,10 @@ class FieldSetNode(ContainerMixin, ComponentNode):
     display_value: str = ""
 
     @property
+    def prefix(self) -> str:
+        return f"{self.configuration_path}.components" or "components"
+
+    @property
     def label(self) -> str:
         header_hidden = self.component.get("hideHeader", False)
         if header_hidden:
