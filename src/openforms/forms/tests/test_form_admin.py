@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -104,3 +105,18 @@ class FormAdminTests(FormListAjaxMixin, WebTest):
 
         form.refresh_from_db()
         self.assertTrue(form._is_deleted)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_copy_saves_translated_name_for_all_the_languages(self):
+        form = FormFactory.create(
+            name="A name for the form",
+            name_nl="A Dutch name for the form",
+            name_en="A name for the form",
+        )
+        form.copy()
+
+        form_copy = Form.objects.order_by("pk").last()
+
+        self.assertEqual(form_copy.name, "A name for the form (copy)")
+        self.assertEqual(form_copy.name_en, "A name for the form (copy)")
+        self.assertEqual(form_copy.name_nl, "A Dutch name for the form (kopie)")

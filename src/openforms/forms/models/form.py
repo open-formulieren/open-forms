@@ -3,12 +3,13 @@ from contextlib import suppress
 from copy import deepcopy
 from typing import List, Optional
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models, transaction
 from django.db.models import F, Window
 from django.db.models.functions import RowNumber
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, override
 
 from autoslug import AutoSlugField
 from privates.fields import PrivateMediaFileField
@@ -396,7 +397,6 @@ class Form(models.Model):
         copy = deepcopy(self)
         copy.pk = None
         copy.uuid = _uuid.uuid4()
-        copy.name = _("{name} (copy)").format(name=self.name)
         copy.internal_name = (
             _("{name} (copy)").format(name=self.internal_name)
             if self.internal_name
@@ -404,6 +404,14 @@ class Form(models.Model):
         )
         copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.product = None
+
+        # name translations are handled by modeltranslation library and
+        # we want to make sure it's translated for all the available languages
+        language_codes = [item[0] for item in settings.LANGUAGES]
+        for lang in language_codes:
+            with override(lang):
+                copy.name = _("{name} (copy)").format(name=self.name)
+
         copy.save()
 
         for form_step in form_steps:
