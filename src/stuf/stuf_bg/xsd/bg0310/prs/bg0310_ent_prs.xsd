@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2014 rel. 2 sp1 (http://www.altova.com) by Michiel Verhoef (Kwaliteits Instituut Nederlandse Gemeenten) -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031003">
-	<include schemaLocation="../vraagAntwoord/bg0310_ent_vraagAntwoord.xsd"/>
+	<include schemaLocation="../../bg0310/vraagAntwoord/bg0310_ent_vraagAntwoord.xsd"/>
 	<include schemaLocation="bg0310_simpleTypes_prs.xsd"/>
 	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="../../0301/stuf0301mtom.xsd"/>
 	<annotation>
 		<documentation>
-				25 september 2014 Joost Wijnings: in het kader van issue PRS-13:
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-13: 
 					- In CorrespondentieAdresGrp-prs-r attribuut 'nillable=false' voor postcode binnen correspondentieadres (was 'nillable=true')
-					- In VerblijfsadresGrpVes-prs-r conform spec ('o*') attribuut 'nillable=true' gezet voor aoa.huisnummer, aoa.postcode, gor.straatnaam, wpl.woonplaatsNaam.
-				25 september 2014 Joost Wijnings: in het kader van issue PRS-12:
+					- In VerblijfsadresGrpVes-prs-r conform spec ('o*') attribuut 'nillable=true' gezet voor aoa.huisnummer, aoa.postcode, gor.straatnaam, wpl.woonplaatsNaam. 
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-12: 
 					- base van CorrespondentieAdresGrp-scope-prs-r gewijzigd van BG:CorrespondentieAdresGrp-kerngegevens naar BG:CorrespondentieAdresGrp-basis (conform StUF-BG bericht vesLv01)
-					- dezelfde restrictie gemaakt als in de oude situatie met als verschil nu de choice voor normaal/postadres op minOccurs=1, maxOccurs=2.
-				25 september 2014 Joost Wijnings: in het kader van issue PRS-18:
-					- acd.code binnen NPS-prs-gezin-aanvrager-r een maxOccurs van 3 gegeven in plaats van 1.
-					- acd.code binnen NPS-prs-kinderen-aanvrager-r een maxOrrcus van 3 gegeven in plaats van 1.
-				25 september 2014 Joost Wijnings: in het kader van issue PRS-15:
-					- uit NPSNAT-antwoord-prs-r de volgende elementen verwijderd via restrictie:
+					- dezelfde restrictie gemaakt als in de oude situatie met als verschil nu de choice voor normaal/postadres op minOccurs=1, maxOccurs=2. 
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-18: 
+					- acd.code binnen NPS-prs-gezin-aanvrager-r een maxOccurs van 3 gegeven in plaats van 1. 
+					- acd.code binnen NPS-prs-kinderen-aanvrager-r een maxOrrcus van 3 gegeven in plaats van 1. 
+				25 september 2014 Joost Wijnings: in het kader van issue PRS-15: 
+					- uit NPSNAT-antwoord-prs-r de volgende elementen verwijderd via restrictie: 
 						- BG:inOnderzoek
 						- StUF:tijdvakRelatie
 						- StUF:tijdvakGeldigheid
 						- StUF:tijdstipRegistratie
-				17 september 2014 Joost Wijnings: in het kader van issue PRS-11:
+				17 september 2014 Joost Wijnings: in het kader van issue PRS-11: 
 					- ComplexType CorrespondentieAdresGrp-scope-prs-r toegevoegd (obv CorrespondentieAdresGrp-prs-r met als verschil nillable=true voor BG:wpl.woonplaatsNaam)
-					- Type gewijzigd naar het nieuwe complexType in:
+					- Type gewijzigd naar het nieuwe complexType in: 
 						- NPS-scope-prs-r
 						- NPS-scope-prs-gezinsituatieOpAdresAanvrager-r
 						- NPS-scope-prs-kinderenVanAanvrager-r
 						- VES-scope-prs-r
-				16 september 2014 Joost Wijnings: in het kader van issue PRS-09:
-					- ComplexType VerblijfsadresGrpVes-prs-r toegevoegd, omdat VerblijfsadresGrp-prs-r niet voor vestigingen bruikbaar is.
-					- Type van 'verblijfsadres' binnen VES-antwoord-prs-r gewijzigd naar VerblijfsadresGrpVes-prs-r.
+				16 september 2014 Joost Wijnings: in het kader van issue PRS-09: 
+					- ComplexType VerblijfsadresGrpVes-prs-r toegevoegd, omdat VerblijfsadresGrp-prs-r niet voor vestigingen bruikbaar is. 
+					- Type van 'verblijfsadres' binnen VES-antwoord-prs-r gewijzigd naar VerblijfsadresGrpVes-prs-r. 
 					- ComplexType VerblijfsadresGrpVes-scope-prs-r toegevoegd
 					- Type van 'verblijfsadres' binnen VES-scope-prs-r gewijzigd naar VerblijfsadresGrpVes-scope-prs-r
-					- Choice van verblijfsadres/verblijfbuitenland binnen 'VES-antwoord-prs-r' aangepast naar min en max van '1'.
+					- Choice van verblijfsadres/verblijfbuitenland binnen 'VES-antwoord-prs-r' aangepast naar min en max van '1'. 
 
-			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:
+			   Wijzigingen t.b.v. patch 21 (1-4-2015) vergeleken met versie 031001 zijn de volgende wijzigingen doorgevoerd:			
 			   - ERR0353: Het schema is voorzien van de afgesproken structuur in 'appinfo'
 			   - issue 396051: 11 februari 2015 Michiel Verhoef: ComplexType VerblijfsadresGrpVes-scope-prs-r uitgebreid met verplicht element
 							   inp:locatiebeschrijving
-
+			
 			   Wijzigingen t.b.v. patch 24 (1-4-2016) vergeleken met versie 031002 zijn de volgende wijzigingen doorgevoerd:
 			   - Patchhistorie gecorrigeerd.
-			   - issue 487481: 28-01-2016 Michiel Verhoef: verblijfsadres Buitenland CorrespondentieAdresGrp-scope-prs-r aangepast naar schema:
+			   - issue 487481: 28-01-2016 Michiel Verhoef: verblijfsadres Buitenland CorrespondentieAdresGrp-scope-prs-r aangepast naar schema: 
 							   onderliggende elementen optioneel gemaakt.
 			   - issue 487482: 28-01-2016 Michiel Verhoef: NPS-scope-prs-gezinsituatieOpAdresAanvrager-r  element heeftAlsNationaliteit optioneel gemaakt
 							   volgens specificatie. Cardinaliteit aangepast naar 0 - unbounded in verband met antwoordbericht. Idem voor NPS-scope-prs-kinderenVanAanvrager-r

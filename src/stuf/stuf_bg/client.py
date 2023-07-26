@@ -27,7 +27,8 @@ class StufBGClient(BaseClient):
 
     def get_values_for_attributes(self, bsn: str, attributes) -> bytes:
         context = {
-            **dict(zip(attributes, attributes)),
+            # replace . with _ to circumvent dot notation in template
+            **{attr.replace(".", "_"): True for attr in attributes},
             "bsn": bsn,
         }
         response = self.templated_request(
@@ -39,7 +40,6 @@ class StufBGClient(BaseClient):
         return response.content
 
     def get_values(self, bsn: str, attributes: List[str]) -> dict:
-
         response_data = self.get_values_for_attributes(bsn, attributes)
 
         dict_response = xmltodict.parse(
