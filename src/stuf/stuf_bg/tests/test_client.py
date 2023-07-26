@@ -186,7 +186,10 @@ class StufBGConfigTests(TestCase):
     def test_inp_heeftAlsKinderen(self):
         test_bsn = "999992314"
 
-        with STUF_BG_XSD.open("r") as infile:
+        with open(
+            f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
+            "r",
+        ) as infile:
             xmlschema_doc = etree.parse(infile)
         xmlschema = etree.XMLSchema(xmlschema_doc)
 
