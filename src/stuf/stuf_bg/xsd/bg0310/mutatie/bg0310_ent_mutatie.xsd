@@ -34,14 +34,17 @@
 
 			   Wijzigingen t.b.v. patch 24 (1-4-2016) vergeleken met versie 031004 zijn de volgende wijzigingen doorgevoerd:
 			   - ERR0354: In de complexTypes 'KOZ-kennisgeving' en 'KOZ-kennisgeving_Sh' is het element 'apr.heeftVerenigingVanEigenaars' uit de tweede choice gehaald en
-								 direct onder die choice geplaatst.			
+								 direct onder die choice geplaatst.	
+								 
+			   Wijzigingen t.b.v. patch 30 (1-5-2021) vergeleken met versie 031005 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR0522: In de complexTypes 'TGOPND-kennisgeving' en 'TGOPND-kennisgeving_Sh' is het element 'extraElementen' beschikbaar gemaakt.		
 			
         </documentation>
 		<appinfo>
 			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
-			<StUF:patch>28</StUF:patch>
-			<StUF:patchdatum>20180401</StUF:patchdatum>
-			<StUF:schemaversie>5</StUF:schemaversie>
+			<StUF:patch>30</StUF:patch>
+			<StUF:patchdatum>20210501</StUF:patchdatum>
+			<StUF:schemaversie>6</StUF:schemaversie>
 		</appinfo>
 	</annotation>
 	<!--ComplexTypes voor entiteittypen-->
@@ -3058,6 +3061,7 @@
 					<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
 					<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
 					<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
 				</sequence>
 				<attribute ref="StUF:entiteittype" use="required" fixed="VBOPND"/>
 				<attribute ref="StUF:scope" use="prohibited"/>
@@ -3075,6 +3079,7 @@
 					<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
 					<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
 					<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
 				</sequence>
 				<attribute ref="StUF:entiteittype" use="required" fixed="VBOPND"/>
 				<attribute ref="StUF:sleutelSynchronisatie" use="required"/>
