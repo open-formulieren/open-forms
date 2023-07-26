@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2013 sp1 (http://www.altova.com) by Robert Melskens (Kwaliteits Instituut Nederlandse Gemeenten) -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031008">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031009">
 	<include schemaLocation="../mutatie/bg0310_ent_mutatie.xsd"/>
 	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="../entiteiten/bg0310_stuf_simpleTypes.xsd"/>
 	<annotation>
@@ -46,12 +46,15 @@
 			   Wijzigingen t.b.v. patch 22 (1-7-2015) vergeleken met versie 031007 zijn de volgende wijzigingen doorgevoerd:			
 			   - ERR0375: In de complexTypes 'TGO-bag-OGO-basis' en 'TGO-bag-OGO-afvoeren' is het element 'tijdstipRegistratie' optioneel gemaakt.		   
 			
+			   Wijzigingen t.b.v. patch 30 (1-5-2021) vergeleken met versie 031008 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR0522: In de complexType 'TGOPND-bag-basis' is het element 'extraElementen' beschikbaar gemaakt.		
+			   
         </documentation>
 		<appinfo>
 			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
-			<StUF:patch>28</StUF:patch>
-			<StUF:patchdatum>20180401</StUF:patchdatum>
-			<StUF:schemaversie>8</StUF:schemaversie>
+			<StUF:patch>30</StUF:patch>
+			<StUF:patchdatum>20210501</StUF:patchdatum>
+			<StUF:schemaversie>9</StUF:schemaversie>
 		</appinfo>
 	</annotation>
 	<!--ComplexTypes voor gespecialiseerde entiteittypen-->
@@ -2128,6 +2131,7 @@
 					<element ref="StUF:tijdvakRelatie" minOccurs="0"/>
 					<element ref="StUF:tijdvakGeldigheid" minOccurs="0"/>
 					<element ref="StUF:tijdstipRegistratie" minOccurs="0"/>
+					<element ref="StUF:extraElementen" minOccurs="0"/>
 				</sequence>
 			</restriction>
 		</complexContent>
