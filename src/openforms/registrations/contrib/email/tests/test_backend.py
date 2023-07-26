@@ -872,9 +872,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         attach_uploads_to_submission_step(submission_step)
 
-        subject, body_html, body_text = EmailRegistration.render_registration_email(
-            submission, is_payment_update=False
-        )
+        body_html, body_text = EmailRegistration.render_registration_email(submission)
 
         with self.subTest("Normal attachment"):
             self.assertIn("normalAttachment.png", body_text)
