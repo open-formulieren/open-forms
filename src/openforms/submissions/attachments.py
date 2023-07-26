@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files.uploadedfile import UploadedFile
+from django.db import transaction
 from django.urls import Resolver404, resolve
 from django.utils.translation import gettext as _
 
@@ -316,7 +317,9 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
         if created and resize_apply and resize_size:
             # NOTE there is a possible race-condition if user completes a submission before this resize task is done
             # see https://github.com/open-formulieren/open-forms/issues/507
-            resize_submission_attachment.delay(attachment.id, resize_size)
+            transaction.on_commit(
+                lambda: resize_submission_attachment.delay(attachment.id, resize_size)
+            )
 
     return result
 
