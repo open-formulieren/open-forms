@@ -1,6 +1,8 @@
 import uuid
+from functools import lru_cache
 from io import BytesIO
 from pathlib import Path
+from random import shuffle
 from unittest.mock import patch
 
 from django.conf import settings
@@ -24,6 +26,15 @@ from stuf.tests.factories import StufServiceFactory
 
 PATH_XSDS = (Path(settings.BASE_DIR) / "src" / "stuf" / "stuf_bg" / "xsd").resolve()
 STUF_BG_XSD = PATH_XSDS / "bg0310" / "vraagAntwoord" / "bg0310_namespace.xsd"
+
+
+@lru_cache
+def _stuf_bg_xmlschema_doc():
+    # don't add the etree.XMLSchema construction to this; it's an object
+    # that contains state like error_log
+
+    with STUF_BG_XSD.open("r") as infile:
+        return etree.parse(infile)
 
 
 class StufBGConfigTests(TestCase):
@@ -117,6 +128,34 @@ class StufBGConfigTests(TestCase):
                 if not glom_target:
                     self.fail(f"unmapped attribute: {attribute}")
 
+    def test_order_of_attributes_in_template_is_correct(self):
+        all_available_attributes = ["inp.heeftAlsKinderen"] + FieldChoices.values
+
+        # order in function call doesn't matter
+        shuffle(all_available_attributes)
+
+        test_bsn = "999992314"
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+
+        with requests_mock.Mocker() as m:
+            m.post(self.client.service.soap_service.url, status_code=200)
+            self.client.get_values_for_attributes(test_bsn, all_available_attributes)
+
+        request_body = m.last_request.body
+        doc = etree.parse(BytesIO(request_body))
+        soap_body = (
+            doc.getroot()
+            .xpath(
+                "soap:Body",
+                namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
+            )[0]
+            .getchildren()[0]
+        )
+
+        # validate soap message with xsd
+        # order of all elements in request doc does matter!
+        xmlschema.assert_(soap_body)
+
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.values
         test_bsn = "999992314"
@@ -189,9 +228,7 @@ class StufBGConfigTests(TestCase):
     def test_inp_heeftAlsKinderen(self):
         test_bsn = "999992314"
 
-        with STUF_BG_XSD.open("r") as infile:
-            xmlschema_doc = etree.parse(infile)
-        xmlschema = etree.XMLSchema(xmlschema_doc)
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
 
         with requests_mock.Mocker() as m:
             m.post(self.client.service.soap_service.url, status_code=200)
