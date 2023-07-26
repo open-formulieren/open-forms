@@ -25,9 +25,7 @@ class StufBGClient:
 
     def _get_request_base_context(self):
         referentienummer = uuid.uuid4()
-
         logger.debug(f"Making StUF-BG request with referentienummer {referentienummer}")
-
         return {
             "created": timezone.now(),
             "expires": timezone.now() + timedelta(minutes=STUF_BG_EXPIRY_MINUTES),
@@ -77,7 +75,8 @@ class StufBGClient:
     def get_request_data(self, bsn, attributes):
         context = self._get_request_base_context()
         for attribute in attributes:
-            context.update({attribute: attribute})
+            # replace . with _ to circumvent dot notation in template
+            context.update({attribute.replace(".", "_"): True})
         context.update({"bsn": bsn})
 
         return loader.render_to_string("stuf_bg/StufBgRequest.xml", context)
@@ -89,7 +88,6 @@ class StufBGClient:
         return self.make_request(data).content
 
     def get_values(self, bsn: str, attributes: List[str]) -> dict:
-
         response_data = self.get_values_for_attributes(bsn, attributes)
 
         dict_response = xmltodict.parse(

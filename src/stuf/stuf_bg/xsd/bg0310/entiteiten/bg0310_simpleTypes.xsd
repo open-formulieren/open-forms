@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2013 sp1 (http://www.altova.com) by Robert Melskens (Kwaliteits Instituut Nederlandse Gemeenten) -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031005">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.egem.nl/StUF/sector/bg/0310" elementFormDefault="qualified" attributeFormDefault="unqualified" version="031007">
 	<import namespace="http://www.egem.nl/StUF/StUF0301" schemaLocation="bg0310_stuf_simpleTypes.xsd"/>
 	<import namespace="http://www.opengis.net/gml" schemaLocation="../../gml-3.1.1.2/gml/3.1.1/base/gml.xsd"/>
 	<annotation>
@@ -28,12 +28,19 @@
 			   Wijzigingen t.b.v. patch 25 (1-7-2016) vergeleken met versie 031004 zijn de volgende wijzigingen doorgevoerd:			
 			   - ERR0433: Aan het simpleType 'aanduidingInhoudingVermissing' is de enumeration 'R' (van rechtswege vervallen) toegevoegd.
 			
+			   Wijzigingen t.b.v. patch 30 (1-5-2021) vergeleken met versie 031005 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR0520: Het simpleType 'IndicatieGezag' is ontdaan van de enumeratie. De waarde wordt voortaan niet meer gelimiteerd door de enumeratie maar 
+						  door de gerelateerde in het LO GBA gedefinieerde lijst.
+			   
+			   Wijzigingen t.b.v. patch 31 (1-10-2021) vergeleken met versie 031006 zijn de volgende wijzigingen doorgevoerd:
+			   - ERR0523: Het simpleType 'AdellijkeTitelPredikaat' is ontdaan van de enumeratie. De waarde wordt voortaan niet meer gelimiteerd door de enumeratie
+						  maar door de gerelateerde in het LO GBA gedefinieerde lijst.
         </documentation>
 		<appinfo>
 			<StUF:onderdeel>http://www.egem.nl/StUF/sector/bg/0310</StUF:onderdeel>
-			<StUF:patch>28</StUF:patch>
-			<StUF:patchdatum>20180401</StUF:patchdatum>
-			<StUF:schemaversie>5</StUF:schemaversie>
+			<StUF:patch>31</StUF:patch>
+			<StUF:patchdatum>20211001</StUF:patchdatum>
+			<StUF:schemaversie>7</StUF:schemaversie>
 		</appinfo>
 	</annotation>
 	<!--ComplexTypes voor metagegevens-->
@@ -1644,21 +1651,7 @@
 		</restriction>
 	</simpleType>
 	<simpleType name="AdellijkeTitelPredikaat">
-		<restriction base="string">
-			<enumeration value="Baron"/>
-			<enumeration value="Barones"/>
-			<enumeration value="Graaf"/>
-			<enumeration value="Gravin"/>
-			<enumeration value="Hertog"/>
-			<enumeration value="Hertogin"/>
-			<enumeration value="Jonkheer"/>
-			<enumeration value="Jonkvrouw"/>
-			<enumeration value="Markies"/>
-			<enumeration value="Markiezin"/>
-			<enumeration value="Prins"/>
-			<enumeration value="Prinses"/>
-			<enumeration value="Ridder"/>
-		</restriction>
+		<restriction base="string"/>
 	</simpleType>
 	<simpleType name="AdresBuitenland">
 		<restriction base="string">
@@ -2568,38 +2561,10 @@
 		</restriction>
 	</simpleType>
 	<simpleType name="IndicatieGezag">
-		<restriction base="string">
-			<enumeration value="1">
-				<annotation>
-					<documentation>ouder1 heeft het gezag</documentation>
-				</annotation>
-			</enumeration>
-			<enumeration value="2">
-				<annotation>
-					<documentation>ouder2 heeft het gezag</documentation>
-				</annotation>
-			</enumeration>
-			<enumeration value="D">
-				<annotation>
-					<documentation>een of meer derden hebben het gezag</documentation>
-				</annotation>
-			</enumeration>
-			<enumeration value="1D">
-				<annotation>
-					<documentation>ouder1 + een derde hebben het gezag</documentation>
-				</annotation>
-			</enumeration>
-			<enumeration value="2D">
-				<annotation>
-					<documentation>ouder2 + een derde hebben het gezag</documentation>
-				</annotation>
-			</enumeration>
-			<enumeration value="12">
-				<annotation>
-					<documentation>ouder1 + ouder2 hebben het gezag</documentation>
-				</annotation>
-			</enumeration>
-		</restriction>
+		<annotation>
+			<documentation>Het domein van waarden die dit simpleType kan aannnemen is begrensd. Er is voor gekozen de mogelijke waarden niet hier op te nemen in een lijst met enumeraties. De mogelijke waarden kunnen gevonden worden in het LO GBA bij het element 'Indicatie gezag minderjarige'.</documentation>
+		</annotation>
+		<restriction base="string"/>
 	</simpleType>
 	<simpleType name="InrichtingsElementType">
 		<restriction base="string">

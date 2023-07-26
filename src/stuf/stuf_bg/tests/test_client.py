@@ -10,7 +10,7 @@ from django.utils import timezone
 import requests_mock
 import xmltodict
 from freezegun import freeze_time
-from glom import glom
+from glom import T as GlomTarget, glom
 from lxml import etree
 
 from openforms.logging.models import TimelineLogProxy
@@ -182,3 +182,40 @@ class StufBGConfigTests(TestCase):
 
             with self.assertRaises(Exception):
                 self.client.get_values("999992314", list(FieldChoices.values.keys()))
+
+    def test_inp_heeftAlsKinderen(self):
+        test_bsn = "999992314"
+
+        with STUF_BG_XSD.open("r") as infile:
+            xmlschema_doc = etree.parse(infile)
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+
+        with requests_mock.Mocker() as m:
+            m.post(self.client.service.soap_service.url, status_code=200)
+            self.client.get_values_for_attributes(test_bsn, ["inp.heeftAlsKinderen"])
+
+        request_body = m.last_request.body
+        doc = etree.parse(BytesIO(request_body))
+        soap_body = (
+            doc.getroot()
+            .xpath(
+                "soap:Body",
+                namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
+            )[0]
+            .getchildren()[0]
+        )
+
+        # validate soap message with xsd
+        xmlschema.assert_(soap_body)
+
+        # convert to dict to glom
+        bg_obj = doc.getroot().xpath("//bg:object", namespaces=nsmap)
+        data_dict = xmltodict.parse(
+            etree.tostring(bg_obj[0]),
+            process_namespaces=True,
+            namespaces=NAMESPACE_REPLACEMENTS,
+        )["object"]
+        missing = object()
+
+        value = glom(data_dict, GlomTarget["inp.heeftAlsKinderen"], default=missing)
+        self.assertNotEqual(value, missing)

@@ -131,6 +131,16 @@
                     {% if gemeenteVanInschrijving %}
                         <ns:inp.gemeenteVanInschrijving xsi:nil="true"/>
                     {% endif %}
+                    {% if inp_heeftAlsKinderen %}
+                        <ns:inp.heeftAlsKinderen StUF:entiteittype="NPSNPSKND">
+                          <ns:gerelateerde StUF:entiteittype="NPS">
+                              <ns:inp.bsn xsi:nil="true" />
+                              <ns:geslachtsnaam xsi:nil="true" />
+                              <ns:voorvoegselGeslachtsnaam xsi:nil="true" />
+                              <ns:voornamen xsi:nil="true" />
+                          </ns:gerelateerde>
+                       </ns:inp.heeftAlsKinderen>
+                    {% endif %}
                 </ns:object>
             </ns:scope>
         </ns:npsLv01>
