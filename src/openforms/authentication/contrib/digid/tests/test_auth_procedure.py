@@ -284,7 +284,6 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
                 "plugin": "digid",
                 "attribute": AuthAttribute.bsn,
                 "value": "12345678",
-                "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
             },
         )
 
