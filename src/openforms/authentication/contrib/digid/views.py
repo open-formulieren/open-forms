@@ -64,13 +64,15 @@ class DigiDAssertionConsumerServiceView(
             )
             return HttpResponseRedirect(failure_url)
 
-        sector_code, sectoral_number = name_id.split(":")
-
-        # We only care about users with a BSN.
-        if sector_code != SectorType.bsn:
-            raise BSNNotPresentError
-
-        bsn = sectoral_number
+        match name_id.split(":"):
+            case [SectorType.bsn, bsn]:
+                pass
+            case [bsn]:
+                # Sectorcode missing; assume BSN as SOFI aren't issued since
+                # Aanpassingswet Brp in 2014
+                pass
+            case _:
+                raise BSNNotPresentError()
 
         # store the bsn itself in the session, and let the plugin decide where
         # to persist it. This is an implementation detail for this specific plugin!
