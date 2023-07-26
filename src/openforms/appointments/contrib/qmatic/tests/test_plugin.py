@@ -289,6 +289,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
         self.assertEqual(locations, [])
 
+    @c_profile()
     @requests_mock.Mocker()
     @given(st.integers(min_value=400, max_value=499))
     def test_get_locations_client_error(self, m, status_code):
@@ -305,6 +306,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         with self.assertRaises(AppointmentException):
             self.plugin.get_locations()
 
+    @c_profile()
     @requests_mock.Mocker()
     @given(st.integers(min_value=500, max_value=511))
     def test_get_dates_server_error(self, m, status_code):
