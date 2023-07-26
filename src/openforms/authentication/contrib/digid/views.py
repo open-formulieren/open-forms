@@ -1,4 +1,5 @@
 import logging
+from collections import namedtuple
 
 from django.http import HttpResponseRedirect
 
@@ -57,6 +58,7 @@ class DigiDAssertionConsumerServiceView(
 
         try:
             name_id = response.get_nameid()
+            assert isinstance(name_id, str)
         except OneLogin_Saml2_ValidationError as exc:
             logger.error(exc)
             failure_url = self.get_failure_url(
@@ -64,13 +66,17 @@ class DigiDAssertionConsumerServiceView(
             )
             return HttpResponseRedirect(failure_url)
 
-        sector_code, sectoral_number = name_id.split(":")
+        bits = name_id.split(":")
 
+        # Sectorcode missing; assume BSN as SOFI aren't issued since
+        # Aanpassingswet Brp in 2014
+        if len(bits) == 1:
+            bits.insert(0, SectorType.bsn)
+
+        sector_code, bsn = bits
         # We only care about users with a BSN.
         if sector_code != SectorType.bsn:
             raise BSNNotPresentError
-
-        bsn = sectoral_number
 
         # store the bsn itself in the session, and let the plugin decide where
         # to persist it. This is an implementation detail for this specific plugin!

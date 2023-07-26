@@ -194,6 +194,74 @@ class AuthenticationStep5Tests(TestCase):
         "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
         return_value="_1330416516",
     )
+    @patch(
+        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
+    )
+    @patch(
+        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
+        return_value=True,
+    )
+    @patch(
+        "onelogin.saml2.response.OneLogin_Saml2_Response.get_nameid",
+        return_value="12345678",
+    )
+    def test_receive_samlart_without_sector_code_from_digid(
+        self,
+        m,
+        mock_nameid,
+        mock_verification,
+        mock_validation,
+        mock_id,
+        mock_xml_validation,
+    ):
+        m.post(
+            "https://test-digid.nl/saml/idp/resolve_artifact",
+            content=_get_artifact_response("ArtifactResponse.xml"),
+        )
+
+        form = FormFactory.create(authentication_backends=["digid"])
+        form_definition = FormDefinitionFactory.create(login_required=True)
+        FormStepFactory.create(form_definition=form_definition, form=form)
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"https://testserver{form_path}?_start=1"
+        auth_return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "digid"},
+        )
+        relay_state = furl(auth_return_url).set({"next": form_url})
+
+        url = furl(reverse("digid:acs")).set(
+            {
+                "SAMLart": _create_test_artifact(),
+                "RelayState": str(relay_state),
+            }
+        )
+
+        response = self.client.get(url)
+
+        self.assertRedirects(response, str(relay_state), fetch_redirect_response=False)
+
+        response = self.client.get(url, follow=True)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertTemplateUsed(response, "forms/form_detail.html")
+        self.assertEqual(
+            self.client.session[FORM_AUTH_SESSION_KEY],
+            {
+                "plugin": "digid",
+                "attribute": AuthAttribute.bsn,
+                "value": "12345678",
+                "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+            },
+        )
+
+    @patch(
+        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
+    )
+    @patch(
+        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="_1330416516",
+    )
     def test_cancel_login(
         self,
         m,
