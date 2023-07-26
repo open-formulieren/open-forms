@@ -1,5 +1,4 @@
 import logging
-from collections import namedtuple
 
 from django.http import HttpResponseRedirect
 
