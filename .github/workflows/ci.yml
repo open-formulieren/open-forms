@@ -48,7 +48,7 @@ jobs:
         uses: maykinmedia/setup-django-backend@v1
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client'
-          python-version: '3.10.9'
+          python-version: '3.10'
           optimize-postgres: 'yes'
           pg-service: 'postgres'
           setup-node: 'yes'
@@ -133,7 +133,7 @@ jobs:
         uses: maykinmedia/setup-django-backend@v1
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client'
-          python-version: '3.10.9'
+          python-version: '3.10'
           optimize-postgres: 'yes'
           pg-service: 'postgres'
           setup-node: 'yes'
@@ -206,7 +206,7 @@ jobs:
         uses: maykinmedia/setup-django-backend@v1
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client'
-          python-version: '3.10.9'
+          python-version: '3.10'
           optimize-postgres: 'yes'
           pg-service: 'postgres'
           setup-node: 'yes'
