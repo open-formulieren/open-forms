@@ -960,7 +960,8 @@ class SubmissionAttachmentTest(TestCase):
         )
 
         # test attaching the file
-        result = attach_uploads_to_submission_step(submission_step)
+        with self.captureOnCommitCallbacks(execute=True):
+            result = attach_uploads_to_submission_step(submission_step)
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0][1], True)  # created new
