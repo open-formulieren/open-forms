@@ -141,9 +141,8 @@ class HaalCentraalPluginTests:
         with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
             attributes = self.config.get_attributes()
             submission = SubmissionFactory.create(auth_info__value="999990676")
-            haalcentraal_plugin = register["haalcentraal"]
 
-            haalcentraal_plugin.get_prefill_values(
+            HaalCentraalPrefill.get_prefill_values(
                 submission,
                 attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
             )

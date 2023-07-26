@@ -156,7 +156,7 @@ coverage==7.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==41.0.1
+cryptography==41.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -185,7 +185,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.19
+django==3.2.20
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -689,7 +689,7 @@ phonenumbers==8.12.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-pillow==9.3.0
+pillow==10.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

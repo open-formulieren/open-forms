@@ -2,6 +2,39 @@
 Changelog
 =========
 
+2.2.1 (2023-07-26)
+==================
+
+Periodic bugfix release
+
+* Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
+* [#3195] Fixed hardcoded ``productaanvraag_type`` in default Objects API template to
+  use configuration option.
+* [#3182] Fixed importing forms from before 2.2.0 due to missing
+  ``{% cosign_information %}`` tag in confirmation email templates.
+* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
+* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+  tracked.
+* [#3161] Fixed not being able to reset form-specific data removal settings to the
+  empty value so that the global configuration is used again.
+* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+  removes the upload again.
+* Fixed CI builds (bump PyYAML, docs build).
+* [#3258] Fixed labels for Haal Centraal prefill attributes.
+* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
+* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
+  inside a container (fieldset, repeating group).
+* [#3302] Fixed an issue causing uploaded images not to be resized.
+* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
+* Bumped dependencies to get their latest security fixes
+* Fixed the broken Token Exchange extension (pre-request plugins) in the Haal Centraal
+  plugin.
+* Removed MacOS CI job due to broken system-level dependencies.
+
+.. note:: We only provided best-effort developer environment support for the MacOS
+   platform. This is now costing too much resources as there are no actual MacOS users
+   in the development team.
+
 2.2.0 "Èspelès" (2023-06-26)
 ============================
 
@@ -207,6 +240,8 @@ Detailed changes
 * [#3070] Fixed the confirmation email template not being copied along when copying a form.
 * Fixed Matomo not using the configured Site ID correctly.
 * [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
+* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+  variable names.
 
 **Documentation**
 
