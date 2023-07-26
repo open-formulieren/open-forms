@@ -244,7 +244,7 @@ class AuthenticationStep5Tests(TestCase):
         response = self.client.get(url, follow=True)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertTemplateUsed(response, "forms/form_detail.html")
+        self.assertTemplateUsed(response, "core/views/form/form_detail.html")
         self.assertEqual(
             self.client.session[FORM_AUTH_SESSION_KEY],
             {
