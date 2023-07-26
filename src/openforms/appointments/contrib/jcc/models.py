@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 
+from openforms.utils.validators import validate_service_url_not_empty
 from stuf.managers import ConfigManager
 
 
@@ -16,6 +17,7 @@ class JccConfig(SingletonModel):
         on_delete=models.PROTECT,
         related_name="+",
         null=True,
+        validators=[validate_service_url_not_empty],
     )
 
     objects = ConfigManager()

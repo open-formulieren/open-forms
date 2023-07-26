@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
-from ..validators import validate_bsn, validate_rsin
+from soap.tests.factories import SoapServiceFactory
+
+from ..validators import validate_bsn, validate_rsin, validate_service_url_not_empty
 
 
 class BSNValidatorTestCase(SimpleTestCase):
@@ -36,3 +38,17 @@ class RSINValidatorTestCase(SimpleTestCase):
 
         with self.assertRaises(ValidationError):
             validate_rsin("063-08836")
+
+
+class ServiceURLEmptyTestCase(TestCase):
+    def test_valid_service(self):
+        service = SoapServiceFactory()
+        result = validate_service_url_not_empty(service.pk)
+
+        self.assertIsNone(result)
+
+    def test_invalid_service(self):
+        service = SoapServiceFactory(url="")
+
+        with self.assertRaises(ValidationError):
+            validate_service_url_not_empty(service.pk)

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -5,7 +6,6 @@ from soap.constants import EndpointSecurity, EndpointSecurityTypeHint
 
 
 class StufService(models.Model):
-
     soap_service = models.OneToOneField(
         "soap.SoapService",
         on_delete=models.CASCADE,
@@ -123,3 +123,16 @@ class StufService(models.Model):
 
     def __str__(self):
         return self.soap_service.label
+
+    def clean(self) -> None:
+        if (
+            not (
+                self.endpoint_beantwoord_vraag
+                or self.endpoint_ontvang_asynchroon
+                or self.endpoint_vrije_berichten
+            )
+            and not self.soap_service.url
+        ):
+            raise ValidationError(
+                _("Either StUF service endpoints or Soap Service url must be provided.")
+            )

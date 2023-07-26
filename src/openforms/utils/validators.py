@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Optional, Type
 
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.utils.redirect import allow_redirect_url
+from soap.models import SoapService
 
 validate_digits = RegexValidator(
     regex="^[0-9]+$", message=_("Expected a numerical value.")
@@ -130,3 +131,15 @@ class SerializerValidator:
                 self.message.format(errors=serializer.errors),
                 code=self.code,
             )
+
+
+def validate_service_url_not_empty(value: int) -> Optional[ValidationError]:
+    """
+    Validate that url is not missing. Used in models where the only url field
+    for the service is the one defined in the SoapService model.
+    """
+
+    service = SoapService.objects.get(pk=value)
+
+    if not service.url:
+        raise ValidationError(_("Url for Soap Service is not provided."))
