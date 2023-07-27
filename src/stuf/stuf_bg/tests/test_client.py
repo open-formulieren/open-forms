@@ -1,5 +1,4 @@
 from functools import lru_cache
-from io import BytesIO
 from pathlib import Path
 from random import shuffle
 
@@ -16,10 +15,12 @@ from lxml import etree
 from openforms.logging.models import TimelineLogProxy
 from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
 from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
+from stuf.stuf_bg.client import StufBGClient
 from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.stuf_zds.client import nsmap
 from stuf.tests.factories import StufServiceFactory
+from stuf.xml import fromstring
 
 PATH_XSDS = (Path(settings.BASE_DIR) / "src" / "stuf" / "stuf_bg" / "xsd").resolve()
 STUF_BG_XSD = PATH_XSDS / "bg0310" / "vraagAntwoord" / "bg0310_namespace.xsd"
@@ -35,15 +36,11 @@ def _stuf_bg_xmlschema_doc():
 
 
 def _extract_soap_body(full_doc: str):
-    doc = etree.parse(BytesIO(full_doc))
-    soap_body = (
-        doc.getroot()
-        .xpath(
-            "soap:Body",
-            namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-        )[0]
-        .getchildren()[0]
-    )
+    doc = fromstring(full_doc)
+    soap_body = doc.xpath(
+        "soap:Body",
+        namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
+    )[0].getchildren()[0]
     return soap_body
 
 
@@ -74,7 +71,7 @@ def _stuf_bg_response(service):
 
 class StufBGConfigTests(TestCase):
     def test_client_requires_a_service(self):
-        config = StufBGConfig.get_solo()
+        config = StufBGConfig(service=None)
 
         with self.assertRaises(RuntimeError):
             config.get_client()
@@ -88,16 +85,10 @@ class StufBGConfigTests(TestCase):
 
 
 class StufBGClientTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.config = StufBGConfig.get_solo()
-        cls.config.service = StufServiceFactory.create(soap_service__soap_version="1.1")
-        cls.config.save()
-
     def setUp(self):
-        super().setUp()
-        self.client = self.config.get_client()
+        self.client = StufBGClient(
+            service=StufServiceFactory.build(soap_service__soap_version="1.1")
+        )
 
     def test_order_of_attributes_in_template_is_correct(self):
         # Any attribute we expect to request MUST be listed here
@@ -139,17 +130,14 @@ class StufBGClientTests(TestCase):
 
     def test_soap_request_gets_logged(self):
         test_bsn = "999992314"
+
         with requests_mock.Mocker() as m:
             m.post(self.client.service.soap_service.url)
             # perform request
             self.client.get_values_for_attributes(test_bsn, FieldChoices.values)
 
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_bg_request.txt"
-            ).count(),
-            1,
-        )
+        logged_events = TimelineLogProxy.objects.filter_event("stuf_bg_request")
+        self.assertTrue(logged_events.exists(), "StUF-BG request wasn't logged.")
 
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.values
