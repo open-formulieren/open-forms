@@ -119,6 +119,13 @@ class StufBgPrefill(BasePlugin):
             if value and "@noValue" not in value:
                 response_dict[attribute] = value
 
+        # postcodes in StUF BG responses have this form "[1-9][0-9]{3}[A-Z]{0,2}"
+        # Our prefill tests expect roughly "[1-9][0-9]{3} [A-Z]{0,2}"
+        if FieldChoices.postcode in response_dict and " " not in (
+            postcode := response_dict[FieldChoices.postcode]
+        ):
+            response_dict[FieldChoices.postcode] = postcode[:4] + " " + postcode[4:]
+
         return response_dict
 
     def get_identifier_value(
