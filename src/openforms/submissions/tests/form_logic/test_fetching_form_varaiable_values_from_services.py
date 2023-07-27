@@ -14,6 +14,7 @@ from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+from openforms.tests.utils import c_profile
 from openforms.variables.constants import DataMappingTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
@@ -206,6 +207,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         # and a weak assertion
         self.assertNotIn(str(field_value), request.headers.values())
 
+    @c_profile()
     @given(
         st.text(),  # OAS schema: type: string
         data_mapping_values(),

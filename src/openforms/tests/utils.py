@@ -4,6 +4,8 @@ import io
 import os
 import pstats
 import socket
+import sys
+from pathlib import Path
 from pstats import SortKey
 
 from django.conf import settings
@@ -56,13 +58,28 @@ def supress_output(stdchannel, dest_filename):
 
 
 @contextlib.contextmanager
+def profile_outfile():
+    # On github CI, write to the step summary
+    github_summary = os.getenv("GITHUB_STEP_SUMMARY")
+    if not github_summary:
+        yield sys.stdout
+    else:
+        with Path(github_summary).open("a") as outfile:
+            outfile.write("```\n")
+            yield outfile
+            outfile.write("```")
+            outfile.write("\n\n")
+
+
+@contextlib.contextmanager
 def c_profile(sort_by=SortKey.CUMULATIVE):  # pragma: no cover
     """
     Profile a block of code with cProfile.
     """
-    with cProfile.Profile() as pr:
-        yield
-        s = io.StringIO()
-        ps = pstats.Stats(pr, stream=s).sort_stats(sort_by)
-        ps.print_stats()
-        print(s.getvalue())
+    with profile_outfile() as outfile:
+        with cProfile.Profile() as pr:
+            yield
+            s = io.StringIO()
+            ps = pstats.Stats(pr, stream=s).sort_stats(sort_by)
+            ps.print_stats()
+            print(s.getvalue(), file=outfile)

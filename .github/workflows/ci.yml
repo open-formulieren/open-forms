@@ -75,6 +75,9 @@ jobs:
 
       - name: Run tests
         run: |
+          echo "# Profiling stats" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_OUTPUT
+
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
           coverage run \
