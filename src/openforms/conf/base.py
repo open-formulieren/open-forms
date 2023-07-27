@@ -923,6 +923,7 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/bag/tests/files"),
+    os.path.join(BASE_DIR, "src/openforms/contrib/kadaster/api/tests/files/"),
 ]
 
 #
@@ -1182,11 +1183,6 @@ LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
 LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
 )  # number of hours
-
-# Pdok api locatieserver url
-PDOK_LOCATIE_SERVER_URL = config(
-    "PDOK_LOCATIE_SERVER_URL", "https://api.pdok.nl/bzk/locatieserver/search/v3_1/"
-)
 
 #
 # Open Forms extensions

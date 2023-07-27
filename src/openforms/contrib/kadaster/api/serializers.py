@@ -14,6 +14,6 @@ class MapSearchRijksDriehoekSerializer(serializers.Serializer):
 
 
 class MapSearchSerializer(serializers.Serializer):
-    label = serializers.CharField(label=_("weergave naam"))
+    label = serializers.CharField(label=_("The location name of the BAG location."))
     latLng = MapSearchLatitudeLongitudeSerializer()
     rd = MapSearchRijksDriehoekSerializer()

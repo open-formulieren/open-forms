@@ -2867,7 +2867,12 @@ paths:
               $ref: '#/components/headers/Content-Language'
   /api/v2/geo/address-search:
     get:
-      operationId: geo_address_search_retrieve
+      operationId: geo_address_search_list
+      description: |-
+        Fetch and serialize a list of objects.
+
+        Alternative to :class:`rest_framework.mixins.ListModelMixin` for non-database
+        backed collections of objects.
       summary: List BAG address suggestions.
       parameters:
       - in: query
@@ -2878,15 +2883,14 @@ paths:
         required: true
       tags:
       - geo
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MapSearch'
+                type: array
+                items:
+                  $ref: '#/components/schemas/MapSearch'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -2912,7 +2916,7 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-        '401':
+        '403':
           content:
             application/json:
               schema:
@@ -7672,7 +7676,7 @@ components:
       properties:
         label:
           type: string
-          title: weergave naam
+          title: The location name of the BAG location.
         latLng:
           $ref: '#/components/schemas/MapSearchLatitudeLongitude'
         rd:

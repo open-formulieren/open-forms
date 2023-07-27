@@ -1,0 +1,755 @@
+{
+    "components": {
+        "schemas": {
+            "error": {
+                "properties": {
+                    "code": {
+                        "example": 400,
+                        "type": "integer"
+                    },
+                    "metadata": {
+                        "items": {
+                            "example": "error-class",
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "msg": {
+                        "example": "undefined field",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "highlighting": {
+                "additionalProperties": {
+                    "properties": {
+                        "suggest": {
+                            "items": {
+                                "example": "",
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "type": "object"
+                },
+                "type": "object"
+            },
+            "response": {
+                "properties": {
+                    "docs": {
+                        "items": {
+                            "type": "object"
+                        },
+                        "type": "array"
+                    },
+                    "maxScore": {
+                        "format": "float",
+                        "type": "number"
+                    },
+                    "numFound": {
+                        "type": "integer"
+                    },
+                    "numFoundExact": {
+                        "type": "boolean"
+                    },
+                    "start": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "spellcheck": {
+                "properties": {
+                    "collations": {
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "properties": {
+                                        "collationQuery": {
+                                            "type": "string"
+                                        },
+                                        "hits": {
+                                            "type": "integer"
+                                        },
+                                        "misspellingsAndCorrections": {
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            ]
+                        },
+                        "type": "array"
+                    },
+                    "suggestions": {
+                        "items": {
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "properties": {
+                                        "endOffset": {
+                                            "type": "integer"
+                                        },
+                                        "numFound": {
+                                            "type": "integer"
+                                        },
+                                        "startOffset": {
+                                            "type": "integer"
+                                        },
+                                        "suggestion": {
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            ]
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "info": {
+        "description": "De PDOK Locatieserver is een open en gratis geocodeerservice waarmee gezocht\nkan worden op gegevens uit verschillende overheidsregistraties (bijvoorbeeld\nadressen, percelen en rijkswegen) om vervolgens doorgestuurd te worden naar\nde locatie van de zoekopdracht.\n\nDe Locatieserver bestaat uit meerdere RESTful API’s die eenvoudig geïntegreerd\nkunnen worden in viewers en/of applicaties. De API’s zijn open, gratis en bevatten\ngegevens uit verschillende overheidsregistraties zoals adressen (postcodes,\nstraten, huisnummer), kadastrale percelen, wegen en hectometerpalen maar ook\nwoonplaatsen, wijken, buurten en waterschappen. De onderliggende gegevens worden\nzeer frequent bijgewerkt.\n\nDe Locatieserver bestaat totaal uit vier RESTful API’s die gepubliceerd worden\nvolgens de Open API Specificatie [https://api.pdok.nl/bzk/locatieserver/search/v3_1/ui/](https://api.pdok.nl/bzk/locatieserver/search/v3_1/ui/).\nHiermee zijn de mogelijkheden van de Locatieserver API’s (input en output)\ngedocumenteerd.\n\nHet zoeken op gegevens wordt vereenvoudigd met behulp van de **Suggest API** die de\nmogelijkheid biedt om een (gedeelte van een) zoekopdracht op te voeren, waarnaar\ner suggesties teruggegeven worden. Dankzij slimme technieken als auto-aanvullen\nen ondersteuning van alternatieve schrijfwijzen en synoniemen vinden gebruikers\nsnel waar ze naar op zoek zijn. Het is ook mogelijk om bij zoekopdrachten een\nlocatie van de gebruiker mee te geven zodat suggesties op basis van die locatie\nworden gesorteerd.\n\nZodra er op basis van suggesties van de Suggest API een keuze is gemaakt, wordt de\n**Lookup API** aangeroepen, welke o.a. een (versimpelde) geometrie van de zoekopdracht\nteruggeeft. Hiermee kan een gebruiker naar de locatie van de zoekopdracht worden\ngestuurd op de kaart. Dankzij de highlight functie kan het betreffende gegeven\n(object) vervolgens worden opgelicht op de kaart.\n\nDe suggest- en de lookup API werken dus als een tweetrapsraket. Er is ook een\nmogelijkheid om vrij te zoeken (klassiek geocoderen) met de **Free API** waar zonder\ntussenkomst van suggesties de API direct resultaten teruggeeft op basis van de\nzoekopdracht.\n\nDe **Reverse API** biedt de mogelijkheid om een locatie (punt geometrie) op te geven\nom vervolgens verschillende gegevens in een range rondom deze locatie te ontvangen.\nBijvoorbeeld het ophalen van alle adressen of wegen in de buurt (op basis van de\nopgegeven locatie). Dit wordt ook wel Reverse Geocoderen genoemd. Met de **Reverse\nAPI** kan je op basis van een coördinaat en een range (bijvoorbeeld 1 kilometer)\nde gewenste gegevens binnen die range opvragen en visualiseren.\n\nDe Locatieserver is primair een geocodeerservice. Voor andere doeleinden zoals het\nrechtstreeks opvragen van bepaalde gegevens of het downloaden van bulk data biedt\nPDOK andere mogelijkheden via webservices en/of downloads.\n\nMeer informatie over de Locatieserver is ook te vinden op de Locatieserver Wiki op\n[Github](https://github.com/PDOK/locatieserver/wiki/API-Locatieserver) of volg\ndiscussies op het [PDOK forum](https://geoforum.nl/c/applicaties-en-diensten/locatieserver/27).\n",
+        "title": "Locatieserver",
+        "version": "v3_1"
+    },
+    "openapi": "3.0.0",
+    "paths": {
+        "/free": {
+            "get": {
+                "operationId": "free",
+                "parameters": [
+                    {
+                        "description": "Hiermee worden de zoektermen opgegeven. De Solr-syntax voor zoektermen kan hier\nworden toegepast, bijv. combineren met \"and\", en het gebruik van dubbele quotes\nvoor opeenvolgende zoektermen. Zoektermen mogen incompleet zijn. Ook wordt er\ngebruik gemaakt van synoniemen.\n\nVoorbeelden:\n`q=Utrecht`: geeft resultaten terug met de zoekterm Utrecht, bijv. adressen in\nde stad Utrecht, woonplaatsen en gemeenten in de provincie Utrecht.\n\n`q=\"De Bilt\"`: geeft resultaten terug met de zoekterm De Bilt, bijv. de\nwoonplaats en gemeente De Bilt, of adressen in deze woonplaats. Let op\ndat bij het daadwerkelijk verzenden van het request onder water de\nURL-encodingregels toegepast worden, dus een spatie wordt verzonden als\neen plusteken.\n\n`q=\"Sint Jacob\" Utre`: geeft o.a. adressen terug waarvan er delen\nachtereenvolgens beginnen met \"Sint\" en \"Jacob\", of met \"St\"\n(synoniem) en \"Jacob\", en waar ook een deel met \"Utre\" begint. Een\nvoorbeeld is het adres St.-Jacobsstraat 200 (officiële schrijfwijze)\nin Utrecht.\n",
+                        "in": "query",
+                        "name": "q",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een coördinaat (in lat/lon, ofwel WGS84) worden opgegeven. Met\nbehulp van deze parameters worden de gevonden zoekresultaten gesorteerd op\nafstand van het meegegeven punt. Wanneer de locatie van de gebruiker bekend\nis, kan op deze manier effectiever worden gezocht.\n\nHet meegeven van een coördinaat is met name nuttig voor de suggest- en vrije\ngeocoder-services. Hier worden meestal meerdere resultaten teruggegeven.\nAls decimaal scheidingsteken moet een punt worden opgegeven i.p.v. een komma.\n",
+                        "in": "query",
+                        "name": "lat",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een coördinaat (in lat/lon, ofwel WGS84) worden opgegeven. Met\nbehulp van deze parameters worden de gevonden zoekresultaten gesorteerd op\nafstand van het meegegeven punt. Wanneer de locatie van de gebruiker bekend\nis, kan op deze manier effectiever worden gezocht.\n\nHet meegeven van een coördinaat is met name nuttig voor de suggest- en vrije\ngeocoder-services. Hier worden meestal meerdere resultaten teruggegeven.\nAls decimaal scheidingsteken moet een punt worden opgegeven i.p.v. een komma.\n\nVoorbeeld: `lat=52.09\u0026lon=5.12`\n\nDe resultaten worden gesorteerd op afstand van een bepaald punt in het\ncentrum van Utrecht.\n",
+                        "in": "query",
+                        "name": "lon",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee worden de velden opgegeven die teruggegeven dienen te worden.",
+                        "in": "query",
+                        "name": "fl",
+                        "schema": {
+                            "default": "id identificatie weergavenaam bron type subtype openbareruimte_id nwb_id openbareruimtetype straatnaam straatnaam_verkort adresseerbaarobject_id nummeraanduiding_id huisnummer huisletter huisnummertoevoeging huis_nlt postcode buurtnaam buurtcode wijknaam wijkcode woonplaatscode woonplaatsnaam gemeentecode gemeentenaam provinciecode provincienaam provincieafkorting kadastraal_object_id kadastrale_gemeentecode kadastrale_gemeentenaam kadastrale_sectie perceelnummer kadastrale_grootte gekoppeld_perceel kadastrale_aanduiding volgnummer gekoppeld_appartement wegnummer hectometernummer zijde hectometerletter waterschapsnaam waterschapscode rdf_seealso centroide_ll centroide_rd boundingbox_ll boundingbox_rd score",
+                            "pattern": "^([a-z_\\*]+( |,|, )?)+$",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een filter query worden opgegeven, bijv. `fq=bron:BAG`.",
+                        "in": "query",
+                        "name": "fq",
+                        "schema": {
+                            "default": [
+                                "type:(gemeente OR woonplaats OR weg OR postcode OR adres)"
+                            ],
+                            "items": {
+                                "example": "",
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt het default zoekveld opgegeven. Dit is het veld waar standaard\nin gezocht wordt, wanneer de veldnaam niet wordt meegegeven.\n",
+                        "in": "query",
+                        "name": "df",
+                        "schema": {
+                            "default": "tekst",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Met behulp van deze parameter kan aan bepaalde _velden_ een extra boost worden\nmeegegeven. Hiermee kan de scoreberekening worden aangepast.\n",
+                        "in": "query",
+                        "name": "qf",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Met behulp van deze parameter kan aan bepaalde _veldwaarden_ een extra\nboost worden meegegeven. Ook hiermee kan de scoreberekening worden aangepast.\n\nVoor elke boost query moet een aparte `bq=\u003cboost\u003e` worden gebruikt.\nBijvoorbeeld: `bq=type:gemeente^1.5\u0026bq=type:woonplaats^1.5`.\n",
+                        "in": "query",
+                        "name": "bq",
+                        "schema": {
+                            "default": [
+                                "type:provincie^1.5",
+                                "type:gemeente^1.5",
+                                "type:woonplaats^1.5",
+                                "type:weg^1.5",
+                                "type:postcode^0.5",
+                                "type:adres^1"
+                            ],
+                            "items": {
+                                "example": "",
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat de index is van het eerste resultaat dat\nteruggegeven wordt. Dit is zero-based. In combinatie met de rows-parameter\nkunnen deze services gepagineerd worden bevraagd. Het maximum is \"10.000\".\n",
+                        "in": "query",
+                        "name": "start",
+                        "schema": {
+                            "default": 0,
+                            "maximum": 10000,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat het maximale aantal rijen (ofwel resultaten) is\ndat teruggegeven moet worden op deze bevraging. Het maximum is \"100\".\n",
+                        "in": "query",
+                        "name": "rows",
+                        "schema": {
+                            "default": 10,
+                            "maximum": 100,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan worden opgegeven hoe de sortering plaatsvindt.",
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "default": "score desc,sortering asc,weergavenaam asc",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat het outputformaat is van de bevraging.",
+                        "in": "query",
+                        "name": "wt",
+                        "schema": {
+                            "default": "json",
+                            "enum": [
+                                "json",
+                                "xml"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/components/schemas/response"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {}
+                        },
+                        "description": "200 OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {},
+                            "text/plain": {
+                                "schema": {
+                                    "example": "parameter x in query has an error: value y: an invalid integer: invalid syntax",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "400 Bad Request"
+                    }
+                },
+                "summary": "De Free API biedt de mogelijkheid om vrij te zoeken (klassiek geocoderen), waar zonder\ntussenkomst van suggesties de API direct resultaten teruggeeft op basis van de zoekopdracht.\n",
+                "tags": [
+                    "Locatieserver"
+                ]
+            }
+        },
+        "/lookup": {
+            "get": {
+                "operationId": "lookup",
+                "parameters": [
+                    {
+                        "description": "Hiermee wordt het object-ID opgegeven.",
+                        "in": "query",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee worden de velden opgegeven die teruggegeven dienen te worden.",
+                        "in": "query",
+                        "name": "fl",
+                        "schema": {
+                            "default": "id identificatie weergavenaam bron type subtype openbareruimte_id nwb_id openbareruimtetype straatnaam straatnaam_verkort adresseerbaarobject_id nummeraanduiding_id huisnummer huisletter huisnummertoevoeging huis_nlt postcode buurtnaam buurtcode wijknaam wijkcode woonplaatscode woonplaatsnaam gemeentecode gemeentenaam provinciecode provincienaam provincieafkorting kadastraal_object_id kadastrale_gemeentecode kadastrale_gemeentenaam kadastrale_sectie perceelnummer kadastrale_grootte gekoppeld_perceel volgnummer gekoppeld_appartement kadastrale_aanduiding wegnummer hectometernummer zijde hectometerletter waterschapsnaam waterschapscode rdf_seealso centroide_ll centroide_rd boundingbox_ll boundingbox_rd",
+                            "pattern": "^([a-z_\\*]+( |,|, )?)+$",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een filter query worden opgegeven, bijv. `fq=bron:BAG`.",
+                        "in": "query",
+                        "name": "fq",
+                        "schema": {
+                            "items": {
+                                "example": "",
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat het outputformaat is van de bevraging.",
+                        "in": "query",
+                        "name": "wt",
+                        "schema": {
+                            "default": "json",
+                            "enum": [
+                                "json",
+                                "xml"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/components/schemas/response"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {}
+                        },
+                        "description": "200 OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {},
+                            "text/plain": {
+                                "schema": {
+                                    "example": "parameter x in query has an error: value y: an invalid integer: invalid syntax",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "400 Bad Request"
+                    }
+                },
+                "summary": "Zodra er op basis van suggesties van de Suggest API een keuze is gemaakt, wordt de\nLookup API aangeroepen, welke o.a. een (versimpelde) geometrie van de zoekopdracht\nteruggeeft.\n",
+                "tags": [
+                    "Locatieserver"
+                ]
+            }
+        },
+        "/reverse": {
+            "get": {
+                "operationId": "reverseGeocoder",
+                "parameters": [
+                    {
+                        "description": "Hiermee wordt het coördinaat in X/Y (RD), of in lat/lon (WGS84)\nopgegeven. Vanaf dit coördinaat gaat de reverse geocoder zoeken.\n",
+                        "example": 194195.304,
+                        "in": "query",
+                        "name": "X",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt het coördinaat in X/Y (RD), of in lat/lon (WGS84)\nopgegeven. Vanaf dit coördinaat gaat de reverse geocoder zoeken.\n",
+                        "example": 465885.902,
+                        "in": "query",
+                        "name": "Y",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt het coördinaat in X/Y (RD), of in lat/lon (WGS84)\nopgegeven. Vanaf dit coördinaat gaat de reverse geocoder zoeken.\n",
+                        "in": "query",
+                        "name": "lat",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt het coördinaat in X/Y (RD), of in lat/lon (WGS84)\nopgegeven. Vanaf dit coördinaat gaat de reverse geocoder zoeken.\n",
+                        "in": "query",
+                        "name": "lon",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan worden opgegeven welke resultaat types je terug krijgt in het\nresultaat. Voor elke type dat je wilt terugkrijgen moet je een aparte type\nparameter toevoegen, bijv. `type=adres\u0026type=gemeente\u0026type=perceel`. Met\n`type=*` krijg je alle types terug. Deze wordt voor het bepalen van de\nresultaten gebruikt en heeft dus geen invloed op aantal resultaten dat\nwordt teruggegeven.\n",
+                        "in": "query",
+                        "name": "type",
+                        "schema": {
+                            "default": "adres",
+                            "pattern": "^([a-z_\\*]+(,)?)+$",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een maximale zoekstraal in meters worden opgegeven. Er zullen\ndan geen resultaten worden teruggegeven die verder liggen dan deze waarden.\n",
+                        "in": "query",
+                        "name": "distance",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Hiermee worden de velden opgegeven die teruggegeven dienen te worden.",
+                        "in": "query",
+                        "name": "fl",
+                        "schema": {
+                            "default": "id type weergavenaam score afstand",
+                            "pattern": "^([a-z_\\*]+( |,|, )?)+$",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een filter query worden opgegeven, bijv. `fq=bron:BAG`. Deze wordt\nuitgevoerd nadat de dichtsbijzijnde resultaten zijn gevonden, dus resultaten\ndie hier niet aan voldoen worden weggefilterd waardoor je minder resultaten\ndan het aantal rows kan terugkrijgen.\n",
+                        "in": "query",
+                        "name": "fq",
+                        "schema": {
+                            "example": "",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat de index is van het eerste resultaat dat\nteruggegeven wordt. Dit is zero-based. In combinatie met de rows-parameter\nkunnen deze services gepagineerd worden bevraagd. Het maximum is \"10.000\".\n",
+                        "in": "query",
+                        "name": "start",
+                        "schema": {
+                            "default": 0,
+                            "maximum": 10000,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat het maximale aantal rijen (ofwel resultaten) is\ndat teruggegeven moet worden op deze bevraging. Het maximum is \"100\".\n",
+                        "in": "query",
+                        "name": "rows",
+                        "schema": {
+                            "default": 10,
+                            "maximum": 100,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat het outputformaat is van de bevraging.",
+                        "in": "query",
+                        "name": "wt",
+                        "schema": {
+                            "default": "json",
+                            "enum": [
+                                "json",
+                                "xml"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/components/schemas/response"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {}
+                        },
+                        "description": "200 OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {},
+                            "text/plain": {
+                                "schema": {
+                                    "example": "parameter x in query has an error: value y: an invalid integer: invalid syntax",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "400 Bad Request"
+                    }
+                },
+                "summary": "De Reverse API biedt de mogelijkheid om een locatie (punt geometrie) op te geven\nom vervolgens verschillende gegevens in een range rondom deze locatie te ontvangen.\n",
+                "tags": [
+                    "Locatieserver"
+                ]
+            }
+        },
+        "/suggest": {
+            "get": {
+                "operationId": "suggest",
+                "parameters": [
+                    {
+                        "description": "Hiermee worden de zoektermen opgegeven. De Solr-syntax voor zoektermen kan hier\nworden toegepast, bijv. combineren met \"and\", en het gebruik van dubbele quotes\nvoor opeenvolgende zoektermen. Zoektermen mogen incompleet zijn. Ook wordt er\ngebruik gemaakt van synoniemen.\n\nVoorbeelden:\n`q=Utrecht`: geeft resultaten terug met de zoekterm Utrecht, bijv. adressen in\nde stad Utrecht, woonplaatsen en gemeenten in de provincie Utrecht.\n\n`q=\"De Bilt\"`: geeft resultaten terug met de zoekterm De Bilt, bijv. de\nwoonplaats en gemeente De Bilt, of adressen in deze woonplaats. Let op\ndat bij het daadwerkelijk verzenden van het request onder water de\nURL-encodingregels toegepast worden, dus een spatie wordt verzonden als\neen plusteken.\n\n`q=\"Sint Jacob\" Utre`: geeft o.a. adressen terug waarvan er delen\nachtereenvolgens beginnen met \"Sint\" en \"Jacob\", of met \"St\"\n(synoniem) en \"Jacob\", en waar ook een deel met \"Utre\" begint. Een\nvoorbeeld is het adres St.-Jacobsstraat 200 (officiële schrijfwijze)\nin Utrecht.\n",
+                        "in": "query",
+                        "name": "q",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een coördinaat (in lat/lon, ofwel WGS84) worden opgegeven. Met\nbehulp van deze parameters worden de gevonden zoekresultaten gesorteerd op\nafstand van het meegegeven punt. Wanneer de locatie van de gebruiker bekend\nis, kan op deze manier effectiever worden gezocht.\n\nHet meegeven van een coördinaat is met name nuttig voor de suggest- en vrije\ngeocoder-services. Hier worden meestal meerdere resultaten teruggegeven.\nAls decimaal scheidingsteken moet een punt worden opgegeven i.p.v. een komma.\n\nVoorbeeld: `lat=52.09\u0026lon=5.12`\n\nDe resultaten worden gesorteerd op afstand van een bepaald punt in het\ncentrum van Utrecht.\n",
+                        "in": "query",
+                        "name": "lat",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een coördinaat (in lat/lon, ofwel WGS84) worden opgegeven. Met\nbehulp van deze parameters worden de gevonden zoekresultaten gesorteerd op\nafstand van het meegegeven punt. Wanneer de locatie van de gebruiker bekend\nis, kan op deze manier effectiever worden gezocht.\n\nHet meegeven van een coördinaat is met name nuttig voor de suggest- en vrije\ngeocoder-services. Hier worden meestal meerdere resultaten teruggegeven.\nAls decimaal scheidingsteken moet een punt worden opgegeven i.p.v. een komma.\n\nVoorbeeld: `lat=52.09\u0026lon=5.12`\n\nDe resultaten worden gesorteerd op afstand van een bepaald punt in het\ncentrum van Utrecht.\n",
+                        "in": "query",
+                        "name": "lon",
+                        "schema": {
+                            "format": "float",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Hiermee worden de velden opgegeven die teruggegeven dienen te worden.",
+                        "in": "query",
+                        "name": "fl",
+                        "schema": {
+                            "default": "id weergavenaam type score adrestype",
+                            "pattern": "^([a-z_\\*]+( |,|, )?)+$",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan een filter query worden opgegeven, bijv. `fq=bron:BAG`.",
+                        "in": "query",
+                        "name": "fq",
+                        "schema": {
+                            "default": [
+                                "type:(gemeente OR woonplaats OR weg OR postcode OR adres)"
+                            ],
+                            "items": {
+                                "example": "",
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "description": "Met behulp van deze parameter kan aan bepaalde _velden_ een extra boost worden\nmeegegeven. Hiermee kan de scoreberekening worden aangepast.\n",
+                        "in": "query",
+                        "name": "qf",
+                        "schema": {
+                            "default": "exacte_match^1 suggest^0.5 huisnummer^0.5 huisletter^0.5 huisnummertoevoeging^0.5",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Met behulp van deze parameter kan aan bepaalde _veldwaarden_ een extra\nboost worden meegegeven. Ook hiermee kan de scoreberekening worden aangepast.\n\nVoor elke boost query moet een aparte `bq=\u003cboost\u003e` worden gebruikt.\nBijvoorbeeld: `bq=type:gemeente^1.5\u0026bq=type:woonplaats^1.5`.\n",
+                        "in": "query",
+                        "name": "bq",
+                        "schema": {
+                            "default": [
+                                "type:provincie^1.5",
+                                "type:gemeente^1.5",
+                                "type:woonplaats^1.5",
+                                "type:weg^1.5",
+                                "type:postcode^0.6",
+                                "type:adres^1"
+                            ],
+                            "items": {
+                                "example": "",
+                                "type": "string"
+                            },
+                            "type": "array"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat de index is van het eerste resultaat dat\nteruggegeven wordt. Dit is zero-based. In combinatie met de rows-parameter\nkunnen deze services gepagineerd worden bevraagd. Hhet maximum is \"10.000\".\n",
+                        "in": "query",
+                        "name": "start",
+                        "schema": {
+                            "default": 0,
+                            "maximum": 10000,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat het maximale aantal rijen (ofwel resultaten) is\ndat teruggegeven moet worden op deze bevraging. Het maximum is \"100\".\n",
+                        "in": "query",
+                        "name": "rows",
+                        "schema": {
+                            "default": 10,
+                            "maximum": 3000,
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Hiermee kan worden opgegeven hoe de sortering plaatsvindt.",
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "default": "score desc,sortering asc,weergavenaam asc",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Hiermee wordt opgegeven wat het outputformaat is van de bevraging.",
+                        "in": "query",
+                        "name": "wt",
+                        "schema": {
+                            "default": "json",
+                            "enum": [
+                                "json",
+                                "xml"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "highlighting": {
+                                            "$ref": "#/components/schemas/highlighting"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/response"
+                                        },
+                                        "spellcheck": {
+                                            "$ref": "#/components/schemas/spellcheck"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {}
+                        },
+                        "description": "200 OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "application/xml": {},
+                            "text/plain": {
+                                "schema": {
+                                    "example": "parameter x in query has an error: value y: an invalid integer: invalid syntax",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "400 Bad Request"
+                    }
+                },
+                "summary": "De Suggest API biedt de mogelijkheid om een (gedeelte van een) zoekopdracht op\nte voeren, waarnaar er suggesties teruggegeven worden.\n",
+                "tags": [
+                    "Locatieserver"
+                ]
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api.pdok.nl/bzk/locatieserver/search/v3_1"
+        }
+    ]
+}
