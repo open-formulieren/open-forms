@@ -1,9 +1,6 @@
-import uuid
 from functools import lru_cache
-from io import BytesIO
 from pathlib import Path
 from random import shuffle
-from unittest.mock import patch
 
 from django.conf import settings
 from django.template import loader
@@ -12,17 +9,18 @@ from django.utils import timezone
 
 import requests_mock
 import xmltodict
-from freezegun import freeze_time
 from glom import T as GlomTarget, glom
 from lxml import etree
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
 from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
+from stuf.stuf_bg.client import StufBGClient
 from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.stuf_zds.client import nsmap
 from stuf.tests.factories import StufServiceFactory
+from stuf.xml import fromstring
 
 PATH_XSDS = (Path(settings.BASE_DIR) / "src" / "stuf" / "stuf_bg" / "xsd").resolve()
 STUF_BG_XSD = PATH_XSDS / "bg0310" / "vraagAntwoord" / "bg0310_namespace.xsd"
@@ -37,98 +35,63 @@ def _stuf_bg_xmlschema_doc():
         return etree.parse(infile)
 
 
-class StufBGConfigTests(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.service = StufServiceFactory.create(soap_service__soap_version="1.1")
-        self.config = StufBGConfig.get_solo()
-        self.config.service = self.service
-        self.config.save()
-        self.client = self.config.get_client()
+def _extract_soap_body(full_doc: str):
+    doc = fromstring(full_doc)
+    soap_body = doc.xpath(
+        "soap:Body",
+        namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
+    )[0].getchildren()[0]
+    return soap_body
 
-    @freeze_time("2020-12-11T10:53:19+01:00")
-    @patch(
-        "stuf.client.uuid.uuid4",
-        return_value=uuid.UUID("38151851-0fe9-4463-ba39-416042b8f406"),
+
+def _stuf_bg_response(service):
+    response_body = bytes(
+        loader.render_to_string(
+            "stuf_bg/tests/responses/StufBgResponse.xml",
+            context={
+                "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
+                "tijdstip_bericht": timezone.now().strftime("%Y%m%d%H%M%S"),
+                "zender_organisatie": service.ontvanger_organisatie,
+                "zender_applicatie": service.ontvanger_applicatie,
+                "zender_administratie": service.ontvanger_administratie,
+                "zender_gebruiker": service.ontvanger_gebruiker,
+                "ontvanger_organisatie": service.zender_organisatie,
+                "ontvanger_applicatie": service.zender_applicatie,
+                "ontvanger_administratie": service.zender_administratie,
+                "ontvanger_gebruiker": service.zender_gebruiker,
+            },
+        ),
+        encoding="utf-8",
     )
-    def test_get_address(self, _mock):
-        with requests_mock.Mocker() as m:
-            m.post(
-                self.service.soap_service.url,
-                content=bytes(
-                    loader.render_to_string(
-                        "stuf_bg/tests/responses/StufBgResponse.xml",
-                        context={
-                            "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
-                            "tijdstip_bericht": timezone.now(),
-                            "zender_organisatie": self.service.ontvanger_organisatie,
-                            "zender_applicatie": self.service.ontvanger_applicatie,
-                            "zender_administratie": self.service.ontvanger_administratie,
-                            "zender_gebruiker": self.service.ontvanger_gebruiker,
-                            "ontvanger_organisatie": self.service.zender_organisatie,
-                            "ontvanger_applicatie": self.service.zender_applicatie,
-                            "ontvanger_administratie": self.service.zender_administratie,
-                            "ontvanger_gebruiker": self.service.zender_gebruiker,
-                        },
-                    ),
-                    encoding="utf-8",
-                ),
-            )
-            self.client.get_values_for_attributes("999992314", FieldChoices.values)
+    # assert this mocked response is valid
+    xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
+    xmlschema.assert_(_extract_soap_body(response_body))
+    return response_body
 
-        self.assertEqual(m.last_request.method, "POST")
-        self.assertEqual(
-            m.last_request.headers["Content-Type"],
-            SOAP_VERSION_CONTENT_TYPES.get(SOAPVersion.soap11),
-        )
-        self.assertEqual(
-            m.last_request.headers["SOAPAction"],
-            "http://www.egem.nl/StUF/sector/bg/0310/npsLv01",
-        )
 
-        with open(
-            f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
-            "r",
-        ) as f:
-            xmlschema_doc = etree.parse(f)
-            xmlschema = etree.XMLSchema(xmlschema_doc)
+class StufBGConfigTests(TestCase):
+    def test_client_requires_a_service(self):
+        config = StufBGConfig(service=None)
 
-            doc = etree.parse(BytesIO(m.last_request.body))
-            el = (
-                doc.getroot()
-                .xpath(
-                    "soap:Body",
-                    namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-                )[0]
-                .getchildren()[0]
-            )
-            if not xmlschema.validate(el):
-                self.fail(
-                    f'Request body "{m.last_request.body}" is not valid against StUF-BG XSDs. '
-                    f"Error: {xmlschema.error_log.last_error.message}"
-                )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_bg_request.txt"
-            ).count(),
-            1,
-        )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/stuf_bg_request.txt"
-            ).count(),
-            1,
-        )
+        with self.assertRaises(RuntimeError):
+            config.get_client()
 
-    def test_all_attributes_are_mapped(self):
+    def test_all_prefill_attributes_are_mapped(self):
         available_attributes = FieldChoices.values
         for attribute in available_attributes:
             with self.subTest(attribute=attribute):
                 glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
-                if not glom_target:
-                    self.fail(f"unmapped attribute: {attribute}")
+                self.assert_(glom_target, f"unmapped attribute: {attribute}")
+
+
+class StufBGClientTests(TestCase):
+    def setUp(self):
+        self.client = StufBGClient(
+            service=StufServiceFactory.build(soap_service__soap_version="1.1")
+        )
 
     def test_order_of_attributes_in_template_is_correct(self):
+        # Any attribute we expect to request MUST be listed here
         all_available_attributes = ["inp.heeftAlsKinderen"] + FieldChoices.values
 
         # order in function call doesn't matter
@@ -142,71 +105,94 @@ class StufBGConfigTests(TestCase):
             self.client.get_values_for_attributes(test_bsn, all_available_attributes)
 
         request_body = m.last_request.body
-        doc = etree.parse(BytesIO(request_body))
-        soap_body = (
-            doc.getroot()
-            .xpath(
-                "soap:Body",
-                namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-            )[0]
-            .getchildren()[0]
-        )
+        soap_body = _extract_soap_body(request_body)
 
         # validate soap message with xsd
         # order of all elements in request doc does matter!
         xmlschema.assert_(soap_body)
 
+    def test_soap_request_method_and_headers(self):
+        test_bsn = "999992314"
+        with requests_mock.Mocker() as m:
+            m.post(self.client.service.soap_service.url)
+            # perform request
+            self.client.get_values_for_attributes(test_bsn, FieldChoices.values)
+
+        self.assertEqual(m.last_request.method, "POST")
+        self.assertEqual(
+            m.last_request.headers["Content-Type"],
+            SOAP_VERSION_CONTENT_TYPES.get(SOAPVersion.soap11),
+        )
+        self.assertEqual(
+            m.last_request.headers["SOAPAction"],
+            "http://www.egem.nl/StUF/sector/bg/0310/npsLv01",
+        )
+
+    def test_soap_request_gets_logged(self):
+        test_bsn = "999992314"
+
+        with requests_mock.Mocker() as m:
+            m.post(self.client.service.soap_service.url)
+            # perform request
+            self.client.get_values_for_attributes(test_bsn, FieldChoices.values)
+
+        logged_events = TimelineLogProxy.objects.filter_event("stuf_bg_request")
+        self.assertTrue(logged_events.exists(), "StUF-BG request wasn't logged.")
+
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.values
         test_bsn = "999992314"
 
-        with STUF_BG_XSD.open("r") as infile:
-            xmlschema_doc = etree.parse(infile)
-        xmlschema = etree.XMLSchema(xmlschema_doc)
+        xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
 
         with requests_mock.Mocker() as m:
-            m.post(self.client.service.soap_service.url, status_code=200)
-            self.client.get_values_for_attributes(test_bsn, available_attributes)
+            m.post(
+                self.client.service.soap_service.url,
+                status_code=200,
+                content=_stuf_bg_response(self.client.service),
+            )
+            response_dict = self.client.get_values(test_bsn, available_attributes)
 
         request_body = m.last_request.body
-        doc = etree.parse(BytesIO(request_body))
-        el = (
-            doc.getroot()
-            .xpath(
-                "soap:Body",
-                namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-            )[0]
-            .getchildren()[0]
-        )
+        soap_body = _extract_soap_body(request_body)
 
-        if not xmlschema.validate(el):
-            self.fail(
-                f'Attributes "{available_attributes}" produces an invalid StUF-BG. '
-                f"Error: {xmlschema.error_log.last_error.message}"
-            )
+        # validate request
+        xmlschema.assert_(soap_body)
 
         # convert to dict to glom
-        bg_obj = doc.getroot().xpath("//bg:object", namespaces=nsmap)
-        data_dict = xmltodict.parse(
+        bg_obj = soap_body.xpath("//bg:object", namespaces=nsmap)
+        request_dict = xmltodict.parse(
             etree.tostring(bg_obj[0]),
             process_namespaces=True,
             namespaces=NAMESPACE_REPLACEMENTS,
         )["object"]
-        sentinel = object()
+        missing = object()
 
         # now test if all attributes appear as nodes in the request data
         # TODO this is in-accurate as we don't check the actual nodes (nil/no-value etc)
         for attribute in available_attributes:
             with self.subTest(attribute=attribute):
                 glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
-                if not glom_target:
-                    self.fail(f"unmapped attribute: {attribute}")
-                else:
-                    value = glom(data_dict, glom_target, default=sentinel)
-                    if value == sentinel:
-                        self.fail(
-                            f"missing attribute in request {attribute} (as {glom_target}"
-                        )
+                in_request = glom(request_dict, glom_target, default=missing)
+                self.assert_(
+                    in_request is not missing,
+                    f"missing attribute in request {attribute} (as {glom_target})",
+                )
+
+                attributes_not_in_mock_response = [
+                    FieldChoices.geboorteplaats,
+                    FieldChoices.landAdresBuitenland,
+                    FieldChoices.adresBuitenland1,
+                    FieldChoices.adresBuitenland2,
+                    FieldChoices.adresBuitenland3,
+                ]
+                if attribute in attributes_not_in_mock_response:
+                    continue
+                in_response = glom(response_dict, glom_target, default=missing)
+                self.assert_(
+                    in_response is not missing,
+                    f"missing attribute in response {attribute} (as {glom_target})",
+                )
 
     @tag("gh-1842")
     def test_errors_are_not_swallowed(self):
@@ -220,7 +206,7 @@ class StufBGConfigTests(TestCase):
         :func:`openforms.prefill._fetch_prefill_values`).
         """
         with requests_mock.Mocker() as m:
-            m.post(self.service.soap_service.url, content=b"I am not valid XML")
+            m.post(self.client.service.soap_service.url, content=b"I am not valid XML")
 
             with self.assertRaises(Exception):
                 self.client.get_values("999992314", list(FieldChoices.values.keys()))
@@ -235,21 +221,12 @@ class StufBGConfigTests(TestCase):
             self.client.get_values_for_attributes(test_bsn, ["inp.heeftAlsKinderen"])
 
         request_body = m.last_request.body
-        doc = etree.parse(BytesIO(request_body))
-        soap_body = (
-            doc.getroot()
-            .xpath(
-                "soap:Body",
-                namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-            )[0]
-            .getchildren()[0]
-        )
-
+        soap_body = _extract_soap_body(request_body)
         # validate soap message with xsd
         xmlschema.assert_(soap_body)
 
         # convert to dict to glom
-        bg_obj = doc.getroot().xpath("//bg:object", namespaces=nsmap)
+        bg_obj = soap_body.xpath("//bg:object", namespaces=nsmap)
         data_dict = xmltodict.parse(
             etree.tostring(bg_obj[0]),
             process_namespaces=True,

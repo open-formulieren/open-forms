@@ -20,9 +20,10 @@
                 </StUF:ontvanger>
                 <StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
                 <StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>
+                <StUF:entiteittype>NPS</StUF:entiteittype>
             </ns:stuurgegevens>
             <ns:parameters>
-                <StUF:indicatorAfnemerIndicatie>false</StUF:indicatorAfnemerIndicatie>
+                <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
             </ns:parameters>
             <ns:antwoord>
                 <ns:object StUF:entiteittype="NPS">
@@ -38,17 +39,21 @@
                     <ns:verblijfsadres>
                         <ns:wpl.woonplaatsNaam>Amsterdam</ns:wpl.woonplaatsNaam>
                         <ns:gor.straatnaam>Keizersgracht</ns:gor.straatnaam>
-                        <ns:aoa.postcode>1015 CJ</ns:aoa.postcode>
+                        <ns:aoa.postcode>1015CJ</ns:aoa.postcode>
                         <ns:aoa.huisnummer>117</ns:aoa.huisnummer>
                         <ns:aoa.huisletter>A</ns:aoa.huisletter>
                         <ns:aoa.huisnummertoevoeging>B</ns:aoa.huisnummertoevoeging>
                     </ns:verblijfsadres>
+                    <!--
                     <ns:sub.verblijfBuitenland>
                       <ns:lnd.landnaam>Paris</ns:lnd.landnaam>
                       <ns:sub.adresBuitenland1>Buitenland regel 1</ns:sub.adresBuitenland1>
                       <ns:sub.adresBuitenland2>Buitenland regel 2</ns:sub.adresBuitenland2>
                       <ns:sub.adresBuitenland3>Buitenland regel 3</ns:sub.adresBuitenland3>
-                   </ns:sub.verblijfBuitenland>
+                    </ns:sub.verblijfBuitenland>
+                    <ns:inp.geboorteplaats>Amsterdam</ns:inp.geboorteplaats>
+                    -->
+                    <ns:inp.gemeenteVanInschrijving>1000</ns:inp.gemeenteVanInschrijving>
                     <ns:inp.datumInschrijving>20051216</ns:inp.datumInschrijving>
                 </ns:object>
             </ns:antwoord>
