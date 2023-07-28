@@ -923,7 +923,7 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/bag/tests/files"),
-    os.path.join(BASE_DIR, "src/openforms/contrib/kadaster/api/tests/files/"),
+    os.path.join(BASE_DIR, "src/openforms/contrib/kadaster/tests/files/"),
 ]
 
 #

@@ -10,22 +10,14 @@ from rest_framework.test import APITestCase
 from zgw_consumers.test import mock_service_oas_get
 
 from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
-from openforms.contrib.kadaster.models import KadasterApiConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
+from ..models import KadasterApiConfig
+
 
 @override_settings(LANGUAGE_CODE="en")
-class MapSearchApiTests(SubmissionsMixin, APITestCase):
-    def setUp(self):
-        super().setUp()
-        config_patcher = patch(
-            "openforms.contrib.kadaster.api.views.KadasterApiConfig.get_solo",
-            return_value=KadasterApiConfig(kadaster_service=self.kadaster_service),
-        )
-        self.config_mock = config_patcher.start()
-        self.addCleanup(config_patcher.stop)
-
+class AddressSearchApiTests(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -35,6 +27,15 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
             api_root="https://kadaster/",
             oas="https://kadaster/api/schema/openapi.yaml",
         )
+
+    def setUp(self):
+        super().setUp()
+        config_patcher = patch(
+            "openforms.contrib.kadaster.api.views.KadasterApiConfig.get_solo",
+            return_value=KadasterApiConfig(search_service=self.kadaster_service),
+        )
+        self.config_mock = config_patcher.start()
+        self.addCleanup(config_patcher.stop)
 
     @requests_mock.Mocker()
     def test_call_with_query_parameter_utrecht(self, m):
@@ -80,9 +81,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url, {"q": "utrecht"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         body = response.json()
-
         self.assertEqual(
             body,
             [
@@ -98,40 +97,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         url = reverse("api:geo:address-search")
 
         response = self.client.get(url)
-
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    @patch(
-        "openforms.contrib.kadaster.api.views.KadasterApiConfig.get_solo",
-        return_value=KadasterApiConfig(kadaster_service=None),
-    )
-    @requests_mock.Mocker()
-    def test_call_with_no_kadaster_configuration(self, m, get_solo):
-        mock_service_oas_get(
-            m,
-            url="https://kadaster/",
-            service="locatieserver_openapi",
-            oas_url="https://kadaster/api/schema/openapi.yaml",
-        )
-        m.get(
-            "https://kadaster/v3_1/free",
-            status_code=200,
-            json={
-                "response": {
-                    "numFound": 0,
-                    "start": 0,
-                    "maxScore": None,
-                    "numFoundExact": False,
-                }
-            },
-        )
-
-        url = reverse("api:geo:address-search")
-        self._add_submission_to_session(self.submission)
-
-        response = self.client.get(url, {"q": "utrecht"})
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_call_with_no_query_parameter(self):
         url = reverse("api:geo:address-search")
@@ -140,6 +106,12 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        errors = response.json()["invalidParams"]
+
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(errors[0]["code"], "required")
+        self.assertEqual(errors[0]["name"], "q")
 
     @requests_mock.Mocker()
     def test_call_with_api_get_bag_response_exception(self, m):
@@ -159,9 +131,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url, {"q": "utrecht"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         body = response.json()
-
         self.assertEqual(body, [])
 
     @requests_mock.Mocker()
@@ -190,9 +160,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url, {"q": "utrecht"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         body = response.json()
-
         self.assertEqual(body, [])
 
     @requests_mock.Mocker()
@@ -211,9 +179,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url, {"q": "utrecht"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         body = response.json()
-
         self.assertEqual(body, [])
 
     @requests_mock.Mocker()
@@ -243,9 +209,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url, {"q": "utrecht"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         body = response.json()
-
         self.assertEqual(body, [])
 
     @requests_mock.Mocker()
@@ -291,9 +255,7 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url, {"q": "utrecht"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         body = response.json()
-
         self.assertEqual(body, [])
 
     @requests_mock.Mocker()
@@ -339,7 +301,14 @@ class MapSearchApiTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url, {"q": "utrecht"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         body = response.json()
-
-        self.assertEqual(body, [])
+        self.assertEqual(
+            body,
+            [
+                {
+                    "label": "Gemeente Utrecht",
+                    "latLng": {"lat": 52.09113798, "lng": 5.0747543},
+                    "rd": None,
+                },
+            ],
+        )

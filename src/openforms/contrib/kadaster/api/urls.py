@@ -1,13 +1,13 @@
 from django.urls import path
 
-from .views import MapSearchView
+from .views import AddressSearchView
 
 app_name = "geo"
 
 urlpatterns = [
     path(
         "address-search",
-        MapSearchView.as_view(),
+        AddressSearchView.as_view(),
         name="address-search",
     ),
 ]

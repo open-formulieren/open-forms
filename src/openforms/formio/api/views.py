@@ -1,4 +1,3 @@
-import logging
 import os
 
 from django.conf import settings
@@ -20,8 +19,6 @@ from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.utils import add_upload_to_session
 
 from .serializers import TemporaryFileUploadSerializer
-
-logger = logging.getLogger(__name__)
 
 
 @extend_schema(

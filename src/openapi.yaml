@@ -212,8 +212,8 @@ paths:
                 type: array
                 items:
                   type: object
-                  description: Een Form.io componentdefinitie. De `type`-, `key`-
-                    en `label`-eigenschappen zijn gegarandeerd aanwezig en niet-leeg.
+                  description: A single Form.io component. The `type`, `key` and `label`
+                    properties are guaranteed to be present and non-empty.
                   properties:
                     type:
                       type: string
@@ -2868,18 +2868,16 @@ paths:
   /api/v2/geo/address-search:
     get:
       operationId: geo_address_search_list
-      description: |-
-        Fetch and serialize a list of objects.
-
-        Alternative to :class:`rest_framework.mixins.ListModelMixin` for non-database
-        backed collections of objects.
+      description: Get a list of BAG locations that matches the most accurate with
+        the given query paramter.
       summary: List BAG address suggestions.
       parameters:
       - in: query
         name: q
         schema:
           type: string
-        description: The search query we send to the pdok locatieserver api.
+        description: Search query for the address to retrieve suggestions with geo-information
+          for.
         required: true
       tags:
       - geo
@@ -2890,7 +2888,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MapSearch'
+                  $ref: '#/components/schemas/AddressSearchResult'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -5944,6 +5942,46 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
+    AddressSearcLatitudeLongitude:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          title: Latitude
+        lng:
+          type: number
+          format: double
+          title: Longitude
+      required:
+      - lat
+      - lng
+    AddressSearcRijksDriehoek:
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+      - x
+      - y
+    AddressSearchResult:
+      type: object
+      properties:
+        label:
+          type: string
+          title: The location name of the BAG location.
+        latLng:
+          $ref: '#/components/schemas/AddressSearcLatitudeLongitude'
+        rd:
+          $ref: '#/components/schemas/AddressSearcRijksDriehoek'
+      required:
+      - label
+      - latLng
+      - rd
     ApiTypeEnum:
       enum:
       - ac
@@ -7671,46 +7709,6 @@ components:
       - label
       - logo
       - url
-    MapSearch:
-      type: object
-      properties:
-        label:
-          type: string
-          title: The location name of the BAG location.
-        latLng:
-          $ref: '#/components/schemas/MapSearchLatitudeLongitude'
-        rd:
-          $ref: '#/components/schemas/MapSearchRijksDriehoek'
-      required:
-      - label
-      - latLng
-      - rd
-    MapSearchLatitudeLongitude:
-      type: object
-      properties:
-        lat:
-          type: number
-          format: double
-          title: Latitude
-        lng:
-          type: number
-          format: double
-          title: Longitude
-      required:
-      - lat
-      - lng
-    MapSearchRijksDriehoek:
-      type: object
-      properties:
-        x:
-          type: number
-          format: double
-        y:
-          type: number
-          format: double
-      required:
-      - x
-      - y
     MethodEnum:
       enum:
       - GET
