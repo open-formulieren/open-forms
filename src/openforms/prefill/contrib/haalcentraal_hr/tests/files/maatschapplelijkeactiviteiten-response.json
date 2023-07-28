@@ -1,0 +1,484 @@
+{
+  "kvkNummer": "string",
+  "naam": "string",
+  "heeftAlsEigenaar": {
+    "natuurlijkPersoon": {
+      "burgerservicenummer": "555555021",
+      "naam": {
+        "geslachtsnaam": "Vries",
+        "voornamen": "Pieter Jan",
+        "voorvoegsel": "de"
+      },
+      "geboorte": {
+        "datum": {
+          "dag": 3,
+          "datum": "1989-05-03",
+          "jaar": 1989,
+          "maand": 5
+        },
+        "plaats": "Rotterdam",
+        "land": {
+          "code": "string",
+          "waarde": "string"
+        }
+      },
+      "geslachtsaanduiding": "man"
+    },
+    "nietNatuurlijkPersoon": {
+      "rsin": "string",
+      "naamgeving": "string"
+    },
+    "rechtsvorm": "string",
+    "aansprakelijken": [
+      {
+        "natuurlijkPersoon": {
+          "burgerservicenummer": "555555021",
+          "naam": {
+            "geslachtsnaam": "Vries",
+            "voornamen": "Pieter Jan",
+            "voorvoegsel": "de"
+          },
+          "geboorte": {
+            "datum": {
+              "dag": 3,
+              "datum": "1989-05-03",
+              "jaar": 1989,
+              "maand": 5
+            },
+            "plaats": "Rotterdam",
+            "land": {
+              "code": "string",
+              "waarde": "string"
+            }
+          },
+          "geslachtsaanduiding": "man"
+        },
+        "nietNatuurlijkPersoon": {
+          "rsin": "string",
+          "naamgeving": "string"
+        },
+        "naamPersoon": {
+          "naam": "Mr. Claude A. Debussy"
+        },
+        "functietitel": "Voorzitter",
+        "functie": "Vennoot",
+        "bevoegdheid": "onbeperkt",
+        "bevoegdheidOmschrijving": "string"
+      }
+    ],
+    "bestuursfuncties": [
+      {
+        "natuurlijkPersoon": {
+          "burgerservicenummer": "555555021",
+          "naam": {
+            "geslachtsnaam": "Vries",
+            "voornamen": "Pieter Jan",
+            "voorvoegsel": "de"
+          },
+          "geboorte": {
+            "datum": {
+              "dag": 3,
+              "datum": "1989-05-03",
+              "jaar": 1989,
+              "maand": 5
+            },
+            "plaats": "Rotterdam",
+            "land": {
+              "code": "string",
+              "waarde": "string"
+            }
+          },
+          "geslachtsaanduiding": "man"
+        },
+        "nietNatuurlijkPersoon": {
+          "rsin": "string",
+          "naamgeving": "string"
+        },
+        "naamPersoon": {
+          "naam": "Mr. Claude A. Debussy"
+        },
+        "functietitel": "Voorzitter",
+        "functie": "Vennoot",
+        "bevoegdheid": "onbeperkt",
+        "bevoegdheidOmschrijving": "string",
+        "wordtVertegenwoordigdDoor": {
+          "burgerservicenummer": "555555021",
+          "naam": {
+            "geslachtsnaam": "Vries",
+            "voornamen": "Pieter Jan",
+            "voorvoegsel": "de"
+          },
+          "geboorte": {
+            "datum": {
+              "dag": 3,
+              "datum": "1989-05-03",
+              "jaar": 1989,
+              "maand": 5
+            },
+            "plaats": "Rotterdam",
+            "land": {
+              "code": "string",
+              "waarde": "string"
+            }
+          },
+          "geslachtsaanduiding": "man"
+        },
+        "monistischeBestuurderRol": "string"
+      }
+    ],
+    "functionarissenBijzondereRechtstoestand": [
+      {
+        "natuurlijkPersoon": {
+          "burgerservicenummer": "555555021",
+          "naam": {
+            "geslachtsnaam": "Vries",
+            "voornamen": "Pieter Jan",
+            "voorvoegsel": "de"
+          },
+          "geboorte": {
+            "datum": {
+              "dag": 3,
+              "datum": "1989-05-03",
+              "jaar": 1989,
+              "maand": 5
+            },
+            "plaats": "Rotterdam",
+            "land": {
+              "code": "string",
+              "waarde": "string"
+            }
+          },
+          "geslachtsaanduiding": "man"
+        },
+        "nietNatuurlijkPersoon": {
+          "rsin": "string",
+          "naamgeving": "string"
+        },
+        "naamPersoon": {
+          "naam": "Mr. Claude A. Debussy"
+        },
+        "functietitel": "Voorzitter",
+        "functie": "Vennoot",
+        "bevoegdheid": "onbeperkt",
+        "bevoegdheidOmschrijving": "string"
+      }
+    ],
+    "gemachtigden": [
+      {
+        "natuurlijkPersoon": {
+          "burgerservicenummer": "555555021",
+          "naam": {
+            "geslachtsnaam": "Vries",
+            "voornamen": "Pieter Jan",
+            "voorvoegsel": "de"
+          },
+          "geboorte": {
+            "datum": {
+              "dag": 3,
+              "datum": "1989-05-03",
+              "jaar": 1989,
+              "maand": 5
+            },
+            "plaats": "Rotterdam",
+            "land": {
+              "code": "string",
+              "waarde": "string"
+            }
+          },
+          "geslachtsaanduiding": "man"
+        },
+        "nietNatuurlijkPersoon": {
+          "rsin": "string",
+          "naamgeving": "string"
+        },
+        "naamPersoon": {
+          "naam": "Mr. Claude A. Debussy"
+        },
+        "functietitel": "Voorzitter",
+        "functie": "Vennoot",
+        "volmachtType": "beperkt"
+      }
+    ],
+    "publiekrechtelijkeFunctionarissen": [
+      {
+        "natuurlijkPersoon": {
+          "burgerservicenummer": "555555021",
+          "naam": {
+            "geslachtsnaam": "Vries",
+            "voornamen": "Pieter Jan",
+            "voorvoegsel": "de"
+          },
+          "geboorte": {
+            "datum": {
+              "dag": 3,
+              "datum": "1989-05-03",
+              "jaar": 1989,
+              "maand": 5
+            },
+            "plaats": "Rotterdam",
+            "land": {
+              "code": "string",
+              "waarde": "string"
+            }
+          },
+          "geslachtsaanduiding": "man"
+        },
+        "nietNatuurlijkPersoon": {
+          "rsin": "string",
+          "naamgeving": "string"
+        },
+        "naamPersoon": {
+          "naam": "Mr. Claude A. Debussy"
+        },
+        "functietitel": "Voorzitter",
+        "functie": "Vennoot",
+        "bevoegdheid": "onbeperkt",
+        "bevoegdheidOmschrijving": "string"
+      }
+    ],
+    "overigeFunctionarissen": [
+      {
+        "natuurlijkPersoon": {
+          "burgerservicenummer": "555555021",
+          "naam": {
+            "geslachtsnaam": "Vries",
+            "voornamen": "Pieter Jan",
+            "voorvoegsel": "de"
+          },
+          "geboorte": {
+            "datum": {
+              "dag": 3,
+              "datum": "1989-05-03",
+              "jaar": 1989,
+              "maand": 5
+            },
+            "plaats": "Rotterdam",
+            "land": {
+              "code": "string",
+              "waarde": "string"
+            }
+          },
+          "geslachtsaanduiding": "man"
+        },
+        "nietNatuurlijkPersoon": {
+          "rsin": "string",
+          "naamgeving": "string"
+        },
+        "naamPersoon": {
+          "naam": "Mr. Claude A. Debussy"
+        },
+        "functietitel": "Voorzitter",
+        "functie": "Vennoot",
+        "bevoegdheid": "onbeperkt",
+        "bevoegdheidOmschrijving": "string"
+      }
+    ]
+  },
+  "activiteiten": [
+    {
+      "code": "775236556481650",
+      "omschrijving": "string",
+      "isHoofdactiviteit": true
+    }
+  ],
+  "manifesteertZichAls": {
+    "handelsnamen": [
+      "string"
+    ],
+    "activiteiten": [
+      {
+        "code": "",
+        "omschrijving": "string",
+        "isHoofdactiviteit": true
+      }
+    ],
+    "wordtUitgeoefendIn": [
+      {
+        "vestigingsnummer": "string",
+        "handelsnamen": [
+          "string"
+        ],
+        "bezoekLocatie": {
+          "straatnaam": "Loosduinsekade",
+          "huisnummer": 23,
+          "huisletter": "B",
+          "huisnummertoevoeging": "to",
+          "postcode": "2571CC",
+          "woonplaatsnaam": "Utrecht",
+          "buitenlandsAdres": {
+            "land": "Duitsland",
+            "straatHuisnummer": "string",
+            "postcodeWoonplaats": "string",
+            "regio": "string"
+          },
+          "identificatiecodeNummeraanduiding": "0518200000366054"
+        },
+        "postLocatie": {
+          "straatnaam": "Loosduinsekade",
+          "huisnummer": 23,
+          "huisletter": "B",
+          "huisnummertoevoeging": "to",
+          "postcode": "2571CC",
+          "woonplaatsnaam": "Utrecht",
+          "buitenlandsAdres": {
+            "land": "Duitsland",
+            "straatHuisnummer": "string",
+            "postcodeWoonplaats": "string",
+            "regio": "string"
+          },
+          "identificatiecodeNummeraanduiding": "0518200000366054",
+          "postbusnummer": 0
+        }
+      }
+    ]
+  },
+  "wordtGeleidVanuit": {
+    "vestigingsnummer": "string",
+    "handelsnamen": [
+      "string"
+    ],
+    "bezoekLocatie": {
+      "straatnaam": "Loosduinsekade",
+      "huisnummer": 23,
+      "huisletter": "B",
+      "huisnummertoevoeging": "to",
+      "postcode": "2571CC",
+      "woonplaatsnaam": "Utrecht",
+      "buitenlandsAdres": {
+        "land": "Duitsland",
+        "straatHuisnummer": "string",
+        "postcodeWoonplaats": "string",
+        "regio": "string"
+      },
+      "identificatiecodeNummeraanduiding": "0518200000366054"
+    },
+    "postLocatie": {
+      "straatnaam": "Loosduinsekade",
+      "huisnummer": 23,
+      "huisletter": "B",
+      "huisnummertoevoeging": "to",
+      "postcode": "2571CC",
+      "woonplaatsnaam": "Utrecht",
+      "buitenlandsAdres": {
+        "land": "Duitsland",
+        "straatHuisnummer": "string",
+        "postcodeWoonplaats": "string",
+        "regio": "string"
+      },
+      "identificatiecodeNummeraanduiding": "0518200000366054",
+      "postbusnummer": 0
+    }
+  },
+  "wordtUitgeoefendIn": [
+    {
+      "vestigingsnummer": "string",
+      "handelsnamen": [
+        "string"
+      ],
+      "bezoekLocatie": {
+        "straatnaam": "Loosduinsekade",
+        "huisnummer": 23,
+        "huisletter": "B",
+        "huisnummertoevoeging": "to",
+        "postcode": "2571CC",
+        "woonplaatsnaam": "Utrecht",
+        "buitenlandsAdres": {
+          "land": "Duitsland",
+          "straatHuisnummer": "string",
+          "postcodeWoonplaats": "string",
+          "regio": "string"
+        },
+        "identificatiecodeNummeraanduiding": "0518200000366054"
+      },
+      "postLocatie": {
+        "straatnaam": "Loosduinsekade",
+        "huisnummer": 23,
+        "huisletter": "B",
+        "huisnummertoevoeging": "to",
+        "postcode": "2571CC",
+        "woonplaatsnaam": "Utrecht",
+        "buitenlandsAdres": {
+          "land": "Duitsland",
+          "straatHuisnummer": "string",
+          "postcodeWoonplaats": "string",
+          "regio": "string"
+        },
+        "identificatiecodeNummeraanduiding": "0518200000366054",
+        "postbusnummer": 0
+      }
+    }
+  ],
+  "datumAanvang": {
+    "dag": 3,
+    "datum": "1989-05-03",
+    "jaar": 1989,
+    "maand": 5
+  },
+  "datumEinde": {
+    "dag": 3,
+    "datum": "1989-05-03",
+    "jaar": 1989,
+    "maand": 5
+  },
+  "_links": {
+    "self": {
+      "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+      "templated": true,
+      "title": "string"
+    },
+    "eigenaar": {
+      "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+      "templated": true,
+      "title": "string"
+    },
+    "vestigingen": [
+      {
+        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+        "templated": true,
+        "title": "string"
+      }
+    ],
+    "aansprakelijken": [
+      {
+        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+        "templated": true,
+        "title": "string"
+      }
+    ],
+    "bestuursfuncties": [
+      {
+        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+        "templated": true,
+        "title": "string"
+      }
+    ],
+    "functionarissenBijzondereRechtstoestand": [
+      {
+        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+        "templated": true,
+        "title": "string"
+      }
+    ],
+    "gemachtigden": [
+      {
+        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+        "templated": true,
+        "title": "string"
+      }
+    ],
+    "publiekrechtelijkeFunctionarissen": [
+      {
+        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+        "templated": true,
+        "title": "string"
+      }
+    ],
+    "overigeFunctionarissen": [
+      {
+        "href": "https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}",
+        "templated": true,
+        "title": "string"
+      }
+    ]
+  }
+}

@@ -1,0 +1,921 @@
+openapi: 3.0.0
+servers:
+# Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/DH-Sandbox/handelsregister/1.0.0
+  - description: wsgateway
+    url: https://wsgateway.acc.denhaag.nl/api/handelsregister/v1
+info:
+  description: Bevragingen Handelsregister KvK
+  version: 1.3.0
+  title: Handelsregister
+  contact:
+    email: dehaagsebron@denhaag.nl
+  license:
+    name: European Union Public License, version 1.2 (EUPL-1.2)
+    url: https://eupl.eu/1.2/nl/
+tags:
+  - name: Maatschappelijke activiteiten
+    description: Module Maatschappelijke activiteiten
+  - name: Vestigingen
+    description: Module vestiging
+  - name: Niet-natuurlijk personen
+    description: Module ingeschreven niet-natuurlijk persoon
+paths:
+  /maatschappelijkeactiviteiten:
+    get:
+      tags:
+        - Maatschappelijke activiteiten
+      description: Op basis van een vestigingsnummer wordt de bijbehorende MAATSCHAPPELIJKE ACTIVITEIT teruggegeven.
+      operationId: RaadpleegMaatschappelijkeActiviteitOpVestigingsnummer
+      parameters:
+        - in: query
+          name: vestigingsnummer
+          description: "identificatie van een vestiging van de maatschappelijke activiteit"
+          required: true
+          schema:
+            type: string
+            minLength: 12
+            maxLength: 12
+            pattern: "^[0-9]{12}$"
+      responses:
+        '200':
+          description: "Zoekactie geslaagd"
+          headers:
+            api-version:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/api_version"
+            warning:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/warning"
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/MaatschappelijkeActiviteitRaadplegen'
+        '400':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/400"
+        '401':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/401"
+        '403':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/403"
+        '406':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/406"
+        '500':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/500"
+        '501':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/501"
+        '503':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/503"
+        'default':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/default"
+  /maatschappelijkeactiviteiten/{kvkNummer}:
+    get:
+      tags:
+        - Maatschappelijke activiteiten
+      description: Op basis van het KvK nummer wordt de MAATSCHAPPELIJKE ACTIVITEIT opgehaald.
+      operationId: RaadpleegMaatschappelijkeActiviteitOpKvKnummer
+      parameters:
+        - in: path
+          name: kvkNummer
+          description: "identificatie van de maatschappelijke activiteit"
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 8
+            pattern: "^[0-9]{8}$"
+      responses:
+        '200':
+          description: "Zoekactie geslaagd"
+          headers:
+            api-version:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/api_version"
+            warning:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/warning"
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/MaatschappelijkeActiviteitRaadplegen'
+        '400':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/400"
+        '401':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/401"
+        '403':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/403"
+        '404':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/404"
+        '406':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/406"
+        '500':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/500"
+        '501':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/501"
+        '503':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/503"
+        'default':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/default"
+  /vestigingen:
+    get:
+      tags:
+        - Vestigingen
+      description: Vestigingen worden gezocht die voldoen aan de opgegeven zoekparameters.
+      operationId: ZoekVestigingen
+      parameters:
+        - in: query
+          name: handelsnaam
+          description: "Zoekt op hele woorden in de handelsnamen van vestigingen. Zoeken is niet hoofdlettergevoelig."
+          required: false
+          schema:
+            type: string
+            minLength: 2
+        - in: query
+          name: kvkNummer
+          description: "Zoekt vestigingen horende bij de maatschappelijke activiteit met opgegeven KvK-nummer"
+          required: false
+          schema:
+            type: string
+            maxLength: 8
+            pattern: "^[0-9]{8}$"
+        - in: query
+          name: identificatiecodeNummeraanduiding
+          description: "Zoekt vestigingen met de opgegeven nummeraanduiding als bezoek-, correspondentie of postadres. Eerst wordt het adres gezocht m.b.v. de/een BAG service. Vervolgens wordt met KvK API (search) verstigingen gezocht met postcode en huisnummer."
+          required: false
+          schema:
+            type: string
+            maxLength: 16
+        - in: query
+          name: woonplaatsnaam
+          description: "Zoekt op hele woorden in de woonplaats van het vestigingsadres, bezoekadres en correspondentieadres. Bijvoorbeeld zoeken op 'den' vindt o.a. 'Den Haag' en 'Den Helder'. Zoeken is niet hoofdlettergevoelig."
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: huisnummer
+          description: "Zoekt huisnummer in vestigingsadres, bezoekadres en correspondentieadres. Huisnummer mag alleen gebruikt worden in combinatie met postcode."
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: postcode
+          description: "Zoekt postcode in vestigingsadres, bezoekadres en correspondentieadres. Er wordt niet-hoofdlettergevoelig gezocht, dus zoeken op 1234aa vindt postcode 1234AA. Bij gebruik van parameter postcode moet ook parameter huisnummer worden gebruikt."
+          required: false
+          schema:
+            type: string
+            pattern: "^[1-9]{1}[0-9]{3}[A-Za-z]{2}$"
+          example: 1234AZ
+        - in: query
+          name: inclusiefBeeindigdeVestigingen
+          description: "Indien in het antwoord op de zoekvraag ook beëindigde Vestigingen moeten worden geretourneerd, dan dient de parameter 'inclusiefBeeindigdeVestigingen'opgenomen te zijn met de waarde True. Indien de parameter ‘inclusiefBeeindigdeVestigingen’ ontbreekt of de waarde False heeft worden geen beëindigde Vestigingen opgenomen in het zoekresultaat."
+          required: false
+          schema:
+            type: boolean
+        - in: query
+          name: page
+          description: "Een pagina binnen de gepagineerde resultatenset. Defaultwaarde is 1 (eerste pagina)."
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: "Zoekactie geslaagd"
+          headers:
+            api-version:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/api_version"
+            warning:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/warning"
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/VestigingCollection'
+        '400':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/400"
+        '401':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/401"
+        '403':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/403"
+        '406':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/406"
+        '500':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/500"
+        '501':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/501"
+        '503':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/503"
+        'default':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/default"
+  /vestigingen/{vestigingsnummer}:
+    get:
+      tags:
+        - Vestigingen
+      description: Op basis van het vestigingsNummer wordt de VESTIGING opgehaald.
+      operationId: RaadpleegVestigingOpVestigingsnummer
+      parameters:
+        - in: path
+          name: vestigingsnummer
+          description: "identificatie van de vestiging"
+          required: true
+          schema:
+            type: string
+            minLength: 12
+            maxLength: 12
+            pattern: "^[0-9]{12}$"
+      responses:
+        '200':
+          description: "Zoekactie geslaagd"
+          headers:
+            api-version:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/api_version"
+            warning:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/warning"
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/VestigingRaadplegen'
+        '400':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/400"
+        '401':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/401"
+        '403':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/403"
+        '404':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/404"
+        '406':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/406"
+        '500':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/500"
+        '501':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/501"
+        '503':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/503"
+        'default':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/default"
+  /nietnatuurlijkpersonen:
+    get:
+      tags:
+        - Niet-natuurlijk personen
+      description: Niet-natuurlijk personen worden gezocht die voldoen aan de opgegeven zoekparameters.
+      operationId: ZoekNietNatuurlijkPersonen
+      parameters:
+        - in: query
+          name: naam
+          description: "Zoekt op hele woorden in de statutaire namen van niet-natuurlijk personen. Vindt (ook) niet-natuurlijk personen waarbij de naam van de maatschappelijke activiteit of een handelsnaam van de vestiging overeenkomt met de opgegeven waarde."
+          required: false
+          schema:
+            type: string
+            minLength: 2
+        - in: query
+          name: woonplaatsnaam
+          description: "Zoekt op hele woorden in de woonplaats van het bezoekadres en postades. Bijvoorbeeld zoeken op 'den' vindt o.a. 'Den Haag' en 'Den Helder'. Zoeken is niet hoofdlettergevoelig."
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: huisnummer
+          description: "Zoekt huisnummer in bezoekadres en postades. Huisnummer mag alleen gebruikt worden in combinatie met postcode."
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: postcode
+          description: "Zoekt postcode in bezoekadres en postades. Er wordt niet-hoofdlettergevoelig gezocht, dus zoeken op 1234aa vindt postcode 1234AA. Bij gebruik van parameter postcode moet ook parameter huisnummer worden gebruikt."
+          required: false
+          schema:
+            type: string
+            pattern: "^[1-9]{1}[0-9]{3}[A-Za-z]{2}$"
+          example: 1234AZ
+        - in: query
+          name: page
+          description: "Een pagina binnen de gepagineerde resultatenset. Defaultwaarde is 1 (eerste pagina)."
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: "Zoekactie geslaagd"
+          headers:
+            api-version:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/api_version"
+            warning:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/warning"
+          content:
+            application/hal+json:
+              schema:
+                $ref: "#/components/schemas/NietNatuurlijkPersoonCollection"
+        '400':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/400"
+        '401':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/401"
+        '403':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/403"
+        '406':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/406"
+        '500':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/500"
+        '501':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/501"
+        '503':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/503"
+        'default':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/default"
+  /nietnatuurlijkpersonen/{rsin}:
+    get:
+      tags:
+        - Niet-natuurlijk personen
+      description: Op basis van het rsin wordt de niet-natuurlijk persoon opgehaald.
+      operationId: RaadpleegNietNatuurlijkPersoon
+      parameters:
+        - in: path
+          name: rsin
+          description: "identificatie van de niet-natuurlijk persoon"
+          required: true
+          schema:
+            type: string
+            minLength: 9
+            maxLength: 9
+            pattern: "^[0-9]{9}$"
+      responses:
+        '200':
+          description: "Zoekactie geslaagd"
+          headers:
+            api-version:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/api_version"
+            warning:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/headers/warning"
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/NietNatuurlijkPersoonRaadplegen'
+        '400':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/400"
+        '401':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/401"
+        '403':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/403"
+        '404':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/404"
+        '406':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/406"
+        '500':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/500"
+        '501':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/501"
+        '503':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/503"
+        'default':
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/responses/default"
+components:
+  schemas:
+    MaatschappelijkeActiviteitBasis:
+      type: object
+      properties:
+        kvkNummer:
+          type: string
+          maxLength: 8
+        naam:
+          type: string
+    MaatschappelijkeActiviteitRaadplegen:
+      allOf:
+        - $ref: "#/components/schemas/MaatschappelijkeActiviteitBasis"
+        - type: object
+          properties:
+            heeftAlsEigenaar:
+              $ref: "#/components/schemas/Eigenaar"
+            activiteiten:
+              type: array
+              items:
+                $ref: "#/components/schemas/Activiteit"
+            manifesteertZichAls:
+              $ref: "#/components/schemas/Onderneming"
+            wordtGeleidVanuit:
+              $ref: "#/components/schemas/VestigingBeperkt" # Hoofdvestiging
+            wordtUitgeoefendIn:
+              type: array
+              items:
+                $ref: "#/components/schemas/VestigingBeperkt" # Nevenvestigingen
+            datumAanvang:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            datumEinde:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            _links:
+              $ref: "#/components/schemas/MaatschappelijkeActiviteitLinks"
+    MaatschappelijkeActiviteitLinks:
+      type: object
+      properties:
+        self:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        eigenaar: # Hyperlink naar de betreffende eigenaar. Kan een natuurlijk persoon zijn of een niet-natuurlijk persoon. Zolang er geen protocoleringsvoorziening beschikbaar is, en/of er geen API beschikbaar is voor het opvragen van persoonsgegevens, wordt de link naar een natuurlijk persoon niet opgenomen.
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        vestigingen:
+          type: array
+          items:
+            $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        aansprakelijken:
+          type: array
+          items:
+            $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        bestuursfuncties:
+          type: array
+          items:
+            $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        functionarissenBijzondereRechtstoestand:
+          type: array
+          items:
+            $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        gemachtigden:
+          type: array
+          items:
+            $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        publiekrechtelijkeFunctionarissen:
+          type: array
+          items:
+            $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        overigeFunctionarissen:
+          type: array
+          items:
+            $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+    MaatschappelijkeActiviteitVestiging:
+      allOf:
+        - $ref: "#/components/schemas/MaatschappelijkeActiviteitBasis"
+        - type: object
+          properties:
+            heeftAlsEigenaar:
+              $ref: "#/components/schemas/EigenaarBasis"
+            wordtGeleidVanuit:
+              $ref: "#/components/schemas/VestigingBasis"
+    Activiteit:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: "[0-9]{0,15}"
+        omschrijving:
+          type: string
+          maxLength: 200
+        isHoofdactiviteit:
+          type: boolean
+    Onderneming:
+      type: object
+      properties:
+        handelsnamen:
+          type: array
+          items:
+            type: string
+        activiteiten:
+          type: array
+          items:
+            $ref: "#/components/schemas/Activiteit"
+        wordtUitgeoefendIn:
+          type: array
+          items:
+            $ref: "#/components/schemas/VestigingBeperkt"
+    EigenaarBasis:
+      description: "Eigenaar kan een natuurlijk persoon of een niet-natuurlijk persoon zijn. Via _links.eigenaar kunnen de details van de eigenaar worden opgevraagd."
+      allOf:
+        - $ref: "#/components/schemas/Persoon"
+        - type: object
+          properties:
+            rechtsvorm:
+              type: string
+    Eigenaar:
+      description: "Eigenaar kan een natuurlijk persoon of een niet-natuurlijk persoon zijn. Via _links.eigenaar kunnen de details van de eigenaar worden opgevraagd."
+      allOf:
+        - $ref: "#/components/schemas/EigenaarBasis"
+        - type: object
+          properties:
+            aansprakelijken:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+            bestuursfuncties:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bestuursfunctie'
+            functionarissenBijzondereRechtstoestand:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+            gemachtigden:
+              type: array
+              items:
+                $ref: '#/components/schemas/Gemachtigde'
+            publiekrechtelijkeFunctionarissen:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+            overigeFunctionarissen:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+    Persoon:
+      type: object
+      properties:
+        natuurlijkPersoon:
+          $ref: "#/components/schemas/NatuurlijkPersoon"
+        nietNatuurlijkPersoon:
+          $ref: "#/components/schemas/NietNatuurlijkPersoonBasis"
+    NatuurlijkPersoon:
+      type: object
+      properties:
+        burgerservicenummer:
+          type: string
+          title: "Burgerservicenummer"
+          description: "Het burgerservicenummer van een ingeschreven natuurlijk persoon."
+          pattern: "^[0-9]{9}$"
+          maxLength: 9
+          minLength: 9
+          example: "555555021"
+        naam:
+          $ref: "#/components/schemas/Naam"
+        geboorte:
+          $ref: "#/components/schemas/Geboorte"
+        geslachtsaanduiding:
+          $ref: "#/components/schemas/Geslacht_enum"
+    Naam:
+      type: "object"
+      description: "Gegevens over de naam van de NATUURLIJK PERSOON \n* **adellijketitelPredikaat**\
+        \ : Tabel Adellijke titel/predikaat, die aangeeft welke titel of welk predikaat\
+        \ behoort tot de naam (bij adellijke titel geslachtsnaam, bij predikaat voornaam)."
+      properties:
+        geslachtsnaam:
+          type: "string"
+          title: "Geslachtsnaam"
+          description: "De (geslachts)naam waarvan de eventueel aanwezige voorvoegsels\
+            \ en adellijke titel/predikaat zijn afgesplitst."
+          example: "Vries"
+        voornamen:
+          type: "string"
+          title: "Voornamen"
+          description: "De verzameling namen die, gescheiden door spaties, aan de\
+            \ geslachtsnaam voorafgaat. De verzameling namen die, gescheiden door\
+            \ spaties, aan de geslachtsnaam voorafgaat."
+          example: "Pieter Jan"
+        voorvoegsel:
+          type: "string"
+          title: "Voorvoegsel"
+          description: "Dat deel van de geslachtsnaam dat voorkomt in de Voorvoegseltabel\
+            \ en, gescheiden door een spatie, vooraf gaat aan de rest van de geslachtsnaam."
+          example: "de"
+    NaamPersoon:
+      description: "NaamPersoon is een persoon waarvan in het Handelsregister alleen een naam (en eventueel een adres en
+telefoonnummer) bekend is. Deze persoon kan niet eenduidig geïdentificeerd worden als een natuurlijk persoon
+of niet-natuurlijk persoon."
+      properties:
+        naam:
+          type: "string"
+          example: "Mr. Claude A. Debussy"
+    Geboorte:
+      description: "Gegevens over de geboorte van respectievelijk de persoon, de ouder,\
+        \ de echtgenoot/geregistreerd partner, de eerdere echtgenoot/geregistreerd\
+        \ partner of het kind. \n* **datum** : Datum waarop de persoon is geboren.\
+        \ \n* **land** : Land waar de persoon is geboren \n* **plaats** : De plaats\
+        \ waar een persoon is geboren. Voor een plaats buiten Nederland is gemeentecode=1999\
+        \ (RNI) en gemeentenaam de buitenlandse plaatsnaam of aanduiding."
+      properties:
+        datum:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+        plaats:
+          type: string
+          example: "Rotterdam"
+        land:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/Waardelijst"
+    NietNatuurlijkPersoonBasis:
+      type: object
+      properties:
+        rsin:
+          type: string
+        naamgeving:
+          type: string
+          maxLength: 500
+    NietNatuurlijkPersoonLijst:
+      allOf:
+        - $ref: "#/components/schemas/NietNatuurlijkPersoonBasis"
+        - type: object
+          properties:
+            bezoekLocatie:
+              $ref: "#/components/schemas/AdresBasis"
+            _links:
+              $ref: "#/components/schemas/NietNatuurlijkPersoonLinks"
+    NietNatuurlijkPersoonCollection:
+      type: object
+      properties:
+        _links:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalPaginationLinks"
+        _embedded:
+          type: object
+          properties:
+            nietnatuurlijkpersonen:
+              type: array
+              items:
+                $ref: "#/components/schemas/NietNatuurlijkPersoonLijst"
+    NietNatuurlijkPersoonLinks:
+      type: object
+      properties:
+        self:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        maatschappelijkeActiviteit:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+    NietNatuurlijkPersoon:
+      allOf:
+        - $ref: "#/components/schemas/NietNatuurlijkPersoonBasis"
+        - type: object
+          properties:
+            bezoekLocatie:
+              $ref: "#/components/schemas/AdresMetRegistratie"
+            datumAanvang:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            datumEinde:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+    NietNatuurlijkPersoonRaadplegen:
+      allOf:
+        - $ref: "#/components/schemas/NietNatuurlijkPersoon"
+        - type: object
+          properties:
+            rechtsvorm:
+              type: string
+            aansprakelijken:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+            bestuursfuncties:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bestuursfunctie'
+            functionarissenBijzondereRechtstoestand:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+            gemachtigden:
+              type: array
+              items:
+                $ref: '#/components/schemas/Gemachtigde'
+            publiekrechtelijkeFunctionarissen:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+            overigeFunctionarissen:
+              type: array
+              items:
+                $ref: '#/components/schemas/FunctieVervulling'
+            _links:
+              $ref: "#/components/schemas/NietNatuurlijkPersoonLinks"
+    FunctieVervullingBasis:
+      allOf:
+        - $ref: "#/components/schemas/Persoon"
+        - type: object
+          properties:
+            naamPersoon:
+              $ref: "#/components/schemas/NaamPersoon"
+            functietitel:
+              type: string
+              description: "De titel van de betrokken functionaris."
+              example: "Voorzitter"
+            functie:
+              type: string
+              description: "Een nadere aanduiding van de functie"
+              example: "Vennoot"
+    FunctieVervulling:
+      allOf:
+        - $ref: "#/components/schemas/FunctieVervullingBasis"
+        - type: object
+          properties:
+            bevoegdheid:
+              $ref: "#/components/schemas/TypeBevoegdheid_enum"
+            bevoegdheidOmschrijving:
+              type: string
+              description: Omschrijving van het type bevoegdheid van een functionaris
+    Bestuursfunctie:
+      allOf:
+        - $ref: "#/components/schemas/FunctieVervulling"
+        - type: object
+          properties:
+            wordtVertegenwoordigdDoor:
+              $ref: "#/components/schemas/NatuurlijkPersoon"
+            monistischeBestuurderRol:
+              type: string
+              description: omschrijving van de rol die de monistische bestuurder vervult bij de Rechtspersoon
+    Gemachtigde:
+      allOf:
+        - $ref: "#/components/schemas/FunctieVervullingBasis"
+        - type: object
+          properties:
+            volmachtType:
+              $ref: '#/components/schemas/TypeVolmacht_enum'
+    AdresBasis:
+      type: "object"
+      properties:
+        straatnaam:
+          type: "string"
+          title: "Straatnaam"
+          description: "De officiële straatnaam zoals door het bevoegd gemeentelijk orgaan is vastgesteld"
+          maxLength: 80
+          example: "Loosduinsekade"
+        huisnummer:
+          type: "integer"
+          title: "Huisnummer"
+          description: "Een door of namens het bevoegd gemeentelijk orgaan ten aanzien van een adresseerbaar object toegekende nummering."
+          example: "23"
+        huisletter:
+          type: "string"
+          title: "Huisletter"
+          description: "Een door of namens het bevoegd gemeentelijk orgaan ten aanzien van een adresseerbaar object toegekende toevoeging aan een huisnummer in de vorm van een alfanumeriek teken."
+          pattern: "^[A-Z,a-z]$"
+          maxLength: 1
+          example: "B"
+        huisnummertoevoeging:
+          type: "string"
+          title: "Huisnummertoevoeging"
+          description: "Een door of namens het bevoegd gemeentelijk orgaan ten aanzien van een adresseerbaar object toegekende nadere toevoeging aan een huisnummer of een combinatie van huisnummer en huisletter."
+          example: "to"
+        postcode:
+          type: "string"
+          title: "Postcode"
+          description: "De door PostNL vastgestelde code behorende bij een bepaalde combinatie van een naam van een woonplaats, naam van een openbare ruimte en een huisnummer"
+          pattern: "^[1-9]{1}[0-9]{3}[A-Z]{2}$"
+          example: "2571CC"
+        woonplaatsnaam:
+          type: "string"
+          title: "Woonplaatsnaam"
+          description: "De door het bevoegde gemeentelijke orgaan aan een WOONPLAATS toegekende benaming."
+          maxLength: 80
+          example: "Utrecht"
+        buitenlandsAdres:
+          $ref: "#/components/schemas/BuitenlandsAdres"
+    NNPAdresRaadplegen:
+      allOf:
+        - $ref: "#/components/schemas/AdresBasis"
+        - type: object
+          description: "Adres van een niet-natuurlijk persoon of vestiging"
+          properties:
+            identificatiecodeNummeraanduiding:
+              type: "string"
+              title: "Identificatiecode nummeraanduiding"
+              description: "De unieke aanduiding van een NUMMERAANDUIDING."
+              maxLength: 16
+              example: "0518200000366054"
+    PostadresRaadplegen:
+      allOf:
+        - $ref: "#/components/schemas/NNPAdresRaadplegen"
+        - type: object
+          description: "Postdres van een niet-natuurlijk persoon of vestiging"
+          properties:
+            postbusnummer:
+              type: "integer"
+    BuitenlandsAdres:
+      type: "object"
+      properties:
+        land:
+          type: "string"
+          example: "Duitsland"
+        straatHuisnummer:
+          type: "string"
+        postcodeWoonplaats:
+          type: "string"
+        regio:
+          type: "string"
+    AdresMetRegistratie:
+      allOf:
+        - $ref: "#/components/schemas/NNPAdresRaadplegen"
+        - type: object
+          description: "Adres van een niet-natuurlijk persoon of vestiging inclusief datum aanvang en einde"
+          properties:
+            datumAanvang:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            datumEinde:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+    PostadresMetRegistratie:
+      allOf:
+        - $ref: "#/components/schemas/PostadresRaadplegen"
+        - type: object
+          description: "Adres van een niet-natuurlijk persoon of vestiging inclusief datum aanvang en einde"
+          properties:
+            datumAanvang:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            datumEinde:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+    VestigingCollection:
+      type: object
+      properties:
+        _links:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalPaginationLinks"
+        _embedded:
+          type: object
+          properties:
+            vestigingen:
+              type: array
+              items:
+                $ref: '#/components/schemas/VestigingLijst'
+    VestigingBasis:
+      type: object
+      properties:
+        vestigingsnummer:
+          type: string
+        handelsnamen:
+          type: array
+          items:
+            type: string
+    Vestiging:
+      allOf:
+        - $ref: "#/components/schemas/VestigingBasis"
+        - type: object
+          properties:
+            typeringVestiging:
+              $ref: "#/components/schemas/TyperingVestiging_enum"
+            _links:
+              $ref: "#/components/schemas/VestigingLinks"
+    VestigingLijst:
+      allOf:
+        - $ref: "#/components/schemas/Vestiging"
+        - type: object
+          properties:
+            bezoekLocatie:
+              $ref: "#/components/schemas/AdresBasis"
+            postLocatie:
+              $ref: "#/components/schemas/AdresBasis"
+    VestigingBeperkt:
+      allOf:
+        - $ref: '#/components/schemas/VestigingBasis'
+        - type: object
+          properties:
+            bezoekLocatie:
+              $ref: "#/components/schemas/NNPAdresRaadplegen"
+            postLocatie:
+              $ref: "#/components/schemas/PostadresRaadplegen"
+    VestigingLinks:
+      type: object
+      properties:
+        self:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        maatschappelijkeActiviteit:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+        eigenaar:
+          $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/HalLink"
+    VestigingRaadplegen:
+      allOf:
+        - $ref: "#/components/schemas/Vestiging"
+        - type: object
+          properties:
+            bezoekLocatie:
+              $ref: "#/components/schemas/AdresMetRegistratie"
+            postLocatie:
+              $ref: "#/components/schemas/PostadresMetRegistratie"
+            datumAanvang:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            datumEinde:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            datumVoortzetting:
+              $ref: "https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-common/master/api-specificatie/common.yaml#/components/schemas/DatumOnvolledig"
+            activiteiten:
+              type: array
+              items:
+                $ref: "#/components/schemas/Activiteit"
+            telefoonnummer:
+              type: array
+              items:
+                type: string
+            faxnummer:
+              type: array
+              items:
+                type: string
+            emailadres:
+              type: array
+              items:
+                type: string
+            url:
+              type: array
+              items:
+                type: string
+            wordtUitgeoefendDoor:
+              $ref: "#/components/schemas/MaatschappelijkeActiviteitVestiging"
+    TyperingVestiging_enum:
+      type: string
+      enum:
+        - "Hoofdvestiging"
+        - "Nevenvestiging"
+    Geslacht_enum:
+      type: "string"
+      description: "Een aanduiding die aangeeft dat de ingeschrevene een man of een\
+        \ vrouw is, of dat het geslacht (nog) onbekend is:\n* `man` - M\n* `vrouw`\
+        \ - V\n* `onbekend` - O"
+      enum:
+      - "man"
+      - "vrouw"
+      - "onbekend"
+    TypeVolmacht_enum:
+      type: "string"
+      description: "Type volmacht van een gemachtigde:\n* `beperkt` - Beperkte volmacht\n* `volledig` - Volledige volmacht"
+      enum:
+      - "beperkt"
+      - "volledig"
+    TypeBevoegdheid_enum:
+      type: "string"
+      description: "Type bevoegdheid van een functionaris:\n* `onbeperkt` - Onbeperkt bevoegd (ob)\n* `beperkt` - Beperkt bevoegd (bb)\n* `niet` - Niet bevoegd (nb)\n* `zelfstandig` - Alleen/zelfstandig bevoegd (azb)\n* `gezamenlijk` - Gezamenlijk bevoegd (gb)\n* `niet_vertegenwoordigen` - Niet bevoegd tot vertegenwoordigen (nbvt)\n* `bevoegd` - Bevoegd tot vertegenwoordigen (btv of bevoegd)"
+      enum:
+      - "onbeperkt"
+      - "beperkt"
+      - "niet"
+      - "zelfstandig"
+      - "gezamenlijk"
+      - "niet_vertegenwoordigen"
+      - "bevoegd"
