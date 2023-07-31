@@ -16,6 +16,7 @@ from openforms.api.views.mixins import ListMixin
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
 from ..models import KadasterApiConfig
+from ..search import free_address_search
 from .serializers import AddressSearchResultSerializer
 
 logger = logging.getLogger(__name__)
@@ -64,13 +65,7 @@ class AddressSearchView(ListMixin, APIView):
 
         client = config.get_client()
         try:
-            # using retrieve rather than list so we can provide the URL explicitly -
-            # we don't have much guarantees about the operationId
-            bag_response = client.retrieve(
-                resource="free",
-                url="v3_1/free",
-                params={"q": query},
-            )
+            bag_response = free_address_search(client, query)
         except (ClientError, requests.RequestException):
             logger.exception("couldn't retrieve pdok locatieserver data")
             return []
