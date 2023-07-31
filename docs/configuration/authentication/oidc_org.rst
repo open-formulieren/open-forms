@@ -4,6 +4,13 @@
 OpenID Connect for organization members
 =======================================
 
+.. note::
+
+  This page documents how to set up Single Sign on (SSO) for organization 
+  members, to access and fill in forms. If you are looking to authenticate 
+  admins for the management interface, please go 
+  :ref:`here <configuration_authentication_oidc>`.
+
 Open Forms supports login on forms by *organization members* through Single Sign On (SSO) via the OpenID Connect protocol (OIDC).
 
 Members of the organization can login to forms for internal use by the organization using the same OpenID Connect configuration that is used for the management interface.
@@ -17,7 +24,7 @@ In this flow:
 
 .. _configuration_authentication_oidc_org_appgroup:
 
-Configuring OICD for login of organization members
+Configuring OIDC for login of organization members
 ==================================================
 
 The OpenID Connect configuration is shared with :ref:`the configuration of the management interface <configuration_authentication_oidc>` and follows the same steps with a few addtional notes:
