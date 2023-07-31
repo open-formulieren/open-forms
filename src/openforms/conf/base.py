@@ -209,6 +209,7 @@ INSTALLED_APPS = [
     "openforms.submissions",
     "openforms.logging.apps.LoggingAppConfig",
     "openforms.contrib.brp",
+    "openforms.contrib.kadaster",
     "openforms.contrib.kvk",
     "openforms.contrib.bag.apps.BAGConfig",
     "openforms.contrib.microsoft.apps.MicrosoftApp",
@@ -922,6 +923,7 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
     os.path.join(BASE_DIR, "src/openforms/contrib/bag/tests/files"),
+    os.path.join(BASE_DIR, "src/openforms/contrib/kadaster/tests/files/"),
 ]
 
 #
@@ -1181,7 +1183,6 @@ LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
 LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
 )  # number of hours
-
 
 #
 # Open Forms extensions

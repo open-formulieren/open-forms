@@ -73,6 +73,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libmagic1 \
         libxmlsec1 \
         libxmlsec1-openssl \
+        gdal-bin \
         gettext \
         # lxml deps
         # libxslt \

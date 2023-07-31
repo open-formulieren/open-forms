@@ -57,6 +57,7 @@ class BAGClient:
         check_postal = "1000AA"
 
         config = BAGConfig.get_solo()
+        assert isinstance(config, BAGConfig)
         if not config.bag_service:
             raise InvalidPluginConfiguration(
                 _("{api_name} endpoint is not configured.").format(
@@ -74,8 +75,8 @@ class BAGClient:
                 _("Invalid response: {exception}").format(exception=e)
             )
 
-    @classmethod
-    def get_config_actions(self):
+    @staticmethod
+    def get_config_actions():
         return [
             (
                 _("Configuration"),

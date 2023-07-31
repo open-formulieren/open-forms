@@ -1,21 +1,24 @@
-from typing import Any, Dict, Generator, Optional
+from typing import Any, Dict, Generator, Optional, Protocol, TypeGuard
 
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
+from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 from openforms.appointments.registry import register as appointments_register
+from openforms.contrib.kadaster.config_check import Check as KadasterConfigCheck
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
 from openforms.dmn.registry import register as dmn_register
 from openforms.payments.registry import register as payments_register
+from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.prefill.registry import register as prefill_register
 from openforms.registrations.registry import register as registrations_register
 from openforms.utils.mixins import UserIsStaffMixin
 
-from .data import Entry
+from .data import Action, Entry
 from .models import GlobalConfiguration
 from .utils import verify_clamav_connection
 
@@ -24,6 +27,22 @@ def _subset_match(requested: Optional[str], checking: str) -> bool:
     if not requested:
         return True
     return requested == checking
+
+
+class ConfigCheckable(Protocol):
+    verbose_name: str
+
+    def check_config(self) -> None:  # pragma: no cover
+        ...
+
+    def get_config_actions(self) -> list[Action]:  # pragma: no cover
+        ...
+
+
+def is_plugin(plugin: Any) -> TypeGuard[AbstractBasePlugin]:
+    if hasattr(plugin, "identifier"):
+        return True
+    return False
 
 
 class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView):
@@ -44,7 +63,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             sections += [
                 {
                     "name": _("Address lookup plugins"),
-                    "entries": self.get_address_entries(),
+                    "entries": self.get_geo_entries(),
                 },
             ]
 
@@ -88,15 +107,13 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             else:
                 yield self.get_plugin_entry(plugin)
 
-    def get_plugin_entry(self, plugin: Any) -> Entry:
+    def get_plugin_entry(self, plugin: AbstractBasePlugin | ConfigCheckable) -> Entry:
         # undocumented query string support - helps for developers ;)
         requested_plugin = self.request.GET.get("plugin")
         status, error = True, ""
-        if hasattr(plugin, "identifier") and not _subset_match(
-            requested_plugin, plugin.identifier
-        ):
+        if is_plugin(plugin) and not _subset_match(requested_plugin, plugin.identifier):
             return Entry(
-                name=plugin.verbose_name,
+                name=force_str(plugin.verbose_name),
                 status=None,
                 actions=[],
             )
@@ -108,7 +125,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
         try:
             actions = plugin.get_config_actions()
         except NotImplementedError:
-            actions = [
+            actions: list[Action] = [
                 (
                     "Not implemented",
                     "TODO: REMOVE THIS WHEN ALL PLUGINS HAVE THIS FUNCTION.",
@@ -123,25 +140,27 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             ]
 
         return Entry(
-            name=plugin.verbose_name,
+            name=force_str(plugin.verbose_name),
             status=status,
             actions=actions,
             error=error,
         )
 
-    def get_address_entries(self):
+    def get_geo_entries(self) -> list[Entry]:
+        entries = []
+
+        # Location client
         try:
             client = import_string(settings.OPENFORMS_LOCATION_CLIENT)
         except ImportError as e:
-            return [
-                Entry(
-                    name=_("unknown"),
-                    status=False,
-                    error=str(e),
-                )
-            ]
+            entries.append(Entry(name=_("unknown"), status=False, error=str(e)))
         else:
-            return [self.get_plugin_entry(client)]
+            entries.append(self.get_plugin_entry(client))
+
+        # Kadaster search
+        entries.append(self.get_plugin_entry(KadasterConfigCheck))
+
+        return entries
 
     def get_clamav_entry(self):
         config = GlobalConfiguration.get_solo()

@@ -2865,6 +2865,72 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/geo/address-search:
+    get:
+      operationId: geo_address_search_list
+      description: |-
+        Get a list of addresses, ordered by relevance/match score of the input query. Note that only results having latitude/longitude data are returned.
+
+        The results are retrieved from the configured geo search service, defaulting to the Kadaster location server.
+      summary: List address suggestions with coordinates.
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Search query for the address to retrieve suggestions with geo-information
+          for.
+        required: true
+      tags:
+      - geo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressSearchResult'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/i18n/formio/{language}:
     get:
       operationId: i18n_formio_retrieve
@@ -3027,8 +3093,10 @@ paths:
   /api/v2/location/get-street-name-and-city:
     get:
       operationId: get_street_name_and_city_list
-      description: Get the street name and city for a given postal code and house
-        number
+      description: |-
+        Get the street name and city for a given postal code and house number.
+
+        **NOTE** this endpoint will redirect to `/api/v3/geo/address-autocomplete/` in v3.
       summary: Get a street name and city
       parameters:
       - in: query
@@ -3045,6 +3113,7 @@ paths:
         required: true
       tags:
       - location
+      deprecated: true
       responses:
         '200':
           content:
@@ -5878,6 +5947,28 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
+    AddressSearchResult:
+      type: object
+      properties:
+        label:
+          type: string
+          title: Location name
+        latLng:
+          allOf:
+          - $ref: '#/components/schemas/LatitudeLongitude'
+          title: Latitude/longitude
+          description: Latitude and longitude in the WGS 84 coordinate system.
+        rd:
+          allOf:
+          - $ref: '#/components/schemas/RijksDriehoek'
+          nullable: true
+          title: Rijkdsdriehoek coordinates
+          description: X and Y coordinates in the [Rijkdsdriehoek](https://nl.wikipedia.org/wiki/Rijksdriehoeksco%C3%B6rdinaten)
+            coordinate system.
+      required:
+      - label
+      - latLng
+      - rd
     ApiTypeEnum:
       enum:
       - ac
@@ -7382,6 +7473,20 @@ components:
       required:
       - current
       - languages
+    LatitudeLongitude:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          title: Latitude
+        lng:
+          type: number
+          format: double
+          title: Longitude
+      required:
+      - lat
+      - lng
     Location:
       type: object
       properties:
@@ -8204,6 +8309,18 @@ components:
       - failed
       - success
       type: string
+    RijksDriehoek:
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+      - x
+      - y
     Service:
       type: object
       properties:

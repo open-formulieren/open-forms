@@ -605,6 +605,7 @@ class GlobalConfiguration(SingletonModel):
             f"{module}.{plugin_identifier}.enabled",
             default=True,
         )
+        assert isinstance(enabled, bool)
         return enabled
 
     def clean(self):

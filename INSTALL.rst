@@ -29,6 +29,7 @@ You need the following libraries and/or programs:
 * `npm`_
 * `yarn`_ (to build the SDK)
 * `gettext`_
+* `gdal-bin`_ (should pull in ``libgeos``)
 * `chromedriver`_
 
 You will also need the following operating-system libraries:
@@ -51,6 +52,7 @@ You will also need the following operating-system libraries:
 .. _yarn: https://yarnpkg.com/
 .. _Redis: https://redis.io/
 .. _gettext: https://www.gnu.org/software/gettext/
+.. _gdal-bin: https://docs.djangoproject.com/en/3.2/ref/contrib/gis/gdal/
 .. _chromedriver: https://chromedriver.chromium.org/downloads
 
 

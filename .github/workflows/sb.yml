@@ -26,7 +26,7 @@ jobs:
       - name: Set up backend environment
         uses: maykinmedia/setup-django-backend@v1
         with:
-          apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl'
+          apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gdal-bin'
           python-version: '3.10'
           optimize-postgres: 'no'
           setup-node: 'yes'
