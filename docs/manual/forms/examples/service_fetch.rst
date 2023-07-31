@@ -189,4 +189,4 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
    :alt: screenshot met extra acties "wijzig een attribuut van een veld/component" Productkeuze: Product (product) verborgen "Ja" resp. "Nee"
 
 .. _dummyjson-service: https://dummyjson.com/docs
-.. _jq sort functie: https://jqlang.github.io/jq/manual/#sort,sort_by(path_expression)
+.. _jq sort functie: https://jqlang.github.io/jq/manual/#sort-sort_by
