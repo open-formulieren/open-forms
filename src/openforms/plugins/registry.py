@@ -11,7 +11,7 @@ class BaseRegistry:
     Base registry class for plugin modules.
     """
 
-    module = ""
+    module: str = ""
     """
     The name of the 'module' this registry belongs to.
 
