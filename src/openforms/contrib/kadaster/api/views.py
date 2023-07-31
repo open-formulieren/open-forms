@@ -22,8 +22,13 @@ logger = logging.getLogger(__name__)
 
 
 @extend_schema(
-    summary=_("List BAG address suggestions."),
-    description=_("Get a list of BAG locations ordered by relevance."),
+    summary=_("List address suggestions with coordinates."),
+    description=_(
+        "Get a list of addresses, ordered by relevance/match score of the input "
+        "query. Note that only results having latitude/longitude data are returned.\n\n"
+        "The results are retrieved from the configured geo search service, defaulting "
+        "to the Kadaster location server."
+    ),
     parameters=[
         OpenApiParameter(
             "q",
@@ -48,6 +53,7 @@ class AddressSearchView(ListMixin, APIView):
 
     def get_objects(self):
         config = KadasterApiConfig.get_solo()
+        assert isinstance(config, KadasterApiConfig)
         query = self.request.GET.get("q")
 
         if not query:
@@ -56,22 +62,18 @@ class AddressSearchView(ListMixin, APIView):
                 code="required",
             )
 
-        search_service = config.search_service.build_client()
-        query_params = {"q": query}
-
+        client = config.get_client()
         try:
-            bag_response = search_service.operation(
-                operation_id="free",
-                data=None,
+            # using retrieve rather than list so we can provide the URL explicitly -
+            # we don't have much guarantees about the operationId
+            bag_response = client.retrieve(
+                resource="free",
                 url="v3_1/free",
-                method="GET",
-                request_kwargs=dict(
-                    params=query_params,
-                ),
+                params={"q": query},
             )
         except (ClientError, requests.RequestException):
-            bag_response = dict()
             logger.exception("couldn't retrieve pdok locatieserver data")
+            return []
 
         if not (
             (response := bag_response.get("response"))

@@ -212,8 +212,8 @@ paths:
                 type: array
                 items:
                   type: object
-                  description: A single Form.io component. The `type`, `key` and `label`
-                    properties are guaranteed to be present and non-empty.
+                  description: Een Form.io componentdefinitie. De `type`-, `key`-
+                    en `label`-eigenschappen zijn gegarandeerd aanwezig en niet-leeg.
                   properties:
                     type:
                       type: string
@@ -2868,9 +2868,11 @@ paths:
   /api/v2/geo/address-search:
     get:
       operationId: geo_address_search_list
-      description: Get a list of BAG locations that matches the most accurate with
-        the given query paramter.
-      summary: List BAG address suggestions.
+      description: |-
+        Get a list of addresses, ordered by relevance/match score of the input query. Note that only results having latitude/longitude data are returned.
+
+        The results are retrieved from the configured geo search service, defaulting to the Kadaster location server.
+      summary: List address suggestions with coordinates.
       parameters:
       - in: query
         name: q
@@ -3091,8 +3093,10 @@ paths:
   /api/v2/location/get-street-name-and-city:
     get:
       operationId: get_street_name_and_city_list
-      description: Get the street name and city for a given postal code and house
-        number
+      description: |-
+        Get the street name and city for a given postal code and house number.
+
+        **NOTE** this endpoint will redirect to `/api/v3/geo/address-autocomplete/` in v3.
       summary: Get a street name and city
       parameters:
       - in: query
@@ -3109,6 +3113,7 @@ paths:
         required: true
       tags:
       - location
+      deprecated: true
       responses:
         '200':
           content:
@@ -5942,42 +5947,24 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
-    AddressSearcLatitudeLongitude:
-      type: object
-      properties:
-        lat:
-          type: number
-          format: double
-          title: Latitude
-        lng:
-          type: number
-          format: double
-          title: Longitude
-      required:
-      - lat
-      - lng
-    AddressSearcRijksDriehoek:
-      type: object
-      properties:
-        x:
-          type: number
-          format: double
-        y:
-          type: number
-          format: double
-      required:
-      - x
-      - y
     AddressSearchResult:
       type: object
       properties:
         label:
           type: string
-          title: The location name of the BAG location.
+          title: Location name
         latLng:
-          $ref: '#/components/schemas/AddressSearcLatitudeLongitude'
+          allOf:
+          - $ref: '#/components/schemas/LatitudeLongitude'
+          title: Latitude/longitude
+          description: Latitude and longitude in the WGS 84 coordinate system.
         rd:
-          $ref: '#/components/schemas/AddressSearcRijksDriehoek'
+          allOf:
+          - $ref: '#/components/schemas/RijksDriehoek'
+          nullable: true
+          title: Rijkdsdriehoek coordinates
+          description: X and Y coordinates in the [Rijkdsdriehoek](https://nl.wikipedia.org/wiki/Rijksdriehoeksco%C3%B6rdinaten)
+            coordinate system.
       required:
       - label
       - latLng
@@ -7486,6 +7473,20 @@ components:
       required:
       - current
       - languages
+    LatitudeLongitude:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          title: Latitude
+        lng:
+          type: number
+          format: double
+          title: Longitude
+      required:
+      - lat
+      - lng
     Location:
       type: object
       properties:
@@ -8308,6 +8309,18 @@ components:
       - failed
       - success
       type: string
+    RijksDriehoek:
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+      required:
+      - x
+      - y
     Service:
       type: object
       properties:

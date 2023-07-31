@@ -36,7 +36,9 @@ class GetStreetNameAndCityView(APIView):
         operation_id="get_street_name_and_city_list",
         summary=_("Get a street name and city"),
         description=_(
-            "Get the street name and city for a given postal code and house number"
+            "Get the street name and city for a given postal code and house number.\n\n"
+            "**NOTE** this endpoint will redirect to `/api/v3/geo/address-autocomplete/`"
+            " in v3."
         ),
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
@@ -55,6 +57,7 @@ class GetStreetNameAndCityView(APIView):
                 required=True,
             ),
         ],
+        deprecated=True,
     )
     def get(self, request, *args, **kwargs):
         serializer = GetStreetNameAndCityViewInputSerializer(data=request.query_params)

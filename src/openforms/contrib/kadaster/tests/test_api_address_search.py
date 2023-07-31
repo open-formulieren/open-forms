@@ -23,16 +23,18 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
         super().setUpTestData()
         cls.submission = SubmissionFactory.create()
 
-        cls.kadaster_service = ServiceFactory(
+        cls.kadaster_service = ServiceFactory.build(
             api_root="https://kadaster/",
             oas="https://kadaster/api/schema/openapi.yaml",
         )
 
     def setUp(self):
         super().setUp()
+
+        self.config = KadasterApiConfig(search_service=self.kadaster_service)
         config_patcher = patch(
             "openforms.contrib.kadaster.api.views.KadasterApiConfig.get_solo",
-            return_value=KadasterApiConfig(search_service=self.kadaster_service),
+            return_value=self.config,
         )
         self.config_mock = config_patcher.start()
         self.addCleanup(config_patcher.stop)
