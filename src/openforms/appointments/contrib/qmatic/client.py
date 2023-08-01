@@ -15,6 +15,20 @@ class QmaticClient(Session):
 
     _config: QmaticConfig | None = None
 
+    def _get_cert(self) -> None | str | tuple[str, str]:
+        if not self._config:
+            self._config = QmaticConfig.get_solo()
+
+        certificate = self._config.service.client_certificate
+        if not certificate:
+            return None
+
+        if certificate.public_certificate and certificate.private_key:
+            return (certificate.public_certificate.path, certificate.private_key.path)
+
+        if certificate.public_certificate:
+            return certificate.public_certificate.path
+
     def request(self, method: str, url: str, *args, **kwargs):
         if not self._config:
             config = QmaticConfig.get_solo()
@@ -30,7 +44,9 @@ class QmaticClient(Session):
         del _temp_client
 
         url = f"{api_root}{url}"
-        response = super().request(method, url, headers=headers, *args, **kwargs)
+        response = super().request(
+            method, url, headers=headers, cert=self._get_cert(), *args, **kwargs
+        )
 
         if response.status_code == 500:
             error_msg = response.headers.get(
