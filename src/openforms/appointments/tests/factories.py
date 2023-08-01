@@ -47,6 +47,8 @@ class AppointmentFactory(factory.django.DjangoModelFactory):
     def products(obj, create, extracted: list[Product], **kwargs):
         if not create:
             raise RuntimeError("You may only provide products with the create strategy")
+        if not extracted:
+            return
 
         for product in extracted:
             AppointmentProductFactory.create(

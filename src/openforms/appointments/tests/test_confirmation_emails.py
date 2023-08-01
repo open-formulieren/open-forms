@@ -7,11 +7,14 @@ from unittest.mock import patch
 from django.core import mail
 from django.test import TestCase
 from django.utils import timezone
+from django.utils.html import escape
+from django.utils.translation import gettext as _
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.typing import Component
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.utils import send_confirmation_email
+from openforms.utils.tests.html_assert import HTMLAssertMixin
 
 from ..base import AppointmentDetails, BasePlugin, Location, Product
 from ..registry import Registry
@@ -88,7 +91,7 @@ class WithEmailPlugin(NoEmailPlugin):
         return [LAST_NAME, EMAIL]
 
 
-class AppointmentCreationConfirmationMailTests(TestCase):
+class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -183,3 +186,81 @@ class AppointmentCreationConfirmationMailTests(TestCase):
         message = mail.outbox[0]
         self.assertEqual(message.subject, "CONFIRMATION")
         self.assertEqual(message.recipients(), ["austin@powers.net"])
+
+    def test_appointment_data_present_in_confirmation_email(self):
+        appointment = AppointmentFactory.create(
+            plugin="with-email",
+            submission__language_code="nl",
+            submission__form__is_appointment_form=True,
+            submission__form__send_confirmation_email=True,
+            products=[Product(identifier="dummy", name="")],
+            appointment_info__registration_ok=True,
+            contact_details_meta=[LAST_NAME, EMAIL],
+            contact_details={"lastName": "Powers", "email": "austin@powers.net"},
+        )
+
+        send_confirmation_email(appointment.submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+
+        message_text = message.body
+        message_html = message.alternatives[0][0]  # type: ignore
+        assert isinstance(message_html, str)
+
+        with self.subTest("Product name", type="plain text"):
+            self.assertIn("Dummy", message_text)
+
+        with self.subTest("Location name", type="plain text"):
+            self.assertIn("Knowhere", message_text)
+            self.assertIn("Teststad", message_text)
+            self.assertIn("1234AB", message_text)
+
+        with self.subTest("Appointment date and time", type="plain text"):
+            self.assertIn("1 augustus 2023, 14:00 - 14:15", message_text)
+
+        with self.subTest("Remarks", type="plain text"):
+            self.assertIn("Remarks", message_text)
+
+        with self.subTest("Additional data", type="plain text"):
+            self.assertIn("Some:\nData", message_text)
+
+        with self.subTest("No generic summary data", type="plain text"):
+            self.assertNotIn(_("Summary"), message_text)
+
+        with self.subTest("Contact details", type="plain text"):
+            self.assertIn("Last name:\nPowers", message_text)
+            self.assertIn("Email:\naustin@powers.net", message_text)
+
+        with self.subTest("Product name", type="HTML"):
+            self.assertTagWithTextIn("td", "Dummy", message_html)
+
+        with self.subTest("Location name", type="HTML"):
+            self.assertIn("Knowhere", message_html)
+            self.assertIn("Teststad", message_html)
+            self.assertIn("1234AB", message_html)
+
+        with self.subTest("Appointment date and time", type="HTML"):
+            self.assertTagWithTextIn(
+                "td", "1 augustus 2023, 14:00 - 14:15", message_html
+            )
+
+        with self.subTest("Remarks", type="HTML"):
+            self.assertTagWithTextIn("td", "Remarks", message_html)
+
+        with self.subTest("Additional data", type="HTML"):
+            self.assertTagWithTextIn("td", "Some", message_html)
+            self.assertTagWithTextIn(
+                "td",
+                escape("<h1>Data</h1>"),
+                message_html,
+            )
+
+        with self.subTest("No generic summary data", type="HTML"):
+            self.assertNotIn(_("Summary"), message_html)
+
+        with self.subTest("Contact details", type="HTML"):
+            self.assertTagWithTextIn("td", "Last name", message_html)
+            self.assertTagWithTextIn("td", "Powers", message_html)
+            self.assertTagWithTextIn("td", "Email", message_html)
+            self.assertTagWithTextIn("td", "austin@powers.net", message_html)
