@@ -15,7 +15,7 @@ from openforms.submissions.utils import send_confirmation_email
 
 from ..base import AppointmentDetails, BasePlugin, Location, Product
 from ..registry import Registry
-from .factories import AppointmentFactory, AppointmentInfoFactory
+from .factories import AppointmentFactory
 
 register = Registry()
 
@@ -82,13 +82,20 @@ class NoEmailPlugin(BasePlugin):
         )
 
 
+@register("with-email")
+class WithEmailPlugin(NoEmailPlugin):
+    def get_required_customer_fields(self, *args, **kwargs) -> list[Component]:
+        return [LAST_NAME, EMAIL]
+
+
 class AppointmentCreationConfirmationMailTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
 
         cls.config = GlobalConfiguration(
-            confirmation_email_content="{% summary %}\n{% appointment_information %}"
+            confirmation_email_content="{% summary %}\n{% appointment_information %}",
+            confirmation_email_subject="CONFIRMATION",
         )
 
     def setUp(self):
@@ -100,6 +107,10 @@ class AppointmentCreationConfirmationMailTests(TestCase):
         )
         patcher.start()
         self.addCleanup(patcher.stop)
+
+        registry_patcher = patch("openforms.appointments.utils.register", new=register)
+        registry_patcher.start()
+        self.addCleanup(registry_patcher.stop)
 
     def test_send_confirmation_mail_disabled(self):
         appointment = AppointmentFactory.create(
@@ -129,3 +140,46 @@ class AppointmentCreationConfirmationMailTests(TestCase):
         send_confirmation_email(appointment.submission)
 
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_no_crash_on_missing_appointment_details(self):
+        submission = SubmissionFactory.create(
+            form__is_appointment_form=True,
+            form__send_confirmation_email=True,
+        )
+        assert not hasattr(submission, "appointment")
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_bad_data(self):
+        appointment = AppointmentFactory.create(
+            plugin="with-email",
+            submission__form__is_appointment_form=True,
+            submission__form__send_confirmation_email=True,
+            products=[Product(identifier="dummy", name="")],
+            appointment_info__registration_ok=True,
+            contact_details_meta=[LAST_NAME, EMAIL],
+            contact_details={"lastName": "Powers", "email": 123},
+        )
+
+        with self.assertRaises(TypeError):
+            send_confirmation_email(appointment.submission)
+
+    def test_confirmation_email_goes_to_correct_recipients(self):
+        appointment = AppointmentFactory.create(
+            plugin="with-email",
+            submission__form__is_appointment_form=True,
+            submission__form__send_confirmation_email=True,
+            products=[Product(identifier="dummy", name="")],
+            appointment_info__registration_ok=True,
+            contact_details_meta=[LAST_NAME, EMAIL],
+            contact_details={"lastName": "Powers", "email": "austin@powers.net"},
+        )
+
+        send_confirmation_email(appointment.submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "CONFIRMATION")
+        self.assertEqual(message.recipients(), ["austin@powers.net"])
