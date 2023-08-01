@@ -297,18 +297,31 @@ class JccAppointment(BasePlugin):
                 appDetail=appointment_details, fields=[]
             )
 
-            if result["updateStatus"] == 0:
+            if (update_status := result["updateStatus"]) == 0:
                 return result["appID"]
-            else:
-                raise AppointmentCreateFailed(
-                    "Could not create appointment for products '%s' at location '%s' starting at %s (updateStatus=%s)",
-                    product_ids,
-                    location,
-                    start_at,
-                    result["updateStatus"],
-                )
+
+            error = AppointmentCreateFailed(
+                f"Could not create appointment, got updateStatus={update_status}"
+            )
+            logger.error(
+                "Could not create appointment for products '%s' at location '%s' starting at %s (updateStatus=%s)",
+                product_ids,
+                location,
+                start_at,
+                update_status,
+                exc_info=error,
+                extra={
+                    "product_ids": product_ids,
+                    "location": location.identifier,
+                    "start_time": start_at,
+                    "update_status": update_status,
+                },
+            )
+            raise error
         except (ZeepError, RequestException, KeyError) as e:
-            raise AppointmentCreateFailed(e)
+            raise AppointmentCreateFailed(
+                "Unexpected appointment create failure"
+            ) from e
 
     def delete_appointment(self, identifier: str) -> None:
         client = get_client()
