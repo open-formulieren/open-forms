@@ -5,6 +5,7 @@ import factory.fuzzy
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ..base import Product
 from ..constants import AppointmentDetailsStatus
 from ..models import AppointmentInfo
 
@@ -41,6 +42,28 @@ class AppointmentFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "appointments.Appointment"
+
+    @factory.post_generation
+    def products(obj, create, extracted: list[Product], **kwargs):
+        if not create:
+            raise RuntimeError("You may only provide products with the create strategy")
+
+        for product in extracted:
+            AppointmentProductFactory.create(
+                appointment=obj,
+                product_id=product.identifier,
+                amount=product.amount,
+            )
+
+    @factory.post_generation
+    def appointment_info(obj, create, extracted, **kwargs):
+        if not create:
+            raise RuntimeError(
+                "You may only provide appointment info with the create strategy"
+            )
+        if not kwargs:
+            return
+        AppointmentInfoFactory.create(submission=obj.submission, **kwargs)
 
 
 class AppointmentProductFactory(factory.django.DjangoModelFactory):
