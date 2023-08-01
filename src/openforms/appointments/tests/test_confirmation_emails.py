@@ -229,8 +229,8 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
             self.assertNotIn(_("Summary"), message_text)
 
         with self.subTest("Contact details", type="plain text"):
-            self.assertIn("Last name:\nPowers", message_text)
-            self.assertIn("Email:\naustin@powers.net", message_text)
+            self.assertIn("Last name: Powers", message_text)
+            self.assertIn("Email: austin@powers.net", message_text)
 
         with self.subTest("Product name", type="HTML"):
             self.assertTagWithTextIn("td", "Dummy", message_html)

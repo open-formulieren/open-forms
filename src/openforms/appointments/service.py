@@ -9,6 +9,13 @@ from openforms.submissions.models import Submission
 from .models import Appointment
 
 
+def get_appointment(submission: Submission) -> Appointment | None:
+    if not submission.form.is_appointment:
+        return None
+    appointment: Appointment | None = getattr(submission, "appointment", None)
+    return appointment
+
+
 def get_email_confirmation_recipients(submission: Submission) -> list[str]:
     """
     Extract confirmation email recipient addresses, if relevant.
@@ -17,11 +24,6 @@ def get_email_confirmation_recipients(submission: Submission) -> list[str]:
     empty list is returned. The caller is expected to apply different logic to obtain
     the e-mail addresses.
     """
-    if not submission.form.is_appointment:
+    if (appointment := get_appointment(submission)) is None:
         return []
-
-    appointment: Appointment | None = getattr(submission, "appointment", None)
-    if appointment is None:
-        return []
-
     return appointment.extract_email_addresses()
