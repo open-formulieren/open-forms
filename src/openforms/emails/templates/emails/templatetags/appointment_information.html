@@ -22,7 +22,7 @@
         <tr>
             <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Date and time" %}</td>
             <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">
-                {{ appointment.start_at.date }}, {{ appointment.start_at.time }}{% if appointment.end_at %} - {{ appointment.end_at.time }}{% endif %}
+                {{ appointment.start_at|date }}, {{ appointment.start_at|time }}{% if appointment.end_at %} - {{ appointment.end_at|time }}{% endif %}
             </td>
         </tr>
         <tr>
