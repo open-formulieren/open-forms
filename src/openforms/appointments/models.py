@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any, TypeGuard
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import MinValueValidator
@@ -83,6 +84,10 @@ class AppointmentInfo(models.Model):
         self.save()
 
 
+def is_str_list(values: list[Any]) -> TypeGuard[list[str]]:
+    return all(isinstance(value, str) for value in values)
+
+
 class Appointment(models.Model):
     """
     Register details for an appointment.
@@ -143,6 +148,23 @@ class Appointment(models.Model):
     def date(self) -> date:
         # this assumes our timezone is the same timezone as the appointment system
         return localdate(self.datetime)
+
+    def extract_email_addresses(self) -> list[str]:
+        """
+        Introspect the contact details metadata to extract email addresses.
+        """
+        from openforms.formio.service import FormioData
+
+        keys: list[str] = [
+            component["key"]
+            for component in self.contact_details_meta
+            if component["type"] == "email"
+        ]
+        data = FormioData(self.contact_details)
+        values = [data[key] for key in keys]
+        if not is_str_list(values):
+            raise TypeError("Expected list of strings for email address values")
+        return values
 
 
 class AppointmentProduct(models.Model):

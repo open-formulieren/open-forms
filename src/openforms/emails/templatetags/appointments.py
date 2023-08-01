@@ -1,6 +1,7 @@
 from django import template
 from django.template.loader import render_to_string
 
+from openforms.appointments.models import Appointment
 from openforms.appointments.utils import get_plugin
 
 register = template.Library()
@@ -8,9 +9,8 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def appointment_information(context):
-    appointment_id = context.get("_appointment_id")
     # Use get since _appointment_id could be an empty string
-    if not appointment_id:
+    if not (appointment_id := context.get("_appointment_id")):
         return ""
 
     if context.get("rendering_text"):
@@ -18,7 +18,12 @@ def appointment_information(context):
     else:
         template_name = "emails/templatetags/appointment_information.html"
 
-    plugin = get_plugin()
+    # check for new style appointments
+    submission = context["_submission"]
+    appointment: Appointment | None = getattr(submission, "appointment", None)
+    plugin_id = appointment.plugin if appointment else ""
+
+    plugin = get_plugin(plugin=plugin_id)
 
     tag_context = {
         "appointment": plugin.get_appointment_details(appointment_id),

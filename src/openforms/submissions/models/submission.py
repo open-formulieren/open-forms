@@ -645,7 +645,14 @@ class Submission(models.Model):
             self._merged_attachments = self.get_attachments().as_form_dict()
         return self._merged_attachments
 
-    def get_email_confirmation_recipients(self, submitted_data: dict) -> List[str]:
+    def get_email_confirmation_recipients(self, submitted_data: dict) -> list[str]:
+        from openforms.appointments.service import get_email_confirmation_recipients
+
+        # first check if there are any recipients because it's an e-mail form, as that
+        # shortcuts the formio component checking (there aren't any)
+        if emails := get_email_confirmation_recipients(self):
+            return emails
+
         recipient_emails = set()
         for key in self.form.get_keys_for_email_confirmation():
             value = submitted_data.get(key)
