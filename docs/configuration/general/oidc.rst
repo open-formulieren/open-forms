@@ -4,6 +4,13 @@
 OpenID Connect
 ==============
 
+.. note::
+
+  This page documents how to set up Single Sign on (SSO) for admins, to access 
+  the management interface. If you are looking to authenticate organization 
+  members on forms, please go 
+  :ref:`here <configuration_authentication_oidc_org>`.
+
 Open Formulieren ondersteunt Single Sign On (SSO) via het OpenID Connect protocol (OIDC) voor de beheerinterface.
 
 Gebruikers kunnen op die manier inloggen op Open Formulieren met hun account bij de OpenID Connect provider. In deze
@@ -23,20 +30,26 @@ flow:
 
 .. _configuration_oidc_appgroup:
 
-Configureren van OIDC zelf
-==========================
+Configureren van OIDC-provider
+==============================
 
-Contacteer de IAM beheerders in je organisatie om een *Client* aan te
+Contacteer de IAM beheerders in je organisatie om een *Client* of *App* aan te
 maken in de omgeving van de OpenID Connect provider.
 
 Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/oidc/callback/`` in,
 waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
+
+Als je gebruikers van dezelfde organisatie ook wilt laten inloggen op 
+formulieren, voeg dan ook direct 
+``https://open-formulieren.gemeente.nl/oidc-org/callback/`` toe. Je kan hier 
+meer over lezen op :ref:`configuration_authentication_oidc_org`.
 
 Aan het eind van dit proces moet je de volgende gegevens hebben (on premise):
 
 * Server adres, bijvoorbeeld ``login.gemeente.nl``
 * Client ID, bijvoorbeeld ``a7d14516-8b20-418f-b34e-25f53c930948``
 * Client secret, bijvoorbeeld ``97d663a9-3624-4930-90c7-2b90635bd990``
+* Discovery endpoint, bijvoorbeeld ``https://login.microsoftonline.com/9c6a25fb-3f9a-4e8b-aa84-b7e2252bcc87/v2.0/.well-known/openid-configuration``
 
 Configureren van OIDC in Open Formulieren
 =========================================
@@ -46,6 +59,7 @@ Zorg dat je de volgende :ref:`gegevens <configuration_oidc_appgroup>` hebt:
 * Server adres
 * Client ID
 * Client secret
+* Discovery endpoint
 
 Navigeer vervolgens in de admin naar **Accounts** > **OpenID Connect configuration**.
 
@@ -70,32 +84,5 @@ deze kunnen automatisch bepaald worden aan de hand van het discovery endpoint
 Klik tot slot rechtsonder op **Opslaan**.
 
 Je kan vervolgens het makkelijkst testen of alles werkt door in een incognitoscherm
-naar https://open-formulieren.gemeente.nl/admin/ te navigeren en op *Inloggen met organisatieaccount* te
-klikken.
-
-Cloud providers
-===============
-
-Azure Active Directory
-----------------------
-
-Azure Active Directory is a cloud-hosted identity provider from Microsoft, part of Azure
-webservices.
-
-To use AAD as OIDC provider, you must obtain:
-
-- Tenant ID, which is usually a UUID4
-- Application (client) ID
-- Application secret value
-
-The tenant ID is used in the discovery URL:
-``https://login.microsoftonline.com/${tenantId}/v2.0``
-
-You can inspect the metadata document in your browser at
-``https://login.microsoftonline.com/${tenantId}/v2.0/.well-known/openid-configuration``.
-
-Known issues:
-
-- The v2.0 is essential, since the URL without the suffix has an invalid issuer which
-  doesn't match the tenant-specific URL.
-- Make sure there's no trailing slash - the issuer does not have one.
+naar ``https://open-formulieren.gemeente.nl/admin/`` te navigeren en op 
+*Inloggen met organisatieaccount* te klikken.
