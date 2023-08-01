@@ -1207,7 +1207,7 @@ msgstr "Tijdstip wanneer de afspraakdetails zijn gemaakt "
 #: openforms/emails/templates/emails/templatetags/appointment_information.html:3
 #: openforms/emails/templates/emails/templatetags/appointment_information.txt:1
 msgid "Appointment information"
-msgstr "Afspraak informatie"
+msgstr "Afspraakinformatie"
 
 #: openforms/appointments/models.py:107 openforms/authentication/models.py:14
 msgid "plugin"
