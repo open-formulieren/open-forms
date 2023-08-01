@@ -7,7 +7,7 @@
             <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Products" %}</td>
             <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">
                 {% for product in appointment.products %}
-                    {{ product.name }}{% if not forloop.last %}<br />{% endif %}
+                    {{ product.name }}{% if product.amount > 1 %} (x{{ product.amount }}){% endif %}{% if not forloop.last %}<br />{% endif %}
                 {% endfor %}
             </td>
         </tr>

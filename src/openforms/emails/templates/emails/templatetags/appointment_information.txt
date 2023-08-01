@@ -1,7 +1,7 @@
 {% load i18n %}{% autoescape off %}{% if appointment %}{% trans "Appointment information" %}
 
 {% trans "Products" %}:{% for product in appointment.products %}
-- {{ product.name }}{% endfor %}
+- {{ product.name }}{% if product.amount > 1 %} (x{{ product.amount }}){% endif %}{% endfor %}
 
 {% trans "Location" %}:
 {{ appointment.location.name }}{% if appointment.location.address %}

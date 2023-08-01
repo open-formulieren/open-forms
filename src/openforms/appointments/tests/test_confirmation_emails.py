@@ -71,7 +71,7 @@ class NoEmailPlugin(BasePlugin):
     def get_appointment_details(self, identifier: str) -> AppointmentDetails:
         return AppointmentDetails(
             identifier=identifier,
-            products=[Product(identifier="dummy", name="Dummy")],
+            products=[Product(identifier="dummy", name="Dummy", amount=2)],
             location=Location(
                 identifier="dummy",
                 name="Knowhere",
@@ -209,7 +209,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
         assert isinstance(message_html, str)
 
         with self.subTest("Product name", type="plain text"):
-            self.assertIn("Dummy", message_text)
+            self.assertIn("Dummy (x2)", message_text)
 
         with self.subTest("Location name", type="plain text"):
             self.assertIn("Knowhere", message_text)
@@ -233,7 +233,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
             self.assertIn("Email: austin@powers.net", message_text)
 
         with self.subTest("Product name", type="HTML"):
-            self.assertTagWithTextIn("td", "Dummy", message_html)
+            self.assertTagWithTextIn("td", "Dummy (x2)", message_html)
 
         with self.subTest("Location name", type="HTML"):
             self.assertIn("Knowhere", message_html)
