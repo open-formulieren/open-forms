@@ -9,7 +9,7 @@
 {{ appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
 
 {% trans "Date and time" %}:
-{{ appointment.start_at.date|date }}, {{ appointment.start_at.time|time }}{% if appointment.end_at %} - {{ appointment.end_at.time|time }}{% endif %}
+{{ appointment.start_at|date }}, {{ appointment.start_at|time }}{% if appointment.end_at %} - {{ appointment.end_at|time }}{% endif %}
 
 {% trans "Remarks" %}:
 {{ appointment.remarks }}
