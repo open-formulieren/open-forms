@@ -179,6 +179,7 @@ class ImportExportTests(TestCase):
         # attempt to break ForeignKey constraint
         fetch_config.delete()
 
+        # check that the form definition is updated with the import data
         old_form_definition_slug = form_definition.slug
         form_definition.slug = "modified"
         form_definition.save()
@@ -209,11 +210,11 @@ class ImportExportTests(TestCase):
             imported_form.payment_backend_options, {"merchant_id": merchant.id}
         )
 
-        form_definitions = FormDefinition.objects.all()
-        fd2 = form_definitions.last()
-        self.assertEqual(form_definitions.count(), 2)
+        form_definitions = FormDefinition.objects.order_by("pk")
+        self.assertEqual(len(form_definitions), 2)
+        fd2 = form_definitions[1]
         self.assertNotEqual(fd2.pk, form_definition_pk)
-        self.assertNotEqual(fd2.uuid, str(form_definition.uuid))
+        self.assertNotEqual(fd2.uuid, form_definition.uuid)
         self.assertEqual(fd2.configuration, form_definition.configuration)
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
@@ -262,7 +263,8 @@ class ImportExportTests(TestCase):
         product = ProductFactory.create()
         form = FormFactory.create(product=product, slug="my-slug")
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            is_reusable=True,
         )
         FormStepFactory.create(form=form, form_definition=form_definition)
         FormLogicFactory.create(form=form)
@@ -282,11 +284,12 @@ class ImportExportTests(TestCase):
         # check uuid mapping still works
         self.assertEqual(imported_form_definition.uuid, form_definition.uuid)
 
-    def test_import_form_definition_slug_already_exists_configuration_duplicate(self):
+    def test_import_form_definition_uuid_already_exists_configuration_duplicate(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            is_reusable=True,
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         form_logic = FormLogicFactory.create(form=form)
@@ -344,11 +347,12 @@ class ImportExportTests(TestCase):
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
         self.assertEqual(imported_form.pk, form_logic_2.form.pk)
 
-    def test_import_form_definition_slug_already_exists_configuration_different(self):
+    def test_import_form_definition_uuid_already_exists_configuration_different(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]},
+            is_reusable=True,  # only re-usable FDs may be related to multiple forms
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         form_logic = FormLogicFactory.create(form=form)
@@ -393,7 +397,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fd2.login_required, form_definition.login_required)
         self.assertEqual(fd2.name, form_definition.name)
         self.assertEqual(fd2.internal_name, form_definition.internal_name)
-        self.assertEqual(fd2.slug, f"{form_definition.slug}-2")
+        self.assertEqual(fd2.slug, form_definition.slug)
 
         form_steps = FormStep.objects.all()
         fs2 = form_steps.get(form=imported_form)

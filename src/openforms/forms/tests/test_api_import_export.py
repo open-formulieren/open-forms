@@ -218,13 +218,13 @@ class ImportExportAPITests(APITestCase):
         "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
     )
-    def test_form_import_error_slug_already_exists(self, _mock):
+    def test_form_import_form_slug_already_exists(self, _mock):
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
         form1 = FormFactory.create(slug="my-slug")
-        form_definition1 = FormDefinitionFactory.create()
+        form_definition1 = FormDefinitionFactory.create(is_reusable=True)
         FormStepFactory.create(form=form1, form_definition=form_definition1)
 
         url = reverse("api:form-export", args=(form1.uuid,))

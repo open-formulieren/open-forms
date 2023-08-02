@@ -26,6 +26,7 @@ class RestoreVersionTest(TestCase):
             name="Test Definition 2",
             internal_name="Test Internal 2",
             configuration={"test": "2"},
+            is_reusable=True,
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -110,12 +111,15 @@ class RestoreVersionTest(TestCase):
                         ),
                     )
 
-    def test_form_definition_same_slug_different_configuration(self):
+    def test_form_definition_same_uuid_different_configuration(self):
         """Test that restoring a form definition with a slug that matches the slug of another form definition
         (but has a different configuration) creates a new form definition with a modified slug.
         """
         form_definition = FormDefinitionFactory.create(
-            slug="test-definition-1", configuration={"test": "2"}
+            uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+            slug="test-definition-1",
+            configuration={"test": "2"},
+            is_reusable=True,
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -140,7 +144,10 @@ class RestoreVersionTest(TestCase):
 
         restored_form_definition = form_steps.get().form_definition
 
-        self.assertEqual("test-definition-1-2", restored_form_definition.slug)
+        self.assertEqual("test-definition-1", restored_form_definition.slug)
+        self.assertNotEqual(
+            str(restored_form_definition.uuid), "f0dad93b-333b-49af-868b-a6bcb94fa1b8"
+        )
 
     def test_handling_uuid(self):
         """
@@ -153,6 +160,7 @@ class RestoreVersionTest(TestCase):
             uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8",
             slug="test-definition-1",
             configuration={"test": "2"},
+            is_reusable=True,
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -176,7 +184,9 @@ class RestoreVersionTest(TestCase):
 
     def test_restore_twice_a_version(self):
         form_definition = FormDefinitionFactory.create(
-            slug="test-definition-2", configuration={"test": "2"}
+            uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+            slug="test-definition-2",
+            configuration={"test": "2"},
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
@@ -191,13 +201,17 @@ class RestoreVersionTest(TestCase):
             form.restore_old_version(version.uuid)
             form.refresh_from_db()
 
-        self.assertEqual(2, FormDefinition.objects.count())
+        self.assertEqual(FormDefinition.objects.count(), 1)
 
-    def test_form_definition_same_slug_same_configuration(self):
-        """Test that restoring a form definition with a slug that matches the slug of another form definition
-        (and has the same configuration) links to the existing form definition.
+    def test_form_definition_same_uuid_same_configuration(self):
+        """
+        Test restoring a form definition with the same slug and same configuration.
+
+        Restoring a form definition with a slug that matches the slug of another form
+        definition and has the same configuration links to the existing form definition.
         """
         form_definition = FormDefinitionFactory.create(
+            uuid="f0dad93b-333b-49af-868b-a6bcb94fa1b8",  # must match EXPORT_BLOB FD uuid
             slug="test-definition-1",
             configuration={
                 "components": [
@@ -208,11 +222,11 @@ class RestoreVersionTest(TestCase):
                     }
                 ]
             },
+            is_reusable=True,
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
-
-        self.assertEqual(1, FormDefinition.objects.count())
+        assert FormDefinition.objects.count() == 1
 
         version = FormVersion.objects.create(
             form=form,
@@ -223,17 +237,13 @@ class RestoreVersionTest(TestCase):
         form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
-        self.assertEqual(
-            2, FormVersion.objects.count()
-        )  # the restore creates a new version itself
-        self.assertEqual(1, FormDefinition.objects.count())
+        # the restore creates a new version itself
+        self.assertEqual(FormVersion.objects.count(), 2)
+        self.assertEqual(FormDefinition.objects.count(), 1)
 
         form_steps = FormStep.objects.filter(form=form)
-
-        self.assertEqual(1, form_steps.count())
-
+        self.assertEqual(form_steps.count(), 1)
         restored_form_definition = form_steps.get().form_definition
-
         self.assertEqual(form_definition, restored_form_definition)
 
     def test_restore_form_with_reusable_form_definition(self):

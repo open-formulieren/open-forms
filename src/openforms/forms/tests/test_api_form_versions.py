@@ -139,11 +139,20 @@ class FormVersionRestoreAPITests(APITestCase):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         self.client.force_authenticate(user=user)
 
+        # create 'modifications' for a form (different slugs) to then restore the
+        # 'version' from EXPORT_BLOB
+        # This form definition is to be discarded (different UUID than the one in export)
         form_definition = FormDefinitionFactory.create(
-            slug="test-definition-2", configuration={"test": "2"}
+            slug="test-definition-2",
+            configuration={"test": "2"},
+            is_reusable=True,
         )
         form = FormFactory.create(name="Test Form 2")
-        FormStepFactory.create(form=form, form_definition=form_definition)
+        FormStepFactory.create(
+            form=form,
+            form_definition=form_definition,
+            slug="test-step-2",  # ensure that slug does not match EXPORT_BLOB
+        )
         FormLogicFactory.create(form=form)
 
         version = FormVersion.objects.create(
@@ -186,7 +195,8 @@ class FormVersionRestoreAPITests(APITestCase):
         self.assertEqual(
             "Test Definition Internal 1", restored_form_definition.internal_name
         )
-        self.assertEqual("test-definition-1", form_step.slug)
+        self.assertEqual("test-step-1", form_step.slug)
+        self.assertEqual("test-definition-1", restored_form_definition.slug)
         self.assertEqual(
             {"components": [{"key": "test", "test": "1", "type": "textfield"}]},
             restored_form_definition.configuration,

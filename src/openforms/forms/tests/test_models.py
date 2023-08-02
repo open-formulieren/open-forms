@@ -293,7 +293,7 @@ class FormDefinitionTestCase(TestCase):
             form_definition_2.internal_name,
             _("{name} (copy)").format(name="A internal"),
         )
-        self.assertEqual(form_definition_3.slug, f"{form_definition_2.slug}-2")
+        self.assertEqual(form_definition_3.slug, form_definition_2.slug)
         self.assertEqual(
             form_definition_3.name, _("{name} (copy)").format(name="A form definition")
         )
