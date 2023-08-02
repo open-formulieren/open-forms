@@ -276,6 +276,11 @@ class JccAppointment(BasePlugin):
             FIELD_TO_XML_NAME[key]: value for key, value in client.details.items()
         }
 
+        # ensure start_at is naive, as JCC does not handle ISO-8601 datetimes with TZ
+        # information.
+        if not timezone.is_naive(start_at):
+            start_at = timezone.make_naive(start_at, timezone=TIMEZONE_AMS)
+
         jcc_client = get_client()
         try:
             factory = jcc_client.type_factory("http://www.genericCBS.org/GenericCBS/")
