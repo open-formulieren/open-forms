@@ -78,6 +78,10 @@ class FormDefinition(models.Model):
         default=dict,
     )
 
+    class Meta:
+        verbose_name = _("Form definition")
+        verbose_name_plural = _("Form definitions")
+
     def __str__(self):
         return self.admin_name
 
@@ -88,6 +92,22 @@ class FormDefinition(models.Model):
         super().save(*args, **kwargs)
 
         self._check_configuration_integrity()
+
+    def delete(self, using=None, keep_parents=False):
+        if Form.objects.filter(formstep__form_definition=self).exists():
+            raise ValidationError(
+                _(
+                    "This form definition cannot be removed because it is used in one or more forms."
+                )
+            )
+
+        return super().delete(using=using, keep_parents=keep_parents)
+
+    def clean(self):
+        from ..validators import validate_form_definition_is_reusable
+
+        super().clean()
+        validate_form_definition_is_reusable(self)
 
     def get_absolute_url(self):
         return reverse("forms:form_definition_detail", kwargs={"slug": self.slug})
@@ -159,16 +179,6 @@ class FormDefinition(models.Model):
             json.dumps(self.configuration, sort_keys=True).encode("utf-8")
         ).hexdigest()
 
-    def delete(self, using=None, keep_parents=False):
-        if Form.objects.filter(formstep__form_definition=self).exists():
-            raise ValidationError(
-                _(
-                    "This form definition cannot be removed because it is used in one or more forms."
-                )
-            )
-
-        return super().delete(using=using, keep_parents=keep_parents)
-
     @cached_property
     def configuration_wrapper(self) -> "FormioConfigurationWrapper":
         from openforms.formio.service import FormioConfigurationWrapper
@@ -182,10 +192,6 @@ class FormDefinition(models.Model):
             configuration=configuration, recursive=recursive, **kwargs
         )
 
-    def get_all_keys(self) -> List[str]:
-        keys = [field["key"] for field in self.iter_components(recursive=True)]
-        return keys
-
     def get_keys_for_email_confirmation(self) -> List[Tuple[str, str]]:
         """Return the key of fields to include in the confirmation email"""
         keys_for_email_confirmation = []
@@ -196,26 +202,6 @@ class FormDefinition(models.Model):
 
         return keys_for_email_confirmation
 
-    @cached_property
-    def sensitive_fields(self):
-        sensitive_fields = []
-
-        for component in self.iter_components(recursive=True):
-            if component.get("isSensitiveData"):
-                sensitive_fields.append(component["key"])
-
-        return sensitive_fields
-
     @property
     def admin_name(self):
         return self.internal_name or self.name
-
-    class Meta:
-        verbose_name = _("Form definition")
-        verbose_name_plural = _("Form definitions")
-
-    def clean(self):
-        from ..validators import validate_form_definition_is_reusable
-
-        super().clean()
-        validate_form_definition_is_reusable(self)
