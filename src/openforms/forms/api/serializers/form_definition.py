@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
@@ -55,6 +55,7 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
         return request.build_absolute_uri(admin_url)
 
 
+@extend_schema_serializer(deprecate_fields=["slug"])
 class FormDefinitionSerializer(
     PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
 ):
