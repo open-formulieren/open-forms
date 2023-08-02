@@ -3,9 +3,15 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from autoslug import AutoSlugField
 from ordered_model.models import OrderedModel
 
 from .utils import literal_getter
+
+
+def populate_from_form_definition_name(instance: "FormStep"):
+    existing_slug = instance.form_definition.slug
+    return existing_slug or instance.form_definition.name
 
 
 class FormStep(OrderedModel):
@@ -18,6 +24,14 @@ class FormStep(OrderedModel):
     form = models.ForeignKey("forms.Form", on_delete=models.CASCADE)
     form_definition = models.ForeignKey(
         "forms.FormDefinition", on_delete=models.PROTECT
+    )
+    slug = AutoSlugField(
+        _("slug"),
+        max_length=100,
+        populate_from=populate_from_form_definition_name,
+        editable=True,
+        unique_with="form",
+        null=True,
     )
 
     previous_text = models.CharField(
@@ -54,9 +68,17 @@ class FormStep(OrderedModel):
     get_save_text = literal_getter("save_text", "form_step_save_text")
     get_next_text = literal_getter("next_text", "form_step_next_text")
 
+    form_id: int
+    form_definition_id: int
+
     class Meta(OrderedModel.Meta):
         verbose_name = _("form step")
         verbose_name_plural = _("form steps")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["form", "slug"], name="form_slug_unique_together"
+            ),
+        ]
 
     def __str__(self):
         if self.form_id and self.form_definition_id:
