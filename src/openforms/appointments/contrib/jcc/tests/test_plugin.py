@@ -234,11 +234,18 @@ class PluginTests(MockConfigMixin, TestCase):
             text=mock_response("bookGovAppointmentResponse.xml"),
         )
 
-        result = self.plugin.create_appointment(
-            [product], location, datetime(2021, 8, 23, 8, 0, 0), client
-        )
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        result = self.plugin.create_appointment([product], location, start_at, client)
 
         self.assertEqual(result, "1234567890")
+        request = get_xpath(
+            fromstring(m.last_request.body),
+            "/soap-env:Envelope/soap-env:Body/ns0:bookGovAppointmentRequest",
+        )[  # type: ignore
+            0
+        ]
+        app_start_time = get_xpath(request, "appDetail/appStartTime")[0].text  # type: ignore
+        self.assertEqual(app_start_time, "2021-08-23T08:00:00")
 
     @requests_mock.Mocker()
     def test_create_appointment_multiple_products(self, m):
