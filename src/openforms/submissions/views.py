@@ -183,7 +183,7 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
 
         # furl adds paths with the /= operator
         form_resume_url /= "stap"
-        form_resume_url /= target_step.form_step.form_definition.slug
+        form_resume_url /= target_step.form_step.slug
         # Add the submission uuid to the query param
         form_resume_url.add({"submission_uuid": submission.uuid})
         return form_resume_url.url

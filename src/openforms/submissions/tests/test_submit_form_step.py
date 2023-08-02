@@ -66,7 +66,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             response.json(),
             {
                 "id": str(submission_step.uuid),
-                "slug": self.step1.form_definition.slug,
+                "slug": self.step1.slug,
                 "formStep": {
                     "index": 0,
                     "configuration": {
@@ -185,7 +185,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             response.json(),
             {
                 "id": str(submission_step.uuid),
-                "slug": step2.form_definition.slug,
+                "slug": step2.slug,
                 "formStep": {
                     "index": 1,
                     "configuration": {

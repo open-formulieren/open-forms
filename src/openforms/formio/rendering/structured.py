@@ -30,7 +30,7 @@ def render_json(submission: "Submission") -> JSONObject:
     current_step_slug = None
     for node in renderer:
         if isinstance(node, SubmissionStepNode):
-            current_step_slug = node.step.form_step.form_definition.slug
+            current_step_slug = node.step.form_step.slug
             data[current_step_slug] = {}
             continue
 

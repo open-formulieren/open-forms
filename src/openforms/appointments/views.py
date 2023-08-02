@@ -49,15 +49,13 @@ class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
                 "redirecting user to first step in form",
                 submission.uuid,
             )
-            next_step = submission.form.formstep_set.select_related(
-                "form_definition"
-            ).first()
+            next_step = submission.form.formstep_set.first()
 
         assert next_step is not None, "Form has no steps to redirect to!"
 
         f = submission.cleaned_form_url
         f /= "stap"
-        f /= next_step.form_definition.slug
+        f /= next_step.slug
         f.add({"submission_uuid": submission.uuid})
 
         return f.url

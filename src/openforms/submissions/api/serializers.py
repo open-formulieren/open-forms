@@ -206,10 +206,7 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
 
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     form_step = ContextAwareFormStepSerializer(read_only=True)
-    slug = serializers.SlugField(
-        source="form_step.form_definition.slug",
-        read_only=True,
-    )
+    slug = serializers.SlugField(source="form_step.slug", read_only=True)
     data = serializers.JSONField(
         label=_("data"),
         required=False,
