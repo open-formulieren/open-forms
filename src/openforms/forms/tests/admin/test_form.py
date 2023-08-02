@@ -232,7 +232,7 @@ class FormAdminImportExportTests(WebTest):
         )
 
     @override_settings(LANGUAGE_CODE="en")
-    def test_form_admin_import_warning_created_form_definitions(self):
+    def test_form_admin_import_feedback_messages(self):
         form = FormFactory.create(slug="test")
         form_definition = FormDefinitionFactory.create(slug="testform")
 
@@ -326,14 +326,6 @@ class FormAdminImportExportTests(WebTest):
 
         response = response.follow()
 
-        warning_message = response.html.find("li", {"class": "warning"})
-        self.assertEqual(
-            warning_message.text,
-            _("Form definitions were created with the following slugs: {}").format(
-                "['testform-2']"
-            ),
-        )
-
         success_message = response.html.find("li", {"class": "success"})
         self.assertEqual(success_message.text, _("Form successfully imported!"))
 
@@ -351,7 +343,7 @@ class FormAdminImportExportTests(WebTest):
         )
         self.assertEqual(form_definition.name, "testform")
         self.assertEqual(form_definition.internal_name, "test internal")
-        self.assertEqual(form_definition.slug, "testform-2")
+        self.assertEqual(form_definition.slug, "testform")
 
     @tag("gh-2851")
     def test_form_admin_import_with_english_default(self):

@@ -3,7 +3,7 @@ import logging
 import random
 import string
 import zipfile
-from typing import Any, List
+from typing import Any
 from uuid import uuid4
 
 from django.conf import settings
@@ -141,7 +141,7 @@ def import_form(import_file, existing_form_instance=None):
             if f"{resource}.json" in zip_file.namelist():
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
-    return import_form_data(import_data, existing_form_instance)
+    import_form_data(import_data, existing_form_instance)
 
 
 def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: bool):
@@ -174,12 +174,12 @@ def check_form_definition(uuid: str, attrs: dict[str, Any], for_existing_form: b
 @transaction.atomic
 @override(language=settings.LANGUAGE_CODE)
 def import_form_data(
-    import_data: dict, existing_form_instance: Form = None
-) -> List[FormDefinition]:
+    import_data: dict,
+    existing_form_instance: Form | None = None,
+) -> None:
     uuid_mapping = {}
 
     request = _get_mock_request()
-    created_form_definitions = []
 
     created_form = None
 
@@ -302,7 +302,6 @@ def import_form_data(
                     # based on the form definition configurations.
                     FormVariable.objects.create_for_form(created_form)
                 if resource == "formDefinitions" and is_create:
-                    created_form_definitions.append(instance)
                     uuid_mapping[old_uuid] = str(instance.uuid)
 
                 # The FormSerializer/FormStepSerializer/FormLogicSerializer have the uuid as a read only field.
@@ -330,11 +329,7 @@ def import_form_data(
                     uuid_mapping[old_uuid] = str(deserialized.instance.uuid)
 
                 else:
-                    import bpdb
-
-                    bpdb.set_trace()
                     raise e
-    return created_form_definitions
 
 
 def remove_key_from_dict(dictionary, key):
