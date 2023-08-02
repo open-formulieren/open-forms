@@ -4,6 +4,7 @@
     "config.RichTextColor",
     "forms.FormLogic",
     "forms.FormsExport",
+    "forms.FormStep",
     "jcc.JccConfig",
     "kadaster.KadasterApiConfig",
     "kvk.KVKConfig",
