@@ -6744,7 +6744,6 @@ components:
       required:
       - configuration
       - name
-      - slug
       - url
     FormDefinitionDetail:
       type: object
@@ -6795,7 +6794,6 @@ components:
       required:
       - configuration
       - name
-      - slug
       - url
       - usedIn
     FormDefinitionDetailENTranslations:

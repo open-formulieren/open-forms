@@ -96,6 +96,9 @@ class FormDefinitionSerializer(
             },
             # TODO: enable this in v3, deprecate writing this field
             # "name": {"read_only": True},  # writing is done via the `translations` field
+            "slug": {
+                "required": False,
+            },
             "configuration": {
                 "validators": [
                     FormIOComponentsValidator(),

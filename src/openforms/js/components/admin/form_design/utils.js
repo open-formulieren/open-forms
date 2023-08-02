@@ -1,3 +1,6 @@
+/*
+global URLify;
+ */
 import FormioUtils from 'formiojs/utils';
 
 const stripIdFromComponents = obj => {
@@ -172,6 +175,9 @@ const getPathToComponent = (configuration, key) => {
   return '';
 };
 
+const slugify = (value, maxLength = 100, allowUnicode = false) =>
+  URLify(value, maxLength, allowUnicode);
+
 export {
   stripIdFromComponents,
   getFormComponents,
@@ -182,4 +188,5 @@ export {
   getFormStep,
   parseValidationErrors,
   getPathToComponent,
+  slugify,
 };

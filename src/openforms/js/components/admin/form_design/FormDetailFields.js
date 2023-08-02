@@ -1,8 +1,5 @@
-/*
-global URLify;
- */
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -10,22 +7,20 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
-import {FormContext} from './Context';
 import TinyMCEEditor from './Editor';
 import LanguageTabs from './LanguageTabs';
+import {slugify} from './utils';
 
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
 const FormDetailFields = ({form: {slug, translations}, onChange}) => {
-  const {languages} = useContext(FormContext);
-
   const setFormSlug = event => {
     // do nothing if there's already a slug set
     if (slug) return;
 
     // sort-of taken from Django's jquery prepopulate module
-    const newSlug = URLify(event.target.value, 100, false);
+    const newSlug = slugify(event.target.value);
     onChange({
       target: {
         name: 'form.slug',
