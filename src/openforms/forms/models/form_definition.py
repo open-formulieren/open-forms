@@ -47,9 +47,7 @@ class FormDefinition(models.Model):
         max_length=50,
         help_text=_("internal name for management purposes"),
     )
-    slug = AutoSlugField(
-        _("slug"), max_length=100, populate_from="name", editable=True, unique=True
-    )
+    slug = AutoSlugField(_("slug"), max_length=100, populate_from="name", editable=True)
     configuration = models.JSONField(
         _("Form.io configuration"),
         help_text=_("The form definition as Form.io JSON schema"),
