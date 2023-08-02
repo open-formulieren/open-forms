@@ -15,7 +15,7 @@ class LogicActionTypes(models.TextChoices):
     variable = "variable", _("Set the value of a variable")
     fetch_from_service = "fetch-from-service", _("Fetch the value from a service")
     set_registration_backend = "set-registration-backend", _(
-        "Set the registration backend to use for the form"
+        "Set the registration backend to use for the submission"
     )
 
     @classmethod

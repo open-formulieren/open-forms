@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.translation import ugettext as _
 
 from ..models import Form, FormDefinition, FormStep
@@ -7,6 +7,7 @@ from .factories import (
     FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
 )
 
@@ -33,6 +34,32 @@ class FormTestCase(TestCase):
         form._is_deleted = True
         self.assertEqual(
             str(form), _("{name} (deleted)").format(name=form.internal_name)
+        )
+
+    def test_registration_backend_display_single_backend(self):
+        form: Form = FormFactory.create()
+        FormRegistrationBackendFactory.create(form=form, key="fst", name="Backend #1")
+        self.assertEqual(form.get_registration_backend_display(), "Backend #1")
+
+    def test_registration_backend_display_multiple_backends(self):
+        form: Form = FormFactory.create()
+        FormRegistrationBackendFactory.create(form=form, key="fst", name="Backend #1")
+        FormRegistrationBackendFactory.create(form=form, key="snd", name="Backend #2")
+
+        self.assertEqual(
+            form.get_registration_backend_display(), "Backend #1, Backend #2"
+        )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_registration_backend_display_marks_misconfigs(self):
+        form: Form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form, key="fst", name="Backend #1", backend="😭-admin-removed-my-plugin"
+        )
+        FormRegistrationBackendFactory.create(form=form, key="snd", name="Backend #2")
+
+        self.assertEqual(
+            form.get_registration_backend_display(), "Backend #1 (invalid), Backend #2"
         )
 
     def test_login_required(self):

@@ -313,14 +313,18 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
-    def get_registration_backend_display(self):
-        choices = dict(registration_register.get_choices())
-        return choices.get(
-            self.registration_backend,
-            "-",
+    def get_registration_backend_display(self) -> str:
+        return (
+            ", ".join(
+                backend.name
+                if backend.backend in registration_register
+                else _("{backend} (invalid)").format(backend=backend.name)
+                for backend in self.registration_backends.all()
+            )
+            or "-"
         )
 
-    get_registration_backend_display.short_description = _("registration backend")
+    get_registration_backend_display.short_description = _("registration backend(s)")
 
     def get_payment_backend_display(self):
         if not self.payment_backend:
