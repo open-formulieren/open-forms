@@ -1,7 +1,7 @@
 import logging
 import warnings
 from contextlib import contextmanager
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from functools import wraps
 from typing import Callable, List, ParamSpec, TypeVar
 
@@ -170,16 +170,15 @@ class JccAppointment(BasePlugin):
     @with_graceful_default(default=[])
     def get_dates(
         self,
-        products: List[Product],
+        products: list[Product],
         location: Location,
         start_at: date | None = None,
         end_at: date | None = None,
     ) -> List[date]:
         client = get_client()
         product_ids = squash_ids(products)
-
-        start_at = start_at or date.today()
-        end_at = end_at or (start_at + timedelta(days=14))
+        now_in_ams = timezone.make_naive(timezone.now(), timezone=TIMEZONE_AMS)
+        start_at = start_at or now_in_ams.today()
 
         with log_soap_errors(
             "Could not retrieve dates for products '%s' at location '%s' between %s - %s",
@@ -189,9 +188,7 @@ class JccAppointment(BasePlugin):
             end_at,
         ):
             max_end_date = client.service.getGovLatestPlanDate(productId=product_ids)
-            if end_at > max_end_date:
-                end_at = max_end_date
-
+            end_at = min(end_at, max_end_date) if end_at else max_end_date
             days = client.service.getGovAvailableDays(
                 locationID=location.identifier,
                 productID=product_ids,

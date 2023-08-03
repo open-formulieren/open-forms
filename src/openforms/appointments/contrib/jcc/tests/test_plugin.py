@@ -128,24 +128,40 @@ class PluginTests(MockConfigMixin, TestCase):
         self.assertEqual(locations[0].identifier, "1")
         self.assertEqual(locations[0].name, "Maykin Media")
 
-    def test_get_dates(self):
+    @requests_mock.mock()
+    def test_get_dates(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLatestPlanDateResponse.xml"),
+            additional_matcher=lambda req: "getGovLatestPlanDateRequest" in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAvailableDaysResponse.xml"),
+            additional_matcher=lambda req: "getGovAvailableDaysRequest" in req.text,
+        )
 
-        with requests_mock.mock() as m:
-            m.post(
-                "http://example.com/soap11",
-                [
-                    {"text": mock_response("getGovLatestPlanDateResponse.xml")},
-                    {"text": mock_response("getGovAvailableDaysResponse.xml")},
-                ],
-            )
+        dates = self.plugin.get_dates([product], location)
 
-            dates = self.plugin.get_dates([product], location)
-            self.assertEqual(
-                dates,
-                [date(2021, 8, 19), date(2021, 8, 20), date(2021, 8, 23)],
-            )
+        self.assertEqual(
+            dates,
+            [date(2021, 8, 19), date(2021, 8, 20), date(2021, 8, 23)],
+        )
+        available_days_request = next(
+            req for req in m.request_history if "getGovAvailableDaysRequest" in req.text
+        )
+        xml_doc = fromstring(available_days_request.body)
+        request = get_xpath(
+            xml_doc,
+            "/soap-env:Envelope/soap-env:Body/ns0:getGovAvailableDaysRequest",
+        )[  # type: ignore
+            0
+        ]
+        # date in getGovLatestPlanDateResponse.xml
+        end_date = get_xpath(request, "endDate")[0].text  # type: ignore
+        self.assertEqual(end_date, "2022-06-15")
 
     @requests_mock.mock()
     def test_get_times(self, m):
