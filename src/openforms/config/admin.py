@@ -94,6 +94,15 @@ class GlobalConfigurationAdmin(
             },
         ),
         (
+            _("Truth"),
+            {
+                "fields": (
+                    "ask_truth_consent",
+                    "truth_label",
+                ),
+            },
+        ),
+        (
             _("Privacy"),
             {
                 "fields": (

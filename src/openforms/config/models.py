@@ -417,6 +417,28 @@ class GlobalConfiguration(SingletonModel):
         ],
     )
 
+    # Truth declaration related fields
+    ask_truth_consent = models.BooleanField(
+        _("ask truth consent"),
+        default=True,
+        help_text=_(
+            "If enabled, the user will have to agree that he filled the form out truthfully before submitting it."
+        ),
+    )
+    truth_label = HTMLField(
+        _("truth label"),
+        blank=True,
+        help_text=_(
+            "The label of the checkbox that prompts the user to agree that he filled out the form truthfully."
+        ),
+        default="Ik verklaar dat ik deze aanvraag naar waarheid heb ingevuld en geen informatie heb verzwegen.",
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+        ],
+    )
+
     # debug/feature flags
     enable_demo_plugins = models.BooleanField(
         _("enable demo plugins"),
