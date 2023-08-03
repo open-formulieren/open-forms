@@ -9,6 +9,8 @@ from glom import GlomError, Path, glom
 from zds_client.oas import SchemaFetcher
 from zgw_consumers.models import Service
 
+from ...attributes_generator import OpenApi3AttributesGenerator
+
 
 def json_path(obj, reference):
     # simplistic json-path
@@ -248,6 +250,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            "--parser",
+            choices=["openapi3-parser", "old-parser"],
+            type=str,
+            help="Whether to use the 'old' parser or the openapi3-parser",
+            default="old-parser",
+        )
+        parser.add_argument(
             "--schema",
             action="store",
             type=str,
@@ -285,6 +294,16 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
+        if options["parser"] == "openapi3-parser":
+            generator = OpenApi3AttributesGenerator(
+                url=options["url"],
+                schema=options["schema"],
+                command=format_command(options, ["parser", "url", "schema"]),
+            )
+            rendered_template = generator.generate_attributes()
+            self.stdout.write(rendered_template)
+            return
+
         if options["service"] and options["url"]:
             self.stderr.write("use either --service or --url (not both)")
             return
