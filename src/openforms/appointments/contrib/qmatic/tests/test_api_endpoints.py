@@ -41,7 +41,7 @@ class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
         products = response.json()
         self.assertEqual(len(products), 2)
         self.assertEqual(products[0]["identifier"], "54b3482204c11bedc8b0a7acbffa308")
-        self.assertEqual(products[0]["code"], None)
+        self.assertEqual(products[0]["code"], "")
         self.assertEqual(products[0]["name"], "Service 01")
 
     def test_get_products_returns_403_when_no_active_sessions(self):

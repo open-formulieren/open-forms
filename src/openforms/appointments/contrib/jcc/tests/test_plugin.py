@@ -69,6 +69,8 @@ class PluginTests(MockConfigMixin, TestCase):
         self.assertEqual(other_products[0].identifier, "5")
         self.assertEqual(other_products[0].code, "RIJAAN")
         self.assertEqual(other_products[0].name, "Rijbewijs aanvraag (Drivers license)")
+        body = m.last_request.text
+        self.assertIn("getGovAvailableProductsByProductRequest", body)
 
     @requests_mock.Mocker()
     def test_get_all_locations(self, m):

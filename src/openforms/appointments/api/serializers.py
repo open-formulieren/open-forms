@@ -59,6 +59,18 @@ class ProductSerializer(serializers.Serializer):
         ref_name = "AppointmentProduct"
 
 
+class ProductInputSerializer(serializers.Serializer):
+    product_id = serializers.ListField(
+        child=ProductIDField(help_text=_("ID of a selected product.")),
+        label=_("Product IDs"),
+        help_text=_(
+            "One or more product IDs already selected, which may limit the collection "
+            "of additional products to select."
+        ),
+        required=False,
+    )
+
+
 class LocationSerializer(serializers.Serializer):
     identifier = serializers.CharField(
         label=_("identifier"), help_text=_("ID of the location")
