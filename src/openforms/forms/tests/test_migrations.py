@@ -848,3 +848,44 @@ class TestAddShowInSummaryDefault(TestMigrations):
                 "showInSummary": False,
             },
         )
+
+
+class TestMoveFormStepSlug(TestMigrations):
+    app = "forms"
+    migrate_from = "0085_auto_20230802_1025"
+    migrate_to = "0086_migrate_form_definition_slugs"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+        Form = apps.get_model("forms", "Form")
+
+        configuration = {"components": []}
+        fd1 = FormDefinition.objects.create(
+            name="FD 1", slug="fd-1", configuration=configuration
+        )
+        fd2 = FormDefinition.objects.create(
+            name="FD 2", slug="fd-2", is_reusable=True, configuration=configuration
+        )
+
+        form1 = Form.objects.create(name="Form 1")
+        form2 = Form.objects.create(name="Form 2")
+
+        FormStep.objects.create(form=form1, form_definition=fd1, order=0)
+        FormStep.objects.create(form=form1, form_definition=fd2, order=1)
+        FormStep.objects.create(form=form2, form_definition=fd2, order=0)
+
+    def test_slugs_filled_from_form_definition(self):
+        FormStep = self.apps.get_model("forms", "FormStep")
+
+        form1_step_order_to_slug = {
+            step.order: step.slug
+            for step in FormStep.objects.filter(form__name="Form 1")
+        }
+        self.assertEqual(form1_step_order_to_slug, {0: "fd-1", 1: "fd-2"})
+
+        form2_step_order_to_slug = {
+            step.order: step.slug
+            for step in FormStep.objects.filter(form__name="Form 2")
+        }
+        self.assertEqual(form2_step_order_to_slug, {0: "fd-2"})

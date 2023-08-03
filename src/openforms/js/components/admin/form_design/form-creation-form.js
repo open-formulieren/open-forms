@@ -67,6 +67,7 @@ import {
   getPathToComponent,
   getUniqueKey,
   parseValidationErrors,
+  slugify,
   updateKeyReferencesInLogic,
 } from './utils';
 import VariablesEditor from './variables/VariablesEditor';
@@ -349,7 +350,7 @@ function reducer(draft, action) {
       } else {
         // re-using an existing form definition
         const fd = draft.formDefinitions.find(fd => fd.url === formDefinitionUrl);
-        const {configuration, name, internalName, isReusable, slug, translations} = fd;
+        const {configuration, name, internalName, isReusable, translations} = fd;
         const {url} = draft.formSteps[index];
 
         const stepTranslations = Object.fromEntries(
@@ -370,7 +371,7 @@ function reducer(draft, action) {
           name,
           internalName,
           isReusable,
-          slug,
+          slug: slugify(name),
           url,
           isNew: false,
           validationErrors: [],

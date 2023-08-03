@@ -1,6 +1,3 @@
-/*
-global URLify;
- */
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
@@ -21,6 +18,7 @@ import MissingComponentTranslationsWarning from './MissingComponentTranslationsW
 import PluginWarning from './PluginWarning';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import useDetectSimpleLogicErrors from './useDetectSimpleLogicErrors';
+import {slugify} from './utils';
 
 const emptyConfiguration = {
   display: 'form',
@@ -60,11 +58,10 @@ const FormStepDefinition = ({
 
     // sort-of taken from Django's jquery prepopulate module
     const name = translations[langCode].name;
-    const newSlug = URLify(name, 100, false);
     onFieldChange({
       target: {
         name: 'slug',
-        value: newSlug,
+        value: slugify(name),
       },
     });
   };

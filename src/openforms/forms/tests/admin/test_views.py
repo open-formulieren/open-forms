@@ -248,8 +248,8 @@ class TestImportView(WebTest):
             messages[0].message,
         )
 
-    @patch("openforms.forms.admin.views.ImportFormsView._import_single_form")
-    def test_single_import(self, m_single_import):
+    @patch("openforms.forms.admin.views.import_form")
+    def test_single_import(self, m_import):
         file = io.BytesIO()
         with ZipFile(file, mode="w") as zf:
             with zf.open("forms.json", "w") as f:
@@ -291,7 +291,7 @@ class TestImportView(WebTest):
         submission_response = html_form.submit("_import")
 
         self.assertEqual(302, submission_response.status_code)
-        m_single_import.assert_called()
+        m_import.assert_called()
 
         submission_response = submission_response.follow()
         messages = list(submission_response.context.get("messages"))

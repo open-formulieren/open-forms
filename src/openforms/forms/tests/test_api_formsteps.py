@@ -2,7 +2,7 @@ import uuid
 from unittest.mock import patch
 
 from django.contrib.auth.models import Permission
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -19,6 +19,12 @@ from openforms.translations.tests.utils import make_translated
 
 from ..models import FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
+
+
+def assign_change_form_permissions(user) -> None:
+    user.user_permissions.add(Permission.objects.get(codename="change_form"))
+    user.is_staff = True
+    user.save()
 
 
 class FormsStepsAPITests(APITestCase):
@@ -40,9 +46,7 @@ class FormsStepsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_form_step_successful(self):
-        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
-        self.user.is_staff = True
-        self.user.save()
+        assign_change_form_permissions(self.user)
         url = reverse(
             "api:form-steps-list", kwargs={"form_uuid_or_slug": self.step.form.uuid}
         )
@@ -804,6 +808,53 @@ class FormsStepsAPITests(APITestCase):
         )
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+    @tag("gh-2017")
+    def test_deprecated_form_definition_slug(self):
+        """
+        Assert that the form definition slug is still functional.
+
+        Open Forms 2.3.0 deprecates the slug on the form definition in favour of the
+        slug on the form step. However, to stay backwards compatible, if no or an
+        empty form step slug is provided, the step should take the slug from the
+        form definition.
+        """
+        assign_change_form_permissions(self.user)
+        form = FormFactory.create()
+        fd_with_slug = FormDefinitionFactory.create(slug="fd-with-slug")
+        url = reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid})
+        fd_url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": fd_with_slug.uuid}
+        )
+        data = {"formDefinition": f"http://testserver{fd_url}", "index": 0}
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        form_step = FormStep.objects.get(form=form)
+        self.assertEqual(form_step.slug, "fd-with-slug")
+
+    @tag("gh-2017")
+    def test_with_non_unique_fd_slugs(self):
+        # when inferring the form step slug from the form definition, these slugs
+        # must still be unique for the same form.
+        assign_change_form_permissions(self.user)
+        form = FormFactory.create()
+        url = reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid})
+        fd_with_slug, fd_with_identical_slug = FormDefinitionFactory.create_batch(
+            2, slug="duplicated-slug"
+        )
+
+        for fd in fd_with_slug, fd_with_identical_slug:
+            fd_url = reverse("api:formdefinition-detail", kwargs={"uuid": fd.uuid})
+            data = {"formDefinition": f"http://testserver{fd_url}", "index": 0}
+            response = self.client.post(url, data=data)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        form_steps = FormStep.objects.filter(form=form)
+        self.assertEqual(len(form_steps), 2)
+        slugs = {form_step.slug for form_step in form_steps}
+        self.assertEqual(len(slugs), 2)  # we expect two unique slugs
 
 
 class FormStepsAPITranslationTests(APITestCase):

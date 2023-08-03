@@ -117,7 +117,7 @@ class ObjectsAPIBackendTests(TestCase):
             language_code="en",
         )
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -314,7 +314,7 @@ class ObjectsAPIBackendTests(TestCase):
             submitted_data={"voornaam": "Foo"},
         )
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -493,7 +493,7 @@ class ObjectsAPIBackendTests(TestCase):
             submitted_data={"voornaam": "Foo"},
         )
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -675,7 +675,7 @@ class ObjectsAPIBackendTests(TestCase):
             language_code="en",
         )
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -901,7 +901,7 @@ class ObjectsAPIBackendTests(TestCase):
             language_code="en",
         )
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -1065,7 +1065,7 @@ class ObjectsAPIBackendTests(TestCase):
             completed=True,
         )
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step, file_name="attachment1.jpg"
@@ -1320,7 +1320,7 @@ class ObjectsAPIBackendTests(TestCase):
             language_code="en",
         )
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -1573,7 +1573,7 @@ class ObjectsAPIBackendTests(TestCase):
         )
 
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -1746,7 +1746,7 @@ class ObjectsAPIBackendTests(TestCase):
         )
 
         submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
+        step_slug = submission_step.form_step.slug
 
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),

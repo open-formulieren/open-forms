@@ -6723,6 +6723,7 @@ components:
           type: string
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
+          deprecated: true
         configuration:
           type: object
           additionalProperties: {}
@@ -6743,7 +6744,6 @@ components:
       required:
       - configuration
       - name
-      - slug
       - url
     FormDefinitionDetail:
       type: object
@@ -6766,6 +6766,7 @@ components:
           type: string
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
+          deprecated: true
         configuration:
           type: object
           additionalProperties: {}
@@ -6793,7 +6794,6 @@ components:
       required:
       - configuration
       - name
-      - slug
       - url
       - usedIn
     FormDefinitionDetailENTranslations:
@@ -7160,7 +7160,9 @@ components:
           type: integer
         slug:
           type: string
-          readOnly: true
+          nullable: true
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
         configuration:
           type: object
           additionalProperties: {}
@@ -7201,7 +7203,6 @@ components:
       - isReusable
       - loginRequired
       - name
-      - slug
       - url
       - uuid
     FormStepENTranslations:
@@ -7724,6 +7725,8 @@ components:
           readOnly: true
         slug:
           type: string
+          nullable: true
+          maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
         formDefinition:
           type: string
@@ -7738,7 +7741,6 @@ components:
       required:
       - formDefinition
       - index
-      - slug
       - url
       - uuid
     NestedSubmissionPaymentDetail:
@@ -8052,6 +8054,7 @@ components:
           type: string
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
+          deprecated: true
         configuration:
           type: object
           additionalProperties: {}
@@ -8080,7 +8083,9 @@ components:
           type: integer
         slug:
           type: string
-          readOnly: true
+          nullable: true
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
         configuration:
           type: object
           additionalProperties: {}

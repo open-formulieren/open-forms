@@ -36,7 +36,6 @@ class FormStepLiteralsSerializer(serializers.Serializer):
 class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")
     index = serializers.IntegerField(source="order")
-    slug = serializers.SlugField(source="form_definition.slug")
     literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
         queryset=FormStep.objects,
@@ -80,7 +79,6 @@ class FormStepSerializer(
     internal_name = serializers.CharField(
         source="form_definition.internal_name", read_only=True
     )
-    slug = serializers.CharField(source="form_definition.slug", read_only=True)
     literals = FormStepLiteralsSerializer(source="*", required=False)
     url = NestedHyperlinkedRelatedField(
         source="*",

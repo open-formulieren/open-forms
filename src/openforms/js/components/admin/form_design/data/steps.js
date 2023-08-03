@@ -39,7 +39,6 @@ const updateOrCreateSingleFormStep = async (
     // FIXME - name should not be required in backend for form designer
     name: step.translations?.[DEFAULT_LANGUAGE]?.name,
     internalName: step.internalName,
-    slug: step.slug,
     // Remove any references to the custom translations key in the configuration
     configuration: step.configuration,
     loginRequired: step.loginRequired,
@@ -82,6 +81,7 @@ const updateOrCreateSingleFormStep = async (
   const stepEndpoint = step.url ? step.url : `${formUrl}/steps`;
   const stepData = {
     index: index,
+    slug: step.slug,
     formDefinition: definitionResponse.data.url,
     translations: formStepTranslations,
   };

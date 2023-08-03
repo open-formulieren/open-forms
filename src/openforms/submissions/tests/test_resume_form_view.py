@@ -52,7 +52,7 @@ class SubmissionResumeViewTests(TestCase):
         f = furl(submission.form_url)
         # furl adds paths with the /= operator
         f /= "stap"
-        f /= submission.get_last_completed_step().form_step.form_definition.slug
+        f /= submission.get_last_completed_step().form_step.slug
         # Add the submission uuid to the query param
         f.add({"submission_uuid": submission.uuid})
 
@@ -211,7 +211,7 @@ class SubmissionResumeViewTests(TestCase):
         )
         expected_redirect_url = furl(submission.form_url)
         expected_redirect_url /= "stap"
-        expected_redirect_url /= form_step.form_definition.slug
+        expected_redirect_url /= form_step.slug
         expected_redirect_url.args["submission_uuid"] = submission.uuid
 
         # Add form_auth to session, as the authentication plugin would do it
@@ -408,7 +408,7 @@ class SubmissionResumeViewTests(TestCase):
         f = furl("http://maykinmedia.nl/some-form/")
         # furl adds paths with the /= operator
         f /= "stap"
-        f /= submission.get_last_completed_step().form_step.form_definition.slug
+        f /= submission.get_last_completed_step().form_step.slug
         # Add the submission uuid to the query param
         f.add({"submission_uuid": submission.uuid})
 

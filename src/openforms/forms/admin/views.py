@@ -82,7 +82,7 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
 
         if not is_bulk_import:
             try:
-                self._import_single_form(import_file)
+                import_form(import_file)
             except ValidationError as exc:
                 messages.error(
                     self.request,
@@ -103,16 +103,6 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
         return _(
             "The bulk import is being processed! The imported forms will soon be available."
         )
-
-    def _import_single_form(self, import_file):
-        created_fds = import_form(import_file)
-        if created_fds:
-            messages.warning(
-                self.request,
-                _("Form definitions were created with the following slugs: {}").format(
-                    created_fds
-                ),
-            )
 
     def _bulk_import_forms(self, import_file):
         name = f"imports/import_forms_{uuid4()}.zip"

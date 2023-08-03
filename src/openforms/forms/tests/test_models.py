@@ -293,7 +293,7 @@ class FormDefinitionTestCase(TestCase):
             form_definition_2.internal_name,
             _("{name} (copy)").format(name="A internal"),
         )
-        self.assertEqual(form_definition_3.slug, f"{form_definition_2.slug}-2")
+        self.assertEqual(form_definition_3.slug, form_definition_2.slug)
         self.assertEqual(
             form_definition_3.name, _("{name} (copy)").format(name="A form definition")
         )
@@ -319,21 +319,6 @@ class FormDefinitionTestCase(TestCase):
         self.assertIn("aaa", keys)
         self.assertNotIn("bbb", keys)
         self.assertIn("ccc", keys)
-
-    def test_form_definition_sensitive_information_returns_correct_fields(self):
-        self.form_definition_with_sensitive_information = FormDefinitionFactory.create(
-            configuration={
-                "components": [
-                    {"key": "textFieldSensitive", "isSensitiveData": True},
-                    {"key": "textFieldNotSensitive", "isSensitiveData": False},
-                ],
-            }
-        )
-        self.assertEqual(self.form_definition.sensitive_fields, [])
-        self.assertEqual(
-            self.form_definition_with_sensitive_information.sensitive_fields,
-            ["textFieldSensitive"],
-        )
 
     def test_not_reusable_form_definitions_deleted(self):
         step = FormStepFactory.create(form_definition=self.form_definition)

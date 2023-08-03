@@ -538,7 +538,7 @@ class Submission(models.Model):
                 if current_step != {}:
                     summary_data.append(current_step)
                 current_step = {
-                    "slug": node.step.form_step.form_definition.slug,
+                    "slug": node.step.form_step.slug,
                     "name": node.render(),
                     "data": [],
                 }

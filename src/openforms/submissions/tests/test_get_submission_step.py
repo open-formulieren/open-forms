@@ -89,7 +89,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = {
             "id": None,  # there is no submission step created yet
-            "slug": self.step.form_definition.slug,
+            "slug": self.step.slug,
             "formStep": {
                 "index": 0,
                 "configuration": {
@@ -135,7 +135,7 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = {
             "id": None,  # there is no submission step created yet
-            "slug": self.step.form_definition.slug,
+            "slug": self.step.slug,
             "formStep": {
                 "index": 0,
                 "configuration": {
