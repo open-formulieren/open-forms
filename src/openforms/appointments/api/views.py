@@ -226,7 +226,7 @@ class TimesListView(ListMixin, APIView):
 
 
 @extend_schema(
-    summary=_("Get required customer field details for a given product"),
+    summary=_("Get customer field details for a given product"),
     parameters=[PRODUCT_QUERY_PARAMETER],
     responses={
         200: OpenApiResponse(
@@ -243,7 +243,7 @@ class TimesListView(ListMixin, APIView):
         ),
     },
 )
-class RequiredCustomerFieldsListView(APIView):
+class CustomerFieldsListView(APIView):
     """
     Retrieve the customer fields required for the appointment.
 

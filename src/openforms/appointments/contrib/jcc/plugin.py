@@ -262,6 +262,12 @@ class JccAppointment(BasePlugin):
                 productID=product_ids
             )
 
+        # add the additionally required fields from our configuration, which are *not*
+        # required in JCC itself
+        config = JccConfig.get_solo()
+        assert isinstance(config, JccConfig)
+        required_fields += config.required_customer_fields
+
         # Required implies visible, last name is always required and JCC does not return
         # it in the required fields list.
         all_field_names = list(FIELD_TO_FORMIO_COMPONENT.keys())

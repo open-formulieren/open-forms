@@ -1,5 +1,7 @@
 import re
+from contextlib import contextmanager
 from datetime import date, datetime
+from unittest.mock import patch
 
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
@@ -18,8 +20,18 @@ from ....core import book
 from ....exceptions import AppointmentException
 from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, VISIBLE_EXCLUDE, CustomerFields
+from ..models import JccConfig
 from ..plugin import JccAppointment
 from .utils import WSDL, MockConfigMixin, get_xpath, mock_response
+
+
+@contextmanager
+def mock_jcc_config_plugin(new_config: JccConfig):
+    with patch(
+        "openforms.appointments.contrib.jcc.plugin.JccConfig.get_solo",
+        return_value=new_config,
+    ):
+        yield
 
 
 @disable_logging()
@@ -202,7 +214,8 @@ class PluginTests(MockConfigMixin, TestCase):
             ),
         ]
 
-        fields = self.plugin.get_customer_fields(products)
+        with mock_jcc_config_plugin(self.jcc_config):
+            fields = self.plugin.get_customer_fields(products)
 
         self.assertEqual(len(fields), 4)
         last_name, dob, tel, email = fields
@@ -262,9 +275,10 @@ class PluginTests(MockConfigMixin, TestCase):
             ),
         )
 
-        fields = self.plugin.get_customer_fields(
-            [Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")]
-        )
+        with mock_jcc_config_plugin(self.jcc_config):
+            fields = self.plugin.get_customer_fields(
+                [Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")]
+            )
 
         fields_by_key = {field["key"]: field for field in fields}
         self.assertIn("LastName", fields_by_key)
@@ -282,7 +296,8 @@ class PluginTests(MockConfigMixin, TestCase):
                 self.assertIn(field, fields_by_key)
 
     @requests_mock.Mocker()
-    def test_get_customer_fields_all_required(self, m):
+    def test_get_customer_fields_additional_required_in_config(self, m):
+        self.jcc_config.required_customer_fields = [CustomerFields.initials.value]
         m.post(
             "http://example.com/soap11",
             additional_matcher=lambda req: "GetRequiredClientFieldsRequest" in req.text,
@@ -292,23 +307,23 @@ class PluginTests(MockConfigMixin, TestCase):
             "http://example.com/soap11",
             additional_matcher=lambda req: "GetAppointmentFieldSettingsRequest"
             in req.text,
-            text=mock_response("GetAppointmentFieldSettingsResponse.xml").replace(
-                "Hidden", "Required"
+            text=mock_response("GetAppointmentFieldSettingsResponse.xml"),
+        )
+        products = [
+            Product(identifier="1", code="PASAAN", name="Paspoort aanvraag"),
+            Product(
+                identifier="5",
+                code="RIJAAN",
+                name="Rijbewijs aanvraag (Drivers license)",
             ),
-        )
+        ]
 
-        fields = self.plugin.get_customer_fields(
-            [Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")]
-        )
+        with mock_jcc_config_plugin(self.jcc_config):
+            fields = self.plugin.get_customer_fields(products)
 
-        fields_by_key = {field["key"]: field for field in fields}
-        for field in CustomerFields.values:
-            if field in VISIBLE_EXCLUDE:
-                continue
-            with self.subTest(field=field):
-                self.assertIn(field, fields_by_key)
-                component = fields_by_key[field]
-                self.assertTrue(component["validate"]["required"])
+        self.assertEqual(len(fields), 5)
+        initials = fields[-1]
+        self.assertEqual(initials["key"], CustomerFields.initials.value)
 
     @requests_mock.Mocker()
     def test_create_appointment(self, m):

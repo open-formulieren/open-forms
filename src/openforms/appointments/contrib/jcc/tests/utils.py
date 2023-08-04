@@ -49,9 +49,10 @@ class MockConfigMixin:
         main_config_patcher.start()
         self.addCleanup(main_config_patcher.stop)  # type: ignore
 
+        self.jcc_config = JccConfig(service=self.soap_service)
         jcc_config_patcher = patch(
             "openforms.appointments.contrib.jcc.client.JccConfig.get_solo",
-            return_value=JccConfig(service=self.soap_service),
+            return_value=self.jcc_config,
         )
         jcc_config_patcher.start()
         self.addCleanup(jcc_config_patcher.stop)  # type: ignore

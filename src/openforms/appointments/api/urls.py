@@ -3,10 +3,10 @@ from django.urls import path
 from .views import (
     CancelAppointmentView,
     CreateAppointmentView,
+    CustomerFieldsListView,
     DatesListView,
     LocationsListView,
     ProductsListView,
-    RequiredCustomerFieldsListView,
     TimesListView,
 )
 
@@ -17,7 +17,7 @@ urlpatterns = [
     path("times", TimesListView.as_view(), name="appointments-times-list"),
     path(
         "customer-fields",
-        RequiredCustomerFieldsListView.as_view(),
+        CustomerFieldsListView.as_view(),
         name="appointments-customer-fields",
     ),
     path("appointments", CreateAppointmentView.as_view(), name="appointments-create"),
