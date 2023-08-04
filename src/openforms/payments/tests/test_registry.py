@@ -77,7 +77,7 @@ class RegistryTests(TestCase):
         form = step.form
         self.assertEqual(form.payment_backend, "plugin1")
 
-        options = register.get_options(request, form)
+        options = register.get_options(request)
         self.assertEqual(len(options), 1)
 
         option = options[0]

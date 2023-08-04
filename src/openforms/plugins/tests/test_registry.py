@@ -9,7 +9,7 @@ from ..plugin import AbstractBasePlugin
 from ..registry import BaseRegistry
 
 
-class Registry1(BaseRegistry):
+class Registry1(BaseRegistry[AbstractBasePlugin]):
     module = "test"
 
 
@@ -26,7 +26,7 @@ class TestPlugin2(AbstractBasePlugin):
     verbose_name = "Test2"
 
 
-class Registry2(BaseRegistry):
+class Registry2(BaseRegistry[AbstractBasePlugin]):
     module = "test2"
 
 

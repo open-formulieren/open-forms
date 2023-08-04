@@ -1,12 +1,19 @@
-from typing import Type
+from typing import TYPE_CHECKING, Callable, Generic, TypeAlias, TypeVar
 
 from django.db import OperationalError
 
 from openforms.config.models import GlobalConfiguration
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 
+if TYPE_CHECKING:  # pragma: no cover
+    from .plugin import AbstractBasePlugin  # noqa: F401
 
-class BaseRegistry:
+
+PluginType_co = TypeVar("PluginType_co", bound="AbstractBasePlugin", covariant=True)
+PluginCls: TypeAlias = type[PluginType_co]
+
+
+class BaseRegistry(Generic[PluginType_co]):
     """
     Base registry class for plugin modules.
     """
@@ -18,12 +25,15 @@ class BaseRegistry:
     The module is the logical group of extra functionality in Open Forms on top of the
     core functionality.
     """
+    _registry: dict[str, PluginType_co]
 
     def __init__(self):
         self._registry = {}
 
-    def __call__(self, unique_identifier: str, *args, **kwargs) -> callable:
-        def decorator(plugin_cls: Type) -> Type:
+    def __call__(
+        self, unique_identifier: str, *args, **kwargs
+    ) -> Callable[[PluginCls], PluginCls]:
+        def decorator(plugin_cls: PluginCls) -> PluginCls:
             if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
                 raise ValueError(
                     f"The unique identifier '{unique_identifier}' is longer then {UNIQUE_ID_MAX_LENGTH} characters."
@@ -56,7 +66,9 @@ class BaseRegistry:
 
     def iter_enabled_plugins(self):
         try:
-            with_demos = GlobalConfiguration.get_solo().enable_demo_plugins
+            config = GlobalConfiguration.get_solo()
+            assert isinstance(config, GlobalConfiguration)
+            with_demos = config.enable_demo_plugins
             enable_all = False
         except OperationalError:
             # fix CI trying to access non-existing database to generate OAS

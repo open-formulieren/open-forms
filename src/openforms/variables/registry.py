@@ -1,7 +1,9 @@
 from openforms.plugins.registry import BaseRegistry
 
+from .base import BaseStaticVariable
 
-class Registry(BaseRegistry):
+
+class Registry(BaseRegistry[BaseStaticVariable]):
     """
     A registry for static variables.
     """

@@ -1,13 +1,25 @@
-from typing import List
+from typing import TYPE_CHECKING, Iterator, List, Optional
 
 from django.http import HttpRequest
 
 from openforms.plugins.registry import BaseRegistry
 
-from .base import APIInfo
+from .base import APIInfo, BasePlugin
+
+if TYPE_CHECKING:  # pragma: no cover
+    from openforms.forms.models import Form
 
 
-class Registry(BaseRegistry):
+def _iter_plugin_ids(form: Optional["Form"], registry: "Registry") -> Iterator[str]:
+    if form is not None:
+        # TODO clean this up as we support multiple backends on the form
+        yield form.payment_backend
+    else:
+        for plugin in registry.iter_enabled_plugins():
+            yield plugin.identifier
+
+
+class Registry(BaseRegistry[BasePlugin]):
     """
     A registry for the payment module plugins.
     """
@@ -21,15 +33,16 @@ class Registry(BaseRegistry):
     #             f"Please specify 'configuration_options' attribute for plugin class."
     #         )
 
-    def get_options(self, request: HttpRequest, form=None) -> List["APIInfo"]:
-        options = list()
-        # TODO clean this up as we support multiple backends on the form
-        plugins = [form.payment_backend] if form else self.iter_enabled_plugins()
-        for plugin_id in plugins:
-            if plugin_id in self._registry:
-                plugin = self._registry[plugin_id]
-                info = plugin.get_api_info(request, form)
-                options.append(info)
+    def get_options(
+        self, request: HttpRequest, form: Optional["Form"] = None
+    ) -> List["APIInfo"]:
+        options = []
+        for plugin_id in _iter_plugin_ids(form, self):
+            if plugin_id not in self._registry:
+                continue
+            plugin = self._registry[plugin_id]
+            info = plugin.get_api_info(request)
+            options.append(info)
         return options
 
 

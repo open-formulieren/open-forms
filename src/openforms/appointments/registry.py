@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from openforms.plugins.registry import BaseRegistry
 
+if TYPE_CHECKING:  # pragma: no cover
+    from .base import BasePlugin  # noqa: F401
 
-class Registry(BaseRegistry):
+
+class Registry(BaseRegistry["BasePlugin"]):
     """
     A registry for appointments module plugins.
     """
