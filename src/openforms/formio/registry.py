@@ -92,7 +92,7 @@ class ComponentRegistry(BaseRegistry):
             return value
         return normalizer(component, value)
 
-    def format(self, component: Component, value: Any, as_html=False):
+    def format(self, component: Component, value: Any, as_html=False) -> str:
         """
         Format a given value in the appropriate way for the specified component.
 

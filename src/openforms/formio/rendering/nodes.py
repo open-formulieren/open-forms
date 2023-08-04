@@ -36,15 +36,40 @@ class RenderConfiguration:
 
 
 @dataclass
-class ComponentNode(Node):
+class ComponentNodeBase(Node):
     component: Component
+
+    @property
+    def label(self) -> str:
+        """
+        Obtain the (human-readable) label for the Formio component.
+        """
+        if self.mode == RenderModes.export:
+            return self.component.get("key") or "KEY_MISSING"
+        return self.component.get("label") or self.component.get("key", "")
+
+    @property
+    def key(self):
+        return self.component["key"]
+
+    @property
+    def key_as_path(self) -> Path:
+        """
+        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
+        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
+        """
+        return Path.from_text(self.key)
+
+
+@dataclass
+class ComponentNode(ComponentNodeBase):
     step: SubmissionStep
     depth: int = 0
     is_layout = False
-    path: Path = None  # Path in the data (#TODO rename to data_path?)
-    json_renderer_path: Path = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
-    configuration_path: str = None  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
-    parent_node: Node = None
+    path: Path | None = None  # Path in the data (#TODO rename to data_path?)
+    json_renderer_path: Path | None = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
+    configuration_path: str = ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
+    parent_node: Node | None = None
 
     @staticmethod
     def build_node(
@@ -53,7 +78,7 @@ class ComponentNode(Node):
         renderer: "Renderer",
         path: Path | None = None,  # Path in the data
         json_renderer_path: Path | None = None,
-        configuration_path: str | None = None,
+        configuration_path: str = "",
         depth: int = 0,
         parent_node: Node | None = None,
     ) -> "ComponentNode":
@@ -62,6 +87,7 @@ class ComponentNode(Node):
         """
         from .registry import register
 
+        assert "type" in component
         node_cls = register[component["type"]]
         nested_node = node_cls(
             step=step,
@@ -223,15 +249,6 @@ class ComponentNode(Node):
         """
         return "root" if self.component.get("_is_root", False) else ""
 
-    @property
-    def label(self) -> str:
-        """
-        Obtain the (human-readable) label for the Formio component.
-        """
-        if self.mode == RenderModes.export:
-            return self.component.get("key") or "KEY_MISSING"
-        return self.component.get("label") or self.component.get("key", "")
-
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         """
         Apply a function f to all labels.
@@ -261,18 +278,6 @@ class ComponentNode(Node):
         Output a simple key-value pair of label and value.
         """
         return f"{self.indent}{self.label}: {self.display_value}"
-
-    @property
-    def key(self):
-        return self.component["key"]
-
-    @property
-    def key_as_path(self) -> Path:
-        """
-        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
-        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
-        """
-        return Path.from_text(self.key)
 
 
 @dataclass

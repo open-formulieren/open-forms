@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Tuple
+from typing import TYPE_CHECKING, Any, Dict
 
 from django.template.defaultfilters import date as date_filter
 from django.urls import reverse
@@ -19,12 +19,13 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def get_confirmation_email_templates(submission: "Submission") -> Tuple[str, str]:
+def get_confirmation_email_templates(submission: "Submission") -> tuple[str, str]:
     if not submission.form.send_confirmation_email:
         raise SkipConfirmationEmail("Confirmation e-mail sending is disabled.")
 
     with translation.override(submission.language_code):
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         if not hasattr(submission.form, "confirmation_email_template"):
             return config.confirmation_email_subject, config.confirmation_email_content
 

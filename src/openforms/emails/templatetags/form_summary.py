@@ -1,6 +1,7 @@
 from django import template
 from django.template.loader import get_template
 
+from openforms.appointments.service import get_appointment
 from openforms.formio.rendering.default import (
     EditGridGroupNode,
     EditGridNode,
@@ -14,9 +15,14 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def summary(context):
-    as_text = context.get("rendering_text")
+    submission = context["_submission"]
+    # if it's a new-style appointment submission, there are no steps or summary to render
+    if get_appointment(submission) is not None:
+        return ""
+
+    as_text = context.get("rendering_text", False)
     renderer = Renderer(
-        submission=context["_submission"],
+        submission=submission,
         mode=RenderModes.confirmation_email,
         as_html=not as_text,
     )
