@@ -8,7 +8,7 @@ from ..attributes_generator import (
     AttributeGeneratorException,
     OpenApi3AttributesGenerator,
 )
-from ..contrib.haalcentraal.tests.utils import load_binary_mock
+from .utils import load_binary_mock
 
 
 class TestOpenApi3AttributesGenerator(SimpleTestCase):
@@ -17,7 +17,7 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
 
         with self.assertRaises(
             AttributeGeneratorException,
-            msg="No URL to the OAS specifications was provided.",
+            msg="No OAS specification URI was provided.",
         ):
             generator.generate_attributes()
 
@@ -30,7 +30,7 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
         )
         generator = OpenApi3AttributesGenerator(
             schema="non-existent-schema",
-            url="https://personen/api/schema/openapi.yaml?v=3",
+            uri="https://personen/api/schema/openapi.yaml?v=3",
         )
 
         with self.assertRaises(
@@ -47,7 +47,7 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
             content=load_binary_mock("personen.yaml"),
         )
         generator = OpenApi3AttributesGenerator(
-            url="https://personen/api/schema/openapi.yaml?v=3",
+            uri="https://personen/api/schema/openapi.yaml?v=3",
         )
 
         with self.assertRaises(
@@ -65,7 +65,8 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
         )
         generator = OpenApi3AttributesGenerator(
             schema="Datum",
-            url="https://personen/api/schema/openapi.yaml?v=3",
+            uri="https://personen/api/schema/openapi.yaml?v=3",
+            command="test",
         )
 
         output = generator.generate_attributes()
@@ -80,6 +81,7 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
                 This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
                 specs: https://personen/api/schema/openapi.yaml?v=3
                 schema: Datum
+                command: test
                 \"\"\"
 
                 dag = "dag", _("Dag")
@@ -100,7 +102,8 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
         )
         generator = OpenApi3AttributesGenerator(
             schema="NaamInOnderzoek",
-            url="https://personen/api/schema/openapi.yaml?v=3",
+            uri="https://personen/api/schema/openapi.yaml?v=3",
+            command="test",
         )
 
         output = generator.generate_attributes()
@@ -115,6 +118,7 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
                 This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
                 specs: https://personen/api/schema/openapi.yaml?v=3
                 schema: NaamInOnderzoek
+                command: test
                 \"\"\"
 
                 geslachtsnaam = "geslachtsnaam", _("Geslachtsnaam")

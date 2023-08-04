@@ -8,8 +8,8 @@ from django.test import SimpleTestCase, override_settings
 from requests_mock import Mocker
 
 from ..contrib.demo.plugin import DemoPrefill
-from ..contrib.haalcentraal.tests.utils import load_binary_mock
 from ..registry import Registry
+from .utils import load_binary_mock
 
 # set up an isolated registry
 register = Registry()
@@ -74,6 +74,7 @@ class TestGetPropertiesFromOAS(SimpleTestCase):
                 This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
                 specs: https://personen/api/schema/openapi.yaml?v=3
                 schema: Datum
+                command: manage.py generate_prefill_from_spec --parser openapi3-parser --url https://personen/api/schema/openapi.yaml?v=3 --schema Datum
                 \"\"\"
 
                 dag = "dag", _("Dag")
