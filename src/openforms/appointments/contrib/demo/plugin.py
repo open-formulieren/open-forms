@@ -31,7 +31,7 @@ class DemoAppointment(BasePlugin):
         times = (time(12, 0), time(15, 15), time(15, 45))
         return [timezone.make_aware(datetime.combine(today, _time)) for _time in times]
 
-    def get_required_customer_fields(
+    def get_customer_fields(
         self,
         products: list[Product],
     ) -> list[Component]:

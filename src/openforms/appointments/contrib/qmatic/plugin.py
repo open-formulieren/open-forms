@@ -181,10 +181,7 @@ class QmaticAppointment(BasePlugin):
             for entry in response.json()["times"]
         ]
 
-    def get_required_customer_fields(
-        self,
-        products: list[Product],
-    ) -> list[Component]:
+    def get_customer_fields(self, products: list[Product]) -> list[Component]:
         config = QmaticConfig.get_solo()
         assert isinstance(config, QmaticConfig)
         components = [

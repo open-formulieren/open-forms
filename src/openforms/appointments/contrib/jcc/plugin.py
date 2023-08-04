@@ -1,9 +1,11 @@
 import logging
 import warnings
 from contextlib import contextmanager
+from copy import deepcopy
+from dataclasses import dataclass
 from datetime import date, datetime
 from functools import wraps
-from typing import Callable, List, ParamSpec, TypeVar
+from typing import Callable, List, Literal, ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils import timezone
@@ -35,7 +37,12 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import get_client
-from .constants import FIELD_TO_FORMIO_COMPONENT, FIELD_TO_XML_NAME, CustomerFields
+from .constants import (
+    FIELD_TO_FORMIO_COMPONENT,
+    FIELD_TO_XML_NAME,
+    VISIBLE_EXCLUDE,
+    CustomerFields,
+)
 from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
@@ -79,6 +86,20 @@ def with_graceful_default(default: T):
         return wrapper
 
     return decorator
+
+
+@dataclass
+class Field:
+    name: CustomerFields
+    required: bool
+
+    @property
+    def component(self) -> Component:
+        component = deepcopy(FIELD_TO_FORMIO_COMPONENT[self.name])
+        component.setdefault("validate", {})
+        assert "validate" in component  # type guard
+        component["validate"]["required"] = self.required
+        return component
 
 
 @register("jcc")
@@ -227,20 +248,41 @@ class JccAppointment(BasePlugin):
         ]
 
     @with_graceful_default(default=[])
-    def get_required_customer_fields(
-        self,
-        products: list[Product],
-    ) -> list[Component]:
+    def get_customer_fields(self, products: list[Product]) -> list[Component]:
         product_ids = squash_ids(products)
 
         client = get_client()
         with log_soap_errors(
             "Could not retrieve required fields for products '%s'", product_ids
         ):
-            field_names = client.service.GetRequiredClientFields(productID=product_ids)
+            field_settings: Literal[
+                "Visible", "Hidden", "Required"
+            ] = client.service.GetAppointmentFieldSettings(productID=product_ids)
+            required_fields = client.service.GetRequiredClientFields(
+                productID=product_ids
+            )
 
-        last_name = FIELD_TO_FORMIO_COMPONENT[CustomerFields.last_name]
-        return [last_name] + [FIELD_TO_FORMIO_COMPONENT[field] for field in field_names]
+        # Required implies visible, last name is always required and JCC does not return
+        # it in the required fields list.
+        all_field_names = list(FIELD_TO_FORMIO_COMPONENT.keys())
+        for excluded in [CustomerFields.last_name] + VISIBLE_EXCLUDE:
+            all_field_names.remove(excluded)
+        if field_settings == "Required":
+            required_fields = all_field_names
+
+        # build the list of fields, with the required fields from endpoint listed first
+        fields = [Field(CustomerFields("LastName"), required=True)] + [
+            Field(CustomerFields(name), required=True) for name in required_fields
+        ]
+        # now add the remaining fields
+        if field_settings != "Hidden":
+            already_added = [field.name for field in fields]
+            fields += [
+                Field(name=CustomerFields(name), required=field_settings == "Required")
+                for name in all_field_names
+                if name not in already_added
+            ]
+        return [field.component for field in fields]
 
     def create_appointment(
         self,
@@ -256,7 +298,7 @@ class JccAppointment(BasePlugin):
         if isinstance(client, Customer):
             warnings.warn(
                 "Fixed customer fields via the Customer class are deprecated, use "
-                "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
+                "dynamic CustomerDetails with 'get_customer_fields' instead.",
                 DeprecationWarning,
             )
             client = CustomerDetails(

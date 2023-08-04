@@ -129,7 +129,7 @@ class PluginTests(MockConfigMixin, TestCase):
         self.assertEqual(len(times), 16)
         self.assertEqual(times[0], datetime(2016, 12, 6, 9, 0, 0))
 
-    def test_get_required_customer_fields(self):
+    def test_get_customer_fields(self):
         self.qmatic_config.required_customer_fields = [
             CustomerFields.last_name,
             CustomerFields.birthday,
@@ -140,7 +140,7 @@ class PluginTests(MockConfigMixin, TestCase):
             identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
         )
 
-        fields = self.plugin.get_required_customer_fields([product])
+        fields = self.plugin.get_customer_fields([product])
 
         self.assertEqual(len(fields), 4)
         last_name, dob, tel, email = fields

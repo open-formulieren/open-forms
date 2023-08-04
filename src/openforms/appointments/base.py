@@ -172,9 +172,8 @@ class BasePlugin(ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_required_customer_fields(
-        self,
-        products: list[Product],
+    def get_customer_fields(
+        self, products: list[Product]
     ) -> list[Component]:  # pragma: no cover
         """
         Given a list of products, return the additional required customer fields.

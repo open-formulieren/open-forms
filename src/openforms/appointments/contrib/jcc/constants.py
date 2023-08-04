@@ -110,7 +110,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.address.label,
         "autocomplete": "address-line1",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 64,
         },
     },
@@ -120,7 +120,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.birthday.label,
         "autocomplete": "bday",
         "validate": {
-            "required": True,
+            "required": False,
         },
         "openForms": {
             "widget": "inputGroup",
@@ -132,7 +132,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.city.label,
         "autocomplete": "address-line2",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 80,
         },
     },
@@ -142,7 +142,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.email.label,
         "autocomplete": "email",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 254,
         },
     },
@@ -152,7 +152,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.initials.label,
         "autocomplete": "given-name",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 128,
         },
     },
@@ -163,7 +163,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.main_tel.label,
         "autocomplete": "tel",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 16,
         },
     },
@@ -173,7 +173,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.mobile_tel.label,
         "autocomplete": "tel",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 16,
         },
     },
@@ -183,7 +183,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.any_tel.label,
         "autocomplete": "tel",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 16,
         },
     },
@@ -193,7 +193,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "label": CustomerFields.postal_code.label,
         "autocomplete": "postal-code",
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 16,
         },
     },
@@ -202,7 +202,7 @@ FIELD_TO_FORMIO_COMPONENT: dict[CustomerFields, Component] = {
         "key": CustomerFields.ID.value,
         "label": CustomerFields.ID.label,
         "validate": {
-            "required": True,
+            "required": False,
             "maxLength": 16,
         },
     },
@@ -222,6 +222,11 @@ FIELD_TO_XML_NAME: dict[CustomerFields, str] = {
     CustomerFields.postal_code: "clientPostalCode",
     CustomerFields.ID: "clientID",
 }
+
+# since these map to the same customer field, it doesn't make sense to show all three
+# of them. The assumption (to be confirmed, see Taiga HodM #58) is that AnyTel covers
+# the generic form.
+VISIBLE_EXCLUDE = [CustomerFields.main_tel, CustomerFields.mobile_tel]
 
 # sanity checks
 for member in CustomerFields.values:

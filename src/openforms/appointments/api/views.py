@@ -266,9 +266,9 @@ class RequiredCustomerFieldsListView(APIView):
 
         with elasticapm.capture_span(
             name="get-required-customer-fields",
-            span_type="app.appointments.get_required_customer_fields",
+            span_type="app.appointments.get_customer_fields",
         ):
-            fields = plugin.get_required_customer_fields(products)
+            fields = plugin.get_customer_fields(products)
 
         return Response(fields)
 

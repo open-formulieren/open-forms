@@ -36,4 +36,4 @@ class CustomerFieldsListTests(SubmissionsMixin, APITestCase):
             Product(identifier="1", code="", name=""),
             Product(identifier="2", code="", name=""),
         ]
-        mock_plugin.get_required_customer_fields.assert_called_once_with(products)
+        mock_plugin.get_customer_fields.assert_called_once_with(products)

@@ -251,7 +251,7 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
             )
 
         # 5. Validate contact details against product
-        contact_details_meta = plugin.get_required_customer_fields(products)
+        contact_details_meta = plugin.get_customer_fields(products)
         try:
             validate_formio_data(contact_details_meta, attrs["contact_details"])
         except serializers.ValidationError as errors:
