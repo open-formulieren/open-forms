@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 from django.test import SimpleTestCase
 
 from requests_mock import Mocker
@@ -64,28 +66,28 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
         generator = OpenApi3AttributesGenerator(
             schema="Datum",
             url="https://personen/api/schema/openapi.yaml?v=3",
-            command="test",
         )
 
         output = generator.generate_attributes()
 
-        expected_output = """
-from django.db import models
-from django.utils.translation import gettext_lazy as _
+        expected_output = dedent(
+            """
+            from django.db import models
+            from django.utils.translation import gettext_lazy as _
 
-class Attributes(models.TextChoices):
-    \"\"\"
-    This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-    specs: https://personen/api/schema/openapi.yaml?v=3
-    schema: Datum
-    command: test
-    \"\"\"
+            class Attributes(models.TextChoices):
+                \"\"\"
+                This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
+                specs: https://personen/api/schema/openapi.yaml?v=3
+                schema: Datum
+                \"\"\"
 
-    dag = "dag", _("Dag")
-    datum = "datum", _("Datum")
-    jaar = "jaar", _("Jaar")
-    maand = "maand", _("Maand")
-"""
+                dag = "dag", _("Dag")
+                datum = "datum", _("Datum")
+                jaar = "jaar", _("Jaar")
+                maand = "maand", _("Maand")
+            """
+        )
 
         self.assertEqual(expected_output.strip(), output.strip())
 
@@ -99,30 +101,30 @@ class Attributes(models.TextChoices):
         generator = OpenApi3AttributesGenerator(
             schema="NaamInOnderzoek",
             url="https://personen/api/schema/openapi.yaml?v=3",
-            command="test",
         )
 
         output = generator.generate_attributes()
 
-        expected_output = """
-from django.db import models
-from django.utils.translation import gettext_lazy as _
+        expected_output = dedent(
+            """
+            from django.db import models
+            from django.utils.translation import gettext_lazy as _
 
-class Attributes(models.TextChoices):
-    \"\"\"
-    This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-    specs: https://personen/api/schema/openapi.yaml?v=3
-    schema: NaamInOnderzoek
-    command: test
-    \"\"\"
+            class Attributes(models.TextChoices):
+                \"\"\"
+                This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
+                specs: https://personen/api/schema/openapi.yaml?v=3
+                schema: NaamInOnderzoek
+                \"\"\"
 
-    geslachtsnaam = "geslachtsnaam", _("Geslachtsnaam")
-    voornamen = "voornamen", _("Voornamen")
-    voorvoegsel = "voorvoegsel", _("Voorvoegsel")
-    datumingangonderzoek_dag = "datumIngangOnderzoek.dag", _("Datumingangonderzoek > Dag")
-    datumingangonderzoek_datum = "datumIngangOnderzoek.datum", _("Datumingangonderzoek > Datum")
-    datumingangonderzoek_jaar = "datumIngangOnderzoek.jaar", _("Datumingangonderzoek > Jaar")
-    datumingangonderzoek_maand = "datumIngangOnderzoek.maand", _("Datumingangonderzoek > Maand")
-"""
+                geslachtsnaam = "geslachtsnaam", _("Geslachtsnaam")
+                voornamen = "voornamen", _("Voornamen")
+                voorvoegsel = "voorvoegsel", _("Voorvoegsel")
+                datumingangonderzoek_dag = "datumIngangOnderzoek.dag", _("Datumingangonderzoek > Dag")
+                datumingangonderzoek_datum = "datumIngangOnderzoek.datum", _("Datumingangonderzoek > Datum")
+                datumingangonderzoek_jaar = "datumIngangOnderzoek.jaar", _("Datumingangonderzoek > Jaar")
+                datumingangonderzoek_maand = "datumIngangOnderzoek.maand", _("Datumingangonderzoek > Maand")
+            """
+        )
 
         self.assertEqual(expected_output.strip(), output.strip())

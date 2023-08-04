@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from typing import Iterator
 
 from openapi_parser import parse
+from openapi_parser.specification import Object, Property, Specification
 
 from openforms.template import render_from_string
 
@@ -18,105 +20,111 @@ class Attributes(models.TextChoices):
     This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
     specs: {{ url }}
     schema: {{ schema }}
-    command: {{ command }}
     \"\"\"
 
-    {% for attribute in attributes %}{{ attribute.attribute_variable_name }} = "{{ attribute.attribute_value }}", _("{{ attribute.attribute_label }}")
+    {% for attribute in attributes %}{{ attribute.variable_name }} = "{{ attribute.value }}", _("{{ attribute.label }}")
     {% endfor %}
 """
 
 
+@dataclass()
+class Attribute:
+    """
+    Prepare attributes for code generation.
+
+    Each attribute is prepared by:
+
+    * using snake_case to create valid variable names/identifiers
+    * creating a string value with periods as path separators
+    * capitalize each part for the human-readable label
+    """
+
+    parts: list[str]
+
+    @property
+    def variable_name(self) -> str:
+        return "_".join(part.lower() for part in self.parts).lstrip("_")
+
+    @property
+    def value(self) -> str:
+        return ".".join(self.parts)
+
+    @property
+    def label(self) -> str:
+        return " > ".join(part.capitalize() for part in self.parts)
+
+
 @dataclass
 class OpenApi3AttributesGenerator:
+    """Generate the attributes from OAS specification
+
+    TODO features present in the generate_prefill_from_spec command
+
+    * Specify a service and then generate the attributes from the OAS of this service
+    * Specify a path and then only generate the attributes for this path
+    * If no path/schema are specified, print all paths and schemas in the OAS
+    * Option to add '_embedded.' in paths for $refs
+
+    Additional features that could be good
+
+    * Keep track of the titles in addition to the properties names in the schema
+    """
+
     url: str = ""
+    """
+    The URL of the OAS specification
+    """
     schema: str = ""
-    command: str = ""
-    # TODO features present in the generate_prefill_from_spec command
-    # - Specify a service and then generate the attributes from the OAS of this service
-    # - Specify a path and then only generate the attributes for this path
-    # - If no path/schema are specified, print all paths and schemas in the OAS
-    # - Option to add '_embedded.' in paths for $refs
-    # Additional features that could be good
-    # - Keep track of the titles in addition to the properties names in the schema
+    """
+    The name of the schema in the specification from which to generate the attributes
+    """
 
-    def get_specifications(self):
-        if self.url:
-            # The content types supported in the openapi3-parser are these:
-            # https://github.com/manchenkoff/openapi3-parser/tree/master/src/openapi_parser/home/silvia/repositories/openapi3-parser/src/openapi_parser/enumeration.py
-            # However, in the haal centraal OAS we find content types such as "application/hal+json". So with
-            # strict_enum=False, the parser just checks that the content type is a string
-            return parse(uri=self.url, strict_enum=False)
-
-        raise AttributeGeneratorException(
-            "No URL to the OAS specifications was provided."
-        )
-
-    def get_attributes(self, property_schema):
-        attributes = []
-        if hasattr(property_schema.schema, "properties"):
-            for schema_property in property_schema.schema.properties:
-                nested_attributes = self.get_attributes(schema_property)
-                attributes += [
-                    [property_schema.name] + nested_attribute
-                    for nested_attribute in nested_attributes
-                ]
-        else:
-            attributes.append([property_schema.name])
-        return attributes
-
-    def get_schemas_attributes(self, oas_specifications):
-        # In the specifications, the schemas are under the path "components > schemas"
-        parsed_schemas = oas_specifications.schemas
-
-        if self.schema:
-            if self.schema not in parsed_schemas:
-                raise AttributeGeneratorException(
-                    f'The given schema name "{self.schema}" could not be found in the specifications'
-                )
-
-            return [
-                self.get_attributes(schema_property)
-                for schema_property in parsed_schemas[self.schema].properties
-            ]
-
-        raise AttributeGeneratorException("No schema specified")
-
-    def format_attributes(self, attributes):
-        """Turn each attribute in ``{"attribute_variable_name": "bla_bla", "attribute_value": "bla.bla", "attribute_label": "Bla > Bla"}``"""
-        formatted_attributes = []
-        for nested_attributes in attributes:
-            for attribute in nested_attributes:
-                formatted_attributes.append(
-                    {
-                        "attribute_variable_name": (
-                            "_".join(
-                                [attribute_bit.lower() for attribute_bit in attribute]
-                            )
-                        ).lstrip("_"),
-                        "attribute_value": ".".join(
-                            [attribute_bit for attribute_bit in attribute]
-                        ),
-                        "attribute_label": " > ".join(
-                            [attribute_bit.capitalize() for attribute_bit in attribute]
-                        ),
-                    }
-                )
-        return formatted_attributes
-
-    def generate_attributes(self):
-        oas_specifications = self.get_specifications()
-
-        attributes = self.get_schemas_attributes(oas_specifications)
-
-        formatted_attributes = self.format_attributes(attributes)
-
+    def generate_attributes(self) -> str:
+        oas_specification = self._load_specification()
+        attributes = self._get_schema_attributes(oas_specification, self.schema)
         return render_from_string(
             FILE_TEMPLATE,
             context={
                 "url": self.url,
                 "schema": self.schema,
-                "command": self.command,
-                "attributes": formatted_attributes,
+                "attributes": attributes,
             },
             disable_autoescape=True,
         )
+
+    def _load_specification(self) -> Specification:
+        if self.url:
+            # The content types supported in the openapi3-parser are these:
+            # https://github.com/manchenkoff/openapi3-parser/blob/master/src/openapi_parser/enumeration.py#L97
+            # However, in the haal centraal OAS we find content types such as "application/hal+json". So with
+            # strict_enum=False, the parser just checks that the content type is a string
+            return parse(uri=self.url, strict_enum=False)
+
+        raise AttributeGeneratorException(
+            "No URL to the OAS specification was provided."
+        )
+
+    def _get_schema_attributes(
+        self, oas_specification: Specification, schema_name: str
+    ) -> Iterator[Attribute]:
+        if (schema := oas_specification.schemas.get(schema_name)) is None:
+            raise AttributeGeneratorException(
+                f'The given schema name "{schema_name}" could not be found in the specifications'
+            )
+
+        assert isinstance(
+            schema, Object
+        ), f"Expected an object schema, got {type(schema)}."
+        for schema_property in schema.properties:
+            yield from self._get_property_attributes(schema_property)
+
+    def _get_property_attributes(
+        self, property: Property, prefix: list[str] | None = None
+    ) -> Iterator[Attribute]:
+        if isinstance(property.schema, Object):
+            nested_prefix = prefix + [property.name] if prefix else [property.name]
+            for nested in property.schema.properties:
+                yield from self._get_property_attributes(nested, prefix=nested_prefix)
+        else:
+            parts = (prefix or []) + [property.name]
+            yield Attribute(parts)

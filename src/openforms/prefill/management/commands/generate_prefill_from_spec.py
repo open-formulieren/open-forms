@@ -298,7 +298,6 @@ class Command(BaseCommand):
             generator = OpenApi3AttributesGenerator(
                 url=options["url"],
                 schema=options["schema"],
-                command=format_command(options, ["parser", "url", "schema"]),
             )
             rendered_template = generator.generate_attributes()
             self.stdout.write(rendered_template)

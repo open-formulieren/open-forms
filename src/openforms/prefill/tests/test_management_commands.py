@@ -1,4 +1,5 @@
 from io import StringIO
+from textwrap import dedent
 from unittest.mock import patch
 
 from django.core.management import call_command
@@ -61,25 +62,25 @@ class TestGetPropertiesFromOAS(SimpleTestCase):
             stdout=stdout,
         )
 
-        stdout.seek(0)
-        output = stdout.read()
+        output = stdout.getvalue()
 
-        expected_output = """
-from django.db import models
-from django.utils.translation import gettext_lazy as _
+        expected_output = dedent(
+            """
+            from django.db import models
+            from django.utils.translation import gettext_lazy as _
 
-class Attributes(models.TextChoices):
-    \"\"\"
-    This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-    specs: https://personen/api/schema/openapi.yaml?v=3
-    schema: Datum
-    command: manage.py generate_prefill_from_spec --parser openapi3-parser --url https://personen/api/schema/openapi.yaml?v=3 --schema Datum
-    \"\"\"
+            class Attributes(models.TextChoices):
+                \"\"\"
+                This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
+                specs: https://personen/api/schema/openapi.yaml?v=3
+                schema: Datum
+                \"\"\"
 
-    dag = "dag", _("Dag")
-    datum = "datum", _("Datum")
-    jaar = "jaar", _("Jaar")
-    maand = "maand", _("Maand")
-"""
+                dag = "dag", _("Dag")
+                datum = "datum", _("Datum")
+                jaar = "jaar", _("Jaar")
+                maand = "maand", _("Maand")
+            """
+        )
 
         self.assertEqual(expected_output.strip(), output.strip())
