@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -28,3 +29,22 @@ class AddressSearchResultSerializer(serializers.Serializer):
         ),
         allow_null=True,
     )
+
+
+class LatLngSearchInputSerializer(serializers.Serializer):
+    lat = serializers.FloatField(
+        label=_("Latitude"),
+        help_text=_("Latitude, in decimal degrees."),
+        required=True,
+        validators=[MinValueValidator(-90.0), MaxValueValidator(90.0)],
+    )
+    lng = serializers.FloatField(
+        label=_("Longitude"),
+        help_text=_("Longitude, in decimal degrees."),
+        required=True,
+        validators=[MinValueValidator(-180.0), MaxValueValidator(180.0)],
+    )
+
+
+class LatLngSearchResultSerializer(serializers.Serializer):
+    label = serializers.CharField(label=_("Closest address"))
