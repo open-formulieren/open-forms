@@ -4,6 +4,8 @@ Core implementation of the generic API.
 This module is the follow-up to the bulk of functionality in utils.py, which is doing
 way too much but can't be easily refactored without breaking existing functionality.
 """
+import logging
+
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
@@ -23,6 +25,8 @@ from .registry import register
 from .utils import cancel_previous_submission_appointment
 
 __all__ = ["book_for_submission"]
+
+logger = logging.getLogger(__name__)
 
 
 def _get_plugin(appointment: Appointment) -> BasePlugin:
@@ -95,6 +99,7 @@ def book_for_submission(submission: Submission) -> str:
     try:
         appointment_id = book(appointment)
     except AppointmentCreateFailed as e:
+        logger.error("Appointment creation failed", exc_info=e)
         # This is displayed to the end-user!
         error_information = _(
             "A technical error occurred while we tried to book your appointment. "

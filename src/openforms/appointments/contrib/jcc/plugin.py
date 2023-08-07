@@ -1,5 +1,6 @@
 import logging
 import warnings
+from collections import Counter
 from contextlib import contextmanager
 from datetime import date, datetime
 from functools import wraps
@@ -297,18 +298,33 @@ class JccAppointment(BasePlugin):
                 appDetail=appointment_details, fields=[]
             )
 
-            if result["updateStatus"] == 0:
+            if (update_status := result["updateStatus"]) == 0:
                 return result["appID"]
-            else:
-                raise AppointmentCreateFailed(
-                    "Could not create appointment for products '%s' at location '%s' starting at %s (updateStatus=%s)",
-                    product_ids,
-                    location,
-                    start_at,
-                    result["updateStatus"],
-                )
-        except (ZeepError, RequestException, KeyError) as e:
-            raise AppointmentCreateFailed(e)
+
+            error = AppointmentCreateFailed(
+                f"Could not create appointment, got updateStatus={update_status}"
+            )
+            logger.error(
+                "Could not create appointment for products '%s' at location '%s' starting at %s (updateStatus=%s)",
+                product_ids,
+                location,
+                start_at,
+                update_status,
+                exc_info=error,
+                extra={
+                    "product_ids": product_ids,
+                    "location": location.identifier,
+                    "start_time": start_at,
+                    "update_status": update_status,
+                },
+            )
+            raise error
+        except Exception as e:
+            if isinstance(e, AppointmentCreateFailed):
+                raise e
+            raise AppointmentCreateFailed(
+                "Unexpected appointment create failure"
+            ) from e
 
     def delete_appointment(self, identifier: str) -> None:
         client = get_client()
@@ -340,10 +356,13 @@ class JccAppointment(BasePlugin):
             qrcode = client.service.GetAppointmentQRCodeText(appID=identifier)
 
             app_products = []
-            for pid in details.productID.split(","):
-                product = client.service.getGovProductDetails(productID=pid)
-
-                app_products.append(Product(identifier=pid, name=product.description))
+            product_ids = Counter(details.productID.split(","))
+            for product_id, count in product_ids.items():
+                _product = client.service.getGovProductDetails(productID=product_id)
+                product = Product(
+                    identifier=product_id, name=_product.description or "", amount=count
+                )
+                app_products.append(product)
 
             qrcode_base64 = create_base64_qrcode(qrcode)
 

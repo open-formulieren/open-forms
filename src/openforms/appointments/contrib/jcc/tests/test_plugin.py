@@ -15,7 +15,7 @@ from soap.tests.factories import SoapServiceFactory
 
 from ....base import AppointmentDetails, Customer, CustomerDetails, Location, Product
 from ....core import book
-from ....exceptions import AppointmentException
+from ....exceptions import AppointmentCreateFailed, AppointmentException
 from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
@@ -365,12 +365,25 @@ class PluginTests(MockConfigMixin, TestCase):
 
         m.post(
             "http://example.com/soap11",
-            [
-                {"text": mock_response("getGovAppointmentDetailsResponse.xml")},
-                {"text": mock_response("getGovLocationDetailsResponse.xml")},
-                {"text": mock_response("GetAppointmentQRCodeTextResponse.xml")},
-                {"text": mock_response("getGovProductDetailsResponse.xml")},
-            ],
+            text=mock_response("getGovAppointmentDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovLocationDetailsRequest" in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("GetAppointmentQRCodeTextResponse.xml"),
+            additional_matcher=lambda req: "GetAppointmentQRCodeTextRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovProductDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovProductDetailsRequest" in req.text,
         )
 
         result = self.plugin.get_appointment_details(identifier)
@@ -382,6 +395,7 @@ class PluginTests(MockConfigMixin, TestCase):
 
         self.assertEqual(result.products[0].identifier, "1")
         self.assertEqual(result.products[0].name, "Paspoort aanvraag")
+        self.assertEqual(result.products[0].amount, 1)
 
         self.assertEqual(result.location.identifier, "1")
         self.assertEqual(result.location.name, "Maykin Media")
@@ -400,6 +414,105 @@ class PluginTests(MockConfigMixin, TestCase):
                 ): '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB50lEQVR4nO2bzY3cMAxGHyMDe5Q72FLkDlJSkJLSgVXKdiAfA9j4cpA849nLziQYr4IlT/p5hw8gKNKibOJOy9/uJcFRRx111FFHn4laswGb2Mxs3AyWfXl6ugBHH0GTJKmAfo5BmgmyiSBJ0i36HAGOPoIulxACSG9DHZjZcI4AR++w4d3cwFCeMLGcIcDRf0FTCbLpEwU4+jEaJc37ouao6jJJ6zkCHL3D2kmYDYBQZ5behhXY7PkCHH3YW4frp/y6QnVUvL2V+nStjlJr9CSJVAAIkkrYPRXbruZP1+po9Zakdc9RUYK4HtxYzb3VD7q8yKZlQDObkQqYjUAeTxLg6D3WAodWCTYrQaQS2obHVifo5cBbOeSteU9etar3vNUJevQWcUUzYa834gpJq8dWN+ixgk+/BoDNyCMIthMEOPp3NeEhmOY6kuetvtB2ElZHlZvp1TxvdYJeYkuXXtaxtvC81SF67R1XS5JgGfx7q0v02jue44pNi1k7DhfvRvaD7hV8oba26tpMON7oet7qFK1PMn7Uj+WwF4snCnD0ETSVzchmrbWVR2htyv60fjl0z0pRUB9ixHVQ/l4gv/6263uaDrQ62tBsZmYj2LS8vH+X0aa9aP3CqPlfC4466qijjv5H6B/hFU+U471mPQAAAABJRU5ErkJggg==" alt="44b322c32c5329b135e1" />'
             },
         )
+
+    @requests_mock.Mocker()
+    def test_get_appointment_details_no_product_description(self, m):
+        identifier = "1234567890"
+
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAppointmentDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovLocationDetailsRequest" in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("GetAppointmentQRCodeTextResponse.xml"),
+            additional_matcher=lambda req: "GetAppointmentQRCodeTextRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovProductDetailsNoDescriptionResponse.xml"),
+            additional_matcher=lambda req: "getGovProductDetailsRequest" in req.text,
+        )
+
+        result = self.plugin.get_appointment_details(identifier)
+
+        self.assertEqual(type(result), AppointmentDetails)
+
+        self.assertEqual(len(result.products), 1)
+        self.assertEqual(result.identifier, identifier)
+        self.assertEqual(result.products[0].name, "")
+
+    @requests_mock.Mocker()
+    def test_get_appointment_details_multiple_products(self, m):
+        identifier = "1234567890"
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAppointmentDetailsMultipleProductsResponse.xml"),
+            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovLocationDetailsRequest" in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("GetAppointmentQRCodeTextResponse.xml"),
+            additional_matcher=lambda req: "GetAppointmentQRCodeTextRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovProductDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovProductDetailsRequest" in req.text,
+        )
+
+        result = self.plugin.get_appointment_details(identifier)
+
+        self.assertEqual(type(result), AppointmentDetails)
+
+        self.assertEqual(len(result.products), 2)
+        self.assertEqual(result.identifier, identifier)
+
+        self.assertEqual(result.products[0].identifier, "1")
+        self.assertEqual(result.products[0].name, "Paspoort aanvraag")
+        self.assertEqual(result.products[0].amount, 2)
+
+        self.assertEqual(result.location.identifier, "1")
+        self.assertEqual(result.location.name, "Maykin Media")
+        self.assertEqual(result.location.address, "Straat 1")
+        self.assertEqual(result.location.postalcode, "1111 AA")
+        self.assertEqual(result.location.city, "Stad")
+
+        self.assertEqual(result.start_at, datetime(2021, 8, 30, 15, 0))
+        self.assertEqual(result.end_at, datetime(2021, 8, 30, 15, 15))
+        self.assertEqual(result.remarks, "Dit is een testafspraak\n\nBvd,\nJohn")
+        self.assertDictEqual(
+            result.other,
+            {
+                _(
+                    "QR-code"
+                ): '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB50lEQVR4nO2bzY3cMAxGHyMDe5Q72FLkDlJSkJLSgVXKdiAfA9j4cpA849nLziQYr4IlT/p5hw8gKNKibOJOy9/uJcFRRx111FFHn4laswGb2Mxs3AyWfXl6ugBHH0GTJKmAfo5BmgmyiSBJ0i36HAGOPoIulxACSG9DHZjZcI4AR++w4d3cwFCeMLGcIcDRf0FTCbLpEwU4+jEaJc37ouao6jJJ6zkCHL3D2kmYDYBQZ5behhXY7PkCHH3YW4frp/y6QnVUvL2V+nStjlJr9CSJVAAIkkrYPRXbruZP1+po9Zakdc9RUYK4HtxYzb3VD7q8yKZlQDObkQqYjUAeTxLg6D3WAodWCTYrQaQS2obHVifo5cBbOeSteU9etar3vNUJevQWcUUzYa834gpJq8dWN+ixgk+/BoDNyCMIthMEOPp3NeEhmOY6kuetvtB2ElZHlZvp1TxvdYJeYkuXXtaxtvC81SF67R1XS5JgGfx7q0v02jue44pNi1k7DhfvRvaD7hV8oba26tpMON7oet7qFK1PMn7Uj+WwF4snCnD0ETSVzchmrbWVR2htyv60fjl0z0pRUB9ixHVQ/l4gv/6263uaDrQ62tBsZmYj2LS8vH+X0aa9aP3CqPlfC4466qijjv5H6B/hFU+U471mPQAAAABJRU5ErkJggg==" alt="44b322c32c5329b135e1" />'
+            },
+        )
+
+        with self.subTest("performance"):
+            # check the amount of calls made to fetch product details
+            product_detail_calls = [
+                req
+                for req in m.request_history
+                if "getGovProductDetailsRequest" in req.text
+            ]
+            self.assertEqual(len(product_detail_calls), 2)
 
 
 @disable_logging()
@@ -518,6 +631,35 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_times(
                 products=[product], location=location, day=date(2023, 6, 22)
             )
+
+    @requests_mock.Mocker()
+    def test_create_appointment_failure(self, m):
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("failedBookGovAppointmentResponse.xml"),
+        )
+
+        with self.assertRaisesMessage(
+            AppointmentCreateFailed, "Could not create appointment, got updateStatus=1"
+        ):
+            self.plugin.create_appointment([product], location, start_at, client)
+
+    @requests_mock.Mocker()
+    def test_create_appointment_unexpected_exception(self, m):
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+
+        with self.assertRaisesMessage(
+            AppointmentCreateFailed, "Unexpected appointment create failure"
+        ):
+            self.plugin.create_appointment([product], location, start_at, client)
 
 
 class ConfigurationTests(SimpleTestCase):
