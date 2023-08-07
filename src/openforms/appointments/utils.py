@@ -158,6 +158,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
         )
         logevent.appointment_register_success(appointment_info, plugin)
     except AppointmentCreateFailed as e:
+        logger.error("Appointment creation failed", exc_info=e)
         # This is displayed to the end-user!
         error_information = _(
             "A technical error occurred while we tried to book your appointment. "
