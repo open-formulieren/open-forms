@@ -284,6 +284,16 @@ class Submission(models.Model):
         ),
     )
 
+    finalised_registration_backend = models.ForeignKey(
+        FormRegistrationBackend,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text=_(
+            "The registration backend after logic evaluation when submission was completed."
+        ),
+    )
+
     objects = SubmissionManager()
 
     _form_login_required: Optional[bool] = None  # can be set via annotation
@@ -742,6 +752,9 @@ class Submission(models.Model):
 
     @property
     def registration_backend(self) -> FormRegistrationBackend:
+        if self.finalised_registration_backend:
+            return self.finalised_registration_backend
+
         match self._registration_backend:
             case str(key):
                 self._registration_backend = self.form.registration_backends.get(

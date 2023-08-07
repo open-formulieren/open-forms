@@ -34,9 +34,13 @@ class SubmissionCompletionMixin:
 
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
-        submission.save()
+        submission.save()  # TODO remove? or does persist_user... require saved submission?
 
         persist_user_defined_variables(submission, self.request)
+
+        # all logic has run; we can fix backend
+        submission.finalised_registration_backend = submission.registration_backend
+        submission.save()
 
         logevent.form_submit_success(submission)
 
