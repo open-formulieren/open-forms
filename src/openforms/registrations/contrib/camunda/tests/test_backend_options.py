@@ -249,30 +249,26 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         ]
         expected_errors = [
             {
-                "registrationBackends.0.options.processVariables.0.enabled": "required",
-                "registrationBackends.0.options.processVariables.0.componentKey": "required",
+                "registrationBackendOptions.processVariables.0.enabled": "required",
+                "registrationBackendOptions.processVariables.0.componentKey": "required",
             },
             {
-                "registrationBackends.0.options.processVariables": "null",
+                "registrationBackendOptions.processVariables": "null",
             },
             {
-                "registrationBackends.0.options.processVariables.0.componentKey": "blank",
+                "registrationBackendOptions.processVariables.0.componentKey": "blank",
             },
         ]
 
         for invalid_var, expected_error_codes in zip(invalid_vars, expected_errors):
             with self.subTest(invalid_var=invalid_var):
                 data = {
-                    "registrationBackends": [
-                        {
-                            "options": {
-                                "processDefinition": "invoice",
-                                "processDefinitionVersion": None,
-                                "processVariables": [invalid_var],
-                                "complexProcessVariables": [],
-                            }
-                        }
-                    ],
+                    "registrationBackendOptions": {
+                        "processDefinition": "invoice",
+                        "processDefinitionVersion": None,
+                        "processVariables": [invalid_var],
+                        "complexProcessVariables": [],
+                    },
                 }
 
                 response = self.client.patch(self.endpoint, data)
@@ -295,41 +291,37 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         ]
         expected_errors = [
             {
-                "registrationBackends.0.options.complexProcessVariables.0.enabled": "required",
-                "registrationBackends.0.options.complexProcessVariables.0.alias": "required",
-                "registrationBackends.0.options.complexProcessVariables.0.type": "required",
+                "registrationBackendOptions.complexProcessVariables.0.enabled": "required",
+                "registrationBackendOptions.complexProcessVariables.0.alias": "required",
+                "registrationBackendOptions.complexProcessVariables.0.type": "required",
             },
             {
-                "registrationBackends.0.options.complexProcessVariables": "null",
+                "registrationBackendOptions.complexProcessVariables": "null",
             },
             {
-                "registrationBackends.0.options.complexProcessVariables.0.alias": "blank",
-                "registrationBackends.0.options.complexProcessVariables.0.type": "required",
+                "registrationBackendOptions.complexProcessVariables.0.alias": "blank",
+                "registrationBackendOptions.complexProcessVariables.0.type": "required",
             },
             {
-                "registrationBackends.0.options.complexProcessVariables.0.type": "invalid_choice",
+                "registrationBackendOptions.complexProcessVariables.0.type": "invalid_choice",
             },
             {
-                "registrationBackends.0.options.complexProcessVariables.0.definition": "null",
+                "registrationBackendOptions.complexProcessVariables.0.definition": "null",
             },
             {
-                "registrationBackends.0.options.complexProcessVariables.0.definition": "not_a_dict",
+                "registrationBackendOptions.complexProcessVariables.0.definition": "not_a_dict",
             },
         ]
 
         for invalid_var, expected_error_codes in zip(invalid_vars, expected_errors):
             with self.subTest(invalid_var=invalid_var):
                 data = {
-                    "registrationBackends": [
-                        {
-                            "options": {
-                                "processDefinition": "invoice",
-                                "processDefinitionVersion": None,
-                                "processVariables": [],
-                                "complexProcessVariables": [invalid_var],
-                            }
-                        }
-                    ],
+                    "registrationBackendOptions": {
+                        "processDefinition": "invoice",
+                        "processDefinitionVersion": None,
+                        "processVariables": [],
+                        "complexProcessVariables": [invalid_var],
+                    },
                 }
 
                 response = self.client.patch(self.endpoint, data)

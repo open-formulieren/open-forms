@@ -266,7 +266,9 @@ class MappedProcessVariableTests(CamundaMixin, TestCase):
                 "invoiceCategory": "Misc",
             },
             with_report=False,
-            form__registration_backend="camunda",
+        )
+        FormRegistrationBackendFactory.create(
+            form=cls.submission.form, backend="camunda"
         )
 
     @patch("openforms.registrations.contrib.camunda.plugin.start_process")
@@ -335,7 +337,9 @@ class ComplexProcessVariableTests(CamundaMixin, TestCase):
                 "number": 12.50,
             },
             with_report=False,
-            form__registration_backend="camunda",
+        )
+        FormRegistrationBackendFactory.create(
+            form=cls.submission.form, backend="camunda"
         )
 
     @patch("openforms.registrations.contrib.camunda.plugin.start_process")

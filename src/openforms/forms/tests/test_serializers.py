@@ -11,6 +11,7 @@ from openforms.forms.api.serializers.logic.action_serializers import (
 )
 from openforms.forms.tests.factories import (
     FormFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -135,3 +136,86 @@ class FormSerializerTest(TestCase):
         cosign_login_info = serializer.data["cosign_login_info"]
 
         self.assertIsNone(cosign_login_info)
+
+    def test_patching_registrations_deleting_the_first(self):
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="backend1",
+            name="#1",
+            backend="email",
+            options={"to_emails": ["you@example.com"]},
+        )
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="backend2",
+            name="#2",
+            backend="email",
+            options={"to_emails": ["me@example.com"]},
+        )
+        context = {"request": None}
+        data = FormSerializer(context=context).to_representation(form)
+
+        assert data["registration_backends"][0]["key"] == "backend1"
+        del data["registration_backends"][0]
+
+        serializer = FormSerializer(instance=form, context=context, data=data)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        form.refresh_from_db()
+
+        self.assertEqual(form.registration_backends.count(), 1)
+        backend = form.registration_backends.first()
+        self.assertEqual(backend.key, "backend2")
+        self.assertEqual(backend.name, "#2")
+        self.assertEqual(backend.backend, "email")
+        self.assertEqual(backend.options["to_emails"], ["me@example.com"])
+
+    def test_patching_registrations_with_a_booboo(self):
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="backend1",
+            name="#1",
+            backend="email",
+            options={"to_emails": ["you@example.com"]},
+        )
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="backend2",
+            name="#2",
+            backend="email",
+            options={"to_emails": ["me@example.com"]},
+        )
+        context = {"request": None}
+        data = FormSerializer(context=context).to_representation(form)
+
+        all_the_same = 3 * [
+            {
+                "key": "backend5",
+                "name": "#5",
+                "backend": "email",
+                "options": {"to_emails": ["booboo@example.com", "yogi@example.com"]},
+            }
+        ]
+
+        data["registration_backends"] = all_the_same
+
+        serializer = FormSerializer(instance=form, context=context, data=data)
+        with self.assertRaises(Exception):
+            self.assertTrue(serializer.is_valid())
+            serializer.save()
+
+        form.refresh_from_db()
+
+        # assert no changes made
+        self.assertEqual(form.registration_backends.count(), 2)
+        backend1, backend2 = form.registration_backends.all()
+        self.assertEqual(backend1.key, "backend1")
+        self.assertEqual(backend1.name, "#1")
+        self.assertEqual(backend1.backend, "email")
+        self.assertEqual(backend1.options["to_emails"], ["you@example.com"])
+        self.assertEqual(backend2.key, "backend2")
+        self.assertEqual(backend2.name, "#2")
+        self.assertEqual(backend2.backend, "email")
+        self.assertEqual(backend2.options["to_emails"], ["me@example.com"])

@@ -14,8 +14,8 @@ from openforms.registrations.base import BasePlugin as RegistrationBasePlugin
 from openforms.registrations.registry import Registry as RegistrationRegistry
 from openforms.registrations.tests.utils import patch_registry
 
-from ..models import Form
-from .factories import FormFactory
+from ..models import Form, FormRegistrationBackend
+from .factories import FormFactory, FormRegistrationBackendFactory
 
 
 class EmailOptionsSerializer(serializers.Serializer):
@@ -48,7 +48,7 @@ class FormPluginOptionTest(APITestCase):
         form = FormFactory.create()
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
 
         register = RegistrationRegistry()
         register("test")(RegistrationPlugin)
@@ -61,36 +61,41 @@ class FormPluginOptionTest(APITestCase):
                 response = self.client.patch(
                     url,
                     data={
-                        "registration_backend": "",
-                        "registration_backend_options": None,
+                        "registration_backends": [],
                     },
                 )
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 form.refresh_from_db()
-                self.assertEqual(form.registration_backend, "")
-                self.assertEqual(form.registration_backend_options, None)
+                self.assertEqual(form.registration_backends.count(), 0)
 
             with self.subTest("valid"):
                 response = self.client.patch(
                     url,
                     data={
-                        "registration_backend": "test",
-                        "registration_backend_options": {"email": "foo@bar.baz"},
+                        "registration_backends": [
+                            {
+                                "backend": "test",
+                                "options": {"email": "foo@bar.baz"},
+                            }
+                        ]
                     },
                 )
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 form.refresh_from_db()
-                self.assertEqual(form.registration_backend, "test")
-                self.assertEqual(
-                    form.registration_backend_options, {"email": "foo@bar.baz"}
-                )
+                backend = form.registration_backends.first()
+                self.assertEqual(backend.backend, "test")
+                self.assertEqual(backend.options, {"email": "foo@bar.baz"})
 
             with self.subTest("invalid"):
                 response = self.client.patch(
                     url,
                     data={
-                        "registration_backend": "test",
-                        "registration_backend_options": {"email": "not_email_address"},
+                        "registration_backends": [
+                            {
+                                "backend": "test",
+                                "options": {"email": "not_email_address"},
+                            }
+                        ]
                     },
                 )
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -98,7 +103,8 @@ class FormPluginOptionTest(APITestCase):
                 json = response.json()
                 self.assertEqual(json["code"], "invalid")
                 self.assertEqual(
-                    json["invalidParams"][0]["name"], "registrationBackendOptions.email"
+                    json["invalidParams"][0]["name"],
+                    "registrationBackends.0.options.email",
                 )
 
     def test_payment_backend_options(self):
@@ -157,9 +163,12 @@ class FormPluginOptionTest(APITestCase):
                 )
 
     def test_overwrite_only_registration_email_subject_templates(self):
-        form = FormFactory.create(
-            registration_backend="email",
-            registration_backend_options={"to_emails": ["test@test.nl"]},
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="fst",
+            backend="email",
+            options={"to_emails": ["test@test.nl"]},
         )
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -177,16 +186,21 @@ class FormPluginOptionTest(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         data = response.json()
-
+        self.assertEqual(len(data["registrationBackends"]), 1)
+        backend = data["registrationBackends"][0]
         self.assertEqual(
-            data["registrationBackendOptions"]["emailSubject"],
+            backend["options"]["emailSubject"],
             "Custom subject",
         )
+        self.assertEqual(backend["key"], "fst")
 
     def test_overwrite_both_registration_email_html_and_text_templates(self):
-        form = FormFactory.create(
-            registration_backend="email",
-            registration_backend_options={"to_emails": ["test@test.nl"]},
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="fst",
+            backend="email",
+            options={"to_emails": ["test@test.nl"]},
         )
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -218,9 +232,12 @@ class FormPluginOptionTest(APITestCase):
         )
 
     def test_cannot_overwrite_only_registration_email_html_template(self):
-        form = FormFactory.create(
-            registration_backend="email",
-            registration_backend_options={"to_emails": ["test@test.nl"]},
+        form = FormFactory.create()
+        FormRegistrationBackendFactory.create(
+            form=form,
+            key="fst",
+            backend="email",
+            options={"to_emails": ["test@test.nl"]},
         )
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})

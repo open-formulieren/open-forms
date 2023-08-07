@@ -7,6 +7,7 @@ from freezegun import freeze_time
 from privates.test import temp_private_root
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.tests.factories import FormRegistrationBackendFactory
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -64,17 +65,20 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
                 },
             ],
             form__name="my-form",
-            form__registration_backend="stuf-zds-create-zaak",
-            form__registration_backend_options={
-                "zds_zaaktype_code": "zt-code",
-                "zds_zaaktype_status_code": "123",
-                "zds_documenttype_omschrijving_inzending": "aaabbc",
-            },
             completed_not_preregistered=True,
             bsn="111222333",
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
+            },
+        )
+        FormRegistrationBackendFactory.create(
+            form=cls.submission.form,
+            backend="stuf-zds-create-zaak",
+            options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_zaaktype_status_code": "123",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
             },
         )
 
