@@ -5,11 +5,8 @@ from unittest.mock import patch
 from django.core.management import call_command
 from django.test import SimpleTestCase, override_settings
 
-from requests_mock import Mocker
-
 from ..contrib.demo.plugin import DemoPrefill
 from ..registry import Registry
-from .utils import load_binary_mock
 
 # set up an isolated registry
 register = Registry()
@@ -45,20 +42,14 @@ class ListPluginsTests(SimpleTestCase):
 
 
 class TestGetPropertiesFromOAS(SimpleTestCase):
-    @Mocker()
-    def test_generate_attributes_openapi3_parser(self, m_request_oas):
-        m_request_oas.get(
-            "https://personen/api/schema/openapi.yaml?v=3",
-            status_code=200,
-            content=load_binary_mock("personen.yaml"),
-        )
+    def test_generate_attributes_openapi3_parser(self):
         stdout = StringIO()
 
         call_command(
             "generate_prefill_from_spec",
             parser="openapi3-parser",
             schema="Datum",
-            url="https://personen/api/schema/openapi.yaml?v=3",
+            url="./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml",
             stdout=stdout,
         )
 
@@ -72,9 +63,9 @@ class TestGetPropertiesFromOAS(SimpleTestCase):
             class Attributes(models.TextChoices):
                 \"\"\"
                 This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-                specs: https://personen/api/schema/openapi.yaml?v=3
+                specs: ./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml
                 schema: Datum
-                command: manage.py generate_prefill_from_spec --parser openapi3-parser --url https://personen/api/schema/openapi.yaml?v=3 --schema Datum
+                command: manage.py generate_prefill_from_spec --parser openapi3-parser --url ./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml --schema Datum
                 \"\"\"
 
                 dag = "dag", _("Dag")
