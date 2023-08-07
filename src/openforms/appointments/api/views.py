@@ -1,5 +1,6 @@
 import logging
 import warnings
+from copy import copy
 
 from django.utils.translation import gettext_lazy as _
 
@@ -39,6 +40,7 @@ from .serializers import (
     DateSerializer,
     LocationInputSerializer,
     LocationSerializer,
+    ProductInputSerializer,
     ProductSerializer,
     TimeInputSerializer,
     TimeSerializer,
@@ -67,6 +69,9 @@ PRODUCT_QUERY_PARAMETER = OpenApiParameter(
     style="form",
     explode=True,
 )
+OPTIONAL_PRODUCT_QUERY_PARAMETER = copy(PRODUCT_QUERY_PARAMETER)
+OPTIONAL_PRODUCT_QUERY_PARAMETER.required = False
+
 LOCATION_QUERY_PARAMETER = OpenApiParameter(
     "location_id",
     OpenApiTypes.STR,
@@ -78,6 +83,7 @@ LOCATION_QUERY_PARAMETER = OpenApiParameter(
 
 @extend_schema(
     summary=_("List available products"),
+    parameters=[OPTIONAL_PRODUCT_QUERY_PARAMETER],
 )
 class ProductsListView(ListMixin, APIView):
     """
@@ -89,12 +95,26 @@ class ProductsListView(ListMixin, APIView):
     serializer_class = ProductSerializer
 
     def get_objects(self):
+        serializer = ProductInputSerializer(data=self.request.query_params)
+        is_valid = serializer.is_valid()
+        # TODO: ideally we want to use raise_exception=True, but the SDK and the way
+        # that Formio work is that we can't prevent the invalid request from firing.
+        # Instead, we just return an empty result list which populates dropdowns with
+        # empty options.
+        if not is_valid:
+            warn_serializer_validation_deprecation()
+            return []
+
         plugin = get_plugin()
         config = AppointmentsConfig().get_solo()
         assert isinstance(config, AppointmentsConfig)
         kwargs = {}
         if location_id := config.limit_to_location:
             kwargs["location_id"] = location_id
+
+        if products := serializer.validated_data.get("product_id"):
+            kwargs["current_products"] = products
+
         with elasticapm.capture_span(
             name="get-available-products", span_type="app.appointments.get_products"
         ):

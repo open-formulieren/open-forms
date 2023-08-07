@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 class Product:
     identifier: str
     name: str
-    code: str | None = None
+    code: str = ""
     amount: int = 1
 
     def __str__(self):

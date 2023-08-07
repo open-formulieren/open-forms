@@ -39,7 +39,7 @@ class PluginTests(MockConfigMixin, TestCase):
 
             self.assertEqual(len(products), 2)
             self.assertEqual(products[0].identifier, "54b3482204c11bedc8b0a7acbffa308")
-            self.assertEqual(products[0].code, None)
+            self.assertEqual(products[0].code, "")
             self.assertEqual(products[0].name, "Service 01")
 
         with self.subTest("with location ID"):
