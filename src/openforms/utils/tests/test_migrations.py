@@ -1,11 +1,11 @@
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
-from django.test import TestCase, override_settings
+from django.test import TransactionTestCase, override_settings
 
 unset = object()
 
 
-class TestMigrations(TestCase):
+class TestMigrations(TransactionTestCase):
     """
     Test the effect of applying a migration
 

@@ -3,23 +3,47 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import openforms.registrations.fields
+from openforms.registrations.registry import register
+
+
+def forward(apps, _):
+    Form = apps.get_model("forms", "Form")
+    FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+    for form in Form.objects.exclude(
+        models.Q(registration_backend="") | models.Q(registration_backend__isnull=True)
+    ):
+        backend = form.registration_backend
+        # getting the plugin for a human readable name
+        # as form.get_registration_backend_display doesn't exist
+        plugin = register[backend]
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key=backend,
+            name=plugin.get_label(),
+            backend=backend,
+            options=form.registration_backend_options or {},
+        )
+
+
+def reverse(apps, _):
+    # This will lose data, but preserves the simple cases of just one backend
+    # No attempt at determinism for the multi-backend case is done; there will
+    # probably be logic rules that will break anyway. Ops need to use db backups,
+    # this is for this dev, that has "Update demo fixutures" at the end of this ticket's
+    # todo-list
+    FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+    for backend in FormRegistrationBackend.objects.select_related("form"):
+        backend.form.registration_backend = backend.backend
+        backend.form.registration_backend_options = backend.options
+        backend.form.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("forms", "0084_formvariable_prefill_identifier_role"),
+        ("forms", "0088_add_time_custom_error"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="form",
-            name="registration_backend",
-        ),
-        migrations.RemoveField(
-            model_name="form",
-            name="registration_backend_options",
-        ),
         migrations.CreateModel(
             name="FormRegistrationBackend",
             fields=[
@@ -74,5 +98,14 @@ class Migration(migrations.Migration):
             options={
                 "unique_together": {("form", "key")},
             },
+        ),
+        migrations.RunPython(forward, reverse),
+        migrations.RemoveField(
+            model_name="form",
+            name="registration_backend",
+        ),
+        migrations.RemoveField(
+            model_name="form",
+            name="registration_backend_options",
         ),
     ]
