@@ -2942,6 +2942,85 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/geo/latlng-search:
+    get:
+      operationId: geo_latlng_search_retrieve
+      description: Get the closest address name based on the given longitude and latitude.
+      summary: Get an adress based on coordinates
+      parameters:
+      - in: query
+        name: lat
+        schema:
+          type: number
+          format: float
+        description: The latitude of the location, in decimal degrees.
+        required: true
+      - in: query
+        name: lng
+        schema:
+          type: number
+          format: float
+        description: The longitude of the location, in decimal degrees.
+        required: true
+      tags:
+      - geo
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LatLngSearchResult'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '204':
+          description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/i18n/formio/{language}:
     get:
       operationId: i18n_formio_retrieve
@@ -7485,6 +7564,14 @@ components:
       required:
       - current
       - languages
+    LatLngSearchResult:
+      type: object
+      properties:
+        label:
+          type: string
+          title: Closest address
+      required:
+      - label
     LatitudeLongitude:
       type: object
       properties:
