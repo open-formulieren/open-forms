@@ -95,8 +95,7 @@ const initialFormState = {
     translationEnabled: false,
     submissionAllowed: 'yes',
     suspensionAllowed: true,
-    registrationBackend: '',
-    registrationBackendOptions: {},
+    registrationBackends: [],
     product: null,
     paymentBackend: '',
     paymentBackendOptions: {},
@@ -155,8 +154,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   translationEnabled: 'form',
   confirmationEmailTemplate: 'submission-confirmation',
   submissionAllowed: 'form',
-  registrationBackend: 'registration',
-  registrationBackendOptions: 'registration',
+  registrationBackends: 'registration',
   product: 'product-payment',
   paymentBackend: 'product-payment',
   paymentBackendOptions: 'product-payment',
@@ -242,6 +240,21 @@ function reducer(draft, action) {
       );
       break;
     }
+    case 'ADD_REGISTRATION': {
+      const {key} = action.payload;
+      draft.form.registrationBackends.push({
+        key: key,
+      });
+      break;
+    }
+    case 'DELETE_REGISTRATION': {
+      const {key} = action.payload;
+      draft.form.registrationBackends = draft.form.registrationBackends.filter(
+        backend => backend.key != key
+      );
+      break;
+    }
+
     case 'FIELD_CHANGED': {
       const {name, value} = action.payload;
       const nameBits = name.split('.');
@@ -482,15 +495,17 @@ function reducer(draft, action) {
         draft.validationErrors
       );
 
-      // check if we need updates to the backendRegistrationOptions
-      const {registrationBackend, registrationBackendOptions} = draft.form;
-      const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
-      if (handler == null) break;
+      // apply updates to the backendRegistration Options if needed
+      draft.form.registrationBackends = draft.form.registrationBackends.map(configuredBackend => {
+        const {backend: registrationBackend, options: registrationBackendOptions} =
+          configuredBackend;
+        const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
+        if (handler == null) return configuredBackend;
+        const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
+        if (!updatedOptions) return configuredBackend;
 
-      const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
-      if (updatedOptions) {
-        draft.form.registrationBackendOptions = updatedOptions;
-      }
+        return {...configuredBackend, options: updatedOptions};
+      });
       break;
     }
     case 'STEP_FIELD_CHANGED': {
@@ -967,6 +982,13 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
     });
   };
 
+  const addRegistration = key => {
+    dispatch({
+      type: 'ADD_REGISTRATION',
+      payload: {key},
+    });
+  };
+
   const onStepDelete = index => {
     dispatch({
       type: 'DELETE_STEP',
@@ -1159,10 +1181,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           },
           languages: state.languageInfo.languages,
           translationEnabled: state.form.translationEnabled,
-          registration: {
-            registrationBackend: state.form.registrationBackend,
-            registrationBackendOptions: state.form.registrationBackendOptions,
-          },
+          registrationBackends: state.form.registrationBackends,
           selectedAuthPlugins: state.selectedAuthPlugins,
         }}
       >
@@ -1286,10 +1305,11 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           {!isAppointment && (
             <TabPanel>
               <RegistrationFields
-                backends={state.availableRegistrationBackends}
-                selectedBackend={state.form.registrationBackend}
-                backendOptions={state.form.registrationBackendOptions}
+                availableBackends={state.availableRegistrationBackends}
+                configuredBackends={state.form.registrationBackends}
                 onChange={onFieldChange}
+                addBackend={addRegistration}
+                onDelete={key => dispatch({type: 'DELETE_REGISTRATION', payload: {key: key}})}
               />
             </TabPanel>
           )}

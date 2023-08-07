@@ -9,6 +9,33 @@ import {localiseSchema} from './i18n';
 
 const BaseFileField = Formio.Components.components.file;
 
+const getInformatieObjectTypen = (backend, options) => {
+  switch (backend) {
+    case 'zgw-create-zaak': {
+      return get('/api/v2/registration/informatieobjecttypen', {
+        zgw_api_group: options.zgwApiGroup,
+        registration_backend: backend,
+      });
+    }
+    case 'objects_api':
+      return get('/api/v2/registration/informatieobjecttypen', {registration_backend: backend});
+    default:
+      return;
+  }
+};
+
+const getSetOfBackends = instance => {
+  const registrationInfo = instance?.options?.openForms?.registrationBackendInfoRef?.current;
+  if (!registrationInfo) return [];
+  return Array.from(
+    new Set(
+      registrationInfo.map(({backend, options}) => {
+        return {backend, options};
+      })
+    ).values()
+  );
+};
+
 const REGISTRATION = {
   key: 'registration',
   label: 'Registration',
@@ -22,30 +49,14 @@ const REGISTRATION = {
       data: {
         custom(context) {
           const instance = context.instance;
-          const registrationInfo =
-            instance?.options?.openForms?.registrationBackendInfoRef?.current;
-          if (!registrationInfo) return [];
-
-          let queries = {};
-          switch (registrationInfo.registrationBackend) {
-            case 'zgw-create-zaak': {
-              queries = {
-                zgw_api_group: registrationInfo.registrationBackendOptions.zgwApiGroup,
-                registration_backend: 'zgw-create-zaak',
-              };
-              break;
-            }
-            case 'objects_api': {
-              queries = {registration_backend: 'objects_api'};
-              break;
-            }
-            default:
-              return;
-          }
-
-          get('/api/v2/registration/informatieobjecttypen', queries).then(response =>
-            instance.setItems(response.data)
-          );
+          const backends = getSetOfBackends(instance);
+          Promise.all(
+            backends.map(({backend, options}) => getInformatieObjectTypen(backend, options))
+          ).then(responses => {
+            const items = responses.reduce((items, response) => items.concat(response.data), []);
+            console.log(items);
+            instance.setItems(items);
+          });
         },
       },
       valueProperty: 'url',

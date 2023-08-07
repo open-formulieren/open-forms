@@ -73,8 +73,7 @@ const handleAppointmentForm = draft => {
 
   // appointment forms have very limited functionality, which is why we clear any
   // lingering configuration if a form is turned into an appointment form
-  draft.form.registrationBackend = '';
-  draft.form.registrationBackendOptions = {};
+  draft.form.registrationBackends = [];
   draft.form.product = null;
   draft.form.paymentBackend = '';
 
@@ -95,6 +94,8 @@ const saveForm = async (state, csrftoken) => {
     form: {uuid},
   } = state;
   const cleanedState = produce(state, draft => {
+    delete draft.form.registrationBackend; // deprecated
+    delete draft.form.registrationBackendOptions; // deprecated
     normalizeLimit(draft, 'successfulSubmissionsRemovalLimit');
     normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
     normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');

@@ -34,7 +34,6 @@ class SubmissionCompletionMixin:
 
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
-        submission.save()  # TODO remove? or does persist_user... require saved submission?
 
         persist_user_defined_variables(submission, self.request)
 

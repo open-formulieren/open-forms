@@ -310,7 +310,7 @@ const FormIOBuilder = ({
   onComponentMutated,
   componentTranslations = {}, // mapping of language code to (mapping of literal -> translation)
   componentNamespace = {},
-  registrationBackendInfo = {},
+  registrationBackendInfo = [],
   forceUpdate = false,
 }) => {
   // the deep clone is needed to create a mutable object, as the FormBuilder
@@ -393,6 +393,7 @@ FormIOBuilder.propTypes = {
   componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
   componentNamespace: PropTypes.arrayOf(PropTypes.object),
   forceUpdate: PropTypes.bool,
+  registrationBackendInfo: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default FormIOBuilder;

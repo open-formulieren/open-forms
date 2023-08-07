@@ -5,6 +5,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import StepSelection from 'components/admin/form_design/StepSelection';
+import RegistrationBackendSelection from 'components/admin/form_design/RegistrationBackendSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
   MODIFIABLE_PROPERTIES,
@@ -204,6 +205,18 @@ const ActionStepNotApplicable = ({action, errors, onChange}) => {
   );
 };
 
+const ActionSetRegistrationBackend = ({action, errors, onChange}) => {
+  return (
+    <DSLEditorNode errors={errors.value}>
+      <RegistrationBackendSelection
+        name="action.value"
+        value={action.action.value}
+        onChange={onChange}
+      />
+    </DSLEditorNode>
+  );
+};
+
 const ActionComponent = ({action, errors, onChange}) => {
   let Component;
   switch (action.action.type) {
@@ -225,6 +238,10 @@ const ActionComponent = ({action, errors, onChange}) => {
     }
     case 'step-not-applicable': {
       Component = ActionStepNotApplicable;
+      break;
+    }
+    case 'set-registration-backend': {
+      Component = ActionSetRegistrationBackend;
       break;
     }
     default: {

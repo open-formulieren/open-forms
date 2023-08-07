@@ -94,6 +94,9 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
             with phase("Configure registration backend"):
                 await page.get_by_role("tab", name="Registration").click()
                 await page.get_by_role(
+                    "button", name="Add registration backend"
+                ).click()
+                await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="ZGW API's")
                 await page.get_by_label("ZGW API set").select_option(label="Group 1")
@@ -179,6 +182,9 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
 
             with phase("Configure registration backend"):
                 await page.get_by_role("tab", name="Registration").click()
+                await page.get_by_role(
+                    "button", name="Add registration backend"
+                ).click()
                 await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="Objects API registration")

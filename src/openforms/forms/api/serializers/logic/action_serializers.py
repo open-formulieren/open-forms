@@ -72,6 +72,13 @@ class LogicFetchActionSerializer(serializers.Serializer):
     )
 
 
+class LogicSetRegistrationBackendActionSerializer(serializers.Serializer):
+    value = serializers.CharField(
+        label=_("registration_backend_key"),
+        allow_blank=False,
+    )
+
+
 class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     type = serializers.ChoiceField(
         choices=LogicActionTypes.choices,
@@ -86,6 +93,9 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         str(LogicActionTypes.step_not_applicable): DummySerializer,
         str(LogicActionTypes.variable): LogicValueActionSerializer,
         str(LogicActionTypes.fetch_from_service): LogicFetchActionSerializer,
+        str(
+            LogicActionTypes.set_registration_backend
+        ): LogicSetRegistrationBackendActionSerializer,
     }
 
 
@@ -225,4 +235,17 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 code="blank",
             )
 
+        # if action_type == LogicActionTypes.set_registration_backend:
+        #     if not action_value:
+        #         raise serializers.ValidationError(
+        #             {"action": {"value": _("Invalid registration backend")}},
+        #             code="blank",
+        #         )
+        #     # form is not in scope here :(
+        #     # if not form.registration_backends.filter(key=action_value).exists():
+        #     #     raise serializers.ValidationError(
+        #     #         {"action": {"value": _("Invalid registration backend")}},
+        #     #         code="invalid",
+        #     #     )
+        #
         return data

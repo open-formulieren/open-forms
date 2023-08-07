@@ -336,6 +336,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                 "registration_backends"
             ].child.get_fields()["backend"]
             fields["registration_backend"].required = False
+            fields["registration_backend"].allow_null = True
             fields["registration_backend"].allow_blank = True
             fields["registration_backend_options"] = fields[
                 "registration_backends"
@@ -349,7 +350,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         super().validate(attrs)
         if "registration_backend" in attrs and "registration_backends" in attrs:
             backend = attrs.pop("registration_backend")
-            options = attrs.pop("registration_backend_options", {})
+            options = attrs.pop("registration_backend_options")
             match attrs["registration_backends"]:
                 case []:
                     # ambiguous "new" call
