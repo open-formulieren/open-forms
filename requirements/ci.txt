@@ -599,7 +599,7 @@ openapi-spec-validator==0.5.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   openapi3-parser
-openapi3-parser==1.1.10
+openapi3-parser==1.1.11
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
