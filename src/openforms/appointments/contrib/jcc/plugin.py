@@ -360,7 +360,7 @@ class JccAppointment(BasePlugin):
             for product_id, count in product_ids.items():
                 _product = client.service.getGovProductDetails(productID=product_id)
                 product = Product(
-                    identifier=product_id, name=_product.description, amount=count
+                    identifier=product_id, name=_product.description or "", amount=count
                 )
                 app_products.append(product)
 

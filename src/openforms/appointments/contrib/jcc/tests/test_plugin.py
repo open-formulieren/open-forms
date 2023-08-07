@@ -416,6 +416,41 @@ class PluginTests(MockConfigMixin, TestCase):
         )
 
     @requests_mock.Mocker()
+    def test_get_appointment_details_no_product_description(self, m):
+        identifier = "1234567890"
+
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAppointmentDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationDetailsResponse.xml"),
+            additional_matcher=lambda req: "getGovLocationDetailsRequest" in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("GetAppointmentQRCodeTextResponse.xml"),
+            additional_matcher=lambda req: "GetAppointmentQRCodeTextRequest"
+            in req.text,
+        )
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovProductDetailsNoDescriptionResponse.xml"),
+            additional_matcher=lambda req: "getGovProductDetailsRequest" in req.text,
+        )
+
+        result = self.plugin.get_appointment_details(identifier)
+
+        self.assertEqual(type(result), AppointmentDetails)
+
+        self.assertEqual(len(result.products), 1)
+        self.assertEqual(result.identifier, identifier)
+        self.assertEqual(result.products[0].name, "")
+
+    @requests_mock.Mocker()
     def test_get_appointment_details_multiple_products(self, m):
         identifier = "1234567890"
         m.post(
