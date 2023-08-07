@@ -15,7 +15,7 @@ from soap.tests.factories import SoapServiceFactory
 
 from ....base import AppointmentDetails, Customer, CustomerDetails, Location, Product
 from ....core import book
-from ....exceptions import AppointmentException
+from ....exceptions import AppointmentCreateFailed, AppointmentException
 from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
@@ -596,6 +596,35 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_times(
                 products=[product], location=location, day=date(2023, 6, 22)
             )
+
+    @requests_mock.Mocker()
+    def test_create_appointment_failure(self, m):
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("failedBookGovAppointmentResponse.xml"),
+        )
+
+        with self.assertRaisesMessage(
+            AppointmentCreateFailed, "Could not create appointment, got updateStatus=1"
+        ):
+            self.plugin.create_appointment([product], location, start_at, client)
+
+    @requests_mock.Mocker()
+    def test_create_appointment_unexpected_exception(self, m):
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+
+        with self.assertRaisesMessage(
+            AppointmentCreateFailed, "Unexpected appointment create failure"
+        ):
+            self.plugin.create_appointment([product], location, start_at, client)
 
 
 class ConfigurationTests(SimpleTestCase):

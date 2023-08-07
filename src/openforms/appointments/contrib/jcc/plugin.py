@@ -319,7 +319,9 @@ class JccAppointment(BasePlugin):
                 },
             )
             raise error
-        except (ZeepError, RequestException, KeyError) as e:
+        except Exception as e:
+            if isinstance(e, AppointmentCreateFailed):
+                raise e
             raise AppointmentCreateFailed(
                 "Unexpected appointment create failure"
             ) from e
