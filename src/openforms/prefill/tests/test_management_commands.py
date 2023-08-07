@@ -1,4 +1,5 @@
 from io import StringIO
+from pathlib import Path
 from textwrap import dedent
 from unittest.mock import patch
 
@@ -45,27 +46,36 @@ class TestGetPropertiesFromOAS(SimpleTestCase):
     def test_generate_attributes_openapi3_parser(self):
         stdout = StringIO()
 
+        oas_uri = (
+            Path(__file__).parent.parent
+            / "contrib"
+            / "haalcentraal"
+            / "tests"
+            / "files"
+            / "personen.yaml"
+        ).as_uri()
+
         call_command(
             "generate_prefill_from_spec",
             parser="openapi3-parser",
             schema="Datum",
-            url="./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml",
+            url=oas_uri,
             stdout=stdout,
         )
 
         output = stdout.getvalue()
 
         expected_output = dedent(
-            """
+            f"""
             from django.db import models
             from django.utils.translation import gettext_lazy as _
 
             class Attributes(models.TextChoices):
                 \"\"\"
                 This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-                specs: ./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml
+                spec: {oas_uri}
                 schema: Datum
-                command: manage.py generate_prefill_from_spec --parser openapi3-parser --url ./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml --schema Datum
+                command: manage.py generate_prefill_from_spec --parser openapi3-parser --url {oas_uri} --schema Datum
                 \"\"\"
 
                 dag = "dag", _("Dag")

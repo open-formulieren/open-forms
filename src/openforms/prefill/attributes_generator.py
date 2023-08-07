@@ -18,7 +18,7 @@ from django.utils.translation import gettext_lazy as _
 class Attributes(models.TextChoices):
     \"\"\"
     This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-    specs: {{ uri }}
+    spec: {{ uri }}
     schema: {{ schema }}
     command: {{ command }}
     \"\"\"

@@ -1,3 +1,4 @@
+from pathlib import Path
 from textwrap import dedent
 
 from django.test import SimpleTestCase
@@ -6,6 +7,15 @@ from ..attributes_generator import (
     AttributeGeneratorException,
     OpenApi3AttributesGenerator,
 )
+
+OAS_URI = (
+    Path(__file__).parent.parent
+    / "contrib"
+    / "haalcentraal"
+    / "tests"
+    / "files"
+    / "personen.yaml"
+).as_uri()
 
 
 class TestOpenApi3AttributesGenerator(SimpleTestCase):
@@ -21,7 +31,7 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
     def test_wrong_schema_provided(self):
         generator = OpenApi3AttributesGenerator(
             schema="non-existent-schema",
-            uri="./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml",
+            uri=OAS_URI,
         )
 
         with self.assertRaises(
@@ -32,7 +42,7 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
 
     def test_no_schema_provided(self):
         generator = OpenApi3AttributesGenerator(
-            uri="./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml",
+            uri=OAS_URI,
         )
 
         with self.assertRaises(
@@ -44,21 +54,21 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
     def test_happy_flow(self):
         generator = OpenApi3AttributesGenerator(
             schema="Datum",
-            uri="./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml",
+            uri=OAS_URI,
             command="test",
         )
 
         output = generator.generate_attributes()
 
         expected_output = dedent(
-            """
+            f"""
             from django.db import models
             from django.utils.translation import gettext_lazy as _
 
             class Attributes(models.TextChoices):
                 \"\"\"
                 This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-                specs: ./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml
+                spec: {OAS_URI}
                 schema: Datum
                 command: test
                 \"\"\"
@@ -75,21 +85,21 @@ class TestOpenApi3AttributesGenerator(SimpleTestCase):
     def test_happy_flow_nested_properties(self):
         generator = OpenApi3AttributesGenerator(
             schema="NaamInOnderzoek",
-            uri="./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml",
+            uri=OAS_URI,
             command="test",
         )
 
         output = generator.generate_attributes()
 
         expected_output = dedent(
-            """
+            f"""
             from django.db import models
             from django.utils.translation import gettext_lazy as _
 
             class Attributes(models.TextChoices):
                 \"\"\"
                 This code was (at some point) generated from the management command below. Names and labels are in Dutch if the spec was Dutch
-                specs: ./src/openforms/prefill/contrib/haalcentraal/tests/files/personen.yaml
+                spec: {OAS_URI}
                 schema: NaamInOnderzoek
                 command: test
                 \"\"\"
