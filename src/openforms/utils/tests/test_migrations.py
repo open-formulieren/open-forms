@@ -1,3 +1,4 @@
+from django.core.management import call_command
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TransactionTestCase, override_settings
@@ -48,3 +49,9 @@ class TestMigrations(TransactionTestCase):
 
     def setUpBeforeMigration(self, apps):
         pass
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        # reset to latest migration
+        call_command("migrate", verbosity=0, database=connection._alias)
