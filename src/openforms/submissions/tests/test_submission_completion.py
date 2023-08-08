@@ -25,13 +25,18 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormPriceLogicFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.registrations.base import BasePlugin
+from openforms.registrations.registry import Registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..constants import SUBMISSIONS_SESSION_KEY
+from ..logic.actions import LogicActionTypes
 from ..models import SubmissionStep
+from ..tasks import on_completion
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -684,3 +689,94 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
         submission.refresh_from_db()
         self.assertTrue(submission.payment_required)
         self.assertEqual(submission.price, Decimal("123.45"))
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
+    "Registration backend can be set with a form action"
+
+    def setUp(self):
+        mock_register = Registry()
+        self.mock_calls = mock_calls = []
+
+        @mock_register("mock")
+        class MockPlugin(BasePlugin):
+            verbose_name = "Mock RegistrationBackend"
+
+            def register_submission(self, *args, **kwargs):
+                mock_calls.append((args, kwargs))
+
+            def get_reference_from_result(self, *args, **kwargs):
+                pass
+
+        backend_field = FormRegistrationBackendFactory._meta.model._meta.get_field(
+            "backend"
+        )
+        real_registry = backend_field.registry
+        backend_field.registry = mock_register
+
+        def unpatch():
+            backend_field.registry = real_registry
+
+        self.addCleanup(unpatch)
+
+    def test_single_backend_needs_no_logic(self):
+        submission = SubmissionFactory.from_data({"foo": 1})
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            backend="mock",
+            options={"isbn": "0-19-280142-2"},
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        on_completion(submission.id)
+
+        self.assertEqual(len(self.mock_calls), 1)
+        submission_in_args = self.mock_calls[0][0][0]
+        self.assertEqual(
+            submission_in_args.registration_backend.options["isbn"], "0-19-280142-2"
+        )
+
+    def test_setting_backend_with_logic(self):
+        submission = SubmissionFactory.from_data({"foo": 1})
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            backend="mock",
+            options={"isbn": "0-19-280142-2"},
+        )
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            key="to_pick",
+            backend="mock",
+            options={"url": "https://www.angelfire.com/tx4/cus/combinator/birds.html"},
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "foo"}, 1]},
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.set_registration_backend,
+                        "value": "to_pick",
+                    },
+                }
+            ],
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        on_completion(submission.id)
+
+        self.assertEqual(len(self.mock_calls), 1)
+        submission_in_args = self.mock_calls[0][0][0]
+        self.assertEqual(
+            submission_in_args.registration_backend.options["url"],
+            "https://www.angelfire.com/tx4/cus/combinator/birds.html",
+        )
