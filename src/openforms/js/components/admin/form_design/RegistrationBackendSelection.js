@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 
 import Select from 'components/admin/forms/Select';
+
 import {FormContext} from './Context';
 
 const RegistrationBackendSelection = ({name, value, onChange}) => {

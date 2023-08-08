@@ -4,8 +4,8 @@ import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {FormContext} from 'components/admin/form_design/Context';
-import StepSelection from 'components/admin/form_design/StepSelection';
 import RegistrationBackendSelection from 'components/admin/form_design/RegistrationBackendSelection';
+import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
   MODIFIABLE_PROPERTIES,
