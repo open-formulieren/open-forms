@@ -94,11 +94,11 @@ class GlobalConfigurationAdmin(
             },
         ),
         (
-            _("Truth"),
+            _("Truth declaration"),
             {
                 "fields": (
                     "ask_truth_consent",
-                    "truth_label",
+                    "truth_declaration_label",
                 ),
             },
         ),
