@@ -13,7 +13,11 @@ from openforms.api.utils import mark_experimental
 
 from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
-from .fields import PrivacyPolicyAcceptedField, SubmissionAllowedField
+from .fields import (
+    PrivacyPolicyAcceptedField,
+    SubmissionAllowedField,
+    TruthDeclarationAcceptedField,
+)
 
 
 @mark_experimental
@@ -29,6 +33,7 @@ class CompletionValidationSerializer(serializers.Serializer):
     )
     submission_allowed = SubmissionAllowedField()
     privacy_policy_accepted = PrivacyPolicyAcceptedField()
+    truth_declaration_accepted = TruthDeclarationAcceptedField()
     contains_blocked_steps = serializers.BooleanField()
 
     def validate_contains_blocked_steps(self, value):
@@ -42,6 +47,7 @@ class CompletionValidationSerializer(serializers.Serializer):
     def save(self, **kwargs):
         submission = self.context["submission"]
         submission.privacy_policy_accepted = True
+        submission.truth_declaration_accepted = True
         submission.save()
 
 
@@ -71,6 +77,9 @@ def get_submission_completion_serializer(
             "incomplete_steps": incomplete_steps,
             "submission_allowed": submission.form.submission_allowed,
             "privacy_policy_accepted": request.data.get("privacy_policy_accepted"),
+            "truth_declaration_accepted": request.data.get(
+                "truth_declaration_accepted", False
+            ),
             "contains_blocked_steps": any(
                 not submission_step.can_submit
                 for submission_step in state.submission_steps

@@ -234,6 +234,9 @@ class SubmissionViewSet(
             data={
                 "completed": submission.is_completed,
                 "privacy_policy_accepted": request.data["privacy_policy_accepted"],
+                "truth_declaration_accepted": request.data.get(
+                    "truth_declaration_accepted", False
+                ),
             },
             context={"request": request, "submission": submission},
         )

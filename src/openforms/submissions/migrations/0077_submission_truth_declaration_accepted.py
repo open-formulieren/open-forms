@@ -19,4 +19,13 @@ class Migration(migrations.Migration):
                 verbose_name="truth declaration accepted",
             ),
         ),
+        migrations.AddField(
+            model_name="submission",
+            name="cosign_truth_declaration_accepted",
+            field=models.BooleanField(
+                default=False,
+                help_text="Has the co-signer accepted the truth declaration?",
+                verbose_name="cosign truth declaration accepted",
+            ),
+        ),
     ]

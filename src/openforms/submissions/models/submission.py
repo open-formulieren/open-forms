@@ -231,6 +231,11 @@ class Submission(models.Model):
         default=False,
         help_text=_("Has the user accepted the truth declaration?"),
     )
+    cosign_truth_declaration_accepted = models.BooleanField(
+        _("cosign truth declaration accepted"),
+        default=False,
+        help_text=_("Has the co-signer accepted the truth declaration?"),
+    )
 
     _is_cleaned = models.BooleanField(
         _("is cleaned"),

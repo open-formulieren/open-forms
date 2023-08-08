@@ -6,6 +6,7 @@ from rest_framework.serializers import JSONField
 from openforms.formio.service import normalize_value_for_component
 from openforms.forms.models import Form
 
+from ...config.models import GlobalConfiguration
 from ..exceptions import FormMaintenance
 from ..models import SubmissionStep
 
@@ -62,3 +63,24 @@ class FormMaintenanceModeValidator:
                 return
         if form.maintenance_mode:
             raise serializers.ValidationError(self.message, code=self.code)
+
+
+class CheckCheckboxAccepted:
+    def __init__(self, ask_declaration_field_name: str, declaration_display_name: str):
+        self.ask_declaration_field_name = ask_declaration_field_name
+        self.declaration_display_name = declaration_display_name
+
+    def __call__(self, value: bool):
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+
+        should_declaration_be_accepted = getattr(
+            config, self.ask_declaration_field_name
+        )
+        declaration_valid = value if should_declaration_be_accepted else True
+        if not declaration_valid:
+            raise serializers.ValidationError(
+                _("{declaration_display_name} must be accepted.").format(
+                    declaration_display_name=self.declaration_display_name
+                )
+            )
