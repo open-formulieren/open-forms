@@ -9,8 +9,8 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.config.models import GlobalConfiguration
 
-from ...config.models import GlobalConfiguration
 from ..constants import SUBMISSIONS_SESSION_KEY
 from .factories import SubmissionFactory
 from .mixins import SubmissionsMixin
