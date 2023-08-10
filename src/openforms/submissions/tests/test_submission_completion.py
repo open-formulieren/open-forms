@@ -244,7 +244,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
         self.assertNotEqual(value, "foo")
 
-    def test_privacy_policy_accepted(self):
+    def test_privacy_policy_and_truth_declaration_accepted(self):
         form = FormFactory.create(
             submission_confirmation_template="Thank you for submitting {{ foo }}."
         )
@@ -256,15 +256,25 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.fields.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(ask_privacy_consent=True),
+            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                ask_privacy_consent=True, ask_truth_consent=True
+            ),
         ):
             response = self.client.post(
                 reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
-                data={"privacy_policy_accepted": True},
+                data={
+                    "privacy_policy_accepted": True,
+                    "truth_declaration_accepted": True,
+                },
             )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        submission.refresh_from_db()
+
+        self.assertTrue(submission.privacy_policy_accepted)
+        self.assertTrue(submission.truth_declaration_accepted)
 
     @override_settings(LANGUAGE_CODE="en")
     def test_submission_privacy_policy_not_accepted(self):
@@ -307,7 +317,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.fields.GlobalConfiguration.get_solo",
+            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(ask_privacy_consent=False),
         ):
             response = self.client.post(
@@ -431,6 +441,96 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             data["invalidParams"][0]["reason"],
             "Submission of this form is not allowed due to the answers submitted in a step.",
         )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_submission_truth_declaration_not_accepted(self):
+        form = FormFactory.create(
+            submission_confirmation_template="Thank you for submitting {{ foo }}."
+        )
+        form_step = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+
+        with self.subTest("Truth declaration not in body"):
+            with patch(
+                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(ask_truth_consent=True),
+            ):
+                response = self.client.post(
+                    reverse(
+                        "api:submission-complete", kwargs={"uuid": submission.uuid}
+                    ),
+                    data={
+                        "privacy_policy_accepted": True,
+                    },
+                )
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(
+                response.json()["invalidParams"],
+                [
+                    {
+                        "name": "truthDeclarationAccepted",
+                        "code": "invalid",
+                        "reason": "Truth declaration must be accepted.",
+                    }
+                ],
+            )
+
+        with self.subTest("Truth declaration in body but not accepted"):
+            with patch(
+                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(ask_truth_consent=True),
+            ):
+                response = self.client.post(
+                    reverse(
+                        "api:submission-complete", kwargs={"uuid": submission.uuid}
+                    ),
+                    data={
+                        "privacy_policy_accepted": True,
+                        "truth_declaration_accepted": False,
+                    },
+                )
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(
+                response.json()["invalidParams"],
+                [
+                    {
+                        "name": "truthDeclarationAccepted",
+                        "code": "invalid",
+                        "reason": "Truth declaration must be accepted.",
+                    }
+                ],
+            )
+
+    def test_submission_truth_declaration_not_accepted_but_not_required(self):
+        form = FormFactory.create(
+            submission_confirmation_template="Thank you for submitting {{ foo }}."
+        )
+        form_step = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+
+        with patch(
+            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(ask_truth_consent=False),
+        ):
+            response = self.client.post(
+                reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+                data={
+                    "privacy_policy_accepted": True,
+                    "truth_declaration_accepted": False,
+                },
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 @temp_private_root()
