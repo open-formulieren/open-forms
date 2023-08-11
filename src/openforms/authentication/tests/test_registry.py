@@ -4,9 +4,12 @@ from django.test.client import RequestFactory
 from furl import furl
 from rest_framework.reverse import reverse
 
-from ...forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
+
 from ..registry import Registry
 from .mocks import Plugin
+
+factory = RequestFactory()
 
 
 class RegistryTests(TestCase):
@@ -44,7 +47,6 @@ class RegistryTests(TestCase):
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
 
-        factory = RequestFactory()
         request = factory.get("/xyz")
         step = FormStepFactory(
             form__slug="myform",
@@ -62,6 +64,29 @@ class RegistryTests(TestCase):
         self.assertEqual(option.label, "some human readable label")
         self.assertEqual(option.url, plugin.get_start_url(request, form))
 
+    def test_get_options_without_form(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        request = factory.get("/foo")
+
+        options = register.get_options(request)
+
+        self.assertEqual(len(options), 1)
+        self.assertEqual(options[0].identifier, "plugin1")
+
+    def test_get_options_with_unknown_plugin_id(self):
+        # get_options may not crash when a (legacy) plugin is specified on the form.
+        # This could be from a custom extension that was removed.
+        form = FormFactory.build(authentication_backends=["some_old_value"])
+
+        register = Registry()
+        register("plugin1")(Plugin)
+        request = factory.get("/foo")
+
+        options = register.get_options(request, form)
+
+        self.assertEqual(len(options), 0)
+
     def test_urls(self):
         register = Registry()
         register("plugin1")(Plugin)
@@ -75,7 +100,6 @@ class RegistryTests(TestCase):
         form = step.form
 
         # we need an arbitrary request
-        factory = RequestFactory()
         request = factory.get("/foo")
 
         # check the start url

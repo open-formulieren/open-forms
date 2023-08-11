@@ -3,11 +3,12 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from openforms.forms.models import FormVariable
+from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 
 
 @dataclass
-class BaseStaticVariable(ABC):
+class BaseStaticVariable(ABC, AbstractBasePlugin):
     identifier: str
     name: str = field(init=False)
     data_type: str = field(init=False)

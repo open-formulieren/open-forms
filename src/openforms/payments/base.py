@@ -11,9 +11,7 @@ from openforms.utils.urls import reverse_plus
 
 from .constants import PaymentRequestType
 
-if TYPE_CHECKING:  # pragma: nocover
-    from openforms.forms.models import Form
-
+if TYPE_CHECKING:  # pragma: no cover
     from .models import Submission, SubmissionPayment
 
 
@@ -27,7 +25,7 @@ class APIInfo:
 class PaymentInfo:
     type: str = PaymentRequestType.get
     url: str = ""
-    data: Mapping[str, str] = None
+    data: Mapping[str, str] | None = None
 
 
 class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -79,9 +77,6 @@ class BasePlugin(AbstractBasePlugin):
             request=request,
         )
 
-    def get_api_info(self, request: HttpRequest, form: "Form") -> APIInfo:
-        info = APIInfo(
-            self.identifier,
-            self.get_label(),
-        )
+    def get_api_info(self, request: HttpRequest) -> APIInfo:
+        info = APIInfo(self.identifier, str(self.get_label()))
         return info

@@ -1,7 +1,9 @@
 from openforms.plugins.registry import BaseRegistry
 
+from .base import PreRequestHookBase
 
-class Registry(BaseRegistry):
+
+class Registry(BaseRegistry[PreRequestHookBase]):
     """
     A registry for pre-request hooks.
     """

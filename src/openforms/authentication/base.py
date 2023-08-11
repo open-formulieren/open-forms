@@ -98,11 +98,11 @@ class BasePlugin(AbstractBasePlugin):
         """
         pass
 
-    def get_login_info(self, request: HttpRequest, form: Form) -> LoginInfo:
+    def get_login_info(self, request: HttpRequest, form: Form | None) -> LoginInfo:
         info = LoginInfo(
             self.identifier,
             self.get_label(),
-            url=self.get_start_url(request, form),
+            url=self.get_start_url(request, form) if form else "",
             logo=self.get_logo(request),
             is_for_gemachtigde=self.is_for_gemachtigde,
         )

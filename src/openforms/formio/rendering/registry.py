@@ -1,19 +1,23 @@
-from typing import Type
+from typing import Callable, TypeAlias
 
 from openforms.plugins.registry import BaseRegistry
 
 from .nodes import ComponentNode
 
+TComponentNode: TypeAlias = type[ComponentNode]
+
 
 class Registry(BaseRegistry):
     module = "formio"
 
-    def __call__(self, unique_identifier: str, *args, **kwargs) -> callable:
+    def __call__(
+        self, unique_identifier: str, *args, **kwargs
+    ) -> Callable[[TComponentNode], TComponentNode]:
         """
         Overridden from base class because we register classes instead of instances.
         """
 
-        def decorator(klass: Type[ComponentNode]) -> Type[ComponentNode]:
+        def decorator(klass: TComponentNode) -> TComponentNode:
             if unique_identifier in self._registry:
                 raise ValueError(
                     f"The unique identifier '{unique_identifier}' is already present "
@@ -26,7 +30,7 @@ class Registry(BaseRegistry):
 
         return decorator
 
-    def __getitem__(self, key: str) -> Type[ComponentNode]:
+    def __getitem__(self, key: str) -> TComponentNode:
         try:
             return self._registry[key]
         except KeyError:

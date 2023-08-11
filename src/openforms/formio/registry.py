@@ -78,7 +78,7 @@ class BasePlugin(AbstractBasePlugin):
         ...
 
 
-class ComponentRegistry(BaseRegistry):
+class ComponentRegistry(BaseRegistry[BasePlugin]):
     module = "formio_components"
 
     def normalize(self, component: Component, value: Any) -> Any:

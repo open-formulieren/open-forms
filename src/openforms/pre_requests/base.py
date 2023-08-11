@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING
 
-from .clients import PreRequestClientContext
+from openforms.plugins.plugin import AbstractBasePlugin
+
+if TYPE_CHECKING:  # pragma: no cover
+    from .clients import PreRequestClientContext
 
 
 @dataclass
-class PreRequestHookBase(ABC):
+class PreRequestHookBase(ABC, AbstractBasePlugin):
     identifier: str
 
     @abstractmethod
@@ -15,6 +20,6 @@ class PreRequestHookBase(ABC):
         method: str,
         url: str,
         kwargs: dict,
-        context: Optional[PreRequestClientContext] = None,
+        context: PreRequestClientContext | None = None,
     ) -> None:
         raise NotImplementedError()  # pragma: nocover
