@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import JSONField
 
+from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import normalize_value_for_component
 from openforms.forms.models import Form
 
@@ -62,3 +63,20 @@ class FormMaintenanceModeValidator:
                 return
         if form.maintenance_mode:
             raise serializers.ValidationError(self.message, code=self.code)
+
+
+class CheckCheckboxAccepted:
+    message = _("You must accept this statement.")
+
+    def __init__(self, ask_statement_field_name: str, message):
+        self.ask_statement_field_name = ask_statement_field_name
+        self.message = message or self.message
+
+    def __call__(self, value: bool):
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+
+        should_statement_be_accepted = getattr(config, self.ask_statement_field_name)
+        declaration_valid = value if should_statement_be_accepted else True
+        if not declaration_valid:
+            raise serializers.ValidationError(self.message, code="required")

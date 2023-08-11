@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import override_settings
 from django.urls import resolve
 
@@ -7,6 +9,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.config.models import GlobalConfiguration
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from .factories import SubmissionFactory
@@ -161,7 +164,20 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
-        response = self.client.post(endpoint, data={"privacy_policy_accepted": True})
+
+        with patch(
+            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                ask_statement_of_truth=True, ask_privacy_consent=True
+            ),
+        ):
+            response = self.client.post(
+                endpoint,
+                data={
+                    "privacy_policy_accepted": True,
+                    "statement_of_truth_accepted": True,
+                },
+            )
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
@@ -176,6 +192,8 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         submission.refresh_from_db()
 
         self.assertTrue(submission.cosign_complete)
+        self.assertTrue(submission.cosign_privacy_policy_accepted)
+        self.assertTrue(submission.cosign_statement_of_truth_accepted)
 
         session = self.client.session
         ids = session.get(SUBMISSIONS_SESSION_KEY, [])
@@ -214,5 +232,74 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         self.assertEqual(data["invalidParams"][0]["name"], "privacyPolicyAccepted")
         self.assertEqual(
             data["invalidParams"][0]["reason"],
-            "Privacy policy must be accepted.",
+            "You must accept the privacy policy.",
         )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_cosign_did_not_accept_truth_declaration(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+            ],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+            completed=True,
+        )
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+
+        with self.subTest("Truth declaration not in body"):
+            with patch(
+                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(ask_statement_of_truth=True),
+            ):
+                response = self.client.post(
+                    endpoint, data={"privacy_policy_accepted": True}
+                )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+            data = response.json()
+
+            self.assertEqual(
+                data["invalidParams"][0]["name"], "statementOfTruthAccepted"
+            )
+            self.assertEqual(
+                data["invalidParams"][0]["reason"],
+                "You must declare the form to be filled out truthfully.",
+            )
+
+        with self.subTest("Truth declaration in body but false"):
+            with patch(
+                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(ask_statement_of_truth=True),
+            ):
+                response = self.client.post(
+                    endpoint,
+                    data={
+                        "privacy_policy_accepted": True,
+                        "statement_of_truth_accepted": False,
+                    },
+                )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+            data = response.json()
+
+            self.assertEqual(
+                data["invalidParams"][0]["name"], "statementOfTruthAccepted"
+            )
+            self.assertEqual(
+                data["invalidParams"][0]["reason"],
+                "You must declare the form to be filled out truthfully.",
+            )

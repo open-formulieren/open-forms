@@ -38,7 +38,7 @@ class ConfigPatchMixin:
 
         self.global_configuration = GlobalConfiguration(ask_privacy_consent=True)
         global_config_patcher = patch(
-            "openforms.submissions.api.fields.GlobalConfiguration.get_solo",
+            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
             return_value=self.global_configuration,
         )
         global_config_patcher.start()

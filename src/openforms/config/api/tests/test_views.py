@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import override_settings
 from django.urls import reverse
 
@@ -54,3 +56,85 @@ class PrivacyInfoViewTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(False, data["requiresPrivacyConsent"])
         self.assertIsNone(data["privacyLabel"])
+
+
+@override_settings(LANGUAGE_CODE="en")
+class DeclarationsInfoListViewTests(SubmissionsMixin, APITestCase):
+    def test_requires_active_submission(self):
+        response = self.client.get(reverse("api:config:statements-info-list"))
+
+        self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
+
+    def test_returns_list_checkboxes(self):
+        conf = GlobalConfiguration(
+            ask_privacy_consent=True,
+            privacy_policy_url="http://example-privacy.com",
+            privacy_policy_label="I read the {% privacy_policy %}",
+            ask_statement_of_truth=True,
+            statement_of_truth_label="I am honest",
+        )
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+
+        with patch(
+            "openforms.config.api.views.GlobalConfiguration.get_solo", return_value=conf
+        ):
+            response = self.client.get(reverse("api:config:statements-info-list"))
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        data = response.json()
+
+        privacy_checkbox = data[0]
+        self.assertTrue(privacy_checkbox["validate"]["required"])
+        self.assertHTMLEqual(
+            'I read the <a href="http://example-privacy.com" target="_blank" '
+            'rel="noreferrer noopener">privacy policy</a>',
+            privacy_checkbox["label"],
+        )
+        self.assertEqual(privacy_checkbox["key"], "privacyPolicyAccepted")
+
+        truth_checkbox = data[1]
+        self.assertTrue(truth_checkbox["validate"]["required"])
+        self.assertHTMLEqual(
+            "I am honest",
+            truth_checkbox["label"],
+        )
+        self.assertEqual(truth_checkbox["key"], "statementOfTruthAccepted")
+
+    def test_declarations_not_required(self):
+        conf = GlobalConfiguration(
+            ask_privacy_consent=False,
+            privacy_policy_url="http://example-privacy.com",
+            privacy_policy_label="I read the {% privacy_policy %}",
+            ask_statement_of_truth=False,
+            statement_of_truth_label="I am honest",
+        )
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+
+        with patch(
+            "openforms.config.api.views.GlobalConfiguration.get_solo", return_value=conf
+        ):
+            response = self.client.get(reverse("api:config:statements-info-list"))
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        data = response.json()
+
+        privacy_checkbox = data[0]
+        self.assertFalse(privacy_checkbox["validate"]["required"])
+        self.assertHTMLEqual(
+            'I read the <a href="http://example-privacy.com" target="_blank" '
+            'rel="noreferrer noopener">privacy policy</a>',
+            privacy_checkbox["label"],
+        )
+        self.assertEqual(privacy_checkbox["key"], "privacyPolicyAccepted")
+
+        truth_checkbox = data[1]
+        self.assertFalse(truth_checkbox["validate"]["required"])
+        self.assertHTMLEqual(
+            "I am honest",
+            truth_checkbox["label"],
+        )
+        self.assertEqual(truth_checkbox["key"], "statementOfTruthAccepted")

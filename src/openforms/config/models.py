@@ -417,6 +417,31 @@ class GlobalConfiguration(SingletonModel):
         ],
     )
 
+    # Statement of truth related fields
+    ask_statement_of_truth = models.BooleanField(
+        _("ask statement of truth"),
+        default=False,
+        help_text=_(
+            "If enabled, the user will have to agree that they filled out the form "
+            "truthfully before submitting it."
+        ),
+    )
+    statement_of_truth_label = HTMLField(
+        _("statement of truth label"),
+        blank=True,
+        help_text=_(
+            "The label of the checkbox that prompts the user to agree that they filled "
+            "out the form truthfully. Note that this field does not have templating "
+            "support."
+        ),
+        # TODO: deschler/django-modeltranslation#698 for dynamic translations depending
+        # on the field language.
+        default=(
+            "Ik verklaar dat ik deze aanvraag naar waarheid heb ingevuld en geen "
+            "informatie heb verzwegen."
+        ),
+    )
+
     # debug/feature flags
     enable_demo_plugins = models.BooleanField(
         _("enable demo plugins"),

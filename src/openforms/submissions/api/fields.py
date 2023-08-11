@@ -2,12 +2,12 @@ from functools import reduce
 
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import serializers
 from rest_framework.fields import BooleanField, ChoiceField
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import SubmissionAllowedChoices
+
+from .validators import CheckCheckboxAccepted
 
 
 class NestedRelatedField(NestedHyperlinkedRelatedField):
@@ -62,16 +62,22 @@ class URLRelatedField(NestedHyperlinkedRelatedField):
         return obj
 
 
-def check_privacy_policy_accepted(value: bool) -> None:
-    config = GlobalConfiguration.get_solo()
-    assert isinstance(config, GlobalConfiguration)
-    privacy_policy_valid = value if config.ask_privacy_consent else True
-    if not privacy_policy_valid:
-        raise serializers.ValidationError(_("Privacy policy must be accepted."))
+class TruthDeclarationAcceptedField(BooleanField):
+    default_validators = [
+        CheckCheckboxAccepted(
+            "ask_statement_of_truth",
+            _("You must declare the form to be filled out truthfully."),
+        )
+    ]
 
 
 class PrivacyPolicyAcceptedField(BooleanField):
-    default_validators = [check_privacy_policy_accepted]
+    default_validators = [
+        CheckCheckboxAccepted(
+            "ask_privacy_consent",
+            _("You must accept the privacy policy."),
+        )
+    ]
 
 
 # TODO: ideally this should be moved into a permission-check in the view rather than

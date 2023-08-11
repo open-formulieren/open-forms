@@ -94,6 +94,15 @@ class GlobalConfigurationAdmin(
             },
         ),
         (
+            _("Statement of truth"),
+            {
+                "fields": (
+                    "ask_statement_of_truth",
+                    "statement_of_truth_label",
+                ),
+            },
+        ),
+        (
             _("Privacy"),
             {
                 "fields": (

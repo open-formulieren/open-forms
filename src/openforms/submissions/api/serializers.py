@@ -31,7 +31,11 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
 from ..utils import get_report_download_url
-from .fields import NestedRelatedField, PrivacyPolicyAcceptedField
+from .fields import (
+    NestedRelatedField,
+    PrivacyPolicyAcceptedField,
+    TruthDeclarationAcceptedField,
+)
 from .validators import FormMaintenanceModeValidator, ValidatePrefillData
 
 logger = logging.getLogger(__name__)
@@ -488,11 +492,19 @@ class CosignValidationSerializer(serializers.Serializer):
         label=_("privacy policy accepted"),
         help_text=_("Whether the co-signer has accepted the privacy policy"),
     )
+    statement_of_truth_accepted = TruthDeclarationAcceptedField(
+        label=_("statement of truth accepted"),
+        help_text=_(
+            "Whether the co-signer has declared the form to be filled out truthfully."
+        ),
+        default=False,
+    )
 
     def save(self, **kwargs):
         submission = self.context["submission"]
         submission.cosign_complete = True
         submission.cosign_privacy_policy_accepted = True
+        submission.cosign_statement_of_truth_accepted = True
         submission.save()
 
 
