@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
     dependencies = [
         ("forms", "0088_enable_mutiple_registration_backends"),
-        ("submissions", "0076_alter_submission_form_url"),
+        ("submissions", "0077_auto_20230811_1217"),
     ]
 
     operations = [

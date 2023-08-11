@@ -4,7 +4,6 @@ from django.test import RequestFactory, TestCase
 
 from hypothesis import given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
-from rest_framework.exceptions import ValidationError
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.api.datastructures import FormVariableWrapper
