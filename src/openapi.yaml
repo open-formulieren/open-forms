@@ -1289,6 +1289,8 @@ paths:
 
         - `internalName`
         - `registrationBackends`
+        - `registrationBackend`
+        - `registrationBackendOptions`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -1354,6 +1356,8 @@ paths:
 
         - `internalName`
         - `registrationBackends`
+        - `registrationBackend`
+        - `registrationBackendOptions`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -1863,6 +1867,8 @@ paths:
 
         - `internalName`
         - `registrationBackends`
+        - `registrationBackend`
+        - `registrationBackendOptions`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -1934,6 +1940,8 @@ paths:
 
         - `internalName`
         - `registrationBackends`
+        - `registrationBackend`
+        - `registrationBackendOptions`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -2009,6 +2017,8 @@ paths:
 
         - `internalName`
         - `registrationBackends`
+        - `registrationBackend`
+        - `registrationBackendOptions`
         - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
@@ -6655,7 +6665,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6677,6 +6687,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
+        registrationBackend:
+          type: string
+          deprecated: true
+        registrationBackendOptions:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          deprecated: true
         authenticationBackends:
           type: array
           items:
@@ -7051,7 +7069,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7218,7 +7236,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7688,6 +7706,7 @@ components:
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
+      - $ref: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
       discriminator:
         propertyName: type
         mapping:
@@ -7696,6 +7715,7 @@ components:
           step-not-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
           variable: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
           fetch-from-service: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
+          set-registration-backend: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
     LogicActionPolymorphicGenericObject:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
@@ -7708,6 +7728,10 @@ components:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
       - $ref: '#/components/schemas/LogicPropertyAction'
+    LogicActionPolymorphicLogicSetRegistrationBackendAction:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/LogicSetRegistrationBackendAction'
     LogicActionPolymorphicLogicValueAction:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
@@ -7746,6 +7770,7 @@ components:
       - property
       - variable
       - fetch-from-service
+      - set-registration-backend
       type: string
     LogicComponentAction:
       type: object
@@ -7818,6 +7843,14 @@ components:
       required:
       - property
       - state
+    LogicSetRegistrationBackendAction:
+      type: object
+      properties:
+        value:
+          type: string
+          title: registration_backend_key
+      required:
+      - value
     LogicValueAction:
       type: object
       properties:
@@ -8061,7 +8094,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -8083,6 +8116,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormRegistrationBackend'
+        registrationBackend:
+          type: string
+          deprecated: true
+        registrationBackendOptions:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          deprecated: true
         authenticationBackends:
           type: array
           items:

@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from openforms.submissions.models import Submission
 
-from .constants import PLUGIN_ID
 from .models import EmailConfig
 
 
@@ -21,7 +20,6 @@ def get_registration_email_templates(
 
     backend = submission.registration_backend
     if backend is not None:
-        assert backend.backend == PLUGIN_ID
         form_config = backend.options
     else:
         form_config = {}

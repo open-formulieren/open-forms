@@ -53,8 +53,9 @@ const REGISTRATION = {
           Promise.all(
             backends.map(({backend, options}) => getInformatieObjectTypen(backend, options))
           ).then(responses => {
-            const items = responses.reduce((items, response) => items.concat(response.data), []);
-            console.log(items);
+            const items = responses
+              .reduce((items, response) => items.concat(response.data), [])
+              .filter(id => id); // not all backends do a fetch, not all responses contain data
             instance.setItems(items);
           });
         },

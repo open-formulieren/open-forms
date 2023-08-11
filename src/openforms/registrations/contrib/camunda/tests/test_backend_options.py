@@ -55,6 +55,10 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         """
         self.maxDiff = None
         detail_response = self.client.get(self.endpoint).json()
+        # remove v2 attributes
+        del detail_response["registrationBackend"]
+        del detail_response["registrationBackendOptions"]
+
         data = {
             **detail_response,
             "registrationBackends": [

@@ -19,7 +19,7 @@ class FormFactoryTests(TestCase):
         backend = FormRegistrationBackend.objects.get(form=form, backend="email")
         self.assertEqual(backend.options, {"to_emails": ["me@example.com"]})
 
-    def test_registration_backend_options_get_passed_tru_subfactories(self):
+    def test_registration_backend_options_get_passed_through_subfactories(self):
         form = FormStepFactory.create(
             form__registration_backend="email",
             form__registration_backend_options={"to_emails": ["me@example.com"]},

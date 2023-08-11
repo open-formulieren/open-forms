@@ -4,6 +4,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 import openforms.registrations.fields
 from openforms.registrations.registry import register
+from django.utils.translation import gettext as _
 
 
 def forward(apps, _):
@@ -15,11 +16,13 @@ def forward(apps, _):
         backend = form.registration_backend
         # getting the plugin for a human readable name
         # as form.get_registration_backend_display doesn't exist
-        plugin = register[backend]
+        backend_label = (
+            register[backend].get_label() if backend in register else _("Default")
+        )
         FormRegistrationBackend.objects.create(
             form=form,
             key=backend,
-            name=plugin.get_label(),
+            name=backend_label,
             backend=backend,
             options=form.registration_backend_options or {},
         )
@@ -29,7 +32,7 @@ def reverse(apps, _):
     # This will lose data, but preserves the simple cases of just one backend
     # No attempt at determinism for the multi-backend case is done; there will
     # probably be logic rules that will break anyway. Ops need to use db backups,
-    # this is for this dev, that has "Update demo fixutures" at the end of this ticket's
+    # this is for this dev, that has "Update demo fixtures" at the end of this ticket's
     # todo-list
     FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
     for backend in FormRegistrationBackend.objects.select_related("form"):
@@ -97,6 +100,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 "unique_together": {("form", "key")},
+                "verbose_name": "registration backend",
+                "verbose_name_plural": "registration backends",
             },
         ),
         migrations.RunPython(forward, reverse),

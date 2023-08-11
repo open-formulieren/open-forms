@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
+from openforms.typing import RegistrationBackendKey
 
 from . import Form
 
@@ -13,7 +14,7 @@ class FormRegistrationBackend(models.Model):
         on_delete=models.CASCADE,
         related_name="registration_backends",
     )
-    key = models.CharField(
+    key: RegistrationBackendKey = models.CharField(
         _("key"),
         max_length=50,
         help_text=_("The key to use to refer to this configuration in form logic."),
@@ -32,6 +33,11 @@ class FormRegistrationBackend(models.Model):
 
     class Meta:
         unique_together = ("form", "key")
+        verbose_name = _("registration backend")
+        verbose_name_plural = _("registration backends")
+
+    def __str__(self):
+        return _("{backend} on {form}").format(backend=self.name, form=self.form)
 
     def get_backend_display(self):
         choices = dict(registration_register.get_choices())

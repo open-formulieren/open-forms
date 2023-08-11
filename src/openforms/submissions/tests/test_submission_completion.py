@@ -29,8 +29,10 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
+from openforms.registrations.tests.utils import patch_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -696,6 +698,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
     "Registration backend can be set with a form action"
 
     def setUp(self):
+        super().setUp()
         mock_register = Registry()
         self.mock_calls = mock_calls = []
 
@@ -712,13 +715,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         backend_field = FormRegistrationBackendFactory._meta.model._meta.get_field(
             "backend"
         )
-        real_registry = backend_field.registry
-        backend_field.registry = mock_register
-
-        def unpatch():
-            backend_field.registry = real_registry
-
-        self.addCleanup(unpatch)
+        self.monkeypatch = patch_registry(backend_field, mock_register)
 
     def test_single_backend_needs_no_logic(self):
         submission = SubmissionFactory.from_data({"foo": 1})
@@ -733,12 +730,57 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, {"privacy_policy_accepted": True})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        on_completion(submission.id)
+        with self.monkeypatch:
+            on_completion(submission.id)
 
         self.assertEqual(len(self.mock_calls), 1)
         submission_in_args = self.mock_calls[0][0][0]
         self.assertEqual(
             submission_in_args.registration_backend.options["isbn"], "0-19-280142-2"
+        )
+
+    def test_multi_backend_no_logic(self):
+        submission = SubmissionFactory.from_data({"foo": 1})
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            key="M",
+            name="Mockingbird",
+            backend="mock",
+            options={"isbn": "0-19-280142-2"},
+        )
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            key="BM",
+            name="Double Mockingbird",
+            backend="mock",
+            options={"url": "https://www.angelfire.com/tx4/cus/combinator/birds.html"},
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        with self.monkeypatch:
+            on_completion(submission.id)
+
+        # it uses the first
+        self.assertEqual(len(self.mock_calls), 1)
+        submission_in_args = self.mock_calls[0][0][0]
+        self.assertEqual(
+            submission_in_args.registration_backend.options["isbn"], "0-19-280142-2"
+        )
+        # and logs debug data to the timeline
+        logged_events = TimelineLogProxy.objects.filter_event("registration_debug")
+        self.assertTrue(
+            next(
+                (
+                    log
+                    for log in logged_events
+                    if log.extra_data["backend"] == {"key": "M", "name": "Mockingbird"}
+                ),
+                False,
+            )
         )
 
     def test_setting_backend_with_logic(self):
@@ -772,11 +814,64 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, {"privacy_policy_accepted": True})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        on_completion(submission.id)
+        with self.monkeypatch:
+            on_completion(submission.id)
 
         self.assertEqual(len(self.mock_calls), 1)
         submission_in_args = self.mock_calls[0][0][0]
         self.assertEqual(
             submission_in_args.registration_backend.options["url"],
             "https://www.angelfire.com/tx4/cus/combinator/birds.html",
+        )
+
+    def test_setting_faulty_backend_with_logic(self):
+        submission = SubmissionFactory.from_data({"foo": 1})
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            key="M",
+            backend="mock",
+        )
+        FormRegistrationBackendFactory.create(
+            form=submission.form,
+            key="BM",
+            backend="mock",
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "foo"}, 1]},
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.set_registration_backend,
+                        "value": "not M",
+                    },
+                }
+            ],
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        with self.monkeypatch:
+            on_completion(submission.id)
+
+        # Still tries to use default
+        self.assertEqual(len(self.mock_calls), 1)
+        submission_in_args = self.mock_calls[0][0][0]
+        self.assertEqual(submission_in_args.registration_backend.key, "M")
+        # but logs the fact
+        logged_events = TimelineLogProxy.objects.filter_event("registration_debug")
+        self.assertTrue(
+            next(
+                (
+                    log
+                    for log in logged_events
+                    if log.extra_data.get("error", "")
+                    == "FormRegistrationBackend matching query does not exist."
+                    and log.extra_data["backend"]["key"] == "not M"
+                ),
+                False,
+            )
         )

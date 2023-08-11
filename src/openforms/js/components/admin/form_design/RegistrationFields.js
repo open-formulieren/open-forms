@@ -28,13 +28,13 @@ const backendKeyGenerator = (function* () {
   while (true) yield `backend${i++}`;
 })();
 
-const BackendOptionsFormRow = ({backend = null, currentOptions = {}, onChange, index}) => {
-  if (!backend) return null;
+const BackendOptionsFormRow = ({backendType = null, currentOptions = {}, onChange, index}) => {
+  if (!backendType) return null;
 
-  const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
+  const hasOptionsForm = Boolean(backendType && Object.keys(backendType.schema.properties).length);
   // either use the custom backend-specific defined form, or fall back to the generic react-json-schema-form
-  const OptionsFormComponent = BACKEND_OPTIONS_FORMS[backend.id]?.form ?? FormRjsfWrapper;
-  if (!hasOptionsForm && !BACKEND_OPTIONS_FORMS[backend.id]) {
+  const OptionsFormComponent = BACKEND_OPTIONS_FORMS[backendType.id]?.form ?? FormRjsfWrapper;
+  if (!hasOptionsForm && !BACKEND_OPTIONS_FORMS[backendType.id]) {
     return null;
   }
   return (
@@ -47,8 +47,8 @@ const BackendOptionsFormRow = ({backend = null, currentOptions = {}, onChange, i
             description="Registration backend options label"
           />
         }
-        schema={backend.schema}
-        uiSchema={BACKEND_OPTIONS_FORMS[backend.id]?.uiSchema || {}}
+        schema={backendType.schema}
+        uiSchema={BACKEND_OPTIONS_FORMS[backendType.id]?.uiSchema || {}}
         formData={currentOptions}
         onChange={({formData}) =>
           onChange({target: {name: `form.registrationBackends.${index}.options`, value: formData}})
@@ -59,26 +59,18 @@ const BackendOptionsFormRow = ({backend = null, currentOptions = {}, onChange, i
 };
 
 BackendOptionsFormRow.propTypes = {
-  backend: BackendType,
+  backendType: BackendType,
   currentOptions: PropTypes.object,
   onChange: PropTypes.func.isRequired,
-  index: PropTypes.number,
+  index: PropTypes.number.isRequired,
 };
 
-const RegistrationFieldSet = ({
-  index = 0,
-  backendKey = '',
-  backendName = '',
-  backends = [],
-  selectedBackend = '',
-  backendOptions = {},
-  onChange,
-  onDelete,
-}) => {
+const BackendFields = ({index = 0, backend, availableBackends = [], onChange, onDelete}) => {
   const intl = useIntl();
 
-  const backendChoices = backends.map(backend => [backend.id, backend.label]);
-  const backend = backends.find(backend => backend.id === selectedBackend);
+  const backendChoices = availableBackends.map(backend => [backend.id, backend.label]);
+  const selectedBackend = backend.backend || '';
+  const selectedBackendType = availableBackends.find(choice => choice.id === selectedBackend);
 
   const addAnotherMsg = intl.formatMessage({
     description: 'Button text to add extra item',
@@ -91,31 +83,12 @@ const RegistrationFieldSet = ({
       extraClassName="admin-fieldset"
       title={
         <>
-          {backendName || backendKey}
+          {backend.name || backend.key}
           <DeleteIcon onConfirm={onDelete} />
         </>
       }
     >
-      {
-        // <FormRow>
-        //   <Field
-        //     name={`form.registrationBackends.${index}.key`}
-        //     label={<FormattedMessage defaultMessage="Key" description="Registration backend key" />}
-        //     helpText={
-        //       <FormattedMessage
-        //         defaultMessage="The key to use to refer to this configuration in form logic."
-        //         description="Backend key help text"
-        //       />
-        //     }
-        //     disabled
-        //   >
-        //   <TextInput onChange={onChange} value={backendKey} />
-        //   </Field>
-        // </FormRow>
-        //
-      }
       <FormRow>
-        <Input type="hidden" onChange={onChange} value={backendKey} />
         <Field
           name={`form.registrationBackends.${index}.name`}
           label={
@@ -128,7 +101,7 @@ const RegistrationFieldSet = ({
             />
           }
         >
-          <TextInput onChange={onChange} value={backendName} />
+          <TextInput onChange={onChange} value={backend.name || ''} />
         </Field>
       </FormRow>
       <FormRow>
@@ -156,21 +129,23 @@ const RegistrationFieldSet = ({
 
       <BackendOptionsFormRow
         index={index}
-        backend={backend}
-        currentOptions={backendOptions}
+        backendType={selectedBackendType}
+        currentOptions={backend.options || {}}
         onChange={onChange}
       />
     </Fieldset>
   );
 };
 
-RegistrationFieldSet.propTypes = {
+BackendFields.propTypes = {
   index: PropTypes.number,
-  backendKey: PropTypes.string,
-  backendName: PropTypes.string,
-  backends: PropTypes.arrayOf(BackendType),
-  selectedBackend: PropTypes.string,
-  backendOptions: PropTypes.object,
+  backend: PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    backend: PropTypes.string,
+    options: PropTypes.object,
+  }),
+  availableBackends: PropTypes.arrayOf(BackendType),
   onChange: PropTypes.func.isRequired,
 };
 
@@ -183,18 +158,15 @@ const RegistrationFields = ({
 }) => {
   return (
     <>
-      {Array.from(configuredBackends.entries()).map(([idx, {key, name, backend, options}]) => (
+      {Array.from(configuredBackends.entries()).map(([idx, backend]) => (
         <>
-          <RegistrationFieldSet
-            key={key}
+          <BackendFields
+            key={backend.key}
             index={idx}
-            backendKey={key}
-            backendName={name}
-            backends={availableBackends}
-            selectedBackend={backend}
-            backendOptions={options}
+            backend={backend}
+            availableBackends={availableBackends}
             onChange={onChange}
-            onDelete={() => onDelete(key)}
+            onDelete={() => onDelete(backend.key)}
           />
         </>
       ))}

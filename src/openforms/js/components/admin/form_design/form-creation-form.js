@@ -244,6 +244,9 @@ function reducer(draft, action) {
       const {key} = action.payload;
       draft.form.registrationBackends.push({
         key: key,
+        name: '',
+        backend: '',
+        options: {},
       });
       break;
     }

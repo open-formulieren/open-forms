@@ -235,17 +235,4 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 code="blank",
             )
 
-        # if action_type == LogicActionTypes.set_registration_backend:
-        #     if not action_value:
-        #         raise serializers.ValidationError(
-        #             {"action": {"value": _("Invalid registration backend")}},
-        #             code="blank",
-        #         )
-        #     # form is not in scope here :(
-        #     # if not form.registration_backends.filter(key=action_value).exists():
-        #     #     raise serializers.ValidationError(
-        #     #         {"action": {"value": _("Invalid registration backend")}},
-        #     #         code="invalid",
-        #     #     )
-        #
         return data

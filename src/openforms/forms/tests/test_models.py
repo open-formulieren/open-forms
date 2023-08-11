@@ -444,3 +444,23 @@ class FormLogicTests(TestCase):
                 logic.clean()
             except ValidationError:
                 self.fail("Should be allowed")
+
+
+class FormRegistrationBackendTests(TestCase):
+    def test_string_contains_both_parts_of_the_relation(self):
+        backend = FormRegistrationBackendFactory.build(
+            name="Henk de Vries", form__name="zijn broer"
+        )
+
+        self.assertTrue("Henk de Vries" in str(backend))
+        self.assertTrue("zijn broer" in str(backend))
+
+    def test_backend_display_of_bad_backend(self):
+        backend = FormRegistrationBackendFactory.build(backend="open-kaboose")
+
+        self.assertEqual(backend.get_backend_display(), "-")
+
+    def test_backend_display_of_existing_backend(self):
+        backend = FormRegistrationBackendFactory.build(backend="email")
+
+        self.assertNotEqual(backend.get_backend_display(), "-")

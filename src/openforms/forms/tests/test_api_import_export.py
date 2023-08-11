@@ -187,8 +187,8 @@ class ImportExportAPITests(APITestCase):
         self.assertNotEqual(imported_form.uuid, str(form1.uuid))
         self.assertEqual(imported_form.active, False)
         for imported, original in zip(
-            imported_form.registration_backends.all(),
-            form1.registration_backends.all(),
+            imported_form.registration_backends.order_by("id"),
+            form1.registration_backends.order_by("id"),
         ):
             self.assertEqual(imported.key, original.key)
             self.assertEqual(imported.name, original.name)

@@ -45,7 +45,7 @@ class ActionOperation:
         """
         Constructor from an ActionDict
         """
-        pass
+        pass  # pragma: nocover
 
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper

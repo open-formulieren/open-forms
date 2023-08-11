@@ -6,10 +6,8 @@ import Select from 'components/admin/forms/Select';
 import {FormContext} from './Context';
 
 const RegistrationBackendSelection = ({name, value, onChange}) => {
-  const {registrationBackends} = useContext(FormContext);
-
-  const configuredBackends = registrationBackends || [];
-  const registrationBackendChoices = configuredBackends.map(({key, name}) => [key, name]);
+  const {registrationBackends = []} = useContext(FormContext);
+  const registrationBackendChoices = registrationBackends.map(({key, name}) => [key, name]);
 
   return (
     <Select

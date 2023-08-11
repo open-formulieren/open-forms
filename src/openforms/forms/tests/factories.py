@@ -1,6 +1,9 @@
+import random
+
 import factory
 
 from openforms.products.tests.factories import ProductFactory
+from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..models import FormDefinition, FormStep, FormVariable
