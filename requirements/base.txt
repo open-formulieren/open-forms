@@ -213,7 +213,7 @@ django-tinymce==3.6.1
     # via -r requirements/base.in
 django-treebeard==4.7
     # via -r requirements/base.in
-django-yubin==2.0.0
+django-yubin==2.0.1
     # via -r requirements/base.in
 djangorestframework==3.14.0
     # via

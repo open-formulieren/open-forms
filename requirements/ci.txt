@@ -363,7 +363,7 @@ django-treebeard==4.7
     #   -r requirements/base.txt
 django-webtest==1.9.7
     # via -r requirements/test-tools.in
-django-yubin==2.0.0
+django-yubin==2.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
