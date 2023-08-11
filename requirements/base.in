@@ -66,7 +66,7 @@ django-csp-reports
 mail-cleaner
 
 # API libraries
-djangorestframework~=3.13.0
+djangorestframework
 drf-nested-routers
 djangorestframework-camel-case
 django-filter
