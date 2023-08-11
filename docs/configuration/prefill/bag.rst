@@ -35,7 +35,7 @@ Configuration
 
 The BAG configuration is now completed.
 
-.. _`BAG API`: https://bag.basisregistraties.overheid.nl/
+.. _`BAG API`: https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/openapi.yaml
 .. _`BAG API key`: https://www.kadaster.nl/zakelijk/producten/adressen-en-gebouwen/bag-api-individuele-bevragingen
 
 
