@@ -8,10 +8,11 @@ class InformatieObjectTypeSelectField extends SelectField {
         value: item.informatieobjecttype.url,
         label: item.informatieobjecttype.omschrijving,
       };
-      if (!(item.catalogus.domein in groups)) {
-        groups[item.catalogus.domein] = [];
+      const groupLabel = [item.backendLabel, item.catalogus.domein].filter(Boolean).join(' > ');
+      if (!(groupLabel in groups)) {
+        groups[groupLabel] = [];
       }
-      groups[item.catalogus.domein].push(choice);
+      groups[groupLabel].push(choice);
     }
 
     const choices = [];

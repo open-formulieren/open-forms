@@ -26,14 +26,7 @@ const getInformatieObjectTypen = (backend, options) => {
 
 const getSetOfBackends = instance => {
   const registrationInfo = instance?.options?.openForms?.registrationBackendInfoRef?.current;
-  if (!registrationInfo) return [];
-  return Array.from(
-    new Set(
-      registrationInfo.map(({backend, options}) => {
-        return {backend, options};
-      })
-    ).values()
-  );
+  return registrationInfo || [];
 };
 
 const REGISTRATION = {
@@ -51,12 +44,21 @@ const REGISTRATION = {
           const instance = context.instance;
           const backends = getSetOfBackends(instance);
           Promise.all(
-            backends.map(({backend, options}) => getInformatieObjectTypen(backend, options))
-          ).then(responses => {
-            const items = responses
-              .reduce((items, response) => items.concat(response.data), [])
-              .filter(id => id); // not all backends do a fetch, not all responses contain data
-            instance.setItems(items);
+            backends.map(({backend, options, key, name}) => {
+              const backendLabel = name || key;
+              return getInformatieObjectTypen(backend, options)?.then(response =>
+                response.data?.length ? {backendLabel, data: response.data} : null
+              );
+            })
+          ).then(labeledDataAndNulls => {
+            // not all backends do a fetch, not all responses contain data
+            const labeledData = labeledDataAndNulls.filter(Boolean);
+            // no need for label if we have one backend
+            if (backends.length == 1 && labeledData.length) labeledData[0].backendLabel = '';
+            const labeledItems = labeledData
+              .map(({backendLabel, data}) => data.map(item => ({backendLabel, item})))
+              .reduce((joinedArray, items) => joinedArray.concat(items), []);
+            instance.setItems(labeledItems);
           });
         },
       },
