@@ -287,3 +287,36 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
 
         data = response.json()["data"]
         self.assertEqual(data["postcode"], "1015 CJ")
+
+    def test_step_configuration_not_camelcased(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "time",
+                        "type": "time",
+                        "errors": {"invalid_time": "Invalid time! Oh no!"},
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        self._add_submission_to_session(submission)
+        response = self.client.get(
+            reverse(
+                "api:submission-steps-detail",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": form_step.uuid,
+                },
+            ),
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(
+            "invalid_time",
+            response.json()["formStep"]["configuration"]["components"][0]["errors"],
+        )
