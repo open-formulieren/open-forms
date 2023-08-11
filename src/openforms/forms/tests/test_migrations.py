@@ -934,7 +934,7 @@ class TestAddCustomErrorMessageTimeComponent(TestMigrations):
         self.assertEqual(
             self.form_def.configuration["components"][0]["translatedErrors"],
             {
-                "en": {"required": "", "invalidTime": ""},
-                "nl": {"required": "", "invalidTime": ""},
+                "en": {"required": "", "invalid_time": ""},
+                "nl": {"required": "", "invalid_time": ""},
             },
         )

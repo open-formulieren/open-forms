@@ -10,7 +10,7 @@ const getCustomValidationErrorMessagesEditForm = validators => {
       if (validator_key.startsWith('validate')) return {[validator_key.split('.')[1]]: ''};
 
       if (validator_key.includes('minTime') || validator_key.includes('maxTime'))
-        return {invalidTime: ''};
+        return {invalid_time: ''};
     })
   );
 

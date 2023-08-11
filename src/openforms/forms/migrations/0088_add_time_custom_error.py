@@ -6,10 +6,6 @@ from openforms.formio.utils import iter_components
 
 
 def add_time_custom_error_message(apps, schema_editor):
-    """
-    Ensure that the values of translatable fields are also updated in the default
-    translated field (`..._nl`)
-    """
     FormDefinition = apps.get_model("forms", "FormDefinition")
 
     form_definitions = FormDefinition.objects.all()
@@ -23,7 +19,7 @@ def add_time_custom_error_message(apps, schema_editor):
             ):
                 updated_form_definition = True
                 for language_code, custom_error_messages in translated_errors.items():
-                    translated_errors[language_code]["invalidTime"] = ""
+                    translated_errors[language_code]["invalid_time"] = ""
 
         if updated_form_definition:
             form_definitions_to_update.append(form_definition)
