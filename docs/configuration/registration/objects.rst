@@ -150,7 +150,7 @@ To configure the Objects API follow these steps:
       * **API root url**: The root of this API, *for example* ``https://example.com/objecten/api/v1/``
 
       * **Authorization type**: Select the option: ``API Key``
-      * **Header key**: Fill in ``Authentication``
+      * **Header key**: Fill in ``Authorization``
       * **Header value**: Fill in ``Token <tokenValue>`` where ``<tokenValue>`` is replaced by the token provided by the backend service
       * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
         *for example:* ``https://example.com/objecten/api/v1/schema/openapi.yaml``
