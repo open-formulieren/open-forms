@@ -59,7 +59,11 @@
         <a href="{{ appointment_cancel_link }}" rel="nofollow">{% trans "Cancel appointment" %}</a>
     </p>
     <p>
-        <a href="{{ appointment_change_link }}" rel="nofollow">{% trans "Change appointment" %}</a>
+        {% if appointment_change_link %}
+            <a href="{{ appointment_change_link }}" rel="nofollow">{% trans "Change appointment" %}</a>
+        {% else %}
+            {% trans "If you wish to change your appointment, please cancel it using the above link and create a new one." %}
+        {% endif %}
     </p>
 
 {% endif %}
