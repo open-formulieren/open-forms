@@ -570,6 +570,56 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/config/declarations_info_list:
+    get:
+      operationId: config_declarations_info_list_retrieve
+      description: Declarations that the user may have to accept before being able
+        to submit a form. The declarations are returned as a list of Form.io checkbox
+        components.
+      summary: Declarations list
+      tags:
+      - config
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  description: A single Form.io checkbox component for the declarations
+                    that a user may have to accept before submitting a form.
+                  properties:
+                    type:
+                      type: string
+                      description: Component type (checkbox)
+                    key:
+                      type: string
+                      description: Key of the declaration
+                    label:
+                      type: string
+                      description: Text of the declaration
+                    validate:
+                      type: object
+                      properties:
+                        required:
+                          type: boolean
+                          description: Whether accepting this declaration is required
+                            or not.
+                  title: Declaration checkbox
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/config/privacy_policy_info:
     get:
       operationId: config_privacy_policy_info_retrieve
@@ -579,6 +629,7 @@ paths:
       security:
       - tokenAuth: []
       - cookieAuth: []
+      deprecated: true
       responses:
         '200':
           content:
@@ -6274,6 +6325,8 @@ components:
           $ref: '#/components/schemas/SubmissionAllowedEnum'
         privacyPolicyAccepted:
           type: boolean
+        truthDeclarationAccepted:
+          type: boolean
         containsBlockedSteps:
           type: boolean
       required:
@@ -6281,6 +6334,7 @@ components:
       - incompleteSteps
       - privacyPolicyAccepted
       - submissionAllowed
+      - truthDeclarationAccepted
       x-experimental: true
     ComponentProperty:
       type: object
