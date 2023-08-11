@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import DeclarationsInfoListView, PrivacyPolicyInfoView
+from .views import PrivacyPolicyInfoView, StatementsInfoListView
 
 app_name = "config"
 
@@ -11,8 +11,8 @@ urlpatterns = [
         name="privacy-policy-info",
     ),
     path(
-        "declarations_info_list",
-        DeclarationsInfoListView.as_view(),
-        name="declarations-info-list",
+        "statements-info-list",
+        StatementsInfoListView.as_view(),
+        name="statements-info-list",
     ),
 ]

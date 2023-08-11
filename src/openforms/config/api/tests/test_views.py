@@ -61,7 +61,7 @@ class PrivacyInfoViewTests(SubmissionsMixin, APITestCase):
 @override_settings(LANGUAGE_CODE="en")
 class DeclarationsInfoListViewTests(SubmissionsMixin, APITestCase):
     def test_requires_active_submission(self):
-        response = self.client.get(reverse("api:config:declarations-info-list"))
+        response = self.client.get(reverse("api:config:statements-info-list"))
 
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
@@ -70,8 +70,8 @@ class DeclarationsInfoListViewTests(SubmissionsMixin, APITestCase):
             ask_privacy_consent=True,
             privacy_policy_url="http://example-privacy.com",
             privacy_policy_label="I read the {% privacy_policy %}",
-            ask_truth_consent=True,
-            truth_declaration_label="I am honest",
+            ask_statement_of_truth=True,
+            statement_of_truth_label="I am honest",
         )
         submission = SubmissionFactory.create()
         self._add_submission_to_session(submission)
@@ -79,7 +79,7 @@ class DeclarationsInfoListViewTests(SubmissionsMixin, APITestCase):
         with patch(
             "openforms.config.api.views.GlobalConfiguration.get_solo", return_value=conf
         ):
-            response = self.client.get(reverse("api:config:declarations-info-list"))
+            response = self.client.get(reverse("api:config:statements-info-list"))
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
@@ -100,15 +100,15 @@ class DeclarationsInfoListViewTests(SubmissionsMixin, APITestCase):
             "I am honest",
             truth_checkbox["label"],
         )
-        self.assertEqual(truth_checkbox["key"], "truthDeclarationAccepted")
+        self.assertEqual(truth_checkbox["key"], "statementOfTruthAccepted")
 
     def test_declarations_not_required(self):
         conf = GlobalConfiguration(
             ask_privacy_consent=False,
             privacy_policy_url="http://example-privacy.com",
             privacy_policy_label="I read the {% privacy_policy %}",
-            ask_truth_consent=False,
-            truth_declaration_label="I am honest",
+            ask_statement_of_truth=False,
+            statement_of_truth_label="I am honest",
         )
         submission = SubmissionFactory.create()
         self._add_submission_to_session(submission)
@@ -116,7 +116,7 @@ class DeclarationsInfoListViewTests(SubmissionsMixin, APITestCase):
         with patch(
             "openforms.config.api.views.GlobalConfiguration.get_solo", return_value=conf
         ):
-            response = self.client.get(reverse("api:config:declarations-info-list"))
+            response = self.client.get(reverse("api:config:statements-info-list"))
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
@@ -137,4 +137,4 @@ class DeclarationsInfoListViewTests(SubmissionsMixin, APITestCase):
             "I am honest",
             truth_checkbox["label"],
         )
-        self.assertEqual(truth_checkbox["key"], "truthDeclarationAccepted")
+        self.assertEqual(truth_checkbox["key"], "statementOfTruthAccepted")

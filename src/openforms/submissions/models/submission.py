@@ -226,15 +226,15 @@ class Submission(models.Model):
         default=False,
         help_text=_("Has the co-signer accepted the privacy policy?"),
     )
-    truth_declaration_accepted = models.BooleanField(
-        _("truth declaration accepted"),
+    statement_of_truth_accepted = models.BooleanField(
+        _("statement of truth accepted"),
         default=False,
-        help_text=_("Has the user accepted the truth declaration?"),
+        help_text=_("Did the user declare the form to be filled out truthfully?"),
     )
-    cosign_truth_declaration_accepted = models.BooleanField(
-        _("cosign truth declaration accepted"),
+    cosign_statement_of_truth_accepted = models.BooleanField(
+        _("cosign statement of truth accepted"),
         default=False,
-        help_text=_("Has the co-signer accepted the truth declaration?"),
+        help_text=_("Did the co-signer declare the form to be filled out truthfully?"),
     )
 
     _is_cleaned = models.BooleanField(

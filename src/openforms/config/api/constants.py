@@ -7,10 +7,11 @@ assert STR_TYPE is not None
 BOOL_TYPE = build_basic_type(bool)
 assert BOOL_TYPE is not None
 
-DECLARATION_SCHEMA = build_object_type(
-    title=_("Declaration checkbox"),
+STATEMENT_CHECKBOX_SCHEMA = build_object_type(
+    title=_("Statement checkbox"),
     description=_(
-        "A single Form.io checkbox component for the declarations that a user may have to accept before submitting a form."
+        "A single Form.io checkbox component for the statements that a user may "
+        "have to accept before submitting a form."
     ),
     properties={
         "type": {
@@ -19,18 +20,18 @@ DECLARATION_SCHEMA = build_object_type(
         },
         "key": {
             **STR_TYPE,
-            "description": _("Key of the declaration"),
+            "description": _("Key of the statement field"),
         },
         "label": {
             **STR_TYPE,
-            "description": _("Text of the declaration"),
+            "description": _("Text of the statement"),
         },
         "validate": build_object_type(
             properties={
                 "required": {
                     **BOOL_TYPE,
                     "description": _(
-                        "Whether accepting this declaration is required or not."
+                        "Whether accepting this statement is required or not."
                     ),
                 }
             }

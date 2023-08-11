@@ -64,13 +64,19 @@ class URLRelatedField(NestedHyperlinkedRelatedField):
 
 class TruthDeclarationAcceptedField(BooleanField):
     default_validators = [
-        CheckCheckboxAccepted("ask_truth_consent", "Truth declaration")
+        CheckCheckboxAccepted(
+            "ask_statement_of_truth",
+            _("You must declare the form to be filled out truthfully."),
+        )
     ]
 
 
 class PrivacyPolicyAcceptedField(BooleanField):
     default_validators = [
-        CheckCheckboxAccepted("ask_privacy_consent", "Privacy policy")
+        CheckCheckboxAccepted(
+            "ask_privacy_consent",
+            _("You must accept the privacy policy."),
+        )
     ]
 
 

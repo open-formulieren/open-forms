@@ -66,21 +66,17 @@ class FormMaintenanceModeValidator:
 
 
 class CheckCheckboxAccepted:
-    def __init__(self, ask_declaration_field_name: str, declaration_display_name: str):
-        self.ask_declaration_field_name = ask_declaration_field_name
-        self.declaration_display_name = declaration_display_name
+    message = _("You must accept this statement.")
+
+    def __init__(self, ask_statement_field_name: str, message):
+        self.ask_statement_field_name = ask_statement_field_name
+        self.message = message or self.message
 
     def __call__(self, value: bool):
         config = GlobalConfiguration.get_solo()
         assert isinstance(config, GlobalConfiguration)
 
-        should_declaration_be_accepted = getattr(
-            config, self.ask_declaration_field_name
-        )
-        declaration_valid = value if should_declaration_be_accepted else True
+        should_statement_be_accepted = getattr(config, self.ask_statement_field_name)
+        declaration_valid = value if should_statement_be_accepted else True
         if not declaration_valid:
-            raise serializers.ValidationError(
-                _("{declaration_display_name} must be accepted.").format(
-                    declaration_display_name=self.declaration_display_name
-                )
-            )
+            raise serializers.ValidationError(self.message, code="required")

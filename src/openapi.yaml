@@ -570,56 +570,6 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/config/declarations_info_list:
-    get:
-      operationId: config_declarations_info_list_retrieve
-      description: Declarations that the user may have to accept before being able
-        to submit a form. The declarations are returned as a list of Form.io checkbox
-        components.
-      summary: Declarations list
-      tags:
-      - config
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  description: A single Form.io checkbox component for the declarations
-                    that a user may have to accept before submitting a form.
-                  properties:
-                    type:
-                      type: string
-                      description: Component type (checkbox)
-                    key:
-                      type: string
-                      description: Key of the declaration
-                    label:
-                      type: string
-                      description: Text of the declaration
-                    validate:
-                      type: object
-                      properties:
-                        required:
-                          type: boolean
-                          description: Whether accepting this declaration is required
-                            or not.
-                  title: Declaration checkbox
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
   /api/v2/config/privacy_policy_info:
     get:
       operationId: config_privacy_policy_info_retrieve
@@ -636,6 +586,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PrivacyPolicyInfo'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/config/statements-info-list:
+    get:
+      operationId: config_statements_info_list_retrieve
+      description: Return the list of statements that the user may have to accept
+        before being able to submit a form. The statements are returned as a list
+        of Form.io checkbox components.
+      summary: Submission statements configuration
+      tags:
+      - config
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  description: A single Form.io checkbox component for the statements
+                    that a user may have to accept before submitting a form.
+                  properties:
+                    type:
+                      type: string
+                      description: Component type (checkbox)
+                    key:
+                      type: string
+                      description: Key of the statement field
+                    label:
+                      type: string
+                      description: Text of the statement
+                    validate:
+                      type: object
+                      properties:
+                        required:
+                          type: boolean
+                          description: Whether accepting this statement is required
+                            or not.
+                  title: Statement checkbox
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -6325,7 +6340,7 @@ components:
           $ref: '#/components/schemas/SubmissionAllowedEnum'
         privacyPolicyAccepted:
           type: boolean
-        truthDeclarationAccepted:
+        statementOfTruthAccepted:
           type: boolean
         containsBlockedSteps:
           type: boolean
@@ -6333,8 +6348,8 @@ components:
       - containsBlockedSteps
       - incompleteSteps
       - privacyPolicyAccepted
+      - statementOfTruthAccepted
       - submissionAllowed
-      - truthDeclarationAccepted
       x-experimental: true
     ComponentProperty:
       type: object

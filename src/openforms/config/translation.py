@@ -20,7 +20,7 @@ class GlobalConfigurationTranslationOptions(TranslationOptions):
         "form_step_save_text",
         "form_step_next_text",
         "privacy_policy_label",
-        "truth_declaration_label",
+        "statement_of_truth_label",
     )
     fallback_undefined = {
         "submission_confirmation_template": "",
@@ -37,5 +37,5 @@ class GlobalConfigurationTranslationOptions(TranslationOptions):
         "form_step_save_text": "",
         "form_step_next_text": "",
         "privacy_policy_label": "",
-        "truth_declaration_label": "",
+        "statement_of_truth_label": "",
     }

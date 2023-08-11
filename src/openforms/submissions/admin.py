@@ -207,7 +207,8 @@ class SubmissionAdmin(admin.ModelAdmin):
         "cosign_complete",
         "cosign_privacy_policy_accepted",
         "privacy_policy_accepted",
-        "truth_declaration_accepted",
+        "statement_of_truth_accepted",
+        "cosign_statement_of_truth_accepted",
     ]
     raw_id_fields = ("form", "previous_submission")
     actions = [

@@ -417,26 +417,29 @@ class GlobalConfiguration(SingletonModel):
         ],
     )
 
-    # Truth declaration related fields
-    ask_truth_consent = models.BooleanField(
-        _("ask truth consent"),
+    # Statement of truth related fields
+    ask_statement_of_truth = models.BooleanField(
+        _("ask statement of truth"),
         default=False,
         help_text=_(
-            "If enabled, the user will have to agree that he filled the form out truthfully before submitting it."
+            "If enabled, the user will have to agree that they filled out the form "
+            "truthfully before submitting it."
         ),
     )
-    truth_declaration_label = HTMLField(
-        _("truth declaration label"),
+    statement_of_truth_label = HTMLField(
+        _("statement of truth label"),
         blank=True,
         help_text=_(
-            "The label of the checkbox that prompts the user to agree that he filled out the form truthfully."
+            "The label of the checkbox that prompts the user to agree that they filled "
+            "out the form truthfully. Note that this field does not have templating "
+            "support."
         ),
-        default="Ik verklaar dat ik deze aanvraag naar waarheid heb ingevuld en geen informatie heb verzwegen.",
-        validators=[
-            DjangoTemplateValidator(
-                backend="openforms.template.openforms_backend",
-            ),
-        ],
+        # TODO: deschler/django-modeltranslation#698 for dynamic translations depending
+        # on the field language.
+        default=(
+            "Ik verklaar dat ik deze aanvraag naar waarheid heb ingevuld en geen "
+            "informatie heb verzwegen."
+        ),
     )
 
     # debug/feature flags

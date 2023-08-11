@@ -168,14 +168,14 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         with patch(
             "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(
-                ask_truth_consent=True, ask_privacy_consent=True
+                ask_statement_of_truth=True, ask_privacy_consent=True
             ),
         ):
             response = self.client.post(
                 endpoint,
                 data={
                     "privacy_policy_accepted": True,
-                    "truth_declaration_accepted": True,
+                    "statement_of_truth_accepted": True,
                 },
             )
 
@@ -193,7 +193,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self.assertTrue(submission.cosign_complete)
         self.assertTrue(submission.cosign_privacy_policy_accepted)
-        self.assertTrue(submission.cosign_truth_declaration_accepted)
+        self.assertTrue(submission.cosign_statement_of_truth_accepted)
 
         session = self.client.session
         ids = session.get(SUBMISSIONS_SESSION_KEY, [])
@@ -232,7 +232,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         self.assertEqual(data["invalidParams"][0]["name"], "privacyPolicyAccepted")
         self.assertEqual(
             data["invalidParams"][0]["reason"],
-            "Privacy policy must be accepted.",
+            "You must accept the privacy policy.",
         )
 
     @override_settings(LANGUAGE_CODE="en")
@@ -261,7 +261,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         with self.subTest("Truth declaration not in body"):
             with patch(
                 "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
-                return_value=GlobalConfiguration(ask_truth_consent=True),
+                return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(
                     endpoint, data={"privacy_policy_accepted": True}
@@ -272,23 +272,23 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
             data = response.json()
 
             self.assertEqual(
-                data["invalidParams"][0]["name"], "truthDeclarationAccepted"
+                data["invalidParams"][0]["name"], "statementOfTruthAccepted"
             )
             self.assertEqual(
                 data["invalidParams"][0]["reason"],
-                "Truth declaration must be accepted.",
+                "You must declare the form to be filled out truthfully.",
             )
 
         with self.subTest("Truth declaration in body but false"):
             with patch(
                 "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
-                return_value=GlobalConfiguration(ask_truth_consent=True),
+                return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(
                     endpoint,
                     data={
                         "privacy_policy_accepted": True,
-                        "truth_declaration_accepted": False,
+                        "statement_of_truth_accepted": False,
                     },
                 )
 
@@ -297,9 +297,9 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
             data = response.json()
 
             self.assertEqual(
-                data["invalidParams"][0]["name"], "truthDeclarationAccepted"
+                data["invalidParams"][0]["name"], "statementOfTruthAccepted"
             )
             self.assertEqual(
                 data["invalidParams"][0]["reason"],
-                "Truth declaration must be accepted.",
+                "You must declare the form to be filled out truthfully.",
             )

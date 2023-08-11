@@ -492,9 +492,11 @@ class CosignValidationSerializer(serializers.Serializer):
         label=_("privacy policy accepted"),
         help_text=_("Whether the co-signer has accepted the privacy policy"),
     )
-    truth_declaration_accepted = TruthDeclarationAcceptedField(
-        label=_("truth declaration accepted"),
-        help_text=_("Whether the co-signer has accepted the truth declaration."),
+    statement_of_truth_accepted = TruthDeclarationAcceptedField(
+        label=_("statement of truth accepted"),
+        help_text=_(
+            "Whether the co-signer has declared the form to be filled out truthfully."
+        ),
         default=False,
     )
 
@@ -502,7 +504,7 @@ class CosignValidationSerializer(serializers.Serializer):
         submission = self.context["submission"]
         submission.cosign_complete = True
         submission.cosign_privacy_policy_accepted = True
-        submission.cosign_truth_declaration_accepted = True
+        submission.cosign_statement_of_truth_accepted = True
         submission.save()
 
 

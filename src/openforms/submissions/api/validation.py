@@ -33,7 +33,7 @@ class CompletionValidationSerializer(serializers.Serializer):
     )
     submission_allowed = SubmissionAllowedField()
     privacy_policy_accepted = PrivacyPolicyAcceptedField()
-    truth_declaration_accepted = TruthDeclarationAcceptedField()
+    statement_of_truth_accepted = TruthDeclarationAcceptedField()
     contains_blocked_steps = serializers.BooleanField()
 
     def validate_contains_blocked_steps(self, value):
@@ -47,7 +47,7 @@ class CompletionValidationSerializer(serializers.Serializer):
     def save(self, **kwargs):
         submission = self.context["submission"]
         submission.privacy_policy_accepted = True
-        submission.truth_declaration_accepted = True
+        submission.statement_of_truth_accepted = True
         submission.save()
 
 
@@ -77,8 +77,8 @@ def get_submission_completion_serializer(
             "incomplete_steps": incomplete_steps,
             "submission_allowed": submission.form.submission_allowed,
             "privacy_policy_accepted": request.data.get("privacy_policy_accepted"),
-            "truth_declaration_accepted": request.data.get(
-                "truth_declaration_accepted", False
+            "statement_of_truth_accepted": request.data.get(
+                "statement_of_truth_accepted", False
             ),
             "contains_blocked_steps": any(
                 not submission_step.can_submit
