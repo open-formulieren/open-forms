@@ -1,20 +1,25 @@
 {# Takes a 'field' context argument, which should be an instance of a BoundField #}
-<div class="openforms-form-control openforms-form-control--{{ type|default:'textfield' }}  utrecht-form-field">
-    <div class="utrecht-form-field utrecht-form-field--openforms">
-        <p class="utrecht-paragraph utrecht-form-field__label">
-            <label for="{{ field.auto_id }}" class="utrecht-form-label">
-                {{ field.label }}
-            </label>
-        </p>
-        <div>
-            {{ field }}
+<div class="openforms-form-control openforms-form-control--{{ type|default:'textfield' }}">
+
+    {% if type == 'radio' %}
+        {% include "./radio.html" %}
+    {% else %}
+        <div class="utrecht-form-field utrecht-form-field--openforms">
+            <p class="utrecht-paragraph utrecht-form-field__label">
+                <label for="{{ field.auto_id }}" class="utrecht-form-label">
+                    {{ field.label }}
+                </label>
+            </p>
+            <div>
+                {{ field }}
+            </div>
+            {% if field.help_text %}
+            <div class="utrecht-form-field-description utrecht-form-field-description--openforms-helptext">
+                {{ field.help_text }}
+            </div>
+            {% endif %}
         </div>
-        {% if field.help_text %}
-        <div class="utrecht-form-field-description utrecht-form-field-description--openforms-helptext">
-            {{ field.help_text }}
-        </div>
-        {% endif %}
-    </div>
+    {% endif %}
 
     {# validation errors #}
     {% include "includes/forms/errorlist.html" with errors=field.errors only %}

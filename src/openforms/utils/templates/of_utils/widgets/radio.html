@@ -1,8 +1,10 @@
-<div class="openforms-form-choices utrecht-form-fieldset__fieldset utrecht-form-fieldset__fieldset--html-fieldset {% if widget.inline %}openforms-form-choices--inline{% endif %}">
+<div class="openforms-choice-list {% if widget.inline %}openforms-choice-list--inline{% endif %}">
 {% for group, options, index in widget.optgroups %}
-    {% if group %}OPTGROUPS ARE NOT SUPPORTED{% endif %}
-    {% for option in options %}
-        {% include option.template_name with widget=option %}
-    {% endfor %}
+    <div class="openforms-choice-list__choice">
+        {% if group %}OPTGROUPS ARE NOT SUPPORTED{% endif %}
+        {% for option in options %}
+            {% include option.template_name with widget=option %}
+        {% endfor %}
+    </div>
 {% endfor %}
 </div>

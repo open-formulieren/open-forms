@@ -1,0 +1,26 @@
+<div class="utrecht-form-fieldset utrecht-form-fieldset--openforms">
+    <fieldset
+        {% if field.help_text %}aria-describedby="{{ field.auto_id }}"{% endif %}
+        role="radiogroup"
+        class="utrecht-form-fieldset__fieldset utrecht-form-fieldset--html-fieldset"
+    >
+        <legend class="
+            utrecht-form-fieldset__legend
+            utrecht-form-fieldset__legend--html-legend
+            utrecht-form-field__label">
+            <label class="utrecht-form-label utrecht-form-label--openforms-required">
+                {{ field.label }}
+            </label>
+        </legend>
+
+        {{ field }}
+
+        {% if field.help_text %}
+        <div id="{{ field.auto_id }}"
+             class="utrecht-form-field-description
+                    utrecht-form-field-description--openforms-helptext
+                    utrecht-form-field__description"
+        >{{ field.help_text }}</div>
+        {% endif %}
+    </fieldset>
+</div>
