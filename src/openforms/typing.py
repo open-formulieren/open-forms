@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Protocol, Union
+from typing import Any, Dict, List, NewType, Protocol, Union
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
@@ -14,6 +14,8 @@ JSONObject = Dict[str, JSONValue]
 DataMapping = Dict[str, Any]  # key: value pair
 
 AnyRequest = Union[HttpRequest, Request]
+
+RegistrationBackendKey = NewType("RegistrationBackendKey", str)
 
 
 class RequestHandler(Protocol):

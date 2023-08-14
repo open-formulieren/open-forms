@@ -34,9 +34,11 @@ class SubmissionCompletionMixin:
 
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
-        submission.save()
 
         persist_user_defined_variables(submission, self.request)
+
+        # all logic has run; we can fix backend
+        submission.save()
 
         logevent.form_submit_success(submission)
 

@@ -1,5 +1,6 @@
 import logging
 from dataclasses import asdict
+from functools import partial
 from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from django.db.models import Model
@@ -195,6 +196,12 @@ def prefill_retrieve_failure(submission: "Submission", plugin, error: Exception)
 
 def registration_start(submission: "Submission"):
     _create_log(submission, "registration_start")
+
+
+registration_debug = partial(_create_log, event="registration_debug")
+registration_debug.__doc__ = (
+    """Log debugging info. `model` parameter ought to be the submission."""
+)
 
 
 def registration_success(submission: "Submission", plugin):

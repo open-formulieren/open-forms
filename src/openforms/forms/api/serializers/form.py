@@ -1,6 +1,9 @@
-from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
+import warnings
 
+from django.db import transaction
+from django.utils.translation import gettext_lazy as _
+
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
@@ -19,7 +22,7 @@ from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
-from ...models import Category, Form
+from ...models import Category, Form, FormRegistrationBackend
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
 
@@ -45,6 +48,46 @@ class FormLiteralsSerializer(serializers.Serializer):
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
+class FormRegistrationBackendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FormRegistrationBackend
+        fields = [
+            "key",
+            "name",
+            "backend",
+            "options",
+        ]
+
+    def get_fields(self):
+        # set backend choices at runtime
+        fields = super().get_fields()
+        fields["backend"].choices = registration_register.get_choices()
+        return fields
+
+    def validate(self, attrs):
+        # validate config options with selected plugin
+        if "backend" not in attrs:
+            # performing nested PATCH
+            return attrs
+        plugin = registration_register[attrs["backend"]]
+
+        if not plugin.configuration_options:  # unicorn case
+            return attrs  # pragma: nocover
+
+        serializer = plugin.configuration_options(data=attrs["options"])
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            detail = {"options": e.detail}
+            raise serializers.ValidationError(detail) from e
+        # serializer does some normalization, so make sure to update the data
+        attrs["options"] = serializer.data
+        return attrs
+
+
+@extend_schema_serializer(
+    deprecate_fields=["registration_backend", "registration_backend_options"]
+)
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
@@ -128,6 +171,14 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
     translations = ModelTranslationsSerializer()
 
+    registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
+
+    # deprecated fields
+    registration_backend = serializers.CharField(required=False)
+    registration_backend_options = serializers.JSONField(
+        required=False, allow_null=True
+    )
+
     class Meta:
         model = Form
         fields = (
@@ -136,6 +187,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "internal_name",
             "login_required",
             "translation_enabled",
+            "registration_backends",
             "registration_backend",
             "registration_backend_options",
             "authentication_backends",
@@ -217,21 +269,87 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
+        registration_backends = validated_data.pop("registration_backends", [])
+
+        registration_backend_options = (
+            validated_data.pop("registration_backend_options", None) or {}
+        )
+        if "registration_backend" in validated_data:
+            warnings.warn(
+                (
+                    "Form 'registration_backend' and 'registration_backend_options' "
+                    "are deprecated, use 'registration_backends' instead."
+                ),
+                DeprecationWarning,
+            )
+            registration_backends.append(
+                {
+                    "key": "default",
+                    "name": _("Default"),
+                    "backend": validated_data.pop("registration_backend"),
+                    "options": registration_backend_options,
+                }
+            )
+
         instance = super().create(validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+        FormRegistrationBackend.objects.bulk_create(
+            FormRegistrationBackend(form=instance, **backend)
+            for backend in registration_backends
+        )
         return instance
+
+    def _update_v2_registration_backend(self, form, validated_data):
+        new_data = {}
+        if "registration_backend" in validated_data:
+            new_data["backend"] = validated_data.pop("registration_backend")
+        if "registration_backend_options" in validated_data:
+            new_data["options"] = validated_data.pop("registration_backend_options")
+        if not any(v is not None for v in new_data.values()):
+            return
+
+        warnings.warn(
+            (
+                "Form 'registration_backend' and 'registration_backend_options' "
+                "are deprecated, use 'registration_backends' instead."
+            ),
+            DeprecationWarning,
+        )
+
+        backend = form.registration_backends.first() or FormRegistrationBackend(
+            form=form, name=_("Default"), key="default"
+        )
+        serializer = FormRegistrationBackendSerializer(
+            instance=backend, data=new_data, context=self.context, partial=self.partial
+        )
+        # validated_data ought to be correct already
+        assert serializer.is_valid()
+        serializer.save()
 
     @transaction.atomic()
     def update(self, instance, validated_data):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
+        registration_backends = validated_data.pop("registration_backends", None)
+
+        self._update_v2_registration_backend(instance, validated_data)
+
         instance = super().update(instance, validated_data)
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+        if registration_backends is None:
+            return instance
+
+        instance.registration_backends.all().delete()
+        FormRegistrationBackend.objects.bulk_create(
+            FormRegistrationBackend(form=instance, **backend)
+            for backend in registration_backends
+        )
+
         return instance
 
     def get_fields(self):
@@ -245,16 +363,44 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             fields["payment_backend"].choices = [
                 ("", "")
             ] + payment_register.get_choices()
+
+        # adapt fields for v2 backwards compatibility
+        if "registration_backends" in fields:
+            v2_backend = fields["registration_backend"]
+            v3_backend = fields["registration_backends"].child.get_fields()["backend"]
+            v2_backend.choices = v3_backend.choices
+
         return fields
 
     def validate(self, attrs):
         super().validate(attrs)
-        self.validate_backend_options(
-            attrs,
-            "registration_backend",
-            "registration_backend_options",
-            registration_register,
-        )
+
+        if "registration_backend" in attrs and "registration_backends" in attrs:
+            raise serializers.ValidationError(
+                {
+                    "registration_backend": ErrorDetail(
+                        _(
+                            "registration_backend is deprecated, please use just registration_backends",
+                        ),
+                        code="invalid",
+                    ),
+                    "registration_backend_options": ErrorDetail(
+                        _(
+                            "registration_backend is deprecated, please use just registration_backends",
+                        ),
+                        code="invalid",
+                    ),
+                }
+            )
+
+        if "registration_backends" not in attrs:
+            self.validate_backend_options(
+                attrs,
+                "registration_backend",
+                "registration_backend_options",
+                registration_register,
+            )
+
         self.validate_backend_options(
             attrs, "payment_backend", "payment_backend_options", payment_register
         )
@@ -355,6 +501,10 @@ class FormExportSerializer(FormSerializer):
             del fields["payment_options"]
         if "authentication_backends" in fields:
             fields["authentication_backends"].write_only = False
+        if "registration_backend" in fields:
+            del fields["registration_backend"]
+        if "registration_backend_options" in fields:
+            del fields["registration_backend_options"]
         return fields
 
 

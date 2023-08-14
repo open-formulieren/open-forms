@@ -18,6 +18,7 @@ from ..factories import (
     FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
 )
 
@@ -1328,11 +1329,14 @@ class AppointmentFormTests(E2ETestCase):
                 name="Playwright appointment test",
                 generate_minimal_setup=True,
                 is_appointment=False,
-                registration_backend="email",
-                registration_backend_options={
+                product=ProductFactory.create(),
+            )
+            FormRegistrationBackendFactory.create(
+                form=form,
+                backend="email",
+                options={
                     "to_emails": ["foo@example.com"],
                 },
-                product=ProductFactory.create(),
             )
             return form
 
@@ -1363,8 +1367,7 @@ class AppointmentFormTests(E2ETestCase):
             self.assertTrue(form.is_appointment)
             self.assertFalse(form.formstep_set.exists())
             self.assertFalse(form.formvariable_set.exists())
-            self.assertEqual(form.registration_backend, "")
-            self.assertEqual(form.registration_backend_options, {})
+            self.assertFalse(form.registration_backends.exists())
             self.assertEqual(form.payment_backend, "")
             self.assertEqual(form.payment_backend_options, {})
             self.assertIsNone(form.product)

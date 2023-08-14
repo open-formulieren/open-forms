@@ -12,6 +12,7 @@ const FormContext = React.createContext({
   formSteps: [],
   formDefinitions: [],
   formVariables: {},
+  registrationBackends: [],
   plugins: {},
   languages: [],
   translationEnabled: false,

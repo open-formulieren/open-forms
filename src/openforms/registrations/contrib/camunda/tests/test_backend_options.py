@@ -55,48 +55,59 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         """
         self.maxDiff = None
         detail_response = self.client.get(self.endpoint).json()
+        # remove v2 attributes
+        del detail_response["registrationBackend"]
+        del detail_response["registrationBackendOptions"]
+
         data = {
             **detail_response,
-            "registrationBackendOptions": {
-                "processDefinition": "invoice",
-                "processDefinitionVersion": None,
-                "processVariables": [
-                    {
-                        "enabled": True,
-                        "componentKey": "test1",
-                    },
-                    {
-                        "enabled": False,
-                        "componentKey": "test2",
-                        "alias": "test2Alias",
-                    },
-                ],
-                "complexProcessVariables": [
-                    {
-                        "enabled": True,
-                        "alias": "complex1",
-                        "type": "object",
-                        "definition": {
-                            "fooBar": {  # deliberate camelCase key - should not be converted to underscore
-                                "source": "manual",
-                                "type": "string",
-                                "definition": "bar",
-                            }
-                        },
-                    },
-                    {
-                        "enabled": False,
-                        "alias": "complex2",
-                        "type": "array",
-                        "definition": [
+            "registrationBackends": [
+                {
+                    "name": "Foo",
+                    "key": "camunda-fu",
+                    "backend": "camunda",
+                    "options": {
+                        "processDefinition": "invoice",
+                        "processDefinitionVersion": None,
+                        "processVariables": [
                             {
-                                "source": "component",
-                                "definition": {"var": "test1"},
+                                "enabled": True,
+                                "componentKey": "test1",
+                            },
+                            {
+                                "enabled": False,
+                                "componentKey": "test2",
+                                "alias": "test2Alias",
+                            },
+                        ],
+                        "complexProcessVariables": [
+                            {
+                                "enabled": True,
+                                "alias": "complex1",
+                                "type": "object",
+                                "definition": {
+                                    "fooBar": {  # deliberate camelCase key - should not be converted to underscore
+                                        "source": "manual",
+                                        "type": "string",
+                                        "definition": "bar",
+                                    }
+                                },
+                            },
+                            {
+                                "enabled": False,
+                                "alias": "complex2",
+                                "type": "array",
+                                "definition": [
+                                    {
+                                        "source": "component",
+                                        "definition": {"var": "test1"},
+                                    },
+                                ],
                             },
                         ],
                     },
-                ],
-            },
+                }
+            ],
         }
 
         response = self.client.put(self.endpoint, data)
@@ -144,7 +155,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                 },
             ],
         }
-        self.assertEqual(self.form.registration_backend_options, expected)
+        self.assertEqual(self.form.registration_backends.first().options, expected)
 
     def test_read_complex_variables(self):
         """
@@ -204,7 +215,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        complex_var = response.json()["registrationBackendOptions"][
+        complex_var = response.json()["registrationBackends"][0]["options"][
             "complexProcessVariables"
         ][0]
         expected = {
@@ -330,46 +341,53 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         detail_response = self.client.get(self.endpoint).json()
         data = {
             **detail_response,
-            "registrationBackendOptions": {
-                "processDefinition": "invoice",
-                "processDefinitionVersion": None,
-                "processVariables": [
-                    {
-                        "enabled": True,
-                        "componentKey": "test1",
-                    },
-                    {
-                        "enabled": True,
-                        "componentKey": "test2",
-                        "alias": "test2Alias",
-                    },
-                ],
-                "complexProcessVariables": [
-                    {
-                        "enabled": True,
-                        "alias": "test1",
-                        "type": "object",
-                        "definition": {
-                            "fooBar": {
-                                "source": "manual",
-                                "type": "string",
-                                "definition": "bar",
-                            }
-                        },
-                    },
-                    {
-                        "enabled": False,
-                        "alias": "test2Alias",
-                        "type": "array",
-                        "definition": [
+            "registrationBackends": [
+                {
+                    "name": "Camunda",
+                    "key": "camunda",
+                    "backend": "camunda",
+                    "options": {
+                        "processDefinition": "invoice",
+                        "processDefinitionVersion": None,
+                        "processVariables": [
                             {
-                                "source": "component",
-                                "definition": {"var": "test1"},
+                                "enabled": True,
+                                "componentKey": "test1",
+                            },
+                            {
+                                "enabled": True,
+                                "componentKey": "test2",
+                                "alias": "test2Alias",
+                            },
+                        ],
+                        "complexProcessVariables": [
+                            {
+                                "enabled": True,
+                                "alias": "test1",
+                                "type": "object",
+                                "definition": {
+                                    "fooBar": {
+                                        "source": "manual",
+                                        "type": "string",
+                                        "definition": "bar",
+                                    }
+                                },
+                            },
+                            {
+                                "enabled": False,
+                                "alias": "test2Alias",
+                                "type": "array",
+                                "definition": [
+                                    {
+                                        "source": "component",
+                                        "definition": {"var": "test1"},
+                                    },
+                                ],
                             },
                         ],
                     },
-                ],
-            },
+                }
+            ],
         }
 
         response = self.client.put(self.endpoint, data)

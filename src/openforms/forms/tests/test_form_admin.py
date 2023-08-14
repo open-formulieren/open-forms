@@ -13,8 +13,6 @@ from ..models import Form
 from .admin.test_form import FormListAjaxMixin
 from .factories import FormFactory
 
-model_field = Form._meta.get_field("registration_backend")
-
 register = Registry()
 
 

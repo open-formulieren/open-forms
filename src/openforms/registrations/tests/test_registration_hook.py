@@ -13,7 +13,7 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.models import Form
+from openforms.forms.models import FormRegistrationBackend
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -78,7 +78,7 @@ class RegistrationHookTests(TestCase):
                 pass
 
         # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register):
             register_submission(self.submission.id)
 
@@ -110,7 +110,7 @@ class RegistrationHookTests(TestCase):
                 pass
 
         # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register), self.assertLogs(
             level="WARNING"
         ) as log:
@@ -149,7 +149,7 @@ class RegistrationHookTests(TestCase):
                 pass
 
         # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register), self.assertLogs(
             level="ERROR"
         ) as log:
@@ -188,7 +188,7 @@ class RegistrationHookTests(TestCase):
                 pass
 
         # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
 
         last_register_date = timezone.now() - timedelta(hours=1)
         submission = SubmissionFactory.create(
@@ -218,7 +218,7 @@ class RegistrationHookTests(TestCase):
         )
 
         # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, Registry()):
             register_submission(submission_no_registration_backend.id)
 
@@ -262,7 +262,7 @@ class RegistrationHookTests(TestCase):
         )
 
         # # call the hook for the submission, while patching the model field registry
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register):
             with self.assertRaises(RegistrationFailed):
                 register_submission(self.submission.id)
@@ -306,7 +306,7 @@ class NumRegistrationsTest(TestCase):
             plugin_configuration={"registrations": {"callback": {"enabled": True}}},
         )
 
-        model_field = Form._meta.get_field("registration_backend")
+        model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register):
             # first registration won't re-raise RegistrationFailed
             register_submission(submission.id)

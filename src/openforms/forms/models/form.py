@@ -24,7 +24,6 @@ from openforms.formio.typing import CosignComponent
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
-from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
@@ -68,14 +67,6 @@ class Form(models.Model):
         "forms.Category", null=True, blank=True, on_delete=models.PROTECT
     )
     translation_enabled = models.BooleanField(_("translation enabled"), default=False)
-
-    # registration
-    registration_backend = RegistrationBackendChoiceField(
-        _("registration backend"), blank=True
-    )
-    registration_backend_options = models.JSONField(
-        _("registration backend options"), default=dict, blank=True, null=True
-    )
 
     # payments
     payment_backend = PaymentBackendChoiceField(_("payment backend"), blank=True)
@@ -322,14 +313,32 @@ class Form(models.Model):
     def get_api_url(self):
         return reverse("api:form-detail", kwargs={"uuid": self.uuid})
 
-    def get_registration_backend_display(self):
-        choices = dict(registration_register.get_choices())
-        return choices.get(
-            self.registration_backend,
-            "-",
+    @property
+    def registration_backend(self) -> str | None:
+        "For backwards compatibility"
+        return (
+            backend.backend if (backend := self.registration_backends.first()) else None
         )
 
-    get_registration_backend_display.short_description = _("registration backend")
+    @property
+    def registration_backend_options(self) -> str | None:
+        "For backwards compatibility"
+        return (
+            backend.options if (backend := self.registration_backends.first()) else None
+        )
+
+    def get_registration_backend_display(self) -> str:
+        return (
+            ", ".join(
+                backend.name
+                if backend.backend in registration_register
+                else _("{backend} (invalid)").format(backend=backend.name)
+                for backend in self.registration_backends.all()
+            )
+            or "-"
+        )
+
+    get_registration_backend_display.short_description = _("registration backend(s)")
 
     def get_payment_backend_display(self):
         if not self.payment_backend:

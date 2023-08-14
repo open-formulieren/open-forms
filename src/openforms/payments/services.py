@@ -23,8 +23,8 @@ def update_submission_payment_registration(submission: Submission):
         return
 
     try:
-        plugin = register[submission.form.registration_backend]
-    except KeyError as e:
+        plugin = register[submission.registration_backend.backend]
+    except (AttributeError, KeyError) as e:
         logevent.registration_payment_update_failure(submission, error=e)
         return
 
@@ -39,7 +39,10 @@ def update_submission_payment_registration(submission: Submission):
 
         logevent.registration_payment_update_start(submission, plugin=plugin)
         options_serializer = plugin.configuration_options(
-            data=submission.form.registration_backend_options
+            data=(
+                submission.registration_backend
+                and submission.registration_backend.options
+            )
         )
         options_serializer.is_valid(raise_exception=True)
 

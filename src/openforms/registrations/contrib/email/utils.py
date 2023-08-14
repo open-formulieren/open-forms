@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from openforms.submissions.models import Submission
+
 from .models import EmailConfig
 
 
@@ -11,25 +13,31 @@ class RegistrationEmailTemplates:
     content_text: str
 
 
-def get_registration_email_templates(submission) -> RegistrationEmailTemplates:
-    config = EmailConfig.get_solo()
+def get_registration_email_templates(
+    submission: Submission,
+) -> RegistrationEmailTemplates:
+    global_config = EmailConfig.get_solo()
 
-    form_options = submission.form.registration_backend_options
+    backend = submission.registration_backend
+    if backend is not None:
+        form_config = backend.options
+    else:
+        form_config = {}
 
-    subject_template = form_options.get("email_subject") or config.subject
+    subject_template = form_config.get("email_subject") or global_config.subject
     payment_subject_template = (
-        form_options.get("email_payment_subject") or config.payment_subject
+        form_config.get("email_payment_subject") or global_config.payment_subject
     )
 
     html_body = (
         form_template_html
-        if (form_template_html := form_options.get("email_content_template_html"))
-        else config.content_html
+        if (form_template_html := form_config.get("email_content_template_html"))
+        else global_config.content_html
     )
     text_body = (
-        form_options["email_content_template_text"]
+        form_config["email_content_template_text"]
         if form_template_html
-        else config.content_text
+        else global_config.content_text
     )
     return RegistrationEmailTemplates(
         subject=subject_template,

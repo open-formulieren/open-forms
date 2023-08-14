@@ -35,7 +35,7 @@ def pre_registration(submission_id: int) -> None:
             return
 
         options_serializer = registration_plugin.configuration_options(
-            data=submission.form.registration_backend_options
+            data=submission.registration_backend.options
         )
 
         if not options_serializer.is_valid():
@@ -146,14 +146,16 @@ def register_submission(submission_id: int) -> None:
 
     # figure out which registry and backend to use from the model field used
     form = submission.form
-    backend = form.registration_backend
-    registry = form._meta.get_field("registration_backend").registry
+    backend_config = submission.registration_backend
 
-    if not backend:
+    if not backend_config or not backend_config.backend:
         logger.info("Form %s has no registration plugin configured, aborting", form)
         submission.save_registration_status(RegistrationStatuses.success, None)
         logevent.registration_skip(submission)
         return
+
+    registry = backend_config._meta.get_field("backend").registry
+    backend = backend_config.backend
 
     logger.debug("Looking up plugin with unique identifier '%s'", backend)
     plugin = registry[backend]
@@ -168,9 +170,7 @@ def register_submission(submission_id: int) -> None:
         raise e
 
     logger.debug("De-serializing the plugin configuration options")
-    options_serializer = plugin.configuration_options(
-        data=form.registration_backend_options
-    )
+    options_serializer = plugin.configuration_options(data=backend_config.options)
     try:
         options_serializer.is_valid(raise_exception=True)
     except Exception as e:

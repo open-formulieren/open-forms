@@ -1,10 +1,19 @@
+import random
+
 import factory
 
 from openforms.products.tests.factories import ProductFactory
+from openforms.registrations.registry import register as registration_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..models import FormDefinition, FormStep, FormVariable
 from ..utils import form_to_json
+
+
+def random_registration_plugin():
+    return random.choice(
+        [p.identifier for p in registration_registry.iter_enabled_plugins()]
+    )
 
 
 class FormFactory(factory.django.DjangoModelFactory):
@@ -32,6 +41,37 @@ class FormFactory(factory.django.DjangoModelFactory):
             generate_minimal_setup=False,  # there are no form steps
             is_appointment=True,
         )
+        # prevent options passed to Form() and set a default
+        registration_backend_options = {}
+
+    @factory.lazy_attribute
+    def registration_backend__options(backend_resolver):
+        # Then JIT read it from the parent Params
+        # I've seen self modifying assembly, cpp/c++ template hacks
+        # but this API... 🤯
+        return backend_resolver.factory_parent.registration_backend_options
+
+    @factory.post_generation
+    def registration_backend(form, create, extracted, **kwargs):
+        if extracted is None:
+            return
+        (
+            FormRegistrationBackendFactory.create
+            if create
+            # Does build even make sense? Is it just to keep the garbage collector busy?
+            # Let's anyway; maybe the constructor has side-effects; everything is possible.
+            else FormRegistrationBackendFactory.build
+        )(form=form, backend=extracted, **kwargs)
+
+
+class FormRegistrationBackendFactory(factory.django.DjangoModelFactory):
+    key = factory.Sequence(lambda n: f"backend{n}")
+    name = factory.Faker("catch_phrase")
+    backend = factory.LazyFunction(random_registration_plugin)
+    form = factory.SubFactory(FormFactory)
+
+    class Meta:
+        model = "forms.FormRegistrationBackend"
 
 
 class FormDefinitionFactory(factory.django.DjangoModelFactory):

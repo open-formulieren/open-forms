@@ -66,7 +66,7 @@ const FormStepDefinition = ({
     });
   };
 
-  const {translationEnabled, formSteps, registration} = useContext(FormContext);
+  const {translationEnabled, formSteps, registrationBackends} = useContext(FormContext);
 
   // A 'total configuration': merging all the configurations from the different steps, so that we can figure out if
   // a key is unique across steps
@@ -328,7 +328,7 @@ const FormStepDefinition = ({
           onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
           componentTranslations={componentTranslations}
           componentNamespace={componentNamespace}
-          registrationBackendInfo={registration}
+          registrationBackendInfo={registrationBackends}
           {...props}
         />
       </div>

@@ -938,3 +938,112 @@ class TestAddCustomErrorMessageTimeComponent(TestMigrations):
                 "nl": {"required": "", "invalid_time": ""},
             },
         )
+
+
+class EnableMultipleRegistrationBackendsTest(TestMigrations):
+    migrate_from = "0088_add_time_custom_error"
+    migrate_to = "0089_enable_mutiple_registration_backends"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        self.form0 = Form.objects.create(name="No Reg")
+        self.form1 = Form.objects.create(
+            name="Default Options",
+            registration_backend="email",
+        )
+        self.form2 = Form.objects.create(
+            name="Chucklevision",
+            registration_backend="email",
+            registration_backend_options={
+                "to_emails": ["tome@example.com", "toyou@example.com"],
+            },
+        )
+
+    def test_no_backend(self):
+        # get new Model class
+        Form = self.apps.get_model("forms", "Form")
+        # reload
+        form = Form.objects.get(pk=self.form0.pk)
+        self.assertEqual(form.registration_backends.count(), 0)
+
+    def test_default_options(self):
+        # get new Model class
+        Form = self.apps.get_model("forms", "Form")
+        # reload
+        form = Form.objects.get(pk=self.form1.pk)
+
+        self.assertEqual(form.registration_backends.count(), 1)
+        backend = form.registration_backends.first()
+        self.assertEqual(backend.backend, "email")
+        self.assertEqual(backend.options, {})
+
+    def test_options(self):
+        # get new Model class
+        Form = self.apps.get_model("forms", "Form")
+        # reload
+        form = Form.objects.get(pk=self.form2.pk)
+        self.assertEqual(form.registration_backends.count(), 1)
+        backend = form.registration_backends.first()
+        self.assertEqual(backend.backend, "email")
+        self.assertEqual(
+            backend.options,
+            {
+                "to_emails": ["tome@example.com", "toyou@example.com"],
+            },
+        )
+
+
+class RevertEnableMultipleRegistrationBackendsTest(TestMigrations):
+    migrate_to = "0088_add_time_custom_error"
+    migrate_from = "0089_enable_mutiple_registration_backends"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+        self.form0 = Form.objects.create(name="No Reg")
+        self.form1 = Form.objects.create(name="Default Options")
+        FormRegistrationBackend.objects.create(
+            form=self.form1, name="Email", key="email", backend="email"
+        )
+
+        self.form2 = Form.objects.create(name="Chucklevision")
+        FormRegistrationBackend.objects.create(
+            form=self.form2,
+            name="Email",
+            key="email",
+            backend="email",
+            options={
+                "to_emails": ["tome@example.com", "toyou@example.com"],
+            },
+        )
+
+    def test_no_backend(self):
+        # get new Model class
+        Form = self.apps.get_model("forms", "Form")
+        # reload
+        form = Form.objects.get(pk=self.form0.pk)
+        self.assertEqual(form.registration_backend, "")
+
+    def test_default_options(self):
+        # get new Model class
+        Form = self.apps.get_model("forms", "Form")
+        # reload
+        form = Form.objects.get(pk=self.form1.pk)
+
+        self.assertEqual(form.registration_backend, "email")
+        self.assertEqual(form.registration_backend_options, {})
+
+    def test_options(self):
+        # get new Model class
+        Form = self.apps.get_model("forms", "Form")
+        # reload
+        form = Form.objects.get(pk=self.form2.pk)
+        self.assertEqual(form.registration_backend, "email")
+        self.assertEqual(
+            form.registration_backend_options,
+            {
+                "to_emails": ["tome@example.com", "toyou@example.com"],
+            },
+        )

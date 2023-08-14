@@ -72,6 +72,13 @@ class LogicFetchActionSerializer(serializers.Serializer):
     )
 
 
+class LogicSetRegistrationBackendActionSerializer(serializers.Serializer):
+    value = serializers.CharField(
+        label=_("registration_backend_key"),
+        allow_blank=False,
+    )
+
+
 class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     type = serializers.ChoiceField(
         choices=LogicActionTypes.choices,
@@ -86,6 +93,9 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         str(LogicActionTypes.step_not_applicable): DummySerializer,
         str(LogicActionTypes.variable): LogicValueActionSerializer,
         str(LogicActionTypes.fetch_from_service): LogicFetchActionSerializer,
+        str(
+            LogicActionTypes.set_registration_backend
+        ): LogicSetRegistrationBackendActionSerializer,
     }
 
 

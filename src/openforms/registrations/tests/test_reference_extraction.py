@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from rest_framework import serializers
 
-from openforms.forms.models import Form
+from openforms.forms.models import FormRegistrationBackend
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import BasePlugin
@@ -17,7 +17,7 @@ from .utils import patch_registry
 
 register = Registry()
 
-model_field = Form._meta.get_field("registration_backend")
+model_field = FormRegistrationBackend._meta.get_field("backend")
 
 
 @register("plugin1")
@@ -47,7 +47,7 @@ class Plugin2(BasePlugin):
 
 class NoExtractableSubmissionReferenceTests(TestCase):
     def test_submission_without_registration_backend(self):
-        submission = SubmissionFactory.create(form__registration_backend="")
+        submission = SubmissionFactory.create()
 
         with self.assertRaises(NoSubmissionReference):
             extract_submission_reference(submission)

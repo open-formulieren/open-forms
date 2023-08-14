@@ -172,12 +172,18 @@ class TestInvalidOptions(APITestCase):
         data = {
             "name": "Test Post Form",
             "slug": "test-post-form",
-            "registrationBackend": "email",
-            "registrationBackendOptions": {
-                "attachFilesToEmail": None,
-                "emailSubject": "Invalid template {{ _name }}",
-                "toEmails": ["test@email.nl"],
-            },
+            "registrationBackends": [
+                {
+                    "key": "email1",
+                    "name": "Email",
+                    "backend": "email",
+                    "options": {
+                        "attachFilesToEmail": None,
+                        "emailSubject": "Invalid template {{ _name }}",
+                        "toEmails": ["test@email.nl"],
+                    },
+                }
+            ],
         }
         response = self.client.post(url, data=data)
 
@@ -186,6 +192,7 @@ class TestInvalidOptions(APITestCase):
         error = response.json()
 
         self.assertEqual(
-            error["invalidParams"][0]["name"], "registrationBackendOptions.emailSubject"
+            error["invalidParams"][0]["name"],
+            "registrationBackends.0.options.emailSubject",
         )
         self.assertEqual(error["invalidParams"][0]["code"], "syntax_error")

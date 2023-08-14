@@ -28,6 +28,7 @@ from .factories import (
     FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -126,13 +127,16 @@ class ImportExportTests(TestCase):
         form = FormFactory.create(
             product=product,
             authentication_backends=["digid"],
-            registration_backend="email",
-            registration_backend_options={
+            payment_backend="ogone-legacy",
+            payment_backend_options={"merchant_id": merchant.id},
+        )
+        FormRegistrationBackendFactory.create(
+            form=form,
+            backend="email",
+            options={
                 "to_emails": ["foo@bar.baz"],
                 "attach_files_to_email": None,
             },
-            payment_backend="ogone-legacy",
-            payment_backend_options={"merchant_id": merchant.id},
         )
         form_definition = FormDefinitionFactory.create(
             configuration={"components": [{"key": "test-key", "type": "textfield"}]}

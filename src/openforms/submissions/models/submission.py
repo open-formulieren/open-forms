@@ -16,10 +16,11 @@ from glom import glom
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
-from openforms.forms.models import FormStep
+from openforms.forms.models import FormRegistrationBackend, FormStep
+from openforms.logging.logevent import registration_debug
 from openforms.payments.constants import PaymentStatus
 from openforms.template import openforms_backend, render_from_string
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, RegistrationBackendKey
 from openforms.utils.validators import AllowedRedirectValidator, SerializerValidator
 
 from ..constants import RegistrationStatuses, SubmissionValueVariableSources
@@ -282,6 +283,14 @@ class Submission(models.Model):
         help_text=_(
             "The code (RFC5646 format) of the language used to fill in the Form."
         ),
+    )
+
+    finalised_registration_backend_key = models.CharField(
+        _("final registration backend key"),
+        max_length=50,  # FormRegistrationBackend.key.max_length
+        default="",
+        blank=True,
+        help_text=_("The key of the registration backend to use."),
     )
 
     objects = SubmissionManager()
@@ -737,3 +746,54 @@ class Submission(models.Model):
             return True
 
         return False
+
+    @property
+    def default_registration_backend_key(self) -> RegistrationBackendKey | None:
+        backends = list(self.form.registration_backends.order_by("id"))
+        match len(backends):  # sanity check
+            case 1:
+                return backends[0].key
+            case 0:
+                registration_debug(
+                    self,
+                    extra_data={
+                        "message": _("No registration backends defined on form")
+                    },
+                )
+                return None
+            case _:
+                default = backends[0]
+                registration_debug(
+                    self,
+                    extra_data={
+                        "message": _("Multiple backends defined on form"),
+                        "backend": {"key": default.key, "name": default.name},
+                    },
+                )
+                return default.key
+
+    @property
+    def registration_backend(self) -> FormRegistrationBackend | None:
+        if self.finalised_registration_backend_key:
+            try:
+                return self.form.registration_backends.get(
+                    key=self.finalised_registration_backend_key
+                )
+            except FormRegistrationBackend.DoesNotExist as e:
+                registration_debug(
+                    self,
+                    error=e,
+                    extra_data={
+                        "message": _(
+                            "Unknown registration backend set by form logic. Trying default..."
+                        ),
+                        "backend": {"key": self.finalised_registration_backend_key},
+                    },
+                )
+
+        # not/faulty set by logic; fallback to default
+        return (
+            self.form.registration_backends.get(key=default_key)
+            if (default_key := self.default_registration_backend_key)
+            else None
+        )

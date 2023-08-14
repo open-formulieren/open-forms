@@ -19,6 +19,7 @@ from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -1050,6 +1051,38 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
         self.assertEqual(1, logs.count())
         log = logs[0]
         self.assertTrue(log.extra_data["evaluated_rules"][0]["trigger"])
+
+    def test_evaluate_logic_logs_setting_registration_backend(self):
+        backend = FormRegistrationBackendFactory.create(
+            key="non-default",
+            name="My weird name",
+            form__generate_minimal_setup=True,
+        )
+        FormLogicFactory.create(
+            form=backend.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": "set-registration-backend",
+                        "value": "non-default",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=backend.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=backend.form.formstep_set.first(),
+            data={},
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        log = TimelineLogProxy.objects.first()
+        self.assertTrue("non-default" in str(log.extra_data))
+        # TODO This would be more useful if we ever overhaul logging logic
+        # self.assertTrue("My weird name" in str(log.extra_data))
 
     def test_evaluate_logic_log_event_not_triggered(self):
         form = FormFactory.create()

@@ -20,6 +20,7 @@ from ..models import Form, FormDefinition, FormStep
 from .factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -133,12 +134,14 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_form_import(self):
+        # export, delete, import roundtrip
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
         self.user.save()
 
         form1 = FormFactory.create(send_confirmation_email=True)
         form2 = FormFactory.create()
+        FormRegistrationBackendFactory.create_batch(2, form=form1, backend="demo")
         form_definition1, form_definition2 = FormDefinitionFactory.create_batch(2)
         form_step1 = FormStepFactory.create(
             form=form1, form_definition=form_definition1
@@ -183,7 +186,14 @@ class ImportExportAPITests(APITestCase):
         self.assertNotEqual(imported_form.pk, form1.pk)
         self.assertNotEqual(imported_form.uuid, str(form1.uuid))
         self.assertEqual(imported_form.active, False)
-        self.assertEqual(imported_form.registration_backend, form1.registration_backend)
+        for imported, original in zip(
+            imported_form.registration_backends.order_by("id"),
+            form1.registration_backends.order_by("id"),
+        ):
+            self.assertEqual(imported.key, original.key)
+            self.assertEqual(imported.name, original.name)
+            self.assertEqual(imported.backend, original.backend)
+            self.assertEqual(imported.options, original.options)
         self.assertEqual(imported_form.name, form1.name)
         self.assertIsNone(imported_form.product)
         self.assertEqual(imported_form.slug, form1.slug)

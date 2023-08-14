@@ -9,6 +9,26 @@ import {localiseSchema} from './i18n';
 
 const BaseFileField = Formio.Components.components.file;
 
+const getInformatieObjectTypen = (backend, options) => {
+  switch (backend) {
+    case 'zgw-create-zaak': {
+      return get('/api/v2/registration/informatieobjecttypen', {
+        zgw_api_group: options.zgwApiGroup,
+        registration_backend: backend,
+      });
+    }
+    case 'objects_api':
+      return get('/api/v2/registration/informatieobjecttypen', {registration_backend: backend});
+    default:
+      return;
+  }
+};
+
+const getSetOfBackends = instance => {
+  const registrationInfo = instance?.options?.openForms?.registrationBackendInfoRef?.current;
+  return registrationInfo || [];
+};
+
 const REGISTRATION = {
   key: 'registration',
   label: 'Registration',
@@ -22,30 +42,24 @@ const REGISTRATION = {
       data: {
         custom(context) {
           const instance = context.instance;
-          const registrationInfo =
-            instance?.options?.openForms?.registrationBackendInfoRef?.current;
-          if (!registrationInfo) return [];
-
-          let queries = {};
-          switch (registrationInfo.registrationBackend) {
-            case 'zgw-create-zaak': {
-              queries = {
-                zgw_api_group: registrationInfo.registrationBackendOptions.zgwApiGroup,
-                registration_backend: 'zgw-create-zaak',
-              };
-              break;
-            }
-            case 'objects_api': {
-              queries = {registration_backend: 'objects_api'};
-              break;
-            }
-            default:
-              return;
-          }
-
-          get('/api/v2/registration/informatieobjecttypen', queries).then(response =>
-            instance.setItems(response.data)
-          );
+          const backends = getSetOfBackends(instance);
+          Promise.all(
+            backends.map(({backend, options, key, name}) => {
+              const backendLabel = name || key;
+              return getInformatieObjectTypen(backend, options)?.then(response =>
+                response.data?.length ? {backendLabel, data: response.data} : null
+              );
+            })
+          ).then(labeledDataAndNulls => {
+            // not all backends do a fetch, not all responses contain data
+            const labeledData = labeledDataAndNulls.filter(Boolean);
+            // no need for label if we have one backend
+            if (backends.length == 1 && labeledData.length) labeledData[0].backendLabel = '';
+            const labeledItems = labeledData
+              .map(({backendLabel, data}) => data.map(item => ({backendLabel, item})))
+              .reduce((joinedArray, items) => joinedArray.concat(items), []);
+            instance.setItems(labeledItems);
+          });
         },
       },
       valueProperty: 'url',

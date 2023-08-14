@@ -91,6 +91,13 @@ const ACTION_TYPES = [
       defaultMessage: 'Mark the form step as not-applicable',
     }),
   ],
+  [
+    'set-registration-backend',
+    defineMessage({
+      description: 'action type "set-registration-backend" label',
+      defaultMessage: 'Set the registration backend to use for the submission',
+    }),
+  ],
 ];
 
 // Action types that once they are selected need further configurations.
