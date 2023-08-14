@@ -29,6 +29,21 @@ class NowTests(TestCase):
         self.assertEqual(variable.initial_value, timezone.now())
 
 
+@freeze_time("2022-08-29T17:10:00+02:00")
+class CurrentYearTests(TestCase):
+    def test_with_submission(self):
+        submission = SubmissionFactory.build()
+
+        variable = _get_variable("current_year", submission=submission)
+
+        self.assertEqual(variable.initial_value, timezone.now().year)
+
+    def test_without_submission(self):
+        variable = _get_variable("current_year")
+
+        self.assertEqual(variable.initial_value, timezone.now().year)
+
+
 class EnvironmentTests(TestCase):
     def test_with_submission(self):
         submission = SubmissionFactory.build()

@@ -30,6 +30,16 @@ class Today(BaseStaticVariable):
         return timezone.localtime(now_utc).date()
 
 
+@register_static_variable("current_year")
+class CurrentYear(BaseStaticVariable):
+    name = _("Current year")
+    data_type = FormVariableDataTypes.int
+
+    def get_initial_value(self, submission: Optional[Submission] = None) -> int:
+        now_utc = timezone.now()
+        return timezone.localtime(now_utc).year
+
+
 @register_static_variable("environment")
 class Environment(BaseStaticVariable):
     name = _("Environment")
