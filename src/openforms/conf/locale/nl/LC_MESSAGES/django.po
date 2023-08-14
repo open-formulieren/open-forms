@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-14 13:11+0200\n"
+"POT-Creation-Date: 2023-08-14 13:12+0200\n"
 "PO-Revision-Date: 2023-07-24 14:36+0018\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -644,20 +644,20 @@ msgstr ""
 "je een actieve inzending in je sessie dient te hebben of ingelogd moet zijn "
 "in de beheerinterface."
 
-#: openforms/appointments/admin.py:40
+#: openforms/appointments/admin.py:41
 msgid "Please configure the plugin first"
 msgstr "Stel eerst de plugin in"
-
-#: openforms/appointments/admin.py:84 openforms/config/models.py:141
-msgid "Change"
-msgstr "Wijzigen"
 
 #: openforms/appointments/admin.py:85
 #: openforms/config/templates/admin/config/overview.html:57
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: openforms/appointments/admin.py:93
+#: openforms/appointments/admin.py:91 openforms/config/models.py:141
+msgid "Change"
+msgstr "Wijzigen"
+
+#: openforms/appointments/admin.py:99
 msgid "Appointment actions"
 msgstr "Afspraakacties"
 
@@ -3487,10 +3487,19 @@ msgstr ""
 msgid "Cancel appointment"
 msgstr "Afspraak annuleren"
 
-#: openforms/emails/templates/emails/templatetags/appointment_information.html:62
+#: openforms/emails/templates/emails/templatetags/appointment_information.html:63
 #: openforms/emails/templates/emails/templatetags/appointment_information.txt:26
 msgid "Change appointment"
 msgstr "Afspraak wijzigen"
+
+#: openforms/emails/templates/emails/templatetags/appointment_information.html:65
+#: openforms/emails/templates/emails/templatetags/appointment_information.txt:26
+msgid ""
+"If you wish to change your appointment, please cancel it using the above "
+"link and create a new one."
+msgstr ""
+"Indien u uw afspraak wenst te wijzingen, dan kunt u deze annuleren en een nieuwe "
+"aanmaken."
 
 #: openforms/emails/templates/emails/templatetags/cosign_information.html:3
 msgid "Co-sign information"
@@ -9825,71 +9834,3 @@ msgstr "Gemeentecode"
 #: stuf/stuf_zds/models.py:45
 msgid "StUF-ZDS configuration"
 msgstr "StUF-ZDS configuratie"
-
-#~ msgid "Form definitions were created with the following slugs: {}"
-#~ msgstr "Formulier definities zijn aangemaakt met de volgende URL-delen: {}"
-
-#~ msgid "Privacy policy must be accepted."
-#~ msgstr "U moet het privacybeleid accepteren."
-
-#~ msgid "Authentication attribute"
-#~ msgstr "Authenticatie attribuut"
-
-#~ msgid "This is experimental mode for appointments"
-#~ msgstr "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie"
-
-#~ msgid ""
-#~ "The form specific confirmation email template is not set up correctly and "
-#~ "can therefore not be selected."
-#~ msgstr ""
-#~ "De bevestigingse-mail van het formulier is niet valide en kan daarom niet "
-#~ "worden geselecteerd."
-
-#~ msgid "This field needs to refer to a form component"
-#~ msgstr ""
-#~ "Dit veld moet een geldige verwijzing naar een formuliercomponent zijn."
-
-#~ msgid "confirmation email option"
-#~ msgstr "bevestigingsmail"
-
-#~ msgid "omschrijving"
-#~ msgstr "omschrijving"
-
-#~ msgid "The description of the InformatieObjectType"
-#~ msgstr "De omschrijving van het InformatieObjectType"
-
-#~ msgid "The URL of the InformatieObjectType."
-#~ msgstr "De URL van het InformatieObjectType"
-
-#~ msgid "catalogus domein"
-#~ msgstr "catalogusdomein"
-
-#~ msgid "The domain of the related Catalogus"
-#~ msgstr "Het domein van de gerelateerde catalogus"
-
-#~ msgid "[Open Forms] {{ form_name }} - submission {{ submission_reference }}"
-#~ msgstr ""
-#~ "[Open Formulieren] {{ form_name }} - inzending {{ public_reference }}"
-
-#, python-format
-#~ msgid "Payment order ID: %(payment_order_id)s"
-#~ msgstr "Betalings-order ID: %(payment_order_id)s"
-
-#, python-format
-#~ msgid "Submission details for %(form_name)s (submitted on %(datetime)s)"
-#~ msgstr "Inzendingdetails van %(form_name)s (verzonden op %(datetime)s)"
-
-#, python-format
-#~ msgid "Submission language: %(submission_language)s"
-#~ msgstr "Inzendingstaal: %(submission_language)s"
-
-#~ msgid "Privacy policy must be accepted before completing submission."
-#~ msgstr "U moet het privacybeleid accepteren om door te gaan."
-
-#~ msgid "Data mapping type missing for expression"
-#~ msgstr ""
-#~ "Er is een mapping-expressie opgegeven, maar de soort is niet opgegeven."
-
-#, python-brace-format
-#~ msgid "Missing {mapping_type} expression"
-#~ msgstr "De {mapping_type} mapping-expressie ontbreekt."
