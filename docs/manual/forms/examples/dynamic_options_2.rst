@@ -7,7 +7,7 @@ In dit voorbeeld maken we een deel-formulier bestaande uit 1 stap, waarbij de
 opties van een "keuzelijst" component dynamisch worden aangepast aan de hand
 de waarde van een variabele. In dit voorbeeld `current_year`.
 
-Deze functionaliteit kan op eenelfde manier worden gebruikt voor de "radio"
+Deze functionaliteit kan op eenzelfde manier worden gebruikt voor de "radio"
 component en de "selectievakjes" component.
 
 
