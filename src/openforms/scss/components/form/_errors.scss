@@ -1,8 +1,0 @@
-@import '~microscope-sass/lib/color';
-
-.errors {
-  @include body;
-  @include body--big;
-  @include color-danger;
-  font-weight: bold;
-}
