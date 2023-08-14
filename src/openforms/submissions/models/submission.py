@@ -285,14 +285,12 @@ class Submission(models.Model):
         ),
     )
 
-    finalised_registration_backend = models.ForeignKey(
-        FormRegistrationBackend,
-        on_delete=models.SET_NULL,
-        null=True,
+    finalised_registration_backend_key = models.CharField(
+        _("final registration backend key"),
+        max_length=50,  # FormRegistrationBackend.key.max_length
+        default="",
         blank=True,
-        help_text=_(
-            "The registration backend after logic evaluation when submission was completed."
-        ),
+        help_text=_("The key of the registration backend to use."),
     )
 
     objects = SubmissionManager()
@@ -749,16 +747,12 @@ class Submission(models.Model):
 
         return False
 
-    _registration_backend: RegistrationBackendKey | FormRegistrationBackend | None = (
-        None
-    )
-
     @property
-    def default_registration_backend(self) -> FormRegistrationBackend | None:
-        backends = self.form.registration_backends.order_by("id")
-        match backends.count():  # sanity check
+    def default_registration_backend_key(self) -> RegistrationBackendKey | None:
+        backends = list(self.form.registration_backends.order_by("id"))
+        match len(backends):  # sanity check
             case 1:
-                return backends.first()
+                return backends[0].key
             case 0:
                 registration_debug(
                     self,
@@ -768,7 +762,7 @@ class Submission(models.Model):
                 )
                 return None
             case _:
-                default = backends.first()
+                default = backends[0]
                 registration_debug(
                     self,
                     extra_data={
@@ -776,43 +770,30 @@ class Submission(models.Model):
                         "backend": {"key": default.key, "name": default.name},
                     },
                 )
-                return default
+                return default.key
 
     @property
     def registration_backend(self) -> FormRegistrationBackend | None:
-        if self.finalised_registration_backend:
-            return self.finalised_registration_backend
+        if self.finalised_registration_backend_key:
+            try:
+                return self.form.registration_backends.get(
+                    key=self.finalised_registration_backend_key
+                )
+            except FormRegistrationBackend.DoesNotExist as e:
+                registration_debug(
+                    self,
+                    error=e,
+                    extra_data={
+                        "message": _(
+                            "Unknown registration backend set by form logic. Trying default..."
+                        ),
+                        "backend": {"key": self.finalised_registration_backend_key},
+                    },
+                )
 
-        match self._registration_backend:
-            case str(key):
-                # RegistrationBackendKey set by logic
-                try:
-                    self._registration_backend = self.form.registration_backends.get(
-                        key=key
-                    )
-                except FormRegistrationBackend.DoesNotExist as e:
-                    registration_debug(
-                        self,
-                        error=e,
-                        extra_data={
-                            "message": _(
-                                "Unknown registration backend set by form logic. Trying default..."
-                            ),
-                            "backend": {"key": key},
-                        },
-                    )
-                    self._registration_backend = self.default_registration_backend
-            case None:
-                # not set by logic
-                self._registration_backend = self.default_registration_backend
-            case FormRegistrationBackend():
-                # already fetched from datastore
-                pass
-
-        return self._registration_backend
-
-    @registration_backend.setter
-    def registration_backend(
-        self, value: RegistrationBackendKey | FormRegistrationBackend
-    ):
-        self._registration_backend = value
+        # not/faulty set by logic; fallback to default
+        return (
+            self.form.registration_backends.get(key=default_key)
+            if (default_key := self.default_registration_backend_key)
+            else None
+        )

@@ -94,14 +94,26 @@ class LogicComponentActionSerializerTest(TestCase):
 
         serializer = LogicComponentActionSerializer(
             data={
-                "json_logic_trigger": {
-                    "==": [
-                        {"var": "someDate"},
-                        {},
-                    ]
-                },
+                "json_logic_trigger": False,
                 "action": {
-                    "type": "set-registation-backend",
+                    "type": "set-registration-backend",
+                },
+            },
+            context=context,
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors["action"]["value"][0].code, "required")
+
+    def test_invalid_action(self):
+        form = FormFactory.create()
+        context = {"request": None, "form_variables": FormVariableWrapper(form=form)}
+
+        serializer = LogicComponentActionSerializer(
+            data={
+                "json_logic_trigger": False,
+                "action": {
+                    "type": "does-not-exist",
                 },
             },
             context=context,

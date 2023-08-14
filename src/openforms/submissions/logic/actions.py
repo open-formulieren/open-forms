@@ -277,7 +277,9 @@ class SetRegistrationBackendAction(ActionOperation):
     def apply(
         self, step: SubmissionStep, configuration: FormioConfigurationWrapper
     ) -> None:
-        step.submission.registration_backend = self.registration_backend_key
+        step.submission.finalised_registration_backend_key = (
+            self.registration_backend_key
+        )
 
     def get_action_log_data(self, *args, **kwargs) -> JSONObject:
         return {
