@@ -5,9 +5,13 @@ import {getSupportedLanguages} from 'components/formio_builder/translation';
 const getCustomValidationErrorMessagesEditForm = validators => {
   const defaultValues = Object.assign(
     {},
-    ...validators.map(validator => ({
-      [validator.key.split('.')[1]]: '',
-    }))
+    ...validators.map(validator => {
+      const validator_key = validator.key;
+      if (validator_key.startsWith('validate')) return {[validator_key.split('.')[1]]: ''};
+
+      if (validator_key.includes('minTime') || validator_key.includes('maxTime'))
+        return {invalid_time: ''};
+    })
   );
 
   const languages = getSupportedLanguages();

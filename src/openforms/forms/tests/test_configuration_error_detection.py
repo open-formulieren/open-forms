@@ -55,3 +55,18 @@ class SnakeCaseDetectionTests(TestCase):
         detect_formiojs_configuration_snake_case(fd.id)
 
         capture.check()
+
+    @log_capture(level=logging.ERROR)
+    def test_ignores_invalid_time_key(self, capture):
+        configuration = {
+            "translationErrors": {
+                "en": {"invalid_time": "This is a custom error."},
+                "nl": {"invalid_time": "This is a custom error."},
+            }
+        }
+
+        fd = FormDefinitionFactory.create(configuration=configuration)
+
+        detect_formiojs_configuration_snake_case(fd.id)
+
+        capture.check()

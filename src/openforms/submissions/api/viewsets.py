@@ -33,7 +33,10 @@ from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
-from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
+from ..parsers import (
+    IgnoreDataAndConfigFieldCamelCaseJSONParser,
+    IgnoreDataAndConfigJSONRenderer,
+)
 from ..signals import submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
 from ..tasks.co_sign import on_cosign
@@ -445,8 +448,8 @@ class SubmissionStepViewSet(
     ]
     lookup_url_kwarg = "step_uuid"
     submission_url_kwarg = "submission_uuid"
-    parser_classes = [IgnoreDataFieldCamelCaseJSONParser]
-    renderer_classes = [IgnoreDataJSONRenderer]
+    parser_classes = [IgnoreDataAndConfigFieldCamelCaseJSONParser]
+    renderer_classes = [IgnoreDataAndConfigJSONRenderer]
 
     def get_object(self):
         """

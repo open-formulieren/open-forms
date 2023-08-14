@@ -889,3 +889,52 @@ class TestMoveFormStepSlug(TestMigrations):
             for step in FormStep.objects.filter(form__name="Form 2")
         }
         self.assertEqual(form2_step_order_to_slug, {0: "fd-2"})
+
+
+class TestAddCustomErrorMessageTimeComponent(TestMigrations):
+    app = "forms"
+    migrate_from = "0087_alter_formdefinition_slug"
+    migrate_to = "0088_add_time_custom_error"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+        Form = apps.get_model("forms", "Form")
+
+        self.form_def = FormDefinition.objects.create(
+            name="Time",
+            slug="time",
+            configuration={
+                "components": [
+                    {
+                        "key": "timeWithCustomError",
+                        "type": "time",
+                        "label": "Tijd with custom error",
+                        "maxTime": "13:00:00",
+                        "minTime": "12:00:00",
+                        "translatedErrors": {
+                            "en": {
+                                "required": "",
+                            },
+                            "nl": {
+                                "required": "",
+                            },
+                        },
+                    }
+                ]
+            },
+        )
+        form = Form.objects.create(name="Form time")
+
+        FormStep.objects.create(form=form, form_definition=self.form_def, order=0)
+
+    def test_the_custom_error_is_added(self):
+        self.form_def.refresh_from_db()
+
+        self.assertEqual(
+            self.form_def.configuration["components"][0]["translatedErrors"],
+            {
+                "en": {"required": "", "invalid_time": ""},
+                "nl": {"required": "", "invalid_time": ""},
+            },
+        )
