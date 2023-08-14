@@ -18,4 +18,5 @@ Voorbeelden
    repeating_groups
    decision_tree
    dynamic_options
+   dynamic_options_2
    service_fetch
