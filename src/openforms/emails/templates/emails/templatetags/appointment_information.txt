@@ -23,4 +23,7 @@
 
 {% trans "If you want to cancel or change your appointment, you can do so below." %}
 {% trans "Cancel appointment" %}: {{ appointment_cancel_link }}
-{% trans "Change appointment" %}: {{ appointment_change_link }}{% endif %}{% endautoescape %}
+{% if appointment_change_link %}{% trans "Change appointment" %}: {{ appointment_change_link }}
+{% else %}{% trans "If you wish to change your appointment, please cancel it using the above link and create a new one." %}
+{% endif %}
+{% endif %}{% endautoescape %}

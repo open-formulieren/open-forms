@@ -22,7 +22,7 @@ from openforms.submissions.tests.factories import (
 )
 
 from ..tokens import submission_appointment_token_generator
-from .factories import AppointmentInfoFactory
+from .factories import AppointmentFactory, AppointmentInfoFactory
 
 
 @freeze_time("2021-07-15T21:15:00Z")
@@ -848,3 +848,24 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             ).count(),
             1,
         )
+
+    def test_change_new_style_appointment(self):
+        appointment = AppointmentFactory.create(
+            appointment_info__registration_ok=True,
+            appointment_info__start_time=datetime(
+                2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc
+            ),
+        )
+        submission = appointment.submission
+        url = reverse(
+            "appointments:appointments-verify-change-appointment-link",
+            kwargs={
+                "token": submission_appointment_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        # one day after token generation
+        with freeze_time("2021-07-16T21:15:00Z"):
+            with self.assertRaises(RuntimeError):
+                self.client.get(url)

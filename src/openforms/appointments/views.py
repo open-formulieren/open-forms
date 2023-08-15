@@ -41,6 +41,11 @@ class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
 
     def get_form_resume_url(self, submission: Submission) -> str:
         next_step = find_first_appointment_step(submission.form)
+        # simplified flow for new-style appointments
+        if submission.form.is_appointment:
+            raise RuntimeError(
+                "New style appointments do not support the change appointment flow."
+            )
 
         if next_step is None:
             # Should not happen but redirect to first step if it does
