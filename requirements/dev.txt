@@ -507,7 +507,7 @@ gemma-zds-client==2.0.0
     #   zgw-consumers
 gitdb==4.0.7
     # via gitpython
-gitpython==3.1.30
+gitpython==3.1.32
     # via -r requirements/dev.in
 glom==20.11.0
     # via
@@ -1105,7 +1105,7 @@ tomli==1.2.1
     #   black
     #   build
     #   pytest
-tornado==6.3.2
+tornado==6.3.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

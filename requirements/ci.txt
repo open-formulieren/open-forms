@@ -935,7 +935,7 @@ tomli==1.2.1
     # via
     #   black
     #   pytest
-tornado==6.3.2
+tornado==6.3.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

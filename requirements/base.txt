@@ -472,7 +472,7 @@ tinycss2==1.1.0
     #   cairosvg
     #   cssselect2
     #   weasyprint
-tornado==6.3.2
+tornado==6.3.3
     # via flower
 typing-extensions==4.7.1
     # via django-modeltranslation
