@@ -32,6 +32,7 @@ class SandboxedDjangoTemplates(DjangoTemplates):
             "builtins",
             [
                 "django.templatetags.l10n",  # allow usage of localize/unlocalize
+                "openforms.utils.templatetags.utils",
             ],
         )
         super().__init__(params)
@@ -75,6 +76,7 @@ def get_openforms_backend():
                     "openforms.emails.templatetags.payment",
                     "openforms.emails.templatetags.products",
                     "openforms.config.templatetags.privacy_policy",
+                    "openforms.utils.templatetags.utils",
                 ]
                 + get_registration_custom_libraries(),
             }
