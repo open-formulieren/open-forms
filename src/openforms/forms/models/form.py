@@ -29,7 +29,7 @@ from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableSources
 
-from ..constants import SubmissionAllowedChoices
+from ..constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from .utils import literal_getter
 
 User = get_user_model()
@@ -195,6 +195,25 @@ class Form(models.Model):
             help_text=_(
                 "Content that will be shown on the start page of the form, below the title and above the log in text."
             ),
+        ),
+    )
+    ask_privacy_consent = models.CharField(
+        _("ask privacy consent"),
+        max_length=50,
+        choices=StatementCheckboxChoices.choices,
+        default=StatementCheckboxChoices.global_setting,
+        help_text=_(
+            "If enabled, the user will have to agree to the privacy policy before submitting a form."
+        ),
+    )
+    ask_statement_of_truth = models.CharField(
+        _("ask statement of truth"),
+        max_length=50,
+        choices=StatementCheckboxChoices.choices,
+        default=StatementCheckboxChoices.global_setting,
+        help_text=_(
+            "If enabled, the user will have to agree that they filled out the form "
+            "truthfully before submitting it."
         ),
     )
 
