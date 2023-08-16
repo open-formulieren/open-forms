@@ -138,14 +138,17 @@ class ServiceFetchConfiguration(models.Model):
         escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
 
         query_params = {
-            param: render_from_string(
-                value,
-                # Explicitly cast values to strings to avoid localization
-                {k: str(v) for k, v in context.items()},
-                backend=sandbox_backend,
-                disable_autoescape=True,
-            )
-            for param, value in (self.query_params or {}).items()
+            param: [
+                render_from_string(
+                    value,
+                    # Explicitly cast values to strings to avoid localization
+                    {k: str(v) for k, v in context.items()},
+                    backend=sandbox_backend,
+                    disable_autoescape=True,
+                )
+                for value in (values if isinstance(values, list) else (values,))
+            ]
+            for param, values in (self.query_params or {}).items()
         }
 
         request_args = dict(

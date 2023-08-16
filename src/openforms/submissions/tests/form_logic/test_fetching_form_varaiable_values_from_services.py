@@ -222,7 +222,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="redirect-to",
-                query_params={"status_code": "{{code}}", "url": "{{url}}"},
+                query_params={"status_code": ["{{code}}"], "url": ["{{url}}"]},
             )
         )
 
