@@ -281,7 +281,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.8.0
+django-digid-eherkenning==0.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
