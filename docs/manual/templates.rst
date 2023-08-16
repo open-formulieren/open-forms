@@ -162,7 +162,7 @@ De volgende template tags kunnen ook worden gebruikt in opmaakcomponenten.
 
 **get_value**
 
-Geeft de mogelijkheid om een waarde uit een sleutel-waarde variabelen uit te halen.
+Geeft de mogelijkheid om een waarde uit een sleutel-waarde variabele te halen.
 Bijvoorbeeld, als deze variabele in het formulier bestaat:
 
 .. code:: python
