@@ -558,6 +558,32 @@ class FormDefinitionsAPITests(APITestCase):
             'Repeating Group > Duplicate) ,  "anotherDuplicate" (in Another Duplicate, Accidental Duplicate)',
         )
 
+    def test_templatetag_expression_is_valid(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        url = reverse("api:formdefinition-list")
+
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "form-definition-with-content",
+                "configuration": {
+                    "display": "form",
+                    "components": [
+                        {
+                            "key": "htmlContent",
+                            "type": "content",
+                            "html": """Here is a value: {% get_value someVariable 'someKey' %}""",
+                        }
+                    ],
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
 
 class FormioCoSignComponentValidationTests(APITestCase):
     """
