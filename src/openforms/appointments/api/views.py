@@ -40,6 +40,7 @@ from .serializers import (
     DateSerializer,
     LocationInputSerializer,
     LocationSerializer,
+    PermissionSerializer,
     ProductInputSerializer,
     ProductSerializer,
     TimeInputSerializer,
@@ -369,6 +370,23 @@ class CreateAppointmentView(SubmissionCompletionMixin, CreateAPIView):
     serializer_class = AppointmentSerializer
     parser_classes = [AppointmentCreateCamelCaseJSONParser]
     renderer_classes = [AppointmentCreateJSONRenderer]
+
+    _submission: Submission | None
+
+    def extract_submission(self) -> Submission | None:
+        if not hasattr(self, "_submission"):
+            serializer = PermissionSerializer(data=self.request.data)
+            if not serializer.is_valid():
+                self._submission = None
+            else:
+                self._submission = serializer.validated_data["submission"]
+        return self._submission
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        submission = self.extract_submission()
+        context.update({"submission": submission})
+        return context
 
     def perform_create(self, serializer: AppointmentSerializer):
         super().perform_create(serializer)

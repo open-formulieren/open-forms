@@ -10,6 +10,7 @@ from rest_framework import serializers
 from openforms.formio.service import validate_formio_data
 from openforms.forms.models import Form
 from openforms.submissions.api.fields import PrivacyPolicyAcceptedField
+from openforms.submissions.models import Submission
 
 from ..base import BasePlugin, Product
 from ..models import Appointment, AppointmentProduct, AppointmentsConfig
@@ -138,6 +139,15 @@ class AppointmentProductSerializer(serializers.ModelSerializer):
         model = AppointmentProduct
         fields = ("product_id", "amount")
         ref_name = "_AppointmentProduct"
+
+
+class PermissionSerializer(serializers.Serializer):
+    submission = serializers.HyperlinkedRelatedField(
+        required=True,
+        queryset=Submission.objects.all(),
+        view_name="api:submission-detail",
+        lookup_field="uuid",
+    )
 
 
 class AppointmentSerializer(serializers.HyperlinkedModelSerializer):

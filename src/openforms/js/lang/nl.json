@@ -115,7 +115,7 @@
     "originalDefault": "Add another"
   },
   "3ZtB10": {
-    "defaultMessage": "Vraag toestemming om gegevens te verwerken",
+    "defaultMessage": "Vraag verklaring invullen naar waarheid",
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
   },
