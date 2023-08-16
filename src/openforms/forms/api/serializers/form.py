@@ -225,6 +225,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "explanation_template",
             "submission_allowed",
             "suspension_allowed",
+            "ask_privacy_consent",
+            "ask_statement_of_truth",
             "submissions_removal_options",
             "confirmation_email_template",
             "send_confirmation_email",

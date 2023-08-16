@@ -908,6 +908,7 @@ SPECTACULAR_SETTINGS = {
     "ENUM_NAME_OVERRIDES": {
         "IncompleteSubmissionsRemovalMethodEnum": "openforms.data_removal.constants.RemovalMethods",
         "AvailableLanguagesEnum": "django.conf.settings.LANGUAGES",
+        "StatementCheckboxEnum": "openforms.forms.constants.StatementCheckboxChoices",
     },
 }
 

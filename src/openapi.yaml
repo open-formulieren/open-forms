@@ -1233,6 +1233,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -1300,6 +1302,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -1811,6 +1815,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -1884,6 +1890,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -1961,6 +1969,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -6600,7 +6610,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6723,6 +6733,16 @@ components:
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.
+        askPrivacyConsent:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree to the privacy policy
+            before submitting a form.
+        askStatementOfTruth:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree that they filled out
+            the form truthfully before submitting it.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -7032,7 +7052,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7199,7 +7219,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -8057,7 +8077,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -8180,6 +8200,16 @@ components:
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.
+        askPrivacyConsent:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree to the privacy policy
+            before submitting a form.
+        askStatementOfTruth:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree that they filled out
+            the form truthfully before submitting it.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -8617,6 +8647,12 @@ components:
       enum:
       - component
       - user_defined
+      type: string
+    StatementCheckboxEnum:
+      enum:
+      - global_setting
+      - required
+      - disabled
       type: string
     StatusEnum:
       enum:
