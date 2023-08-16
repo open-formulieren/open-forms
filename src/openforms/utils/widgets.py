@@ -9,12 +9,25 @@ class OpenFormsRadioSelect(forms.RadioSelect):
         self._inline = kwargs.pop("inline", False)
         super().__init__(*args, **kwargs)
 
+    def create_option(self, *args, **kwargs):
+        attrs = kwargs.pop("attrs") or {}
+        attrs.update(
+            {
+                "class": " ".join(
+                    [
+                        "utrecht-radio-button",
+                        "utrecht-radio-button--html-input",
+                        "utrecht-form-field__input",
+                    ]
+                )
+            }
+        )
+        kwargs["attrs"] = attrs
+        return super().create_option(*args, **kwargs)
+
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         context["widget"]["inline"] = self._inline
-        context["widget"]["attrs"].update(
-            {"class": "utrecht-radio-button utrecht-radio-button--html-input"}
-        )
         return context
 
 

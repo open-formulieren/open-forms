@@ -1,18 +1,21 @@
-@import 'microscope-sass/lib/bem';
+@use 'microscope-sass/lib/bem';
 @import 'microscope-sass/lib/typography';
 
-.openforms-form-choices {
-  @include modifier('inline') {
+.openforms-choice-list {
+  @include bem.modifier('inline') {
+    --of-utrecht-form-field-radio-margin-block-start: 0;
+
     display: flex;
     gap: 1em;
+    justify-content: space-between;
 
     @include mobile-only {
       display: block;
     }
 
-    @include element('choice') {
-      @include margin($margin: true, $value-mobile: $typography-margin-list);
-      width: 100%;
+    @include bem.element('choice') {
+      flex-basis: 100%;
+      flex-grow: 1;
     }
   }
 }
