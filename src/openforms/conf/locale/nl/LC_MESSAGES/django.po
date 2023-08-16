@@ -2493,16 +2493,12 @@ msgid "ask statement of truth"
 msgstr ""
 
 #: openforms/config/models.py:425
-#, fuzzy
-#| msgid ""
-#| "If enabled, the user will have to agree to the privacy policy before "
-#| "submitting a form."
 msgid ""
 "If enabled, the user will have to agree that they filled out the form "
 "truthfully before submitting it."
 msgstr ""
-"Indien ingeschakeld, moet de gebruiker akkoord gaan met het privacybeleid "
-"voordat hij een formulier indient."
+"Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor "
+"die het formulier indient."
 
 #: openforms/config/models.py:430
 msgid "statement of truth label"

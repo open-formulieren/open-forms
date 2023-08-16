@@ -114,6 +114,11 @@
     "description": "Button text to add extra item",
     "originalDefault": "Add another"
   },
+  "3ZtB10": {
+    "defaultMessage": "Vraag toestemming om gegevens te verwerken",
+    "description": "Form askStatementOfTruth field label",
+    "originalDefault": "Ask statement of truth"
+  },
   "4FQxD/": {
     "defaultMessage": "Configureren",
     "description": "JSON editor: 'configure' header label",
@@ -314,6 +319,11 @@
     "description": "Errored Submissions Removal Limit field label",
     "originalDefault": "Errored Submissions Removal Limit"
   },
+  "A1tDIH": {
+    "defaultMessage": "Name",
+    "description": "Registration backend long name",
+    "originalDefault": "Name"
+  },
   "A3uQyR": {
     "defaultMessage": "Link naar hoofdwebsite weergeven",
     "description": "Display main website link field label",
@@ -408,6 +418,11 @@
     "defaultMessage": "Interne naam van de formulierdefinitie voor deze stap",
     "description": "Form step internal name field help text",
     "originalDefault": "Internal name of the form definition used in this form step"
+  },
+  "CD6UBS": {
+    "defaultMessage": "Gebruik algemene instelling",
+    "description": "option \"global_setting\" of statement checkbox configuration",
+    "originalDefault": "Global setting"
   },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",
@@ -588,6 +603,11 @@
     "defaultMessage": "Onderhoudsmodus",
     "description": "Form maintenance mode field label",
     "originalDefault": "Maintenance mode"
+  },
+  "HCfL9x": {
+    "defaultMessage": "Indien ingeschakeld, moet de gebruiker akkoord gaan met het privacybeleid voordat die een formulier indient.",
+    "description": "Form askPrivacyConsent field help text",
+    "originalDefault": "If enabled, the user will have to agree to the privacy policy before submitting a form."
   },
   "HEg854": {
     "defaultMessage": "Naam",
@@ -1014,6 +1034,11 @@
     "description": "Logic trigger number of days",
     "originalDefault": "days"
   },
+  "TmRKe+": {
+    "defaultMessage": "Niet uitvragen",
+    "description": "option \"disabled\" of statement checkbox configuration",
+    "originalDefault": "Do not ask"
+  },
   "UKTqb8": {
     "defaultMessage": "Bewaartermijn van inzendingen",
     "description": "All Submissions Removal Limit field label",
@@ -1104,6 +1129,11 @@
     "description": "Advanced logic rule invalid JSON-logic message",
     "originalDefault": "Invalid JSON logic expression"
   },
+  "XUW6Gx": {
+    "defaultMessage": "Vraag toestemming om gegevens te verwerken",
+    "description": "Form askPrivacyConsent field label",
+    "originalDefault": "Ask privacy consent"
+  },
   "Xe+CCn": {
     "defaultMessage": "Basis",
     "description": "Service fetch configuration modal basic fieldset title",
@@ -1153,6 +1183,11 @@
     "defaultMessage": "'Vorige' tekst",
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
+  },
+  "ZdZ2Mb": {
+    "defaultMessage": "Set the registration backend to use for the submission",
+    "description": "action type \"set-registration-backend\" label",
+    "originalDefault": "Set the registration backend to use for the submission"
   },
   "a4gS07": {
     "defaultMessage": "Nee (zonder overzichtspagina)",
@@ -1259,6 +1294,11 @@
     "description": "Export form button title",
     "originalDefault": "Export this form"
   },
+  "dV8M5q": {
+    "defaultMessage": "A recognisable name for this backend configuration.",
+    "description": "Backend name help text",
+    "originalDefault": "A recognisable name for this backend configuration."
+  },
   "dWNClE": {
     "defaultMessage": "Optionele categorie om formulieren in te groeperen.",
     "description": "Form category field help text",
@@ -1339,6 +1379,11 @@
     "description": "Service fetch configuration modal form mapping expression language field label",
     "originalDefault": "Mapping expression language"
   },
+  "fqGKJu": {
+    "defaultMessage": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient.",
+    "description": "Form askStatementOfTruth field help text",
+    "originalDefault": "If enabled, the user will have to agree that they filled out the form ruthfully before submitting it."
+  },
   "ftzF/n": {
     "defaultMessage": "Als",
     "description": "Logic trigger prefix",
@@ -1393,6 +1438,11 @@
     "defaultMessage": "Minimale betrouwbaarheidsniveaus",
     "description": "Minimal levels of assurance label",
     "originalDefault": "Minimal levels of assurance"
+  },
+  "hPJb+Q": {
+    "defaultMessage": "Add registration backend",
+    "description": "Button text to add registration backend",
+    "originalDefault": "Add registration backend"
   },
   "hWRRHx": {
     "defaultMessage": "Formulierontwerp",
@@ -1768,6 +1818,11 @@
     "defaultMessage": "Selecteer naar welke authenticatiemethode de gebruiker automatisch doorgestuurd moet worden.",
     "description": "Auto-login field help text",
     "originalDefault": "Select which authentication backend is automatically redirected to."
+  },
+  "ulTen2": {
+    "defaultMessage": "Verplicht",
+    "description": "option \"required\" of statement checkbox configuration",
+    "originalDefault": "Required"
   },
   "uleYj3": {
     "defaultMessage": "Geschiedenis",
