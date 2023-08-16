@@ -3,7 +3,8 @@ import warnings
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
-from drf_spectacular.utils import extend_schema_serializer
+from drf_spectacular.plumbing import build_array_type
+from drf_spectacular.utils import extend_schema_field, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
@@ -13,15 +14,18 @@ from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
+from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
+from openforms.formio.typing import Component
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
+from ...constants import StatementCheckboxChoices
 from ...models import Category, Form, FormRegistrationBackend
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
@@ -168,6 +172,14 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     )
     hide_non_applicable_steps = serializers.SerializerMethodField(read_only=True)
     submission_report_download_link_title = serializers.SerializerMethodField()
+    submission_statements_configuration = serializers.SerializerMethodField(
+        label=_("submission statements configuration"),
+        help_text=_(
+            "A list of statements that need to be accepted by the user before they "
+            "can submit a form. Returns a list of formio component definitions, all "
+            "of type 'checkbox'."
+        ),
+    )
 
     translations = ModelTranslationsSerializer()
 
@@ -223,6 +235,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "resume_link_lifetime",
             "hide_non_applicable_steps",
             "cosign_login_info",
+            "submission_statements_configuration",
             "submission_report_download_link_title",
         )
         # allowlist for anonymous users
@@ -251,6 +264,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "resume_link_lifetime",
             "hide_non_applicable_steps",
             "cosign_login_info",
+            "submission_statements_configuration",
             "submission_report_download_link_title",
         )
         extra_kwargs = {
@@ -482,6 +496,42 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lifetime = min(lifetime, lifetime_all)
 
         return lifetime
+
+    @extend_schema_field(field=build_array_type(STATEMENT_CHECKBOX_SCHEMA))
+    def get_submission_statements_configuration(self, obj: Form) -> list[Component]:
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+
+        ask_privacy_consent = (
+            obj.ask_privacy_consent == StatementCheckboxChoices.required
+            or (
+                obj.ask_privacy_consent == StatementCheckboxChoices.global_setting
+                and config.ask_privacy_consent
+            )
+        )
+        ask_statement_of_truth = (
+            obj.ask_statement_of_truth == StatementCheckboxChoices.required
+            or (
+                obj.ask_statement_of_truth == StatementCheckboxChoices.global_setting
+                and config.ask_statement_of_truth
+            )
+        )
+
+        # TODO Generalise to configurable declarations
+        privacy_policy_checkbox = Component(
+            key="privacyPolicyAccepted",
+            label=config.render_privacy_policy_label(),
+            validate={"required": ask_privacy_consent},
+            type="checkbox",
+        )
+        truth_declaration_checkbox = Component(
+            key="statementOfTruthAccepted",
+            label=config.statement_of_truth_label,
+            validate={"required": ask_statement_of_truth},
+            type="checkbox",
+        )
+
+        return [privacy_policy_checkbox, truth_declaration_checkbox]
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(

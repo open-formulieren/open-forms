@@ -3,7 +3,8 @@ import uuid
 from unittest.mock import patch
 
 from django.conf import settings
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import AnonymousUser, Permission
+from django.test import override_settings
 from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
@@ -17,6 +18,7 @@ from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.translations.tests.utils import make_translated
 
 from ..api.serializers import FormSerializer
+from ..constants import StatementCheckboxChoices
 from ..models import Form
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -106,6 +108,103 @@ class FormSerializerTests(APITestCase):
 
         with self.subTest("No form specific setting"):
             self.assertEqual(response_data5["resumeLinkLifetime"], 7)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_statement_checkboxes_configuration_defaults(self):
+        request = APIRequestFactory().get("/")
+        request.user = AnonymousUser()
+        config = GlobalConfiguration(
+            ask_privacy_consent=True,
+            privacy_policy_url="http://example-privacy.com",
+            privacy_policy_label="I read the {% privacy_policy %}",
+            ask_statement_of_truth=True,
+            statement_of_truth_label="I am honest",
+        )
+        form = FormFactory.build()
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=config,
+        ):
+            serializer = FormSerializer(instance=form, context={"request": request})
+            configuration = serializer.data["submission_statements_configuration"]
+
+        self.assertEqual(len(configuration), 2)
+        privacy_checkbox, truth_checkbox = configuration
+
+        with self.subTest("privacy_checkbox"):
+            self.assertTrue(privacy_checkbox["validate"]["required"])
+            self.assertHTMLEqual(
+                'I read the <a href="http://example-privacy.com" target="_blank" '
+                'rel="noreferrer noopener">privacy policy</a>',
+                privacy_checkbox["label"],
+            )
+            self.assertEqual(privacy_checkbox["key"], "privacyPolicyAccepted")
+
+        with self.subTest("truth_checkbox"):
+            self.assertTrue(truth_checkbox["validate"]["required"])
+            self.assertHTMLEqual(
+                "I am honest",
+                truth_checkbox["label"],
+            )
+            self.assertEqual(truth_checkbox["key"], "statementOfTruthAccepted")
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_statement_checkboxes_configuration_not_required_with_overrides(self):
+        request = APIRequestFactory().get("/")
+        request.user = AnonymousUser()
+        config = GlobalConfiguration(
+            ask_privacy_consent=False, ask_statement_of_truth=False
+        )
+        form = FormFactory.build(
+            ask_privacy_consent=StatementCheckboxChoices.required,
+            ask_statement_of_truth=StatementCheckboxChoices.required,
+        )
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=config,
+        ):
+            serializer = FormSerializer(instance=form, context={"request": request})
+            configuration = serializer.data["submission_statements_configuration"]
+
+        self.assertEqual(len(configuration), 2)
+        privacy_checkbox, truth_checkbox = configuration
+
+        with self.subTest("privacy_checkbox"):
+            self.assertTrue(privacy_checkbox["validate"]["required"])
+            self.assertEqual(privacy_checkbox["key"], "privacyPolicyAccepted")
+
+        with self.subTest("truth_checkbox"):
+            self.assertTrue(truth_checkbox["validate"]["required"])
+            self.assertEqual(truth_checkbox["key"], "statementOfTruthAccepted")
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_statement_checkboxes_configuration_required_with_overrides(self):
+        request = APIRequestFactory().get("/")
+        request.user = AnonymousUser()
+        config = GlobalConfiguration(
+            ask_privacy_consent=True, ask_statement_of_truth=True
+        )
+        form = FormFactory.build(
+            ask_privacy_consent=StatementCheckboxChoices.disabled,
+            ask_statement_of_truth=StatementCheckboxChoices.disabled,
+        )
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=config,
+        ):
+            serializer = FormSerializer(instance=form, context={"request": request})
+            configuration = serializer.data["submission_statements_configuration"]
+
+        self.assertEqual(len(configuration), 2)
+        privacy_checkbox, truth_checkbox = configuration
+
+        with self.subTest("privacy_checkbox"):
+            self.assertFalse(privacy_checkbox["validate"]["required"])
+            self.assertEqual(privacy_checkbox["key"], "privacyPolicyAccepted")
+
+        with self.subTest("truth_checkbox"):
+            self.assertFalse(truth_checkbox["validate"]["required"])
+            self.assertEqual(truth_checkbox["key"], "statementOfTruthAccepted")
 
 
 class FormsAPITests(APITestCase):

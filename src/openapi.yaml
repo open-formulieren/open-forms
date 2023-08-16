@@ -596,71 +596,6 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/config/statements-info-list:
-    get:
-      operationId: config_statements_info_list_retrieve
-      description: Return the list of statements that the user may have to accept
-        before being able to submit a form. The statements are returned as a list
-        of Form.io checkbox components.
-      summary: Submission statements configuration
-      tags:
-      - config
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  description: A single Form.io checkbox component for the statements
-                    that a user may have to accept before submitting a form.
-                  properties:
-                    type:
-                      type: string
-                      description: Component type (checkbox)
-                    key:
-                      type: string
-                      description: Key of the statement field
-                    label:
-                      type: string
-                      description: Text of the statement
-                    validate:
-                      type: object
-                      properties:
-                        required:
-                          type: boolean
-                          description: Whether accepting this statement is required
-                            or not.
-                  title: Statement checkbox
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-        '403':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Exception'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/decision-definitions:
     get:
       operationId: dmn_decision_definitions_list
@@ -6821,6 +6756,33 @@ components:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
+        submissionStatementsConfiguration:
+          type: array
+          items:
+            type: object
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
+            properties:
+              type:
+                type: string
+                description: Component type (checkbox)
+              key:
+                type: string
+                description: Key of the statement field
+              label:
+                type: string
+                description: Text of the statement
+              validate:
+                type: object
+                properties:
+                  required:
+                    type: boolean
+                    description: Whether accepting this statement is required or not.
+            title: Statement checkbox
+          readOnly: true
+          description: A list of statements that need to be accepted by the user before
+            they can submit a form. Returns a list of formio component definitions,
+            all of type 'checkbox'.
         submissionReportDownloadLinkTitle:
           type: string
           readOnly: true
@@ -6837,6 +6799,7 @@ components:
       - slug
       - steps
       - submissionReportDownloadLinkTitle
+      - submissionStatementsConfiguration
       - url
       - uuid
     FormAdminMessage:
@@ -8250,6 +8213,33 @@ components:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
+        submissionStatementsConfiguration:
+          type: array
+          items:
+            type: object
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
+            properties:
+              type:
+                type: string
+                description: Component type (checkbox)
+              key:
+                type: string
+                description: Key of the statement field
+              label:
+                type: string
+                description: Text of the statement
+              validate:
+                type: object
+                properties:
+                  required:
+                    type: boolean
+                    description: Whether accepting this statement is required or not.
+            title: Statement checkbox
+          readOnly: true
+          description: A list of statements that need to be accepted by the user before
+            they can submit a form. Returns a list of formio component definitions,
+            all of type 'checkbox'.
         submissionReportDownloadLinkTitle:
           type: string
           readOnly: true
