@@ -166,7 +166,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
 
         with patch(
-            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(
                 ask_statement_of_truth=True, ask_privacy_consent=True
             ),
@@ -260,7 +260,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         with self.subTest("Truth declaration not in body"):
             with patch(
-                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                "openforms.forms.models.form.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(
@@ -281,7 +281,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         with self.subTest("Truth declaration in body but false"):
             with patch(
-                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                "openforms.forms.models.form.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(

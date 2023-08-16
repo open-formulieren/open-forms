@@ -263,7 +263,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(
                 ask_privacy_consent=True, ask_statement_of_truth=True
             ),
@@ -342,7 +342,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(ask_privacy_consent=False),
         ):
             response = self.client.post(
@@ -481,7 +481,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         with self.subTest("Truth declaration not in body"):
             with patch(
-                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                "openforms.forms.models.form.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(
@@ -507,7 +507,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         with self.subTest("Truth declaration in body but not accepted"):
             with patch(
-                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                "openforms.forms.models.form.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(
@@ -544,7 +544,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(ask_statement_of_truth=False),
         ):
             response = self.client.post(
