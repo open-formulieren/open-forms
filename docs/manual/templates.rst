@@ -158,24 +158,23 @@ Expressie                           Voorbeeld waarde                   Toelichti
 Template tags
 -------------
 
-De volgende template tags kunnen ook worden gebruikt in opmaak componenten.
+De volgende template tags kunnen ook worden gebruikt in opmaakcomponenten.
 
 **get_value**
 
-Geeft de mogelijkheid om een waarde uit een dictionary uit te halen.
+Geeft de mogelijkheid om een waarde uit een sleutel-waarde variabelen uit te halen.
 Bijvoorbeeld, als deze variabele in het formulier bestaat:
 
 .. code:: python
 
-   eenVariabel = {"optie 1": "waarde 1", "optie 2": "waarde 2"}
+   eenVariabele = {"optie 1": "waarde 1", "optie 2": "waarde 2"}
 
-Dan de template tag ``get_value``:
+Dan zal de template tag ``get_value`` de waarde ``waarde 1`` teruggeven:
 
-.. code::
+.. code:: django
 
-   {% get_value eenVariabel 'optie 1' %}
+   {% get_value eenVariabele 'optie 1' %}
 
-Geeft de waarde ``waarde 1`` terug.
 
 Bevestigingsmail
 ================

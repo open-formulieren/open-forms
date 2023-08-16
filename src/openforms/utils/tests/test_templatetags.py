@@ -16,3 +16,14 @@ class TemplateTagsTests(TestCase):
         )
 
         self.assertEqual("an interesting value  someValue", result)
+
+    def test_get_value_with_non_dictionaries(self):
+        result = render_from_string(
+            "{% get_value a_list 'key' %}{% get_value a_string 'key' %}",
+            context={
+                "a_list": ["hello"],
+                "a_string": "someValue",
+            },
+        )
+
+        self.assertEqual("", result)
