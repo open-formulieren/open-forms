@@ -1,7 +1,7 @@
 import uuid as _uuid
 from contextlib import suppress
 from copy import deepcopy
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -19,6 +19,7 @@ from tinymce.models import HTMLField
 from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
+from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.formio.typing import CosignComponent
 from openforms.payments.fields import PaymentBackendChoiceField
@@ -29,7 +30,7 @@ from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableSources
 
-from ..constants import SubmissionAllowedChoices
+from ..constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from .utils import literal_getter
 
 User = get_user_model()
@@ -195,6 +196,25 @@ class Form(models.Model):
             help_text=_(
                 "Content that will be shown on the start page of the form, below the title and above the log in text."
             ),
+        ),
+    )
+    ask_privacy_consent = models.CharField(
+        _("ask privacy consent"),
+        max_length=50,
+        choices=StatementCheckboxChoices.choices,
+        default=StatementCheckboxChoices.global_setting,
+        help_text=_(
+            "If enabled, the user will have to agree to the privacy policy before submitting a form."
+        ),
+    )
+    ask_statement_of_truth = models.CharField(
+        _("ask statement of truth"),
+        max_length=50,
+        choices=StatementCheckboxChoices.choices,
+        default=StatementCheckboxChoices.global_setting,
+        help_text=_(
+            "If enabled, the user will have to agree that they filled out the form "
+            "truthfully before submitting it."
         ),
     )
 
@@ -510,6 +530,22 @@ class Form(models.Model):
     @property
     def admin_name(self) -> str:
         return self.internal_name or self.name
+
+    def get_statement_checkbox_required(
+        self,
+        field_name: Literal["ask_privacy_consent", "ask_statement_of_truth"],
+    ) -> bool:
+        """
+        Check whether a particular statement checkbox is required or not.
+        """
+        value = getattr(self, field_name)
+        if value != StatementCheckboxChoices.global_setting:
+            return value == StatementCheckboxChoices.required
+
+        # otherwise, check the global configuration
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+        return getattr(config, field_name)
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):

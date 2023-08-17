@@ -203,6 +203,12 @@
       "value": "Nog één toevoegen"
     }
   ],
+  "3ZtB10": [
+    {
+      "type": 0,
+      "value": "Vraag verklaring invullen naar waarheid"
+    }
+  ],
   "4/cCvG": [
     {
       "type": 0,
@@ -623,6 +629,12 @@
       "value": "Bewaartermijn voor niet voltooide inzendingen inzendingen"
     }
   ],
+  "A1tDIH": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "A3uQyR": [
     {
       "type": 0,
@@ -779,6 +791,12 @@
     {
       "type": 0,
       "value": "Maximale lengte"
+    }
+  ],
+  "CD6UBS": [
+    {
+      "type": 0,
+      "value": "Gebruik algemene instelling"
     }
   ],
   "CN9j+L": [
@@ -1073,6 +1091,12 @@
     {
       "type": 0,
       "value": "Onderhoudsmodus"
+    }
+  ],
+  "HCfL9x": [
+    {
+      "type": 0,
+      "value": "Indien ingeschakeld, moet de gebruiker akkoord gaan met het privacybeleid voordat die een formulier indient."
     }
   ],
   "HEg854": [
@@ -1693,6 +1717,12 @@
       "value": "dagen"
     }
   ],
+  "TmRKe+": [
+    {
+      "type": 0,
+      "value": "Niet uitvragen"
+    }
+  ],
   "TtqZa0": [
     {
       "type": 0,
@@ -1871,6 +1901,12 @@
       "value": "Ongeldige JSON-logic expressie. Zie https://jsonlogic.com/operations.html voor beschikbare operaties."
     }
   ],
+  "XUW6Gx": [
+    {
+      "type": 0,
+      "value": "Vraag toestemming om gegevens te verwerken"
+    }
+  ],
   "Xe+CCn": [
     {
       "type": 0,
@@ -2020,6 +2056,12 @@
     {
       "type": 0,
       "value": "'Vorige' tekst"
+    }
+  ],
+  "ZdZ2Mb": [
+    {
+      "type": 0,
+      "value": "Set the registration backend to use for the submission"
     }
   ],
   "a4gS07": [
@@ -2190,6 +2232,12 @@
       "value": "Annuleren"
     }
   ],
+  "dV8M5q": [
+    {
+      "type": 0,
+      "value": "A recognisable name for this backend configuration."
+    }
+  ],
   "dWNClE": [
     {
       "type": 0,
@@ -2316,6 +2364,12 @@
       "value": "Soort mappingexpressie"
     }
   ],
+  "fqGKJu": [
+    {
+      "type": 0,
+      "value": "Indien verplicht dient de gebruiker de verklaring naar waarheid te accepteren voor die het formulier indient."
+    }
+  ],
   "ftzF/n": [
     {
       "type": 0,
@@ -2392,6 +2446,12 @@
     {
       "type": 0,
       "value": "Formulierveld"
+    }
+  ],
+  "hPJb+Q": [
+    {
+      "type": 0,
+      "value": "Add registration backend"
     }
   ],
   "hWRRHx": [
@@ -2997,6 +3057,12 @@
     {
       "type": 0,
       "value": "Selecteer naar welke authenticatiemethode de gebruiker automatisch doorgestuurd moet worden."
+    }
+  ],
+  "ulTen2": [
+    {
+      "type": 0,
+      "value": "Verplicht"
     }
   ],
   "uleYj3": [

@@ -95,6 +95,8 @@ const initialFormState = {
     translationEnabled: false,
     submissionAllowed: 'yes',
     suspensionAllowed: true,
+    askPrivacyConsent: 'global_setting',
+    askStatementOfTruth: 'global_setting',
     registrationBackends: [],
     product: null,
     paymentBackend: '',

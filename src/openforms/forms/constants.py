@@ -46,3 +46,9 @@ class SubmissionAllowedChoices(models.TextChoices):
     yes = "yes", _("Yes")
     no_with_overview = "no_with_overview", _("No (with overview page)")
     no_without_overview = "no_without_overview", _("No (without overview page)")
+
+
+class StatementCheckboxChoices(models.TextChoices):
+    global_setting = "global_setting", _("Global setting")
+    required = "required", _("Required")
+    disabled = "disabled", _("Disabled")

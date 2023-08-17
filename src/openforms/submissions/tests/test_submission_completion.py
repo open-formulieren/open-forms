@@ -20,7 +20,7 @@ from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.constants import SubmissionAllowedChoices
+from openforms.forms.constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -263,7 +263,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(
                 ask_privacy_consent=True, ask_statement_of_truth=True
             ),
@@ -312,6 +312,24 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             ],
         )
 
+    def test_submission_privacy_policy_not_accepted_not_required_on_form(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__ask_privacy_consent=StatementCheckboxChoices.disabled,
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+            data={"privacy_policy_accepted": False},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_submission_privacy_policy_not_accepted_but_not_required(self):
         form = FormFactory.create(
             submission_confirmation_template="Thank you for submitting {{ foo }}."
@@ -324,7 +342,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(ask_privacy_consent=False),
         ):
             response = self.client.post(
@@ -463,7 +481,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         with self.subTest("Truth declaration not in body"):
             with patch(
-                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                "openforms.forms.models.form.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(
@@ -489,7 +507,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         with self.subTest("Truth declaration in body but not accepted"):
             with patch(
-                "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+                "openforms.forms.models.form.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(ask_statement_of_truth=True),
             ):
                 response = self.client.post(
@@ -526,7 +544,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with patch(
-            "openforms.submissions.api.validators.GlobalConfiguration.get_solo",
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(ask_statement_of_truth=False),
         ):
             response = self.client.post(

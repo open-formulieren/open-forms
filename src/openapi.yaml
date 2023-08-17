@@ -596,71 +596,6 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/config/statements-info-list:
-    get:
-      operationId: config_statements_info_list_retrieve
-      description: Return the list of statements that the user may have to accept
-        before being able to submit a form. The statements are returned as a list
-        of Form.io checkbox components.
-      summary: Submission statements configuration
-      tags:
-      - config
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  description: A single Form.io checkbox component for the statements
-                    that a user may have to accept before submitting a form.
-                  properties:
-                    type:
-                      type: string
-                      description: Component type (checkbox)
-                    key:
-                      type: string
-                      description: Key of the statement field
-                    label:
-                      type: string
-                      description: Text of the statement
-                    validate:
-                      type: object
-                      properties:
-                        required:
-                          type: boolean
-                          description: Whether accepting this statement is required
-                            or not.
-                  title: Statement checkbox
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-        '403':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Exception'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/decision-definitions:
     get:
       operationId: dmn_decision_definitions_list
@@ -1298,6 +1233,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -1365,6 +1302,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -1876,6 +1815,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -1949,6 +1890,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -2026,6 +1969,8 @@ paths:
         - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
+        - `askPrivacyConsent`
+        - `askStatementOfTruth`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
         - `sendConfirmationEmail`
@@ -6665,7 +6610,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6788,6 +6733,16 @@ components:
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.
+        askPrivacyConsent:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree to the privacy policy
+            before submitting a form.
+        askStatementOfTruth:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree that they filled out
+            the form truthfully before submitting it.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -6821,6 +6776,33 @@ components:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
+        submissionStatementsConfiguration:
+          type: array
+          items:
+            type: object
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
+            properties:
+              type:
+                type: string
+                description: Component type (checkbox)
+              key:
+                type: string
+                description: Key of the statement field
+              label:
+                type: string
+                description: Text of the statement
+              validate:
+                type: object
+                properties:
+                  required:
+                    type: boolean
+                    description: Whether accepting this statement is required or not.
+            title: Statement checkbox
+          readOnly: true
+          description: A list of statements that need to be accepted by the user before
+            they can submit a form. Returns a list of formio component definitions,
+            all of type 'checkbox'.
         submissionReportDownloadLinkTitle:
           type: string
           readOnly: true
@@ -6837,6 +6819,7 @@ components:
       - slug
       - steps
       - submissionReportDownloadLinkTitle
+      - submissionStatementsConfiguration
       - url
       - uuid
     FormAdminMessage:
@@ -7069,7 +7052,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7236,7 +7219,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -8094,7 +8077,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -8217,6 +8200,16 @@ components:
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.
+        askPrivacyConsent:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree to the privacy policy
+            before submitting a form.
+        askStatementOfTruth:
+          allOf:
+          - $ref: '#/components/schemas/StatementCheckboxEnum'
+          description: If enabled, the user will have to agree that they filled out
+            the form truthfully before submitting it.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -8250,6 +8243,33 @@ components:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
+        submissionStatementsConfiguration:
+          type: array
+          items:
+            type: object
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
+            properties:
+              type:
+                type: string
+                description: Component type (checkbox)
+              key:
+                type: string
+                description: Key of the statement field
+              label:
+                type: string
+                description: Text of the statement
+              validate:
+                type: object
+                properties:
+                  required:
+                    type: boolean
+                    description: Whether accepting this statement is required or not.
+            title: Statement checkbox
+          readOnly: true
+          description: A list of statements that need to be accepted by the user before
+            they can submit a form. Returns a list of formio component definitions,
+            all of type 'checkbox'.
         submissionReportDownloadLinkTitle:
           type: string
           readOnly: true
@@ -8627,6 +8647,12 @@ components:
       enum:
       - component
       - user_defined
+      type: string
+    StatementCheckboxEnum:
+      enum:
+      - global_setting
+      - required
+      - disabled
       type: string
     StatusEnum:
       enum:

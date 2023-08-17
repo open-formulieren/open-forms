@@ -13,7 +13,7 @@ import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
 import {FeatureFlagsContext} from './Context';
 
-export const SUMBISSION_ALLOWED_CHOICES = [
+const SUMBISSION_ALLOWED_CHOICES = [
   [
     'yes',
     defineMessage({
@@ -33,6 +33,30 @@ export const SUMBISSION_ALLOWED_CHOICES = [
     defineMessage({
       description: 'option "no_without_overview" of "submission_allowed"',
       defaultMessage: 'No (without overview page)',
+    }),
+  ],
+];
+
+const STATEMENT_CHECKBOX_CHOICES = [
+  [
+    'global_setting',
+    defineMessage({
+      description: 'option "global_setting" of statement checkbox configuration',
+      defaultMessage: 'Global setting',
+    }),
+  ],
+  [
+    'required',
+    defineMessage({
+      description: 'option "required" of statement checkbox configuration',
+      defaultMessage: 'Required',
+    }),
+  ],
+  [
+    'disabled',
+    defineMessage({
+      description: 'option "disabled" of statement checkbox configuration',
+      defaultMessage: 'Do not ask',
     }),
   ],
 ];
@@ -74,6 +98,8 @@ const FormConfigurationFields = ({
     translationEnabled,
     submissionAllowed,
     suspensionAllowed,
+    askPrivacyConsent,
+    askStatementOfTruth,
     appointmentOptions,
   } = form;
 
@@ -362,6 +388,53 @@ const FormConfigurationFields = ({
           onChange={event => onCheckboxChange(event, suspensionAllowed)}
         />
       </FormRow>
+      <FormRow>
+        <Field
+          name="form.askPrivacyConsent"
+          label={
+            <FormattedMessage
+              defaultMessage="Ask privacy consent"
+              description="Form askPrivacyConsent field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="If enabled, the user will have to agree to the privacy policy before submitting a form."
+              description="Form askPrivacyConsent field help text"
+            />
+          }
+        >
+          <Select
+            choices={getTranslatedChoices(intl, STATEMENT_CHECKBOX_CHOICES)}
+            value={askPrivacyConsent}
+            onChange={onChange}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name="form.askStatementOfTruth"
+          label={
+            <FormattedMessage
+              defaultMessage="Ask statement of truth"
+              description="Form askStatementOfTruth field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="If enabled, the user will have to agree that they filled out the form ruthfully before submitting it."
+              description="Form askStatementOfTruth field help text"
+            />
+          }
+        >
+          <Select
+            choices={getTranslatedChoices(intl, STATEMENT_CHECKBOX_CHOICES)}
+            value={askStatementOfTruth}
+            onChange={onChange}
+          />
+        </Field>
+      </FormRow>
+
       {new_appointments_enabled && (
         <FormRow>
           <Checkbox
@@ -387,6 +460,8 @@ const FormConfigurationFields = ({
   );
 };
 
+const statementChoices = PropTypes.oneOf(STATEMENT_CHECKBOX_CHOICES.map(opt => opt[0]));
+
 FormConfigurationFields.propTypes = {
   form: PropTypes.shape({
     uuid: PropTypes.string.isRequired,
@@ -398,6 +473,8 @@ FormConfigurationFields.propTypes = {
     translationEnabled: PropTypes.bool.isRequired,
     submissionAllowed: PropTypes.oneOf(SUMBISSION_ALLOWED_CHOICES.map(opt => opt[0])),
     suspensionAllowed: PropTypes.bool.isRequired,
+    askPrivacyConsent: statementChoices.isRequired,
+    askStatementOfTruth: statementChoices.isRequired,
     appointmentOptions: PropTypes.shape({
       isAppointment: PropTypes.bool.isRequired,
     }),
