@@ -1,6 +1,6 @@
 {
-  "kvkNummer": "string",
-  "naam": "string",
+  "kvkNummer": "111222333",
+  "naam": "Test Naam",
   "heeftAlsEigenaar": {
     "natuurlijkPersoon": {
       "burgerservicenummer": "555555021",
