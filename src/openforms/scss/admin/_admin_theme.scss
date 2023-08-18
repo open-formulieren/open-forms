@@ -51,6 +51,8 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
   --list-item-active-fg: var(--primary);
   --edit-panel-title-bg: #{$color-secondary-dark};
   --edit-panel-title-fg: #{$color-dark};
+  --input-group-text-bg: #{$color-secondary-dark};
+  --input-group-text-fg: #{$color-dark};
   --formio-dropdown-highlighted-bg: #f2f2f2;
 }
 
@@ -78,6 +80,8 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
     --list-item-active-fg: #2fc0ec;
     --edit-panel-title-bg: #{$color-dark};
     --edit-panel-title-fg: var(--body-fg);
+    --input-group-text-bg: #{$color-dark};
+    --input-group-text-fg: var(--body-fg);
     --formio-dropdown-highlighted-bg: #{$color-dark};
   }
 
