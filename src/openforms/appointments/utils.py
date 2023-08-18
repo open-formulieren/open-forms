@@ -50,7 +50,7 @@ def get_missing_fields_labels(
     return sorted(labels)
 
 
-def get_formatted_phone_number(phone_number: Optional[str]) -> Optional[str]:
+def get_formatted_phone_number(phone_number: str | None) -> str | None:
     """
     Remove any character that isn't numeric or a space, +, or - character
     and return max 16 characters

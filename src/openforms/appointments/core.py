@@ -47,7 +47,8 @@ def book(appointment: Appointment, remarks: str = "") -> str:
         for ap in appointment.products.all()
     ]
     location = Location(identifier=appointment.location, name="")
-    customer = CustomerDetails(details=appointment.contact_details)
+    normalized_data = plugin.normalize_contact_details(appointment.contact_details)
+    customer = CustomerDetails(details=normalized_data)
 
     logevent.appointment_register_start(appointment.submission, plugin)
     appointment_id = plugin.create_appointment(

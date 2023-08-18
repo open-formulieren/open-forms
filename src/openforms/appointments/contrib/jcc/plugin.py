@@ -34,7 +34,7 @@ from ...exceptions import (
     AppointmentException,
 )
 from ...registry import register
-from ...utils import create_base64_qrcode
+from ...utils import create_base64_qrcode, get_formatted_phone_number
 from .client import get_client
 from .constants import FIELD_TO_FORMIO_COMPONENT, FIELD_TO_XML_NAME, CustomerFields
 from .exceptions import GracefulJCCError, JCCError
@@ -83,7 +83,7 @@ def with_graceful_default(default: T):
 
 
 @register("jcc")
-class JccAppointment(BasePlugin):
+class JccAppointment(BasePlugin[CustomerFields]):
     """
     Plugin for JCC-Afspraken internetafsprakenadapter GGS2 (april 2020)
 
@@ -95,6 +95,11 @@ class JccAppointment(BasePlugin):
         True  # see 4.13 bookGovAppointment and 3.1 AppointmentDetailsType
     )
     # Note - customer fields may be different per product!
+    normalizers = {
+        CustomerFields.main_tel: [get_formatted_phone_number],
+        CustomerFields.mobile_tel: [get_formatted_phone_number],
+        CustomerFields.any_tel: [get_formatted_phone_number],
+    }
 
     @with_graceful_default(default=[])
     def get_available_products(
