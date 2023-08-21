@@ -1,6 +1,7 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 
 from django.test import SimpleTestCase, TestCase
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 import requests_mock
@@ -11,7 +12,9 @@ from openforms.tests.utils import c_profile
 from openforms.utils.tests.logging import disable_logging
 
 from ....base import AppointmentDetails, Customer, Location, Product
-from ....exceptions import AppointmentException
+from ....core import book
+from ....exceptions import AppointmentCreateFailed, AppointmentException
+from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import QmaticAppointment
 from .factories import ServiceFactory
@@ -192,6 +195,34 @@ class PluginTests(MockConfigMixin, TestCase):
         result = self.plugin.create_appointment([product], location, day, client)
 
         self.assertEqual(result, "fa67a4692bb4c3fab9a0fbcc5511ff346ba4")
+
+    @requests_mock.Mocker()
+    def test_book_through_model(self, m):
+        appointment = AppointmentFactory.create(
+            plugin="qmatic",
+            location="f364d92b7fa07a48c4ecc862de30c47",
+            datetime=datetime(2023, 8, 21, 14, 15).replace(
+                tzinfo=timezone.utc
+            ),  # 16:15 local time
+            contact_details={
+                CustomerFields.last_name: "Doe",
+                CustomerFields.birthday: "1980-01-01",
+            },
+        )
+        AppointmentProductFactory.create(
+            appointment=appointment,
+            product_id="54b3482204c11bedc8b0a7acbffa308",
+        )
+        assert appointment.products.count() == 1
+        m.post(
+            f"{self.api_root}branches/f364d92b7fa07a48c4ecc862de30c47/services/"
+            f"54b3482204c11bedc8b0a7acbffa308/dates/2023-08-21/times/16:15/book",
+            text=mock_response("book.json"),
+        )
+
+        app_id = book(appointment)
+
+        self.assertEqual(app_id, "fa67a4692bb4c3fab9a0fbcc5511ff346ba4")
 
     @requests_mock.Mocker()
     def test_delete_appointment(self, m):
@@ -375,6 +406,57 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_times(
                 products=[product], location=location, day=date(2023, 6, 22)
             )
+
+    @requests_mock.Mocker()
+    def test_create_appointment_multiple_products(self, m):
+        product1 = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        product2 = Product(identifier="2", code="PASAF", name="Nope")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        start_at = timezone.make_aware(datetime(2021, 8, 23, 6, 0, 0))
+
+        result = self.plugin.create_appointment(
+            [product1, product2], location, start_at, client
+        )
+
+        self.assertIsNone(result)
+        self.assertEqual(len(m.request_history), 0)
+
+    @requests_mock.Mocker()
+    def test_create_appointment_failure(self, m):
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        start_at = timezone.make_aware(datetime(2021, 8, 23, 6, 0, 0))
+        m.post(
+            f"{self.api_root}branches/{location.identifier}/services/{product.identifier}/"
+            f"dates/{start_at.strftime('%Y-%m-%d')}/times/{start_at.strftime('%H:%M')}/book",
+            headers={
+                "ERROR_CODE": "440",
+                "ERROR_MESSAGE": "No resource is available for the selected date and time",
+            },
+            json={
+                "msg": "No resource is available for the selected date and time",
+            },
+        )
+
+        with self.assertRaisesMessage(
+            AppointmentCreateFailed, "Could not create appointment"
+        ):
+            self.plugin.create_appointment([product], location, start_at, client)
+
+    @requests_mock.Mocker()
+    def test_create_appointment_unexpected_exception(self, m):
+        product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
+        location = Location(identifier="1", name="Maykin Media")
+        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
+        start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+
+        with self.assertRaisesMessage(
+            AppointmentCreateFailed, "Unexpected appointment create failure"
+        ):
+            self.plugin.create_appointment([product], location, start_at, client)
 
 
 class ConfigurationTests(SimpleTestCase):

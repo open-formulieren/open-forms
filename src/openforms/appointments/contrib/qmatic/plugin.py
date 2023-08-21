@@ -1,18 +1,28 @@
 import json
 import logging
+import warnings
 from datetime import date, datetime, time
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import pytz
 from dateutil.parser import isoparse
 from requests.exceptions import RequestException
 
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ...base import AppointmentDetails, BasePlugin, Customer, Location, Product
+from ...base import (
+    AppointmentDetails,
+    BasePlugin,
+    Customer,
+    CustomerDetails,
+    Location,
+    Product,
+)
 from ...exceptions import (
     AppointmentCreateFailed,
     AppointmentDeleteFailed,
@@ -25,6 +35,10 @@ from .models import QmaticConfig
 
 logger = logging.getLogger(__name__)
 
+_CustomerDetails = CustomerDetails[CustomerFields]
+
+TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
+
 
 @register("qmatic")
 class QmaticAppointment(BasePlugin[CustomerFields]):
@@ -36,8 +50,9 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
 
     verbose_name = _("Qmatic")
     # See "Book an appointment for multiple customers and multiple services" in the
-    # documentation.
-    supports_multiple_products = True
+    # documentation. Qmatic *does* support it, but there are no stakeholders anymore for
+    # this plugin so we only provide the legacy (pre 2.3.0) functionality.
+    supports_multiple_products = False
 
     def get_available_products(
         self,
@@ -198,34 +213,52 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         products: list[Product],
         location: Location,
         start_at: datetime,
-        client: Customer,
+        client: _CustomerDetails | Customer,
         remarks: str = "",
     ) -> str | None:
+        warnings.warn(
+            "The QMatic plugin is deprecated and will be removed in Open Forms 3.0",
+            DeprecationWarning,
+        )
 
         qmatic_client = QmaticClient()
         if len(products) != 1:
+            logger.warning(
+                "The QMatic plugin (currently) does not support booking appointments "
+                "with multiple products or services",
+                extra={"products": products},
+            )
             return
 
         product_id = products[0].identifier
         product_name = products[0].name
 
+        # Phasing out Customer in favour of CustomerDetails, so convert to the new type
+        if isinstance(client, Customer):
+            warnings.warn(
+                "Fixed customer fields via the Customer class are deprecated, use "
+                "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
+                DeprecationWarning,
+            )
+            client = _CustomerDetails(
+                details={
+                    CustomerFields.last_name: client.last_name,
+                    CustomerFields.birthday: client.birthdate.isoformat(),
+                    CustomerFields.first_name: client.initials or "",
+                    CustomerFields.phone_number: client.phonenumber or "",
+                }
+            )
+
         data = {
             "title": f"Open Formulieren: {product_name}",
             "customer": {
-                # "firstName" : "Voornaam",
-                "lastName": client.last_name,
-                # "email" : "test@test.com",
-                # "phone" : "06-11223344",
-                # "addressLine1" : "Straatnaam 1",
-                # "addressCity" : "Plaatsnaam",
-                # "addressState" : "Zuid Holland",
-                # "addressZip" : "1111AB",
-                # "addressCountry" : "Nederland",
-                # "identificationNumber" : "1234567890",
-                "dateOfBirth": client.birthdate,
+                choice.value: value for choice, value in client.details.items() if value
             },
             "notes": remarks,
         }
+
+        if not timezone.is_naive(start_at):
+            start_at = timezone.make_naive(start_at, timezone=TIMEZONE_AMS)
 
         start_date = start_at.strftime("%Y-%m-%d")
         start_time = start_at.strftime("%H:%M")
@@ -234,19 +267,30 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
             f"dates/{start_date}/times/{start_time}/book"
         )
         try:
-            response = qmatic_client.post(url, json.dumps(data, cls=DjangoJSONEncoder))
+            response = qmatic_client.post(
+                url, data=json.dumps(data, cls=DjangoJSONEncoder)
+            )
             response.raise_for_status()
             return response.json()["publicId"]
         except (QmaticException, RequestException, KeyError) as exc:
-            raise AppointmentCreateFailed(
-                "Could not create appointment for products '%s' at location '%s' starting at %s: %s",
+            logger.error(
+                "Could not create appointment for product '%s' at location '%s' starting at %s",
                 product_id,
                 location,
                 start_at,
-                exc,
+                exc_info=exc,
+                extra={
+                    "product_ids": product_id,
+                    "location": location.identifier,
+                    "start_time": start_at,
+                },
             )
+
+            raise AppointmentCreateFailed("Could not create appointment") from exc
         except Exception as exc:
-            raise AppointmentException from exc
+            raise AppointmentCreateFailed(
+                "Unexpected appointment create failure"
+            ) from exc
 
     def delete_appointment(self, identifier: str) -> None:
         client = QmaticClient()
