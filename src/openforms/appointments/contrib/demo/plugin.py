@@ -2,6 +2,8 @@ from datetime import date, datetime
 
 from django.utils.translation import gettext_lazy as _
 
+from dateutil.parser import isoparse
+
 from ...base import (
     AppointmentDetails,
     AppointmentLocation,
@@ -53,8 +55,8 @@ class DemoAppointment(BasePlugin):
                 AppointmentProduct(identifier="2", name="Test product 2"),
             ],
             location=AppointmentLocation(identifier="1", name="Test location"),
-            start_at=datetime(2021, 1, 1, 12, 0),
-            end_at=datetime(2021, 1, 1, 12, 15),
+            start_at=isoparse("2021-01-01T11:00:00+00:00"),
+            end_at=isoparse("2021-01-01T11:15+00:00"),
             remarks="Remarks",
             other={"Some": "<h1>Data</h1>"},
         )
