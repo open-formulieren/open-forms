@@ -540,6 +540,7 @@ idna==2.10
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   requests
+    #   yarl
 imagesize==1.2.0
     # via
     #   -c requirements/ci.txt
@@ -661,6 +662,11 @@ mozilla-django-oidc-db==0.12.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+multidict==6.0.4
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   yarl
 mypy-extensions==0.4.3
     # via
     #   -c requirements/ci.txt
@@ -878,6 +884,7 @@ pyyaml==6.0.1
     #   drf-spectacular
     #   gemma-zds-client
     #   jsonschema-spec
+    #   vcrpy
 qrcode==6.1
     # via
     #   -c requirements/ci.txt
@@ -1137,6 +1144,10 @@ uwsgi==2.0.21
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+vcrpy==5.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 vine==5.0.0
     # via
     #   -c requirements/ci.txt
@@ -1186,6 +1197,7 @@ wrapt==1.15.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   elastic-apm
+    #   vcrpy
 xmlsec==1.3.10
     # via
     #   -c requirements/ci.txt
@@ -1195,6 +1207,11 @@ xmltodict==0.12.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+yarl==1.9.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   vcrpy
 zeep==4.1.0
     # via
     #   -c requirements/ci.txt
