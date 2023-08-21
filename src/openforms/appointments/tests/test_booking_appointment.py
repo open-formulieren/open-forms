@@ -117,7 +117,11 @@ class BookAppointmentTests(TestCase):
             plugin="demo",
             location="123",
             datetime=start,
-            contact_details={"lastName": "English", "firstName": "Johny"},
+            contact_details={
+                "lastName": "English",
+                "firstName": "Johny",
+                "initials": "Johny",
+            },
         )
         AppointmentProductFactory.create(
             appointment=appointment, product_id="456", amount=3
@@ -142,7 +146,13 @@ class BookAppointmentTests(TestCase):
             ],
             Location(identifier="123", name=""),
             start,
-            CustomerDetails(details={"lastName": "English", "firstName": "Johny"}),
+            CustomerDetails(
+                details={
+                    "lastName": "English",
+                    "firstName": "Johny",
+                    "initials": "J.",
+                }
+            ),
             remarks="",
         )
 

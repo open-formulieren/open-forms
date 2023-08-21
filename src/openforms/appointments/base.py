@@ -2,7 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Generic, List, TypeVar
+from typing import Callable, Generic, List, TypeAlias, TypeVar
 
 from django.db.models import TextChoices
 from django.urls import reverse
@@ -74,6 +74,10 @@ class CustomerDetails(Generic[F]):
     details: dict[F, JSONPrimitive]
 
 
+TInput = TypeVar("TInput", bound=JSONPrimitive)
+Normalizer: TypeAlias = Callable[[TInput], TInput]
+
+
 @dataclass()
 class AppointmentDetails:
     identifier: str
@@ -91,13 +95,14 @@ class AppointmentDetails:
         return self.identifier
 
 
-class BasePlugin(ABC, AbstractBasePlugin):
+class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
     """
     Base Appointment plugin.
     """
 
     configuration_options = EmptyOptions
     supports_multiple_products: bool = False
+    normalizers: dict[F, list[Normalizer]] = {}
 
     @abstractmethod
     def get_available_products(
@@ -185,13 +190,26 @@ class BasePlugin(ABC, AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    def normalize_contact_details(
+        self, data: dict[F, JSONPrimitive]
+    ) -> dict[F, JSONPrimitive]:
+        # XXX: We could consider using openforms.formio.service.normalize_value_for_component,
+        # but there currently is no phone normalizer and adding it could potentially break this
+        # component...
+        normalized = {}
+        for key, value in data.items():
+            for normalizer in self.normalizers.get(key, []):
+                value = normalizer(value)
+            normalized[key] = value
+        return normalized
+
     @abstractmethod
     def create_appointment(
         self,
         products: list[Product],
         location: Location,
         start_at: datetime,
-        client: CustomerDetails | Customer,
+        client: CustomerDetails[F] | Customer,
         remarks: str = "",
     ) -> str:  # pragma: no cover
         """

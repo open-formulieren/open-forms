@@ -1,5 +1,6 @@
 from datetime import datetime, time
 
+from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext, gettext_lazy as _
 
@@ -9,10 +10,24 @@ from ...base import AppointmentDetails, BasePlugin, Location, Product
 from ...registry import register
 
 
+class CustomerFields(models.TextChoices):
+    last_name = "lastName", "Last name"
+    first_name = "firstName", "First name"
+    initials = "initials", "Initials"
+
+
+def get_initials(name_or_initials: str) -> str:
+    parts = [part for part in name_or_initials.split(" ") if part.strip()]
+    return " ".join([f"{part[0]}." for part in parts])
+
+
 @register("demo")
-class DemoAppointment(BasePlugin):
+class DemoAppointment(BasePlugin[CustomerFields]):
     verbose_name = _("Demo")
     is_demo_plugin = True
+    normalizers = {
+        CustomerFields.initials: [get_initials],
+    }
 
     def get_available_products(self, current_products=None, location_id: str = ""):
         return [

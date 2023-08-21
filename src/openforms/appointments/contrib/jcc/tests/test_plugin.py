@@ -265,6 +265,30 @@ class PluginTests(MockConfigMixin, TestCase):
         app_start_time = get_xpath(request, "appDetail/appStartTime")[0].text  # type: ignore
         self.assertEqual(app_start_time, "2021-08-23T08:00:00")
 
+    def test_customer_details_normalization(self):
+        phone_numbers = [
+            "+31 20 753 05 23",
+            "+31 20 753 05 abcdef23",
+            "+31 20 753 05 {}()!@#$%^&*23",
+            "+31 20 753 05 2333",
+        ]
+        for phone_number in phone_numbers:
+            with self.subTest(phone_number=phone_number):
+                data = {
+                    CustomerFields.main_tel: phone_number,
+                    CustomerFields.mobile_tel: phone_number,
+                    CustomerFields.any_tel: phone_number,
+                }
+
+                normalized = self.plugin.normalize_contact_details(data)
+
+                expected = {
+                    CustomerFields.main_tel: "+31 20 753 05 23",
+                    CustomerFields.mobile_tel: "+31 20 753 05 23",
+                    CustomerFields.any_tel: "+31 20 753 05 23",
+                }
+                self.assertEqual(normalized, expected)
+
     @requests_mock.Mocker()
     def test_create_appointment_multiple_products(self, m):
         product1 = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")

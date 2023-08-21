@@ -20,14 +20,14 @@ from ...exceptions import (
 )
 from ...registry import register
 from .client import QmaticClient, QmaticException
-from .constants import FIELD_TO_FORMIO_COMPONENT
+from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from .models import QmaticConfig
 
 logger = logging.getLogger(__name__)
 
 
 @register("qmatic")
-class QmaticAppointment(BasePlugin):
+class QmaticAppointment(BasePlugin[CustomerFields]):
     """
     Plugin for Qmatic Orchestra Calendar Public Appointment API (july 2017)
 
