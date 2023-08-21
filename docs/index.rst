@@ -12,7 +12,7 @@ fields are pre-filled whenever possible and personalized choices are shown
 depending on the user, if authenticated.
 
 Using a plugin-based architecture, Open Forms allows for flexible submission
-backends (ie. `Open Zaak`_), authentication schemes, payment providers, calendar
+backends (e.g. `Open Zaak`_), authentication schemes, payment providers, calendar
 apps and pre-fill services.
 
 Open Forms is developed in line with the `Common Ground`_ principles,

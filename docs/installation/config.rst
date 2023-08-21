@@ -150,10 +150,10 @@ Log settings
 ------------
 
 * ``SENTRY_DSN``: URL of the sentry project to send error reports to. Defaults
-  to an empty string (ie. no monitoring). See `Sentry settings`_.
+  to an empty string (i.e. no monitoring). See `Sentry settings`_.
 
 * ``SDK_SENTRY_DSN``: URL of the sentry project for the SDK to send error reports to. Defaults
-  to an empty string (ie. no monitoring). This is a **public** Sentry DSN. See `Sentry settings`_.
+  to an empty string (i.e. no monitoring). This is a **public** Sentry DSN. See `Sentry settings`_.
 
 * ``SDK_SENTRY_ENVIRONMENT``: the environment label for the SDK to group events. Defaults
   to ``ENVIRONMENT``.

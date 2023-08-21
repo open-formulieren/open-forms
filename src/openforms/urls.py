@@ -88,7 +88,7 @@ urlpatterns = [
     ),
 ]
 
-# NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static
+# NOTE: The staticfiles_urlpatterns also discovers static files (i.e. no need to run collectstatic). Both the static
 # folder and the media folder are only served via Django if DEBUG = True.
 urlpatterns += staticfiles_urlpatterns() + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
