@@ -59,6 +59,7 @@ class DigiDAssertionConsumerServiceView(
     """
 
     def get(self, request):
+        # breakpoint()
         saml_art = request.GET.get("SAMLart")
         client = DigiDClient()
 

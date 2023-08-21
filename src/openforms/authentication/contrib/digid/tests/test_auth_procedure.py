@@ -14,8 +14,6 @@ from furl import furl
 from lxml import etree
 from privates.test import temp_private_root
 from rest_framework import status
-from simple_certmanager.constants import CertificateTypes
-from simple_certmanager.models import Certificate
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -28,7 +26,7 @@ from openforms.utils.tests.cache import clear_caches
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import create_test_artifact, get_artifact_response
-from .utils import TEST_FILES
+from .utils import TEST_FILES, make_certificate
 
 
 def _create_test_artifact() -> str:
@@ -54,14 +52,7 @@ class DigiDConfigMixin:
         CERT = TEST_FILES / "test.certificate"
         METADATA = TEST_FILES / "metadata.xml"
 
-        with KEY.open("rb") as key_file, CERT.open("rb") as cert_file:
-            cert = Certificate(
-                label="DigiD",
-                type=CertificateTypes.key_pair,
-                private_key=File(key_file, KEY.name),
-                public_certificate=File(cert_file, CERT.name),
-            )
-            cert.save()
+        cert = make_certificate(KEY, CERT)
 
         config = DigidConfiguration.get_solo()
         config.certificate = cert
