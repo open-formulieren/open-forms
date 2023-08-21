@@ -374,7 +374,7 @@
   "Repeating Group": "Herhalende groep",
   "repeatingGroup": "herhalendeGroep",
   "Group label": "Groepslabel",
-  "The label that will be shown above each repeating group in the summary page, the submission report and the confirmation email. The index of the item will be added next to it, i.e. if you enter 'Item' it will be displayed as 'Item 1', 'Item 2', ...": "Het label dat boven elke herhaalde groep weergegeven wordt in de overzichtspagina, inzendings-PDF en bevestigingsmail. De index van de groep wordt hieraan toegevoegd, bijvoorbeeld als je 'Item' opgeeft, dan wordt dit weergegeven als 'Item 1', 'Item 2', ...",
+  "The label that will be shown above each repeating group in the summary page, the submission report and the confirmation email. The index of the item will be added next to it, e.g. if you enter 'Item' it will be displayed as 'Item 1', 'Item 2', ...": "Het label dat boven elke herhaalde groep weergegeven wordt in de overzichtspagina, inzendings-PDF en bevestigingsmail. De index van de groep wordt hieraan toegevoegd, bijvoorbeeld als je 'Item' opgeeft, dan wordt dit weergegeven als 'Item 1', 'Item 2', ...",
   "Disable Adding / Removing Rows": "Blokkeer het toevoegen/verwijderen van groepen",
   "Check if you want to hide Add Another button and Remove Row button": "Vink dit aan om de 'Groep toevoegen'- en 'Groep verwijderen'-knoppen te verbergen",
   "Add Another Text": "'Groep toevoegen'-tekst",
