@@ -1,0 +1,743 @@
+interactions:
+- request:
+    body: SAMLRequest=PHNhbWxwOkF1dGhuUmVxdWVzdCB4bWxuczpzYW1scD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOnByb3RvY29sIiB4bWxuczpzYW1sPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIiBJRD0iT05FTE9HSU5fMTIzNDU2IiBWZXJzaW9uPSIyLjAiIEZvcmNlQXV0aG49InRydWUiIElzc3VlSW5zdGFudD0iMjAyMy0wOC0yMVQxNTozMDozMloiIERlc3RpbmF0aW9uPSJodHRwczovL21heWtpbi5wcmUuaWUwMS5zaWduaWNhdC5wcm8vYnJva2VyL3NwL3NhbWwvbG9naW4iIFByb3RvY29sQmluZGluZz0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmJpbmRpbmdzOkhUVFAtQXJ0aWZhY3QiIEFzc2VydGlvbkNvbnN1bWVyU2VydmljZVVSTD0iaHR0cHM6Ly9sb2NhbGhvc3Q6ODAwMC9laGVya2VubmluZy9hY3MvIiBBdHRyaWJ1dGVDb25zdW1pbmdTZXJ2aWNlSW5kZXg9IjkwNTIiPgogICAgPHNhbWw6SXNzdWVyPmh0dHBzOi8vbG9jYWxob3N0OjgwMDAvZWhlcmtlbm5pbmc8L3NhbWw6SXNzdWVyPjxkczpTaWduYXR1cmUgeG1sbnM6ZHM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvMDkveG1sZHNpZyMiPgo8ZHM6U2lnbmVkSW5mbz4KPGRzOkNhbm9uaWNhbGl6YXRpb25NZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzEwL3htbC1leGMtYzE0biMiLz4KPGRzOlNpZ25hdHVyZU1ldGhvZCBBbGdvcml0aG09Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvMDQveG1sZHNpZy1tb3JlI3JzYS1zaGEyNTYiLz4KPGRzOlJlZmVyZW5jZSBVUkk9IiNPTkVMT0dJTl8xMjM0NTYiPgo8ZHM6VHJhbnNmb3Jtcz4KPGRzOlRyYW5zZm9ybSBBbGdvcml0aG09Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvMDkveG1sZHNpZyNlbnZlbG9wZWQtc2lnbmF0dXJlIi8%2BCjxkczpUcmFuc2Zvcm0gQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzEwL3htbC1leGMtYzE0biMiLz4KPC9kczpUcmFuc2Zvcm1zPgo8ZHM6RGlnZXN0TWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjc2hhMjU2Ii8%2BCjxkczpEaWdlc3RWYWx1ZT45T1dUNWV0MUd6VFgxSVcrVmR1VXdvRHBHeCtQWXdwRUZyUk51TFhOM1kwPTwvZHM6RGlnZXN0VmFsdWU%2BCjwvZHM6UmVmZXJlbmNlPgo8L2RzOlNpZ25lZEluZm8%2BCjxkczpTaWduYXR1cmVWYWx1ZT5KeHh2ZEc0YitTT0tOdkgvWUN3NnEybFpHTE1Id1FrakJOZi9PRGRFV09KZUN4dXRndzJ0VThiek5ONWdzakFuCldOeU9aODNIbTRHV3hoT3pOUjd5WC95Qy96SFN2ZmEwK2ltY1N1TXhRcjNaOFRpcGNGcWJPbTRRak81bkc5R08KNTFGZjJVWCs5TTU2WGFMYlpnSnBDTzFjdXY4cm1yK2d1US96V0JXMG9uSFhmcTQvRldvZVNNOHpCWWZCLyt1Rwo1cEpJL2ZRbFBObWdRanljRlhuaXFwdG54RnJseUVOVGRHZG1LYmp0Skh3WVNOaytBaVJvazVnV1RtK1hqZUwzCm9BNHlSQXNjNXE1aUh4RUxRV1BBQzM2OUExd29OQVc2Z21QVXYxdTREakxqN1dhNHgxWm5vc04rczc3azcySFUKRTV0RXE4NWxqU1RIV200MnNjY2lUMGxYNVFQQUlpSUk3ODF0aG9yMW5KemI5Y3psaEtlblJtVUt5bUJkUTA3QgpBT2lKK3FLRitOd0RaR0h0dUhsUFJzTjBodEJ0aHVtWTkrdzNTb1ZwWGExa3pCbFlOaFB1MUlLRXRFN3MyY25DCk51YWU4RGNRVmt5S0l2bDFvb2ZRRkVGU3J0c2Nzc044N2tiOWdKQWV4cmRNNTk3RkZ3K0EwYVl6ZEJqWndwSzEKazVnVkVjM01mdFEzd0pINnE3QW9nMHVINS9yQmF4dHN0aElhOEMzVTIybk5tQ2d4RUVsMUMxVUpmUGJhRUpZWQpmc0ZhU3RiYUVrUnRRSE1ZYkd4SEdBSFBtRjN3cWVaZWRmeW1RTzZLc1c1WHBFRWpOMFhpZ0p0SEkvS1d5MEkxCk9vUkMvV2Jub3c3azA2czZjRnRWSmt5SjFUSndIeXdZTmtwNWRVaVZKM1E9PC9kczpTaWduYXR1cmVWYWx1ZT4KPGRzOktleUluZm8%2BCjxkczpYNTA5RGF0YT4KPGRzOlg1MDlDZXJ0aWZpY2F0ZT5NSUlGY3pDQ0ExdWdBd0lCQWdJVUF1dXU2ckNEKzNleUN4OXJYUTdXbjhJWDNqb3dEUVlKS29aSWh2Y05BUUVMCkJRQXdTVEVMTUFrR0ExVUVCaE1DVGt3eElUQWZCZ05WQkFvTUdFbHVkR1Z5Ym1WMElGZHBaR2RwZEhNZ1VIUjUKSUV4MFpERVhNQlVHQTFVRUF3d09iRzlqWVd4b2IzTjBPamd3TURBd0hoY05Nak13TmpFME1UTXhOalF3V2hjTgpNalF3TmpFek1UTXhOalF3V2pCSk1Rc3dDUVlEVlFRR0V3Sk9UREVoTUI4R0ExVUVDZ3dZU1c1MFpYSnVaWFFnClYybGtaMmwwY3lCUWRIa2dUSFJrTVJjd0ZRWURWUVFEREE1c2IyTmhiR2h2YzNRNk9EQXdNRENDQWlJd0RRWUoKS29aSWh2Y05BUUVCQlFBRGdnSVBBRENDQWdvQ2dnSUJBSk4xdmNRVDJ5Q0lxZ3FrQlF2Z0h0alpPM0xlWXVtVAp6MFcwWWovenRQNlhKUHZSelplc05yZXR3MWQxMTNOTFpPRCtOZlN5TkhUcjVXQ0RQcmxmNnJxeUxUdDV4ek1MCkJjSi82QnJrUE9zc1owUHZnMlI2U3FIVDhIbXR0MHQ2Z0FkMUwzYnlZMmlSZGtmN1B1ZGtSdllqLzN0V2dQMGQKbVRzLzU4eVZha2ZNZUsrOGNndTl1UFNZN2l2L21sd2lvZ2UvMHd5cU0rZCtFRHhadW8yZDkyWnlVcVV0RHVYegprM3RYQXBwc1E2Y1FUeDNmN1hSVGl1RmhDbWErS2dJMVJzbzlOTG5Cc3g4SW5CMEZLcEl2Z0llRVdPbmIyVDlLCjRyTDFKcm1POTNHbDdtSHZkNFl1L3l2cVdlRExZNERQTjB5aDhOamxnc0xKTmRDbVNJSEpYU1VXdlNHbkFqckUKRm1yOXJqZHh3L2JjQU5UcjRoSXRrczhkMHNoZ3IzTlZESGlKbG1vekxuMmorWnY5NElrbDh0WWRidlBGa2l1SApMQUUvU0JOYWVYVnRxZUczbkF0ZFZWaHhEWUFJcUFrVjhJYUhSN3R2LzVORUxlVHYzUEpDSzR5Nm0xYlN4QWRICmRjcUEwbVFiZm5oUzhTZi9ROHlrbTBBQTZuN2lvODNqQkRxMmRWUnBJcGdvWVFwZmFVY2tuVU90WnlzaGJaUnoKVXphU21DTlZFMmdtOVdCbS9tYjkvVHRySjBDZmFVL296RFUyRERuV05jUGFXYUpESVNlTWxRcktOdVZWYS9PLwowb0djQjRqamxLSGpLNmJadWU3OSt6SnBzRkEweDhXU2hRK2x0RE9ZSUREeTBERm13eFJsRzI2ZTZPalo2alFYCmwyamM0TlpRei80MUFnTUJBQUdqVXpCUk1CMEdBMVVkRGdRV0JCVGV2NzNITnBtalR6M2NUMzdvc2lJVUk2UzAKR0RBZkJnTlZIU01FR0RBV2dCVGV2NzNITnBtalR6M2NUMzdvc2lJVUk2UzBHREFQQmdOVkhSTUJBZjhFQlRBRApBUUgvTUEwR0NTcUdTSWIzRFFFQkN3VUFBNElDQVFBY1hGd2ZzUFNiVWVSeWx5R0tyaXpCeVpXMkd0a2lZNUNaCmVmY2hEYVhLTlJOblBERkdENlErK1pIWGZlaVZIOW1CTjI5bi9RN1NaOXR4cGhXeEkzZVo1UU5yS3JvWk1aQlYKTC9kbjBxVlJiSTh3WWllQ0ltYnRKTFhhUFJKS2w2bGQyQkRMS3ZEZVpac05zd0xJRUwrUHBFZDk3cWtCM09NdwpoQzFPRWxLdkU5dVY4czl5SEpONWV0d2p2RUJlS2ZhNzJ5OGJ4MjJvbDBaTUw5OEtORnF5Mkk2eGNJcUJDUmZhCnFlSktoMzNDUG94c1lxT2VpUGVKSXhmSm14dTJDZnJrQWpua3BpaEJpVEhEUFhpQU8xTTJwWHhDS1d5d2lrSWUKZnJRTzJscWpET05zQVY2MmFhaHMzeStBWlhJR3FLenpnNWIrRERJczlTRjhyMDllakVHOTZRMTVkWGFaaGNpZApscmNMeXdLZExob2l2RWtxWXZrY3JTY2UvWHRKTDBhV3AxRXVqenBHQ0ltYkpvTFdVdTBzZ2VyMW5ZRGZjOVBzCi80L2JKNDhib0VTK0V0dkNUSHlDeUc2UkxEWkpsUk90a01vWFBFWXdZWldPQkY5RTBGMlkwdlB3S0dNQVlZeGsKMUN4Q2tFWk8vZzczUGh1eEpUaUp0MG5UbVM5S1lMNnhmdkl6blBPRjVjYnJtL2JPb0J5V21CdmU5THFzODNUTgpZQ0V1Wk1WSkZENXB1dlNDdWszcXUvY3Zud2FRU0JyVHZzdktFQkJZYzNTai8vbVovczZVNUVhWE8zTmtlci9qCkdnNkpZSWROTDEyaG1OVFhwYXNteGY3enFGekc2b3ArQ29FRFdoUUlpQytuV2s4UGtCVEdmZlRGU3ltcmdFTjgKVUROaUcyMGpnQT09PC9kczpYNTA5Q2VydGlmaWNhdGU%2BCjwvZHM6WDUwOURhdGE%2BCjwvZHM6S2V5SW5mbz4KPC9kczpTaWduYXR1cmU%2BCiAgICAgPHNhbWxwOlJlcXVlc3RlZEF1dGhuQ29udGV4dCBDb21wYXJpc29uPSJtaW5pbXVtIj48c2FtbDpBdXRobkNvbnRleHRDbGFzc1JlZj51cm46ZXRvZWdhbmc6Y29yZTphc3N1cmFuY2UtY2xhc3M6bG9hMzwvc2FtbDpBdXRobkNvbnRleHRDbGFzc1JlZj4gICAgPC9zYW1scDpSZXF1ZXN0ZWRBdXRobkNvbnRleHQ%2BCjwvc2FtbHA6QXV0aG5SZXF1ZXN0Pg%3D%3D&RelayState=%2Fauth%2Fslurm%2Feherkenning%2Freturn%3Fnext%3Dhttp%253A%252F%252Ftestserver%252Fsubmissions%252F17399e4c-913f-47de-837a-d71a8308e0a8%252F10w-41eeccb3fa12405571ed%252Fresume
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '5716'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: https://maykin.pre.ie01.signicat.pro/broker/sp/saml/login
+  response:
+    body:
+      string: ''
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-length:
+      - '0'
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' cdn.connectis.io; style-src ''self''
+        cdn.connectis.io; font-src ''self'' data: cdn.connectis.io; img-src ''self''
+        data: cdn.connectis.io qrcode.idin.nl; navigate-to https:; form-action ''self''
+        https:; frame-ancestors ''none''; base-uri ''self''; upgrade-insecure-requests
+        ; connect-src ''self'''
+      date:
+      - Mon, 21 Aug 2023 15:30:32 GMT
+      expires:
+      - '0'
+      location:
+      - https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/selection
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      set-cookie:
+      - SESSION=OTJkYTk0MzYtYTIyZC00ODZkLThlNmUtM2VmZDM5ZTY1OWRk; Path=/broker; Secure;
+        HttpOnly; SameSite=None
+      strict-transport-security:
+      - max-age=63072000
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 302
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - SESSION=OTJkYTk0MzYtYTIyZC00ODZkLThlNmUtM2VmZDM5ZTY1OWRk
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/selection
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <title>Select simulator</title>\n
+        \   <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,
+        initial-scale=1\" />\n    <link rel=\"shortcut icon\" href=\"/broker/images/favicon.png\"
+        />\n    <link\n      rel=\"stylesheet\"\n      type=\"text/css\"\n      href=\"/broker/css/logo.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/material-icons.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/open-sans.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/mabry.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.css\"\n
+        \   />\n    \n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.js\"\n
+        \   ></script>\n  </head>\n  <body class=\"mdc-typography\">\n    <div class=\"app-background\"></div>\n
+        \   <div class=\"mdc-drawer-app-content\">\n      <header class=\"mdc-top-app-bar
+        mdc-top-app-bar--fixed\">\n        <div class=\"mdc-top-app-bar__row\">\n
+        \         <section\n            class=\"mdc-top-app-bar__section mdc-top-app-bar__section--align-end\"\n
+        \         ><div>\n    <div class=\"mdc-menu-surface--anchor cng-menu mr-4\">\n
+        \     <button class=\"mdc-button cng-menu__button profile-button\">\n        <span
+        class=\"mdc-button__ripple\"></span>\n        <i class=\"material-icons mdc-button__icon\">language</i>\n
+        \       <span class=\"mdc-button__label\">en</span>\n      </button>\n      <div
+        class=\"mdc-menu mdc-menu-surface cng-menu__menu\">\n        <div\n          class=\"mdc-list\"\n
+        \         id=\"language-select\"\n          role=\"menu\"\n          aria-hidden=\"true\"\n
+        \         aria-orientation=\"vertical\"\n          tabindex=\"-1\"\n          data-mdc-auto-init=\"MDCList\"\n
+        \       >\n          <a\n            href=\"https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/selection?lang=en\"\n
+        \           role=\"menuitem\"\n            class=\"mdc-list-item\"\n          >\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/en.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> English </span>\n
+        \         </a>\n          <a\n            href=\"https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/selection?lang=nl\"\n
+        \           class=\"mdc-list-item\"\n            role=\"menuitem\"\n          >\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/nl.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> Nederlands
+        </span>\n          </a>\n        </div>\n      </div>\n    </div>\n  </div></section>\n
+        \       </div>\n      </header>\n      <main class=\"page-content\">\n        <div
+        class=\"mdc-layout-grid\">\n          <div class=\"mdc-layout-grid__inner\">\n
+        \           <div class=\"mdc-card cng-small-card--centered\">\n              <form
+        method=\"post\">\n                <div class=\"cng-card__primary\">\n                  <div
+        class=\"logo-container primary-logo mb-4\"></div>\n                  <div\n
+        \                   class=\"mdc-typography--headline5 text-center\"\n                  >Select
+        simulator</div>\n                </div>\n                <div class=\"cng-card__divider\"></div>\n
+        \               <div class=\"cng-card__secondary\">\n                  <nav
+        class=\"mdc-list connection-list\">\n                    <a\n                      class=\"mdc-list-item
+        my-2\"\n                      href=\"selection/custom\"\n                      data-test=\"selection-custom\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img src=\"/broker/connection/simulator.svg\" />\n
+        \                     </span>\n                      <span\n                        class=\"mdc-list-item__text\"\n
+        \                     >Custom</span>\n                    </a>\n\n                    <a\n
+        \                     class=\"mdc-list-item my-2\"\n                      href=\"selection/digid\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img\n                          width=\"50px\"\n                          src=\"/broker/connection/digid.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >DigiD</span>\n
+        \                   </a>\n                    <a\n                      class=\"mdc-list-item
+        my-2\"\n                      href=\"selection/digid-cc\"\n                    >\n
+        \                     <span class=\"mdc-list-item__graphic\">\n                        <img\n
+        \                         width=\"50px\"\n                          src=\"/broker/connection/digid.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >DigiD
+        CombiConnect</span>\n                    </a>\n\n                    <a\n
+        \                     class=\"mdc-list-item my-2\"\n                      href=\"selection/eh\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img src=\"/broker/connection/eherkenning.svg\" />\n
+        \                     </span>\n                      <span\n                        class=\"mdc-list-item__text\"\n
+        \                     >eHerkenning</span>\n                    </a>\n\n                    <a\n
+        \                     class=\"mdc-list-item my-2\"\n                      href=\"selection/eidas\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img\n                          width=\"50px\"\n                          src=\"/broker/connection/eidas.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >eIDAS</span>\n
+        \                   </a>\n\n                    <a\n                      class=\"mdc-list-item
+        my-2\"\n                      href=\"selection/idin\"\n                      data-test=\"selection-idin\"\n
+        \                   >\n                      <span class=\"mdc-list-item__graphic\">\n
+        \                       <img\n                          width=\"50px\"\n                          src=\"/broker/connection/idin.svg\"\n
+        \                       />\n                      </span>\n                      <span\n
+        \                       class=\"mdc-list-item__text\"\n                      >iDIN</span>\n
+        \                   </a>\n                    \n                    \n                  </nav>\n
+        \               </div>\n                <div class=\"mdc-card__actions cng-card__actions-align-end\">\n
+        \                 <div class=\"mdc-card__action-buttons\">\n                    <a\n
+        \                     href=\"/broker/authn/simulator/cancel\"\n                      class=\"mdc-button
+        mdc-card__action mdc-card__action--button mdc-button--outlined\"\n                    >\n
+        \                     <div class=\"mdc-button__ripple\"></div>\n                      <span\n
+        \                       class=\"mdc-button__label\"\n                        >Cancel</span\n
+        \                     >\n                    </a>\n                  </div>\n
+        \               </div>\n              </form>\n            </div>\n          </div>\n
+        \       </div>\n      </main>\n    </div>\n  </body>\n</html>\n"
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' cdn.connectis.io; style-src ''self''
+        cdn.connectis.io; font-src ''self'' data: cdn.connectis.io; img-src ''self''
+        data: cdn.connectis.io qrcode.idin.nl; navigate-to https:; form-action ''self''
+        https:; frame-ancestors ''none''; base-uri ''self''; upgrade-insecure-requests
+        ; connect-src ''self'''
+      content-type:
+      - text/html;charset=UTF-8
+      date:
+      - Mon, 21 Aug 2023 15:30:32 GMT
+      expires:
+      - '0'
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      strict-transport-security:
+      - max-age=63072000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - SESSION=OTJkYTk0MzYtYTIyZC00ODZkLThlNmUtM2VmZDM5ZTY1OWRk
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/selection/eh
+  response:
+    body:
+      string: ''
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-length:
+      - '0'
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' cdn.connectis.io; style-src ''self''
+        cdn.connectis.io; font-src ''self'' data: cdn.connectis.io; img-src ''self''
+        data: cdn.connectis.io qrcode.idin.nl; navigate-to https:; form-action ''self''
+        https:; frame-ancestors ''none''; base-uri ''self''; upgrade-insecure-requests
+        ; connect-src ''self'''
+      date:
+      - Mon, 21 Aug 2023 15:30:32 GMT
+      expires:
+      - '0'
+      location:
+      - https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/authenticate/eh
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      strict-transport-security:
+      - max-age=63072000
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 302
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - SESSION=OTJkYTk0MzYtYTIyZC00ODZkLThlNmUtM2VmZDM5ZTY1OWRk
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/authenticate/eh
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <title>Signicat
+        eHerkenning simulator</title>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\"
+        content=\"width=device-width, initial-scale=1\" />\n    <link rel=\"shortcut
+        icon\" href=\"/broker/images/favicon.png\" />\n    <link\n      rel=\"stylesheet\"\n
+        \     type=\"text/css\"\n      href=\"/broker/css/logo.css\"\n    />\n    <link\n
+        \     rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/material-icons.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/open-sans.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/mabry.css\"\n
+        \   />\n    <link\n      rel=\"stylesheet\"\n      href=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.css\"\n
+        \   />\n    \n    <script\n      type=\"text/javascript\"\n      src=\"https://cdn.connectis.io/styling/1.1.4/signicat-styling.js\"\n
+        \   ></script>\n    <script type=\"text/javascript\" src=\"/broker/js/authenticate-eh.js\"></script>\n
+        \ </head>\n  <body class=\"mdc-typography\">\n    <div class=\"app-background\"></div>\n
+        \   <div class=\"mdc-drawer-app-content\">\n      <header class=\"mdc-top-app-bar
+        mdc-top-app-bar--fixed\">\n        <div class=\"mdc-top-app-bar__row\">\n
+        \         <section\n            class=\"mdc-top-app-bar__section mdc-top-app-bar__section--align-end\"\n
+        \         ><div>\n    <div class=\"mdc-menu-surface--anchor cng-menu mr-4\">\n
+        \     <button class=\"mdc-button cng-menu__button profile-button\">\n        <span
+        class=\"mdc-button__ripple\"></span>\n        <i class=\"material-icons mdc-button__icon\">language</i>\n
+        \       <span class=\"mdc-button__label\">en</span>\n      </button>\n      <div
+        class=\"mdc-menu mdc-menu-surface cng-menu__menu\">\n        <div\n          class=\"mdc-list\"\n
+        \         id=\"language-select\"\n          role=\"menu\"\n          aria-hidden=\"true\"\n
+        \         aria-orientation=\"vertical\"\n          tabindex=\"-1\"\n          data-mdc-auto-init=\"MDCList\"\n
+        \       >\n          <a\n            href=\"https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/authenticate/eh?lang=en\"\n
+        \           role=\"menuitem\"\n            class=\"mdc-list-item\"\n          >\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/en.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> English </span>\n
+        \         </a>\n          <a\n            href=\"https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/authenticate/eh?lang=nl\"\n
+        \           class=\"mdc-list-item\"\n            role=\"menuitem\"\n          >\n
+        \           <img\n              src=\"https://cdn.connectis.io/styling/1.1.4/assets/locales/nl.png\"\n
+        \             alt=\"\"\n              class=\"mdc-list-item__graphic cng-locale-flag\"\n
+        \           />\n            <span class=\"mdc-list-item__text\"> Nederlands
+        </span>\n          </a>\n        </div>\n      </div>\n    </div>\n  </div></section>\n
+        \       </div>\n      </header>\n      <main class=\"page-content\">\n        <div
+        class=\"mdc-layout-grid\">\n          <div class=\"mdc-layout-grid__inner\">\n
+        \           <div class=\"mdc-card cng-small-card--centered\">\n              <form
+        method=\"post\">\n                <div class=\"cng-card__primary\">\n                  <div
+        class=\"logo-container primary-logo mb-4\"></div>\n                  <div\n
+        \                   class=\"mdc-typography--headline5 text-center\"\n                  >Signicat
+        eHerkenning simulator</div>\n                </div>\n                <div
+        class=\"cng-card__divider\"></div>\n                <div class=\"cng-card__secondary\">\n
+        \                 <ul class=\"mdc-list mdc-list--non-interactive\">\n                    <li
+        class=\"mdc-list-item text-field-list-item\">\n                      <div
+        class=\"cng-full-width\">\n                        <div\n                          class=\"mdc-text-field
+        mdc-text-field--outlined cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"serviceId\"\n                            name=\"serviceId\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"urn:etoegang:DV:00000003244440010000:services:9302\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"serviceId\"\n                                class=\"mdc-floating-label\"\n
+        \                             >Service ID</label>\n                            </div>\n
+        \                           <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\">\n
+        \                     <div class=\"cng-full-width\">\n                        <div\n
+        \                         class=\"mdc-text-field mdc-text-field--outlined
+        cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"entityConcernedIdPseudo\"\n                            name=\"entityConcernedIdPseudo\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"03659FB1FAE5D26DB2D28866C1A4FE7F4E1CD5E62DD2552EE3D3B11D4C27163D@9162F54B3B07284AC4E147A849DEAEE4\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"entityConcernedIdPseudo\"\n                                class=\"mdc-floating-label\"\n
+        \                             >Pseudo</label>\n                            </div>\n
+        \                           <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\">\n
+        \                     <div class=\"cng-full-width\">\n                        <div\n
+        \                         class=\"mdc-text-field mdc-text-field--outlined
+        cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"entityConcernedIdKvKnr\"\n                            name=\"entityConcernedIdKvKnr\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"24444001\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"entityConcernedIdKvKnr\"\n                                class=\"mdc-floating-label\"\n
+        \                             >KVK number</label>\n                            </div>\n
+        \                           <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\">\n
+        \                     <div class=\"cng-full-width\">\n                        <div\n
+        \                         class=\"mdc-text-field mdc-text-field--outlined
+        cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"intermediateEntityIdKvKnr\"\n                            name=\"intermediateEntityIdKvKnr\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"intermediateEntityIdKvKnr\"\n                                class=\"mdc-floating-label\"\n
+        \                             >Intermediate KVK number</label>\n                            </div>\n
+        \                           <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\">\n
+        \                     <div class=\"cng-full-width\">\n                        <div\n
+        \                         class=\"mdc-text-field mdc-text-field--outlined
+        cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"vestigingsnr\"\n                            name=\"vestigingsnr\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"vestigingsnr\"\n                                class=\"mdc-floating-label\"\n
+        \                             >Establishment number (vestigings nummer)</label>\n
+        \                           </div>\n                            <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\">\n
+        \                     <div class=\"mdc-form-field\">\n                        <div
+        class=\"mdc-radio\">\n                          <input\n                            class=\"mdc-radio__native-control\"\n
+        \                           type=\"radio\"\n                            id=\"rsinRadio\"\n
+        \                           name=\"bsnRsinRadio\"\n                            checked\n
+        \                         />\n                          <div class=\"mdc-radio__background\">\n
+        \                           <div class=\"mdc-radio__outer-circle\"></div>\n
+        \                           <div class=\"mdc-radio__inner-circle\"></div>\n
+        \                         </div>\n                          <div class=\"mdc-radio__ripple\"></div>\n
+        \                       </div>\n                        <label\n                          for=\"rsinRadio\"\n
+        \                       >RSIN</label>\n                        <div class=\"mdc-radio\">\n
+        \                         <input\n                            class=\"mdc-radio__native-control\"\n
+        \                           type=\"radio\"\n                            id=\"bsnRadio\"\n
+        \                           name=\"bsnRsinRadio\"\n                          />\n
+        \                         <div class=\"mdc-radio__background\">\n                            <div
+        class=\"mdc-radio__outer-circle\"></div>\n                            <div
+        class=\"mdc-radio__inner-circle\"></div>\n                          </div>\n
+        \                         <div class=\"mdc-radio__ripple\"></div>\n                        </div>\n
+        \                       <label\n                          for=\"rsinRadio\"\n
+        \                       >BSN (sole proprietor)</label>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\"
+        id=\"rsinRow\">\n                      <div class=\"cng-full-width\">\n                        <div\n
+        \                         class=\"mdc-text-field mdc-text-field--outlined
+        cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"entityConcernedIdRsin\"\n                            name=\"entityConcernedIdRsin\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"819935177\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"entityConcernedIdRsin\"\n                                class=\"mdc-floating-label\"\n
+        \                             >RSIN</label>\n                            </div>\n
+        \                           <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\"
+        id=\"bsnRow\">\n                      <div class=\"cng-full-width\">\n                        <div\n
+        \                         class=\"mdc-text-field mdc-text-field--outlined
+        cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"entityConcernedIdBsn\"\n                            name=\"entityConcernedIdBsn\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"entityConcernedIdBsn\"\n                                class=\"mdc-floating-label\"\n
+        \                             >BSN (sole proprietor)</label>\n                            </div>\n
+        \                           <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li class=\"mdc-list-item text-field-list-item\">\n
+        \                     <div class=\"cng-full-width\">\n                        <div\n
+        \                         class=\"mdc-text-field mdc-text-field--outlined
+        cng-full-width\"\n                          data-mdc-auto-init=\"MDCTextField\"\n
+        \                       >\n                          <input\n                            type=\"text\"\n
+        \                           id=\"companyName\"\n                            name=\"companyName\"\n
+        \                           class=\"mdc-text-field__input\"\n                            value=\"ExampleCompanyName\"\n
+        \                         />\n                          <div\n                            class=\"mdc-notched-outline
+        mdc-notched-outline--upgraded\"\n                          >\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <label\n
+        \                               for=\"companyName\"\n                                class=\"mdc-floating-label\"\n
+        \                             >Company name</label>\n                            </div>\n
+        \                           <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                      </div>\n
+        \                   </li>\n                    <li>\n                      <div\n
+        \                       class=\"mdc-select mdc-select--outlined px-3 pt-4\"\n
+        \                       data-mdc-auto-init=\"MDCSelect\"\n                        data-test=\"MDCSelect\"\n
+        \                     >\n                        <input\n                          type=\"text\"\n
+        \                         name=\"loa\"\n                          class=\"cng-select__hidden-input\"\n
+        \                       />\n                        <div class=\"mdc-select__anchor
+        cng-full-width\">\n                          <i class=\"mdc-select__dropdown-icon\"></i>\n
+        \                         <div\n                            class=\"mdc-select__selected-text\"\n
+        \                           aria-labelledby=\"outlined-select-label\"\n                          ></div>\n
+        \                         <div class=\"mdc-notched-outline\">\n                            <div
+        class=\"mdc-notched-outline__leading\"></div>\n                            <div
+        class=\"mdc-notched-outline__notch\">\n                              <span\n
+        \                               id=\"outlined-select-label\"\n                                class=\"mdc-floating-label\"\n
+        \                               >Level Of Authentication</span\n                              >\n
+        \                           </div>\n                            <div class=\"mdc-notched-outline__trailing\"></div>\n
+        \                         </div>\n                        </div>\n                        <div\n
+        \                         class=\"mdc-select__menu mdc-menu mdc-menu-surface
+        cng-full-width\"\n                        >\n                          <ul
+        class=\"mdc-list\">\n                            <li\n                              class=\"mdc-list-item\"
+        data-value=\"loa1\"\n                            >loa1</li>\n                            <li\n
+        \                             class=\"mdc-list-item\" data-value=\"loa2\"\n
+        \                           >loa2</li>\n                            <li\n
+        \                             class=\"mdc-list-item\" data-value=\"loa2plus\"\n
+        \                           >loa2plus</li>\n                            <li\n
+        \                             class=\"mdc-list-item mdc-list-item--selected\"
+        data-value=\"loa3\"\n                            >loa3</li>\n                            <li\n
+        \                             class=\"mdc-list-item\" data-value=\"loa4\"\n
+        \                           >loa4</li>\n                          </ul>\n
+        \                       </div>\n                      </div>\n                    </li>\n
+        \                 </ul>\n                </div>\n                <div class=\"mdc-card__actions
+        cng-card__actions-align-end\">\n                  <div class=\"mdc-card__action-buttons\">\n
+        \                   <a\n                      href=\"/broker/authn/simulator/cancel\"\n
+        \                     class=\"mdc-button mdc-card__action mdc-card__action--button
+        mdc-button--outlined\"\n                    >\n                      <div
+        class=\"mdc-button__ripple\"></div>\n                      <span\n                        class=\"mdc-button__label\"\n
+        \                       >Cancel</span\n                      >\n                    </a>\n
+        \                   <a\n                      href=\"/broker/authn/simulator/error\"\n
+        \                     class=\"mdc-button mdc-card__action--button mdc-button--outlined\"\n
+        \                   >\n                      <span class=\"mdc-button__ripple\"></span>\n
+        \                     <span\n                        class=\"mdc-button__label\"\n
+        \                       >Error</span\n                      >\n                    </a>\n
+        \                   <button\n                      type=\"submit\"\n                      class=\"mdc-button
+        mdc-button--unelevated mdc-card__action--button\"\n                      data-test=\"authenticate-button\"\n
+        \                   >\n                      <span class=\"mdc-button__ripple\"></span>\n
+        \                     <span\n                        class=\"mdc-button__label\"\n
+        \                       >Send</span\n                      >\n                    </button>\n
+        \                 </div>\n                </div>\n              </form>\n
+        \           </div>\n          </div>\n        </div>\n      </main>\n    </div>\n
+        \ </body>\n</html>\n"
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' cdn.connectis.io; style-src ''self''
+        cdn.connectis.io; font-src ''self'' data: cdn.connectis.io; img-src ''self''
+        data: cdn.connectis.io qrcode.idin.nl; navigate-to https:; form-action ''self''
+        https:; frame-ancestors ''none''; base-uri ''self''; upgrade-insecure-requests
+        ; connect-src ''self'''
+      content-type:
+      - text/html;charset=UTF-8
+      date:
+      - Mon, 21 Aug 2023 15:30:32 GMT
+      expires:
+      - '0'
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      strict-transport-security:
+      - max-age=63072000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: serviceId=urn%3Aetoegang%3ADV%3A00000003244440010000%3Aservices%3A9302&entityConcernedIdPseudo=03659FB1FAE5D26DB2D28866C1A4FE7F4E1CD5E62DD2552EE3D3B11D4C27163D%409162F54B3B07284AC4E147A849DEAEE4&entityConcernedIdKvKnr=12345678&intermediateEntityIdKvKnr=&vestigingsnr=&bsnRsinRadio=on&entityConcernedIdRsin=819935177&entityConcernedIdBsn=&companyName=ExampleCompanyName&loa=loa4
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '377'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - SESSION=OTJkYTk0MzYtYTIyZC00ODZkLThlNmUtM2VmZDM5ZTY1OWRk
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: https://maykin.pre.ie01.signicat.pro/broker/authn/simulator/authenticate/eh
+  response:
+    body:
+      string: ''
+    headers:
+      cache-control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      content-language:
+      - en
+      content-length:
+      - '0'
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' cdn.connectis.io; style-src ''self''
+        cdn.connectis.io; font-src ''self'' data: cdn.connectis.io; img-src ''self''
+        data: cdn.connectis.io qrcode.idin.nl; navigate-to https:; form-action ''self''
+        https:; frame-ancestors ''none''; base-uri ''self''; upgrade-insecure-requests
+        ; connect-src ''self'''
+      date:
+      - Mon, 21 Aug 2023 15:30:32 GMT
+      expires:
+      - '0'
+      location:
+      - https://localhost:8000/eherkenning/acs/?SAMLart=AAQAACtFCwW1R7216asQ%2FLLPzqzV85bXcmvWOzG5kchfdHKMUrKn7YVeXHE%3D&RelayState=%2Fauth%2Fslurm%2Feherkenning%2Freturn%3Fnext%3Dhttp%253A%252F%252Ftestserver%252Fsubmissions%252F17399e4c-913f-47de-837a-d71a8308e0a8%252F10w-41eeccb3fa12405571ed%252Fresume
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      set-cookie:
+      - SESSION=YzdjZWM4YWYtZTZhMi00MDQzLTg0NTYtZDE0MGZkYjRhMmRi; Path=/broker; Secure;
+        HttpOnly; SameSite=None
+      strict-transport-security:
+      - max-age=63072000
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 302
+      message: ''
+- request:
+    body: "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Body>\n<samlp:ArtifactResolve
+      xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\"
+      ID=\"ONELOGIN_123456\" Version=\"2.0\" IssueInstant=\"2023-08-21T15:30:48Z\">\n
+      <saml:Issuer>https://localhost:8000/eherkenning</saml:Issuer><ds:Signature xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">\n<ds:SignedInfo>\n<ds:CanonicalizationMethod
+      Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>\n<ds:SignatureMethod
+      Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/>\n<ds:Reference
+      URI=\"#ONELOGIN_123456\">\n<ds:Transforms>\n<ds:Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/>\n<ds:Transform
+      Algorithm=\"http://www.w3.org/2001/10/xml-exc-c14n#\"/>\n</ds:Transforms>\n<ds:DigestMethod
+      Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>\n<ds:DigestValue>kkAlaPJF4Jmu8nU3B7+WcZ3U/LpW5mF6yZEGYG+tBuQ=</ds:DigestValue>\n</ds:Reference>\n</ds:SignedInfo>\n<ds:SignatureValue>bbvr9WtL5G9ebGIzbZG4CZZJykrYRs6Jot/oXG5Zvstwehr2dj77q7iZ+uMFGI4W\ngfkxHn9D69lCRp/difWX6iI91n24ONsjbUuUuoXIV43QiU8+0D7PtKQf2qv5Wq8e\nkldFvw5a/+reGsELWWDdfGR3GPf9/QN1opJk/3VJIgpkVoH1RukbBdW6vvZ4cB+X\njdc68Uadpi8APpV9oeSdoJz731ZsfgiFf2zx+q0QF4dgBScxVwF9g/7u+znyUB7q\nhRyTMO+AnbUDADR0bYImQ+4UxUwcTkZ5tiWi9iY1o6AeE2bdOShf51gqmjb+Vuh2\nv1Ai8j4T4v3NDRPfXkXJRav1VTAX6iYoCDKUfI1A0hg3pZY6ZskCP8RO7LXdQHSQ\nZ5OsJTzDMmgktepaKsI0QiMF8h0X5UHf+/SUqUMSbzSpMfVlOE54ZC+ctHZz4tNP\nkfatRlc2e0GXfgTSuRLckkOeMwqXJBZWIHmoWRhUQvLRtA61uW4NaQFrNLchuJ6A\nJffY8LT8X5P4RtWcQtjblafRAgbzy04YvNqAnNjAGl/ArXF+hND22IMyDsHIdwXZ\nJyLJB4vEnO5f7WFnN0K5pWqdUs7kzP0fKvH7FA4KDg3lF2vOZSOxNHpX6LjnZcf4\nSTpqMAhbm69SMmWwN3xQBjiJJV9GI/zDBcOSd9n+6Io=</ds:SignatureValue>\n<ds:KeyInfo>\n<ds:X509Data>\n<ds:X509Certificate>MIIFczCCA1ugAwIBAgIUAuuu6rCD+3eyCx9rXQ7Wn8IX3jowDQYJKoZIhvcNAQEL\nBQAwSTELMAkGA1UEBhMCTkwxITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5\nIEx0ZDEXMBUGA1UEAwwObG9jYWxob3N0OjgwMDAwHhcNMjMwNjE0MTMxNjQwWhcN\nMjQwNjEzMTMxNjQwWjBJMQswCQYDVQQGEwJOTDEhMB8GA1UECgwYSW50ZXJuZXQg\nV2lkZ2l0cyBQdHkgTHRkMRcwFQYDVQQDDA5sb2NhbGhvc3Q6ODAwMDCCAiIwDQYJ\nKoZIhvcNAQEBBQADggIPADCCAgoCggIBAJN1vcQT2yCIqgqkBQvgHtjZO3LeYumT\nz0W0Yj/ztP6XJPvRzZesNretw1d113NLZOD+NfSyNHTr5WCDPrlf6rqyLTt5xzML\nBcJ/6BrkPOssZ0Pvg2R6SqHT8Hmtt0t6gAd1L3byY2iRdkf7PudkRvYj/3tWgP0d\nmTs/58yVakfMeK+8cgu9uPSY7iv/mlwioge/0wyqM+d+EDxZuo2d92ZyUqUtDuXz\nk3tXAppsQ6cQTx3f7XRTiuFhCma+KgI1Rso9NLnBsx8InB0FKpIvgIeEWOnb2T9K\n4rL1JrmO93Gl7mHvd4Yu/yvqWeDLY4DPN0yh8NjlgsLJNdCmSIHJXSUWvSGnAjrE\nFmr9rjdxw/bcANTr4hItks8d0shgr3NVDHiJlmozLn2j+Zv94Ikl8tYdbvPFkiuH\nLAE/SBNaeXVtqeG3nAtdVVhxDYAIqAkV8IaHR7tv/5NELeTv3PJCK4y6m1bSxAdH\ndcqA0mQbfnhS8Sf/Q8ykm0AA6n7io83jBDq2dVRpIpgoYQpfaUcknUOtZyshbZRz\nUzaSmCNVE2gm9WBm/mb9/TtrJ0CfaU/ozDU2DDnWNcPaWaJDISeMlQrKNuVVa/O/\n0oGcB4jjlKHjK6bZue79+zJpsFA0x8WShQ+ltDOYIDDy0DFmwxRlG26e6OjZ6jQX\nl2jc4NZQz/41AgMBAAGjUzBRMB0GA1UdDgQWBBTev73HNpmjTz3cT37osiIUI6S0\nGDAfBgNVHSMEGDAWgBTev73HNpmjTz3cT37osiIUI6S0GDAPBgNVHRMBAf8EBTAD\nAQH/MA0GCSqGSIb3DQEBCwUAA4ICAQAcXFwfsPSbUeRylyGKrizByZW2GtkiY5CZ\nefchDaXKNRNnPDFGD6Q++ZHXfeiVH9mBN29n/Q7SZ9txphWxI3eZ5QNrKroZMZBV\nL/dn0qVRbI8wYieCImbtJLXaPRJKl6ld2BDLKvDeZZsNswLIEL+PpEd97qkB3OMw\nhC1OElKvE9uV8s9yHJN5etwjvEBeKfa72y8bx22ol0ZML98KNFqy2I6xcIqBCRfa\nqeJKh33CPoxsYqOeiPeJIxfJmxu2CfrkAjnkpihBiTHDPXiAO1M2pXxCKWywikIe\nfrQO2lqjDONsAV62aahs3y+AZXIGqKzzg5b+DDIs9SF8r09ejEG96Q15dXaZhcid\nlrcLywKdLhoivEkqYvkcrSce/XtJL0aWp1EujzpGCImbJoLWUu0sger1nYDfc9Ps\n/4/bJ48boES+EtvCTHyCyG6RLDZJlROtkMoXPEYwYZWOBF9E0F2Y0vPwKGMAYYxk\n1CxCkEZO/g73PhuxJTiJt0nTmS9KYL6xfvIznPOF5cbrm/bOoByWmBve9Lqs83TN\nYCEuZMVJFD5puvSCuk3qu/cvnwaQSBrTvsvKEBBYc3Sj//mZ/s6U5EaXO3Nker/j\nGg6JYIdNL12hmNTXpasmxf7zqFzG6op+CoEDWhQIiC+nWk8PkBTGffTFSymrgEN8\nUDNiG20jgA==</ds:X509Certificate>\n</ds:X509Data>\n</ds:KeyInfo>\n</ds:Signature>\n
+      <samlp:Artifact>AAQAACtFCwW1R7216asQ/LLPzqzV85bXcmvWOzG5kchfdHKMUrKn7YVeXHE=</samlp:Artifact>\n</samlp:ArtifactResolve>\n
+      \   \n</soap:Body>\n</soap:Envelope>"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3886'
+      User-Agent:
+      - python-requests/2.31.0
+      content-type:
+      - text/xml
+    method: POST
+    uri: https://maykin.pre.ie01.signicat.pro/broker/sp/saml/ars
+  response:
+    body:
+      string: <?xml version="1.0" encoding="UTF-8"?><soap11:Envelope xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/"><soap11:Body><saml2p:ArtifactResponse
+        xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" ID="_a135372b159523dc3038e49893035e71"
+        InResponseTo="ONELOGIN_123456" IssueInstant="2023-08-21T15:30:48.892Z" Version="2.0"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"><saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">https://maykin.pre.ie01.signicat.pro/broker/sp/saml</saml2:Issuer><ds:Signature
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:CanonicalizationMethod
+        Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><ds:Reference
+        URI="#_a135372b159523dc3038e49893035e71"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform
+        Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces
+        xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="xsd"/></ds:Transform></ds:Transforms><ds:DigestMethod
+        Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><ds:DigestValue>ag8ga2RQZoGNNeXmCWFTkuueKbWldn19W5CUG9fiuRA=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>Y6KsnIKFHoicp/UlYW0owRDs0GlT34W8Afcok17wtymbXzAf/Z9Hk2LKTS/RHOPmwCqR+6aYf7V1QZ9nwBo05yh47Ke6i+XNsVLx5lIrCEtejd7Vniqk8rpDN+FcpiL78jMHFl9UMy2cqYf28yPJn/0AogQ5PEoJczC+oG0RdNf9fh7TTkY4GQrVLsOoEfQFF+eWiATlZjQyMozcy4xyKVyiYHRpUsnehj8vH1+9d3u7IP+VjicDZMKwQoXrGXbFrz186KwueLQKO+51qpFhQwlboGsHpuGfCqWBUatGZxygzTiveYqwqnRbFgu7xC5TvSuYEZG4ATs8VlWQfqwJby6Qk5gR5RAX2vP1TaSHu+43EQFRyC8hwSpBHzQk4Zmive9jZghkmwz933yMXcjtLobCY8KmBlZDbYUI2NICEd7q9BYrCo9ScoWu1PGaoR35UME2EL4xpBkT5dDmS60axl8hVunuRecxeBcYe/PrUAZT8gbV4kNNv7qBKoJyVs+Yc1Rp3B8HWaTqMLu+Q1Xps0NVsxHDqF8hVh9g5CygQk3goURXYuLgQQTamvO2kr4/STylVJ+wSKe9BsstfzRztclw+nUytqDZ+6khg7HkFVdBIc/jHJxIi7Kr9CLBtPclKnK8Dhey9NvJ/Gm69f6oIEd2PvLZw0jLQwBHzpkCWZc=</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>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</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature><saml2p:Status><saml2p:StatusCode
+        Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></saml2p:Status><saml2p:Response
+        Destination="https://localhost:8000/eherkenning/acs/" ID="_279e07bf1a275c5ac72dff9b3d2eab12"
+        InResponseTo="ONELOGIN_123456" IssueInstant="2023-08-21T15:30:33.372Z" Version="2.0"
+        xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"><saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">https://maykin.pre.ie01.signicat.pro/broker/sp/saml</saml2:Issuer><saml2p:Status><saml2p:StatusCode
+        Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></saml2p:Status><saml2:Assertion
+        xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" ID="_b514347774871cbc91baca4f5636ee4b"
+        IssueInstant="2023-08-21T15:30:33.382Z" Version="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><saml2:Issuer>https://maykin.pre.ie01.signicat.pro/broker/sp/saml</saml2:Issuer><ds:Signature
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:CanonicalizationMethod
+        Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><ds:Reference
+        URI="#_b514347774871cbc91baca4f5636ee4b"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform
+        Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces
+        xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="xsd"/></ds:Transform></ds:Transforms><ds:DigestMethod
+        Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><ds:DigestValue>8s74YWBjeSspVQtL6kG5AvruYx2pxCvcns0r9fHNZ/I=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>DnjR2266AtQ1ZYiigulntoByFPG1u6bf4E/a+DXmKh62Y4aV9bdBNLf01m3u7CbwjCfARLJoKfYC08yf4z+ZS928Bvvxg08lSHGu/zoMskzQV2AHVrKuBOHwhNBwzd9ldZjDaHZY4DTehxEA5Cr2B3uM1nx8kBQ4HKp4JGst78yPucsFgpu6Om9dok2AiCbUWxr1IGCTDX3BWH+Uu4Vvl2MHZLBN9EkM9QCjGWM9llnvE3X9o2IzEV4cc7gjybi15Gkw2Tkauxknpckuag760BMm7mZRGOzzCe80sULYdu7E7dmENwIMVSj0cjTlekTIRyXGdQuFyQFiYQYECecqh4yTQBtT72hD8tZmhm45xqOk7x9xLF02bcTLYx++hoMPgvNofqnwuTpaxOzbZzyi2OhAJJxK0Gfu9p7/DQjtEKYJTJuldmb+J0LbgNJlCWB1/cOiUIkw6Z+csuHdBsTQbNjkKfSNjzA/ev/6IUcD1Essbt8wi00efp7SY/4RpmLDfO4PlQrvwJ6qTd8zqUC12pNn7EerqG3GvGjINRjaNU07+zasptwZlNs8LPIHuSEzXqDlBoj8M0WchtX+5byOYMbNC1ycq3om9OAAf5wkVQvrAXIUiG7NrfFigA11YQFluzAvy7RouvedDe6BEYI27ytoTievIE52PxMIlWm5Lko=</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>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</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature><saml2:Subject><saml2:NameID
+        Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified" NameQualifier="simulator">03659FB1FAE5D26DB2D28866C1A4FE7F4E1CD5E62DD2552EE3D3B11D4C27163D@9162F54B3B07284AC4E147A849DEAEE4</saml2:NameID><saml2:SubjectConfirmation
+        Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"><saml2:SubjectConfirmationData
+        InResponseTo="ONELOGIN_123456" NotOnOrAfter="2023-08-21T15:32:33.382Z" Recipient="https://localhost:8000/eherkenning/acs/"/></saml2:SubjectConfirmation></saml2:Subject><saml2:Conditions
+        NotBefore="2023-08-21T15:30:28.382Z" NotOnOrAfter="2023-08-21T15:32:33.382Z"><saml2:AudienceRestriction><saml2:Audience>https://localhost:8000/eherkenning</saml2:Audience></saml2:AudienceRestriction></saml2:Conditions><saml2:AttributeStatement><saml2:Attribute
+        Name="urn:etoegang:core:ServiceID"><saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:type="xsd:string">urn:etoegang:DV:00000003244440010000:services:9302</saml2:AttributeValue></saml2:Attribute><saml2:Attribute
+        Name="urn:etoegang:1.13:EntityConcernedID:Pseudo"><saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:type="xsd:string">03659FB1FAE5D26DB2D28866C1A4FE7F4E1CD5E62DD2552EE3D3B11D4C27163D@9162F54B3B07284AC4E147A849DEAEE4</saml2:AttributeValue></saml2:Attribute><saml2:Attribute
+        Name="urn:etoegang:1.9:EntityConcernedID:KvKnr"><saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:type="xsd:string">12345678</saml2:AttributeValue></saml2:Attribute><saml2:Attribute
+        Name="urn:etoegang:1.9:EntityConcernedID:RSIN"><saml2:AttributeValue xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:type="xsd:string">819935177</saml2:AttributeValue></saml2:Attribute><saml2:Attribute
+        Name="urn:etoegang:1.11:attribute-represented:CompanyName"><saml2:AttributeValue
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">ExampleCompanyName</saml2:AttributeValue></saml2:Attribute></saml2:AttributeStatement><saml2:AuthnStatement
+        AuthnInstant="2023-08-21T15:30:33.383Z" SessionIndex="3285f936-b3bc-48d5-891b-2e4c2a80b0a5"><saml2:AuthnContext><saml2:AuthnContextClassRef>urn:etoegang:core:assurance-class:loa4</saml2:AuthnContextClassRef><saml2:AuthenticatingAuthority>simulator</saml2:AuthenticatingAuthority></saml2:AuthnContext></saml2:AuthnStatement></saml2:Assertion></saml2p:Response></saml2p:ArtifactResponse></soap11:Body></soap11:Envelope>
+    headers:
+      cache-control:
+      - no-cache, no-store
+      content-language:
+      - en
+      content-security-policy:
+      - 'default-src ''none''; script-src ''self'' cdn.connectis.io; style-src ''self''
+        cdn.connectis.io; font-src ''self'' data: cdn.connectis.io; img-src ''self''
+        data: cdn.connectis.io qrcode.idin.nl; navigate-to https:; form-action ''self''
+        https:; frame-ancestors ''none''; base-uri ''self''; upgrade-insecure-requests
+        ; connect-src ''self'''
+      content-type:
+      - text/xml;charset=UTF-8
+      date:
+      - Mon, 21 Aug 2023 15:30:48 GMT
+      permissions-policy:
+      - geolocation=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), payment=(),
+        usb=(), accelerometer=()
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      set-cookie:
+      - SESSION=YzU4YWEzOTItNTAzMi00ZDAxLWFkZDYtZTA2ZjAwNmY3ZTg0; Path=/broker; Secure;
+        HttpOnly; SameSite=None
+      soapaction:
+      - http://www.oasis-open.org/committees/security
+      strict-transport-security:
+      - max-age=63072000
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - DENY
+      x-robots-tag:
+      - noindex
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+version: 1
