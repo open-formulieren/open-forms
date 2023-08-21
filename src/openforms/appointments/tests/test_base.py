@@ -1,7 +1,7 @@
-from datetime import datetime
-
 from django.test import TestCase, override_settings
 from django.urls import reverse
+
+from dateutil.parser import isoparse
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -24,8 +24,8 @@ class TestPlugin(BasePlugin):
                 AppointmentProduct(identifier="2", name="Test product 2"),
             ],
             location=AppointmentLocation(identifier="1", name="Test location"),
-            start_at=datetime(2021, 1, 1, 12, 0),
-            end_at=datetime(2021, 1, 1, 12, 15),
+            start_at=isoparse("2021-01-01T11:00:00+00:00"),
+            end_at=isoparse("2021-01-01T11:15+00:00"),
             remarks="Remarks",
             other={"Some": "<h1>Data</h1>"},
         )
