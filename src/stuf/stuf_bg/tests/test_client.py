@@ -129,6 +129,8 @@ class StufBGConfigTests(TestCase):
             m.post(self.client.service.soap_service.url, status_code=200)
             self.client.get_values_for_attributes(test_bsn, available_attributes)
 
+        self.assertFalse(_contains_nils(response_dict))
+
         request_body = m.last_request.body
         doc = etree.parse(BytesIO(request_body))
         el = (
@@ -158,6 +160,8 @@ class StufBGConfigTests(TestCase):
         # now test if all attributes appear as nodes in the request data
         # TODO this is in-accurate as we don't check the actual nodes (nil/no-value etc)
         for attribute in available_attributes:
+            if attribute == "voorvoegselGeslachtsnaam":
+                continue  # That's a nil.
             with self.subTest(attribute=attribute):
                 glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
                 if not glom_target:
@@ -222,3 +226,19 @@ class StufBGConfigTests(TestCase):
 
         value = glom(data_dict, GlomTarget["inp.heeftAlsKinderen"], default=missing)
         self.assertNotEqual(value, missing)
+
+
+def _contains_nils(d: dict):
+    """Check if xmltodict result contains xsi:nil="true" or StUF:noValue="geenWaarde"
+    where
+    xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    StUF = "http://www.egem.nl/StUF/StUF0301"
+    """
+
+    for k, v in d.items():
+        if (k == "@http://www.w3.org/2001/XMLSchema-instance:nil" and v == "true") or (
+            k == "@noValue" and v == "geenWaarde"
+        ):
+            return True
+        if isinstance(v, dict) and _contains_nils(v):
+            return True
