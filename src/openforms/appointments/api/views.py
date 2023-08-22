@@ -2,6 +2,7 @@ import logging
 import warnings
 from copy import copy
 
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
@@ -10,6 +11,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
@@ -387,6 +389,13 @@ class CreateAppointmentView(SubmissionCompletionMixin, CreateAPIView):
         submission = self.extract_submission()
         context.update({"submission": submission})
         return context
+
+    @transaction.atomic
+    def create(self, request: Request, *args, **kwargs):
+        # ensure any previous attempts are deleted before creating a new one
+        submission = self.extract_submission()
+        Appointment.objects.filter(submission=submission).delete()
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer: AppointmentSerializer):
         super().perform_create(serializer)

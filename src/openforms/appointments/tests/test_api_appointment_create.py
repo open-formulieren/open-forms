@@ -146,6 +146,51 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
         # assert that the async celery task execution is scheduled
         mock_on_completion.assert_called_once_with(self.submission.id)
 
+    def test_retry_does_not_cause_integrity_error(self):
+        # When there are on_completion processing errors, the client will re-post the
+        # same state. This must update the existing appointment rather than trying to
+        # create a new one.
+        data = {
+            "submission": reverse(
+                "api:submission-detail", kwargs={"uuid": self.submission.uuid}
+            ),
+            "products": [{"productId": "2", "amount": 1}],
+            "location": "1",
+            "date": TODAY,
+            "datetime": f"{TODAY}T13:15:00Z",
+            "contactDetails": {
+                "lastName": "Periwinkle",
+            },
+            "privacy_policy_accepted": True,
+        }
+        # first POST
+        response = self.client.post(ENDPOINT, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # retry attempt - SubmissionProcessingStatus.ensure_failure_can_be_managed adds
+        # the submission ID back to the session
+        self._add_submission_to_session(self.submission)
+        updated_data = {
+            **data,
+            "contactDetails": {
+                "lastName": "Periwinkle",
+                "firstName": "Caro",
+            },
+        }
+        response = self.client.post(ENDPOINT, updated_data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Appointment.objects.count(), 1)
+        appointment = Appointment.objects.get()
+        self.assertEqual(
+            appointment.contact_details,
+            {
+                "lastName": "Periwinkle",
+                "firstName": "Caro",
+            },
+        )
+
     def test_privacy_policy_not_required(self):
         self.global_configuration.ask_privacy_consent = False
         data = {
