@@ -13,6 +13,9 @@ const format = messages => {
     const existingMsg = existingCatalog[id];
     if (!existingMsg) return;
     msg.defaultMessage = existingMsg.defaultMessage;
+    if (existingMsg.isTranslated) {
+      msg.isTranslated = true;
+    }
   });
   return messages;
 };
