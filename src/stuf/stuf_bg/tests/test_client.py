@@ -222,3 +222,19 @@ class StufBGConfigTests(TestCase):
 
         value = glom(data_dict, GlomTarget["inp.heeftAlsKinderen"], default=missing)
         self.assertNotEqual(value, missing)
+
+
+def _contains_nils(d: dict):
+    """Check if xmltodict result contains xsi:nil="true" or StUF:noValue="geenWaarde"
+    where
+    xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    StUF = "http://www.egem.nl/StUF/StUF0301"
+    """
+
+    for k, v in d.items():
+        if (k == "@http://www.w3.org/2001/XMLSchema-instance:nil" and v == "true") or (
+            k == "@noValue" and v == "geenWaarde"
+        ):
+            return True
+        if isinstance(v, dict) and _contains_nils(v):
+            return True
