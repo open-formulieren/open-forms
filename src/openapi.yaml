@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 2.3.0-alpha.0
+  version: 2.3.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -6780,8 +6780,9 @@ components:
           type: array
           items:
             type: object
-            description: A single Form.io checkbox component for the statements that
-              a user may have to accept before submitting a form.
+            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
+              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
+              kan worden.
             properties:
               type:
                 type: string
@@ -8247,8 +8248,9 @@ components:
           type: array
           items:
             type: object
-            description: A single Form.io checkbox component for the statements that
-              a user may have to accept before submitting a form.
+            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
+              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
+              kan worden.
             properties:
               type:
                 type: string
