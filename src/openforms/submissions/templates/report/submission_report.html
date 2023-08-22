@@ -101,11 +101,19 @@
             {% endif %}
 
             {% if config.ask_privacy_consent and report.submission.privacy_policy_accepted %}
-                <section class="submission-privacy-policy">
-                    <div class="submission-privacy-policy__check">[X]</div>
-                    <div class="submission-privacy-policy__text">{{ config.render_privacy_policy_label }}</div>
+                <section class="submission-consent">
+                    <div class="submission-consent__check">[X]</div>
+                    <div class="submission-consent__text">{{ config.render_privacy_policy_label }}</div>
                 </section>
             {% endif %}
+
+            {% if config.ask_statement_of_truth and report.submission.statement_of_truth_accepted %}
+                <section class="submission-consent">
+                    <div class="submission-consent__check">[X]</div>
+                    <div class="submission-consent__text">{{ config.render_statement_of_truth_label }}</div>
+                </section>
+            {% endif %}
+
         </section>
     </body>
 </html>

@@ -624,6 +624,13 @@ class GlobalConfiguration(SingletonModel):
             backend=openforms_backend,
         )
 
+    def render_statement_of_truth_label(self) -> str:
+        return render_from_string(
+            self.statement_of_truth_label,
+            context={"global_configuration": self},
+            backend=openforms_backend,
+        )
+
     def plugin_enabled(self, module: str, plugin_identifier: str):
         enabled = glom(
             self.plugin_configuration,
