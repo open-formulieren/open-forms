@@ -1,4 +1,5 @@
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310" xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
                   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml">
     <soapenv:Header/>
@@ -29,7 +30,7 @@
                 <ns:object StUF:entiteittype="NPS">
                     <ns:inp.bsn>999992314</ns:inp.bsn>
                     <ns:geslachtsnaam>Maykin</ns:geslachtsnaam>
-                    <ns:voorvoegselGeslachtsnaam>van</ns:voorvoegselGeslachtsnaam>
+                    <ns:voorvoegselGeslachtsnaam xsi:nil="true" StUF:noValue="geenWaarde"></ns:voorvoegselGeslachtsnaam>
                     <ns:voornamen>Media</ns:voornamen>
                     <ns:geslachtsaanduiding>M</ns:geslachtsaanduiding>
                     <ns:geboortedatum>19800915</ns:geboortedatum>
