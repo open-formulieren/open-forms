@@ -186,7 +186,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     registration_backends = FormRegistrationBackendSerializer(many=True, required=False)
 
     # deprecated fields
-    registration_backend = serializers.CharField(required=False)
+    registration_backend = serializers.CharField(required=False, allow_blank=True)
     registration_backend_options = serializers.JSONField(
         required=False, allow_null=True
     )

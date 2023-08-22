@@ -245,6 +245,11 @@ class ImportExportTests(TestCase):
         self.assertNotEqual(form_logic_2.uuid, str(form_logic.uuid))
         self.assertEqual(form_logic_2.form.pk, imported_form.pk)
 
+    @tag("gh-3379")
+    def test_import_2_1_3_export_does_not_fail(self):
+        call_command("import", import_file=PATH / "data/smol.zip")
+        self.assertTrue(Form.objects.filter(name="Smol").exists())
+
     def test_import_no_backends(self):
         """
         explicitly test import/export of Form without backends as they use custom fields/choices
