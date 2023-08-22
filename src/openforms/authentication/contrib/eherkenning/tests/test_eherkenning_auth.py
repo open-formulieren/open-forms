@@ -15,6 +15,7 @@ from digid_eherkenning.models import EherkenningConfiguration
 from freezegun import freeze_time
 from furl import furl
 from lxml import etree
+from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
 from simple_certmanager.models import Certificate
 
@@ -105,6 +106,7 @@ def _get_encrypted_attribute(kvk: str):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
+@temp_private_root()
 class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
     def test_redirect_to_eherkenning_login(self):
         form = FormFactory.create(
@@ -254,6 +256,7 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+@temp_private_root()
 @requests_mock.Mocker()
 class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
     @patch(
@@ -432,6 +435,7 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+@temp_private_root()
 @requests_mock.Mocker()
 class CoSignLoginAuthenticationTests(
     SubmissionsMixin, EHerkenningConfigMixin, TestCase

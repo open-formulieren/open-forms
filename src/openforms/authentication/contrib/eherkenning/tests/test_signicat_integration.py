@@ -3,17 +3,17 @@ from unittest.mock import patch
 
 from django.core.files import File
 from django.template.response import TemplateResponse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
-import bs4
 import requests
-import vcr
 import vcr.unittest
 from digid_eherkenning.choices import AssuranceLevels, XMLContentTypes
 from digid_eherkenning.models import EherkenningConfiguration
 from freezegun import freeze_time
 from furl import furl
+from privates.test import temp_private_root
+from webtest.forms import Form as WTForm
 
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -36,17 +36,9 @@ SELECT_EHERKENNING_SIM = SIGNICAT_BROKER_BASE / "authn/simulator/selection/eh"
     "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
     lambda *_, **__: "ONELOGIN_123456",
 )
+@temp_private_root()
+@override_settings(COOKIE_CONSENT_ENABLED=False)
 class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
-    def _get_cassette_library_dir(self):
-        return str(TEST_FILES / "vcr_cassettes" / self.__class__.__qualname__)
-
-    def _get_vcr_kwargs(self):
-        kwargs = super()._get_vcr_kwargs()
-        # https://vcrpy.readthedocs.io/en/latest/usage.html#record-modes
-        kwargs["record_mode"] = "none"  # in CI
-        # kwargs["record_mode"] = "once"  # in dev
-        return kwargs
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -84,6 +76,16 @@ class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
             config.idp_metadata_file = File(md_file, METADATA.name)
             config.save()
 
+    def _get_cassette_library_dir(self):
+        return str(TEST_FILES / "vcr_cassettes" / self.__class__.__qualname__)
+
+    def _get_vcr_kwargs(self):
+        kwargs = super()._get_vcr_kwargs()
+        # https://vcrpy.readthedocs.io/en/latest/usage.html#record-modes
+        kwargs["record_mode"] = "none"  # in CI
+        # kwargs["record_mode"] = "once"  # in dev
+        return kwargs
+
     def setUp(self):
         super().setUp()
 
@@ -98,8 +100,8 @@ class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
         if self.cassette.responses:
             now = self.cassette.responses[0]["headers"]["date"][0]
             time_ctx = freeze_time(now)
-            self.addCleanup(time_ctx.__exit__)
-            time_ctx.__enter__()
+            self.addCleanup(time_ctx.stop)
+            time_ctx.start()
 
     def test_login_with_too_low_a_loa_fails(self):
         session: requests.Session = requests.session()
@@ -118,8 +120,10 @@ class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = furl("http://testserver/") / form_path
 
-        our_faux_redirect = self.client.get(f"{login_url}?next={form_url}", follow=True)
-        # do the JS submit to get redirected to Signicat broker
+        our_faux_redirect = self.client.get(
+            login_url, {"next": str(form_url)}, follow=True
+        )
+        # do the js submit to get redirected to signicat broker
         method, redirect_url, form_values = _parse_form(our_faux_redirect)
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
 
@@ -150,7 +154,9 @@ class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = furl("https://testserver") / form_path
 
-        our_faux_redirect = self.client.get(f"{login_url}?next={form_url}", follow=True)
+        our_faux_redirect = self.client.get(
+            login_url, {"next": str(form_url)}, follow=True
+        )
         # do the JS submit to get redirected to Signicat broker
         method, redirect_url, form_values = _parse_form(our_faux_redirect)
         self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
@@ -590,35 +596,11 @@ Method = Union[Literal["get"], Literal["post"]]
 Response = Union[TemplateResponse, requests.Response]
 
 
-def _parse_value(el):
-    match el.attrs["name"]:
-        # hard code eHerkenning form values
-        case "bsnRsinRadio":
-            return "on"
-        case "loa":
-            return "loa3"
-
-    match el.name:
-        case "input":
-            return el.get("value", "")
-        case "select":
-            selected = el.find("option", selected=True)
-            return selected.get("value", "")
-
-
 def _parse_form(response: Response) -> tuple[Method, str, dict[str, str]]:
     "Extract method, action URL and form values from html content"
-    # doesn't handle radio/checkbox... Need more? Look for a library don't flesh this out.
-    forms = bs4.BeautifulSoup(response.content, "lxml").find_all("form")
-    assert len(forms) == 1
-    form = forms[0]
-    url = form.attrs.get("action", getattr(response, "url", None))
+    form = WTForm(None, response.content)
+    url = form.action or response.url
     assert url, f"No url found in {form}"
-    method = form.attrs.get("method", "get").lower()
+    method = form.method
     assert method in ("get", "post")
-    form_values = {
-        name: _parse_value(el)
-        for el in form.find_all(["input", "select"])
-        if (name := el.attrs.get("name"))
-    }
-    return method, url, form_values
+    return method, url, dict(form.submit_fields())
