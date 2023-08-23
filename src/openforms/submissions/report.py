@@ -33,6 +33,18 @@ class Report:
         return self.submission.form
 
     @property
+    def needs_privacy_content(self) -> bool:
+        return self.submission.form.get_statement_checkbox_required(
+            "ask_privacy_consent"
+        )
+
+    @property
+    def needs_statement_of_truth(self) -> bool:
+        return self.submission.form.get_statement_checkbox_required(
+            "ask_statement_of_truth"
+        )
+
+    @property
     def show_payment_info(self) -> bool:
         return self.submission.payment_required and self.submission.price
 

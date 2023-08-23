@@ -42,8 +42,7 @@ class StatementOfTruthTests(TestCase):
         )
         conf.save()
 
-        label = conf.render_statement_of_truth_label()
-
         self.assertHTMLEqual(
-            "I declare that I have filled in this application truthfully.", label
+            "I declare that I have filled in this application truthfully.",
+            conf.statement_of_truth_label,
         )
