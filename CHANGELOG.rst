@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.0.10 (2023-08-24)
+===================
+
+Periodic bugfix release
+
+* [#3358] Fixed display of appointment time in correct timezone.
+* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+
 2.0.9 (2023-07-26)
 ==================
 
