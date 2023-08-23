@@ -3,7 +3,7 @@ import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Con
 import {FormLogicContext} from './Context';
 
 export const FeatureFlagsDecorator = Story => (
-  <FeatureFlagsContext.Provider value={{of_service_fetch_enabled: true}}>
+  <FeatureFlagsContext.Provider value={{}}>
     <Story />
   </FeatureFlagsContext.Provider>
 );
