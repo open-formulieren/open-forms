@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterator
 
+from .constants import RenderModes
+
 if TYPE_CHECKING:
     from .renderer import Renderer  # pragma: nocover
 
@@ -18,7 +20,7 @@ class Node(ABC):
     renderer: "Renderer"
 
     @property
-    def mode(self) -> str:
+    def mode(self) -> RenderModes:
         return self.renderer.mode
 
     @property

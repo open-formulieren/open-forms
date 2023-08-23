@@ -14,7 +14,7 @@ from openforms.variables.rendering.nodes import VariablesNode
 from ..form_logic import evaluate_form_logic
 from ..models import Submission
 from .base import Node
-from .constants import RenderModes  # noqa
+from .constants import RenderModes
 from .nodes import FormNode, SubmissionStepNode
 from .utils import get_request
 
@@ -31,7 +31,7 @@ class Renderer:
 
     # render context, passed to all underlying nodes
     submission: Submission
-    mode: str
+    mode: RenderModes
     as_html: bool
 
     def __post_init__(self):

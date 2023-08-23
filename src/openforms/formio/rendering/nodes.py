@@ -7,6 +7,7 @@ from glom import Path, assign, glom
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
+from openforms.typing import DataMapping
 
 from ..service import format_value, translate_function
 from ..typing import Component
@@ -63,7 +64,7 @@ class ComponentNodeBase(Node):
 
 @dataclass
 class ComponentNode(ComponentNodeBase):
-    step: SubmissionStep
+    step_data: DataMapping  # XXX refactor to FormioData
     depth: int = 0
     is_layout = False
     path: Path | None = None  # Path in the data (#TODO rename to data_path?)
@@ -74,7 +75,7 @@ class ComponentNode(ComponentNodeBase):
 
     @staticmethod
     def build_node(
-        step: SubmissionStep,
+        step_data: DataMapping,
         component: Component,
         renderer: "Renderer",
         path: Path | None = None,  # Path in the data
@@ -92,7 +93,7 @@ class ComponentNode(ComponentNodeBase):
         assert "type" in component
         node_cls = register[component["type"]]
         nested_node = node_cls(
-            step=step,
+            step_data=step_data,
             component=component,
             renderer=renderer,
             depth=depth,
@@ -154,7 +155,7 @@ class ComponentNode(ComponentNodeBase):
         if isinstance(self.parent_node, EditGridGroupNode):
             # Frontend logic for repeating group does not specify the index of the iteration. So we need to look at
             # the data for a specific iteration to figure out if a field within the iteration is visible
-            step_data = copy.deepcopy(self.step.data)
+            step_data = copy.deepcopy(self.step_data)
             current_iteration_data = glom(step_data, self.path, default=None)
             artificial_repeating_group_data = assign(
                 step_data, self.parent_node.path, current_iteration_data, missing=dict
@@ -163,7 +164,7 @@ class ComponentNode(ComponentNodeBase):
                 self.component, artificial_repeating_group_data
             ):
                 return False
-        elif not is_visible_in_frontend(self.component, self.step.data):
+        elif not is_visible_in_frontend(self.component, self.step_data):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
@@ -192,7 +193,7 @@ class ComponentNode(ComponentNodeBase):
         """
         path = Path(self.path, self.key_as_path) if self.path else self.key_as_path
 
-        value = glom(self.step.data, path, default=None)
+        value = glom(self.step_data, path, default=None)
         return value
 
     @property
@@ -209,7 +210,7 @@ class ComponentNode(ComponentNodeBase):
             recursive=False,
         ):
             yield ComponentNode.build_node(
-                step=self.step,
+                step_data=self.step_data,
                 component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
@@ -308,7 +309,7 @@ class FormioNode(Node):
             configuration, recursive=False
         ):
             child_node = ComponentNode.build_node(
-                step=self.step,
+                step_data=self.step.data,
                 component=component,
                 renderer=self.renderer,
                 configuration_path=configuration_path,
