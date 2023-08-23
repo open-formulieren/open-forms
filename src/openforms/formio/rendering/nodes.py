@@ -70,6 +70,7 @@ class ComponentNode(ComponentNodeBase):
     json_renderer_path: Path | None = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
     configuration_path: str = ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
     parent_node: Node | None = None
+    translate_function: Callable[[str], str] | None = None
 
     @staticmethod
     def build_node(
@@ -81,6 +82,7 @@ class ComponentNode(ComponentNodeBase):
         configuration_path: str = "",
         depth: int = 0,
         parent_node: Node | None = None,
+        translate_function: Callable[[str], str] | None = None,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
@@ -98,6 +100,7 @@ class ComponentNode(ComponentNodeBase):
             json_renderer_path=json_renderer_path,
             configuration_path=configuration_path,
             parent_node=parent_node,
+            translate_function=translate_function,
         )
         return nested_node
 
@@ -105,10 +108,8 @@ class ComponentNode(ComponentNodeBase):
         # Value Formatters have no access to the translations; run all our
         # labels through the translations, before further processing of logic
         # etc.
-        if self.renderer.form.translation_enabled and self.step.form_step:
-            self.apply_to_labels(
-                translate_function(self.renderer.submission, self.step)
-            )
+        if self.translate_function:
+            self.apply_to_labels(self.translate_function)
 
     @property
     def is_visible(self) -> bool:
@@ -288,7 +289,21 @@ class FormioNode(Node):
         return ""
 
     def get_children(self) -> Iterator[ComponentNode]:
+        assert self.step.form_step  # nosec: intended use of B101
         configuration = self.step.form_step.form_definition.configuration
+
+        # prepare for any potential translations to component definitions. The translate
+        # function is (for now) bound to the form step, as that's where the translations
+        # are stored. Possibly in the future we will store those in the component itself,
+        # but then the need to translate upfront is also gone as the value formatters do
+        # receive the component definition.
+        i18n_enabled = self.renderer.form.translation_enabled
+        do_translate = (
+            translate_function(self.renderer.submission, self.step)
+            if i18n_enabled
+            else None
+        )
+
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration, recursive=False
         ):
@@ -297,5 +312,6 @@ class FormioNode(Node):
                 component=component,
                 renderer=self.renderer,
                 configuration_path=configuration_path,
+                translate_function=do_translate,
             )
             yield from child_node

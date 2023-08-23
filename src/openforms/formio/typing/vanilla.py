@@ -26,3 +26,11 @@ class ContentComponent(Component):
 
 class DatetimeComponent(Component):
     datePicker: DatePickerConfig | None
+
+
+class Column(TypedDict):
+    components: list[Component]
+
+
+class ColumnsComponent(Component):
+    columns: list[Column]

@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeAlias, TypeGuard
 
 import elasticapm
 from glom import Coalesce, Path, glom
@@ -10,17 +10,25 @@ from openforms.utils.glom import _glom_path_to_str
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
 from .constants import COMPONENT_DATATYPES
-from .typing import Component
+from .typing import Column, ColumnsComponent, Component
 
 logger = logging.getLogger(__name__)
+
+# XXX: we should probably be able to narrow this in Python 3.11 with non-total typed
+# dicts.
+ComponentLike: TypeAlias = JSONObject | Component | ColumnsComponent | Column
+
+
+def _is_column_component(component: ComponentLike) -> TypeGuard[ColumnsComponent]:
+    return component.get("type") == "columns"
 
 
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def iter_components(
-    configuration: JSONObject, recursive=True, _is_root=True, _mark_root=False
+    configuration: ComponentLike, recursive=True, _is_root=True, _mark_root=False
 ) -> Iterator[Component]:
     components = configuration.get("components", [])
-    if configuration.get("type") == "columns" and recursive:
+    if _is_column_component(configuration) and recursive:
         assert not components, "Both nested components and columns found"
         for column in configuration["columns"]:
             yield from iter_components(
@@ -38,7 +46,7 @@ def iter_components(
 
 
 def iterate_components_with_configuration_path(
-    configuration: JSONObject, prefix: str = "components", recursive=True
+    configuration: ComponentLike, prefix: str = "components", recursive=True
 ) -> Iterator[Tuple[str, Component]]:
     for index, component in enumerate(iter_components(configuration, recursive=False)):
         full_path = f"{prefix}.{index}"
