@@ -37,33 +37,8 @@ class RenderConfiguration:
 
 
 @dataclass
-class ComponentNodeBase(Node):
+class ComponentNode(Node):
     component: Component
-
-    @property
-    def label(self) -> str:
-        """
-        Obtain the (human-readable) label for the Formio component.
-        """
-        if self.mode == RenderModes.export:
-            return self.component.get("key") or "KEY_MISSING"
-        return self.component.get("label") or self.component.get("key", "")
-
-    @property
-    def key(self):
-        return self.component["key"]
-
-    @property
-    def key_as_path(self) -> Path:
-        """
-        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
-        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
-        """
-        return Path.from_text(self.key)
-
-
-@dataclass
-class ComponentNode(ComponentNodeBase):
     step_data: DataMapping  # XXX refactor to FormioData
     depth: int = 0
     is_layout = False
@@ -179,6 +154,27 @@ class ComponentNode(ComponentNodeBase):
             render_configuration.key, render_configuration.default
         )
         return should_render
+
+    @property
+    def key(self):
+        return self.component["key"]
+
+    @property
+    def key_as_path(self) -> Path:
+        """
+        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
+        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
+        """
+        return Path.from_text(self.key)
+
+    @property
+    def label(self) -> str:
+        """
+        Obtain the (human-readable) label for the Formio component.
+        """
+        if self.mode == RenderModes.export:
+            return self.component.get("key") or "KEY_MISSING"
+        return self.component.get("label") or self.component.get("key", "")
 
     @property
     def value(self) -> Any:
