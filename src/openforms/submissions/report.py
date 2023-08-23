@@ -33,7 +33,7 @@ class Report:
         return self.submission.form
 
     @property
-    def needs_privacy_content(self) -> bool:
+    def needs_privacy_consent(self) -> bool:
         return self.submission.form.get_statement_checkbox_required(
             "ask_privacy_consent"
         )

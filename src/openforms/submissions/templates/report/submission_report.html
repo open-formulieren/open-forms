@@ -100,7 +100,7 @@
                 </section>
             {% endif %}
 
-            {% if report.needs_privacy_content and report.submission.privacy_policy_accepted %}
+            {% if report.needs_privacy_consent and report.submission.privacy_policy_accepted %}
                 <section class="submission-consent">
                     <div class="submission-consent__check">[X]</div>
                     <div class="submission-consent__text">{{ config.render_privacy_policy_label }}</div>
