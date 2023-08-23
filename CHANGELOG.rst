@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.2.2 (2023-08-24)
+==================
+
+Periodic bugfix release
+
+* [#3319] Fixed forms possibly sending a DigiD SAML request without assurance level due
+  to misconfiguration.
+* [#3358] Fixed display of appointment time in correct timezone.
+* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+* Fixed JQ documentation URL for sorting.
+
 2.2.1 (2023-07-26)
 ==================
 
