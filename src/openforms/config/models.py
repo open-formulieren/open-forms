@@ -449,12 +449,6 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("If enabled, the admin allows selection of demo backend plugins."),
     )
 
-    enable_service_fetch = models.BooleanField(
-        _("enable service fetch"),
-        default=False,
-        help_text=_("Allow use of unfinished, unstable service fetch feature."),
-    )
-
     enable_react_formio_builder = models.BooleanField(
         _("enable new formio builder"),
         default=False,
@@ -463,11 +457,6 @@ class GlobalConfiguration(SingletonModel):
             "this falls back to the existing builder for components that are not "
             "supported yet."
         ),
-    )
-    enable_new_appointments = models.BooleanField(
-        _("enable new appointments"),
-        default=False,
-        help_text=_("Enable using the new appointment form flow."),
     )
 
     default_test_bsn = models.CharField(

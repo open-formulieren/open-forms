@@ -31,9 +31,7 @@ class FormioConfigMixin:
                     for value, label in UploadFileType.choices
                 ],
                 "feature_flags": {
-                    "of_service_fetch_enabled": config.enable_service_fetch,
                     "react_formio_builder_enabled": config.enable_react_formio_builder,
-                    "new_appointments_enabled": config.enable_new_appointments,
                 },
                 "confidentiality_levels": [
                     {"label": label, "value": value}

@@ -1,10 +1,9 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React from 'react';
 import {useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
-import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
 import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
@@ -16,13 +15,6 @@ import {ActionError, Action as ActionType} from './types';
 const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
   const intl = useIntl();
   const hasErrors = Object.entries(errors).length > 0;
-
-  const flags = useContext(FeatureFlagsContext);
-  const enabledActionTypes = ACTION_TYPES.filter(action => {
-    const name = action[0];
-    return name === 'fetch-from-service' ? flags.of_service_fetch_enabled : true;
-  });
-
   return (
     <div className="logic-action">
       <div
@@ -45,7 +37,7 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
             <DSLEditorNode errors={errors.action?.type}>
               <Select
                 name="action.type"
-                choices={enabledActionTypes}
+                choices={ACTION_TYPES}
                 translateChoices
                 allowBlank
                 onChange={onChange}

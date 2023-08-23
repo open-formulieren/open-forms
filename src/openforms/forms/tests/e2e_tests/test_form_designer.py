@@ -1316,10 +1316,6 @@ class AppointmentFormTests(E2ETestCase):
         super().setUp()
 
         self.addCleanup(clear_caches)
-        config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
-        config.enable_new_appointments = True
-        config.save()
 
     async def test_appointment_form_nukes_irrelevant_configuration(self):
         @sync_to_async
