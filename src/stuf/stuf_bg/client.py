@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Mapping, TypeVar
 
 import xmltodict
 from glom import glom
@@ -42,10 +42,12 @@ class StufBGClient(BaseClient):
     def get_values(self, bsn: str, attributes: List[str]) -> dict:
         response_data = self.get_values_for_attributes(bsn, attributes)
 
-        dict_response = xmltodict.parse(
-            response_data,
-            process_namespaces=True,
-            namespaces=NAMESPACE_REPLACEMENTS,
+        dict_response = _remove_nils(
+            xmltodict.parse(
+                response_data,
+                process_namespaces=True,
+                namespaces=NAMESPACE_REPLACEMENTS,
+            )
         )
 
         # handle missing keys/empty data graciously, see #1842
@@ -69,3 +71,25 @@ class StufBGClient(BaseClient):
             extra={"response": dict_response, "fault": fault},
         )
         raise ValueError("Problem processing StUF-BG response")
+
+
+M = TypeVar("M", bound=Mapping)
+
+
+def _remove_nils(d: M) -> M:
+    """Return a copy of d with nils removed"""
+    mapping = type(d)  # use the same dict type
+
+    def is_nil(value):
+        return isinstance(value, mapping) and (
+            value.get("@http://www.w3.org/2001/XMLSchema-instance:nil") == "true"
+            or value.get("@noValue") == "geenWaarde"
+        )
+
+    return mapping(
+        **{
+            k: (_remove_nils(v) if isinstance(v, mapping) else v)
+            for k, v in d.items()
+            if not is_nil(v)
+        }
+    )
