@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with data=log.debug_data lead=log.fmt_lead %}
+   {{ lead }}: Registration debug data: {{ data }}
+{% endblocktrans %}
