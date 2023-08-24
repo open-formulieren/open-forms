@@ -2,6 +2,127 @@
 Changelog
 =========
 
+2.3.0 "Cruquius" (2023-08-24)
+=============================
+
+.. epigraph::
+
+   **Cruquius** is a village in Haarlemmermeer. It gets its name from Nicolaas Kruik, one
+   of the many promotors of a plan to pump the Haarlem lake (Haarlemmermeer) dry.
+
+   -- "Cruquius, Netherlands", Wikipedia
+
+Upgrade procedure
+-----------------
+
+Ensure that your current version of Open Forms is at least version 2.1.3 before
+upgrading.
+
+Version 2.3.0 does not contain breaking changes and therefore upgrading should be
+straightforward.
+
+Major features
+--------------
+
+**📅 Appointments**
+
+We are introducing an all-new, optimized appointment booking flow, allowing you to make
+appointments for multiple products and/or people in one go! The new user interface
+focuses on better accessibility and a more fluent experience, while increasing the
+flexibility for the organization managing appointments.
+
+The JCC plugin is fully updated, while the Qmatic plugin is compatible. Please get in
+touch if you use Qmatic and wish to use the multi-product flow.
+
+The old appointment flow is now deprecated and will be removed in Open Forms 3.0.
+
+**🧐 Prefill with DigiD Machtigen/Bewindvoering**
+
+Open Forms supports logging in with your own credentials on behalf of someone else (
+you are then the authorisee, while "someone else" is the authoriser). Up until now,
+prefill could only retrieve the data of the authoriser. Starting now, you can select
+from which role the data should be prefilled, so you can retrieve this for all roles
+at the same time!
+
+**🗺️ Map component**
+
+We've improved the map component and/or geo integration:
+
+* Configure the initial coordinates and zoom level of the map instead of the center of
+  the Netherlands. This is even configurable *per component*, which can be useful if your
+  organization has multiple districts, for example.
+* Users now have a search box to look up their/an address, which autocompletes the
+  addresses from the BAG. Clicking a suggestion places the marker on the coordinates of
+  the selected address.
+* Clicking a location in the map looks up the nearest address and displays this for
+  extra confirmation.
+
+**🧠 Dynamic registration backends**
+
+Registration backends are now dynamic - you can configure one, none or multiple
+registration backends on a form and use logic to decide which to use. If no or only one
+backend is configured, the existing behaviour applies. However, if you have multiple
+possible backends, you must create a logic rule to select the appropriate backend.
+
+Detailed changes
+----------------
+
+The 2.3.0-alpha.0 changes are included as well, see the earlier changelog entry.
+
+**New features**
+
+* [#2174] Added geo-search (using the Kadaster Locatieserver by default) for the map
+  component.
+* [#2017] The form step slug is now moved from the form definition to the form step
+  itself, allowing you to use the same slug for a step in different forms.
+* [#3332] Use the JCC configuration for the latest available appointment date.
+* [#3332] When selecting a product, this choice is now taken into account to populate
+  the list of available additional products.
+* [#3321] Added support for new appointment flow to confirmation emails.
+* [#1884] Added custom error message support for invalid times.
+* [#3203, #3372] Added an additional checkbox for truth declaration before submitting a
+  form, in addition to the privacy policy. You can now also configure these requirements
+  per-form instead of only the global configuration.
+* [#1889] Added the ``current_year`` static variable.
+* [#3179] You can now use logic to select an appropriate registration backend.
+* [#3299] Added Qmatic support for the new appointments.
+
+**Bugfixes**
+
+* [#3223] Fixed some content translations not being properly translated when copying a form.
+* [#3144] Fixed file download links being absent in registration emails when the file
+  upload is nested inside a group.
+* [#3278] Fixed a crash when the DigiD provider does not provide a sector code in the
+  SAML Artifact. We now assume it's BSN (as opposed to sofinummer).
+* [#3084] Fixed ``inp.heeftAlsKinderen`` missing in scope of StUF-BG request.
+* [#3302] Fixed race condition causing uploaded images not be resized.
+* [#3332] Ensured that naive, localized appointment times are sent to JCC.
+* [#3309] Added a missing automatic appointment configuration upgrade.
+* Fixed broken inline images in outgoing emails and loss of additional parameters.
+* [#3322] Fixed the cancel-appointment flow for new appointments.
+* [#3327] Fixed the backend markup and styling of radio fields.
+* [#3319] Fixed forms possibly sending a DigiD SAML request without assurance level due
+  to misconfiguration.
+* Fixed passing querystring parameter to service fetch.
+* [#3277] Added a workaround to use form variable values containing spaces in templates.
+* [#3292] Fixed dark mode suffixes in the form builder.
+* [#3286] Fixed data normalization for customer details in new appointments.
+* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+* [#3310] Fixed alignment issue in confirmation PDF for accepted privacy policy statement.
+
+**Project maintenance**
+
+* Changed the fail-fast behaviour of the end-to-end tests to reduce the flakiness impact.
+* We now build Docker images based on the latest available Python patch release again.
+* [#3242] Added more profiling to investigate test flakiness.
+* Upgraded the container base image from Debian Bullseye to Bookworm.
+* [#3127] Rework developer tooling to generate code from an API specification.
+* Fixed JQ documentation URL for sorting.
+* Bump dependencies reported to have vulnerabilities (via @dependabot).
+* Improved typing of plugins and plugin registries.
+* Fixed incorrect Authentication header in the Objects API documentation.
+* [#3049] Upgraded more libraries to prepare for Django 4.2
+
 2.2.2 (2023-08-24)
 ==================
 
