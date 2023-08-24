@@ -1,4 +1,4 @@
-{% load static i18n solo_tags style_dictionary %}<!DOCTYPE html>
+{% load static i18n solo_tags style_dictionary appointments %}<!DOCTYPE html>
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% get_current_language as LANG %}
 <html lang="{{ LANG }}" class="{{ config.theme_classname }}">
@@ -92,6 +92,10 @@
                     </div>
                 </div>
             </section>
+            {% endif %}
+
+            {% if report.submission.appointment_info.appointment_id %}
+            <section>{% appointment_information %}</section>
             {% endif %}
 
             {% if report.submission.form.include_confirmation_page_content_in_pdf %}
