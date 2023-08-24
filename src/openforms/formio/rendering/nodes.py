@@ -46,7 +46,7 @@ class ComponentNode(Node):
     json_renderer_path: Path | None = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
     configuration_path: str = ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
     parent_node: Node | None = None
-    translate_function: Callable[[str], str] | None = None
+    translate: Callable[[str], str] | None = None
 
     @staticmethod
     def build_node(
@@ -58,7 +58,7 @@ class ComponentNode(Node):
         configuration_path: str = "",
         depth: int = 0,
         parent_node: Node | None = None,
-        translate_function: Callable[[str], str] | None = None,
+        translate: Callable[[str], str] | None = None,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
@@ -76,7 +76,7 @@ class ComponentNode(Node):
             json_renderer_path=json_renderer_path,
             configuration_path=configuration_path,
             parent_node=parent_node,
-            translate_function=translate_function,
+            translate=translate,
         )
         return nested_node
 
@@ -84,8 +84,8 @@ class ComponentNode(Node):
         # Value Formatters have no access to the translations; run all our
         # labels through the translations, before further processing of logic
         # etc.
-        if self.translate_function:
-            self.apply_to_labels(self.translate_function)
+        if self.translate:
+            self.apply_to_labels(self.translate)
 
     @property
     def is_visible(self) -> bool:
@@ -157,6 +157,7 @@ class ComponentNode(Node):
 
     @property
     def key(self):
+        assert "key" in self.component
         return self.component["key"]
 
     @property
@@ -172,9 +173,10 @@ class ComponentNode(Node):
         """
         Obtain the (human-readable) label for the Formio component.
         """
+        assert "key" in self.component
         if self.mode == RenderModes.export:
-            return self.component.get("key") or "KEY_MISSING"
-        return self.component.get("label") or self.component.get("key", "")
+            return self.component["key"]
+        return self.component.get("label") or self.component["key"]
 
     @property
     def value(self) -> Any:
@@ -309,6 +311,6 @@ class FormioNode(Node):
                 component=component,
                 renderer=self.renderer,
                 configuration_path=configuration_path,
-                translate_function=do_translate,
+                translate=do_translate,
             )
             yield from child_node
