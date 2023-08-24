@@ -63,7 +63,9 @@ class StufBGConfigTests(TestCase):
                     encoding="utf-8",
                 ),
             )
-            self.client.get_values_for_attributes("999992314", FieldChoices.values)
+            response_dict = self.client.get_values("999992314", FieldChoices.values)
+
+        self.assertFalse(_contains_nils(response_dict))
 
         self.assertEqual(m.last_request.method, "POST")
         self.assertEqual(
@@ -128,8 +130,6 @@ class StufBGConfigTests(TestCase):
         with requests_mock.Mocker() as m:
             m.post(self.client.service.soap_service.url, status_code=200)
             self.client.get_values_for_attributes(test_bsn, available_attributes)
-
-        self.assertFalse(_contains_nils(response_dict))
 
         request_body = m.last_request.body
         doc = etree.parse(BytesIO(request_body))
