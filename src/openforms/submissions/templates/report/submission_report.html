@@ -94,7 +94,7 @@
             </section>
             {% endif %}
 
-            {% if report.submission.appointment_info.appointment_id %}
+            {% if report.submission.form.is_appointment %}
             <section>{% appointment_information %}</section>
             {% endif %}
 
