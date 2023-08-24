@@ -8,6 +8,11 @@ from privates.test import temp_private_root
 from pyquery import PyQuery as pq
 from testfixtures import LogCapture
 
+from openforms.appointments.tests.factories import (
+    AppointmentFactory,
+    AppointmentProductFactory,
+)
+
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
 from .factories import SubmissionFactory, SubmissionReportFactory
@@ -232,6 +237,26 @@ class SubmissionReportGenerationTests(TestCase):
         reference_node = doc(".metadata").children()[1]
 
         self.assertEqual(reference_node.text, "Your reference is: OF-12345")
+
+    def test_appointment_info_is_included(self):
+        # NB the demo plugin appointment info is hardcoded in the plugin
+        appointment = AppointmentFactory.create(
+            plugin="demo",
+            submission__language_code="nl",
+            submission__with_report=True,
+            appointment_info__registration_ok=True,
+            location__identifier="1",
+        )
+        AppointmentProductFactory.create(
+            appointment=appointment, product_id="1", amount=1
+        )
+        submission = appointment.submission
+
+        html = submission.report.generate_submission_report_pdf()
+
+        self.assertIn("Test product 1", html)
+        self.assertIn("Test location", html)
+        self.assertIn("Datum en tijd", html)
 
 
 @temp_private_root()
