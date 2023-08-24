@@ -10,7 +10,9 @@ from furl import furl
 from glom import Path
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
+from openforms.formio.typing import Component
 from openforms.submissions.rendering.constants import RenderModes
+from openforms.typing import DataMapping
 from openforms.utils.glom import _glom_path_to_str
 from openforms.utils.urls import build_absolute_uri
 
@@ -23,6 +25,10 @@ from .registry import register
 class ContainerMixin:
     is_layout = True
 
+    step_data: DataMapping
+    component: Component
+    mode: RenderModes
+
     @property
     def is_visible(self) -> bool:
         # fieldset/editgrid components do not support the showInFoo properties, so we don't use the super
@@ -31,13 +37,14 @@ class ContainerMixin:
             return True
 
         # We only pass the step data, since frontend logic only has access to the current step data.
-        if not is_visible_in_frontend(self.component, self.step.data):
+        if not is_visible_in_frontend(self.component, self.step_data):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
         if render_configuration.key is not None:
+            _type = self.component.get("type", "unknown")
             assert render_configuration.key not in self.component, (
-                f"Component type {self.component['type']} unexpectedly seems to support "
+                f"Component type {_type} unexpectedly seems to support "
                 f"the {render_configuration.key} property!"
             )
 
@@ -89,7 +96,7 @@ class FieldSetNode(ContainerMixin, ComponentNode):
 class ColumnsNode(ContainerMixin, ComponentNode):
     layout_modifier: str = "columns"
     label: str = ""  # 1451 -> never output a label
-    value = None  # columns never have a value
+    value: None = None  # columns never have a value
     display_value: str = ""
 
     def get_children(self) -> Iterator["ComponentNode"]:
@@ -123,7 +130,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                 recursive=False,
             ):
                 yield ComponentNode.build_node(
-                    step=self.step,
+                    step_data=self.step_data,
                     component=component,
                     renderer=self.renderer,
                     depth=self.depth + 1,
@@ -261,7 +268,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
             )
 
             yield EditGridGroupNode(
-                step=self.step,
+                step_data=self.step_data,
                 component=self.component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
@@ -286,7 +293,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
             recursive=False,
         ):
             yield ComponentNode.build_node(
-                step=self.step,
+                step_data=self.step_data,
                 component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,

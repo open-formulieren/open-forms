@@ -250,7 +250,7 @@ class FormNodeTests(TestCase):
         assert component["key"] == "input1"
 
         component_node = ComponentNode.build_node(
-            step=self.step, component=component, renderer=renderer
+            step_data=self.step.data, component=component, renderer=renderer
         )
 
         self.assertIsInstance(component_node, ComponentNode)
@@ -280,7 +280,7 @@ class FormNodeTests(TestCase):
 
         with patch("openforms.formio.rendering.registry.register", new=register):
             component_node = ComponentNode.build_node(
-                step=self.step, component=component, renderer=renderer
+                step_data=self.step.data, component=component, renderer=renderer
             )
 
         self.assertIsInstance(component_node, TextFieldNode)
@@ -297,7 +297,7 @@ class FormNodeTests(TestCase):
             assert component["hidden"]
 
             component_node = ComponentNode.build_node(
-                step=self.step, component=component, renderer=renderer
+                step_data=self.step.data, component=component, renderer=renderer
             )
 
             nodelist = list(component_node)
@@ -315,7 +315,7 @@ class FormNodeTests(TestCase):
 
             with patch("openforms.formio.rendering.registry.register", new=register):
                 component_node = ComponentNode.build_node(
-                    step=self.step, component=fieldset, renderer=renderer
+                    step_data=self.step.data, component=fieldset, renderer=renderer
                 )
 
                 nodelist = list(component_node)
@@ -331,7 +331,7 @@ class FormNodeTests(TestCase):
             "components"
         ]:
             component_node = ComponentNode.build_node(
-                step=self.step, component=component, renderer=renderer
+                step_data=self.step.data, component=component, renderer=renderer
             )
             nodelist += list(component_node)
 
@@ -375,7 +375,7 @@ class FormNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step=self.step, component=component, renderer=renderer
+                    step_data=self.step.data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -407,7 +407,7 @@ class FormNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step=self.step, component=component, renderer=renderer
+                    step_data=self.step.data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 
@@ -441,7 +441,7 @@ class FormNodeTests(TestCase):
                 "components"
             ]:
                 component_node = ComponentNode.build_node(
-                    step=self.step, component=component, renderer=renderer
+                    step_data=self.step.data, component=component, renderer=renderer
                 )
                 nodelist += list(component_node)
 

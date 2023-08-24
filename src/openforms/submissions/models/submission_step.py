@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from frozendict import frozendict
 
 from openforms.forms.models import FormDefinition, FormStep
+from openforms.typing import DataMapping
 
 
 def _make_frozen(obj):
@@ -202,7 +203,7 @@ class SubmissionStep(models.Model):
         self.save()
 
     @property
-    def data(self) -> dict:
+    def data(self) -> DataMapping:
         values_state = self.submission.load_submission_value_variables_state()
         # This is used in the evaluate_form_logic function, which only returns the data that has been changed to the
         # frontend.

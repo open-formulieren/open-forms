@@ -7,6 +7,7 @@ from glom import Path, assign, glom
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
+from openforms.typing import DataMapping
 
 from ..service import format_value, translate_function
 from ..typing import Component
@@ -36,44 +37,20 @@ class RenderConfiguration:
 
 
 @dataclass
-class ComponentNodeBase(Node):
+class ComponentNode(Node):
     component: Component
-
-    @property
-    def label(self) -> str:
-        """
-        Obtain the (human-readable) label for the Formio component.
-        """
-        if self.mode == RenderModes.export:
-            return self.component.get("key") or "KEY_MISSING"
-        return self.component.get("label") or self.component.get("key", "")
-
-    @property
-    def key(self):
-        return self.component["key"]
-
-    @property
-    def key_as_path(self) -> Path:
-        """
-        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
-        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
-        """
-        return Path.from_text(self.key)
-
-
-@dataclass
-class ComponentNode(ComponentNodeBase):
-    step: SubmissionStep
+    step_data: DataMapping  # XXX refactor to FormioData
     depth: int = 0
     is_layout = False
     path: Path | None = None  # Path in the data (#TODO rename to data_path?)
     json_renderer_path: Path | None = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
     configuration_path: str = ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
     parent_node: Node | None = None
+    translate: Callable[[str], str] | None = None
 
     @staticmethod
     def build_node(
-        step: SubmissionStep,
+        step_data: DataMapping,
         component: Component,
         renderer: "Renderer",
         path: Path | None = None,  # Path in the data
@@ -81,6 +58,7 @@ class ComponentNode(ComponentNodeBase):
         configuration_path: str = "",
         depth: int = 0,
         parent_node: Node | None = None,
+        translate: Callable[[str], str] | None = None,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
@@ -90,7 +68,7 @@ class ComponentNode(ComponentNodeBase):
         assert "type" in component
         node_cls = register[component["type"]]
         nested_node = node_cls(
-            step=step,
+            step_data=step_data,
             component=component,
             renderer=renderer,
             depth=depth,
@@ -98,6 +76,7 @@ class ComponentNode(ComponentNodeBase):
             json_renderer_path=json_renderer_path,
             configuration_path=configuration_path,
             parent_node=parent_node,
+            translate=translate,
         )
         return nested_node
 
@@ -105,10 +84,8 @@ class ComponentNode(ComponentNodeBase):
         # Value Formatters have no access to the translations; run all our
         # labels through the translations, before further processing of logic
         # etc.
-        if self.renderer.form.translation_enabled and self.step.form_step:
-            self.apply_to_labels(
-                translate_function(self.renderer.submission, self.step)
-            )
+        if self.translate:
+            self.apply_to_labels(self.translate)
 
     @property
     def is_visible(self) -> bool:
@@ -153,7 +130,7 @@ class ComponentNode(ComponentNodeBase):
         if isinstance(self.parent_node, EditGridGroupNode):
             # Frontend logic for repeating group does not specify the index of the iteration. So we need to look at
             # the data for a specific iteration to figure out if a field within the iteration is visible
-            step_data = copy.deepcopy(self.step.data)
+            step_data = copy.deepcopy(self.step_data)
             current_iteration_data = glom(step_data, self.path, default=None)
             artificial_repeating_group_data = assign(
                 step_data, self.parent_node.path, current_iteration_data, missing=dict
@@ -162,7 +139,7 @@ class ComponentNode(ComponentNodeBase):
                 self.component, artificial_repeating_group_data
             ):
                 return False
-        elif not is_visible_in_frontend(self.component, self.step.data):
+        elif not is_visible_in_frontend(self.component, self.step_data):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
@@ -179,6 +156,29 @@ class ComponentNode(ComponentNodeBase):
         return should_render
 
     @property
+    def key(self):
+        assert "key" in self.component
+        return self.component["key"]
+
+    @property
+    def key_as_path(self) -> Path:
+        """
+        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
+        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
+        """
+        return Path.from_text(self.key)
+
+    @property
+    def label(self) -> str:
+        """
+        Obtain the (human-readable) label for the Formio component.
+        """
+        assert "key" in self.component
+        if self.mode == RenderModes.export:
+            return self.component["key"]
+        return self.component.get("label") or self.component["key"]
+
+    @property
     def value(self) -> Any:
         """
         Obtain the value from the submission for this component.
@@ -191,7 +191,7 @@ class ComponentNode(ComponentNodeBase):
         """
         path = Path(self.path, self.key_as_path) if self.path else self.key_as_path
 
-        value = glom(self.step.data, path, default=None)
+        value = glom(self.step_data, path, default=None)
         return value
 
     @property
@@ -208,7 +208,7 @@ class ComponentNode(ComponentNodeBase):
             recursive=False,
         ):
             yield ComponentNode.build_node(
-                step=self.step,
+                step_data=self.step_data,
                 component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
@@ -288,14 +288,29 @@ class FormioNode(Node):
         return ""
 
     def get_children(self) -> Iterator[ComponentNode]:
+        assert self.step.form_step  # nosec: intended use of B101
         configuration = self.step.form_step.form_definition.configuration
+
+        # prepare for any potential translations to component definitions. The translate
+        # function is (for now) bound to the form step, as that's where the translations
+        # are stored. Possibly in the future we will store those in the component itself,
+        # but then the need to translate upfront is also gone as the value formatters do
+        # receive the component definition.
+        i18n_enabled = self.renderer.form.translation_enabled
+        do_translate = (
+            translate_function(self.renderer.submission, self.step)
+            if i18n_enabled
+            else None
+        )
+
         for configuration_path, component in iterate_components_with_configuration_path(
             configuration, recursive=False
         ):
             child_node = ComponentNode.build_node(
-                step=self.step,
+                step_data=self.step.data,
                 component=component,
                 renderer=self.renderer,
                 configuration_path=configuration_path,
+                translate=do_translate,
             )
             yield from child_node

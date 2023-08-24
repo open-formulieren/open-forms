@@ -8,7 +8,14 @@ Formio components are JSON blobs adhering to a formio-specific schema. We define
 
 from .base import Component, OptionDict
 from .custom import CosignComponent, DateComponent
-from .vanilla import ContentComponent, DatetimeComponent, FileComponent, RadioComponent
+from .vanilla import (
+    Column,
+    ColumnsComponent,
+    ContentComponent,
+    DatetimeComponent,
+    FileComponent,
+    RadioComponent,
+)
 
 __all__ = [
     "Component",
@@ -16,6 +23,8 @@ __all__ = [
     "ContentComponent",
     "FileComponent",
     "RadioComponent",
+    "Column",
+    "ColumnsComponent",
     "DatetimeComponent",
     "CosignComponent",
     "DateComponent",
