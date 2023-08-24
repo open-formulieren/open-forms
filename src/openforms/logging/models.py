@@ -161,6 +161,10 @@ class TimelineLogProxy(TimelineLog):
         else:
             return self.extra_data.get("log_event", None)
 
+    @property
+    def debug_data(self):
+        return repr(self.extra_data)
+
 
 class AVGTimelineLogProxyManager(models.Manager):
     def get_queryset(self):
