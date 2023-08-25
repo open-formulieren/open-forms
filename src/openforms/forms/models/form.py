@@ -228,6 +228,18 @@ class Form(models.Model):
         ),
     )
     _is_deleted = models.BooleanField(default=False)
+    activate_on = models.DateTimeField(
+        _("activate on"),
+        blank=True,
+        null=True,
+        help_text=_("Date and time that the form should be activated."),
+    )
+    deactivate_on = models.DateTimeField(
+        _("deactivate on"),
+        blank=True,
+        null=True,
+        help_text=_("Date and time that the form should be deactivated."),
+    )
 
     # Data removal
     successful_submissions_removal_limit = models.PositiveIntegerField(

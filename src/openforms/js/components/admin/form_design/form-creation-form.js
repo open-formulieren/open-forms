@@ -89,6 +89,8 @@ const initialFormState = {
     displayMainWebsiteLink: true,
     includeConfirmationPageContentInPdf: true,
     active: true,
+    activateOn: '',
+    deactivateOn: '',
     category: '',
     isDeleted: false,
     maintenanceMode: false,

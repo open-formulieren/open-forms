@@ -5,7 +5,7 @@ import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox, DateTimeInput, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
 
@@ -93,6 +93,8 @@ const FormConfigurationFields = ({
     active,
     category,
     isDeleted,
+    activateOn,
+    deactivateOn,
     maintenanceMode,
     translationEnabled,
     submissionAllowed,
@@ -288,6 +290,22 @@ const FormConfigurationFields = ({
           }
           checked={active}
           onChange={event => onCheckboxChange(event, active)}
+        />
+      </FormRow>
+      <FormRow>
+        <DateTimeInput
+          name="form.activatedOn"
+          value=""
+          formatDatetime=
+          onChange=
+        />
+      </FormRow>
+      <FormRow>
+        <DateTimeInput
+          name="form.deactivatedOn"
+          value=""
+          formatDatetime=
+          onChange=
         />
       </FormRow>
       <FormRow>
