@@ -169,6 +169,7 @@ django==3.2.20
     #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
+    #   open-forms-ext-haalcentraal-hr
     #   open-forms-ext-token-exchange
     #   sentry-sdk
     #   zgw-consumers
@@ -486,6 +487,8 @@ oauthlib==3.2.2
     # via
     #   -r requirements/base.txt
     #   requests-oauthlib
+open-forms-ext-haalcentraal-hr==0.1.0
+    # via -r requirements/extensions.in
 open-forms-ext-token-exchange==0.2.0
     # via -r requirements/extensions.in
 openapi-schema-validator==0.4.4
@@ -799,6 +802,7 @@ zgw-consumers==0.26.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
+    #   open-forms-ext-haalcentraal-hr
     #   open-forms-ext-token-exchange
 
 # The following packages are considered to be unsafe in a requirements file:
