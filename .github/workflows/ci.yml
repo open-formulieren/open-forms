@@ -407,18 +407,15 @@ jobs:
         run: npm install -g @openapitools/openapi-generator-cli@2.4.2
       - name: Validate schema
         run: openapi-generator-cli validate -i ./openapi.yaml
+      - name: Set the version of openapi-generator which gets used
+        run: |
+          openapi-generator-cli version-manager set 7.0.0
       - name: Generate Java client
         run:
           openapi-generator-cli generate -i ./openapi.yaml
           --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
           ./sdks/java -g java
           --additional-properties=dateLibrary=java8,java8=true,optionalProjectFile=false,optionalAssemblyInfo=false
-      - name: Generate .NET Core client
-        run:
-          openapi-generator-cli generate -i ./openapi.yaml
-          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
-          ./sdks/netcore -g csharp-netcore
-          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
       - name: Generate .NET Full Framework client
         run:
           openapi-generator-cli generate -i ./openapi.yaml
