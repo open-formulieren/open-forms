@@ -320,7 +320,7 @@ jobs:
             extensions: ''
             image_tag_prefix: ''
           - env: extensions
-            extensions: 'token_exchange'
+            extensions: 'token_exchange,prefill_haalcentraalhr'
             image_tag_prefix: 'all-extensions-'
           - env: ci
             extensions: ''
