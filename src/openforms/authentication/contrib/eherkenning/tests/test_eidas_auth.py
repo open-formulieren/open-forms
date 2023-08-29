@@ -14,6 +14,7 @@ from digid_eherkenning.models import EherkenningConfiguration
 from freezegun import freeze_time
 from furl import furl
 from lxml import etree
+from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
 from simple_certmanager.models import Certificate
 
@@ -80,6 +81,10 @@ class EIDASConfigMixin:
             config.idp_metadata_file = File(md_file, METADATA.name)
             config.save()
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+
     def setUp(self):
         super().setUp()
 
@@ -102,6 +107,7 @@ def _get_encrypted_attribute(pseudo_id: str):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
+@temp_private_root()
 class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
     def test_redirect_to_eIDAS_login(self):
         form = FormFactory.create(
@@ -188,6 +194,7 @@ class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+@temp_private_root()
 @requests_mock.Mocker()
 class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
     @patch(
@@ -306,6 +313,7 @@ class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+@temp_private_root()
 @requests_mock.Mocker()
 class CoSignLoginAuthenticationTests(SubmissionsMixin, EIDASConfigMixin, TestCase):
     @freeze_time("2020-04-09T08:31:46Z")
