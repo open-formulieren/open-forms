@@ -39,6 +39,31 @@ SELECT_EHERKENNING_SIM = SIGNICAT_BROKER_BASE / "authn/simulator/selection/eh"
 @temp_private_root()
 @override_settings(COOKIE_CONSENT_ENABLED=False)
 class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
+    """Test using Signicat broker.
+
+    Instead of mocking responses. We do real requests to a Signicat test environment
+    *once* and record the responses with VCR.
+
+    Requests to ourself go through the regular Django TestClient.
+    Requests to the broker use a requests Session.
+
+    When Signicat updates their service, responses on VCR cassettes might be stale, and
+    we'll need to re-test against the real service to assert everything still works.
+
+    To do so:
+
+    1. Ensure the config is still valid:
+       - `CERT` needs to be valid
+       - `CERT` and our SAML metadata need to be configured in Signicat
+       - `METADATA` needs to contain their SAML metadata
+    2. Delete the VCR cassettes
+    3. Set the "record_mode" to "once"  in `self._get_vcr_kwargs()`
+    4. Run the test
+    5. Inspect the diff of the new cassettes
+    6. Set the "record_mode" back to "none"; we don't want CI to make *any* real
+       requests!
+    """
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
