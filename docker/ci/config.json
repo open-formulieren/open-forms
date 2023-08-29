@@ -35,6 +35,10 @@
         {
             "name": "Token Exchange",
             "repo": "open-forms-ext-token-exchange"
+        },
+        {
+            "name": "Haal Centraal HR Prefill",
+            "repo": "open-forms-ext-haalcentraal-hr"
         }
     ]
 }
