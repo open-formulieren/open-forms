@@ -1,0 +1,61 @@
+{% load i18n %}
+<section class="appointment">
+<h2>{% trans "Appointment information" %}</h2>
+
+<table>
+  <tr class="appointment__products">
+    <td>
+      {% trans "Products" %}
+    </td>
+    <td>
+      {% for product in appointment.products %} {{ product.name }}{% if product.amount > 1 %} (x{{
+      product.amount }}){% endif %}{% if not forloop.last %}<br />{% endif %} {% endfor %}
+    </td>
+  </tr>
+  <tr class="appointment__location">
+    <td>
+      {% trans "Location" %}
+    </td>
+    <td>
+      {{ appointment.location.name }} {% if appointment.location.address %}<br />{{
+      appointment.location.address }}{% endif %} {% if appointment.location.city %}<br />{{
+      appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
+    </td>
+  </tr>
+  <tr class="appointment__datetime">
+    <td>
+      {% trans "Date and time" %}
+    </td>
+    <td>
+      {{ appointment.start_at|date }}, {{ appointment.start_at|time }}{% if appointment.end_at %} -
+      {{ appointment.end_at|time }}{% endif %}
+    </td>
+  </tr>
+  <tr class="appointment__remarks">
+    <td>
+      {% trans "Remarks" %}
+    </td>
+    <td>
+      {{ appointment.remarks|linebreaksbr }}
+    </td>
+  </tr>
+  {% if appointment.other %} {% for key, value in appointment.other.items %}
+  <tr class="appointment__{{key}}">
+    <td>{{ key }}</td>
+    <td>{{ value }}</td>
+  </tr>
+  {% endfor %} {% endif %}
+</table>
+
+<h2>{% trans "Your contact details" %}</h2>
+
+<table class="appointment__contact_details">
+  {% for node in contact_details %}
+  <tr>
+    <td>{{ node.label }}</td>
+    <td>{{ node.display_value }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+</section>

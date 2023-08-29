@@ -94,9 +94,7 @@
             </section>
             {% endif %}
 
-            {% if report.submission.form.is_appointment %}
-            <section>{% appointment_information %}</section>
-            {% endif %}
+            {{ report.appointment }}
 
             {% if report.submission.form.include_confirmation_page_content_in_pdf %}
                 <section>

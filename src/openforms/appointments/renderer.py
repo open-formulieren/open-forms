@@ -1,10 +1,14 @@
 from typing import Iterator
 
+from django.template.loader import render_to_string
+from django.utils.safestring import SafeString
+
 from openforms.formio.rendering.nodes import ComponentNode
 from openforms.formio.typing import Component
 from openforms.submissions.rendering import Renderer
 
 from .service import get_appointment
+from .utils import get_plugin
 
 
 class AppointmentRenderer(Renderer):
@@ -26,5 +30,24 @@ class AppointmentRenderer(Renderer):
                 renderer=self,
                 configuration_path=f"{index}",
             )
-            yield child_node
             yield from child_node
+
+    def __str__(self) -> SafeString:
+        # Like a Django Form renderer, render to the default representation
+
+        if (
+            not (appointment := get_appointment(self.submission))
+            or not appointment.plugin
+        ):
+            return ""
+
+        template_name = (
+            f"appointments/appointment__{self.mode}.{'html' if self.as_html else 'txt'}"
+        )
+        plugin = get_plugin(plugin=appointment.plugin)
+
+        ctx = {
+            "appointment": plugin.get_appointment_details(appointment.pk),
+            "contact_details": self.get_children(),  # todo: a bit of a wart
+        }
+        return render_to_string(template_name, ctx)
