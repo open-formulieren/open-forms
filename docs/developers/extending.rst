@@ -33,7 +33,8 @@ This means that it needs to be either:
 * Anywhere on the file path, but the ``PYTHONPATH`` environment variable is modified to
   include the path to the extension.
 * In the relevant site-packages directory, similarly to when an Open Forms dependency
-  is installed with ``pip install`` and ``virtualenv``.
+  is installed with ``pip install`` and ``virtualenv``. In order for this to work, the extension should be published on
+  PyPi and added to the ``requirements/extensions.in`` file.
 
 Building and distributing the extended Open Forms
 -------------------------------------------------
