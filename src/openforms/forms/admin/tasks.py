@@ -10,6 +10,7 @@ from django.core.files import File
 from django.core.management import call_command
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from privates.storages import private_media_storage
@@ -102,3 +103,33 @@ def process_forms_import(import_file: str, user_id: int) -> None:
 def clear_forms_export():
     logger.debug("Clearing old export files")
     call_command("delete_export_files")
+
+
+@app.task()
+def activate_forms():
+    """Activate all the forms that should be activated by the specific date and time."""
+    now = timezone.now().minute
+    forms = Form.objects.filter(
+        active=False, _is_deleted=False, activate_on__minute=now
+    )
+
+    for form in forms:
+        form.active = True
+        form.activate_on = None
+        form.save(["active", "activate_on"])
+        logger.debug(f"Activated form {form.admin_name}")
+        logevent.form_activated(form)
+
+
+@app.task()
+def deactivate_forms():
+    """Deactivate all the forms that should be deactivated by the specific date and time."""
+    now = timezone.now().minute
+    forms = Form.objects.live().filter(deactivate_on__minute=now)
+
+    for form in forms:
+        form.active = False
+        form.deactivate_on = None
+        form.save(["active", "deactivate_on"])
+        logger.debug(f"Deactivated form {form.admin_name}")
+        logevent.form_deactivated(form)

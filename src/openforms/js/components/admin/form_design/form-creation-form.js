@@ -154,6 +154,8 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   active: 'form',
   category: 'form',
   isDeleted: 'form',
+  activateOn: 'form',
+  deactivateOn: 'form',
   maintenanceMode: 'form',
   translationEnabled: 'form',
   confirmationEmailTemplate: 'submission-confirmation',

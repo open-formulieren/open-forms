@@ -16,7 +16,12 @@ from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.utils.urls import build_absolute_uri
 
-from ...admin.tasks import process_forms_export, process_forms_import
+from ...admin.tasks import (
+    activate_forms,
+    deactivate_forms,
+    process_forms_export,
+    process_forms_import,
+)
 from ...models.form import Form, FormsExport
 from ..factories import FormFactory
 
@@ -122,3 +127,115 @@ class ImportFormsTaskTests(TestCase):
 
         for item in failed_forms:
             self.assertEqual(item[1], ["Something went wrong"])
+
+
+class ActivateFormsTests(TestCase):
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_forms_are_activated_on_specified_datetime(self):
+        form1 = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
+        form2 = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
+
+        activate_forms()
+
+        form1.refresh_from_db()
+        form2.refresh_from_db()
+
+        self.assertTrue(form1.active)
+        self.assertIsNone(form1.activate_on)
+        self.assertTrue(form2.active)
+        self.assertIsNone(form2.activate_on)
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_activation_is_logged(self):
+        form = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
+
+        activate_forms()
+
+        log_entry = TimelineLogProxy.objects.last()
+        message = log_entry.get_message()
+
+        self.assertEqual(log_entry.content_object.id, form.id)
+        self.assertEqual(
+            message.strip().replace("&quot;", '"'),
+            f"{log_entry.fmt_lead}: Form was activated.",
+        )
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_is_not_activated_on_different_time(self):
+        form = FormFactory(active=False, activate_on="2023-10-10T21:16:00Z")
+
+        activate_forms()
+
+        form.refresh_from_db()
+
+        self.assertFalse(form.active)
+        self.assertIsNotNone(form.activate_on)
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_is_not_activated_when_soft_deleted(self):
+        form = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
+        form._is_deleted = True
+        form.save(update_fields=["_is_deleted"])
+
+        activate_forms()
+
+        form.refresh_from_db()
+
+        self.assertFalse(form.active)
+        self.assertIsNotNone(form.activate_on)
+
+
+class DeactivateFormsTests(TestCase):
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_forms_are_deactivated_on_specified_datetime(self):
+        form1 = FormFactory(deactivate_on="2023-10-10T21:15:00Z")
+        form2 = FormFactory(deactivate_on="2023-10-10T21:15:00Z")
+
+        deactivate_forms()
+
+        form1.refresh_from_db()
+        form2.refresh_from_db()
+
+        self.assertFalse(form1.active)
+        self.assertIsNone(form1.deactivate_on)
+        self.assertFalse(form2.active)
+        self.assertIsNone(form2.deactivate_on)
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_deactivation_is_logged(self):
+        form = FormFactory(deactivate_on="2023-10-10T21:15:00Z")
+
+        deactivate_forms()
+
+        log_entry = TimelineLogProxy.objects.last()
+        message = log_entry.get_message()
+
+        self.assertEqual(log_entry.content_object.id, form.id)
+        self.assertEqual(
+            message.strip().replace("&quot;", '"'),
+            f"{log_entry.fmt_lead}: Form was deactivated.",
+        )
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_is_not_deactivated_on_different_time(self):
+        form = FormFactory(deactivate_on="2023-10-10T21:16:00Z")
+
+        deactivate_forms()
+
+        form.refresh_from_db()
+
+        self.assertTrue(form.active)
+        self.assertIsNotNone(form.deactivate_on)
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_is_not_deactivated_when_soft_deleted(self):
+        form = FormFactory(active=False, deactivate_on="2023-10-10T21:15:00Z")
+        form._is_deleted = True
+        form.save(update_fields=["_is_deleted"])
+
+        deactivate_forms()
+
+        form.refresh_from_db()
+
+        self.assertFalse(form.active)
+        self.assertIsNotNone(form.deactivate_on)

@@ -220,6 +220,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "show_progress_indicator",
             "maintenance_mode",
             "active",
+            "activate_on",
+            "deactivate_on",
             "is_deleted",
             "submission_confirmation_template",
             "explanation_template",

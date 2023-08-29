@@ -293,20 +293,42 @@ const FormConfigurationFields = ({
         />
       </FormRow>
       <FormRow>
-        <DateTimeInput
-          name="form.activatedOn"
-          value=""
-          formatDatetime=
-          onChange=
-        />
+        <Field
+          name="form.activateOn"
+          label={
+            <FormattedMessage
+              defaultMessage="Activate on"
+              description="Form activation field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="When the form should be activated."
+              description="Form activation field help text"
+            />
+          }
+        >
+          <DateTimeInput value={activateOn} onChange={onChange} enableTime={true} />
+        </Field>
       </FormRow>
       <FormRow>
-        <DateTimeInput
-          name="form.deactivatedOn"
-          value=""
-          formatDatetime=
-          onChange=
-        />
+        <Field
+          name="form.deactivateOn"
+          label={
+            <FormattedMessage
+              defaultMessage="Deactivate on"
+              description="Form deactivation field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="When the form should be deactivated."
+              description="Form deactivation field help text"
+            />
+          }
+        >
+          <DateTimeInput value={deactivateOn} onChange={onChange} enableTime={true} />
+        </Field>
       </FormRow>
       <FormRow>
         <Checkbox
