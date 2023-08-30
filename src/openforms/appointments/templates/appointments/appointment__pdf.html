@@ -1,61 +1,60 @@
 {% load i18n %}
 <section class="appointment">
-<h2>{% trans "Appointment information" %}</h2>
+<h2 class="subtitle">{% trans "Appointment information" %}</h2>
 
-<table>
-  <tr class="appointment__products">
-    <td>
+<div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
       {% trans "Products" %}
-    </td>
-    <td>
+    </div>
+    <div class="submission-step-row__value">
       {% for product in appointment.products %} {{ product.name }}{% if product.amount > 1 %} (x{{
       product.amount }}){% endif %}{% if not forloop.last %}<br />{% endif %} {% endfor %}
-    </td>
-  </tr>
-  <tr class="appointment__location">
-    <td>
+    </div>
+  </div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
       {% trans "Location" %}
-    </td>
-    <td>
+    </div>
+    <div class="submission-step-row__value">
       {{ appointment.location.name }} {% if appointment.location.address %}<br />{{
       appointment.location.address }}{% endif %} {% if appointment.location.city %}<br />{{
       appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
-    </td>
-  </tr>
-  <tr class="appointment__datetime">
-    <td>
+    </div>
+  </div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
       {% trans "Date and time" %}
-    </td>
-    <td>
+    </div>
+    <div class="submission-step-row__value">
       {{ appointment.start_at|date }}, {{ appointment.start_at|time }}{% if appointment.end_at %} -
       {{ appointment.end_at|time }}{% endif %}
-    </td>
-  </tr>
-  <tr class="appointment__remarks">
-    <td>
+    </div>
+  </div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
       {% trans "Remarks" %}
-    </td>
-    <td>
+    </div>
+    <div class="submission-step-row__value">
       {{ appointment.remarks|linebreaksbr }}
-    </td>
-  </tr>
+    </div>
+  </div>
   {% if appointment.other %} {% for key, value in appointment.other.items %}
-  <tr class="appointment__{{key}}">
-    <td>{{ key }}</td>
-    <td>{{ value }}</td>
-  </tr>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">{{ key }}</div>
+    <div class="submission-step-row__value">{{ value }}</div>
+  </div>
   {% endfor %} {% endif %}
-</table>
+</div>
 
-<h2>{% trans "Your contact details" %}</h2>
-
-<table class="appointment__contact_details">
+<h2 class="subtitle">{% trans "Your contact details" %}</h2>
+<div class="submission-step">
   {% for node in contact_details %}
-  <tr>
-    <td>{{ node.label }}</td>
-    <td>{{ node.display_value }}</td>
-  </tr>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">{{ node.label }}</div>
+    <div class="submission-step-row__value">{{ node.display_value }}</div>
+  </div>
   {% endfor %}
-</table>
+</div>
 
 </section>
