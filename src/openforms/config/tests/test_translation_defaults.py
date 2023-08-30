@@ -23,6 +23,15 @@ class TranslatableFieldDefaultsTests(TestCase):
                     is_safe_default,
                     "Translatable model fields must have a callable or empty-ish default.",
                 )
+                if not callable(default):
+                    continue
 
                 value_en = getattr(unsaved_instance, f"{field}_en")
                 value_nl = getattr(unsaved_instance, f"{field}_nl")
+                self.assertNotEqual(
+                    value_en,
+                    value_nl,
+                    "Different languages produce the same value - check that your "
+                    "translations catalog is up to date and that your dynamic default "
+                    "actually returns translatable values!",
+                )
