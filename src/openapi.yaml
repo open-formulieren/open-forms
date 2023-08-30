@@ -212,8 +212,8 @@ paths:
                 type: array
                 items:
                   type: object
-                  description: Een Form.io componentdefinitie. De `type`-, `key`-
-                    en `label`-eigenschappen zijn gegarandeerd aanwezig en niet-leeg.
+                  description: A single Form.io component. The `type`, `key` and `label`
+                    properties are guaranteed to be present and non-empty.
                   properties:
                     type:
                       type: string
@@ -1231,6 +1231,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1300,6 +1302,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1813,6 +1817,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1888,6 +1894,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1967,6 +1975,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -6610,7 +6620,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6714,6 +6724,16 @@ components:
             mode.
         active:
           type: boolean
+        activateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time that the form should be activated.
+        deactivateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time that the form should be deactivated.
         isDeleted:
           type: boolean
         submissionConfirmationTemplate:
@@ -6780,9 +6800,8 @@ components:
           type: array
           items:
             type: object
-            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
-              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
-              kan worden.
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
             properties:
               type:
                 type: string
@@ -7053,7 +7072,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7220,7 +7239,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -8078,7 +8097,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -8182,6 +8201,16 @@ components:
             mode.
         active:
           type: boolean
+        activateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time that the form should be activated.
+        deactivateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time that the form should be deactivated.
         isDeleted:
           type: boolean
         submissionConfirmationTemplate:
@@ -8248,9 +8277,8 @@ components:
           type: array
           items:
             type: object
-            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
-              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
-              kan worden.
+            description: A single Form.io checkbox component for the statements that
+              a user may have to accept before submitting a form.
             properties:
               type:
                 type: string
