@@ -406,8 +406,10 @@ class GlobalConfiguration(SingletonModel):
             "The label of the checkbox that prompts the user to agree to the privacy policy."
         ),
         default=runtime_gettext(
-            "Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk "
-            "toestemming voor het verwerken van de door mij opgegeven gegevens."
+            _(
+                "Yes, I have read the {% privacy_policy %} and explicitly agree to the "
+                "processing of my submitted information."
+            )
         ),
         validators=[
             DjangoTemplateValidator(
@@ -436,11 +438,11 @@ class GlobalConfiguration(SingletonModel):
             "out the form truthfully. Note that this field does not have templating "
             "support."
         ),
-        # TODO: deschler/django-modeltranslation#698 for dynamic translations depending
-        # on the field language.
         default=runtime_gettext(
-            "Ik verklaar dat ik deze aanvraag naar waarheid heb ingevuld en geen "
-            "informatie heb verzwegen."
+            _(
+                "I declare that I have filled out the form truthfully and have not omitted "
+                "any information."
+            )
         ),
     )
 
