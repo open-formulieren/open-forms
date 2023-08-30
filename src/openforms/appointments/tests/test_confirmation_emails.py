@@ -30,6 +30,7 @@ LAST_NAME: Component = {
         "required": True,
         "maxLength": 20,
     },
+    "showInEmail": True,
 }
 
 EMAIL: Component = {
@@ -39,6 +40,7 @@ EMAIL: Component = {
     "validate": {
         "required": True,
     },
+    "showInEmail": True,
 }
 
 
