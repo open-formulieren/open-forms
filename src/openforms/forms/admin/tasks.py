@@ -116,7 +116,7 @@ def activate_forms():
     for form in forms:
         form.active = True
         form.activate_on = None
-        form.save(["active", "activate_on"])
+        form.save()
         logger.debug(f"Activated form {form.admin_name}")
         logevent.form_activated(form)
 
@@ -130,6 +130,6 @@ def deactivate_forms():
     for form in forms:
         form.active = False
         form.deactivate_on = None
-        form.save(["active", "deactivate_on"])
+        form.save()
         logger.debug(f"Deactivated form {form.admin_name}")
         logevent.form_deactivated(form)
