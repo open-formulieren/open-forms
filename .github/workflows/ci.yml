@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1
+        uses: maykinmedia/setup-django-backend@v1.1
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client gdal-bin'
           python-version: '3.10'
@@ -322,9 +322,6 @@ jobs:
           - env: extensions
             extensions: 'token_exchange,prefill_haalcentraalhr'
             image_tag_prefix: 'all-extensions-'
-          - env: ci
-            extensions: ''
-            image_tag_prefix: 'test-'
     uses: ./.github/workflows/build-image.yml
     with:
       image_name: ${{ needs.docker_build_setup.outputs.image-name }}
