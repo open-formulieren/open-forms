@@ -6728,12 +6728,12 @@ components:
           type: string
           format: date-time
           nullable: true
-          description: Date and time that the form should be activated.
+          description: Date and time on which the form should be activated.
         deactivateOn:
           type: string
           format: date-time
           nullable: true
-          description: Date and time that the form should be deactivated.
+          description: Date and time on which the form should be deactivated.
         isDeleted:
           type: boolean
         submissionConfirmationTemplate:
@@ -8206,12 +8206,12 @@ components:
           type: string
           format: date-time
           nullable: true
-          description: Date and time that the form should be activated.
+          description: Date and time on which the form should be activated.
         deactivateOn:
           type: string
           format: date-time
           nullable: true
-          description: Date and time that the form should be deactivated.
+          description: Date and time on which the form should be deactivated.
         isDeleted:
           type: boolean
         submissionConfirmationTemplate:
