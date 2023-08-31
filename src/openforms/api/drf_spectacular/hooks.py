@@ -34,6 +34,7 @@ IS_FORM_DESIGNER_COMPONENT = build_response_header_component(
         "If true, the user is allowed to navigate between submission steps even if "
         "previous submission steps have not been completed yet."
     ),
+    required=False,
 )
 
 
