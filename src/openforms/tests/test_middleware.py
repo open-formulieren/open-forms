@@ -38,8 +38,7 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
 
         response = self.client.get(url)
 
-        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
-        self.assertEqual("false", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
+        self.assertNotIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
 
     def test_header_not_api_endpoint_not_authenticated(self):
         response = self.client.get("/")

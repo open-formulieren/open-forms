@@ -70,9 +70,11 @@ class CanNavigateBetweenStepsMiddleware:
         if not request.path_info.startswith("/api"):
             return response
 
-        response[IS_FORM_DESIGNER_HEADER_NAME] = "false"
-
         user = request.user
+
+        if user.is_authenticated:
+            response[IS_FORM_DESIGNER_HEADER_NAME] = "false"
+
         if user.is_staff and user.has_perm("forms.change_form"):
             response[IS_FORM_DESIGNER_HEADER_NAME] = "true"
 
