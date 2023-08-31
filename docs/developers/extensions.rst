@@ -53,3 +53,37 @@ The flow works as follows:
 .. _open-forms-ext-token-exchange: https://github.com/open-formulieren/open-forms-ext-token-exchange
 .. _custom authentication class: https://requests.readthedocs.io/en/latest/user/advanced/#custom-authentication
 .. _mozilla-django-oidc: https://github.com/mozilla/mozilla-django-oidc/blob/2.0.0/mozilla_django_oidc/auth.py
+
+Haal Centraal HR prefill extension
+==================================
+
+This is an extension to add a prefill plugin to retrieve data from the `Haal Centraal HR API`_ using KVK numbers.
+The Haal Centraal HR API is a Den Haag specific API and not a national Dutch standard. For this reason, this prefill
+plugin was added as an extension rather than a Open-Forms core prefill plugin: `open-forms-ext-haalcentraal-hr`_.
+
+This prefill plugin supports the Keycloak token exchange if used alongside the Keycloak token exchange extension.
+
+.. _Haal Centraal HR API: https://app.swaggerhub.com/apis/DH-Sandbox/handelsregister/1.3.0
+.. _open-forms-ext-haalcentraal-hr: https://github.com/open-formulieren/open-forms-ext-haalcentraal-hr
+
+Configuration
+-------------
+
+* Go to **Configuration** > **Services** and create a service for Haal Centraal HR.
+* Go to **Configuration** > **Application groups** > **Configuration**.
+  Move the model ``prefill_haalcentraalhr.Haalcentraalhrconfig`` from the left to the right panel. Then click on **Save**.
+* Go to **Configuration** > **Haal Centraal HR Configuration**. Select the service for Haal Centraal HR and save the configuration.
+
+If the token exchange should be performed:
+
+* Go to **Miscellaneous** > **Token exchange plugin configurations**.
+  Click on **Add Token exchange plugin configuration** and fill in the details:
+
+  * Select the Haal Centraal HR service.
+  * Add the Keycloak audience.
+
+  Save the configuration.
+
+The prefill will be available in the form designer in the same way as other prefill plugins.
+
+
