@@ -452,8 +452,6 @@ jobs:
             image_tag_prefix: ''
           - env: extensions
             image_tag_prefix: 'all-extensions-'
-          - env: ci
-            image_tag_prefix: 'test-'
 
     steps:
       - uses: actions/checkout@v3
