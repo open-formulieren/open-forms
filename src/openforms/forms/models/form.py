@@ -232,13 +232,13 @@ class Form(models.Model):
         _("activate on"),
         blank=True,
         null=True,
-        help_text=_("Date and time that the form should be activated."),
+        help_text=_("Date and time on which the form should be activated."),
     )
     deactivate_on = models.DateTimeField(
         _("deactivate on"),
         blank=True,
         null=True,
-        help_text=_("Date and time that the form should be deactivated."),
+        help_text=_("Date and time on which the form should be deactivated."),
     )
 
     # Data removal

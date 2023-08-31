@@ -145,20 +145,50 @@ class ActivateFormsTests(TestCase):
         self.assertTrue(form2.active)
         self.assertIsNone(form2.activate_on)
 
+        # make sure the activation is logged as well
+        log_entries = TimelineLogProxy.objects.all()
+        self.assertEqual(log_entries.count(), 2)
+
+        for log_entry in log_entries:
+            message = log_entry.get_message()
+
+            self.assertEqual(
+                message.strip().replace("&quot;", '"'),
+                f"{log_entry.fmt_lead}: Form was activated.",
+            )
+
     @freeze_time("2023-10-10T21:15:00Z")
-    def test_form_activation_is_logged(self):
-        form = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
+    def test_form_with_timedelta(self):
+        with self.subTest("5 min have not passed"):
+            form = FormFactory(active=False, activate_on="2023-10-10T21:12:00Z")
+
+            activate_forms()
+
+            form.refresh_from_db()
+
+            self.assertTrue(form.active)
+            self.assertIsNone(form.activate_on)
+
+        with self.subTest("5 min have passed"):
+            form = FormFactory(active=False, activate_on="2023-10-10T21:08:00Z")
+
+            activate_forms()
+
+            form.refresh_from_db()
+
+            self.assertFalse(form.active)
+            self.assertIsNotNone(form.activate_on)
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_is_not_activated_on_different_date(self):
+        form = FormFactory(active=False, activate_on="2023-10-19T21:15:00Z")
 
         activate_forms()
 
-        log_entry = TimelineLogProxy.objects.last()
-        message = log_entry.get_message()
+        form.refresh_from_db()
 
-        self.assertEqual(log_entry.content_object.id, form.id)
-        self.assertEqual(
-            message.strip().replace("&quot;", '"'),
-            f"{log_entry.fmt_lead}: Form was activated.",
-        )
+        self.assertFalse(form.active)
+        self.assertIsNotNone(form.activate_on)
 
     @freeze_time("2023-10-10T21:15:00Z")
     def test_form_is_not_activated_on_different_time(self):
@@ -201,20 +231,50 @@ class DeactivateFormsTests(TestCase):
         self.assertFalse(form2.active)
         self.assertIsNone(form2.deactivate_on)
 
+        # make sure the deactivation is logged as well
+        log_entries = TimelineLogProxy.objects.all()
+        self.assertEqual(log_entries.count(), 2)
+
+        for log_entry in log_entries:
+            message = log_entry.get_message()
+
+            self.assertEqual(
+                message.strip().replace("&quot;", '"'),
+                f"{log_entry.fmt_lead}: Form was deactivated.",
+            )
+
     @freeze_time("2023-10-10T21:15:00Z")
-    def test_form_deactivation_is_logged(self):
-        form = FormFactory(deactivate_on="2023-10-10T21:15:00Z")
+    def test_form_with_timedelta(self):
+        with self.subTest("5 min have not passed"):
+            form = FormFactory(deactivate_on="2023-10-10T21:12:00Z")
+
+            deactivate_forms()
+
+            form.refresh_from_db()
+
+            self.assertFalse(form.active)
+            self.assertIsNone(form.deactivate_on)
+
+        with self.subTest("5 min have passed"):
+            form = FormFactory(deactivate_on="2023-10-10T21:08:00Z")
+
+            deactivate_forms()
+
+            form.refresh_from_db()
+
+            self.assertTrue(form.active)
+            self.assertIsNotNone(form.deactivate_on)
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    def test_form_is_not_deactivated_on_different_date(self):
+        form = FormFactory(deactivate_on="2023-10-19T21:15:00Z")
 
         deactivate_forms()
 
-        log_entry = TimelineLogProxy.objects.last()
-        message = log_entry.get_message()
+        form.refresh_from_db()
 
-        self.assertEqual(log_entry.content_object.id, form.id)
-        self.assertEqual(
-            message.strip().replace("&quot;", '"'),
-            f"{log_entry.fmt_lead}: Form was deactivated.",
-        )
+        self.assertTrue(form.active)
+        self.assertIsNotNone(form.deactivate_on)
 
     @freeze_time("2023-10-10T21:15:00Z")
     def test_form_is_not_deactivated_on_different_time(self):

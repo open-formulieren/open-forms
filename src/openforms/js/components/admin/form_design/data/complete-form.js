@@ -61,9 +61,9 @@ const normalizeLimit = (draft, field) => {
 };
 
 /**
- * Convert empty str value for a datetime field to null.
+ * Convert empty str value of a field to null.
  */
-const normalizeDateTime = (draft, field) => {
+const normalizeEmptyStrField = (draft, field) => {
   const form = draft.form;
   if (form[field] === '') {
     form[field] = null;
@@ -110,8 +110,8 @@ const saveForm = async (state, csrftoken) => {
     normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
     normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
     normalizeLimit(draft, 'allSubmissionsRemovalLimit');
-    normalizeDateTime(draft, 'activateOn');
-    normalizeDateTime(draft, 'deactivateOn');
+    normalizeEmptyStrField(draft, 'activateOn');
+    normalizeEmptyStrField(draft, 'deactivateOn');
     handleAppointmentForm(draft);
   });
 

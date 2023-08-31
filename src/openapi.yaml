@@ -212,8 +212,8 @@ paths:
                 type: array
                 items:
                   type: object
-                  description: A single Form.io component. The `type`, `key` and `label`
-                    properties are guaranteed to be present and non-empty.
+                  description: Een Form.io componentdefinitie. De `type`-, `key`-
+                    en `label`-eigenschappen zijn gegarandeerd aanwezig en niet-leeg.
                   properties:
                     type:
                       type: string
@@ -6800,8 +6800,9 @@ components:
           type: array
           items:
             type: object
-            description: A single Form.io checkbox component for the statements that
-              a user may have to accept before submitting a form.
+            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
+              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
+              kan worden.
             properties:
               type:
                 type: string
@@ -8277,8 +8278,9 @@ components:
           type: array
           items:
             type: object
-            description: A single Form.io checkbox component for the statements that
-              a user may have to accept before submitting a form.
+            description: Eén enkel Form.io selectievakjecomponent voor de verklaring
+              die een gebruiker mogelijks moet accepteren voor het formulier ingestuurd
+              kan worden.
             properties:
               type:
                 type: string

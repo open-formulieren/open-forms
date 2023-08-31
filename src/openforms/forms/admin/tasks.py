@@ -1,6 +1,7 @@
 import logging
 import tempfile
 import zipfile
+from datetime import timedelta
 from pathlib import Path
 from uuid import uuid4
 from zipfile import ZipFile
@@ -108,28 +109,35 @@ def clear_forms_export():
 @app.task()
 def activate_forms():
     """Activate all the forms that should be activated by the specific date and time."""
-    now = timezone.now().minute
+    now = timezone.now()
     forms = Form.objects.filter(
-        active=False, _is_deleted=False, activate_on__minute=now
+        active=False,
+        _is_deleted=False,
+        activate_on__lte=now,
+        activate_on__gt=now - timedelta(minutes=5),
     )
 
     for form in forms:
         form.active = True
         form.activate_on = None
-        form.save()
         logger.debug(f"Activated form {form.admin_name}")
         logevent.form_activated(form)
+
+    Form.objects.bulk_update(forms, fields=["active", "activate_on"])
 
 
 @app.task()
 def deactivate_forms():
     """Deactivate all the forms that should be deactivated by the specific date and time."""
-    now = timezone.now().minute
-    forms = Form.objects.live().filter(deactivate_on__minute=now)
+    now = timezone.now()
+    forms = Form.objects.live().filter(
+        deactivate_on__lte=now, deactivate_on__gt=now - timedelta(minutes=5)
+    )
 
     for form in forms:
         form.active = False
         form.deactivate_on = None
-        form.save()
         logger.debug(f"Deactivated form {form.admin_name}")
         logevent.form_deactivated(form)
+
+    Form.objects.bulk_update(forms, fields=["active", "deactivate_on"])
