@@ -13,10 +13,28 @@ import {extractMissingComponentTranslations} from './MissingComponentTranslation
 const LABEL_MAPPING = jsonScriptToVar('label-mapping', {default: {}});
 const LANGUAGES = jsonScriptToVar('languages', {default: []});
 
-const extractMissingTranslations = (translations, tabName, fieldNames, fallbackFields) => {
+const extractMissingTranslations = (
+  translations,
+  tabName,
+  fieldNames,
+  fallbackFields,
+  optionalFields = []
+) => {
   const defaultLangCode = LANGUAGES[0][0];
   const languageCodeMapping = Object.fromEntries(LANGUAGES);
   let skipWarningsFor = [];
+  const numOptionalTranslations = {};
+
+  const numLanguages = Object.keys(translations).length;
+  // count the amount of optional field translations
+  for (const [languageCode, mapping] of Object.entries(translations)) {
+    for (const [key, translation] of Object.entries(mapping)) {
+      if (fieldNames && fieldNames.includes(key) && optionalFields.includes(key)) {
+        if (!numOptionalTranslations[key]) numOptionalTranslations[key] = 0;
+        if (translation) numOptionalTranslations[key] += 1;
+      }
+    }
+  }
 
   let missingTranslations = [];
   for (const [languageCode, mapping] of Object.entries(translations)) {
@@ -26,21 +44,19 @@ const extractMissingTranslations = (translations, tabName, fieldNames, fallbackF
       if (!translation && languageCode === defaultLangCode && (fallbackFields || []).includes(key))
         skipWarningsFor.push(key);
 
-      if (!translation && !skipWarningsFor.includes(key)) {
-        if (fieldNames === undefined) {
-          missingTranslations.push({
-            fieldName: LABEL_MAPPING[key],
-            language: languageCodeMapping[languageCode],
-            tabName: tabName,
-          });
-        } else if (fieldNames.includes(key)) {
-          missingTranslations.push({
-            fieldName: LABEL_MAPPING[key],
-            language: languageCodeMapping[languageCode],
-            tabName: tabName,
-          });
-        }
-      }
+      // Ignore optional fields that are all empty or filled in
+      if (numOptionalTranslations[key] === 0 || numOptionalTranslations[key] === numLanguages)
+        skipWarningsFor.push(key);
+
+      if (translation) continue;
+      if (skipWarningsFor.includes(key)) continue;
+      if (fieldNames && !fieldNames.includes(key)) continue;
+
+      missingTranslations.push({
+        fieldName: LABEL_MAPPING[key],
+        language: languageCodeMapping[languageCode],
+        tabName: tabName,
+      });
     }
   }
   return missingTranslations;
@@ -94,7 +110,9 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
     extractMissingTranslations(
       form.translations,
       <FormattedMessage defaultMessage="Form" description="Form fields tab title" />,
-      ['name', 'explanationTemplate']
+      ['name', 'explanationTemplate'],
+      undefined,
+      ['explanationTemplate']
     ),
     extractMissingTranslations(
       form.translations,
