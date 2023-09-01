@@ -21,7 +21,7 @@ const NewStepFormDefinitionPicker = ({onReplace}) => {
   const [validationErrors, setValidationErrors] = useState([]);
 
   const formDefinitionChoices = formDefinitions
-    .filter(fd => fd.isReusable)
+    .filter(fd => fd.isReusable && !formContext.formSteps.some(fc => fc.isReusable && fc.formDefinition === fd.url))
     .map(fd => [fd.url, fd.internalName || fd.name])
     .sort((a, b) => a[1].localeCompare(b[1]));
 
