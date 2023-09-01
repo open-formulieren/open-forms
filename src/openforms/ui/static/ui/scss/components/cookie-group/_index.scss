@@ -15,3 +15,11 @@
     }
   }
 }
+
+.openforms-theme {
+  .cookie-group {
+    &__title {
+      margin-block-end: 1rem !important; // SDK styles for :not(:last-child) override this otherwise
+    }
+  }
+}
