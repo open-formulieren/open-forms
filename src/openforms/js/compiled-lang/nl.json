@@ -29,6 +29,12 @@
       "value": "Verwijderen"
     }
   ],
+  "+dcsE0": [
+    {
+      "type": 0,
+      "value": "Remove value"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -632,7 +638,7 @@
   "A1tDIH": [
     {
       "type": 0,
-      "value": "Name"
+      "value": "Naam"
     }
   ],
   "A3uQyR": [
@@ -1029,6 +1035,12 @@
     {
       "type": 0,
       "value": "Gebruik bestaande formulierdefinitie"
+    }
+  ],
+  "GO9yud": [
+    {
+      "type": 0,
+      "value": "When the form should be activated."
     }
   ],
   "GV8HnZ": [
@@ -2061,7 +2073,7 @@
   "ZdZ2Mb": [
     {
       "type": 0,
-      "value": "Set the registration backend to use for the submission"
+      "value": "Zet registratieplugin voor de inzending"
     }
   ],
   "a4gS07": [
@@ -2140,6 +2152,12 @@
     {
       "type": 0,
       "value": "Volledige HTTP-request"
+    }
+  ],
+  "brvKtm": [
+    {
+      "type": 0,
+      "value": "Activate on"
     }
   ],
   "bzVhb6": [
@@ -2235,7 +2253,7 @@
   "dV8M5q": [
     {
       "type": 0,
-      "value": "A recognisable name for this backend configuration."
+      "value": "Een herkenbare naam voor deze plugin en configuratie."
     }
   ],
   "dWNClE": [
@@ -2451,7 +2469,7 @@
   "hPJb+Q": [
     {
       "type": 0,
-      "value": "Add registration backend"
+      "value": "Registratiepluginoptie toevoegen"
     }
   ],
   "hWRRHx": [
@@ -2744,6 +2762,12 @@
     {
       "type": 0,
       "value": "Versie"
+    }
+  ],
+  "nFXYHB": [
+    {
+      "type": 0,
+      "value": "When the form should be deactivated."
     }
   ],
   "nHFMXn": [
@@ -3141,6 +3165,12 @@
     {
       "type": 0,
       "value": "Veld waar beschikbare producten voor een afspraak komen te staan"
+    }
+  ],
+  "x+ORaW": [
+    {
+      "type": 0,
+      "value": "Deactivate on"
     }
   ],
   "x4gaYf": [

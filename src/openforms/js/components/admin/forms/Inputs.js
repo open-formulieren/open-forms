@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef} from 'react';
 import {defineMessage, useIntl} from 'react-intl';
 
+import FAIcon from 'components/admin/FAIcon';
+
 import {PrefixContext} from './Context';
 
 const Input = ({type = 'text', name, ...extraProps}) => {
@@ -66,7 +68,22 @@ const DateTimeInput = ({name, value, formatDatetime, onChange, ...extraProps}) =
 
   return (
     <div className="datetime-input">
-      <input ref={datetimePickerRef} placeholder={placeHolder} />
+      <input
+        ref={datetimePickerRef}
+        placeholder={placeHolder}
+        value={value ?? ''}
+        onChange={onChange}
+      />
+      <FAIcon
+        title={intl.formatMessage({
+          description: 'Delete datetime value',
+          defaultMessage: 'Remove value',
+        })}
+        icon="times"
+        onClick={() => {
+          onChange({target: {name, value: ''}});
+        }}
+      />
     </div>
   );
 };

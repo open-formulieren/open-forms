@@ -49,7 +49,7 @@ const getStepReference = (stepsByGeneratedId, stepIdentifier, stepAttribute = 'u
 };
 
 /**
- * Convert empty str value for a field to null.
+ * Convert empty str value for a data removal field to null.
  */
 const normalizeLimit = (draft, field) => {
   const removalOptions = draft.form?.submissionsRemovalOptions;
@@ -57,6 +57,16 @@ const normalizeLimit = (draft, field) => {
   const currentValue = removalOptions?.[field];
   if (currentValue === '') {
     removalOptions[field] = null;
+  }
+};
+
+/**
+ * Convert empty str value of a field to null.
+ */
+const normalizeEmptyStrField = (draft, field) => {
+  const form = draft.form;
+  if (form[field] === '') {
+    form[field] = null;
   }
 };
 
@@ -100,6 +110,8 @@ const saveForm = async (state, csrftoken) => {
     normalizeLimit(draft, 'incompleteSubmissionsRemovalLimit');
     normalizeLimit(draft, 'erroredSubmissionsRemovalLimit');
     normalizeLimit(draft, 'allSubmissionsRemovalLimit');
+    normalizeEmptyStrField(draft, 'activateOn');
+    normalizeEmptyStrField(draft, 'deactivateOn');
     handleAppointmentForm(draft);
   });
 

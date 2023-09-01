@@ -1,3 +1,4 @@
+import logging
 import uuid as _uuid
 from contextlib import suppress
 from copy import deepcopy
@@ -34,6 +35,7 @@ from ..constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from .utils import literal_getter
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class FormQuerySet(models.QuerySet):
@@ -228,6 +230,18 @@ class Form(models.Model):
         ),
     )
     _is_deleted = models.BooleanField(default=False)
+    activate_on = models.DateTimeField(
+        _("activate on"),
+        blank=True,
+        null=True,
+        help_text=_("Date and time on which the form should be activated."),
+    )
+    deactivate_on = models.DateTimeField(
+        _("deactivate on"),
+        blank=True,
+        null=True,
+        help_text=_("Date and time on which the form should be deactivated."),
+    )
 
     # Data removal
     successful_submissions_removal_limit = models.PositiveIntegerField(
@@ -546,6 +560,18 @@ class Form(models.Model):
         config = GlobalConfiguration.get_solo()
         assert isinstance(config, GlobalConfiguration)
         return getattr(config, field_name)
+
+    def activate(self):
+        self.active = True
+        self.activate_on = None
+        logger.debug("Activating form %s", self.admin_name)
+        self.save(update_fields=["active", "activate_on"])
+
+    def deactivate(self):
+        self.active = False
+        self.deactivate_on = None
+        logger.debug("Deactivating form %s", self.admin_name)
+        self.save(update_fields=["active", "deactivate_on"])
 
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):

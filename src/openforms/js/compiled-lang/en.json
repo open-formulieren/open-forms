@@ -29,6 +29,12 @@
       "value": "Remove"
     }
   ],
+  "+dcsE0": [
+    {
+      "type": 0,
+      "value": "Remove value"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -1025,6 +1031,12 @@
     {
       "type": 0,
       "value": "Use existing form definition"
+    }
+  ],
+  "GO9yud": [
+    {
+      "type": 0,
+      "value": "When the form should be activated."
     }
   ],
   "GV8HnZ": [
@@ -2137,6 +2149,12 @@
       "value": "Full request"
     }
   ],
+  "brvKtm": [
+    {
+      "type": 0,
+      "value": "Activate on"
+    }
+  ],
   "bzVhb6": [
     {
       "type": 0,
@@ -2741,6 +2759,12 @@
       "value": "Version"
     }
   ],
+  "nFXYHB": [
+    {
+      "type": 0,
+      "value": "When the form should be deactivated."
+    }
+  ],
   "nHFMXn": [
     {
       "type": 0,
@@ -3135,6 +3159,12 @@
     {
       "type": 0,
       "value": "Component where products for an appointment will be shown"
+    }
+  ],
+  "x+ORaW": [
+    {
+      "type": 0,
+      "value": "Deactivate on"
     }
   ],
   "x4gaYf": [

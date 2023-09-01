@@ -673,3 +673,14 @@ def skipped_registration_cosign_required(submission: "Submission"):
         submission,
         "skipped_registration_cosign_required",
     )
+
+
+# - - -
+
+
+def form_activated(form: "Form"):
+    _create_log(form, "form_activated")
+
+
+def form_deactivated(form: "Form"):
+    _create_log(form, "form_deactivated")

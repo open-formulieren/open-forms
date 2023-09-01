@@ -5,7 +5,7 @@ import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox, DateTimeInput, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
 
@@ -93,6 +93,8 @@ const FormConfigurationFields = ({
     active,
     category,
     isDeleted,
+    activateOn,
+    deactivateOn,
     maintenanceMode,
     translationEnabled,
     submissionAllowed,
@@ -289,6 +291,44 @@ const FormConfigurationFields = ({
           checked={active}
           onChange={event => onCheckboxChange(event, active)}
         />
+      </FormRow>
+      <FormRow>
+        <Field
+          name="form.activateOn"
+          label={
+            <FormattedMessage
+              defaultMessage="Activate on"
+              description="Form activation field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="When the form should be activated."
+              description="Form activation field help text"
+            />
+          }
+        >
+          <DateTimeInput value={activateOn} onChange={onChange} enableTime={true} />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name="form.deactivateOn"
+          label={
+            <FormattedMessage
+              defaultMessage="Deactivate on"
+              description="Form deactivation field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="When the form should be deactivated."
+              description="Form deactivation field help text"
+            />
+          }
+        >
+          <DateTimeInput value={deactivateOn} onChange={onChange} enableTime={true} />
+        </Field>
       </FormRow>
       <FormRow>
         <Checkbox

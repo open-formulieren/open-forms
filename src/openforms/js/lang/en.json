@@ -14,6 +14,11 @@
     "description": "Service fetch configuration modal form Path field label",
     "originalDefault": "Path"
   },
+  "+dcsE0": {
+    "defaultMessage": "Remove value",
+    "description": "Delete datetime value",
+    "originalDefault": "Remove value"
+  },
   "+hAGg7": {
     "defaultMessage": "Users will not be able to start the form if it is in maintenance mode.",
     "description": "Form maintenance mode field help text",
@@ -563,6 +568,11 @@
     "defaultMessage": "Use existing form definition",
     "description": "Form definition selection modal title",
     "originalDefault": "Use existing form definition"
+  },
+  "GO9yud": {
+    "defaultMessage": "When the form should be activated.",
+    "description": "Form activation field help text",
+    "originalDefault": "When the form should be activated."
   },
   "GV8HnZ": {
     "defaultMessage": "Select payment backend",
@@ -1239,6 +1249,11 @@
     "description": "Service fetch configuration try it out tabpanel full request fieldset title",
     "originalDefault": "Full request"
   },
+  "brvKtm": {
+    "defaultMessage": "Activate on",
+    "description": "Form activation field label",
+    "originalDefault": "Activate on"
+  },
   "bzVhb6": {
     "defaultMessage": "Move up",
     "description": "Move up icon title",
@@ -1629,6 +1644,11 @@
     "description": "Camunda 'process definition version' label",
     "originalDefault": "Version"
   },
+  "nFXYHB": {
+    "defaultMessage": "When the form should be deactivated.",
+    "description": "Form deactivation field help text",
+    "originalDefault": "When the form should be deactivated."
+  },
   "nHFMXn": {
     "defaultMessage": "Trigger condition",
     "description": "Logic trigger heading",
@@ -1873,6 +1893,11 @@
     "defaultMessage": "Component where products for an appointment will be shown",
     "description": "Products Component field help text",
     "originalDefault": "Component where products for an appointment will be shown"
+  },
+  "x+ORaW": {
+    "defaultMessage": "Deactivate on",
+    "description": "Form deactivation field label",
+    "originalDefault": "Deactivate on"
   },
   "x4gaYf": {
     "defaultMessage": "Cancel",

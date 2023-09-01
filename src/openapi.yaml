@@ -1231,6 +1231,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1300,6 +1302,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1813,6 +1817,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1888,6 +1894,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -1967,6 +1975,8 @@ paths:
         - `paymentBackendOptions`
         - `product`
         - `category`
+        - `activateOn`
+        - `deactivateOn`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `askPrivacyConsent`
@@ -6609,7 +6619,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6713,6 +6723,16 @@ components:
             mode.
         active:
           type: boolean
+        activateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time on which the form should be activated.
+        deactivateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time on which the form should be deactivated.
         isDeleted:
           type: boolean
         submissionConfirmationTemplate:
@@ -7052,7 +7072,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7219,7 +7239,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -8077,7 +8097,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -8181,6 +8201,16 @@ components:
             mode.
         active:
           type: boolean
+        activateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time on which the form should be activated.
+        deactivateOn:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time on which the form should be deactivated.
         isDeleted:
           type: boolean
         submissionConfirmationTemplate:

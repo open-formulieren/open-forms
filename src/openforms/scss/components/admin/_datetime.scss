@@ -1,0 +1,10 @@
+.datetime-input {
+  display: inline-flex;
+  gap: 3px;
+  padding-right: 2px;
+
+  .fa-solid {
+    margin-top: 2px;
+    cursor: pointer;
+  }
+}
