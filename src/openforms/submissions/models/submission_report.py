@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _, override
 from celery.result import AsyncResult
 from privates.fields import PrivateMediaFileField
 
-from openforms.appointments.models import AppointmentInfo
 from openforms.utils.pdf import render_to_pdf
 
 from ..report import Report

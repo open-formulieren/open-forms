@@ -7,8 +7,7 @@ from openforms.formio.rendering.nodes import ComponentNode
 from openforms.formio.typing import Component
 from openforms.submissions.rendering import Renderer
 
-from .service import get_appointment
-from .utils import get_plugin
+from .utils import get_appointment, get_plugin
 
 
 class AppointmentRenderer(Renderer):
@@ -33,7 +32,7 @@ class AppointmentRenderer(Renderer):
             yield from child_node
 
     def __str__(self) -> SafeString:
-        # Like a Django Form renderer, render to the default representation
+        # Like a Django Form renderer, render to the requested representation
 
         if (
             not (appointment := get_appointment(self.submission))

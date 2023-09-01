@@ -6,14 +6,15 @@ Anything else is considered private API.
 """
 from openforms.submissions.models import Submission
 
-from .models import Appointment
+from .renderer import AppointmentRenderer
+from .utils import get_appointment, get_plugin
 
-
-def get_appointment(submission: Submission) -> Appointment | None:
-    if not submission.form.is_appointment:
-        return None
-    appointment: Appointment | None = getattr(submission, "appointment", None)
-    return appointment
+__all__ = [
+    "AppointmentRenderer",
+    "get_appointment",
+    "get_email_confirmation_recipients",
+    "get_plugin",
+]
 
 
 def get_email_confirmation_recipients(submission: Submission) -> list[str]:

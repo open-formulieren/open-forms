@@ -309,3 +309,10 @@ def get_confirmation_mail_suffix(submission: Submission) -> str:
         return ""
 
     return _("(updated)")
+
+
+def get_appointment(submission: Submission) -> Appointment | None:
+    if not submission.form.is_appointment:
+        return None
+    appointment: Appointment | None = getattr(submission, "appointment", None)
+    return appointment

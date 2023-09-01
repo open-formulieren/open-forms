@@ -80,7 +80,7 @@ class Report:
 
     @property
     def appointment(self):
-        from openforms.appointments.renderer import AppointmentRenderer
+        from openforms.appointments.service import AppointmentRenderer
 
         return AppointmentRenderer(
             submission=self.renderer.submission,

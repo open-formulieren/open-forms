@@ -1,9 +1,11 @@
 from django import template
 from django.template.loader import render_to_string
 
-from openforms.appointments.models import Appointment
-from openforms.appointments.renderer import AppointmentRenderer
-from openforms.appointments.utils import get_plugin
+from openforms.appointments.service import (
+    AppointmentRenderer,
+    get_appointment,
+    get_plugin,
+)
 from openforms.submissions.rendering.constants import RenderModes
 
 register = template.Library()
@@ -22,7 +24,7 @@ def appointment_information(context):
 
     # check for new style appointments
     submission = context["_submission"]
-    appointment: Appointment | None = getattr(submission, "appointment", None)
+    appointment = get_appointment(submission)
     plugin_id = appointment.plugin if appointment else ""
 
     plugin = get_plugin(plugin=plugin_id)
