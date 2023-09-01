@@ -1,3 +1,7 @@
+import logging
+from unittest.mock import patch
+
+from django.db import DatabaseError
 from django.test import TestCase, override_settings
 
 from freezegun import freeze_time
@@ -6,6 +10,8 @@ from openforms.logging.models import TimelineLogProxy
 
 from ..tasks import activate_forms, deactivate_forms
 from .factories import FormFactory
+
+logger = logging.getLogger(__name__)
 
 
 class ActivateFormsTests(TestCase):
@@ -95,6 +101,20 @@ class ActivateFormsTests(TestCase):
         self.assertFalse(form.active)
         self.assertIsNotNone(form.activate_on)
 
+    @freeze_time("2023-10-10T21:15:00Z")
+    @patch("openforms.forms.tasks.Form.activate")
+    def test_database_error(self, mocked_activation):
+        form = FormFactory(active=False, activate_on="2023-10-10T21:15:00Z")
+        mocked_activation.side_effect = DatabaseError()
+
+        with self.assertLogs() as logs:
+            activate_forms()
+
+        message = logs.records[0].getMessage()
+
+        mocked_activation.assert_called()
+        self.assertEqual(message, f"Form activation of form {form.admin_name} failed")
+
 
 class DeactivateFormsTests(TestCase):
     @freeze_time("2023-10-10T21:15:00Z")
@@ -182,3 +202,17 @@ class DeactivateFormsTests(TestCase):
 
         self.assertFalse(form.active)
         self.assertIsNotNone(form.deactivate_on)
+
+    @freeze_time("2023-10-10T21:15:00Z")
+    @patch("openforms.forms.tasks.Form.deactivate")
+    def test_database_error(self, mocked_deactivation):
+        form = FormFactory(deactivate_on="2023-10-10T21:15:00Z")
+        mocked_deactivation.side_effect = DatabaseError()
+
+        with self.assertLogs() as logs:
+            deactivate_forms()
+
+        message = logs.records[0].getMessage()
+
+        mocked_deactivation.assert_called()
+        self.assertEqual(message, f"Form deactivation of form {form.admin_name} failed")
