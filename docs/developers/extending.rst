@@ -185,15 +185,141 @@ environment variables your extensions require.
 Testing in CI
 -------------
 
-The approach for testing in CI largely follows :ref:`developers_extending_docker`.
+There are multiple approaches to testing in CI. These include:
 
-Open Forms also publishes an image to Docker Hub including the test dependencies to
-facilitate unit testing in Python for your extension. The
-``openformulieren/open-forms:test-latest`` image is always based on the ``latest`` tag
-and includes the upstream ``requirements/ci.txt``.
+* Using git submodules
+* Using symlinks
 
-See also our :ref:`versioning policy<developers_versioning>` to see how and when we
-make breaking changes.
+**Git submodules**
 
+You can include Open-Forms as a `git submodule`_ in the repository of the extension with:
+
+.. code-block:: bash
+
+   git submodule add https://github.com/open-formulieren/open-forms.git
+
+Then, stage and commit the updated files.
+
+In order for the extension to be able to import from ``openforms``, the path to the ``openforms`` package needs to be present in
+the ``PYTHON_PATH``. If it is not present, it can be added with:
+
+.. code-block:: bash
+
+   export PYTHON_PATH=$PYTHON_PATH:<path to extension repo>/open-forms/src
+
+Open-Forms (in the git submodule) should then be set up in the same way as when installing Open-Forms for development.
+See :ref:`developers_installation` for more information.
+
+With this set up, from within the extension repository it is possible to test the extension. This can be done
+using the ``manage.py`` file from open-forms:
+
+.. code-block:: bash
+
+   open-forms/src/manage.py test extension_package
+
+In Github Actions, one can then create an action to run the tests with a similar logic. This action requires a ``postgres``
+and a ``redis`` service. It is possible to checkout the repository with the Open-Forms submodule using:
+
+.. code-block:: yaml
+
+   - uses: actions/checkout@v3
+     with:
+       submodules: true
+
+Then, after setting up the Open-Forms backend with the ``maykinmedia/setup-django-backend@v1.1`` action, one can run the
+tests as follows. Note that both the directory containing the Open-Forms ``manage.py`` and the working directory are
+automatically added to the path (so there is no need to update the ``PYTHON_PATH``).
+
+.. code-block:: yaml
+
+   - name: Run tests
+     run: |
+       python open-forms/src/manage.py compilemessages
+       coverage run --source=extension_package open-forms/src/manage.py test extension_package
+       coverage xml -o coverage-extension.xml
+     env:
+       DJANGO_SETTINGS_MODULE: openforms.conf.ci
+       OPEN_FORMS_EXTENSIONS: extension_package
+
+For an example of how to set up github action with this method, look at the `demo extension`_.
+
+The advantages of using this approach include:
+
+* If you are not actively developing Open-Forms locally, then this approach keeps the extension nicely contained in one
+  folder.
+* Setting up CI with Github actions is more straightforward.
 
 .. _demo extension: https://github.com/open-formulieren/demo-extension
+.. _git submodule: https://git-scm.com/book/en/v2/Git-Tools-Submodules
+
+**Symlinks**
+
+This approach involves symlinking the extension package inside Open-Forms. The idea behind it is described in
+:ref:`test_extension_plugin_locally`.
+
+In order to create a Github Action to test with this approach, you need to checkout both the extension AND the
+Open-Forms repositories:
+
+.. code-block:: yaml
+
+   - name: Checkout Open Forms
+     uses: actions/checkout@v3
+     with:
+       repository: open-formulieren/open-forms
+       path: open-forms
+
+   - name: Checkout extension
+     uses: actions/checkout@v3
+     with:
+       path: extension
+
+Then, the Open-Forms backend needs to be set-up. You can use the ``maykinmedia/setup-django-backend@v1.1`` action,
+specifying the ``working-directory: open-forms`` and the ``nvmrc-custom-dir: open-forms`` arguments in addition to
+all the other arguments that are normally used to set up the Open-Forms backend.
+
+Next, the extension package needs to be symlinked in the Open-Forms repository:
+
+.. code-block:: yaml
+
+   - name: Make symlink in OF to the extension
+     run: |
+       ln -s ${{ github.workspace }}/extension/extension_package ${{ github.workspace }}/open-forms/src
+
+The tests can be run in the same way as for the previous approach, but the ``working-directory`` needs to be specified:
+
+.. code-block:: yaml
+
+   - name: Run tests
+     run: |
+       python open-forms/src/manage.py compilemessages
+       coverage run --source=extension_package open-forms/src/manage.py test extension_package
+       coverage xml -o coverage-extension.xml
+     env:
+       DJANGO_SETTINGS_MODULE: openforms.conf.ci
+       OPEN_FORMS_EXTENSIONS: extension_package
+     working-directory: ${{ github.workspace }}/open-forms
+
+In order to get CodeCov working properly, the ``working-directory`` and the ``root_dir`` parameters both need to be
+specified:
+
+.. code-block:: yaml
+
+   - name: Publish coverage report
+     uses: codecov/codecov-action@v3.1.4
+     with:
+       root_dir: ${{ github.workspace }}/extension
+       working-directory: ${{ github.workspace }}/open-forms
+       files: ./coverage-extension.xml
+
+For examples of how to set up Github Actions with this approach, look at `open-forms-ext-haalcentraal-hr`_ and
+`open-forms-ext-token-exchange`_.
+
+The advantages of using this approach are:
+
+* If you are developing Open-Forms locally, you do not need to have an extra copy of the repository inside the extension
+  repository.
+* If you want to test multiple extensions at the same time, this can be easily achieved by adding more symlinks to
+  Open-Forms.
+
+.. _open-forms-ext-haalcentraal-hr: https://github.com/open-formulieren/open-forms-ext-haalcentraal-hr
+.. _open-forms-ext-token-exchange: https://github.com/open-formulieren/open-forms-ext-token-exchange
