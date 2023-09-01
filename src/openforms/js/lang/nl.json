@@ -14,6 +14,11 @@
     "description": "Service fetch configuration modal form Path field label",
     "originalDefault": "Path"
   },
+  "+dcsE0": {
+    "defaultMessage": "Remove value",
+    "description": "Delete datetime value",
+    "originalDefault": "Remove value"
+  },
   "+hAGg7": {
     "defaultMessage": "Gebruikers kunnen dit formulier niet starten als het in onderhoud is",
     "description": "Form maintenance mode field help text",
@@ -82,8 +87,8 @@
   "2Z/hNo": {
     "defaultMessage": "Type",
     "description": "Camunda complex process var 'type' label",
-    "originalDefault": "Type",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Type"
   },
   "2boL55": {
     "defaultMessage": "Query-parameters",
@@ -168,8 +173,8 @@
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
-    "originalDefault": "minus",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "minus"
   },
   "5zieWh": {
     "defaultMessage": "Naam van de formulierdefinitie die in deze stap gebruikt wordt.",
@@ -189,8 +194,8 @@
   "6ZW12a": {
     "defaultMessage": "Request body",
     "description": "Service fetch configuration modal form request body field label",
-    "originalDefault": "Request body",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Request body"
   },
   "6hApJ7": {
     "defaultMessage": "Ingelogd blijven",
@@ -265,8 +270,8 @@
   "8VqmbG": {
     "defaultMessage": "Type",
     "description": "JSON editor: 'type' header label",
-    "originalDefault": "Type",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Type"
   },
   "8hSjw4": {
     "defaultMessage": "Component {label} ({key}) steunt op een niet-bestaande component key {missingKey} in de eenvoudige logica.",
@@ -406,8 +411,8 @@
   "BrGg65": {
     "defaultMessage": "plus",
     "description": "\"+\" operator description",
-    "originalDefault": "plus",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "plus"
   },
   "BrsG4w": {
     "defaultMessage": "dan is de prijs",
@@ -507,8 +512,8 @@
   "Ev+T9r": {
     "defaultMessage": "in",
     "description": "\"in\" operator description",
-    "originalDefault": "in",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "in"
   },
   "F+cPJR": {
     "defaultMessage": "de lijst",
@@ -569,6 +574,11 @@
     "defaultMessage": "Gebruik bestaande formulierdefinitie",
     "description": "Form definition selection modal title",
     "originalDefault": "Use existing form definition"
+  },
+  "GO9yud": {
+    "defaultMessage": "When the form should be activated.",
+    "description": "Form activation field help text",
+    "originalDefault": "When the form should be activated."
   },
   "GV8HnZ": {
     "defaultMessage": "Betaalprovider",
@@ -838,8 +848,8 @@
   "O3l+pQ": {
     "defaultMessage": "Type",
     "description": "JSON datatype selector label",
-    "originalDefault": "Type",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Type"
   },
   "OB48En": {
     "defaultMessage": "Design token waarden",
@@ -869,8 +879,8 @@
   "Orf0vr": {
     "defaultMessage": "Update",
     "description": "Update service fetch configuration button label",
-    "originalDefault": "Update",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Update"
   },
   "OvqnXR": {
     "defaultMessage": "Ja",
@@ -915,8 +925,8 @@
   "PtZ96W": {
     "defaultMessage": "Alias",
     "description": "Manage process vars alias column title",
-    "originalDefault": "Alias",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Alias"
   },
   "PwUKIe": {
     "defaultMessage": "(biedt {attrs} aan)",
@@ -1101,14 +1111,14 @@
   "WQCs+M": {
     "defaultMessage": "Product",
     "description": "Product fieldset title",
-    "originalDefault": "Product",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Product"
   },
   "WUTOwp": {
     "defaultMessage": "Service",
     "description": "Service fetch configuration modal form Service field label",
-    "originalDefault": "Service",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Service"
   },
   "WdVKZw": {
     "defaultMessage": "Logica",
@@ -1250,6 +1260,11 @@
     "description": "Service fetch configuration try it out tabpanel full request fieldset title",
     "originalDefault": "Full request"
   },
+  "brvKtm": {
+    "defaultMessage": "Activate on",
+    "description": "Form activation field label",
+    "originalDefault": "Activate on"
+  },
   "bzVhb6": {
     "defaultMessage": "Verplaats omhoog",
     "description": "Move up icon title",
@@ -1263,8 +1278,8 @@
   "c1XyJ4": {
     "defaultMessage": "Component",
     "description": "Component variables tab title",
-    "originalDefault": "Component",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Component"
   },
   "cDbGU2": {
     "defaultMessage": "bewaartermijn voor sessies",
@@ -1284,8 +1299,8 @@
   "cV72I+": {
     "defaultMessage": "Product",
     "description": "Form product label",
-    "originalDefault": "Product",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Product"
   },
   "cZbqaM": {
     "defaultMessage": "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven de startknop(pen).",
@@ -1642,6 +1657,11 @@
     "description": "Camunda 'process definition version' label",
     "originalDefault": "Version"
   },
+  "nFXYHB": {
+    "defaultMessage": "When the form should be deactivated.",
+    "description": "Form deactivation field help text",
+    "originalDefault": "When the form should be deactivated."
+  },
   "nHFMXn": {
     "defaultMessage": "Triggervoorwaarde",
     "description": "Logic trigger heading",
@@ -1886,6 +1906,11 @@
     "defaultMessage": "Veld waar beschikbare producten voor een afspraak komen te staan",
     "description": "Products Component field help text",
     "originalDefault": "Component where products for an appointment will be shown"
+  },
+  "x+ORaW": {
+    "defaultMessage": "Deactivate on",
+    "description": "Form deactivation field label",
+    "originalDefault": "Deactivate on"
   },
   "x4gaYf": {
     "defaultMessage": "Annuleren",

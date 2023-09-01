@@ -71,7 +71,7 @@ const DateTimeInput = ({name, value, formatDatetime, onChange, ...extraProps}) =
       <input
         ref={datetimePickerRef}
         placeholder={placeHolder}
-        value={value ? value : ''}
+        value={value ?? ''}
         onChange={onChange}
       />
       <FAIcon

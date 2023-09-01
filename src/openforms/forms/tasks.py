@@ -1,7 +1,10 @@
 import copy
 import logging
+from datetime import timedelta
 
+from django.db import DatabaseError, transaction
 from django.db.utils import IntegrityError
+from django.utils import timezone
 
 from djangorestframework_camel_case.util import camelize
 
@@ -82,3 +85,57 @@ def recouple_submission_variables_to_form_variables(form_id: int) -> None:
         # Issue #1970: If the form is saved again from the form editor while this task was running, the form variables
         # retrieved don't exist anymore. Another task will be scheduled from the endpoint, so nothing more to do here.
         logger.info("Form variables were updated while this task was runnning.")
+
+
+@app.task()
+def activate_forms():
+    """Activate all the forms that should be activated by the specific date and time."""
+    from openforms.logging import logevent
+
+    now = timezone.now()
+    forms = Form.objects.filter(
+        active=False,
+        _is_deleted=False,
+        activate_on__lte=now,
+        activate_on__gt=now - timedelta(minutes=5),
+    )
+
+    for form in forms:
+        with transaction.atomic():
+            try:
+                form.activate()
+            except DatabaseError as exc:
+                logger.error(
+                    "Form activation of form %s failed",
+                    form.admin_name,
+                    exc_info=exc,
+                    extra={"pk": form.pk},
+                )
+            else:
+                transaction.on_commit(lambda: logevent.form_activated(form))
+
+
+@app.task()
+def deactivate_forms():
+    """Deactivate all the forms that should be deactivated by the specific date and time."""
+    from openforms.logging import logevent
+
+    now = timezone.now()
+    forms = Form.objects.live().filter(
+        deactivate_on__lte=now, deactivate_on__gt=now - timedelta(minutes=5)
+    )
+
+    for form in forms:
+        with transaction.atomic():
+            try:
+                form.deactivate()
+            except DatabaseError as exc:
+                logger.error(
+                    "Form deactivation of form %s failed",
+                    form.admin_name,
+                    exc_info=exc,
+                    extra={"pk": form.pk},
+                )
+
+            else:
+                transaction.on_commit(lambda: logevent.form_deactivated(form))

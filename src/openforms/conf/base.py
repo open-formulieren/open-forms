@@ -700,11 +700,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
     },
     "activate-forms": {
-        "task": "openforms.forms.admin.tasks.activate_forms",
+        "task": "openforms.forms.tasks.activate_forms",
         "schedule": crontab(minute="*"),
     },
     "deactivate-forms": {
-        "task": "openforms.forms.admin.tasks.deactivate_forms",
+        "task": "openforms.forms.tasks.deactivate_forms",
         "schedule": crontab(minute="*"),
     },
     "cleanup-outgoing-request-logs": {

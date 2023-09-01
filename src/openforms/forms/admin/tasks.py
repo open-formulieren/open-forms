@@ -1,7 +1,6 @@
 import logging
 import tempfile
 import zipfile
-from datetime import timedelta
 from pathlib import Path
 from uuid import uuid4
 from zipfile import ZipFile
@@ -11,7 +10,6 @@ from django.core.files import File
 from django.core.management import call_command
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from privates.storages import private_media_storage
@@ -104,40 +102,3 @@ def process_forms_import(import_file: str, user_id: int) -> None:
 def clear_forms_export():
     logger.debug("Clearing old export files")
     call_command("delete_export_files")
-
-
-@app.task()
-def activate_forms():
-    """Activate all the forms that should be activated by the specific date and time."""
-    now = timezone.now()
-    forms = Form.objects.filter(
-        active=False,
-        _is_deleted=False,
-        activate_on__lte=now,
-        activate_on__gt=now - timedelta(minutes=5),
-    )
-
-    for form in forms:
-        form.active = True
-        form.activate_on = None
-        logger.debug(f"Activated form {form.admin_name}")
-        logevent.form_activated(form)
-
-    Form.objects.bulk_update(forms, fields=["active", "activate_on"])
-
-
-@app.task()
-def deactivate_forms():
-    """Deactivate all the forms that should be deactivated by the specific date and time."""
-    now = timezone.now()
-    forms = Form.objects.live().filter(
-        deactivate_on__lte=now, deactivate_on__gt=now - timedelta(minutes=5)
-    )
-
-    for form in forms:
-        form.active = False
-        form.deactivate_on = None
-        logger.debug(f"Deactivated form {form.admin_name}")
-        logevent.form_deactivated(form)
-
-    Form.objects.bulk_update(forms, fields=["active", "deactivate_on"])
