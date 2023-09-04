@@ -218,6 +218,12 @@ def import_form_data(
                         },
                     }
                 )
+                if "service_fetch_configuration" in entry:
+                    # The transferring between systems case is very tricky
+                    # better not import these, we don't know where this came from.
+                    # services and ids may point to different things
+                    # in different OF instances.
+                    del entry["service_fetch_configuration"]
 
             if resource == "formLogic":
                 # by now, the form resource has been created (or it was an existing one)

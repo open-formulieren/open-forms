@@ -145,13 +145,21 @@ class ImportExportTests(TestCase):
         # fetch configurations are not exported (yet)
         # but shouldn't break export - import
         fetch_config = ServiceFetchConfigurationFactory.create()
+        far_fetched = FormVariableFactory.create(
+            form=form,
+            user_defined=True,
+            name="far_fetched",
+            key="farFetched",
+            service_fetch_configuration=fetch_config,
+        )
         FormLogicFactory.create(
             form=form,
-            json_logic_trigger={"!": {"var": "test-user-defined"}},
+            json_logic_trigger={"!": {"var": "farFetched"}},
+            is_advanced=True,
             actions=[
                 {
-                    "action": {"type": "fetch-from-service", "value": fetch_config.pk},
-                    "variable": "test-user-defined",
+                    "action": {"type": "fetch-from-service", "value": ""},
+                    "variable": "farFetched",
                 }
             ],
         )
@@ -177,6 +185,7 @@ class ImportExportTests(TestCase):
         call_command("export", form.pk, self.filepath)
 
         # attempt to break ForeignKey constraint
+        far_fetched.delete()
         fetch_config.delete()
 
         old_form_definition_slug = form_definition.slug
@@ -231,7 +240,12 @@ class ImportExportTests(TestCase):
         user_defined_vars = FormVariable.objects.filter(
             source=FormVariableSources.user_defined
         )
-        self.assertEqual(2, user_defined_vars.count())
+
+        # assert 3 user_defined_vars
+        # 1. original test-user-defined
+        # 2. imported test-user-defined
+        # 3. imported far_fetched (but without service_fetch_configuration)
+        self.assertEqual(user_defined_vars.count(), 3)
 
         form_logics = FormLogic.objects.all()
         self.assertEqual(4, form_logics.count())
