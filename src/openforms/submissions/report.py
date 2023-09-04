@@ -77,3 +77,13 @@ class Report:
         # has been applied by ``Template.render``
         content = self.submission.render_confirmation_page()
         return content
+
+    @property
+    def appointment(self):
+        from openforms.appointments.service import AppointmentRenderer
+
+        return AppointmentRenderer(
+            submission=self.renderer.submission,
+            mode=self.renderer.mode,
+            as_html=self.renderer.as_html,
+        )

@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _, override
 from celery.result import AsyncResult
 from privates.fields import PrivateMediaFileField
 
-from openforms.appointments.models import AppointmentInfo
 from openforms.utils.pdf import render_to_pdf
 
 from ..report import Report
@@ -66,21 +65,12 @@ class SubmissionReport(models.Model):
         :return: string with the HTML used for the PDF generation, so that contents
           can be tested.
         """
-        try:
-            appointment_id = self.submission.appointment_info.appointment_id
-        except AppointmentInfo.DoesNotExist:
-            appointment_id = None
 
         with override(self.submission.language_code):
             form = self.submission.form
             html_report, pdf_report = render_to_pdf(
                 "report/submission_report.html",
-                context={
-                    "report": Report(self.submission),
-                    # appointment_information tag needs _submission and _appointment_id
-                    "_submission": self.submission,
-                    "_appointment_id": appointment_id,
-                },
+                context={"report": Report(self.submission)},
             )
             self.content = ContentFile(
                 content=pdf_report,

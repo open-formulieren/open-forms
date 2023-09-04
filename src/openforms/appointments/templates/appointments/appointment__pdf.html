@@ -1,0 +1,60 @@
+{% load i18n %}
+<section class="appointment">
+<h2 class="subtitle">{% trans "Appointment information" %}</h2>
+
+<div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
+      {% trans "Products" %}
+    </div>
+    <div class="submission-step-row__value">
+      {% for product in appointment.products %} {{ product.name }}{% if product.amount > 1 %} (x{{
+      product.amount }}){% endif %}{% if not forloop.last %}<br />{% endif %} {% endfor %}
+    </div>
+  </div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
+      {% trans "Location" %}
+    </div>
+    <div class="submission-step-row__value">
+      {{ appointment.location.name }} {% if appointment.location.address %}<br />{{
+      appointment.location.address }}{% endif %} {% if appointment.location.city %}<br />{{
+      appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
+    </div>
+  </div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
+      {% trans "Date and time" %}
+    </div>
+    <div class="submission-step-row__value">
+      {{ appointment.start_at|date }}, {{ appointment.start_at|time }}{% if appointment.end_at %} -
+      {{ appointment.end_at|time }}{% endif %}
+    </div>
+  </div>
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">
+      {% trans "Remarks" %}
+    </div>
+    <div class="submission-step-row__value">
+      {{ appointment.remarks|linebreaksbr }}
+    </div>
+  </div>
+  {% if appointment.other %} {% for key, value in appointment.other.items %}
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">{{ key }}</div>
+    <div class="submission-step-row__value">{{ value }}</div>
+  </div>
+  {% endfor %} {% endif %}
+</div>
+
+<h2 class="subtitle">{% trans "Your contact details" %}</h2>
+<div class="submission-step">
+  {% for node in contact_details %}
+  <div class="submission-step-row">
+    <div class="submission-step-row__label">{{ node.label }}</div>
+    <div class="submission-step-row__value">{{ node.display_value }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+</section>
