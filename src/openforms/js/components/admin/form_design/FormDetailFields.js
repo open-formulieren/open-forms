@@ -14,7 +14,8 @@ import {slugify} from './utils';
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormDetailFields = ({form: {slug, translations}, onChange}) => {
+const FormDetailFields = ({form: {slug, translations, appointmentOptions}, onChange}) => {
+  const {isAppointment = false} = appointmentOptions;
   const setFormSlug = event => {
     // do nothing if there's already a slug set
     if (slug) return;
@@ -61,35 +62,37 @@ const FormDetailFields = ({form: {slug, translations}, onChange}) => {
               </Field>
             </FormRow>
 
-            <FormRow>
-              <Field
-                name={`form.translations.${langCode}.explanationTemplate`}
-                label={
-                  <FormattedMessage
-                    defaultMessage="Explanation template"
-                    description="Start page explanation text label"
-                  />
-                }
-                helpText={
-                  <FormattedMessage
-                    defaultMessage="Content that will be shown on the start page of the form, below the title and above the log in text."
-                    description="Start page explanation text"
-                  />
-                }
-              >
-                <TinyMCEEditor
-                  content={translations[langCode].explanationTemplate}
-                  onEditorChange={(newValue, editor) =>
-                    onChange({
-                      target: {
-                        name: `form.translations.${langCode}.explanationTemplate`,
-                        value: newValue,
-                      },
-                    })
+            {!isAppointment && (
+              <FormRow>
+                <Field
+                  name={`form.translations.${langCode}.explanationTemplate`}
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Explanation template"
+                      description="Start page explanation text label"
+                    />
                   }
-                />
-              </Field>
-            </FormRow>
+                  helpText={
+                    <FormattedMessage
+                      defaultMessage="Content that will be shown on the start page of the form, below the title and above the log in text."
+                      description="Start page explanation text"
+                    />
+                  }
+                >
+                  <TinyMCEEditor
+                    content={translations[langCode].explanationTemplate}
+                    onEditorChange={(newValue, editor) =>
+                      onChange({
+                        target: {
+                          name: `form.translations.${langCode}.explanationTemplate`,
+                          value: newValue,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+              </FormRow>
+            )}
           </>
         )}
       </LanguageTabs>

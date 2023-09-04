@@ -113,6 +113,8 @@ const FormConfigurationFields = ({
     onChange({target: {name, value: !currentValue}});
   };
 
+  const isAppointment = appointmentOptions?.isAppointment ?? false;
+
   return (
     <Fieldset
       title={
@@ -190,74 +192,77 @@ const FormConfigurationFields = ({
         </Field>
       </FormRow>
 
-      <FormRow>
-        <AuthPluginField
-          availableAuthPlugins={availableAuthPlugins}
-          selectedAuthPlugins={selectedAuthPlugins}
-          onChange={onAuthPluginChange}
-        />
-      </FormRow>
-
-      <FormRow>
-        <Field
-          name="form.autoLoginAuthenticationBackend"
-          label={
-            <FormattedMessage
-              defaultMessage="Authentication automatic login"
-              description="Auto-login field label"
+      {!isAppointment && (
+        <>
+          <FormRow>
+            <AuthPluginField
+              availableAuthPlugins={availableAuthPlugins}
+              selectedAuthPlugins={selectedAuthPlugins}
+              onChange={onAuthPluginChange}
             />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Select which authentication backend is automatically redirected to."
-              description="Auto-login field help text"
-            />
-          }
-        >
-          <AuthPluginAutoLoginField
-            eligiblePlugins={availableAuthPlugins.filter(plugin =>
-              selectedAuthPlugins.includes(plugin.id)
-            )}
-            value={form.autoLoginAuthenticationBackend}
-            onChange={onChange}
-          ></AuthPluginAutoLoginField>
-        </Field>
-      </FormRow>
-
-      <FormRow>
-        <Field
-          name="form.authenticationBackendOptions"
-          label={
-            <FormattedMessage
-              description="Minimal levels of assurance label"
-              defaultMessage="Minimal levels of assurance"
-            />
-          }
-        >
-          <ul>
-            {availableAuthPlugins
-              .filter(
-                plugin => plugin.assuranceLevels.length && selectedAuthPlugins.includes(plugin.id)
-              )
-              .map(plugin => (
-                <li key={plugin.id}>
-                  <label htmlFor={`form.authenticationBackendOptions.${plugin.id}.loa`}>
-                    {plugin.label}
-                  </label>
-                  <Select
-                    key={plugin.id}
-                    id={`form.authenticationBackendOptions.${plugin.id}.loa`}
-                    name={`form.authenticationBackendOptions.${plugin.id}.loa`}
-                    value={form.authenticationBackendOptions[plugin.id]?.loa}
-                    onChange={onChange}
-                    allowBlank={true}
-                    choices={plugin.assuranceLevels.map(loa => [loa.value, loa.label])}
-                  />
-                </li>
-              ))}
-          </ul>
-        </Field>
-      </FormRow>
+          </FormRow>
+          <FormRow>
+            <Field
+              name="form.autoLoginAuthenticationBackend"
+              label={
+                <FormattedMessage
+                  defaultMessage="Authentication automatic login"
+                  description="Auto-login field label"
+                />
+              }
+              helpText={
+                <FormattedMessage
+                  defaultMessage="Select which authentication backend is automatically redirected to."
+                  description="Auto-login field help text"
+                />
+              }
+            >
+              <AuthPluginAutoLoginField
+                eligiblePlugins={availableAuthPlugins.filter(plugin =>
+                  selectedAuthPlugins.includes(plugin.id)
+                )}
+                value={form.autoLoginAuthenticationBackend}
+                onChange={onChange}
+              ></AuthPluginAutoLoginField>
+            </Field>
+          </FormRow>
+          <FormRow>
+            <Field
+              name="form.authenticationBackendOptions"
+              label={
+                <FormattedMessage
+                  description="Minimal levels of assurance label"
+                  defaultMessage="Minimal levels of assurance"
+                />
+              }
+            >
+              <ul>
+                {availableAuthPlugins
+                  .filter(
+                    plugin =>
+                      plugin.assuranceLevels.length && selectedAuthPlugins.includes(plugin.id)
+                  )
+                  .map(plugin => (
+                    <li key={plugin.id}>
+                      <label htmlFor={`form.authenticationBackendOptions.${plugin.id}.loa`}>
+                        {plugin.label}
+                      </label>
+                      <Select
+                        key={plugin.id}
+                        id={`form.authenticationBackendOptions.${plugin.id}.loa`}
+                        name={`form.authenticationBackendOptions.${plugin.id}.loa`}
+                        value={form.authenticationBackendOptions[plugin.id]?.loa}
+                        onChange={onChange}
+                        allowBlank={true}
+                        choices={plugin.assuranceLevels.map(loa => [loa.value, loa.label])}
+                      />
+                    </li>
+                  ))}
+              </ul>
+            </Field>
+          </FormRow>
+        </>
+      )}
 
       <FormRow>
         <Checkbox
@@ -407,25 +412,29 @@ const FormConfigurationFields = ({
           />
         </Field>
       </FormRow>
-      <FormRow>
-        <Checkbox
-          name="form.suspensionAllowed"
-          label={
-            <FormattedMessage
-              defaultMessage="Suspension allowed"
-              description="Form suspensionAllowed field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Whether the user is allowed to suspend this form or not."
-              description="Form suspensionAllowed field help text"
-            />
-          }
-          checked={suspensionAllowed}
-          onChange={event => onCheckboxChange(event, suspensionAllowed)}
-        />
-      </FormRow>
+
+      {!isAppointment && (
+        <FormRow>
+          <Checkbox
+            name="form.suspensionAllowed"
+            label={
+              <FormattedMessage
+                defaultMessage="Suspension allowed"
+                description="Form suspensionAllowed field label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Whether the user is allowed to suspend this form or not."
+                description="Form suspensionAllowed field help text"
+              />
+            }
+            checked={suspensionAllowed}
+            onChange={event => onCheckboxChange(event, suspensionAllowed)}
+          />
+        </FormRow>
+      )}
+
       <FormRow>
         <Field
           name="form.askPrivacyConsent"
@@ -488,7 +497,7 @@ const FormConfigurationFields = ({
               description="Form appointment enabled field help text"
             />
           }
-          checked={appointmentOptions?.isAppointment}
+          checked={isAppointment}
           onChange={event => onCheckboxChange(event, appointmentOptions?.isAppointment)}
         />
       </FormRow>
