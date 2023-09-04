@@ -39,6 +39,9 @@ Er verschijnen enkele tabbladen waarmee het formulier geconfigureerd kan
 worden. Onder de tabbladen zit de knop **Opslaan**. Pas als u op deze knop heeft
 gedrukt wordt het formulier daadwerkelijk opgeslagen.
 
+.. note:: Sommige formulieropties kunnen ervoor zorgen dat een tabblad wel of niet
+   beschikbaar is. Uw scherm kan er dus wat anders uit zien dan in de screenshots.
+
 Hieronder gaan we in op elk tabblad.
 
 Formulier
@@ -67,16 +70,24 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
 
 * **Toon voortgang**: Vink aan om de stappen bij een formulier te tonen. Typisch
   kan deze worden uitgevinkt indien er een slechts beperkt aantal stappen is.
+
 * **Actief**: Vink aan om het formulier beschikbaar te maken voor de
   buitenwereld.
+
 * **Onderhoudsmodus**: Vink aan om het formulier in onderhoudsmodus te zetten.
   Als het formulier in onderhoudsmodus staat, kan het formulier niet gestart
   worden en verschijnt er een melding voor de eindgebruiker. Beheerders kunnen
   het formulier blijven gebruiken.
+
 * **Inzenden mogelijk**: Vink aan om eindgebruikers het formulier te laten
   versturen. Sommige formulieren dienen niet verstuurd te worden maar geven
   bijvoorbeeld alleen informatie of verwijzingen naar andere formulieren. In dat
   geval vinkt u deze optie uit.
+
+* **Is afspraakformulier?**: Vink aan om het formulier als _`afspraakformulier` in te
+  stellen. Afspraken dienen hiervoor :ref:`geconfigureerd <configuration_appointment_index>`
+  te zijn. Wanneer deze optie inschakeld is, dan kunt u geen formulierstappen, registratie,
+  product/betaling, logica of variabelen instellen.
 
 .. note::
 
@@ -216,6 +227,10 @@ Voorbeelden en uitleg over hierover vind u onder :ref:`manual_logic`.
 
 Afspraken
 ---------
+
+.. warning:: Deze manier van afspraken configureren wordt uitgefaseerd en zal in versie
+   3.0 van Open Formulieren verwijderd worden. U kunt beter de
+   :ref:`nieuwe afsprakenconfiguratie <afspraakformulier>` gebruiken.
 
 Als u een formulier wilt koppelen aan een afsprakensysteem, dan kunt u hier
 aangeven welke velden opgenomen moeten worden in de afspraak. Bij de meeste
