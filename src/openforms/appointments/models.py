@@ -17,7 +17,7 @@ class AppointmentsConfig(SingletonModel):
     plugin = AppointmentBackendChoiceField(_("appointment plugin"), blank=True)
     limit_to_location = models.CharField(
         _("location"),
-        max_length=50,
+        max_length=100,
         blank=True,
         help_text=_(
             "If configured, only products connected to this location are exposed. "
