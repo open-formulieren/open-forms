@@ -1,6 +1,10 @@
-==============
-Afspraak maken
-==============
+=======================
+Afspraak maken (legacy)
+=======================
+
+.. warning:: Deze manier van afspraken configureren wordt uitgefaseerd en zal in versie
+   3.0 van Open Formulieren verwijderd worden. U kunt beter de
+   :ref:`nieuwe afsprakenconfiguratie <manual_forms_examples_appointment_form>` gebruiken.
 
 In dit voorbeeld tonen we u hoe u een formulier kan maken zodat de gebruikers een afspraak
 kan maken met het formulier.
