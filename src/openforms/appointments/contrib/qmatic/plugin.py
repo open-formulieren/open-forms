@@ -95,15 +95,22 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
     ) -> list[Product]:
         """
         Retrieve all available products and services to create an appointment for.
+
+        Qmatic has a couple of possible endpoints for this, most notably one returning
+        a flat list of products (all or filtered by branch) and two others that return
+        product groups. The product groups dictate which products can be booked together.
+
+        We opt to use the latter - while a bit harder to process, it's simpler to have
+        a fixed set of endpoints that we hit.
         """
         client = QmaticClient()
 
-        # if there are already selected products, we must check that we only return
-        # products that can be booked together with the already selected products.
-        if current_products:
-            import bpdb
+        # # if there are already selected products, we must check that we only return
+        # # products that can be booked together with the already selected products.
+        # if current_products:
+        #     import bpdb
 
-            bpdb.set_trace()
+        #     bpdb.set_trace()
 
         endpoint = f"branches/{location_id}/services" if location_id else "services"
         with log_api_errors("Could not retrieve available products"):

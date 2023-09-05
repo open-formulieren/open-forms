@@ -1,3 +1,5 @@
+from typing import Literal
+
 from requests import Session
 
 from .exceptions import QmaticException
@@ -11,6 +13,7 @@ class QmaticClient(Session):
     """
 
     _config: QmaticConfig | None = None
+    version: Literal["v1", "v2"] = "v1"
 
     def request(self, method: str, url: str, *args, **kwargs):
         if not self._config:
@@ -18,7 +21,8 @@ class QmaticClient(Session):
             assert isinstance(config, QmaticConfig)
             self._config = config
 
-        api_root = self._config.service.api_root
+        # zgw-consumers normalizes api_root to have a trailing slash
+        api_root = f"{self._config.service.api_root}{self.version}/"
         _temp_client = self._config.service.build_client()
         headers = {
             "Content-Type": "application/json",
@@ -38,3 +42,11 @@ class QmaticClient(Session):
             )
 
         return response
+
+
+class QmaticV1Client(QmaticClient):
+    version = "v1"
+
+
+class QmaticV2Client(QmaticClient):
+    version = "v2"

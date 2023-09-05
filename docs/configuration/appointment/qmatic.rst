@@ -12,6 +12,8 @@ This plugin is made for the *Qmatic Orchestra Calendar Public Appointment API*.
    * **Label**: Qmatic
    * **Type**: ORC (Overige)
    * **API root URL**: *The API endpoint provided by Qmatic*
+
+     Make sure to *not* include the trailing ``v1`` or ``v2``!
    * **Authorization type**: API key
    * **Header key**: ``X-Api-Key``
    * **Header value**: *The API-key provided by Qmatic*
