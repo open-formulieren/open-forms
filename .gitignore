@@ -47,6 +47,7 @@ local.py
 /celerybeat
 /tmp/*
 !/tmp/.gitkeep
+/bin/ssh_tunnel*
 
 # Static files
 src/openforms/static/bundles/
