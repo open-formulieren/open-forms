@@ -149,7 +149,7 @@ defusedxml==0.6.0
     #   django-camunda
     #   django-digid-eherkenning
     #   python3-saml
-django==3.2.20
+django==3.2.21
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
