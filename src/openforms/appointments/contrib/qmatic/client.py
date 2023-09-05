@@ -1,10 +1,7 @@
 from requests import Session
 
+from .exceptions import QmaticException
 from .models import QmaticConfig
-
-
-class QmaticException(Exception):
-    pass
 
 
 class QmaticClient(Session):

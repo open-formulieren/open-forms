@@ -1,7 +1,10 @@
 import json
 import logging
 import warnings
+from contextlib import contextmanager
 from datetime import date, datetime, time
+from functools import wraps
+from typing import Callable, ParamSpec, TypeVar
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse
@@ -29,8 +32,9 @@ from ...exceptions import (
     AppointmentException,
 )
 from ...registry import register
-from .client import QmaticClient, QmaticException
+from .client import QmaticClient
 from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
+from .exceptions import GracefulQmaticException, QmaticException
 from .models import QmaticConfig
 
 logger = logging.getLogger(__name__)
@@ -38,6 +42,36 @@ logger = logging.getLogger(__name__)
 _CustomerDetails = CustomerDetails[CustomerFields]
 
 TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
+
+
+@contextmanager
+def log_api_errors(template: str, *args):
+    try:
+        yield
+    except (QmaticException, RequestException) as e:
+        logger.exception(template, *args, exc_info=e)
+        raise GracefulQmaticException("SOAP call failed") from e
+    except Exception as exc:
+        raise QmaticException from exc
+
+
+Param = ParamSpec("Param")
+T = TypeVar("T")
+FuncT = Callable[Param, T]
+
+
+def with_graceful_default(default: T):
+    def decorator(func: FuncT) -> FuncT:
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> T:
+            try:
+                return func(*args, **kwargs)
+            except GracefulQmaticException:
+                return default
+
+        return wrapper
+
+    return decorator
 
 
 @register("qmatic")
@@ -50,10 +84,10 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
 
     verbose_name = _("Qmatic")
     # See "Book an appointment for multiple customers and multiple services" in the
-    # documentation. Qmatic *does* support it, but there are no stakeholders anymore for
-    # this plugin so we only provide the legacy (pre 2.3.0) functionality.
-    supports_multiple_products = False
+    # documentation.
+    supports_multiple_products = True
 
+    @with_graceful_default(default=[])
     def get_available_products(
         self,
         current_products: list[Product] | None = None,
@@ -61,29 +95,29 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
     ) -> list[Product]:
         """
         Retrieve all available products and services to create an appointment for.
-
-        NOTE: The API does not support making an appointment for multiple
-        products. The ``current_products`` argument is ignored.
         """
         client = QmaticClient()
+
+        # if there are already selected products, we must check that we only return
+        # products that can be booked together with the already selected products.
+        if current_products:
+            import bpdb
+
+            bpdb.set_trace()
+
         endpoint = f"branches/{location_id}/services" if location_id else "services"
-        try:
+        with log_api_errors("Could not retrieve available products"):
             response = client.get(endpoint)
             response.raise_for_status()
-        except (QmaticException, RequestException) as e:
-            logger.exception("Could not retrieve available products", exc_info=e)
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         # NOTE: Filter out products that are not active or public.
-
         return [
             Product(entry["publicId"], entry["name"])
             for entry in response.json()["serviceList"]
             if entry["publicEnabled"] and entry["active"]
         ]
 
+    @with_graceful_default(default=[])
     def get_locations(
         self,
         products: list[Product] | None = None,
@@ -103,18 +137,12 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
                 )
             endpoint = f"services/{product_ids[0]}/branches"
 
-        try:
+        with log_api_errors(
+            "Could not retrieve locations for product, using API endpoint '%s'",
+            endpoint,
+        ):
             response = client.get(endpoint)
             response.raise_for_status()
-        except (QmaticException, RequestException) as e:
-            logger.exception(
-                "Could not retrieve locations for product, using API endpoint '%s'",
-                endpoint,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
 
         # NOTE: Filter out locations that do not have a postal code to prevent
         # non-physical addresses.
@@ -125,6 +153,7 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
             if entry["addressZip"]
         ]
 
+    @with_graceful_default(default=[])
     def get_dates(
         self,
         products: list[Product],
@@ -144,24 +173,18 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         client = QmaticClient()
         product_id = products[0].identifier
 
-        try:
+        with log_api_errors(
+            "Could not retrieve dates for product '%s' at location '%s'",
+            product_id,
+            location,
+        ):
             response = client.get(
                 f"branches/{location.identifier}/services/{product_id}/dates"
             )
             response.raise_for_status()
-        except (QmaticException, RequestException) as e:
-            logger.exception(
-                "Could not retrieve dates for product '%s' at location '%s'",
-                product_id,
-                location,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
-
         return [isoparse(entry).date() for entry in response.json()["dates"]]
 
+    @with_graceful_default(default=[])
     def get_times(
         self,
         products: list[Product],
@@ -174,23 +197,16 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         client = QmaticClient()
         product_id = products[0].identifier
 
-        try:
+        with log_api_errors(
+            "Could not retrieve times for product '%s' at location '%s' on %s",
+            product_id,
+            location,
+            day,
+        ):
             response = client.get(
                 f"branches/{location.identifier}/services/{product_id}/dates/{day.strftime('%Y-%m-%d')}/times"
             )
             response.raise_for_status()
-        except (QmaticException, RequestException) as e:
-            logger.exception(
-                "Could not retrieve times for product '%s' at location '%s' on %s",
-                product_id,
-                location,
-                day,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
-
         return [
             datetime.combine(day, time.fromisoformat(entry))
             for entry in response.json()["times"]
