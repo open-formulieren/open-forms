@@ -1,9 +1,48 @@
-from typing import Literal
+from typing import TypedDict
 
 from requests import Session
 
 from .exceptions import QmaticException
 from .models import QmaticConfig
+
+# API DATA DEFINITIONS
+
+
+class ServiceDict(TypedDict):
+    publicId: str
+    name: str
+    # could be float to in theory, documentation is not specific (it gives an int example)
+    duration: int
+    additionalCustomerDuration: int
+    custom: str | None
+
+
+class FullServiceDict(ServiceDict):
+    active: bool
+    publicEnabled: bool
+    created: int
+    updated: int
+
+
+class ServiceGroupDict(TypedDict):
+    services: list[ServiceDict]
+
+
+class BranchDict(TypedDict):
+    branchPublicId: str
+    branchName: str
+    serviceGroups: list[ServiceGroupDict]
+
+
+# API CLIENT IMPLEMENTATIONS, per major version of the API
+
+
+def startswith_version(url: str) -> bool:
+    if url.startswith("v1/"):
+        return True
+    if url.startswith("v2/"):
+        return True
+    return False
 
 
 class QmaticClient(Session):
@@ -13,7 +52,6 @@ class QmaticClient(Session):
     """
 
     _config: QmaticConfig | None = None
-    version: Literal["v1", "v2"] = "v1"
 
     def request(self, method: str, url: str, *args, **kwargs):
         if not self._config:
@@ -21,8 +59,10 @@ class QmaticClient(Session):
             assert isinstance(config, QmaticConfig)
             self._config = config
 
-        # zgw-consumers normalizes api_root to have a trailing slash
-        api_root = f"{self._config.service.api_root}{self.version}/"
+        # ensure there is a version identifier in the URL
+        if not startswith_version(url):
+            url = f"v1/{url}"
+
         _temp_client = self._config.service.build_client()
         headers = {
             "Content-Type": "application/json",
@@ -30,7 +70,7 @@ class QmaticClient(Session):
         }
         del _temp_client
 
-        url = f"{api_root}{url}"
+        url = f"{self._config.service.api_root}{url}"
         response = super().request(method, url, headers=headers, *args, **kwargs)
 
         if response.status_code == 500:
@@ -43,10 +83,53 @@ class QmaticClient(Session):
 
         return response
 
+    def list_services(self, location_id: str = "") -> list[FullServiceDict]:
+        endpoint = f"branches/{location_id}/services" if location_id else "services"
+        response = self.get(endpoint)
+        response.raise_for_status()
+        return response.json()["serviceList"]
+
+    def list_service_groups(
+        self, service_id: str, location_id: str = ""
+    ) -> None | list[ServiceGroupDict]:
+        if not service_id:
+            return None
+
+        endpoint = (
+            (f"v2/branches/{location_id}/services/groups;servicePublicId={service_id}")
+            if location_id
+            else (f"services/groups;servicePublicId={service_id}")
+        )
+        response = self.get(endpoint)
+        response.raise_for_status()
+
+        # the shape depends on whether we hit v1 or v2
+        response_data = response.json()
+
+        # v2 API returns a list of service groups (expected to only have one item)
+        if location_id:
+            return response_data
+
+        # v1 API returns a list of branches
+        branches: list[BranchDict] = response_data
+        service_groups = sum((branch["serviceGroups"] for branch in branches), [])
+        return service_groups
+
 
 class QmaticV1Client(QmaticClient):
     version = "v1"
 
+    @staticmethod
+    def extract_service_groups(branches: list[BranchDict]) -> list[ServiceGroupDict]:
+        all_groups = sum((branch["serviceGroups"] for branch in branches), [])
+        return all_groups
+
 
 class QmaticV2Client(QmaticClient):
     version = "v2"
+
+    @staticmethod
+    def extract_service_groups(
+        groups: list[ServiceGroupDict],
+    ) -> list[ServiceGroupDict]:
+        return groups

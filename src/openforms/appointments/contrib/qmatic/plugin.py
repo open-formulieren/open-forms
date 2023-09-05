@@ -32,7 +32,7 @@ from ...exceptions import (
     AppointmentException,
 )
 from ...registry import register
-from .client import QmaticClient
+from .client import FullServiceDict, QmaticClient
 from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from .exceptions import GracefulQmaticException, QmaticException
 from .models import QmaticConfig
@@ -100,28 +100,53 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         a flat list of products (all or filtered by branch) and two others that return
         product groups. The product groups dictate which products can be booked together.
 
-        We opt to use the latter - while a bit harder to process, it's simpler to have
-        a fixed set of endpoints that we hit.
+        We have to use all of these, since the flat list of products contains additional
+        information like whether a product is public and/or active, which is not included
+        in the service groups.
+
+        The service groups per branch requires v2 API client, the rest can be done with
+        the v1 client.
         """
-        client = QmaticClient()
+        # enter context block to use connection pooling
+        with QmaticClient() as client:
+            with log_api_errors("Could not retrieve list of all available products"):
+                services = client.list_services(location_id=location_id)
 
-        # # if there are already selected products, we must check that we only return
-        # # products that can be booked together with the already selected products.
-        # if current_products:
-        #     import bpdb
+            # only consider services publicly available and active
+            available_services: list[FullServiceDict] = [
+                service
+                for service in services
+                if service["publicEnabled"] and service["active"]
+            ]
 
-        #     bpdb.set_trace()
+            # if another product is selected already, we need to filter down the services
+            # to only those in the same service group(s). Qmatic only allows a single service
+            # ID parameter to get the service groups, so I think we can assume a service can
+            # not be in multiple service groups?
+            group_service_id = (
+                current_products[0].identifier if current_products else ""
+            )
+            service_groups = (
+                client.list_service_groups(group_service_id, location_id=location_id)
+                if group_service_id
+                else None
+            )
 
-        endpoint = f"branches/{location_id}/services" if location_id else "services"
-        with log_api_errors("Could not retrieve available products"):
-            response = client.get(endpoint)
-            response.raise_for_status()
+        if service_groups is not None:
+            # filter out possible services based on the service groups
+            allowed_service_ids = {
+                service["publicId"]
+                for group in service_groups
+                for service in group["services"]
+            }
+            available_services = [
+                service
+                for service in available_services
+                if service["publicId"] in allowed_service_ids
+            ]
 
-        # NOTE: Filter out products that are not active or public.
         return [
-            Product(entry["publicId"], entry["name"])
-            for entry in response.json()["serviceList"]
-            if entry["publicEnabled"] and entry["active"]
+            Product(entry["publicId"], entry["name"]) for entry in available_services
         ]
 
     @with_graceful_default(default=[])
