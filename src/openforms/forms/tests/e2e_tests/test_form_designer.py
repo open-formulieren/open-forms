@@ -1369,3 +1369,278 @@ class AppointmentFormTests(E2ETestCase):
             self.assertIsNone(form.product)
 
         await assertState()
+
+
+class SelectReuseableFormDefinitionsTests(E2ETestCase):
+    async def test_no_reuseable_form_definition_options_are_available_when_all_part_of_the_form(
+        self,
+    ):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright map test",
+            )
+            form_definition_1 = FormDefinitionFactory.create(
+                name="FORM DEFINITION #1",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            form_definition_2 = FormDefinitionFactory.create(
+                name="FORM DEFINITION #2",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #3",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=False,
+            )
+            FormStepFactory.create(form=form, form_definition=form_definition_1)
+            FormStepFactory.create(form=form, form_definition=form_definition_2)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Add step and open selectbox
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Check if no options are available in the selectbox
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #1")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #2")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
+
+    async def test_all_reuseable_form_definition_options_are_available_when_not_part_of_the_form(
+        self,
+    ):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright map test",
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #1",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #2",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #3",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=False,
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Add step and open selectbox
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Check if all reusable for steps are available
+            await expect(selectbox).to_contain_text("FORM DEFINITION #1")
+            await expect(selectbox).to_contain_text("FORM DEFINITION #2")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
+
+    async def test_if_reusable_form_definition_is_available_again_after_removing_it_from_the_form(
+        self,
+    ):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright map test",
+            )
+            form_definition_1 = FormDefinitionFactory.create(
+                name="FORM DEFINITION #1",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            form_definition_2 = FormDefinitionFactory.create(
+                name="FORM DEFINITION #2",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #3",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=False,
+            )
+            FormStepFactory.create(form=form, form_definition=form_definition_1)
+            FormStepFactory.create(form=form, form_definition=form_definition_2)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Add step and open selectbox
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Check if no options are available in the selectbox
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #1")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #2")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
+
+            # Close model
+            await page.get_by_title("Sluiten").click()
+
+            # Delete the second step
+            page.on("dialog", lambda dialog: dialog.accept())
+            sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")
+            await sidebar.get_by_role("listitem").nth(1).get_by_title("Delete").click()
+
+            # Select third form step and open selectbox
+            await sidebar.get_by_role("listitem").nth(1).get_by_text(
+                "Stap 3 [new]"
+            ).click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Check if FORM DEFINITION #2 is the only available option
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #1")
+            await expect(selectbox).to_contain_text("FORM DEFINITION #2")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
+
+    async def test_if_reusable_form_definition_is_not_available_after_adding_it_from_the_form(
+        self,
+    ):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright map test",
+            )
+            form_definition_1 = FormDefinitionFactory.create(
+                name="FORM DEFINITION #1",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #2",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #3",
+                configuration={
+                    "display": "form",
+                },
+                is_reusable=False,
+            )
+            FormStepFactory.create(form=form, form_definition=form_definition_1)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Add step and open selectbox
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Check if FORM DEFINITION #2 is the only available option
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #1")
+            await expect(selectbox).to_contain_text("FORM DEFINITION #2")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
+
+            # Select FORM DEFINITION #2 and add it to the form steps
+            await selectbox.select_option("FORM DEFINITION #2")
+            await page.get_by_role("button", name="Confirm").click()
+
+            # Add step and open select box
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Check if no options are available in the selectbox
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #1")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #2")
+            await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
