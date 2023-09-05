@@ -126,11 +126,16 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
             group_service_id = (
                 current_products[0].identifier if current_products else ""
             )
-            service_groups = (
-                client.list_service_groups(group_service_id, location_id=location_id)
-                if group_service_id
-                else None
-            )
+            with log_api_errors(
+                "Could not retrieve service groups for product '%s'", group_service_id
+            ):
+                service_groups = (
+                    client.list_service_groups(
+                        group_service_id, location_id=location_id
+                    )
+                    if group_service_id
+                    else None
+                )
 
         if service_groups is not None:
             # filter out possible services based on the service groups

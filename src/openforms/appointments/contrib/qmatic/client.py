@@ -91,14 +91,11 @@ class QmaticClient(Session):
 
     def list_service_groups(
         self, service_id: str, location_id: str = ""
-    ) -> None | list[ServiceGroupDict]:
-        if not service_id:
-            return None
-
+    ) -> list[ServiceGroupDict]:
         endpoint = (
             (f"v2/branches/{location_id}/services/groups;servicePublicId={service_id}")
             if location_id
-            else (f"services/groups;servicePublicId={service_id}")
+            else (f"v1/services/groups;servicePublicId={service_id}")
         )
         response = self.get(endpoint)
         response.raise_for_status()
@@ -114,22 +111,3 @@ class QmaticClient(Session):
         branches: list[BranchDict] = response_data
         service_groups = sum((branch["serviceGroups"] for branch in branches), [])
         return service_groups
-
-
-class QmaticV1Client(QmaticClient):
-    version = "v1"
-
-    @staticmethod
-    def extract_service_groups(branches: list[BranchDict]) -> list[ServiceGroupDict]:
-        all_groups = sum((branch["serviceGroups"] for branch in branches), [])
-        return all_groups
-
-
-class QmaticV2Client(QmaticClient):
-    version = "v2"
-
-    @staticmethod
-    def extract_service_groups(
-        groups: list[ServiceGroupDict],
-    ) -> list[ServiceGroupDict]:
-        return groups

@@ -8,6 +8,7 @@ from django.test import TestCase
 
 from vcr.unittest import VCRMixin
 
+from ....base import Product
 from ..plugin import QmaticAppointment
 from .utils import MockConfigMixin
 
@@ -33,6 +34,12 @@ class QmaticVCRMixin(VCRMixin):
         return kwargs
 
 
+def _get_location():
+    locations = plugin.get_locations()
+    assert len(locations) > 1
+    return locations[0]
+
+
 class ListAvailableProductsTests(QmaticVCRMixin, MockConfigMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -55,10 +62,40 @@ class ListAvailableProductsTests(QmaticVCRMixin, MockConfigMixin, TestCase):
             self.assertGreater(num_unfiltered_products, 0)
 
         with self.subTest("Filter products by location"):
-            locations = plugin.get_locations()
-            assert len(locations) > 1
+            location = _get_location()
 
             filtered_products = plugin.get_available_products(
-                location_id=locations[0].identifier
+                location_id=location.identifier
             )
+
             self.assertLess(len(filtered_products), num_unfiltered_products)
+
+    def test_listing_products_with_location_and_product_constraint(self):
+        location = _get_location()
+
+        all_location_products = plugin.get_available_products(
+            location_id=location.identifier
+        )
+        num_location_products = len(all_location_products)
+        self.assertGreater(num_location_products, 1)
+
+        # now grab a product and use that as constraint
+        product = Product(identifier=all_location_products[0].identifier, name="")
+
+        available_products = plugin.get_available_products(
+            location_id=location.identifier, current_products=[product]
+        )
+
+        self.assertLess(len(available_products), num_location_products)
+
+    def test_listing_products_without_location_with_product_constraint(self):
+        all_products = plugin.get_available_products()
+        num_location_products = len(all_products)
+        self.assertGreater(num_location_products, 1)
+
+        # now grab a product and use that as constraint
+        product = Product(identifier=all_products[0].identifier, name="")
+
+        available_products = plugin.get_available_products(current_products=[product])
+
+        self.assertLess(len(available_products), num_location_products)
