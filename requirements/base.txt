@@ -87,7 +87,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.20
+django==3.2.21
     # via
     #   -r requirements/base.in
     #   django-admin-index
