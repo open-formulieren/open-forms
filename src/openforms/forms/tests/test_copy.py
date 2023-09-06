@@ -12,11 +12,13 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import SuperUserFactory, TokenFactory
 from openforms.tests.utils import NOOP_CACHES
 from openforms.variables.constants import FormVariableSources
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ..models import Form, FormDefinition, FormStep, FormVariable
 from .factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -201,7 +203,7 @@ class CopyFormWithVarsTest(APITestCase):
         cls.token = TokenFactory(user=user)
 
     def test_copy_form_with_variables(self):
-        form = FormFactory.create(slug="test-copying-with-vars")
+        form: Form = FormFactory.create(slug="test-copying-with-vars")
         FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -218,11 +220,26 @@ class CopyFormWithVarsTest(APITestCase):
             },
         )
         FormVariableFactory.create(
-            form=form, source=FormVariableSources.user_defined, key="bla"
+            form=form,
+            source=FormVariableSources.user_defined,
+            key="bla",
+            service_fetch_configuration=ServiceFetchConfigurationFactory.create(),
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!": {"var": "bla"}},
+            is_advanced=True,
+            actions=[
+                {
+                    "action": {"type": "fetch-from-service", "value": ""},
+                    "variable": "bla",
+                }
+            ],
         )
 
         self.assertEqual(1, Form.objects.count())
         self.assertEqual(3, FormVariable.objects.filter(form=form).count())
+        self.assertEqual(form.formlogic_set.count(), 1)
 
         url = reverse("api:form-copy", args=(form.uuid,))
         response = self.client.post(
@@ -245,3 +262,4 @@ class CopyFormWithVarsTest(APITestCase):
         self.assertEqual(
             1, variables_copy.filter(source=FormVariableSources.user_defined).count()
         )
+        self.assertEqual(form_copy.formlogic_set.count(), 1)
