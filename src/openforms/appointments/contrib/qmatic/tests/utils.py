@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from zgw_consumers.constants import AuthTypes
+
 from openforms.utils.tests.cache import clear_caches
 
 from ....models import AppointmentsConfig
@@ -20,7 +22,7 @@ class MockConfigMixin:
     def setUpTestData(cls):
         super().setUpTestData()  # type: ignore
 
-        cls.service = ServiceFactory.create()
+        cls.service = ServiceFactory.create(auth_type=AuthTypes.no_auth)
 
     def setUp(self):
         super().setUp()  # type: ignore

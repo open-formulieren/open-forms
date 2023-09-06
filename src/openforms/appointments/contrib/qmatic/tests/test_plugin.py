@@ -36,7 +36,7 @@ class PluginTests(MockConfigMixin, TestCase):
     def test_get_available_products(self, m):
 
         with self.subTest("without location ID"):
-            m.get(f"{self.api_root}services", text=mock_response("services.json"))
+            m.get(f"{self.api_root}v1/services", text=mock_response("services.json"))
 
             products = self.plugin.get_available_products()
 
@@ -47,7 +47,7 @@ class PluginTests(MockConfigMixin, TestCase):
 
         with self.subTest("with location ID"):
             m.get(
-                f"{self.api_root}branches/f364d92b7fa07a48c4ecc862de30c47/services",
+                f"{self.api_root}v1/branches/f364d92b7fa07a48c4ecc862de30c47/services",
                 text=mock_response("limited_services.json"),
             )
 
@@ -66,7 +66,7 @@ class PluginTests(MockConfigMixin, TestCase):
         )
 
         m.get(
-            f"{self.api_root}services/{product.identifier}/branches",
+            f"{self.api_root}v1/services/{product.identifier}/branches",
             text=mock_response("limited_branches.json"),
         )
 
@@ -79,7 +79,7 @@ class PluginTests(MockConfigMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_all_locations(self, m):
         m.get(
-            f"{self.api_root}branches",
+            f"{self.api_root}v1/branches",
             text=mock_response("branches.json"),
         )
 
@@ -100,7 +100,7 @@ class PluginTests(MockConfigMixin, TestCase):
         day = date(2016, 12, 6)
 
         m.get(
-            f"{self.api_root}branches/{location.identifier}/services/{product.identifier}/dates",
+            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/dates",
             text=mock_response("dates.json"),
         )
 
@@ -123,7 +123,7 @@ class PluginTests(MockConfigMixin, TestCase):
         day = date(2016, 12, 6)
 
         m.get(
-            f"{self.api_root}branches/{location.identifier}/services/{product.identifier}/dates/{day.strftime('%Y-%m-%d')}/times",
+            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/dates/{day.strftime('%Y-%m-%d')}/times",
             text=mock_response("times.json"),
         )
 
@@ -188,7 +188,7 @@ class PluginTests(MockConfigMixin, TestCase):
         day = datetime(2016, 12, 6, 9, 0, 0)
 
         m.post(
-            f"{self.api_root}branches/{location.identifier}/services/{product.identifier}/dates/{day.strftime('%Y-%m-%d')}/times/{day.strftime('%H:%M')}/book",
+            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/dates/{day.strftime('%Y-%m-%d')}/times/{day.strftime('%H:%M')}/book",
             text=mock_response("book.json"),
         )
 
@@ -215,7 +215,7 @@ class PluginTests(MockConfigMixin, TestCase):
         )
         assert appointment.products.count() == 1
         m.post(
-            f"{self.api_root}branches/f364d92b7fa07a48c4ecc862de30c47/services/"
+            f"{self.api_root}v1/branches/f364d92b7fa07a48c4ecc862de30c47/services/"
             f"54b3482204c11bedc8b0a7acbffa308/dates/2023-08-21/times/16:15/book",
             text=mock_response("book.json"),
         )
@@ -229,7 +229,7 @@ class PluginTests(MockConfigMixin, TestCase):
         identifier = "fa67a4692bb4c3fab9a0fbcc5511ff346ba4"
 
         m.delete(
-            f"{self.api_root}appointments/{identifier}",
+            f"{self.api_root}v1/appointments/{identifier}",
         )
 
         result = self.plugin.delete_appointment(identifier)
@@ -241,7 +241,7 @@ class PluginTests(MockConfigMixin, TestCase):
         identifier = "d50517a0ae88cdbc495f7a32e011cb"
 
         m.get(
-            f"{self.api_root}appointments/{identifier}",
+            f"{self.api_root}v1/appointments/{identifier}",
             text=mock_response("appointment.json"),
         )
 
@@ -429,7 +429,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
         start_at = timezone.make_aware(datetime(2021, 8, 23, 6, 0, 0))
         m.post(
-            f"{self.api_root}branches/{location.identifier}/services/{product.identifier}/"
+            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/"
             f"dates/{start_at.strftime('%Y-%m-%d')}/times/{start_at.strftime('%H:%M')}/book",
             headers={
                 "ERROR_CODE": "440",

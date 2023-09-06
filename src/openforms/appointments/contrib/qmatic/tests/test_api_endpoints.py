@@ -31,7 +31,7 @@ class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     def test_get_products_returns_all_products(self, m):
         self._add_submission_to_session(self.submission)
         m.get(
-            f"{self.api_root}services",
+            f"{self.api_root}v1/services",
             text=mock_response("services.json"),
         )
 
@@ -67,7 +67,7 @@ class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @requests_mock.Mocker()
     def test_get_locations_returns_all_locations_for_a_product(self, m):
         m.get(
-            f"{self.api_root}services/54b3482204c11bedc8b0a7acbffa308/branches",
+            f"{self.api_root}v1/services/54b3482204c11bedc8b0a7acbffa308/branches",
             text=mock_response("branches.json"),
         )
 
@@ -113,7 +113,7 @@ class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @requests_mock.Mocker()
     def test_get_dates_returns_all_dates_for_a_give_location_and_product(self, m):
         m.get(
-            f"{self.api_root}branches/1/services/1/dates",
+            f"{self.api_root}v1/branches/1/services/1/dates",
             text=mock_response("dates.json"),
         )
 
@@ -158,7 +158,7 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @requests_mock.Mocker()
     def test_get_times_returns_all_times_for_a_give_location_product_and_date(self, m):
         m.get(
-            f"{self.api_root}branches/1/services/1/dates/2016-12-06/times",
+            f"{self.api_root}v1/branches/1/services/1/dates/2016-12-06/times",
             text=mock_response("times.json"),
         )
 
@@ -255,7 +255,7 @@ class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):
         )
 
         m.delete(
-            f"{self.api_root}appointments/{identifier}",
+            f"{self.api_root}v1/appointments/{identifier}",
         )
 
         data = {
@@ -299,7 +299,7 @@ class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):
             kwargs={"submission_uuid": submission.uuid},
         )
 
-        m.delete(f"{self.api_root}appointments/{identifier}", exc=QmaticException)
+        m.delete(f"{self.api_root}v1/appointments/{identifier}", exc=QmaticException)
 
         data = {
             "email": "maykin@media.nl",
