@@ -6,8 +6,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE2OTM5MjUzNDgsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.oi-OpbTnhdKrhuPuvX-y1mh3LouAbOqQ1iqUQxl2jMY
       Connection:
       - keep-alive
       Content-Type:
@@ -460,8 +458,6 @@ interactions:
       - '*/*'
       Accept-Encoding:
       - gzip, deflate
-      Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIiLCJpYXQiOjE2OTM5MjUzNDgsImNsaWVudF9pZCI6IiIsInVzZXJfaWQiOiIiLCJ1c2VyX3JlcHJlc2VudGF0aW9uIjoiIn0.oi-OpbTnhdKrhuPuvX-y1mh3LouAbOqQ1iqUQxl2jMY
       Connection:
       - keep-alive
       Content-Type:

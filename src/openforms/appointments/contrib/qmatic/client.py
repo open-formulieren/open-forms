@@ -11,7 +11,7 @@ from .models import QmaticConfig
 class ServiceDict(TypedDict):
     publicId: str
     name: str
-    # could be float to in theory, documentation is not specific (it gives an int example)
+    # could be float too in theory, documentation is not specific (it gives an int example)
     duration: int
     additionalCustomerDuration: int
     custom: str | None
