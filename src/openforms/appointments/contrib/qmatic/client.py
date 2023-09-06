@@ -90,12 +90,16 @@ class QmaticClient(Session):
         return response.json()["serviceList"]
 
     def list_service_groups(
-        self, service_id: str, location_id: str = ""
+        self, service_ids: list[str], location_id: str = ""
     ) -> list[ServiceGroupDict]:
+        assert service_ids, "Unexpectedly received an empty list of service IDs"
+        params = ";".join(
+            [f"servicePublicId={service_id}" for service_id in service_ids]
+        )
         endpoint = (
-            (f"v2/branches/{location_id}/services/groups;servicePublicId={service_id}")
+            (f"v2/branches/{location_id}/services/groups;{params}")
             if location_id
-            else (f"v1/services/groups;servicePublicId={service_id}")
+            else (f"v1/services/groups;{params}")
         )
         response = self.get(endpoint)
         response.raise_for_status()

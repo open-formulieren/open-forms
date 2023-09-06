@@ -107,6 +107,8 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         The service groups per branch requires v2 API client, the rest can be done with
         the v1 client.
         """
+        current_products = current_products or []
+
         # enter context block to use connection pooling
         with QmaticClient() as client:
             with log_api_errors("Could not retrieve list of all available products"):
@@ -120,20 +122,18 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
             ]
 
             # if another product is selected already, we need to filter down the services
-            # to only those in the same service group(s). Qmatic only allows a single service
-            # ID parameter to get the service groups, so I think we can assume a service can
-            # not be in multiple service groups?
-            group_service_id = (
-                current_products[0].identifier if current_products else ""
-            )
+            # to only those in the same service group(s). Through trial and error, it's
+            # clear that this service ID parameter can be repeated, even though the
+            # documentation does not explicitly mention it.
+            group_service_ids = [product.identifier for product in current_products]
             with log_api_errors(
-                "Could not retrieve service groups for product '%s'", group_service_id
+                "Could not retrieve service groups for products '%s'", group_service_ids
             ):
                 service_groups = (
                     client.list_service_groups(
-                        group_service_id, location_id=location_id
+                        group_service_ids, location_id=location_id
                     )
-                    if group_service_id
+                    if group_service_ids
                     else None
                 )
 

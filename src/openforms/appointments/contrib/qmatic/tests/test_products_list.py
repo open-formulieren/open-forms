@@ -54,6 +54,7 @@ class ListAvailableProductsTests(QmaticVCRMixin, MockConfigMixin, TestCase):
         Test that with/without location filter produces different amounts of products.
         """
         num_unfiltered_products = 0
+        location = _get_location()  # can't pickle this if a subtest fails
 
         with self.subTest("List of unfiltered products"):
             products = plugin.get_available_products()
@@ -62,8 +63,6 @@ class ListAvailableProductsTests(QmaticVCRMixin, MockConfigMixin, TestCase):
             self.assertGreater(num_unfiltered_products, 0)
 
         with self.subTest("Filter products by location"):
-            location = _get_location()
-
             filtered_products = plugin.get_available_products(
                 location_id=location.identifier
             )
