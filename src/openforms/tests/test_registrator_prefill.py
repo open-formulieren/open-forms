@@ -22,9 +22,9 @@ from openforms.prefill.contrib.haalcentraal.tests.utils import (
     load_binary_mock,
     load_json_mock,
 )
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.models import Submission
 from openforms.utils.urls import reverse_plus
+from zgw_consumers_ext.factories import ServiceFactory
 
 CONFIGURATION = {
     "display": "form",

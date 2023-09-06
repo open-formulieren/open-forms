@@ -13,12 +13,12 @@ from zgw_consumers.test import mock_service_oas_get
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.brp.models import BRPConfig
 from openforms.formio.service import get_dynamic_configuration
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.template import render_from_string
 from soap.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
 from ..haal_centraal import get_np_children_haal_centraal

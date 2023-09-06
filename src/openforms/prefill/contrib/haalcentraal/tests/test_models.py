@@ -5,7 +5,7 @@ from django.test import SimpleTestCase
 
 from zgw_consumers.models import Service
 
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 from ..client import HaalCentraalClient, HaalCentraalV1Client, HaalCentraalV2Client
 from ..constants import Attributes, AttributesV2, HaalCentraalVersion

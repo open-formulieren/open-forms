@@ -12,12 +12,12 @@ from openforms.formio.service import (
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.logging.models import TimelineLogProxy
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from zgw_consumers_ext.factories import ServiceFactory
 
 from .. import prefill_variables
 from ..contrib.haalcentraal.models import HaalCentraalConfig
