@@ -25,3 +25,9 @@ Formio assertions
 .. automodule:: openforms.formio.tests.assertions
    :members:
    :undoc-members:
+
+Recording HTTP traffic
+======================
+
+.. automodule:: openforms.utils.tests.vcr
+   :members:

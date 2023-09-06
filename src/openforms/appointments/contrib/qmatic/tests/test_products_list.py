@@ -1,12 +1,11 @@
 """
 Tests for retrieving available products from Qmatic through our own API.
 """
-import os
 from pathlib import Path
 
 from django.test import TestCase
 
-from vcr.unittest import VCRMixin
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....base import Product
 from ..plugin import QmaticAppointment
@@ -16,22 +15,8 @@ TEST_FILES = Path(__file__).parent.resolve() / "data"
 
 QMATIC_BASE_URL = "http://localhost:8080/qmatic/calendar-backend/public/api/"
 
-# https://vcrpy.readthedocs.io/en/latest/usage.html#record-modes
-# once in dev, none in CI
-RECORD_MODE = os.environ.get("VCR_RECORD_MODE", "once")
-
 
 plugin = QmaticAppointment("qmatic")
-
-
-class QmaticVCRMixin(VCRMixin):
-    def _get_cassette_library_dir(self):
-        return str(TEST_FILES / "vcr_cassettes" / self.__class__.__qualname__)
-
-    def _get_vcr_kwargs(self):
-        kwargs = super()._get_vcr_kwargs()
-        kwargs["record_mode"] = RECORD_MODE
-        return kwargs
 
 
 def _get_location():
@@ -40,7 +25,9 @@ def _get_location():
     return locations[0]
 
 
-class ListAvailableProductsTests(QmaticVCRMixin, MockConfigMixin, TestCase):
+class ListAvailableProductsTests(OFVCRMixin, MockConfigMixin, TestCase):
+    VCR_TEST_FILES = TEST_FILES
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

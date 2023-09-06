@@ -7,7 +7,6 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 import requests
-import vcr.unittest
 from digid_eherkenning.choices import AssuranceLevels, XMLContentTypes
 from digid_eherkenning.models import EherkenningConfiguration
 from freezegun import freeze_time
@@ -19,6 +18,7 @@ from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tokens import submission_resume_token_generator
 from openforms.utils.tests.cache import clear_caches
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import FORM_AUTH_SESSION_KEY
 from .utils import TEST_FILES, make_certificate
@@ -38,7 +38,7 @@ SELECT_EHERKENNING_SIM = SIGNICAT_BROKER_BASE / "authn/simulator/selection/eh"
 )
 @temp_private_root()
 @override_settings(COOKIE_CONSENT_ENABLED=False)
-class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
+class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
     """Test using Signicat broker.
 
     Instead of mocking responses. We do real requests to a Signicat test environment
@@ -52,17 +52,19 @@ class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
 
     To do so:
 
-    1. Ensure the config is still valid:
+    #. Ensure the config is still valid:
        - `CERT` needs to be valid
        - `CERT` and our SAML metadata need to be configured in Signicat
        - `METADATA` needs to contain their SAML metadata
-    2. Delete the VCR cassettes
-    3. Set the "record_mode" to "once"  in `self._get_vcr_kwargs()`
-    4. Run the test
-    5. Inspect the diff of the new cassettes
-    6. Set the "record_mode" back to "none"; we don't want CI to make *any* real
-       requests!
+    #. Delete the VCR cassettes
+    #. Run the test
+    #. Inspect the diff of the new cassettes
+
+    The default dev settings set the record mode to 'once', but if you need a difference
+    once, see the :module:`openforms.utils.tests.vcr` documentation.
     """
+
+    VCR_TEST_FILES = TEST_FILES
 
     @classmethod
     def setUpTestData(cls):
@@ -100,16 +102,6 @@ class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
         with METADATA.open("rb") as md_file:
             config.idp_metadata_file = File(md_file, METADATA.name)
             config.save()
-
-    def _get_cassette_library_dir(self):
-        return str(TEST_FILES / "vcr_cassettes" / self.__class__.__qualname__)
-
-    def _get_vcr_kwargs(self):
-        kwargs = super()._get_vcr_kwargs()
-        # https://vcrpy.readthedocs.io/en/latest/usage.html#record-modes
-        kwargs["record_mode"] = "none"  # in CI
-        # kwargs["record_mode"] = "once"  # in dev
-        return kwargs
 
     def setUp(self):
         super().setUp()

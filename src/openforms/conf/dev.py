@@ -25,6 +25,7 @@ os.environ.setdefault("SDK_RELEASE", "latest")
 # otherwise the test suite is flaky due to logging config lookups to the DB in
 # non-DB test cases
 os.environ.setdefault("LOG_REQUESTS", "no")
+os.environ.setdefault("VCR_RECORD_MODE", "once")
 
 from .base import *  # noqa isort:skip
 
