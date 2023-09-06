@@ -159,20 +159,31 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         self,
         products: list[Product] | None = None,
     ) -> list[Location]:
+        """
+        Retrieve all available locations.
+
+        When supplying multiple products, the caller must ensure that these products
+        can be booked together. This is the case if you use
+        :meth:`get_available_products`. Only products that are in the same service
+        group can be booked together.
+
+        It does not appear that the Qmatic API supports retrieving a list of available
+        branches with more than one service ID parameter, so we must grab a "random"
+        product to get the ID. If any products are provided at all, then we are
+        guaranteed that index 0 yields a product we can use to query locations for.
+        """
         products = products or []
         product_ids = [product.identifier for product in products]
 
         client = QmaticClient()
 
-        if not product_ids:
-            endpoint = "branches"
-        else:
-            if len(product_ids) > 1:
-                logger.warning(
-                    "Attempt to retrieve locations for more than one product. Using "
-                    "the first ID to limit locations."
-                )
-            endpoint = f"services/{product_ids[0]}/branches"
+        if len(product_ids) > 1:
+            logger.debug(
+                "Attempt to retrieve locations for more than one product. Using "
+                "the first ID to limit locations.",
+                extra={"product_ids": product_ids},
+            )
+        endpoint = f"services/{product_ids[0]}/branches" if product_ids else "branches"
 
         with log_api_errors(
             "Could not retrieve locations for product, using API endpoint '%s'",
