@@ -92,6 +92,7 @@ const EDIT_FORM_TABS = {
               key: 'initialCenter.lat',
               type: 'number',
               requireDecimal: true,
+              decimalLimit: 7,
               validate: {
                 min: -90,
                 max: 90,
@@ -103,6 +104,7 @@ const EDIT_FORM_TABS = {
               key: 'initialCenter.lng',
               type: 'number',
               requireDecimal: true,
+              decimalLimit: 7,
               validate: {
                 min: -180,
                 max: 180,
