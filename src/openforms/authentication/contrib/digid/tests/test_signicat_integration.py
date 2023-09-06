@@ -37,7 +37,7 @@ SIGNICAT_BROKER_BASE = furl("https://maykin.pre.ie01.signicat.pro/broker")
 )
 @temp_private_root()
 @override_settings(COOKIE_CONSENT_ENABLED=False)
-class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
+class SignicatDigiDIntegrationTests(vcr.unittest.VCRMixin, TestCase):
     """Test using Signicat broker.
 
     Instead of mocking responses. We do real requests to a Signicat test environment
@@ -93,8 +93,8 @@ class SignicatEHerkenningIntegrationTests(vcr.unittest.VCRMixin, TestCase):
     def _get_vcr_kwargs(self):
         kwargs = super()._get_vcr_kwargs()
         # https://vcrpy.readthedocs.io/en/latest/usage.html#record-modes
-        # kwargs["record_mode"] = "none"  # in CI
-        kwargs["record_mode"] = "once"  # in dev
+        kwargs["record_mode"] = "none"  # in CI
+        # kwargs["record_mode"] = "once"  # in dev
         return kwargs
 
     def setUp(self):
