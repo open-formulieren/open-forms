@@ -149,10 +149,13 @@ class CookieNoticeTests(WebTest):
                 self.renew_app()
 
                 cookies_page = self.app.get(url, {"referer": allowed})
+                parent = cookies_page.pyquery.find(
+                    ".openforms-card__body a.utrecht-link--openforms"
+                )
+                link = parent(".utrecht-link--openforms")
 
-                button = cookies_page.pyquery.find("a.button--primary")
-                self.assertEqual(button.attr["href"], allowed)
-                self.assertEqual(button.text(), _("Close"))
+                self.assertEqual(link.attr["href"], allowed)
+                self.assertEqual(link.text(), _("Close"))
 
         for blocked in blocked_redirects:
             with self.subTest(f"Blockedredirect to '{blocked}'"):
@@ -160,8 +163,11 @@ class CookieNoticeTests(WebTest):
 
                 cookies_page = self.app.get(url, {"referer": blocked})
 
-                button = cookies_page.pyquery.find("a.button--primary")
-                self.assertFalse(button)
+                parent = cookies_page.pyquery.find(
+                    ".openforms-card__body a.utrecht-link--openforms"
+                )
+
+                self.assertEqual(parent, [])
 
                 for form in cookies_page.forms.values():
                     next_url = furl(form["next"].value)
