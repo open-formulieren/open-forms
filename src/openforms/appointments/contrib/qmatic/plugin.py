@@ -317,7 +317,8 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         start_at: datetime,
         client: _CustomerDetails | Customer,
         remarks: str = "",
-    ) -> str | None:
+    ) -> str:
+        assert products, "Can't book for empty products"
         customer = normalize_customer_details(client)
 
         product_names = ", ".join(sorted({product.name for product in products}))

@@ -1,0 +1,622 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches
+  response:
+    body:
+      string: !!binary |
+        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
+        tzJKGQAA
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1374'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 07 Sep 2023 14:03:07 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1766'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 07 Sep 2023 14:03:07 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1766'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 07 Sep 2023 14:03:07 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services/groups;servicePublicId=INT_Achternaam_gebruiken
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAOWYX2/TMBTFv4rl5z7Aw176RtmACQTVKLy0k+XEN6kbx578J5s27btznbVNXMo0
+        JEBsfqps/1LFR+ceX2d5Rx3YTpbg6HR5R69CoWR5LuiUnn9esDfl2oPVnLeshsIG2YCmE6p5C0gM
+        q2S8KoLlXhpNp69fTSgXQsYRV2+D86YFe5qsl/0s/tvdilpw5RpEUHCmeaFArOjU2wCTFS25LkH9
+        NA0tl8rheEVXFMdr6c7FMNTGg3snQYnhyYorFx+VujILuPEDvVUi7s5brp3qXzP++/Lynt5PUnkE
+        aC89SO8azq0fZDmyMkhy8rgiJ89YEPTL7OsgwzfpvYXGgSJFsDVYJTcNEOe5FoRz3VleZ+SXU1OG
+        Fo3Bmmu58cxUWFG4EzUuqB1DeoaYioyYHDx0ITcF4N7doMl4KgcJ5txdGTPOk9HM00vlbysAN+Wa
+        6xrOIvZPhPkOtlHcSl0z02KyYCnVIDBEBqUGhGwRskeeLt0zDpk+gy/mR0N4xp10FmrpfNwpkDlY
+        Z/TvZcsz16YDuw7yFg2SmGY7F0+lGrqMDqVZn6ys45pJzVTcO7uVm9GR9EAQJIjUpCfIlsghjWcB
+        GzmtsGVxzO5OIsyfa+mwpsZn94gke5Ik5MhTL7fMsJxi4jC8FlhW7EVJ6i0CJAIkAfKouZhD3mBf
+        By0WHb43uqVLEmnxsNrGSDogcqi5KND845dxA2QbAGu0X0NVHQrxkr3yIUjXoRlwz/hr66B14pRf
+        rufikxl4juHKOmyQ8YFehW0LOD7Deogch3LofT5BzZXER1AqbNuFhwZSJ40IckDk4KX3HBGPqatU
+        f8GomDK1hOgUF0+rJhErpeM9/Sidg3C7y2lfgayzAK0Alai1Q/r6IymSRUu0C6kaWsA7KRSgeJ/Z
+        Sf+4DanjUA4hdWAlFeLn5UetlCD/z7eRP6rR5f3lD3WWOsGlFwAA
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '723'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 07 Sep 2023 14:03:07 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAH1SyY4TMRD9lcjnTPDaS04MEQfEICFAQhrEobptJ5a8RF4QKMq/U60sw1y4lFxV
+        79XiVycSTAWyPZFSIVeyJWRNTNSXR00V/BdTmq+FbNmaJGuLQVRs3q+Jd8HdHeuM1+XCg7xvwcSF
+        dDqf12TKEOfD0gW0zqaUXWqx5j837jX67I7I57yTq3efsMycDVSDszAplWT9QIXiA/aF6mrThmwV
+        39BBcYFZ3ote8A5ZrdQUbqWrC+Y5RcSS9y2no3nzGEo1WUMg98ZfK/a5MY6HC5zJFe0pgiKExf+4
+        270wnlw0bAmmuFl9d/5gfHARPEBc8dcwfv8htN/+O0476uvCSkjJqBo5Vz2O1Cbv5g+LKpaNFjgV
+        dNKdElrycZa87zmn4wQdnfU8oVWWWWADjGqWuucTVxQYRtVAbmp8zsa637fZTADnsbyLNr31xuky
+        H/AMIDz8SilPLe830b/stXMVxSNP/wAx6VPcX4WRGzGKsZPDMArWd5ThFcRUnXUzipciXsaPn+e/
+        AtGsAX4CAAA=
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '407'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 07 Sep 2023 14:03:07 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/dates/2023-09-08/times;servicePublicId=INT_Achternaam_gebruiken;servicePublicId=Betalen_gemeentebelastingen;numberOfCustomers=1
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAD3TsW7CMBSF4VepPGdI7rXVNlvbiaWtqm4oQk64oVZtR4qdLoh3r0MOTOYHn48M
+        cFbZBUmq3av6qeVaVdfTbKe+9nPb3E6znYQmNKMZfdvptZt6268nmtCEZjSjNfq2N2hz7aata5zo
+        Bt2gCU1oRjNaozXaoDef4BN8gk/wCT7BJ/gEn+ATfIJP8Bk+w2f4DJ/hM3yGz/AZPsNn+Axfw9fw
+        NXwNX8PX8DV8Dd9gb7A32BvsDfYGe4O9ue81ujxfV6kg2ar2rFK2c1atKp9JPG4v8pSt/5K0+Fx+
+        hI+mUtM4JinX4uJ9pbwL7h6jE39M29DOpyVIXFdnFZfQy/wxvi0pT0Hm9c6+6cq1JPOfG+Rz6b0b
+        duuX7nfv34eX4SfLHK0Nh5P08+J+JVYPr+VBvcTyVpBCSy/epuziSWKnLpdKxSm70Q02uymu/5nu
+        8g8NUH/gQAMAAA==
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '352'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 07 Sep 2023 14:03:07 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAH1SyY4TMRD9lcjnTPDaS04MEQfEICFAQhrEobptJ5a8RF4QKMq/U60sw1y4lFxV
+        79XiVycSTAWyPZFSIVeyJWRNTNSXR00V/BdTmq+FbNmaJGuLQVRs3q+Jd8HdHeuM1+XCg7xvwcSF
+        dDqf12TKEOfD0gW0zqaUXWqx5j837jX67I7I57yTq3efsMycDVSDszAplWT9QIXiA/aF6mrThmwV
+        39BBcYFZ3ote8A5ZrdQUbqWrC+Y5RcSS9y2no3nzGEo1WUMg98ZfK/a5MY6HC5zJFe0pgiKExf+4
+        270wnlw0bAmmuFl9d/5gfHARPEBc8dcwfv8htN/+O0476uvCSkjJqBo5Vz2O1Cbv5g+LKpaNFjgV
+        dNKdElrycZa87zmn4wQdnfU8oVWWWWADjGqWuucTVxQYRtVAbmp8zsa637fZTADnsbyLNr31xuky
+        H/AMIDz8SilPLe830b/stXMVxSNP/wAx6VPcX4WRGzGKsZPDMArWd5ThFcRUnXUzipciXsaPn+e/
+        AtGsAX4CAAA=
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '407'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 07 Sep 2023 14:03:07 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: '{"title": "Open Formulieren: Achternaam gebruiken, Betalen gemeentebelastingen",
+      "customers": [{"email": "automated-test@example.com", "lastName": "TEST (automated)"},
+      {"email": "automated-test@example.com", "lastName": "TEST (automated)"}], "services":
+      [{"publicId": "INT_Achternaam_gebruiken"}, {"publicId": "Betalen_gemeentebelastingen"}],
+      "notes": "AUTOMATED TEST APPOINTMENT - can safely be removed."}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '406'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/dates/2023-09-08/times/08:30/book
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAN1WTW/cNhD9KwJ7adH1lqRIStxTHMcBjCa2gWwRINkgoMiRlw0lGVrKcGD4v2e4
+        3i/ZSdAG6CE9iIBIznDmzXtD3pG2i7AiM3L81/zi9fH89EU2P30zz44vLy/OzuevT8/n2VFmTZut
+        TA3hc1ZB1kPT3YCbkgnpYdUNvQUyuyN2WMWuQVd3C2K70PULMluQX3JTFsYtyGRBoDE+rGcX5B6t
+        W9OgJWGrCFnwf7cZI/cTYnswERyZMaUF1TIvtRD5ZOe/HUKYkFU0fURjTnl+RPURLedUzXI6o3RK
+        Kf0dP5qOGJoK+ov6ZG0MPabK0Rj6G29T3u/viBt6E33X4oF0Qq6HKnh72poqpBhiP8CEGOd82mLC
+        1s+LkdE+ZFFIVWhNqRByMoIEobJLcEOAjfPFxjuiZVoL4cn0Gq7VBi/8X/rVmdv/riv30kNwe8va
+        hFUy9W3dzeE27ndvUk6Qx960q7AOP3l//+GgFsd2GaFvjWmyK6j6wX+CFleNjf4GtnAM126TrswF
+        logpVubFFrszXCDInY97Xx/3vu4nh4jLHwB8jLcohdBFwVVOf0a8n0M0AVoEuwFoI1QQzCr69uof
+        wk75CPaNu49fc3f/YUKijyEde3GNZ77s+mYIHnpoZ9nXCj/Jvh9ehYnZZdI+1gvxXp10Qxv7z1uN
+        bmbf+eskVK5E9vw1GVdPClaUNJe8nJAEURwcxif5lJaS57jKi7zIuXos/+gbeNe1KZfToe+u4Y/j
+        BttI70xDdge/iXjO1uJ6+bCdiYwWdF+BP09O9havfAssTXbtNHvrwxJC45GFBhsgH2/jW8c1jvPv
+        hjMuHKNScy7HeqmZrg2nOa2ckrkTXFvBkdac6sooap2tcJQ1qw0rjZZWuIJXXFLDcFaWu2pc9lD7
+        221sa0qj+8TPZwG8S5poMaqjm67rq6G/mrZhn9eJj1g88upgIy6Grr3aFEZMc51rJcpS56xQlGG/
+        NiG8MJ+3WiBV6OwnZMhuAt086dNSPurTD9V9E7r4CtqruNwmYPd9+/23aJYoef5QzPXd9asZ0CYh
+        /hsZk3Dj8+kFwxR/8HOGJO+T7Lo21RRvmeb6MPpizsSM5jOqp0zn4+h3oN+ulRRSYUdCGPExUeKi
+        fu77g2SxQaDKDg5+svWtj8tuWG/ZrUKAr8bL6LfirX2/hWwkjlEYZw4HX2N/2C5sFJN+sm8jvdHQ
+        g4nfOLHr9ne+vo0foTISUw8xGXTtZYfSSGR0UJshxEMZbWLeq8dJXSgrTEm1pVpxW1RCKlPTUlf4
+        drDKuQryqhS0qFSeV7XEqYKZUgqNtXdkr5RdRkfY7eMzuEVAA0xt1zyWSYoi3Wb/GSm5VP+alLzg
+        PxUpD+L9v5FSlTllwCoqFROyrkqlLYhKm1IgSUtKSyOlLlXOpFLOFKYytVKG8xxbemn4j5Pyw+GV
+        M35EH8RXaCa1Y4qW4EonMT4KuZDUaVdSB9rl3EkcgBea1viulWA1o7yiFngtNFk/wuOQntT0/guo
+        ZwmXSgwAAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1147'
+      Content-Security-Policy:
+      - script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      Content-Type:
+      - application/text;charset=UTF-8
+      Date:
+      - Thu, 07 Sep 2023 14:03:11 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Set-Cookie:
+      - JSESSIONID=node01qy53s225i26rpmk2uosihety26.node0; Path=/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/dates/2023-09-08/times/08:30;
+        Domain=apigateway1.lv.nl
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 202
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: DELETE
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/appointments/79159d1608ed8d5b860e3450d9d80de9d32d5d32e2790f7565ec9102b0ce2f49
+  response:
+    body:
+      string: ''
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Date:
+      - Thu, 07 Sep 2023 14:03:11 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 204
+      message: ''
+version: 1
