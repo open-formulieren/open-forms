@@ -183,12 +183,37 @@ class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @requests_mock.Mocker()
     def test_get_times_returns_all_times_for_a_give_location_product_and_date(self, m):
         m.get(
-            f"{self.api_root}v1/branches/1/services/1/dates/2016-12-06/times",
+            f"{self.api_root}v1/branches/1",
+            json={
+                "branch": {
+                    "addressState": "Zuid Holland",
+                    "phone": "071-4023344",
+                    "addressCity": "Katwijk",
+                    "fullTimeZone": "Europe/Amsterdam",
+                    "timeZone": "Europe/Amsterdam",
+                    "addressLine2": "Lageweg 35",
+                    "addressLine1": None,
+                    "updated": 1475589234069,
+                    "created": 1475589234008,
+                    "email": None,
+                    "name": "Branch 1",
+                    "publicId": "1",
+                    "longitude": 4.436127618214371,
+                    "branchPrefix": None,
+                    "latitude": 52.202012993593705,
+                    "addressCountry": "Netherlands",
+                    "custom": None,
+                    "addressZip": "2222 AG",
+                }
+            },
+        )
+        m.get(
+            f"{self.api_root}v2/branches/1/dates/2016-12-06/times;servicePublicId=1",
             text=mock_response("times.json"),
         )
 
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2016-12-06"
+            self.endpoint, {"product_id": "1", "location_id": "1", "date": "2016-12-06"}
         )
 
         self.assertEqual(response.status_code, 200)

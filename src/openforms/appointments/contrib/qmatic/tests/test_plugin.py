@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+import pytz
 import requests_mock
 from hypothesis import given, strategies as st
 
@@ -148,14 +149,45 @@ class PluginTests(MockConfigMixin, TestCase):
         day = date(2016, 12, 6)
 
         m.get(
-            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/dates/{day.strftime('%Y-%m-%d')}/times",
+            f"{self.api_root}v1/branches/f364d92b7fa07a48c4ecc862de30c47",
+            json={
+                "branch": {
+                    "addressState": "Zuid Holland",
+                    "phone": "071-4023344",
+                    "addressCity": "Katwijk",
+                    "fullTimeZone": "Europe/Amsterdam",
+                    "timeZone": "Europe/Amsterdam",
+                    "addressLine2": "Lageweg 35",
+                    "addressLine1": None,
+                    "updated": 1475589234069,
+                    "created": 1475589234008,
+                    "email": None,
+                    "name": "Branch 1",
+                    "publicId": "f364d92b7fa07a48c4ecc862de30c47",
+                    "longitude": 4.436127618214371,
+                    "branchPrefix": None,
+                    "latitude": 52.202012993593705,
+                    "addressCountry": "Netherlands",
+                    "custom": None,
+                    "addressZip": "2222 AG",
+                }
+            },
+        )
+        m.get(
+            f"{self.api_root}v2/branches/f364d92b7fa07a48c4ecc862de30c47/dates/"
+            "2016-12-06/times;servicePublicId=54b3482204c11bedc8b0a7acbffa308",
             text=mock_response("times.json"),
         )
 
         times = self.plugin.get_times([product], location, day)
 
         self.assertEqual(len(times), 16)
-        self.assertEqual(times[0], datetime(2016, 12, 6, 9, 0, 0))
+        self.assertEqual(
+            times[0],
+            datetime(2016, 12, 6, 9, 0, 0).astimezone(
+                pytz.timezone("Europe/Amsterdam")
+            ),
+        )
 
     def test_get_required_customer_fields(self):
         self.qmatic_config.required_customer_fields = [

@@ -3,7 +3,7 @@ import logging
 import warnings
 from collections import Counter
 from contextlib import contextmanager
-from datetime import date, datetime, time
+from datetime import date, datetime
 from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
@@ -51,7 +51,7 @@ def log_api_errors(template: str, *args):
         yield
     except (QmaticException, RequestException) as e:
         logger.exception(template, *args, exc_info=e)
-        raise GracefulQmaticException("SOAP call failed") from e
+        raise GracefulQmaticException("API call failed") from e
     except Exception as exc:
         raise QmaticException from exc
 
@@ -87,6 +87,18 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
     # See "Book an appointment for multiple customers and multiple services" in the
     # documentation.
     supports_multiple_products = True
+
+    @staticmethod
+    def _count_products(products: list[Product]) -> tuple[list[str], int]:
+        products_counter = Counter()
+        for product in products:
+            products_counter.update({product.identifier: product.amount})
+
+        # grab the amount of the most common product - this determines the total number
+        # of customers for the appointment (see docstring explanation).
+        num_customers = products_counter.most_common(1)[0][1]
+        unique_product_ids = list(products_counter.keys())
+        return (unique_product_ids, num_customers)
 
     @with_graceful_default(default=[])
     def get_available_products(
@@ -231,15 +243,7 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
            date. The `start_at` and `end_at` arguments are ingored.
         """
         assert products, "Can't retrieve dates without having product information"
-
-        products_counter = Counter()
-        for product in products:
-            products_counter.update({product.identifier: product.amount})
-
-        # grab the amount of the most common product - this determines the total number
-        # of customers for the appointment (see docstring explanation).
-        num_customers = products_counter.most_common(1)[0][1]
-        unique_product_ids = list(products_counter.keys())
+        unique_product_ids, num_customers = self._count_products(products)
 
         with log_api_errors(
             "Could not retrieve dates for products '%s' at location '%s'",
@@ -260,26 +264,22 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         location: Location,
         day: date,
     ) -> list[datetime]:
-        if len(products) != 1:
-            return []
-
-        client = QmaticClient()
-        product_id = products[0].identifier
+        assert products, "Can't retrieve dates without having product information"
+        unique_product_ids, num_customers = self._count_products(products)
 
         with log_api_errors(
-            "Could not retrieve times for product '%s' at location '%s' on %s",
-            product_id,
+            "Could not retrieve times for products '%s' at location '%s' on %s",
+            unique_product_ids,
             location,
             day,
         ):
-            response = client.get(
-                f"branches/{location.identifier}/services/{product_id}/dates/{day.strftime('%Y-%m-%d')}/times"
-            )
-            response.raise_for_status()
-        return [
-            datetime.combine(day, time.fromisoformat(entry))
-            for entry in response.json()["times"]
-        ]
+            with QmaticClient() as client:
+                return client.list_times(
+                    location_id=location.identifier,
+                    day=day,
+                    service_ids=unique_product_ids,
+                    num_customers=num_customers,
+                )
 
     def get_required_customer_fields(
         self,

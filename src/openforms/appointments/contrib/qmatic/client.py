@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, time
 from typing import TypedDict
 
 import pytz
@@ -171,7 +171,7 @@ class QmaticClient(Session):
             params += [f"numberOfCustomers={num_customers - 1}"]
         serializedParams = ";".join(params)
 
-        # the the branch detail so we can interpret the timezone correctly
+        # get the branch detail so we can interpret the timezone correctly
         branch = self.get_branch(location_id)
         branch_timezone = pytz.timezone(branch["timeZone"])
 
@@ -185,3 +185,41 @@ class QmaticClient(Session):
             for value in response.json()["dates"]
         ]
         return dates
+
+    def list_times(
+        self, location_id: str, service_ids: list[str], day: date, num_customers: int
+    ) -> list[datetime]:
+        """
+        Get list of available dates for multiple services and customers.
+
+        ``num_customers`` is the total number of customers, which affects the
+        appointment duration in Qmatic (using
+        ``duration + additionalCustomerDuration * numAdditionalCustomers``, where
+        ``numAdditionalCustomers`` is ``numCustomers - 1``.
+        ).
+
+        Note that Qmatic returns a list of datetimes without timezone information.
+        """
+        assert location_id, "Unexpectedly received empty location ID"
+        assert service_ids, "Unexpectedly received an empty list of service IDs"
+        assert num_customers > 0, "Need at least one customer"
+
+        params = [f"servicePublicId={service_id}" for service_id in service_ids]
+        if num_customers > 1:
+            params += [f"numberOfCustomers={num_customers - 1}"]
+        serializedParams = ";".join(params)
+
+        # get the branch detail so we can correctly apply the timezone
+        branch = self.get_branch(location_id)
+        branch_timezone = pytz.timezone(branch["timeZone"])
+
+        # get the times
+        endpoint = f"v2/branches/{location_id}/dates/{day.isoformat()}/times;{serializedParams}"
+        response = self.get(endpoint)
+        response.raise_for_status()
+
+        datetimes = [
+            datetime.combine(day, time.fromisoformat(entry)).astimezone(branch_timezone)
+            for entry in response.json()["times"]
+        ]
+        return datetimes
