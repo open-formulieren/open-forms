@@ -1,3 +1,4 @@
+import traceback
 from datetime import date
 
 from django.core.management import BaseCommand
@@ -213,6 +214,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"Booked appointment id: {appointment_id}")
                 break
             except Exception as exc:
+                traceback.print_exception(exc)
                 self.stderr.write(f"Failed to create appointment: {exc}")
 
     def exit(self):

@@ -244,8 +244,34 @@ class PluginTests(MockConfigMixin, TestCase):
         client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
         day = datetime(2016, 12, 6, 9, 0, 0)
 
+        m.get(
+            f"{self.api_root}v1/branches/f364d92b7fa07a48c4ecc862de30c47",
+            json={
+                "branch": {
+                    "addressState": "Zuid Holland",
+                    "phone": "071-4023344",
+                    "addressCity": "Katwijk",
+                    "fullTimeZone": "Europe/Amsterdam",
+                    "timeZone": "Europe/Amsterdam",
+                    "addressLine2": "Lageweg 35",
+                    "addressLine1": None,
+                    "updated": 1475589234069,
+                    "created": 1475589234008,
+                    "email": None,
+                    "name": "Branch 1",
+                    "publicId": "f364d92b7fa07a48c4ecc862de30c47",
+                    "longitude": 4.436127618214371,
+                    "branchPrefix": None,
+                    "latitude": 52.202012993593705,
+                    "addressCountry": "Netherlands",
+                    "custom": None,
+                    "addressZip": "2222 AG",
+                }
+            },
+        )
         m.post(
-            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/dates/{day.strftime('%Y-%m-%d')}/times/{day.strftime('%H:%M')}/book",
+            f"{self.api_root}v2/branches/f364d92b7fa07a48c4ecc862de30c47/"
+            "dates/2016-12-06/times/09:00/book",
             text=mock_response("book.json"),
         )
 
@@ -271,9 +297,34 @@ class PluginTests(MockConfigMixin, TestCase):
             product_id="54b3482204c11bedc8b0a7acbffa308",
         )
         assert appointment.products.count() == 1
+        m.get(
+            f"{self.api_root}v1/branches/f364d92b7fa07a48c4ecc862de30c47",
+            json={
+                "branch": {
+                    "addressState": "Zuid Holland",
+                    "phone": "071-4023344",
+                    "addressCity": "Katwijk",
+                    "fullTimeZone": "Europe/Amsterdam",
+                    "timeZone": "Europe/Amsterdam",
+                    "addressLine2": "Lageweg 35",
+                    "addressLine1": None,
+                    "updated": 1475589234069,
+                    "created": 1475589234008,
+                    "email": None,
+                    "name": "Branch 1",
+                    "publicId": "f364d92b7fa07a48c4ecc862de30c47",
+                    "longitude": 4.436127618214371,
+                    "branchPrefix": None,
+                    "latitude": 52.202012993593705,
+                    "addressCountry": "Netherlands",
+                    "custom": None,
+                    "addressZip": "2222 AG",
+                }
+            },
+        )
         m.post(
-            f"{self.api_root}v1/branches/f364d92b7fa07a48c4ecc862de30c47/services/"
-            f"54b3482204c11bedc8b0a7acbffa308/dates/2023-08-21/times/16:15/book",
+            f"{self.api_root}v2/branches/f364d92b7fa07a48c4ecc862de30c47/"
+            "dates/2023-08-21/times/16:15/book",
             text=mock_response("book.json"),
         )
 
@@ -465,29 +516,38 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             )
 
     @requests_mock.Mocker()
-    def test_create_appointment_multiple_products(self, m):
-        product1 = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
-        product2 = Product(identifier="2", code="PASAF", name="Nope")
-        location = Location(identifier="1", name="Maykin Media")
-        client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
-        start_at = timezone.make_aware(datetime(2021, 8, 23, 6, 0, 0))
-
-        result = self.plugin.create_appointment(
-            [product1, product2], location, start_at, client
-        )
-
-        self.assertIsNone(result)
-        self.assertEqual(len(m.request_history), 0)
-
-    @requests_mock.Mocker()
     def test_create_appointment_failure(self, m):
         product = Product(identifier="1", code="PASAAN", name="Paspoort aanvraag")
         location = Location(identifier="1", name="Maykin Media")
         client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
         start_at = timezone.make_aware(datetime(2021, 8, 23, 6, 0, 0))
+        m.get(
+            f"{self.api_root}v1/branches/1",
+            json={
+                "branch": {
+                    "addressState": "Zuid Holland",
+                    "phone": "071-4023344",
+                    "addressCity": "Katwijk",
+                    "fullTimeZone": "Europe/Amsterdam",
+                    "timeZone": "Europe/Amsterdam",
+                    "addressLine2": "Lageweg 35",
+                    "addressLine1": None,
+                    "updated": 1475589234069,
+                    "created": 1475589234008,
+                    "email": None,
+                    "name": "Branch 1",
+                    "publicId": "1",
+                    "longitude": 4.436127618214371,
+                    "branchPrefix": None,
+                    "latitude": 52.202012993593705,
+                    "addressCountry": "Netherlands",
+                    "custom": None,
+                    "addressZip": "2222 AG",
+                }
+            },
+        )
         m.post(
-            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/"
-            f"dates/{start_at.strftime('%Y-%m-%d')}/times/{start_at.strftime('%H:%M')}/book",
+            f"{self.api_root}v2/branches/1/dates/2021-08-23/times/06:00/book",
             headers={
                 "ERROR_CODE": "440",
                 "ERROR_MESSAGE": "No resource is available for the selected date and time",
@@ -508,6 +568,31 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         location = Location(identifier="1", name="Maykin Media")
         client = Customer(last_name="Doe", birthdate=date(1980, 1, 1))
         start_at = datetime(2021, 8, 23, 6, 0, 0).replace(tzinfo=timezone.utc)
+        m.get(
+            f"{self.api_root}v1/branches/1",
+            json={
+                "branch": {
+                    "addressState": "Zuid Holland",
+                    "phone": "071-4023344",
+                    "addressCity": "Katwijk",
+                    "fullTimeZone": "Europe/Amsterdam",
+                    "timeZone": "Europe/Amsterdam",
+                    "addressLine2": "Lageweg 35",
+                    "addressLine1": None,
+                    "updated": 1475589234069,
+                    "created": 1475589234008,
+                    "email": None,
+                    "name": "Branch 1",
+                    "publicId": "1",
+                    "longitude": 4.436127618214371,
+                    "branchPrefix": None,
+                    "latitude": 52.202012993593705,
+                    "addressCountry": "Netherlands",
+                    "custom": None,
+                    "addressZip": "2222 AG",
+                }
+            },
+        )
         m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
 
         with self.assertRaisesMessage(
