@@ -3,6 +3,8 @@ from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 from zgw_consumers.admin import ListZaaktypenMixin
 
+from openforms.admin.decorators import suppress_requests_errors
+
 from .models import ZGWApiGroupConfig, ZgwConfig
 
 
@@ -11,6 +13,7 @@ class ZgwConfigAdmin(SingletonModelAdmin):
     pass
 
 
+@suppress_requests_errors(ZGWApiGroupConfig, fields=["zaaktype"])
 @admin.register(ZGWApiGroupConfig)
 class ZGWApiGroupConfigAdmin(ListZaaktypenMixin, admin.ModelAdmin):
     zaaktype_fields = [
