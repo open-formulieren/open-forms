@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 from functools import wraps
+from typing import Type
 
+from django.contrib import messages
 from django.utils.cache import patch_vary_headers
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache as django_never_cache
 
 from openforms.config.models import GlobalConfiguration
@@ -65,3 +68,44 @@ def conditional_search_engine_index(config_attr: str, content="noindex, nofollow
         return _wrapped_view_func
 
     return decorator
+
+
+def dbfields_exception_handler(
+    exceptions: tuple[Type[Exception]],
+):
+    """
+    A decorator that wraps a try catch around the formfields_for_dbfields function.
+    If the decorator catches an exception it will return a base formfield with
+    an error message discribing that an error has occured.
+
+    Args:
+        exceptions (tuple[Type[Exception]]): _description_
+    """
+
+    def decorate(func):
+        def _handle_exceptions(db_field, request, *args, **kwargs):
+            try:
+                return func(db_field, request, *args, **kwargs)
+            except exceptions:
+                error_message = _(
+                    "Could not load data for field '{verbose_name}' - enable and check the request logs for more details"
+                ).format(verbose_name=db_field.verbose_name)
+
+                # filter out duplicated messages that get generated because of the returning form.field
+                if error_message not in [
+                    x.message for x in messages.get_messages(request)
+                ]:
+                    messages.error(request, error_message)
+
+                # return form.field instance for crashing field
+                # TODO: Dynamicly add widget to form.field with decorated ModelAdmin formfield_overrides
+                return db_field.formfield(
+                    help_text=db_field.help_text,
+                    validators=db_field.validators,
+                    max_length=db_field.max_length,
+                    disabled=True,
+                )
+
+        return _handle_exceptions
+
+    return decorate

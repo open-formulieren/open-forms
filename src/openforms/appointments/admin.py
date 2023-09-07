@@ -4,13 +4,18 @@ from typing import Literal
 from django.contrib import admin
 from django.contrib.admin.widgets import AdminTextInputWidget
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.html import format_html_join
 from django.utils.translation import gettext, gettext_lazy as _
 
+from requests.exceptions import RequestException
 from solo.admin import SingletonModelAdmin
+
+from openforms.utils.decorators import dbfields_exception_handler
 
 from .base import BasePlugin
 from .constants import AppointmentDetailsStatus
+from .contrib.qmatic.exceptions import QmaticException
 from .fields import AppointmentBackendChoiceField
 from .models import Appointment, AppointmentInfo, AppointmentProduct, AppointmentsConfig
 from .registry import register
@@ -26,6 +31,15 @@ class PluginFieldMixin:
         return super().formfield_for_dbfield(db_field, request, **kwargs)  # type: ignore
 
 
+@method_decorator(
+    dbfields_exception_handler(
+        exceptions=(
+            QmaticException,
+            RequestException,
+        )
+    ),
+    name="formfield_for_dbfield",
+)
 @admin.register(AppointmentsConfig)
 class AppointmentsConfigAdmin(PluginFieldMixin, SingletonModelAdmin):
     def formfield_for_dbfield(self, db_field, request, **kwargs):
