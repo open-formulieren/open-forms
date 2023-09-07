@@ -100,7 +100,32 @@ class PluginTests(MockConfigMixin, TestCase):
         day = date(2016, 12, 6)
 
         m.get(
-            f"{self.api_root}v1/branches/{location.identifier}/services/{product.identifier}/dates",
+            f"{self.api_root}v1/branches/f364d92b7fa07a48c4ecc862de30c47",
+            json={
+                "branch": {
+                    "addressState": "Zuid Holland",
+                    "phone": "071-4023344",
+                    "addressCity": "Katwijk",
+                    "fullTimeZone": "Europe/Amsterdam",
+                    "timeZone": "Europe/Amsterdam",
+                    "addressLine2": "Lageweg 35",
+                    "addressLine1": None,
+                    "updated": 1475589234069,
+                    "created": 1475589234008,
+                    "email": None,
+                    "name": "Branch 1",
+                    "publicId": "f364d92b7fa07a48c4ecc862de30c47",
+                    "longitude": 4.436127618214371,
+                    "branchPrefix": None,
+                    "latitude": 52.202012993593705,
+                    "addressCountry": "Netherlands",
+                    "custom": None,
+                    "addressZip": "2222 AG",
+                }
+            },
+        )
+        m.get(
+            f"{self.api_root}v2/branches/f364d92b7fa07a48c4ecc862de30c47/dates;servicePublicId=54b3482204c11bedc8b0a7acbffa308",
             text=mock_response("dates.json"),
         )
 

@@ -1,6 +1,7 @@
 import json
 import logging
 import warnings
+from collections import Counter
 from contextlib import contextmanager
 from datetime import date, datetime, time
 from functools import wraps
@@ -212,25 +213,45 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         """
         Retrieve all available dates for given ``products`` and ``location``.
 
-        NOTE: The API does not support getting dates between a start and end
-        date. The `start_at` and `end_at` arguments are ingored.
-        """
-        if len(products) != 1:
-            return []
+        From the documentation:
 
-        client = QmaticClient()
-        product_id = products[0].identifier
+            numberOfCustomers will be used on all services when calculating the
+            appointment duration For example, a service with Duration of 10 minutes and
+            additionalCustomerDuration of 5 minutes will result in an appointment
+            duration of 50 when minutes for 4 customers and 2 services.
+
+        The example given shows that it makes little sense to attach number of customers
+        to a particular product/service. E.g. if you have amount=2 for product 1 and
+        amount=3 for product 2, booking the appointment for 3 customers results in time
+        for 3 people for each product (which is more than you need). Using 5 customers (
+        2 + 3) would result in time reserved for 10 people and is incorrect in this
+        situation.
+
+        .. note:: The API does not support getting dates between a start and end
+           date. The `start_at` and `end_at` arguments are ingored.
+        """
+        assert products, "Can't retrieve dates without having product information"
+
+        products_counter = Counter()
+        for product in products:
+            products_counter.update({product.identifier: product.amount})
+
+        # grab the amount of the most common product - this determines the total number
+        # of customers for the appointment (see docstring explanation).
+        num_customers = products_counter.most_common(1)[0][1]
+        unique_product_ids = list(products_counter.keys())
 
         with log_api_errors(
-            "Could not retrieve dates for product '%s' at location '%s'",
-            product_id,
+            "Could not retrieve dates for products '%s' at location '%s'",
+            unique_product_ids,
             location,
         ):
-            response = client.get(
-                f"branches/{location.identifier}/services/{product_id}/dates"
-            )
-            response.raise_for_status()
-        return [isoparse(entry).date() for entry in response.json()["dates"]]
+            with QmaticClient() as client:
+                return client.list_dates(
+                    location_id=location.identifier,
+                    service_ids=unique_product_ids,
+                    num_customers=num_customers,
+                )
 
     @with_graceful_default(default=[])
     def get_times(

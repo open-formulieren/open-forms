@@ -1,5 +1,8 @@
+from datetime import date
 from typing import TypedDict
 
+import pytz
+from dateutil.parser import isoparse
 from requests import Session
 
 from .exceptions import QmaticException
@@ -32,6 +35,29 @@ class BranchDict(TypedDict):
     branchPublicId: str
     branchName: str
     serviceGroups: list[ServiceGroupDict]
+
+
+class BranchDetailDict(TypedDict):
+    name: str
+    publicId: str
+    phone: str
+    email: str
+    branchPrefix: str | None
+
+    addressLine1: str | None
+    addressLine2: str | None
+    addressZip: str | None
+    addressCity: str | None
+    addressState: str | None
+    addressCountry: str | None
+
+    latitude: float | None
+    longitude: float | None
+    timeZone: str
+    fullTimeZone: str
+    custom: str | None
+    created: int
+    updated: int
 
 
 # API CLIENT IMPLEMENTATIONS, per major version of the API
@@ -115,3 +141,47 @@ class QmaticClient(Session):
         branches: list[BranchDict] = response_data
         service_groups = sum((branch["serviceGroups"] for branch in branches), [])
         return service_groups
+
+    def get_branch(self, branch_id: str) -> BranchDetailDict:
+        response = self.get(f"v1/branches/{branch_id}")
+        response.raise_for_status()
+        branch: BranchDetailDict = response.json()["branch"]
+        return branch
+
+    def list_dates(
+        self, location_id: str, service_ids: list[str], num_customers: int
+    ) -> list[date]:
+        """
+        Get list of available dates for multiple services and customers.
+
+        ``num_customers`` is the total number of customers, which affects the
+        appointment duration in Qmatic (using
+        ``duration + additionalCustomerDuration * numAdditionalCustomers``, where
+        ``numAdditionalCustomers`` is ``numCustomers - 1``.
+        ).
+
+        Note that Qmatic returns a list of datetimes without timezone information.
+        """
+        assert location_id, "Unexpectedly received empty location ID"
+        assert service_ids, "Unexpectedly received an empty list of service IDs"
+        assert num_customers > 0, "Need at least one customer"
+
+        params = [f"servicePublicId={service_id}" for service_id in service_ids]
+        if num_customers > 1:
+            params += [f"numberOfCustomers={num_customers - 1}"]
+        serializedParams = ";".join(params)
+
+        # the the branch detail so we can interpret the timezone correctly
+        branch = self.get_branch(location_id)
+        branch_timezone = pytz.timezone(branch["timeZone"])
+
+        # get the dates
+        endpoint = f"v2/branches/{location_id}/dates;{serializedParams}"
+        response = self.get(endpoint)
+        response.raise_for_status()
+
+        dates: list[date] = [
+            isoparse(value).replace(tzinfo=branch_timezone).date()
+            for value in response.json()["dates"]
+        ]
+        return dates

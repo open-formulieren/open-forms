@@ -1,20 +1,15 @@
 """
 Tests for retrieving available products from Qmatic through our own API.
 """
-from pathlib import Path
-
 from django.test import TestCase
 
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....base import Product
 from ..plugin import QmaticAppointment
-from .utils import MockConfigMixin
-
-TEST_FILES = Path(__file__).parent.resolve() / "data"
+from .utils import TEST_FILES, MockConfigMixin
 
 QMATIC_BASE_URL = "http://localhost:8080/qmatic/calendar-backend/public/api/"
-
 
 plugin = QmaticAppointment("qmatic")
 
