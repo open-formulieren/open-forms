@@ -24,6 +24,12 @@ $logic-line-breakpoint: 1800px !default;
     width: 100%;
     flex-grow: 2;
     flex-shrink: 1;
+
+    // If unordered lists are inside form tags, they get a huge left margin and padding
+    ul.messagelist {
+      margin-left: 0;
+      padding-left: 0;
+    }
   }
 
   @include element('advanced') {

@@ -15,6 +15,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
+import MessageList from '../MessageList';
 import {FormLogicContext} from './Context';
 import StepSelection, {useFormStep} from './StepSelection';
 import {SERVICES_ENDPOINT, SERVICE_FETCH_CONFIG_ENDPOINT} from './constants';
@@ -301,6 +302,23 @@ const RuleBody = ({
               </div>
             </div>
           ) : null}
+
+          {triggerFromStepIdentifier && !triggerFromStep && (
+            <MessageList
+              messages={[
+                {
+                  message: (
+                    <FormattedMessage
+                      description="Warning missing trigger step"
+                      defaultMessage="The selected trigger step could not be found in this form!
+                      Please change it by clicking on the cog icon here on the left."
+                    />
+                  ),
+                  level: 'warning',
+                },
+              ]}
+            />
+          )}
 
           <TriggerComponent
             name="jsonLogicTrigger"

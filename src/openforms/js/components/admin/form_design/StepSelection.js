@@ -42,6 +42,8 @@ const useFormStep = (identifier = '') => {
   // look up the step from the array of steps in the context
   const step = getFormStep(identifier, formSteps);
 
+  if (!step) return null;
+
   return {
     step,
     stepName: getStepDisplayName(step),
