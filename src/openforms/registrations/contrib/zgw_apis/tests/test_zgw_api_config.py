@@ -27,6 +27,7 @@ from .factories import ZGWApiGroupConfigFactory
 class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         cls.zgw_group1 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-1.nl/api/v1/",
             zrc_service__oas="https://zaken-1.nl/api/v1/schema/openapi.yaml",
