@@ -10,12 +10,12 @@ import {useImmerReducer} from 'use-immer';
 import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
+import MessageList from 'components/admin/MessageList';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
-import MessageList from '../MessageList';
 import {FormLogicContext} from './Context';
 import StepSelection, {useFormStep} from './StepSelection';
 import {SERVICES_ENDPOINT, SERVICE_FETCH_CONFIG_ENDPOINT} from './constants';
@@ -343,6 +343,19 @@ const RuleBody = ({
       </div>
     </>
   );
+};
+
+RuleBody.propTypes = {
+  isCreate: PropTypes.bool.isRequired,
+  isAdvanced: PropTypes.bool.isRequired,
+  jsonLogicTrigger: PropTypes.object,
+  actions: PropTypes.arrayOf(PropTypes.object),
+  displayAdvancedOptions: PropTypes.bool,
+  description: PropTypes.string,
+  triggerFromStepIdentifier: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  errors: PropTypes.object,
+  mayGenerateDescription: PropTypes.bool.isRequired,
 };
 
 const Rule = ({

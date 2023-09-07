@@ -5,8 +5,6 @@
   flex-direction: column;
   gap: 1em;
 
-  background: var(--message-error-bg);
-
   @include element('json') {
     font-family: monospace;
   }
