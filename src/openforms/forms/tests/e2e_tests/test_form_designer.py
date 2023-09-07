@@ -1147,6 +1147,12 @@ class FormDesignerRegressionTests(E2ETestCase):
             bin_icon = page.get_by_title("Delete").first
             await expect(bin_icon).to_be_visible()
 
+            # Check that a warning is present
+            warning = page.get_by_role("listitem").get_by_text(
+                "The selected trigger step could not be found in this form! Please change it by clicking on the cog icon here on the left."
+            )
+            await expect(warning).to_be_visible()
+
 
 class FormDesignerTooltipTests(E2ETestCase):
     async def test_tooltip_fields_are_present(self):
