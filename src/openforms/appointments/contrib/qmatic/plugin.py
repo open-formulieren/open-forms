@@ -301,11 +301,6 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         client: _CustomerDetails | Customer,
         remarks: str = "",
     ) -> str | None:
-        warnings.warn(
-            "The QMatic plugin is deprecated and will be removed in Open Forms 3.0",
-            DeprecationWarning,
-        )
-
         qmatic_client = QmaticClient()
         if len(products) != 1:
             logger.warning(
