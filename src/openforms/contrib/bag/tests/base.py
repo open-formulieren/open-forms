@@ -2,7 +2,7 @@ import json
 import os
 
 from openforms.contrib.bag.models import BAGConfig
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 
 class BagTestMixin:

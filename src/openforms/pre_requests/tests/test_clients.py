@@ -5,8 +5,8 @@ from django.test import TestCase
 import requests_mock
 
 from openforms.prefill.contrib.haalcentraal.tests.utils import load_binary_mock
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 from ..base import PreRequestHookBase
 from ..clients import PreRequestClientContext

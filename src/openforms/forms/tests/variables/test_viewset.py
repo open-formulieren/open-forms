@@ -21,7 +21,6 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.variables.constants import (
     DataMappingTypes,
     FormVariableDataTypes,
@@ -30,6 +29,7 @@ from openforms.variables.constants import (
 )
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 
 @override_settings(LANGUAGE_CODE="en")

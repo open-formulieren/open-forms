@@ -8,8 +8,8 @@ from zgw_consumers.models import Service
 from zgw_consumers.test import mock_service_oas_get
 
 from openforms.prefill.contrib.haalcentraal.constants import HaalCentraalVersion
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig

@@ -3,7 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 
 class AccessControlTests(APITestCase):

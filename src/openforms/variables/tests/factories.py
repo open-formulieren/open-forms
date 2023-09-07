@@ -1,6 +1,6 @@
 import factory
 
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 from ..models import ServiceFetchConfiguration
 

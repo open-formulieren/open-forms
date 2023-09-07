@@ -9,7 +9,7 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.models import Service
 from zgw_consumers.test import mock_service_oas_get
 
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 from ..constants import HaalCentraalVersion
 from ..models import HaalCentraalConfig

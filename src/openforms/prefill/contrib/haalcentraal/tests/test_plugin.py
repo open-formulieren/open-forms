@@ -11,8 +11,8 @@ from zgw_consumers.test import mock_service_oas_get
 
 from openforms.pre_requests.base import PreRequestHookBase
 from openforms.pre_requests.registry import Registry
-from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+from zgw_consumers_ext.factories import ServiceFactory
 
 from ....constants import IdentifierRoles
 from ....registry import register
