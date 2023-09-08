@@ -1099,6 +1099,60 @@ class FormDesignerRegressionTests(E2ETestCase):
             error_node = page.locator("css=.error")
             await expect(error_node).not_to_be_visible()
 
+    @tag("gh-3422")
+    async def test_removing_step_doesnt_break_form(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Form with 2 steps",
+            )
+            FormStepFactory.create(
+                form=form,
+                form_definition__configuration={
+                    "components": [{"type": "textfield", "key": "textA"}]
+                },
+            )
+            form_step2 = FormStepFactory.create(
+                form=form,
+                form_definition__configuration={
+                    "components": [{"type": "textfield", "key": "textB"}]
+                },
+            )
+            FormLogicFactory.create(form=form, trigger_from_step=form_step2)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Delete the second step
+            page.on("dialog", lambda dialog: dialog.accept())
+            sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")
+            bin_icon = sidebar.get_by_role("listitem").nth(1).get_by_title("Delete")
+            await bin_icon.click()
+
+            await page.get_by_role("tab", name="Logic").click()
+
+            # Check that you can delete the logic rule
+            bin_icon = page.get_by_title("Delete").first
+            await expect(bin_icon).to_be_visible()
+
+            # Check that a warning is present
+            warning = page.get_by_role("listitem").get_by_text(
+                "The selected trigger step could not be found in this form! Please change it!"
+            )
+            await expect(warning).to_be_visible()
+
 
 class FormDesignerTooltipTests(E2ETestCase):
     async def test_tooltip_fields_are_present(self):

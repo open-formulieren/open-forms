@@ -22,6 +22,7 @@
 // Logic editor UI
 @import './dsl-editor';
 @import './logic-rule';
+@import './logic-rule-error';
 @import './logic-trigger';
 @import './logic-action';
 @import './logic-type-selection';
@@ -38,3 +39,6 @@
 
 // Submission logs
 @import './logic-evaluated-table';
+
+// Errors
+@import './error-message';

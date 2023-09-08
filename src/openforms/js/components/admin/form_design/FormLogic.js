@@ -10,9 +10,11 @@ import {useImmerReducer} from 'use-immer';
 import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
+import MessageList from 'components/admin/MessageList';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {FormLogicContext} from './Context';
 import StepSelection, {useFormStep} from './StepSelection';
@@ -177,41 +179,28 @@ FormLogicRules.propTypes = {
   onAdd: PropTypes.func.isRequired,
 };
 
-const Rule = ({
+const RuleBody = ({
   isCreate,
-  _logicType,
-  description,
-  _mayGenerateDescription,
-  order,
-  jsonLogicTrigger,
-  triggerFromStep: triggerFromStepIdentifier,
-  actions,
   isAdvanced,
+  jsonLogicTrigger,
+  actions,
+  displayAdvancedOptions,
+  setDisplayAdvancedOptions,
+  description,
+  triggerFromStepIdentifier,
   onChange,
-  onDelete,
-  errors = {},
+  errors,
+  mayGenerateDescription,
 }) => {
   const intl = useIntl();
-  const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState(false);
   const [expandExpression, setExpandExpression] = useState(isCreate);
   const [resetRequest, setResetRequest] = useState(0);
   const triggerFromStep = useFormStep(triggerFromStepIdentifier);
 
-  const deleteConfirmMessage = intl.formatMessage({
-    description: 'Logic rule deletion confirm message',
-    defaultMessage: 'Are you sure you want to delete this rule?',
-  });
+  // Case in which there is an error: a trigger step was specified, but this step cannot be found in the form
+  if (!triggerFromStep && triggerFromStepIdentifier) setDisplayAdvancedOptions(true);
 
-  // if no logicType has been set yet, we first present the type selection before the
-  // actual rule can be set up.
-  if (!_logicType) {
-    return (
-      <LogicTypeSelection
-        onChange={selectedType => onChange({target: {name: '_logicType', value: selectedType}})}
-        onCancel={onDelete}
-      />
-    );
-  }
+  const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
 
   const onDescriptionGenerated = generatedDescription => {
     let newDescription = intl.formatMessage(
@@ -229,54 +218,8 @@ const Rule = ({
     onChange({target: {name: 'description', value: newDescription}});
   };
 
-  const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
-
   return (
-    <div className="logic-rule">
-      <div className="logic-rule__actions actions actions--vertical actions--align-top">
-        <div className="actions__action-group">
-          <FAIcon
-            icon="sort-up"
-            title={intl.formatMessage({
-              description: 'Move up icon title',
-              defaultMessage: 'Move up',
-            })}
-            extraClassname="fa-lg actions__action"
-            onClick={() => onChange({target: {name: 'order', value: order - 1}})}
-          />
-          <FAIcon
-            icon="sort-down"
-            title={intl.formatMessage({
-              description: 'Move down icon title',
-              defaultMessage: 'Move down',
-            })}
-            extraClassname="fa-lg actions__action"
-            onClick={() => onChange({target: {name: 'order', value: order + 1}})}
-          />
-        </div>
-        <FAIcon
-          icon="gear"
-          title={intl.formatMessage({
-            description: 'Logic rule advanced options icon title',
-            defaultMessage: 'Advanced options',
-          })}
-          extraClassname="icon actions__action"
-          onClick={() => setDisplayAdvancedOptions(!displayAdvancedOptions)}
-        />
-        <DeleteIcon
-          onConfirm={onDelete}
-          message={deleteConfirmMessage}
-          extraClassname="actions__action"
-        />
-        {isAdvanced && (
-          <FAIcon
-            icon="wand-magic-sparkles"
-            extraClassname="icon icon--no-pointer"
-            title="advanced"
-          />
-        )}
-      </div>
-
+    <>
       <div className="logic-rule__rule">
         <div className="logic-rule__header">
           <h3 className="logic-rule__heading">
@@ -288,35 +231,52 @@ const Rule = ({
         </div>
 
         {displayAdvancedOptions && (
-          <div className="logic-rule__advanced">
-            <div className="dsl-editor">
-              <DSLEditorNode errors={null}>
-                <FormattedMessage
-                  description="'Trigger from step' label"
-                  defaultMessage="Enable from step: "
-                />
-              </DSLEditorNode>
+          <>
+            <div className="logic-rule__advanced">
+              <div className="dsl-editor">
+                <DSLEditorNode errors={null}>
+                  <FormattedMessage
+                    description="'Trigger from step' label"
+                    defaultMessage="Enable from step: "
+                  />
+                </DSLEditorNode>
 
-              <DSLEditorNode errors={null}>
-                <StepSelection
-                  name="triggerFromStep"
-                  value={triggerFromStep?.step?.uuid || triggerFromStepIdentifier || ''}
-                  onChange={onChange}
-                />
-                {!triggerFromStepIdentifier && (
-                  <>
-                    &nbsp;
-                    <FormattedMessage
-                      description="'Trigger from step' information for when unset"
-                      defaultMessage="(checked for every step)"
-                    />
-                  </>
-                )}
-              </DSLEditorNode>
+                <DSLEditorNode errors={null}>
+                  <StepSelection
+                    name="triggerFromStep"
+                    value={triggerFromStep?.step?.uuid || triggerFromStepIdentifier || ''}
+                    onChange={onChange}
+                  />
+                  {!triggerFromStepIdentifier && (
+                    <>
+                      &nbsp;
+                      <FormattedMessage
+                        description="'Trigger from step' information for when unset"
+                        defaultMessage="(checked for every step)"
+                      />
+                    </>
+                  )}
+                </DSLEditorNode>
+              </div>
+
+              <DataPreview data={jsonLogicTrigger} />
             </div>
-
-            <DataPreview data={jsonLogicTrigger} />
-          </div>
+            {triggerFromStepIdentifier && !triggerFromStep && (
+              <MessageList
+                messages={[
+                  {
+                    message: (
+                      <FormattedMessage
+                        description="Warning missing trigger step"
+                        defaultMessage="The selected trigger step could not be found in this form! Please change it!"
+                      />
+                    ),
+                    level: 'warning',
+                  },
+                ]}
+              />
+            )}
+          </>
         )}
 
         <div className="logic-trigger-container">
@@ -325,7 +285,7 @@ const Rule = ({
               <LogicDescriptionInput
                 name="description"
                 generationRequest={resetRequest}
-                generationAllowed={_mayGenerateDescription}
+                generationAllowed={mayGenerateDescription}
                 logicExpression={jsonLogicTrigger}
                 value={description}
                 onChange={onChange}
@@ -385,6 +345,141 @@ const Rule = ({
 
         <ActionSet name="actions" actions={actions} onChange={onChange} errors={errors.actions} />
       </div>
+    </>
+  );
+};
+
+RuleBody.propTypes = {
+  isCreate: PropTypes.bool.isRequired,
+  isAdvanced: PropTypes.bool.isRequired,
+  jsonLogicTrigger: PropTypes.object,
+  actions: PropTypes.arrayOf(PropTypes.object),
+  displayAdvancedOptions: PropTypes.bool,
+  setDisplayAdvancedOptions: PropTypes.func.isRequired,
+  description: PropTypes.string,
+  triggerFromStepIdentifier: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  errors: PropTypes.object,
+  mayGenerateDescription: PropTypes.bool.isRequired,
+};
+
+const Rule = ({
+  isCreate,
+  _logicType,
+  description,
+  _mayGenerateDescription,
+  order,
+  jsonLogicTrigger,
+  triggerFromStep: triggerFromStepIdentifier,
+  actions,
+  isAdvanced,
+  onChange,
+  onDelete,
+  errors = {},
+}) => {
+  const intl = useIntl();
+  const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState(false);
+
+  const deleteConfirmMessage = intl.formatMessage({
+    description: 'Logic rule deletion confirm message',
+    defaultMessage: 'Are you sure you want to delete this rule?',
+  });
+
+  // if no logicType has been set yet, we first present the type selection before the
+  // actual rule can be set up.
+  if (!_logicType) {
+    return (
+      <LogicTypeSelection
+        onChange={selectedType => onChange({target: {name: '_logicType', value: selectedType}})}
+        onCancel={onDelete}
+      />
+    );
+  }
+
+  const boundaryErrorMessage = (
+    <div className="logic-rule-error">
+      <div className="logic-rule-error__text">
+        <FormattedMessage
+          description="Unexpected error message in logic rule"
+          defaultMessage="Something went wrong while rendering this logic rule! For debugging, here is the JSON of the logic rule:"
+        />
+      </div>
+
+      <div className="logic-rule-error__json">
+        <code>
+          {JSON.stringify({
+            jsonLogicTrigger,
+            triggerFromStepIdentifier,
+            order,
+            actions,
+            isAdvanced,
+          })}
+        </code>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="logic-rule">
+      <div className="logic-rule__actions actions actions--vertical actions--align-top">
+        <div className="actions__action-group">
+          <FAIcon
+            icon="sort-up"
+            title={intl.formatMessage({
+              description: 'Move up icon title',
+              defaultMessage: 'Move up',
+            })}
+            extraClassname="fa-lg actions__action"
+            onClick={() => onChange({target: {name: 'order', value: order - 1}})}
+          />
+          <FAIcon
+            icon="sort-down"
+            title={intl.formatMessage({
+              description: 'Move down icon title',
+              defaultMessage: 'Move down',
+            })}
+            extraClassname="fa-lg actions__action"
+            onClick={() => onChange({target: {name: 'order', value: order + 1}})}
+          />
+        </div>
+        <FAIcon
+          icon="gear"
+          title={intl.formatMessage({
+            description: 'Logic rule advanced options icon title',
+            defaultMessage: 'Advanced options',
+          })}
+          extraClassname="icon actions__action"
+          onClick={() => setDisplayAdvancedOptions(!displayAdvancedOptions)}
+        />
+        <DeleteIcon
+          onConfirm={onDelete}
+          message={deleteConfirmMessage}
+          extraClassname="actions__action"
+        />
+        {isAdvanced && (
+          <FAIcon
+            icon="wand-magic-sparkles"
+            extraClassname="icon icon--no-pointer"
+            title="advanced"
+          />
+        )}
+      </div>
+
+      <ErrorBoundary errorMessage={boundaryErrorMessage}>
+        <RuleBody
+          isCreate={isCreate}
+          isAdvanced={isAdvanced}
+          jsonLogicTrigger={jsonLogicTrigger}
+          actions={actions}
+          triggerFromStepIdentifier={triggerFromStepIdentifier}
+          displayAdvancedOptions={displayAdvancedOptions}
+          setDisplayAdvancedOptions={setDisplayAdvancedOptions}
+          description={description}
+          onChange={onChange}
+          errors={errors}
+          mayGenerateDescription={_mayGenerateDescription}
+        />
+      </ErrorBoundary>
     </div>
   );
 };

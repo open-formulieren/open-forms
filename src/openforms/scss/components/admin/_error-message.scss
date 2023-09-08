@@ -1,0 +1,10 @@
+@use 'microscope-sass/lib/bem';
+
+.error-message {
+  @include margin(true, $properties: padding);
+  @include margin('auto', $properties: margin-bottom);
+  display: flex;
+  justify-content: flex-start;
+
+  background-color: var(--message-error-bg);
+}

@@ -1,0 +1,11 @@
+@import 'microscope-sass/lib/bem';
+
+.logic-rule-error {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+  @include element('json') {
+    font-family: monospace;
+  }
+}
