@@ -309,7 +309,7 @@ class Migration(migrations.Migration):
                         ),
                         help_text="The text that will be displayed in the overview page to go to the previous step",
                         max_length=50,
-                        verbose_name="previous text",
+                        verbose_name="back to form text",
                     ),
                 ),
                 (
@@ -333,7 +333,7 @@ class Migration(migrations.Migration):
                         ),
                         help_text="The text that will be displayed in the form step to go to the previous step",
                         max_length=50,
-                        verbose_name="step previous text",
+                        verbose_name="previous step text",
                     ),
                 ),
                 (
@@ -350,79 +350,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "ga_code",
-                    models.CharField(
-                        blank=True,
-                        help_text="Typically looks like 'UA-XXXXX-Y'. Supplying this installs Google Analytics.",
-                        max_length=50,
-                        verbose_name="Google Analytics code",
-                    ),
-                ),
-                (
-                    "gtm_code",
-                    models.CharField(
-                        blank=True,
-                        help_text="Typically looks like 'GTM-XXXX'. Supplying this installs Google Tag Manager.",
-                        max_length=50,
-                        verbose_name="Google Tag Manager code",
-                    ),
-                ),
-                (
-                    "matomo_site_id",
-                    models.PositiveIntegerField(
-                        blank=True,
-                        help_text="The 'idsite' of the website you're tracking in Matomo.",
-                        null=True,
-                        verbose_name="Matomo site ID",
-                    ),
-                ),
-                (
-                    "matomo_url",
-                    models.CharField(
-                        blank=True,
-                        help_text="The base URL of your Matomo server, e.g. 'matomo.example.com'.",
-                        max_length=255,
-                        verbose_name="Matomo server URL",
-                    ),
-                ),
-                (
-                    "piwik_site_id",
-                    models.PositiveIntegerField(
-                        blank=True,
-                        help_text="The 'idsite' of the website you're tracking in Piwik.",
-                        null=True,
-                        verbose_name="Piwik site ID",
-                    ),
-                ),
-                (
-                    "piwik_url",
-                    models.CharField(
-                        blank=True,
-                        help_text="The base URL of your Piwik server, e.g. 'piwik.example.com'.",
-                        max_length=255,
-                        verbose_name="Piwik server URL",
-                    ),
-                ),
-                (
-                    "siteimprove_id",
-                    models.CharField(
-                        blank=True,
-                        help_text="Your SiteImprove ID - you can find this from the embed snippet example, which should contain a URL like '//siteimproveanalytics.com/js/siteanalyze_XXXXX.js'. The XXXXX is your ID.",
-                        max_length=10,
-                        verbose_name="SiteImprove ID",
-                    ),
-                ),
-                (
-                    "analytics_cookie_consent_group",
-                    models.ForeignKey(
-                        blank=True,
-                        help_text="The cookie group used for analytical cookies. The analytics scripts are loaded only if this cookie group is accepted by the end-user.",
-                        null=True,
-                        on_delete=django.db.models.deletion.SET_NULL,
-                        to="cookie_consent.CookieGroup",
-                    ),
-                ),
-                (
                     "admin_session_timeout",
                     models.PositiveIntegerField(
                         default=60,
@@ -434,18 +361,24 @@ class Migration(migrations.Migration):
                 (
                     "form_session_timeout",
                     models.PositiveIntegerField(
-                        default=60,
+                        default=15,
                         help_text="Amount of time in minutes a user filling in a form can be inactive for before being logged out",
-                        validators=[django.core.validators.MinValueValidator(5)],
+                        validators=[
+                            django.core.validators.MinValueValidator(5),
+                            django.core.validators.MaxValueValidator(
+                                15,
+                                message="Due to DigiD requirements this value has to be less than or equal to %(limit_value)s minutes.",
+                            ),
+                        ],
                         verbose_name="form session timeout",
                     ),
                 ),
                 (
                     "design_token_values",
-                    django.contrib.postgres.fields.jsonb.JSONField(
+                    models.JSONField(
                         blank=True,
                         default=dict,
-                        help_text="Values of various style parameters, such as border radii, background colors... Note that this is advanced usage. Any available but un-specified values will use fallback default values.",
+                        help_text="Values of various style parameters, such as border radii, background colors... Note that this is advanced usage. Any available but un-specified values will use fallback default values. See https://open-forms.readthedocs.io/en/latest/installation/form_hosting.html#run-time-configuration for documentation.",
                         verbose_name="design token values",
                     ),
                 ),
