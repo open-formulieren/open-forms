@@ -116,6 +116,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    volumes:
+      - private_media:/app/private_media
     depends_on:
       - db
       - redis
