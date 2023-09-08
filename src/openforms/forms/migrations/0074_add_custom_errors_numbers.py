@@ -2,40 +2,6 @@
 
 from django.db import migrations
 
-from openforms.formio.utils import iter_components
-
-
-def add_custom_errors_to_number_components(apps, schema_editor):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-
-    form_definitions = FormDefinition.objects.all()
-
-    form_definitions_to_update = []
-    for form_definition in form_definitions:
-        updated_form_definition = False
-        for comp in iter_components(configuration=form_definition.configuration):
-            if comp["type"] != "number":
-                continue
-
-            if "translatedErrors" not in comp or not isinstance(
-                comp["translatedErrors"], dict
-            ):
-                continue
-
-            for language_code, custom_errors in comp["translatedErrors"].items():
-                custom_errors["max"] = ""
-                custom_errors["min"] = ""
-
-            updated_form_definition = True
-
-        if updated_form_definition:
-            form_definitions_to_update.append(form_definition)
-
-    if form_definitions_to_update:
-        FormDefinition.objects.bulk_update(
-            form_definitions_to_update, fields=["configuration"]
-        )
-
 
 class Migration(migrations.Migration):
 
@@ -43,8 +9,5 @@ class Migration(migrations.Migration):
         ("forms", "0073_change_bsn_validation"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            add_custom_errors_to_number_components, migrations.RunPython.noop
-        ),
-    ]
+    # this used to be a data migration, but it's no longer relevant on 2.3.0+
+    operations = []

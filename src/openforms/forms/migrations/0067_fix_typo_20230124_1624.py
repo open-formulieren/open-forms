@@ -2,31 +2,6 @@
 
 from django.db import migrations
 
-from openforms.formio.utils import iter_components
-
-
-def fix_typo(apps, schema_editor):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-
-    form_definitions = FormDefinition.objects.all()
-
-    form_definitions_to_update = []
-    for form_definition in form_definitions:
-        updated_form_definition = False
-        for comp in iter_components(configuration=form_definition.configuration):
-            registration = comp.get("registration", {})
-            if registration.get("attribute") == "Strainitiator_straatat":
-                registration["attribute"] = "initiator_straat"
-            updated_form_definition = True
-
-        if updated_form_definition:
-            form_definitions_to_update.append(form_definition)
-
-    if form_definitions_to_update:
-        FormDefinition.objects.bulk_update(
-            form_definitions_to_update, fields=["configuration"]
-        )
-
 
 class Migration(migrations.Migration):
 
@@ -34,4 +9,5 @@ class Migration(migrations.Migration):
         ("forms", "0066_merge_20230119_1618"),
     ]
 
-    operations = [migrations.RunPython(fix_typo, migrations.RunPython.noop)]
+    # this used to be a data migration, but it's no longer relevant on 2.3.0+
+    operations = []

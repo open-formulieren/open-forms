@@ -2,44 +2,6 @@
 
 from django.db import migrations
 
-from openforms.forms.constants import ConfirmationEmailOptions
-from django.db.models import Case, When, Value, Q
-
-
-def forward(apps, schema_editor):
-    """Change the setting for the confirmation email from a choices field to a boolean field"""
-    Form = apps.get_model("forms", "Form")
-    Form.objects.update(
-        send_confirmation_email=Case(
-            When(
-                confirmation_email_option=Value(ConfirmationEmailOptions.no_email),
-                then=False,
-            ),
-            default=True,
-        )
-    )
-
-
-def backwards(apps, schema_editor):
-    """Change the setting for the confirmation email from a boolean field to a choices field."""
-    Form = apps.get_model("forms", "Form")
-    Form.objects.update(
-        confirmation_email_option=Case(
-            When(
-                send_confirmation_email=Value(False),
-                then=Value(ConfirmationEmailOptions.no_email),
-            ),
-            default=Value(ConfirmationEmailOptions.global_email),
-        )
-    )
-    Form.objects.filter(
-        Q(confirmation_email_template__isnull=False)
-        & (
-            ~Q(confirmation_email_template__subject="")
-            & ~Q(confirmation_email_template__content="")
-        )
-    ).update(confirmation_email_option=ConfirmationEmailOptions.form_specific_email)
-
 
 class Migration(migrations.Migration):
 
@@ -47,6 +9,5 @@ class Migration(migrations.Migration):
         ("forms", "0075_form_send_confirmation_email"),
     ]
 
-    operations = [
-        migrations.RunPython(forward, backwards),
-    ]
+    # this used to be a data migration, but it's no longer relevant on 2.3.0+
+    operations = []
