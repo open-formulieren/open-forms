@@ -3,52 +3,11 @@
 from django.db import migrations
 
 
-def check_configuration_templates(apps, schema_editor):
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    config = GlobalConfiguration.objects.first()
-    if not config:
-        return
-
-    # create dummy configuration instance to compare templates against default values
-    config_default = GlobalConfiguration()
-
-    # snapshot of translatable fields at the time of this migration
-    field_names = (
-        "submission_confirmation_template",
-        "confirmation_email_subject",
-        "confirmation_email_content",
-        "save_form_email_subject",
-        "save_form_email_content",
-        "form_previous_text",
-        "form_change_text",
-        "form_confirm_text",
-        "form_begin_text",
-        "form_step_previous_text",
-        "form_step_save_text",
-        "form_step_next_text",
-        "privacy_policy_label",
-    )
-
-    for field_name in field_names:
-        # get the values: (a) from the original field (from before model translation), which
-        # is still present in the DB, (b) from the default configuration template
-        template_attr = getattr(config, field_name)
-        default_template_attr = getattr(config_default, field_name)
-
-        # only override the translated template if the original template was modified
-        if not template_attr == default_template_attr:
-            field_name_nl = field_name + "_nl"
-            setattr(config, field_name_nl, template_attr)
-
-            config.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ("config", "0042_globalconfiguration_enable_service_fetch"),
     ]
 
-    operations = [
-        migrations.RunPython(check_configuration_templates, migrations.RunPython.noop)
-    ]
+    # this used to be a data migration, but it's no longer relevant on 2.3.0+
+    operations = []
