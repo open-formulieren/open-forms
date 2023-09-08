@@ -185,6 +185,7 @@ const RuleBody = ({
   jsonLogicTrigger,
   actions,
   displayAdvancedOptions,
+  setDisplayAdvancedOptions,
   description,
   triggerFromStepIdentifier,
   onChange,
@@ -195,6 +196,9 @@ const RuleBody = ({
   const [expandExpression, setExpandExpression] = useState(isCreate);
   const [resetRequest, setResetRequest] = useState(0);
   const triggerFromStep = useFormStep(triggerFromStepIdentifier);
+
+  // Case in which there is an error: a trigger step was specified, but this step cannot be found in the form
+  if (!triggerFromStep && triggerFromStepIdentifier) setDisplayAdvancedOptions(true);
 
   const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
 
@@ -227,35 +231,52 @@ const RuleBody = ({
         </div>
 
         {displayAdvancedOptions && (
-          <div className="logic-rule__advanced">
-            <div className="dsl-editor">
-              <DSLEditorNode errors={null}>
-                <FormattedMessage
-                  description="'Trigger from step' label"
-                  defaultMessage="Enable from step: "
-                />
-              </DSLEditorNode>
+          <>
+            <div className="logic-rule__advanced">
+              <div className="dsl-editor">
+                <DSLEditorNode errors={null}>
+                  <FormattedMessage
+                    description="'Trigger from step' label"
+                    defaultMessage="Enable from step: "
+                  />
+                </DSLEditorNode>
 
-              <DSLEditorNode errors={null}>
-                <StepSelection
-                  name="triggerFromStep"
-                  value={triggerFromStep?.step?.uuid || triggerFromStepIdentifier || ''}
-                  onChange={onChange}
-                />
-                {!triggerFromStepIdentifier && (
-                  <>
-                    &nbsp;
-                    <FormattedMessage
-                      description="'Trigger from step' information for when unset"
-                      defaultMessage="(checked for every step)"
-                    />
-                  </>
-                )}
-              </DSLEditorNode>
+                <DSLEditorNode errors={null}>
+                  <StepSelection
+                    name="triggerFromStep"
+                    value={triggerFromStep?.step?.uuid || triggerFromStepIdentifier || ''}
+                    onChange={onChange}
+                  />
+                  {!triggerFromStepIdentifier && (
+                    <>
+                      &nbsp;
+                      <FormattedMessage
+                        description="'Trigger from step' information for when unset"
+                        defaultMessage="(checked for every step)"
+                      />
+                    </>
+                  )}
+                </DSLEditorNode>
+              </div>
+
+              <DataPreview data={jsonLogicTrigger} />
             </div>
-
-            <DataPreview data={jsonLogicTrigger} />
-          </div>
+            {triggerFromStepIdentifier && !triggerFromStep && (
+              <MessageList
+                messages={[
+                  {
+                    message: (
+                      <FormattedMessage
+                        description="Warning missing trigger step"
+                        defaultMessage="The selected trigger step could not be found in this form! Please change it!"
+                      />
+                    ),
+                    level: 'warning',
+                  },
+                ]}
+              />
+            )}
+          </>
         )}
 
         <div className="logic-trigger-container">
@@ -303,23 +324,6 @@ const RuleBody = ({
             </div>
           ) : null}
 
-          {triggerFromStepIdentifier && !triggerFromStep && (
-            <MessageList
-              messages={[
-                {
-                  message: (
-                    <FormattedMessage
-                      description="Warning missing trigger step"
-                      defaultMessage="The selected trigger step could not be found in this form!
-                      Please change it by clicking on the cog icon here on the left."
-                    />
-                  ),
-                  level: 'warning',
-                },
-              ]}
-            />
-          )}
-
           <TriggerComponent
             name="jsonLogicTrigger"
             logic={jsonLogicTrigger}
@@ -351,6 +355,7 @@ RuleBody.propTypes = {
   jsonLogicTrigger: PropTypes.object,
   actions: PropTypes.arrayOf(PropTypes.object),
   displayAdvancedOptions: PropTypes.bool,
+  setDisplayAdvancedOptions: PropTypes.func.isRequired,
   description: PropTypes.string,
   triggerFromStepIdentifier: PropTypes.string,
   onChange: PropTypes.func.isRequired,
@@ -401,13 +406,15 @@ const Rule = ({
       </div>
 
       <div className="logic-rule-error__json">
-        {JSON.stringify({
-          jsonLogicTrigger,
-          triggerFromStepIdentifier,
-          order,
-          actions,
-          isAdvanced,
-        })}
+        <code>
+          {JSON.stringify({
+            jsonLogicTrigger,
+            triggerFromStepIdentifier,
+            order,
+            actions,
+            isAdvanced,
+          })}
+        </code>
       </div>
     </div>
   );
@@ -466,6 +473,7 @@ const Rule = ({
           actions={actions}
           triggerFromStepIdentifier={triggerFromStepIdentifier}
           displayAdvancedOptions={displayAdvancedOptions}
+          setDisplayAdvancedOptions={setDisplayAdvancedOptions}
           description={description}
           onChange={onChange}
           errors={errors}

@@ -17,7 +17,6 @@ const ErrorMessage = ({children}) => {
 
 ErrorMessage.propTypes = {
   children: PropTypes.node,
-  modifiers: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default ErrorMessage;

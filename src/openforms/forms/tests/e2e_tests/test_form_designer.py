@@ -1149,7 +1149,7 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             # Check that a warning is present
             warning = page.get_by_role("listitem").get_by_text(
-                "The selected trigger step could not be found in this form! Please change it by clicking on the cog icon here on the left."
+                "The selected trigger step could not be found in this form! Please change it!"
             )
             await expect(warning).to_be_visible()
 
