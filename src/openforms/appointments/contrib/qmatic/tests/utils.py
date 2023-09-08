@@ -9,7 +9,9 @@ from ....models import AppointmentsConfig
 from ..models import QmaticConfig
 from .factories import ServiceFactory
 
-MOCK_DIR = Path(__file__).parent.resolve() / "mock"
+TESTS_DIR = Path(__file__).parent.resolve()
+TEST_FILES = TESTS_DIR / "data"
+MOCK_DIR = TESTS_DIR / "mock"
 
 
 def mock_response(filename: str):

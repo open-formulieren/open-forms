@@ -1,8 +1,9 @@
 import json
 import logging
 import warnings
+from collections import Counter
 from contextlib import contextmanager
-from datetime import date, datetime, time
+from datetime import date, datetime
 from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
 
@@ -41,8 +42,6 @@ logger = logging.getLogger(__name__)
 
 _CustomerDetails = CustomerDetails[CustomerFields]
 
-TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
-
 
 @contextmanager
 def log_api_errors(template: str, *args):
@@ -50,7 +49,7 @@ def log_api_errors(template: str, *args):
         yield
     except (QmaticException, RequestException) as e:
         logger.exception(template, *args, exc_info=e)
-        raise GracefulQmaticException("SOAP call failed") from e
+        raise GracefulQmaticException("API call failed") from e
     except Exception as exc:
         raise QmaticException from exc
 
@@ -74,6 +73,25 @@ def with_graceful_default(default: T):
     return decorator
 
 
+def normalize_customer_details(client: _CustomerDetails | Customer) -> _CustomerDetails:
+    # Phasing out Customer in favour of CustomerDetails, so convert to the new type
+    if isinstance(client, Customer):
+        warnings.warn(
+            "Fixed customer fields via the Customer class are deprecated, use "
+            "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
+            DeprecationWarning,
+        )
+        client = _CustomerDetails(
+            details={
+                CustomerFields.last_name: client.last_name,
+                CustomerFields.birthday: client.birthdate.isoformat(),
+                CustomerFields.first_name: client.initials or "",
+                CustomerFields.phone_number: client.phonenumber or "",
+            }
+        )
+    return client
+
+
 @register("qmatic")
 class QmaticAppointment(BasePlugin[CustomerFields]):
     """
@@ -86,6 +104,18 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
     # See "Book an appointment for multiple customers and multiple services" in the
     # documentation.
     supports_multiple_products = True
+
+    @staticmethod
+    def _count_products(products: list[Product]) -> tuple[list[str], int]:
+        products_counter = Counter()
+        for product in products:
+            products_counter.update({product.identifier: product.amount})
+
+        # grab the amount of the most common product - this determines the total number
+        # of customers for the appointment (see docstring explanation).
+        num_customers = products_counter.most_common(1)[0][1]
+        unique_product_ids = list(products_counter.keys())
+        return (unique_product_ids, num_customers)
 
     @with_graceful_default(default=[])
     def get_available_products(
@@ -159,20 +189,31 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         self,
         products: list[Product] | None = None,
     ) -> list[Location]:
+        """
+        Retrieve all available locations.
+
+        When supplying multiple products, the caller must ensure that these products
+        can be booked together. This is the case if you use
+        :meth:`get_available_products`. Only products that are in the same service
+        group can be booked together.
+
+        It does not appear that the Qmatic API supports retrieving a list of available
+        branches with more than one service ID parameter, so we must grab a "random"
+        product to get the ID. If any products are provided at all, then we are
+        guaranteed that index 0 yields a product we can use to query locations for.
+        """
         products = products or []
         product_ids = [product.identifier for product in products]
 
         client = QmaticClient()
 
-        if not product_ids:
-            endpoint = "branches"
-        else:
-            if len(product_ids) > 1:
-                logger.warning(
-                    "Attempt to retrieve locations for more than one product. Using "
-                    "the first ID to limit locations."
-                )
-            endpoint = f"services/{product_ids[0]}/branches"
+        if len(product_ids) > 1:
+            logger.debug(
+                "Attempt to retrieve locations for more than one product. Using "
+                "the first ID to limit locations.",
+                extra={"product_ids": product_ids},
+            )
+        endpoint = f"services/{product_ids[0]}/branches" if product_ids else "branches"
 
         with log_api_errors(
             "Could not retrieve locations for product, using API endpoint '%s'",
@@ -201,25 +242,37 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         """
         Retrieve all available dates for given ``products`` and ``location``.
 
-        NOTE: The API does not support getting dates between a start and end
-        date. The `start_at` and `end_at` arguments are ingored.
-        """
-        if len(products) != 1:
-            return []
+        From the documentation:
 
-        client = QmaticClient()
-        product_id = products[0].identifier
+            numberOfCustomers will be used on all services when calculating the
+            appointment duration. For example, a service with Duration of 10 minutes and
+            additionalCustomerDuration of 5 minutes will result in an appointment
+            duration of 50 when minutes for 4 customers and 2 services.
+
+        The example given shows that it makes little sense to attach number of customers
+        to a particular product/service. E.g. if you have amount=2 for product 1 and
+        amount=3 for product 2, booking the appointment for 3 customers results in time
+        for 3 people for each product (which is more than you need). Using 5 customers (
+        2 + 3) would result in time reserved for 10 people and is incorrect in this
+        situation.
+
+        .. note:: The API does not support getting dates between a start and end
+           date. The `start_at` and `end_at` arguments are ingored.
+        """
+        assert products, "Can't retrieve dates without having product information"
+        unique_product_ids, num_customers = self._count_products(products)
 
         with log_api_errors(
-            "Could not retrieve dates for product '%s' at location '%s'",
-            product_id,
+            "Could not retrieve dates for products '%s' at location '%s'",
+            unique_product_ids,
             location,
         ):
-            response = client.get(
-                f"branches/{location.identifier}/services/{product_id}/dates"
-            )
-            response.raise_for_status()
-        return [isoparse(entry).date() for entry in response.json()["dates"]]
+            with QmaticClient() as client:
+                return client.list_dates(
+                    location_id=location.identifier,
+                    service_ids=unique_product_ids,
+                    num_customers=num_customers,
+                )
 
     @with_graceful_default(default=[])
     def get_times(
@@ -228,26 +281,22 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         location: Location,
         day: date,
     ) -> list[datetime]:
-        if len(products) != 1:
-            return []
-
-        client = QmaticClient()
-        product_id = products[0].identifier
+        assert products, "Can't retrieve dates without having product information"
+        unique_product_ids, num_customers = self._count_products(products)
 
         with log_api_errors(
-            "Could not retrieve times for product '%s' at location '%s' on %s",
-            product_id,
+            "Could not retrieve times for products '%s' at location '%s' on %s",
+            unique_product_ids,
             location,
             day,
         ):
-            response = client.get(
-                f"branches/{location.identifier}/services/{product_id}/dates/{day.strftime('%Y-%m-%d')}/times"
-            )
-            response.raise_for_status()
-        return [
-            datetime.combine(day, time.fromisoformat(entry))
-            for entry in response.json()["times"]
-        ]
+            with QmaticClient() as client:
+                return client.list_times(
+                    location_id=location.identifier,
+                    day=day,
+                    service_ids=unique_product_ids,
+                    num_customers=num_customers,
+                )
 
     def get_required_customer_fields(
         self,
@@ -268,82 +317,67 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         start_at: datetime,
         client: _CustomerDetails | Customer,
         remarks: str = "",
-    ) -> str | None:
-        warnings.warn(
-            "The QMatic plugin is deprecated and will be removed in Open Forms 3.0",
-            DeprecationWarning,
-        )
+    ) -> str:
+        assert products, "Can't book for empty products"
+        customer = normalize_customer_details(client)
 
-        qmatic_client = QmaticClient()
-        if len(products) != 1:
-            logger.warning(
-                "The QMatic plugin (currently) does not support booking appointments "
-                "with multiple products or services",
-                extra={"products": products},
-            )
-            return
+        product_names = ", ".join(sorted({product.name for product in products}))
+        unique_product_ids, num_customers = self._count_products(products)
 
-        product_id = products[0].identifier
-        product_name = products[0].name
-
-        # Phasing out Customer in favour of CustomerDetails, so convert to the new type
-        if isinstance(client, Customer):
-            warnings.warn(
-                "Fixed customer fields via the Customer class are deprecated, use "
-                "dynamic CustomerDetails with 'get_required_customer_fields' instead.",
-                DeprecationWarning,
-            )
-            client = _CustomerDetails(
-                details={
-                    CustomerFields.last_name: client.last_name,
-                    CustomerFields.birthday: client.birthdate.isoformat(),
-                    CustomerFields.first_name: client.initials or "",
-                    CustomerFields.phone_number: client.phonenumber or "",
-                }
-            )
-
-        data = {
-            "title": f"Open Formulieren: {product_name}",
-            "customer": {
-                choice.value: value for choice, value in client.details.items() if value
-            },
+        body = {
+            "title": f"Open Formulieren: {product_names}",
+            # we repeat the same customer information for every customer, as we currently
+            # don't support getting the contact details for each individual customer
+            "customers": [
+                {choice: value for choice, value in customer.details.items() if value}
+            ]
+            * num_customers,
+            "services": [{"publicId": product_id} for product_id in unique_product_ids],
             "notes": remarks,
         }
 
-        if not timezone.is_naive(start_at):
-            start_at = timezone.make_naive(start_at, timezone=TIMEZONE_AMS)
+        location_id = location.identifier
 
-        start_date = start_at.strftime("%Y-%m-%d")
-        start_time = start_at.strftime("%H:%M")
-        url = (
-            f"branches/{location.identifier}/services/{product_id}/"
-            f"dates/{start_date}/times/{start_time}/book"
-        )
-        try:
-            response = qmatic_client.post(
-                url, data=json.dumps(data, cls=DjangoJSONEncoder)
-            )
-            response.raise_for_status()
-            return response.json()["publicId"]
-        except (QmaticException, RequestException, KeyError) as exc:
-            logger.error(
-                "Could not create appointment for product '%s' at location '%s' starting at %s",
-                product_id,
-                location,
-                start_at,
-                exc_info=exc,
-                extra={
-                    "product_ids": product_id,
-                    "location": location.identifier,
-                    "start_time": start_at,
-                },
-            )
+        with QmaticClient() as api_client:
+            # Ensure that we get the appointment time in the timezone of the branch we're booking for
+            branch = api_client.get_branch(location_id)
+            branch_timezone = pytz.timezone(branch["timeZone"])
+            if not timezone.is_naive(start_at):
+                start_at = timezone.make_naive(start_at, timezone=branch_timezone)
 
-            raise AppointmentCreateFailed("Could not create appointment") from exc
-        except Exception as exc:
-            raise AppointmentCreateFailed(
-                "Unexpected appointment create failure"
-            ) from exc
+            start_date = start_at.date().isoformat()
+            start_time = start_at.strftime("%H:%M")
+
+            # Build the endpoint with all relevant information, see
+            # "Book an appointment for multiple customers and multiple services" in the
+            # docs.
+            endpoint = (
+                f"v2/branches/{location_id}/dates/{start_date}/times/{start_time}/book"
+            )
+            try:
+                response = api_client.post(
+                    endpoint, data=json.dumps(body, cls=DjangoJSONEncoder)
+                )
+                response.raise_for_status()
+                return response.json()["publicId"]
+            except (QmaticException, RequestException, KeyError) as exc:
+                logger.error(
+                    "Could not create appointment for product '%s' at location '%s' starting at %s",
+                    unique_product_ids,
+                    location,
+                    start_at,
+                    exc_info=exc,
+                    extra={
+                        "product_ids": unique_product_ids,
+                        "location": location.identifier,
+                        "start_time": start_at,
+                    },
+                )
+                raise AppointmentCreateFailed("Could not create appointment") from exc
+            except Exception as exc:
+                raise AppointmentCreateFailed(
+                    "Unexpected appointment create failure"
+                ) from exc
 
     def delete_appointment(self, identifier: str) -> None:
         client = QmaticClient()

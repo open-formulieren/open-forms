@@ -1,9 +1,14 @@
+import traceback
 from datetime import date
 
 from django.core.management import BaseCommand
 from django.core.management.base import CommandError
+from django.db.models import Q
+
+from openforms.submissions.models import Submission
 
 from ...base import Customer
+from ...core import book_for_submission
 from ...registry import register
 from ...utils import get_plugin
 
@@ -37,6 +42,7 @@ class Command(BaseCommand):
             ("Create booking", "create_booking"),
             ("Get booking details", "show_booking"),
             ("Cancel booking", "cancel_booking"),
+            ("Book for submission", "book_for_submission"),
             ("Quit", "exit"),
         ]
         selected_action = self._show_options(
@@ -58,7 +64,7 @@ class Command(BaseCommand):
         if allow_multi:
             msg = f"Choose one or more {obj_name}s (comma separated): "
         else:
-            msg = f"Choose a {obj_name}: "
+            msg = f"Choose a(n) {obj_name}: "
 
         while True:
             selected_option = input(msg)
@@ -182,6 +188,34 @@ class Command(BaseCommand):
                 self.stdout.write("Appointment was not cancelled.")
             else:
                 self.stderr.write(f"{do_cancel} is not a valid choice.")
+
+    def book_for_submission(self):
+        submission_id = None
+        while not submission_id:
+            submission_id = input("Submission ID or reference: ")
+
+        submission = Submission.objects.get(
+            Q(id=submission_id) | Q(public_registration_reference=submission_id)
+        )
+
+        while True:
+            do_book = input("Do you want to book this appointment [y/n]: ")
+            if do_book == "n":
+                self.stdout.write("Appointment was not booked.")
+                return
+
+            if do_book != "y":
+                self.stderr.write(f"{do_book} is not a valid choice.")
+                continue
+
+            assert do_book == "y"
+            try:
+                appointment_id = book_for_submission(submission)
+                self.stdout.write(f"Booked appointment id: {appointment_id}")
+                break
+            except Exception as exc:
+                traceback.print_exception(exc)
+                self.stderr.write(f"Failed to create appointment: {exc}")
 
     def exit(self):
         pass
