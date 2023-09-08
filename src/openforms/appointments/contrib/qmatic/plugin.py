@@ -245,7 +245,7 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         From the documentation:
 
             numberOfCustomers will be used on all services when calculating the
-            appointment duration For example, a service with Duration of 10 minutes and
+            appointment duration. For example, a service with Duration of 10 minutes and
             additionalCustomerDuration of 5 minutes will result in an appointment
             duration of 50 when minutes for 4 customers and 2 services.
 

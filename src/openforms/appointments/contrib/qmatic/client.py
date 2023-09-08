@@ -190,7 +190,7 @@ class QmaticClient(Session):
         self, location_id: str, service_ids: list[str], day: date, num_customers: int
     ) -> list[datetime]:
         """
-        Get list of available dates for multiple services and customers.
+        Get list of available times for multiple services and customers.
 
         ``num_customers`` is the total number of customers, which affects the
         appointment duration in Qmatic (using
