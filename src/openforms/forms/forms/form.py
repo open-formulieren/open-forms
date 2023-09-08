@@ -6,7 +6,5 @@ class FormImportForm(forms.Form):
     file = forms.FileField(
         label=_("file"),
         required=True,
-        help_text=_(
-            "Upload your exported ZIP-file."
-        ),
+        help_text=_("Upload your exported ZIP-file."),
     )
