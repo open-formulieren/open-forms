@@ -7,6 +7,6 @@ class FormImportForm(forms.Form):
         label=_("file"),
         required=True,
         help_text=_(
-            "The ZIP-file that contains either a single exported form or multiple ZIP-files of exported forms."
+            "Upload your exported ZIP-file."
         ),
     )

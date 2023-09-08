@@ -78,7 +78,7 @@ services:
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
       - CSP_REPORT_ONLY=yes
-    volumes:
+    volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media
       - log:/app/log
@@ -116,6 +116,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    volumes: *web_volumes
     depends_on:
       - db
       - redis
