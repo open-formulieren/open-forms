@@ -4,24 +4,6 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
-def migrate_services(apps, _):
-    StufService = apps.get_model("stuf", "StufService")
-    StufBGConfig = apps.get_model("stuf_bg", "StufBGConfig")
-
-    try:
-        stuf_bg_config = StufBGConfig.objects.get()  # There can be only one (or none)
-        stuf_bg_config.new_service = StufService.objects.get(
-            soap_service=stuf_bg_config.old_service
-        )
-        stuf_bg_config.save()
-    except StufBGConfig.DoesNotExist:
-        # This config has not been created, no need to migrate anything
-        pass
-    except StufService.DoesNotExist:
-        # There was no service, no need to migrate anything
-        pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -45,7 +27,8 @@ class Migration(migrations.Migration):
                 to="stuf.StufService",
             ),
         ),
-        migrations.RunPython(migrate_services, migrations.RunPython.noop),
+        # there used to be a data migration here, but it's guaranteed to have been
+        # executed if you're on 2.3.0+
         migrations.RenameField(
             model_name="stufbgconfig",
             old_name="new_service",
