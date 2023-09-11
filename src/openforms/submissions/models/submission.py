@@ -39,23 +39,6 @@ if TYPE_CHECKING:  # pragma: nocover
 logger = logging.getLogger(__name__)
 
 
-def _get_config_field(field: str) -> str:
-    # workaround for when this function is called during migrations and the table
-    # hasn't fully migrated yet
-    qs = GlobalConfiguration.objects.values_list(field, flat=True)
-    return qs.first()
-
-
-def get_default_bsn() -> str:
-    default_test_bsn = _get_config_field("default_test_bsn")
-    return default_test_bsn or ""
-
-
-def get_default_kvk() -> str:
-    default_test_kvk = _get_config_field("default_test_kvk")
-    return default_test_kvk or ""
-
-
 @dataclass
 class SubmissionState:
     form_steps: List[FormStep]

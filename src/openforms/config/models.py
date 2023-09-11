@@ -463,27 +463,6 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
-    default_test_bsn = models.CharField(
-        _("default test BSN"),
-        blank=True,
-        default="",
-        max_length=9,
-        help_text=_(
-            "When provided, submissions that are started will have this BSN set as "
-            "default for the session. Useful to test/demo prefill functionality."
-        ),
-    )
-    default_test_kvk = models.CharField(
-        _("default test KvK Number"),
-        blank=True,
-        default="",
-        max_length=9,
-        help_text=_(
-            "When provided, submissions that are started will have this KvK Number set as "
-            "default for the session. Useful to test/demo prefill functionality."
-        ),
-    )
-
     display_sdk_information = models.BooleanField(
         _("display SDK information"),
         default=False,

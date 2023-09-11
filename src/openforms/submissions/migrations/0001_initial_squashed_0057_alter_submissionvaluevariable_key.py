@@ -12,7 +12,6 @@ import privates.fields
 import privates.storages
 
 import openforms.contrib.kvk.validators
-import openforms.submissions.models.submission
 import openforms.submissions.models.submission_files
 import openforms.submissions.serializers
 import openforms.utils.fields
@@ -178,7 +177,6 @@ class Migration(migrations.Migration):
                     "bsn",
                     models.CharField(
                         blank=True,
-                        default=openforms.submissions.models.submission.get_default_bsn,
                         max_length=255,
                         validators=[openforms.utils.validators.BSNValidator()],
                         verbose_name="BSN",
@@ -188,7 +186,6 @@ class Migration(migrations.Migration):
                     "kvk",
                     models.CharField(
                         blank=True,
-                        default=openforms.submissions.models.submission.get_default_kvk,
                         max_length=255,
                         validators=[
                             openforms.contrib.kvk.validators.KVKNumberValidator()
