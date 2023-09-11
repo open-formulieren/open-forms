@@ -2,7 +2,7 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 
 class TestRefactorSoapServices(TestMigrations):
-    migrate_from = "0012_auto_20220905_2218"
+    migrate_from = "0001_initial_pre_openforms_v230"
     migrate_to = "0013_auto_20230718_1036"
     app = "stuf"
 
