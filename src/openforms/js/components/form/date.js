@@ -10,8 +10,8 @@ import {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {getValidationEditForm} from './edit/validationEditFormUtils';
 import {localiseSchema} from './i18n';
-import {getValidationEditForm} from "./edit/validationEditFormUtils";
 
 const DateTimeField = Formio.Components.components.datetime;
 
