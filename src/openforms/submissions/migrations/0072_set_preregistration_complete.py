@@ -2,18 +2,6 @@
 
 from django.db import migrations
 
-from openforms.submissions.constants import RegistrationStatuses
-
-
-def set_preregistration_complete_to_true_if_registration_was_successful(
-    apps, schema_editor
-):
-    Submission = apps.get_model("submissions", "Submission")
-
-    Submission.objects.filter(registration_status=RegistrationStatuses.success).update(
-        pre_registration_completed=True
-    )
-
 
 class Migration(migrations.Migration):
 
@@ -21,9 +9,5 @@ class Migration(migrations.Migration):
         ("submissions", "0071_submission_pre_registration_completed"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            set_preregistration_complete_to_true_if_registration_was_successful,
-            migrations.RunPython.noop,
-        ),
-    ]
+    # data migration removed, as these have been executed on Open Forms 2.3.0+
+    operations = []

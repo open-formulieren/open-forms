@@ -3,12 +3,6 @@
 from django.db import migrations, models
 
 
-def remove_static_submission_variables(apps, schema_editor):
-    SubmissionValueVariable = apps.get_model("submissions", "SubmissionValueVariable")
-
-    SubmissionValueVariable.objects.filter(source="static").delete()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -16,9 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            remove_static_submission_variables, migrations.RunPython.noop
-        ),
+        # data migration removed, as these have been executed on Open Forms 2.3.0+
         migrations.AlterField(
             model_name="submissionvaluevariable",
             name="source",
