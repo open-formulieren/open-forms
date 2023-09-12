@@ -102,7 +102,6 @@ def dbfields_exception_handler(
                 return db_field.formfield(
                     help_text=db_field.help_text,
                     validators=db_field.validators,
-                    max_length=db_field.max_length,
                     disabled=True,
                 )
 
