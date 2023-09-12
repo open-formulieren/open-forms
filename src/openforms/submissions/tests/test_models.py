@@ -5,6 +5,8 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
+from hypothesis import example, given, settings, strategies as st
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
@@ -19,6 +21,7 @@ from ..models import Submission, SubmissionFileAttachment, SubmissionValueVariab
 from .factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionReportFactory,
     SubmissionStepFactory,
 )
 
@@ -617,3 +620,25 @@ class SubmissionTests(TestCase):
         self.assertFalse(hasattr(submission, "_execution_state"))
 
         submission.clear_execution_state()
+
+
+@temp_private_root()
+class PDFSubmissionReportTests(HypothesisTestCase):
+    @given(
+        st.text(
+            min_size=1,
+            alphabet=st.characters(blacklist_characters="\x00", codec="utf-8"),
+        )
+    )
+    # see ticket #3470 - explicit value for form name (the final file name will be > max_length)
+    # Django's get_available_name truncates original name if required, so with a large
+    # name which has a '/' as well it confuses file_root (which is truncated)
+    @example(
+        "A large,really large name for the form in order to catch the above exception foo/bar"
+    )
+    @settings(deadline=500)
+    def test_names_donot_break_pdf_generation(self, form_name):
+        report = SubmissionReportFactory.create(submission__form__name=form_name)
+        report.generate_submission_report_pdf()
+
+        self.assertTrue(report.content)
