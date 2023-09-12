@@ -503,51 +503,105 @@ class FormAdminImportExportTests(WebTest):
 
 @disable_2fa
 class FormAdminCopyTests(TestCase):
-    def test_form_admin_copy(self):
-        user = UserFactory.create(is_superuser=True, is_staff=True)
-        self.client.force_login(user)
-        form = FormFactory.create(
+    def setUp(self):
+        self.user = UserFactory.create(is_superuser=True, is_staff=True)
+        self.client.force_login(self.user)
+
+        self.form = FormFactory.create(
             authentication_backends=["digid"], internal_name="internal"
         )
-        confirmation_email_template = ConfirmationEmailTemplateFactory(
-            form=form, subject="Test"
+        self.confirmation_email_template = ConfirmationEmailTemplateFactory(
+            form=self.form, subject="Test"
         )
-        form_step = FormStepFactory.create(form=form, form_definition__is_reusable=True)
-        logic = FormLogicFactory.create(
-            form=form,
+        self.form_step = FormStepFactory.create(
+            form=self.form, form_definition__is_reusable=True
         )
-        admin_url = reverse("admin:forms_form_change", args=(form.pk,))
+        self.logic = FormLogicFactory.create(form=self.form)
+        self.admin_url = reverse("admin:forms_form_change", args=(self.form.pk,))
 
+    def test_form_admin_copy_with_logic_trigger_from_step(self):
         # React UI renders this input, so simulate it in a raw POST call
-        response = self.client.post(admin_url, data={"_copy": "Copy"})
+        response = self.client.post(self.admin_url, data={"_copy": "Copy"})
 
-        copied_form = Form.objects.get(slug=_("{slug}-copy").format(slug=form.slug))
+        copied_form = Form.objects.get(
+            slug=_("{slug}-copy").format(slug=self.form.slug)
+        )
         new_admin_url = reverse("admin:forms_form_change", args=(copied_form.pk,))
         self.assertRedirects(response, new_admin_url, fetch_redirect_response=False)
 
-        self.assertNotEqual(copied_form.uuid, form.uuid)
-        self.assertEqual(copied_form.name, _("{name} (copy)").format(name=form.name))
+        self.assertNotEqual(copied_form.uuid, self.form.uuid)
+        self.assertEqual(
+            copied_form.name, _("{name} (copy)").format(name=self.form.name)
+        )
         self.assertEqual(
             copied_form.internal_name,
-            _("{name} (copy)").format(name=form.internal_name),
+            _("{name} (copy)").format(name=self.form.internal_name),
         )
         self.assertEqual(copied_form.authentication_backends, ["digid"])
 
         copied_logic = copied_form.formlogic_set.get()
-        self.assertEqual(copied_logic.json_logic_trigger, logic.json_logic_trigger)
-        self.assertEqual(copied_logic.actions, logic.actions)
-        self.assertNotEqual(copied_logic.pk, logic.pk)
+        self.assertEqual(copied_logic.json_logic_trigger, self.logic.json_logic_trigger)
+        self.assertEqual(copied_logic.actions, self.logic.actions)
+        self.assertNotEqual(copied_logic.pk, self.logic.pk)
+        self.assertIsNone(copied_logic.trigger_from_step)
 
         copied_form_step = FormStep.objects.all().order_by("pk").last()
-        self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
+        self.assertNotEqual(copied_form_step.uuid, self.form_step.uuid)
         self.assertEqual(copied_form_step.form, copied_form)
 
         copied_form_step_form_definition = copied_form_step.form_definition
-        self.assertEqual(copied_form_step_form_definition, form_step.form_definition)
+        self.assertEqual(
+            copied_form_step_form_definition, self.form_step.form_definition
+        )
 
         self.assertEqual(copied_form.confirmation_email_template.subject, "Test")
         self.assertNotEqual(
-            copied_form.confirmation_email_template.id, confirmation_email_template.id
+            copied_form.confirmation_email_template.id,
+            self.confirmation_email_template.id,
+        )
+
+    def test_form_admin_copy_without_logic_trigger_from_step(self):
+        self.logic.trigger_from_step = self.form_step
+        self.logic.save()
+
+        # React UI renders this input, so simulate it in a raw POST call
+        response = self.client.post(self.admin_url, data={"_copy": "Copy"})
+
+        copied_form = Form.objects.get(
+            slug=_("{slug}-copy").format(slug=self.form.slug)
+        )
+        new_admin_url = reverse("admin:forms_form_change", args=(copied_form.pk,))
+        self.assertRedirects(response, new_admin_url, fetch_redirect_response=False)
+
+        self.assertNotEqual(copied_form.uuid, self.form.uuid)
+        self.assertEqual(
+            copied_form.name, _("{name} (copy)").format(name=self.form.name)
+        )
+        self.assertEqual(
+            copied_form.internal_name,
+            _("{name} (copy)").format(name=self.form.internal_name),
+        )
+        self.assertEqual(copied_form.authentication_backends, ["digid"])
+
+        copied_logic = copied_form.formlogic_set.get()
+        self.assertEqual(copied_logic.json_logic_trigger, self.logic.json_logic_trigger)
+        self.assertEqual(copied_logic.actions, self.logic.actions)
+        self.assertNotEqual(copied_logic.pk, self.logic.pk)
+        self.assertEqual(copied_logic.trigger_from_step, copied_form.formstep_set.get())
+
+        copied_form_step = FormStep.objects.all().order_by("pk").last()
+        self.assertNotEqual(copied_form_step.uuid, self.form_step.uuid)
+        self.assertEqual(copied_form_step.form, copied_form)
+
+        copied_form_step_form_definition = copied_form_step.form_definition
+        self.assertEqual(
+            copied_form_step_form_definition, self.form_step.form_definition
+        )
+
+        self.assertEqual(copied_form.confirmation_email_template.subject, "Test")
+        self.assertNotEqual(
+            copied_form.confirmation_email_template.id,
+            self.confirmation_email_template.id,
         )
 
 
