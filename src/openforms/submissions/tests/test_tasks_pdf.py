@@ -21,7 +21,9 @@ from .factories import SubmissionFactory, SubmissionReportFactory
 @temp_private_root()
 class SubmissionReportGenerationTests(TestCase):
     def test_submission_report_metadata(self):
-        submission = SubmissionFactory.create(completed=True, form__name="Test Form")
+        submission = SubmissionFactory.create(
+            completed=True, form__name="Test Form", form__slug="test-form"
+        )
 
         generate_submission_report.request.id = "some-id"
         generate_submission_report.run(submission.id)
@@ -31,7 +33,7 @@ class SubmissionReportGenerationTests(TestCase):
             _("%(title)s: Submission report") % {"title": "Test Form"}, report.title
         )
         self.assertEqual(submission, report.submission)
-        self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
+        self.assertTrue(report.content.name.endswith("test-form.pdf"))
         self.assertEqual("some-id", report.task_id)
 
     def test_multiple_value_report_rendering_issue_990(self):
