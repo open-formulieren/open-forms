@@ -550,6 +550,25 @@ class FormAdminCopyTests(TestCase):
             copied_form.confirmation_email_template.id, confirmation_email_template.id
         )
 
+    @tag("gh-3378")
+    def test_copy_form_with_trigger_from_step_in_logic(self):
+        user = SuperUserFactory.create()
+        self.client.force_login(user)
+
+        form_step = FormStepFactory.create()
+        FormLogicFactory.create(form=form_step.form, trigger_from_step=form_step)
+
+        admin_url = reverse("admin:forms_form_change", args=(form_step.form.pk,))
+
+        # React UI renders this input, so simulate it in a raw POST call
+        self.client.post(admin_url, data={"_copy": "Copy"})
+
+        copied_form = Form.objects.exclude(pk=form_step.form.pk).get()
+        copied_step = FormStep.objects.exclude(pk=form_step.pk).get()
+        copied_logic = copied_form.formlogic_set.get()
+
+        self.assertEqual(copied_logic.trigger_from_step, copied_step)
+
 
 @disable_2fa
 class FormAdminActionsTests(FormListAjaxMixin, WebTest):
