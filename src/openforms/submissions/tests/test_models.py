@@ -3,8 +3,10 @@ import os
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
+from hypothesis import given, settings, strategies as st
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
@@ -19,6 +21,7 @@ from ..models import Submission, SubmissionFileAttachment, SubmissionValueVariab
 from .factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionReportFactory,
     SubmissionStepFactory,
 )
 
@@ -569,3 +572,20 @@ class SubmissionTests(TestCase):
         self.assertFalse(hasattr(submission, "_execution_state"))
 
         submission.clear_execution_state()
+
+
+@temp_private_root()
+class PDFSubmissionReportTests(HypothesisTestCase):
+    @tag("gh-3470")
+    @given(
+        st.text(
+            min_size=1,
+            alphabet=st.characters(blacklist_characters="\x00", codec="utf-8"),
+        )
+    )
+    @settings(deadline=500)
+    def test_names_do_not_break_pdf_saving_to_disk(self, form_name):
+        report = SubmissionReportFactory.create(submission__form__name=form_name)
+        report.generate_submission_report_pdf()
+
+        self.assertTrue(report.content.storage.exists(report.content.name))
