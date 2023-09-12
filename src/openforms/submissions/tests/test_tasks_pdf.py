@@ -26,7 +26,7 @@ class SubmissionReportGenerationTests(TestCase):
             _("%(title)s: Submission report") % {"title": "Test Form"}, report.title
         )
         self.assertEqual(submission, report.submission)
-        self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
+        self.assertTrue(report.content.name.endswith("test-form.pdf"))
         self.assertEqual("some-id", report.task_id)
 
     def test_multiple_value_report_rendering_issue_990(self):

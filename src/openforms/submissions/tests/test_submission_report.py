@@ -97,7 +97,7 @@ class DownloadSubmissionReportTests(APITestCase):
         report = submission.report
         self.assertEqual("some-id", report.task_id)
         # report.content.name contains the path too
-        self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
+        self.assertTrue(report.content.name.endswith("test-form.pdf"))
 
     def test_report_is_generated_in_same_language_as_submission(self):
         # fixture_data
