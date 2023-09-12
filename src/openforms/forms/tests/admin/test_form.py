@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 from django.apps import apps
 from django.contrib import admin
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext as _

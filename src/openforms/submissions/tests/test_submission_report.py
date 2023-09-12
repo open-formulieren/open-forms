@@ -87,7 +87,9 @@ class DownloadSubmissionReportTests(APITestCase):
 
     @patch("celery.app.task.Task.request")
     def test_report_generation(self, mock_request):
-        submission = SubmissionFactory.create(completed=True, form__name="Test Form")
+        submission = SubmissionFactory.create(
+            completed=True, form__name="Test Form", form__slug="test-form"
+        )
         mock_request.id = "some-id"
 
         generate_submission_report(submission.id)
@@ -95,7 +97,7 @@ class DownloadSubmissionReportTests(APITestCase):
         report = submission.report
         self.assertEqual("some-id", report.task_id)
         # report.content.name contains the path too
-        self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
+        self.assertTrue(report.content.name.endswith("test-form.pdf"))
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
