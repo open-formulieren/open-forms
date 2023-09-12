@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.core.files.base import ContentFile
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _, override
 
 from celery.result import AsyncResult
@@ -74,7 +75,7 @@ class SubmissionReport(models.Model):
             )
             self.content = ContentFile(
                 content=pdf_report,
-                name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
+                name=f"{slugify(form.name)}.pdf",
             )
         self.save()
         return html_report
