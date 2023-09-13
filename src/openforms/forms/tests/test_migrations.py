@@ -54,3 +54,61 @@ class TestAddMoreCustomErrorMessagesTimeComponent(TestMigrations):
                 },
             },
         )
+
+
+class TestAddDateComponentSettings(TestMigrations):
+    app = "forms"
+    migrate_from = "0092_more_time_custom_errors"
+    migrate_to = "0093_date_component_settings"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+        Form = apps.get_model("forms", "Form")
+
+        self.form_def = FormDefinition.objects.create(
+            name="Date",
+            slug="date",
+            configuration={
+                "components": [
+                    {
+                        "key": "dateComponent",
+                        "type": "date",
+                        "label": "Date component",
+                        "customOptions": {},
+                        "translatedErrors": {
+                            "en": {"required": ""},
+                            "nl": {"required": ""},
+                        },
+                    }
+                ]
+            },
+        )
+        form = Form.objects.create(name="Form date")
+
+        FormStep.objects.create(form=form, form_definition=self.form_def, order=0)
+
+    def test_new_settings(self):
+        self.form_def.refresh_from_db()
+
+        self.assertEqual(
+            self.form_def.configuration["components"][0]["translatedErrors"],
+            {
+                "en": {
+                    "required": "",
+                    "minDate": "",
+                    "maxDate": "",
+                },
+                "nl": {
+                    "required": "",
+                    "minDate": "",
+                    "maxDate": "",
+                },
+            },
+        )
+
+        self.assertTrue(
+            self.form_def.configuration["components"][0]["customOptions"][
+                "allowInvalidPreload"
+            ]
+        )
