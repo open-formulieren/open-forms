@@ -1,0 +1,25 @@
+{% load static i18n %}
+
+<p>
+    {% blocktranslate %}
+        This is a request to co-sign form "{{ form_name }}".<br />
+    {% endblocktranslate %}
+    
+    {% if show_form_link %}
+        {% blocktranslate %}
+            Please click the link below to co-sign:<br />
+            <a class="utrecht-link utrecht-link--openforms" href="{{ form_url }}">Co-sign</a><br />
+        {% endblocktranslate %}
+    {% else %}
+        Please go to the webpage of this form on our website and click on the 'co-sign' button.<br />
+    {% endif %}
+
+    {% blocktranslate trimmed %}
+        You will then be redirected to authenticate yourself.
+        After authentication, fill in the following code to retrieve the form submission:<br /><br />
+        
+        {{ code }}
+        
+        <br /><br />
+    {% endblocktranslate %}
+</p>

@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.core import mail
 from django.test import TestCase, override_settings
 
+from openforms.config.models import GlobalConfiguration
 from openforms.logging.models import TimelineLogProxy
 
 from ..tasks import on_cosign, send_email_cosigner
@@ -96,6 +97,48 @@ class OnCompletionTests(TestCase):
         email = mail.outbox[0]
 
         self.assertEqual(email.recipients(), ["test@test.nl"])
+
+    def test_form_link_allowed_in_email(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+        )
+
+        send_email_cosigner(submission.id)
+
+        email = mail.outbox[0]
+        form_link = submission.form.get_absolute_url()
+
+        self.assertIn(form_link, email.body)
+
+    def test_form_link_not_allowed_in_email(self):
+        config = GlobalConfiguration.get_solo()
+        config.show_form_link_in_cosign_email = False
+        config.save()
+
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+        )
+
+        send_email_cosigner(submission.id)
+
+        email = mail.outbox[0]
+        form_link = submission.form.get_absolute_url()
+
+        self.assertNotIn(form_link, email.body)
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
