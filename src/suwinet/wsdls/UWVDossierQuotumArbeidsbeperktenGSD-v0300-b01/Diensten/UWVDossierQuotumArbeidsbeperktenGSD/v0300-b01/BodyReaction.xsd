@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/UWVDossierQuotumArbeidsbeperktenGSD/v0300" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/UWVDossierQuotumArbeidsbeperktenGSD/v0300" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--23/11/2017 Vanwege het gebrek van wettelijke grondslag (doelbinding) en diverse redenen wordt een aantal elementen uit het bericht verwijderd: "CdRedenEGrondslagArbeidsbeperktheid" en "IndLdrRegistratieWbQa"-->
+	<!--19/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--19/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="UWVPersoonsArbeidsbeperktenInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="LdrRegistratieWbQa" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="DatELdrRegistratieWbQa" type="sml:Datum" minOccurs="0"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="GrondslagArbeidsbeperktheid" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="CdGrondslagArbeidsbeperktheid" type="smls:CdGrondslagArbeidsbeperktheid" minOccurs="0"/>
+											<element name="DatBGrondslagArbeidsbeperktheid" type="sml:Datum"/>
+											<element name="DatEGrondslagArbeidsbeperktheid" type="sml:Datum" minOccurs="0"/>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<simpleType name="CdGrondslagArbeidsbeperktheid">
+		<restriction base="string">
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+</schema>

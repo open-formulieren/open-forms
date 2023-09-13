@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<include schemaLocation="../ComplexTypes/Straatadres_verkort.xsd"/>
+	<complexType name="Voertuigverplichtingennemer">
+		<sequence>
+			<element name="Rechtspersoon" minOccurs="0">
+				<complexType>
+					<sequence>
+						<element name="NaamRechtspersoon" type="sml:NaamAN200"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="AdresVoertuigverplichtingennemer" minOccurs="0">
+				<complexType>
+					<sequence>
+						<element name="FeitelijkAdres" minOccurs="0">
+							<complexType>
+								<sequence>
+									<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+								</sequence>
+							</complexType>
+						</element>
+						<element name="Correspondentieadres" minOccurs="0">
+							<complexType>
+								<sequence>
+									<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+								</sequence>
+							</complexType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+</schema>

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--04/03/2013 Het formaat van "Woonplaatsnaam" en "Gemeentenaam" in entiteit Straatadres is aangepast conform de huidige standaard (conform BAG).-->
+	<!--04/03/2013 Het element "IndBezitOnroerendeZaakVerleden" is vervangen door "IndEigendomOZVerleden", conform SGR.-->
+	<!--09/06/2017 Elementen “KadastraalDeelperceelnr” en “KadastraalAppartementsindex” komen te vervallen. Element "VolgnrKadastraalAppartementsrecht" is nieuw. Formaat van element "KadastraleGemeentenaam" is gewijzigd. Uitbreiding waardebereik van element "CdTypeOnroerendeZaak".-->
+	<!--12/06/2017 Element "Voorletters" komt te vervallen.-->
+	<!--15/06/2017 Het formaat van elementen "KadastraleSectie" en "KadastraalPerceelnr" zijn gewijzigd.-->
+	<!--17/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--17/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--06/02/2020 Typedefinities van elementen ”KadastraalPerceelnr” en “KadastraleSectie” zijn aangepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Include definities-->
+	<include schemaLocation="ComplexTypes/KadastraleAanduiding.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="PersoonsInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi" type="smls:ClientSuwiPersoonsInfo"/>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<element name="ObjectInfoKadastraleAanduidingResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="OnroerendeZaak" type="smls:KadastraalObject" maxOccurs="unbounded"/>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<element name="ObjectInfoLocatieOZResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="OnroerendeZaak" type="smls:OnroerendeZaak" maxOccurs="unbounded"/>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<complexType name="ClientSuwiPersoonsInfo">
+		<sequence>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geslacht" type="sml:Geslacht" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+			<element name="DomicilieAdres" type="smls:AdresKadaster" minOccurs="0"/>
+			<element name="Correspondentieadres" type="smls:PostadresKadaster" minOccurs="0"/>
+			<element name="DatToestandKadaster" type="sml:Datum" minOccurs="0"/>
+			<element name="DatFiatteringKadaster" type="sml:Datum" minOccurs="0"/>
+			<element name="Eigendom">
+				<complexType>
+					<choice>
+						<element name="IndEigendomOZVerleden" type="sml:StdIndJN"/>
+						<element name="OnroerendeZaak" type="smls:OnroerendeZaak" maxOccurs="unbounded"/>
+					</choice>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+	<complexType name="Gerechtigde">
+		<sequence>
+			<choice>
+				<element name="NatuurlijkPersoon" type="smls:NatuurlijkPersoon"/>
+				<element name="NietNatuurlijkPersoon">
+					<complexType>
+						<sequence>
+							<element name="OndernemingInst" minOccurs="0">
+								<complexType>
+									<sequence>
+										<element name="InschrijvingsnrKvK" type="sml:InschrijvingsnrKvK" minOccurs="0"/>
+										<element name="NaamOndernemingInst" minOccurs="0">
+											<complexType>
+												<sequence>
+													<element name="HandelsnaamOrganisatie" type="sml:NaamAN70"/>
+												</sequence>
+											</complexType>
+										</element>
+										<element name="OmsRechtsvorm" type="smls:OmsRechtsvorm" minOccurs="0"/>
+										<element name="OmsStatutaireZetel" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+									</sequence>
+								</complexType>
+							</element>
+							<element name="Rechtspersoon" type="smls:Rechtspersoon" minOccurs="0"/>
+						</sequence>
+					</complexType>
+				</element>
+			</choice>
+			<element name="DomicilieAdres" type="smls:AdresKadaster" minOccurs="0"/>
+			<element name="Correspondentieadres" type="smls:PostadresKadaster" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="NatuurlijkPersoon">
+		<sequence>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geslacht" type="sml:Geslacht" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="OnroerendeZaak">
+		<sequence>
+			<element name="DatToestandKadaster" type="sml:Datum" minOccurs="0"/>
+			<element name="DatFiatteringKadaster" type="sml:Datum" minOccurs="0"/>
+			<element name="CdTypeOnroerendeZaak" type="smls:CdTypeOnroerendeZaak" minOccurs="0"/>
+			<element name="DatOntstaan" type="sml:Datum" minOccurs="0"/>
+			<element name="KadastraleAanduiding" type="smls:KadastraleAanduiding"/>
+			<element name="OmsKadastraalObject" type="sml:OmschrijvingAN200" minOccurs="0"/>
+			<element name="ZakelijkRecht" type="smls:ZakelijkRecht" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="LocatieOZ" type="smls:Locatie" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="PubliekrechtelijkeBeperking" type="smls:PubliekrechtelijkeBeperking" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="BedrKoopsom" type="sml:StandaardBedr" minOccurs="0"/>
+			<element name="JaarAankoop" type="sml:JaartalN4" minOccurs="0"/>
+			<element name="WijzeVerkrijgingEigendom" type="smls:WijzeVerkrijgingEigendom" minOccurs="0"/>
+			<element name="IndMeerGerechtigden" type="sml:StdIndJN"/>
+		</sequence>
+	</complexType>
+	<complexType name="KadastraalObject">
+		<sequence>
+			<element name="DatToestandKadaster" type="sml:Datum" minOccurs="0"/>
+			<element name="CdTypeOnroerendeZaak" type="smls:CdTypeOnroerendeZaak" minOccurs="0"/>
+			<element name="DatOntstaan" type="sml:Datum" minOccurs="0"/>
+			<element name="KadastraleAanduiding" type="smls:KadastraleAanduiding" minOccurs="0"/>
+			<element name="OmsKadastraalObject" type="sml:OmschrijvingAN200" minOccurs="0"/>
+			<element name="ZakelijkRecht" type="smls:ZakelijkRecht" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="LocatieOZ" type="smls:Locatie" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="PubliekrechtelijkeBeperking" type="smls:PubliekrechtelijkeBeperking" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="BedrKoopsom" type="sml:StandaardBedr" minOccurs="0"/>
+			<element name="JaarAankoop" type="sml:JaartalN4" minOccurs="0"/>
+			<element name="WijzeVerkrijgingEigendom" type="smls:WijzeVerkrijgingEigendom" minOccurs="0"/>
+			<element name="IndMeerGerechtigden" type="sml:StdIndJN"/>
+			<element name="Gerechtigde" type="smls:Gerechtigde" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+	<complexType name="PubliekrechtelijkeBeperking">
+		<sequence>
+			<element name="AantekeningKadastraalObject" minOccurs="0">
+				<complexType>
+					<sequence>
+						<element name="DatEAantekeningKadastraalObject" type="sml:Datum" minOccurs="0"/>
+						<element name="OmsAantekeningKadastraalObject" type="sml:OmschrijvingAN200" minOccurs="0"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="BetrokkenPersoonBestuursorgaan" minOccurs="0">
+				<complexType>
+					<choice>
+						<element name="NatuurlijkPersoon" type="smls:NatuurlijkPersoon"/>
+						<element name="Rechtspersoon" type="smls:Rechtspersoon"/>
+					</choice>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+	<complexType name="Rechtspersoon">
+		<sequence>
+			<element name="FiNr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="NaamRechtspersoon" type="sml:NaamAN200" minOccurs="0"/>
+			<element name="OmsRechtsvorm" type="smls:OmsRechtsvorm" minOccurs="0"/>
+			<element name="OmsStatutaireZetel" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="StraatadresBag">
+		<sequence>
+			<element name="Locatieoms" type="sml:NaamAdresNederlandAN70" minOccurs="0"/>
+			<element name="Postcd" type="sml:Postcd" minOccurs="0"/>
+			<element name="Woonplaatsnaam" type="smls:NaamAdresNederlandAN80" minOccurs="0"/>
+			<element name="Gemeentenaam" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+			<element name="Gemeentedeel" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+			<element name="Straatnaam" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+			<element name="Huisnr" type="sml:NummerAdresNederlandN5" minOccurs="0"/>
+			<element name="Huisletter" type="sml:NummerAdresNederlandAN1" minOccurs="0"/>
+			<element name="Huisnrtoevoeging" type="sml:NummerAdresNederlandAN6" minOccurs="0"/>
+			<element name="AanduidingBijHuisnr" type="sml:NummerAdresNederlandAN2" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="WijzeVerkrijgingEigendom">
+		<sequence>
+			<element name="CdWijzeVerkrijgingEigendom" type="smls:CdWijzeVerkrijgingEigendom" minOccurs="0"/>
+			<element name="DatVerkrijgingEigendom" type="sml:Datum" minOccurs="0"/>
+			<element name="DatToestandKadaster" type="sml:Datum" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="ZakelijkRecht">
+		<sequence>
+			<element name="OmsZakelijkRecht" type="sml:OmschrijvingAN200" minOccurs="0"/>
+			<element name="DatEZakelijkRecht" type="sml:Datum" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<simpleType name="CdTypeOnroerendeZaak">
+		<restriction base="string">
+			<enumeration value="A">
+				<annotation>
+					<documentation>Appartementsrecht</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="P">
+				<annotation>
+					<documentation>Perceel</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="L">
+				<annotation>
+					<documentation>Leidingnetwerk</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdWijzeVerkrijgingEigendom">
+		<restriction base="string">
+			<enumeration value="C">
+				<annotation>
+					<documentation>Contant</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="H">
+				<annotation>
+					<documentation>Hypotheek</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	<complexType name="Locatie">
+		<sequence>
+			<element name="StraatadresBag" type="smls:StraatadresBag"/>
+		</sequence>
+	</complexType>
+	<complexType name="AdresKadaster">
+		<choice>
+			<element name="StraatadresBag" type="smls:StraatadresBag"/>
+			<element name="GeneriekAdresBuitenland" type="smls:GeneriekAdresBuitenland"/>
+		</choice>
+	</complexType>
+	<complexType name="PostadresKadaster">
+		<choice>
+			<element name="StraatadresBag" type="smls:StraatadresBag"/>
+			<element name="Postbusadres">
+				<complexType>
+					<sequence>
+						<element name="Locatieoms" type="sml:NaamAdresNederlandAN70" minOccurs="0"/>
+						<element name="Postcd" type="sml:Postcd" minOccurs="0"/>
+						<element name="Woonplaatsnaam" type="smls:NaamAdresNederlandAN80" minOccurs="0"/>
+						<element name="Gemeentenaam" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+						<element name="Postbusnr" type="sml:NummerAdresNederlandN5" minOccurs="0"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="GeneriekAdresBuitenland" type="smls:GeneriekAdresBuitenland"/>
+		</choice>
+	</complexType>
+	<complexType name="GeneriekAdresBuitenland">
+		<sequence>
+			<element name="Adresregel1Buitenland" type="sml:OmschrijvingAN100" minOccurs="0"/>
+			<element name="Adresregel2Buitenland" type="sml:OmschrijvingAN100" minOccurs="0"/>
+			<element name="Adresregel3Buitenland" type="sml:OmschrijvingAN100" minOccurs="0"/>
+			<element name="Landsnaam" type="sml:NaamAdresBuitenlandAN40" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<simpleType name="OmsRechtsvorm">
+		<restriction base="string"/>
+	</simpleType>
+	<simpleType name="NaamAdresNederlandAN80">
+		<restriction base="string">
+			<maxLength value="80"/>
+		</restriction>
+	</simpleType>
+</schema>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300" targetNamespace="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300" elementFormDefault="unqualified">
+	<!--Samenstelling van KadastraleAanduiding.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<!--Include definities-->
+	<include schemaLocation="../SimpleTypes/KadastraalPerceelnr.xsd"/>
+	<include schemaLocation="../SimpleTypes/KadastraleSectie.xsd"/>
+	<include schemaLocation="../SimpleTypes/VolgnrKadAppartementsrecht.xsd"/>
+	<complexType name="KadastraleAanduiding">
+		<sequence>
+			<element name="CdKadastraleGemeente" type="sml:CdKadastraleGemeente"/>
+			<element name="KadastraleGemeentenaam" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+			<element name="KadastraleSectie" type="smls:KadastraleSectie"/>
+			<element name="KadastraalPerceelnr" type="smls:KadastraalPerceelnr"/>
+			<element name="VolgnrKadastraalAppartementsrecht" type="smls:VolgnrKadAppartementsrecht" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>

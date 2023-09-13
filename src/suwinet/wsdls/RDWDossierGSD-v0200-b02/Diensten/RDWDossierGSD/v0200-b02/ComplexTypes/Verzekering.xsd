@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<include schemaLocation="../ComplexTypes/Straatadres.xsd"/>
+	<include schemaLocation="../ComplexTypes/Straatadres_verkort.xsd"/>
+	<include schemaLocation="../TypedXsd/CdVerzekeringsmaatschappijRdw.xsd"/>
+	<complexType name="Verzekering">
+		<sequence>
+			<element name="CdSrtDekking" type="sml:CdSrtDekking" minOccurs="0"/>
+			<element name="Polisnr" type="sml:Polisnr" minOccurs="0"/>
+			<element name="DatBVerzekering" type="sml:Datum" minOccurs="0"/>
+			<element name="DatEVerzekering" type="sml:Datum" minOccurs="0"/>
+			<element name="Verzekeringsmaatschappij" minOccurs="0">
+				<complexType>
+					<sequence>
+						<element name="CdVerzekeringsmaatschappijRdw" type="smls:CdVerzekeringsmaatschappijRdw" minOccurs="0"/>
+						<element name="NaamVerzekeringsmaatschappijRdw" type="sml:NaamAN70" minOccurs="0"/>
+						<element name="AdresVerzekeringsmaatschappijRdw" minOccurs="0">
+							<complexType>
+								<sequence>
+									<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+								</sequence>
+							</complexType>
+						</element>
+						<element name="Gevolmachtigde" minOccurs="0">
+							<complexType>
+								<sequence>
+									<element name="CdGevolmachtigde" type="sml:CdGevolmachtigde" minOccurs="0"/>
+									<element name="NaamGevolmachtigde" type="sml:NaamAN70" minOccurs="0"/>
+									<element name="AdresGevolmachtigde" minOccurs="0">
+										<complexType>
+											<sequence>
+												<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+											</sequence>
+										</complexType>
+									</element>
+								</sequence>
+							</complexType>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+</schema>

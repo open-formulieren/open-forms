@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--23/07/2014 UWVDossierPersoonGSD is opgeknipt in 2 koppelvlakken: UWVDossierInkomstenGSD en UWVDossierWerknemersverzekeringenGSD-->
+	<!--19/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--19/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--07/11/2019 Vanwege het vervallen van element CdSectorRisicogroep met ingang van 01-01-2020 worden de verplichte elementen in de bijbehorende gegevensgroep (CdSectorRisicogroep, SectorBeroepsEnBedrijfsleven) optioneel gemaakt.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Include de definities-->
+	<include schemaLocation="ComplexTypes/Straatadres.xsd"/>
+	<include schemaLocation="ComplexTypes/StraatadresBuitenland.xsd"/>
+	<include schemaLocation="ComplexTypes/Postbusadres.xsd"/>
+	<include schemaLocation="ComplexTypes/PostbusadresBuitenland.xsd"/>
+	<include schemaLocation="SimpleTypes/AantVerloondeUrenIko.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="UWVPersoonsIkvInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Inkomstenverhouding" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="VolgnrIkv" type="sml:VolgnrIkv" minOccurs="0"/>
+											<element name="AanduidingIkvWerkgever" type="sml:AanduidingIkvWerkgever" minOccurs="0"/>
+											<element name="DatBIkv" type="sml:Datum" minOccurs="0"/>
+											<element name="DatEIkv" type="sml:Datum" minOccurs="0"/>
+											<element name="AdministratieveEenheid" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="NaamAdministratieveEenheid" type="sml:NaamAN200" minOccurs="0"/>
+														<element name="Loonheffingennr" type="sml:Loonheffingennr"/>
+														<element name="DatBAdministratieveEenheid" type="sml:Datum" minOccurs="0"/>
+														<element name="DatEAdministratieveEenheid" type="sml:Datum" minOccurs="0"/>
+														<choice>
+															<element name="PersoonAdministratieveEenheid">
+																<complexType>
+																	<sequence>
+																		<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+																		<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+																		<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+																		<element name="FeitelijkAdresPersoonAeh" minOccurs="0" maxOccurs="unbounded">
+																			<complexType>
+																				<sequence>
+																					<element name="DatBAdres" type="sml:Datum" minOccurs="0"/>
+																					<element name="DatEAdres" type="sml:Datum" minOccurs="0"/>
+																					<choice>
+																						<element name="Straatadres" type="smls:Straatadres"/>
+																						<element name="Postbusadres" type="smls:Postbusadres"/>
+																						<element name="StraatadresBuitenland" type="smls:StraatadresBuitenland"/>
+																						<element name="PostbusadresBuitenland" type="smls:PostbusadresBuitenland"/>
+																					</choice>
+																				</sequence>
+																			</complexType>
+																		</element>
+																		<element name="CorrespondentieadresPersoonAeh" minOccurs="0" maxOccurs="unbounded">
+																			<complexType>
+																				<sequence>
+																					<element name="DatBAdres" type="sml:Datum" minOccurs="0"/>
+																					<element name="DatEAdres" type="sml:Datum" minOccurs="0"/>
+																					<choice>
+																						<element name="Straatadres" type="smls:Straatadres"/>
+																						<element name="Postbusadres" type="smls:Postbusadres"/>
+																						<element name="StraatadresBuitenland" type="smls:StraatadresBuitenland"/>
+																						<element name="PostbusadresBuitenland" type="smls:PostbusadresBuitenland"/>
+																					</choice>
+																				</sequence>
+																			</complexType>
+																		</element>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="RechtspersoonAdministratieveEenh">
+																<complexType>
+																	<sequence>
+																		<element name="FiNr" type="sml:SofiNr"/>
+																		<element name="NaamRechtspersoon" type="sml:NaamAN200" minOccurs="0"/>
+																		<element name="CdRechtsvorm" type="sml:CdRechtsvorm" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+														</choice>
+														<element name="FeitelijkAdresAeh" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="DatBAdres" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEAdres" type="sml:Datum" minOccurs="0"/>
+																	<choice>
+																		<element name="Straatadres" type="smls:Straatadres"/>
+																		<element name="Postbusadres" type="smls:Postbusadres"/>
+																		<element name="StraatadresBuitenland" type="smls:StraatadresBuitenland"/>
+																		<element name="PostbusadresBuitenland" type="smls:PostbusadresBuitenland"/>
+																	</choice>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="CorrespondentieadresAeh" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="DatBAdres" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEAdres" type="sml:Datum" minOccurs="0"/>
+																	<choice>
+																		<element name="Straatadres" type="smls:Straatadres"/>
+																		<element name="Postbusadres" type="smls:Postbusadres"/>
+																		<element name="StraatadresBuitenland" type="smls:StraatadresBuitenland"/>
+																		<element name="PostbusadresBuitenland" type="smls:PostbusadresBuitenland"/>
+																	</choice>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="Inkomstenperiode" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="DatBIkp" type="sml:Datum"/>
+														<element name="DatEIkp" type="sml:Datum" minOccurs="0"/>
+														<element name="CdSrtIkv" type="sml:CdSrtInkomstenverhouding" minOccurs="0"/>
+														<element name="CdTypeArbeidscontract" type="sml:CdTypeArbeidscontract" minOccurs="0"/>
+														<!--Element CdTypeArbeidscontract vervalt per 01-01-2020. Element blijft bestaan voor de historie-->
+														<element name="CdInvloedVerzekeringsplicht" type="sml:CdInvloedVerzekeringsplicht" minOccurs="0"/>
+														<element name="IndLoonheffingskortingToegepast" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="IndRegelmatigArbeidspatroon" type="sml:StdInd" minOccurs="0"/>
+														<element name="IndPersoneelsleningNietInLoon" type="sml:StdIndJN" minOccurs="0"/>
+														<!--Element IndPersoneelsleningNietInLoon vervalt per 01-01-2017. Element blijft bestaan voor de historie-->
+														<element name="IndLoonIsMedeAowAlleenstaande" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="IndLoonInclusiefWajongUitkering" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="IndVakantiebonnenToegepast" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="CdAardIkv" type="sml:CdAardIkv" minOccurs="0"/>
+														<element name="CdIncidInkomstenvermindering" type="sml:CdIncidInkomstenvermindering" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="SectorRisicogroepIkv" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="CdSectorRisicogroep" type="sml:CdSectorRisicogroep" minOccurs="0"/>
+														<!--Element CdSectorRisicogroep vervalt per 01-01-2020. Element blijft bestaan voor de historie-->
+														<element name="DatBSectorRisicogroep" type="sml:Datum" minOccurs="0"/>
+														<element name="DatESectorRisicogroep" type="sml:Datum" minOccurs="0"/>
+														<element name="SectorBeroepsEnBedrijfsleven" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="CdSector" type="sml:CdSectorOsv"/>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="Inkomstenopgave" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="DatBIko" type="sml:Datum"/>
+														<element name="DatEIko" type="sml:Datum" minOccurs="0"/>
+														<element name="AantSvDagenIko" type="sml:AantalN3" minOccurs="0"/>
+														<!--Element AantSvDagenIko vervalt per 01-01-2017. Element blijft bestaan voor de historie-->
+														<element name="AantVerloondeUrenIko" type="smls:AantVerloondeUrenIko" minOccurs="0"/>
+														<element name="BedrBrutoloonSv" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrLoonLbPremieVolksverz" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrIngehoudenLbPremieVolksverz" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrVakantietoeslag" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrOpgbRechtVakantietoeslag" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrExtraPrdSalaris" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrOpgbRechtExtraPrdSalaris" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrVergoedingReiskostenOnbelast" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrInUitkBegrBetAlimentatie" type="sml:StandaardBedr" minOccurs="0"/>
+														<element name="BedrRechtstreeksBetAlimentatie" type="sml:StandaardBedr" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="PeriodeGegevensleveringIko" minOccurs="0">
+						<complexType>
+							<sequence>
+								<element name="DatBPeriode" type="sml:Datum" minOccurs="0"/>
+								<element name="DatEPeriode" type="sml:Datum" minOccurs="0"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+</schema>

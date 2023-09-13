@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/FWI/v0205" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--Definities voor de Fault structuur.-->
+	<complexType name="FWI">
+		<sequence>
+			<choice maxOccurs="unbounded">
+				<element name="Fout" type="fwi:Melding"/>
+				<element name="Waarschuwing" type="fwi:Melding"/>
+				<element name="Informatie" type="fwi:Melding"/>
+			</choice>
+		</sequence>
+	</complexType>
+	<complexType name="Melding">
+		<sequence>
+			<element name="Code" type="string"/>
+			<element name="Tekst" type="string"/>
+			<element name="Detail" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Bron">
+				<complexType>
+					<sequence>
+						<element name="DN" type="string">
+							<annotation>
+								<documentation>DistinguishedName</documentation>
+							</annotation>
+						</element>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+	<element name="FWI" type="fwi:FWI"/>
+	<element name="Fout" type="fwi:Melding"/>
+	<element name="NietsGevonden"/>
+	<element name="NietGerechtigd"/>
+	<element name="NietVanToepassing"/>
+</schema>

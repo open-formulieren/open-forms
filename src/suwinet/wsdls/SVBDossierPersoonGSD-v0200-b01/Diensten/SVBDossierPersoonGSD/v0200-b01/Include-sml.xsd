@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!--Importeer de benodigde onderdelen uit het SuwiML basisschema.-->
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Burgerservicenr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Datum.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Percentage.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamPersoonA200.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/WaardeBedr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdWoonsituatieKind.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdSrtRemigratievoorziening.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdSzWet.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/Voorvoegsels.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/Geslacht.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/LandenCdIsoA2.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/StdIndJN.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/StdIndOnb.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdBeslissingOpAanvraagUitkering.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdMunteenheid.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdUitkeringsperiode.xsd"/>
+</schema>

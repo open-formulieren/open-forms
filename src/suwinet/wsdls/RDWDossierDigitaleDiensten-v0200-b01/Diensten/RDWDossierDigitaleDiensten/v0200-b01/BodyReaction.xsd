@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<!--03/05/2011 Gegevens over bijzonderheden voertuig zijn verwijderd uit het schema. RDW heeft BKWI geadviseerd om deze gegevens niet te ontsluiten.-->
+	<!--03/05/2011 De structuur van gegevens in de operaties zijn gewijzigd en zoveel mogelijk geconformeerd aan het bericht RDWDossier (voor professionals).-->
+	<!--23/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--23/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Include definities-->
+	<!--Definities voor de body structuur.-->
+	<element name="VoertuigbezitInfoPersoonResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi" maxOccurs="unbounded">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Aansprakelijke" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="Voertuig" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="CdSrtVoertuig" type="sml:CdSrtVoertuig" minOccurs="0"/>
+														<element name="KentekenVoertuig" type="sml:NummerAN6"/>
+														<element name="StatusVoertuig" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="CdStatusVoertuig" type="sml:CdStatusVoertuig"/>
+																	<element name="DatBStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<element name="KentekenInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi" maxOccurs="unbounded">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Aansprakelijke" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="Voertuig" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="CdSrtVoertuig" type="sml:CdSrtVoertuig" minOccurs="0"/>
+														<element name="KentekenVoertuig" type="sml:NummerAN6"/>
+														<element name="StatusVoertuig" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="CdStatusVoertuig" type="sml:CdStatusVoertuig"/>
+																	<element name="DatBStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="MerkVoertuig" type="sml:OmschrijvingAN35" minOccurs="0"/>
+														<element name="TypeVoertuig" type="sml:OmschrijvingAN50" minOccurs="0"/>
+														<element name="DatEersteInschrijvingVoertuigNat" type="sml:Datum" minOccurs="0"/>
+														<element name="DatEersteInschrijvingVoertuigInt" type="sml:Datum" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+</schema>

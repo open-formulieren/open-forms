@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/v0200" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<complexType name="InschrijvingsgegevensUwvWb">
+		<sequence>
+			<element name="DatInschrijvingUwvWb" type="sml:Datum" minOccurs="0"/>
+			<element name="CdInschrijfredenUwvWb" type="sml:CdInschrijfredenUwvWb" minOccurs="0"/>
+			<element name="DatEInschrijvingUwvWb" type="sml:Datum" minOccurs="0"/>
+			<element name="DatEGeldigheidInschrijvingUwvWb" type="sml:Datum" minOccurs="0"/>
+			<element name="CdRedenEindeInschrijvingUwvWb" type="sml:CdRedenEindeInschrijvingUwvWb" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>

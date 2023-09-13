@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" targetNamespace="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<complexType name="Partner">
+		<sequence>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+		</sequence>
+	</complexType>
+</schema>

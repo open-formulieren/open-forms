@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:sp="http://schemas.xmlsoap.org/ws/2002/12/secext" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" targetNamespace="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200">
+	<!--08/11/2019 De naam van de service van BKWI in de wsdl wordt aangepast.-->
+	<wsdl:documentation>
+		TLS 1.2 met cipher ECDHE-RSA-AES128-GCM-SHA256 
+
+		Elementen:
+ 
+		Het is niet toegestaan eigen header velden toe te voegen aan het bericht.
+
+		Timestamp
+		http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity-utility-1.0.xsd
+		wsu:Timestamp
+		wsu:Created is verplicht
+		wsu:Expires is optioneel
+
+		WS-Adressing: 
+		http://www.w3.org/2006/05/addressing/wsdl
+		Voor de richtlijnen zie: SuwiML Transactiestandaard versie 4.0
+
+		Digitale handtekening:
+		http://www.w3.org/2000/09/xmldsig#
+
+		Canonicalization
+		http://www.w3.org/2001/10/xml-exc-c14n#
+
+		Digest
+		SHA-2 minimaal SHA-224 of SHA-256
+		https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiKoppeling/Standaarden/Digikoppeling-Beveiligingsstandaarden-en-voorschriften.pdf
+		
+		Signature
+		SHA-2 minimaal SHA-224 of SHA-256
+		https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiKoppeling/Standaarden/Digikoppeling-Beveiligingsstandaarden-en-voorschriften.pdf
+
+		De volgende elementen dienen ondertekend worden:
+		- SOAP-Header (alle opgenomen header elementen)
+		- SOAP-Body
+		
+		https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiKoppeling/Standaarden/Digikoppeling-Koppelvlakstandaard-WUS.pdf
+		WB010: Publieke sleutel dat gebruikt is voor het signing proces dient meegeleverd te worden met het bericht via een ‘Direct security token’ reference.
+		Voor de richtlijnen zie: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0.pdf
+		
+		Het gebruikte x.509 certificaat moet als binary security token meegeleverd worden.
+		http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity-secext-1.0.xsd
+		Voor de richtlijnen zie: 	http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0.pdf
+	</wsdl:documentation>
+	<wsdl:types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200">
+			<include schemaLocation="BodyAction.xsd"/>
+			<include schemaLocation="BodyReaction.xsd"/>
+		</schema>
+		<schema targetNamespace="http://bkwi.nl/SuwiML/FWI/v0205">
+			<include schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+		</schema>
+	</wsdl:types>
+	<wsdl:message name="AanvraagPersoon">
+		<wsdl:part name="parameters" element="smls:AanvraagPersoon"/>
+	</wsdl:message>
+	<wsdl:message name="AanvraagPersoonResponse">
+		<wsdl:part name="parameters" element="smls:AanvraagPersoonResponse"/>
+	</wsdl:message>
+	<wsdl:message name="AanvraagNietOk">
+		<wsdl:part name="parameters" element="fwi:Fout"/>
+	</wsdl:message>
+	<wsdl:portType name="BRPInfo">
+		<wsdl:operation name="AanvraagPersoon">
+			<wsdl:input message="smls:AanvraagPersoon" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD-v0200/AanvraagPersoon"/>
+			<wsdl:output message="smls:AanvraagPersoonResponse" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD-v0200/AanvraagPersoonResponse"/>
+			<wsdl:fault name="AanvraagNietOk" message="smls:AanvraagNietOk" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD-v0200/Fout"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="BRPBinding" type="smls:BRPInfo">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsaw:UsingAddressing wsdl:required="true"/>
+		<wsp:UsingPolicy wsdl:Required="true"/>
+		<wsp:Policy wsu:Id="SecurityPolicy">
+			<wsp:All>
+				<sp:SecurityToken>
+					<sp:TokenType>sp:X509v3</sp:TokenType>
+				</sp:SecurityToken>
+				<sp:SignedParts>
+					<sp:Header/>
+					<sp:Body/>
+				</sp:SignedParts>
+				<!--<sp:EncryptedParts>
+						<sp:Body/>
+					</sp:EncryptedParts>-->
+				<sp:TransportBinding>
+					<sp:IncludeTimeStamp/>
+				</sp:TransportBinding>
+			</wsp:All>
+		</wsp:Policy>
+		<wsdl:operation name="AanvraagPersoon">
+			<soap:operation soapAction=""/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="AanvraagNietOk">
+				<soap:fault name="AanvraagNietOk" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+</wsdl:definitions>

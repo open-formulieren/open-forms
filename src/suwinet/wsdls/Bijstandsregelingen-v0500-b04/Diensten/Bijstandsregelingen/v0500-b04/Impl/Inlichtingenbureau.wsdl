@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" targetNamespace="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500">
+	<wsdl:import namespace="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" location="../Bijstandsregelingen.wsdl"/>
+	<wsdl:service name="Bijstandsregelingen-v0500">
+		<wsdl:port name="DKD-Productie-Diginetwerk" binding="smls:BijstandsregelingenBinding">
+			<soap:address location="https://connect.diginetwerk.inlichtingenbureau.nl/Bijstandsregelingen-v0500"/>
+		</wsdl:port>
+		<wsdl:port name="DKD-Test-Diginetwerk" binding="smls:BijstandsregelingenBinding">
+			<soap:address location="https://connect.acct.diginetwerk.inlichtingenbureau.nl/Bijstandsregelingen-v0500"/>
+		</wsdl:port>
+		<wsdl:port name="DKD-Productie-Gemnet" binding="smls:BijstandsregelingenBinding">
+			<soap:address location="https://connect.gemnet.inlichtingenbureau.nl/Bijstandsregelingen-v0500"/>
+		</wsdl:port>
+		<wsdl:port name="DKD-Test-Gemnet" binding="smls:BijstandsregelingenBinding">
+			<soap:address location="https://connect.acct.gemnet.inlichtingenbureau.nl/Bijstandsregelingen-v0500"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

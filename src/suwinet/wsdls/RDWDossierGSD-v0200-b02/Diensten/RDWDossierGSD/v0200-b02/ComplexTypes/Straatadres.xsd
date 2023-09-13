@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<include schemaLocation="../SimpleTypes/NaamAdresNederlandAN80.xsd"/>
+	<complexType name="Straatadres">
+		<sequence>
+			<element name="Postcd" type="sml:Postcd" minOccurs="0"/>
+			<element name="Woonplaatsnaam" type="smls:NaamAdresNederlandAN80" minOccurs="0"/>
+			<element name="Straatnaam" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+			<element name="Huisnr" type="sml:NummerAdresNederlandN5" minOccurs="0"/>
+			<element name="Huisnrtoevoeging" type="sml:NummerAdresNederlandAN6" minOccurs="0"/>
+			<element name="Woonbootverwijzing" type="sml:Woonbootverwijzing" minOccurs="0"/>
+			<element name="Woonwagenverwijzing" type="sml:Woonwagenverwijzing" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>

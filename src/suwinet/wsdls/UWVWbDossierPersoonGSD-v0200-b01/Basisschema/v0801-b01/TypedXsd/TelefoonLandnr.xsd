@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!-- SuwiML Basisschema tabellen typed v0801-b01 -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!-- TelefoonLandnr v0801-b01 tabeldefinitie met type-aanduiding -->
+	<simpleType name="TelefoonLandnr">
+		<restriction base="nonNegativeInteger">
+			<minInclusive value="0"/>
+			<maxInclusive value="999"/>
+			<totalDigits value="3"/>
+		</restriction>
+	</simpleType>
+</schema>

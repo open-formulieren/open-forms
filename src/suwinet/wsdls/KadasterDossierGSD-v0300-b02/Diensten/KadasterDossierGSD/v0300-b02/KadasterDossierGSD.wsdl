@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:sp="http://schemas.xmlsoap.org/ws/2002/12/secext" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" targetNamespace="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300">
+	<wsdl:documentation>
+		TLS 1.2 met cipher ECDHE-RSA-AES128-GCM-SHA256 
+
+		Elementen:
+ 
+		Het is niet toegestaan eigen header velden toe te voegen aan het bericht.
+
+		Timestamp
+		http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity-utility-1.0.xsd
+		wsu:Timestamp
+		wsu:Created is verplicht
+		wsu:Expires is optioneel
+
+		WS-Adressing: 
+		http://www.w3.org/2006/05/addressing/wsdl
+		Voor de richtlijnen zie: SuwiML Transactiestandaard versie 4.0
+
+		Digitale handtekening:
+		http://www.w3.org/2000/09/xmldsig#
+
+		Canonicalization
+		http://www.w3.org/2001/10/xml-exc-c14n#
+
+		Digest
+		SHA-2 minimaal SHA-224 of SHA-256
+		https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiKoppeling/Standaarden/Digikoppeling-Beveiligingsstandaarden-en-voorschriften.pdf
+		
+		Signature
+		SHA-2 minimaal SHA-224 of SHA-256
+		https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiKoppeling/Standaarden/Digikoppeling-Beveiligingsstandaarden-en-voorschriften.pdf
+
+		De volgende elementen dienen ondertekend worden:
+		- SOAP-Header (alle opgenomen header elementen)
+		- SOAP-Body
+		
+		https://www.logius.nl/sites/default/files/public/bestanden/diensten/DigiKoppeling/Standaarden/Digikoppeling-Koppelvlakstandaard-WUS.pdf
+		WB010: Publieke sleutel dat gebruikt is voor het signing proces dient meegeleverd te worden met het bericht via een ‘Direct security token’ reference.
+		Voor de richtlijnen zie: http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0.pdf
+		
+		Het gebruikte x.509 certificaat moet als binary security token meegeleverd worden.
+		http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity-secext-1.0.xsd
+		Voor de richtlijnen zie: 	http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0.pdf
+	</wsdl:documentation>
+	<wsdl:types>
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD/v0300">
+			<xs:include schemaLocation="BodyAction.xsd"/>
+			<xs:include schemaLocation="BodyReaction.xsd"/>
+		</xs:schema>
+		<xs:schema targetNamespace="http://bkwi.nl/SuwiML/FWI/v0205">
+			<xs:include schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="PersoonsInfo">
+		<wsdl:part name="parameters" element="smls:PersoonsInfo"/>
+	</wsdl:message>
+	<wsdl:message name="PersoonsInfoResponse">
+		<wsdl:part name="parameters" element="smls:PersoonsInfoResponse"/>
+	</wsdl:message>
+	<wsdl:message name="ObjectInfoKadastraleAanduiding">
+		<wsdl:part name="parameters" element="smls:ObjectInfoKadastraleAanduiding"/>
+	</wsdl:message>
+	<wsdl:message name="ObjectInfoKadastraleAanduidingResponse">
+		<wsdl:part name="parameters" element="smls:ObjectInfoKadastraleAanduidingResponse"/>
+	</wsdl:message>
+	<wsdl:message name="ObjectInfoLocatieOZ">
+		<wsdl:part name="parameters" element="smls:ObjectInfoLocatieOZ"/>
+	</wsdl:message>
+	<wsdl:message name="ObjectInfoLocatieOZResponse">
+		<wsdl:part name="parameters" element="smls:ObjectInfoLocatieOZResponse"/>
+	</wsdl:message>
+	<wsdl:message name="AanvraagNietOk">
+		<wsdl:part name="parameters" element="fwi:Fout"/>
+	</wsdl:message>
+	<wsdl:portType name="KadasterInfo">
+		<wsdl:operation name="PersoonsInfo">
+			<wsdl:input message="smls:PersoonsInfo" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/PersoonsInfo"/>
+			<wsdl:output message="smls:PersoonsInfoResponse" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/PersoonsInfoResponse"/>
+			<wsdl:fault name="AanvraagNietOk" message="smls:AanvraagNietOk" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/Fout"/>
+		</wsdl:operation>
+		<wsdl:operation name="ObjectInfoKadastraleAanduiding">
+			<wsdl:input message="smls:ObjectInfoKadastraleAanduiding" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/ObjectInfoKadastraleAanduiding"/>
+			<wsdl:output message="smls:ObjectInfoKadastraleAanduidingResponse" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/ObjectInfoKadastraleAanduidingResponse"/>
+			<wsdl:fault name="AanvraagNietOk" message="smls:AanvraagNietOk" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/Fout"/>
+		</wsdl:operation>
+		<wsdl:operation name="ObjectInfoLocatieOZ">
+			<wsdl:input message="smls:ObjectInfoLocatieOZ" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/ObjectInfoLocatieOZ"/>
+			<wsdl:output message="smls:ObjectInfoLocatieOZResponse" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/ObjectInfoLocatieOZResponse"/>
+			<wsdl:fault name="AanvraagNietOk" message="smls:AanvraagNietOk" wsaw:Action="http://bkwi.nl/SuwiML/Diensten/KadasterDossierGSD-v0300/Fout"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="KadasterBinding" type="smls:KadasterInfo">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsaw:UsingAddressing wsdl:required="true"/>
+		<wsp:UsingPolicy wsdl:Required="true"/>
+		<wsp:Policy wsu:Id="SecurityPolicy">
+			<wsp:All>
+				<sp:SecurityToken>
+					<sp:TokenType>sp:X509v3</sp:TokenType>
+				</sp:SecurityToken>
+				<sp:SignedParts>
+					<sp:Header/>
+					<sp:Body/>
+				</sp:SignedParts>
+				<!--<sp:EncryptedParts>
+						<sp:Body/>
+					</sp:EncryptedParts>-->
+				<sp:TransportBinding>
+					<sp:IncludeTimeStamp/>
+				</sp:TransportBinding>
+			</wsp:All>
+		</wsp:Policy>
+		<wsdl:operation name="PersoonsInfo">
+			<soap:operation soapAction=""/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="AanvraagNietOk">
+				<soap:fault name="AanvraagNietOk" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ObjectInfoKadastraleAanduiding">
+			<soap:operation soapAction=""/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="AanvraagNietOk">
+				<soap:fault name="AanvraagNietOk" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ObjectInfoLocatieOZ">
+			<soap:operation soapAction=""/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="AanvraagNietOk">
+				<soap:fault name="AanvraagNietOk" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+</wsdl:definitions>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!--Importeer de benodigde onderdelen uit het SuwiML basisschema.-->
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Burgerservicenr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Datum.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamPersoonA200.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/OmschrijvingAN100.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/ComplexTypes/StandaardPerc.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Voorletters.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdKolomSuwi.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdPartijSuwi.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdVestigingSuwi.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/CodedXsd/CdPositiefNegatief.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/StdIndJN.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/Geslacht.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/Voorvoegsels.xsd"/>
+</schema>

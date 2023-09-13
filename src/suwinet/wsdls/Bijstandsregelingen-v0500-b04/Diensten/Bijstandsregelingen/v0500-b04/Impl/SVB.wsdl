@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" targetNamespace="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500">
+	<wsdl:import namespace="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" location="../Bijstandsregelingen.wsdl"/>
+	<wsdl:service name="Bijstandsregelingen-v0500">
+		<wsdl:port name="ProductieExtern" binding="smls:BijstandsregelingenBinding">
+			<soap:address location="http://194.104.15.34:80/suwi/services/PRD"/>
+		</wsdl:port>
+		<wsdl:port name="Integratietest" binding="smls:BijstandsregelingenBinding">
+			<soap:address location="http://194.104.15.33:80/suwi/services/KIT"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

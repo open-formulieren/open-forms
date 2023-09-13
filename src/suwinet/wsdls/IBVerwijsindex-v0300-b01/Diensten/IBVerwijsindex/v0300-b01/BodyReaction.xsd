@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="IBVerwijsindexResponse">
+		<complexType>
+			<sequence>
+				<element name="Acknowledgement" type="smls:Acknowledgement" minOccurs="0"/>
+				<element name="FWI" type="fwi:FWI" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+	<!--Definities voor de acknowledgement structuur.-->
+	<complexType name="Acknowledgement"/>
+</schema>

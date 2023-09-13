@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSD/v0200" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<complexType name="PostbusadresBuitenland">
+		<sequence>
+			<element name="LocatieomsBuitenland" type="sml:NaamAdresBuitenlandAN70" minOccurs="0"/>
+			<element name="PostcdBuitenland" type="sml:NummerAdresBuitenlandAN9" minOccurs="0"/>
+			<element name="WoonplaatsnaamBuitenland" type="sml:NaamAdresBuitenlandAN40" minOccurs="0"/>
+			<element name="RegionaamBuitenland" type="sml:NaamAdresBuitenlandAN24" minOccurs="0"/>
+			<element name="LandencdIso" type="sml:LandenCdIsoA2" minOccurs="0"/>
+			<element name="Landsnaam" type="sml:NaamAdresBuitenlandAN40" minOccurs="0"/>
+			<element name="PostbusnrBuitenland" type="sml:NummerAdresBuitenlandAN7" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>
