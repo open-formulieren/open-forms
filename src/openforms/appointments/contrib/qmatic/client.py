@@ -63,6 +63,10 @@ class BranchDetailDict(TypedDict):
 # API CLIENT IMPLEMENTATIONS, per major version of the API
 
 
+def get_client() -> "QmaticClient":
+    return QmaticClient()
+
+
 def startswith_version(url: str) -> bool:
     if url.startswith("v1/"):
         return True
