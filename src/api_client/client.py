@@ -7,6 +7,7 @@ notably:
 * Implementing the client as a ``Session`` subclass
 * Providing a base_url and making this absolute
 """
+from contextlib import contextmanager
 from typing import Any
 
 from furl import furl
@@ -33,6 +34,7 @@ def has_same_base(url: furl, reference: furl) -> bool:
 class APIClient(Session):
     base_url: str
     _request_kwargs: dict[str, Any]
+    _in_context_manager: bool = False
 
     def __init__(self, base_url: str, request_kwargs: dict[str, Any] | None = None):
         # base class does not take any kwargs
@@ -53,6 +55,14 @@ class APIClient(Session):
         # store the remainder so we can inject it in the ``request`` method.
         self._request_kwargs = request_kwargs
 
+    def __enter__(self):
+        self._in_context_manager = True
+        return super().__enter__()
+
+    def __exit__(self, *args):
+        self._in_context_manager = False
+        return super().__exit__(*args)
+
     @classmethod
     def configure_from(cls, factory: APIClientFactory):
         base_url = factory.get_client_base_url()
@@ -63,7 +73,27 @@ class APIClient(Session):
         for attr, val in self._request_kwargs.items():
             kwargs.setdefault(attr, val)
         url = self.to_absolute_url(url)
-        return super().request(method, url, *args, **kwargs)
+        with self._maybe_close_session():
+            return super().request(method, url, *args, **kwargs)
+
+    @contextmanager
+    def _maybe_close_session(self):
+        """
+        Clean up resources to avoid leaking them.
+
+        A requests session uses connection pooling when used in a context manager, and
+        the __exit__ method will properly clean up this connection pool when the block
+        exists. However, it's also possible to instantiate and use a client outside a
+        context block which potentially does not clean up any resources.
+
+        We detect these situations and close the session if needed.
+        """
+        _should_close = not self._in_context_manager
+        try:
+            yield
+        finally:
+            if _should_close:
+                self.close()
 
     def to_absolute_url(self, maybe_relative_url: str) -> str:
         base_furl = furl(self.base_url)

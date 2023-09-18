@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 import requests_mock
 from hypothesis import given, strategies as st
@@ -169,3 +170,33 @@ class RequestTests(TestCase):
 
         self.assertEqual(len(m.request_history), 1)
         self.assertEqual(m.last_request.url, "https://from-factory.example.com/foo/bar")
+
+    @given(http_methods)
+    def test_discouraged_usage_without_context(self, method):
+        client = APIClient("https://example.com")
+
+        with requests_mock.Mocker() as m:
+            m.register_uri(requests_mock.ANY, requests_mock.ANY)
+
+            with patch.object(client, "close", wraps=client.close) as mock_close:
+                client.request(method, "foo")
+
+        self.assertEqual(len(m.request_history), 1)
+        mock_close.assert_called_once()
+
+    @given(http_methods)
+    def test_encouraged_usage_with_context_do_not_close_prematurely(self, method):
+        client = APIClient("https://example.com")
+
+        with patch.object(client, "close", wraps=client.close) as mock_close:
+            with requests_mock.Mocker() as m, client:
+                m.register_uri(requests_mock.ANY, requests_mock.ANY)
+
+                client.request(method, "foo")
+
+                # may not be called inside context block
+                mock_close.assert_not_called()
+
+        self.assertEqual(len(m.request_history), 1)
+        # must be called outside context block
+        mock_close.assert_called_once()

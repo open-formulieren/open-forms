@@ -1,4 +1,4 @@
-from typing import Any, Protocol, TypedDict
+from typing import Any, Protocol
 
 
 class APIClientFactory(Protocol):
