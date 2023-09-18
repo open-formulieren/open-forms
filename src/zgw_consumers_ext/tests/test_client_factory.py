@@ -3,6 +3,7 @@ from pathlib import Path
 from django.core.files import File
 from django.test import TestCase
 
+import requests_mock
 from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
 from simple_certmanager.models import Certificate
@@ -98,3 +99,49 @@ class ClientFromServiceTests(TestCase):
         client = APIClient.configure_from(factory)
 
         self.assertIsNone(client.auth)
+
+    def test_api_key_auth(self):
+        service = ServiceFactory.build(
+            api_root="https://example.com/",
+            auth_type=AuthTypes.api_key,
+            header_key="Some-Auth-Header",
+            header_value="some-api-key",
+        )
+        factory = ServiceClientFactory(service)
+        client = APIClient.configure_from(factory)
+
+        with self.subTest("client.auth configuration"):
+            self.assertIsNotNone(client.auth)
+
+        with self.subTest("dummy API call"):
+            with requests_mock.Mocker() as m, client:
+                m.get("https://example.com/foo")
+
+                client.get("foo")
+
+            headers = m.last_request.headers
+            self.assertIn("Some-Auth-Header", headers)
+            self.assertEqual(headers["Some-Auth-Header"], "some-api-key")
+
+    def test_zgw_auth(self):
+        service = ServiceFactory.build(
+            api_root="https://example.com/",
+            auth_type=AuthTypes.zgw,
+            client_id="my-client-id",
+            secret="my-secret",
+        )
+        factory = ServiceClientFactory(service)
+        client = APIClient.configure_from(factory)
+
+        with self.subTest("client.auth configuration"):
+            self.assertIsNotNone(client.auth)
+
+        with self.subTest("dummy API call"):
+            with requests_mock.Mocker() as m, client:
+                m.get("https://example.com/foo")
+
+                client.get("foo")
+
+            headers = m.last_request.headers
+            self.assertIn("Authorization", headers)
+            self.assertTrue(headers["Authorization"].startswith("Bearer "))
