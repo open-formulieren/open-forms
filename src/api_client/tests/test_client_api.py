@@ -5,7 +5,19 @@ from hypothesis import given, strategies as st
 from requests import Session
 from requests.auth import HTTPBasicAuth
 
+from api_client.exceptions import InvalidURLError
+
 from ..client import APIClient
+
+http_methods = st.one_of(
+    st.just("GET"),
+    st.just("OPTIONS"),
+    st.just("HEAD"),
+    st.just("POST"),
+    st.just("PUT"),
+    st.just("PATCH"),
+    st.just("DELETE"),
+)
 
 
 class DirectInstantiationTests(TestCase):
@@ -105,21 +117,12 @@ class RequestTests(TestCase):
         self.assertTrue(m.last_request.verify)
         self.assertEqual(m.last_request.timeout, 5.0)
 
-    @given(
-        st.one_of(
-            st.just("GET"),
-            st.just("OPTIONS"),
-            st.just("HEAD"),
-            st.just("POST"),
-            st.just("PUT"),
-            st.just("PATCH"),
-            st.just("DELETE"),
-        )
-    )
+    @given(http_methods)
     def test_applies_to_any_http_method(self, method):
+        factory = TestFactory()
+
         with requests_mock.Mocker() as m:
             m.register_uri(requests_mock.ANY, requests_mock.ANY)
-            factory = TestFactory()
 
             with APIClient.configure_from(factory) as client:
                 client.request(method, "https://from-factory.example.com/foo")
@@ -132,3 +135,37 @@ class RequestTests(TestCase):
         self.assertTrue(headers["Authorization"].startswith("Basic "))
         self.assertFalse(m.last_request.verify)
         self.assertEqual(m.last_request.timeout, 20.0)
+
+    @given(http_methods)
+    def test_relative_urls_are_made_absolute(self, method):
+        factory = TestFactory()
+        client = APIClient.configure_from(factory)
+
+        with requests_mock.Mocker() as m, client:
+            m.register_uri(requests_mock.ANY, requests_mock.ANY)
+
+            client.request(method, "foo")
+
+        self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(m.last_request.url, "https://from-factory.example.com/foo")
+
+    @given(http_methods)
+    def test_absolute_urls_must_match_base_url(self, method):
+        factory = TestFactory()
+        client = APIClient.configure_from(factory)
+
+        with self.assertRaises(InvalidURLError):
+            client.request(method, "https://example.com/bar")
+
+    @given(http_methods)
+    def test_absolute_urls_must_match_base_url_happy_flow(self, method):
+        factory = TestFactory()
+        client = APIClient.configure_from(factory)
+
+        with requests_mock.Mocker() as m, client:
+            m.register_uri(requests_mock.ANY, requests_mock.ANY)
+
+            client.request(method, "https://from-factory.example.com/foo/bar")
+
+        self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(m.last_request.url, "https://from-factory.example.com/foo/bar")

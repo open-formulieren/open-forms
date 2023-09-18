@@ -1,10 +1,33 @@
+"""
+Implements an API client class as a :class:`requests.Session` subclass.
+
+Some inspiration was taken from https://github.com/guillp/requests_oauth2client/,
+notably:
+
+* Implementing the client as a ``Session`` subclass
+* Providing a base_url and making this absolute
+"""
 from typing import Any
 
+from furl import furl
 from requests import Session
 
+from .exceptions import InvalidURLError
 from .typing import APIClientFactory
 
 sentinel = object()
+
+
+def has_same_base(url: furl, reference: furl) -> bool:
+    if not all(
+        (
+            getattr(url, attr) == getattr(reference, attr)
+            for attr in ("scheme", "username", "password", "host", "port")
+        )
+    ):
+        return False
+    # finally, if all that is the same, the path base should match too
+    return str(url).startswith(str(reference))
 
 
 class APIClient(Session):
@@ -39,7 +62,19 @@ class APIClient(Session):
     def request(self, method, url, *args, **kwargs):
         for attr, val in self._request_kwargs.items():
             kwargs.setdefault(attr, val)
-
-        # TODO: validate that the URL is relative or fits within the self.base_url
-
+        url = self.to_absolute_url(url)
         return super().request(method, url, *args, **kwargs)
+
+    def to_absolute_url(self, maybe_relative_url: str) -> str:
+        base_furl = furl(self.base_url)
+        target_furl = furl(maybe_relative_url)
+        is_absolute = target_furl.path.isabsolute
+        if is_absolute:
+            if not has_same_base(target_furl, base_furl):
+                raise InvalidURLError(
+                    f"Target URL {maybe_relative_url} has a different base URL than the "
+                    f"client ({self.base_url})."
+                )
+            return maybe_relative_url
+        fully_qualified = base_furl / maybe_relative_url
+        return str(fully_qualified)
