@@ -37,7 +37,7 @@ def send_email_cosigner(submission_id: int) -> None:
         {
             "code": submission.public_registration_reference,
             "form_name": submission.form.name,
-            "form_url": submission.form_url,
+            "form_url": submission.cleaned_form_url,
             "show_form_link": config.show_form_link_in_cosign_email,
         }
     )

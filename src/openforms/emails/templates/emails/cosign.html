@@ -6,8 +6,8 @@
     {% endblocktranslate %}
     
     {% if show_form_link %}
-        {% blocktranslate trimmed %}
-            Please visit the form page by navigating to the following link: {{ form_url|urlize }}.<br />
+        {% blocktranslate with form_url=form_url|urlize trimmed %}
+            Please visit the form page by navigating to the following link: {{ form_url }}.<br />
         {% endblocktranslate %}
     {% else %}
         {% trans "Please visit the form page on our website and click on the 'co-sign' button." %}<br />
