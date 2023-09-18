@@ -37,6 +37,9 @@ class APIClient(Session):
         return cls(base_url, session_kwargs)
 
     def request(self, method, url, *args, **kwargs):
-        # TODO: inject self._request_kwargs as defaults
+        for attr, val in self._request_kwargs.items():
+            kwargs.setdefault(attr, val)
+
         # TODO: validate that the URL is relative or fits within the self.base_url
+
         return super().request(method, url, *args, **kwargs)

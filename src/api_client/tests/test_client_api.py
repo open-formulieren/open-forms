@@ -68,17 +68,39 @@ class FromFactoryTests(TestCase):
         self.assertIsNotNone(client.auth)
         self.assertFalse(hasattr(client, "timeout"))
 
+
+class RequestTests(TestCase):
+
     @requests_mock.Mocker()
     def test_runtime_request_kwargs(self, m):
         m.get(requests_mock.ANY, text="ok")
         factory = TestFactory()
 
         with APIClient.configure_from(factory) as client:
-            client.get("https://example.com/foo")
+            client.get("https://from-factory.example.com/foo")
 
-        self.assertEqual(m.last_request.url, "https://example.com/foo")
+        self.assertEqual(m.last_request.url, "https://from-factory.example.com/foo")
         headers = m.last_request.headers
         self.assertIn("Authorization", headers)
         self.assertTrue(headers["Authorization"].startswith("Basic "))
         self.assertFalse(m.last_request.verify)
         self.assertEqual(m.last_request.timeout, 20.0)
+
+    @requests_mock.Mocker()
+    def test_request_kwargs_overrule_defaults(self, m):
+        m.get(requests_mock.ANY, text="ok")
+        factory = TestFactory()
+
+        with APIClient.configure_from(factory) as client:
+            client.get(
+                "https://from-factory.example.com/foo",
+                timeout=5,
+                verify=True,
+            )
+
+        self.assertEqual(m.last_request.url, "https://from-factory.example.com/foo")
+        headers = m.last_request.headers
+        self.assertIn("Authorization", headers)
+        self.assertTrue(headers["Authorization"].startswith("Basic "))
+        self.assertTrue(m.last_request.verify)
+        self.assertEqual(m.last_request.timeout, 5.0)
