@@ -98,7 +98,11 @@ class OnCompletionTests(TestCase):
 
         self.assertEqual(email.recipients(), ["test@test.nl"])
 
-    def test_form_link_allowed_in_email(self):
+    @patch("openforms.submissions.tasks.co_sign.GlobalConfiguration.get_solo")
+    def test_form_link_allowed_in_email(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            show_form_link_in_cosign_email=True
+        )
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -108,20 +112,21 @@ class OnCompletionTests(TestCase):
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},
+            form_url="http://testserver/myform/",
         )
 
         send_email_cosigner(submission.id)
 
         email = mail.outbox[0]
-        form_link = submission.form.get_absolute_url()
+        form_link = submission.form_url
 
         self.assertIn(form_link, email.body)
 
-    def test_form_link_not_allowed_in_email(self):
-        config = GlobalConfiguration.get_solo()
-        config.show_form_link_in_cosign_email = False
-        config.save()
-
+    @patch("openforms.submissions.tasks.co_sign.GlobalConfiguration.get_solo")
+    def test_form_link_not_allowed_in_email(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            show_form_link_in_cosign_email=False
+        )
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -131,12 +136,13 @@ class OnCompletionTests(TestCase):
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},
+            form_url="http://testserver/myform/",
         )
 
         send_email_cosigner(submission.id)
 
         email = mail.outbox[0]
-        form_link = submission.form.get_absolute_url()
+        form_link = submission.form_url
 
         self.assertNotIn(form_link, email.body)
 
