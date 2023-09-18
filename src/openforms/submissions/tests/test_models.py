@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
-from hypothesis import example, given, settings, strategies as st
+from hypothesis import given, settings, strategies as st
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from privates.test import temp_private_root
 from testfixtures import LogCapture
