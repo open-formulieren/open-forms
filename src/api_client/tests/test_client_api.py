@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import requests_mock
+from hypothesis import given, strategies as st
 from requests import Session
 from requests.auth import HTTPBasicAuth
 
@@ -70,7 +71,6 @@ class FromFactoryTests(TestCase):
 
 
 class RequestTests(TestCase):
-
     @requests_mock.Mocker()
     def test_runtime_request_kwargs(self, m):
         m.get(requests_mock.ANY, text="ok")
@@ -104,3 +104,31 @@ class RequestTests(TestCase):
         self.assertTrue(headers["Authorization"].startswith("Basic "))
         self.assertTrue(m.last_request.verify)
         self.assertEqual(m.last_request.timeout, 5.0)
+
+    @given(
+        st.one_of(
+            st.just("GET"),
+            st.just("OPTIONS"),
+            st.just("HEAD"),
+            st.just("POST"),
+            st.just("PUT"),
+            st.just("PATCH"),
+            st.just("DELETE"),
+        )
+    )
+    def test_applies_to_any_http_method(self, method):
+        with requests_mock.Mocker() as m:
+            m.register_uri(requests_mock.ANY, requests_mock.ANY)
+            factory = TestFactory()
+
+            with APIClient.configure_from(factory) as client:
+                client.request(method, "https://from-factory.example.com/foo")
+
+        self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(m.last_request.url, "https://from-factory.example.com/foo")
+        self.assertEqual(m.last_request.method, method)
+        headers = m.last_request.headers
+        self.assertIn("Authorization", headers)
+        self.assertTrue(headers["Authorization"].startswith("Basic "))
+        self.assertFalse(m.last_request.verify)
+        self.assertEqual(m.last_request.timeout, 20.0)
