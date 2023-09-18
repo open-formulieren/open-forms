@@ -1,6 +1,5 @@
 from django.core.files import File
 from django.test import TestCase, tag
-from django.utils.translation import gettext as _
 
 import requests_mock
 from privates.test import temp_private_root
