@@ -2,6 +2,7 @@ from pathlib import Path
 
 import requests_mock
 from factory.django import FileField
+from freezegun import freeze_time
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -181,3 +182,56 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(m.request_history), 3)
         self.assertEqual(m.request_history[-1].url, "https://httpbin.org/get?fieldC=43")
+
+    @requests_mock.Mocker(case_sensitive=True)
+    def test_requests_cache_timeout(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {"type": "textfield", "key": "fieldA"},
+            ]
+        )
+        fetch_config = ServiceFetchConfigurationFactory.create(
+            service=self.service, path="get", cache_timeout=30
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            order=1,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "fieldA",
+                    "action": {
+                        "name": "Fetch some field from some server",
+                        "type": LogicActionTypes.fetch_from_service,
+                        "value": fetch_config.id,
+                    },
+                }
+            ],
+        )
+
+        self._add_submission_to_session(submission)
+
+        m.get("https://httpbin.org/get", json=42)
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.form.formstep_set.first().uuid,
+            },
+        )
+
+        with freeze_time("2023-02-21T18:00:00Z"):
+            response = self.client.post(endpoint, data={"data": {}})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(m.request_history[-1].url, "https://httpbin.org/get")
+
+        with freeze_time("2023-02-21T18:01:00Z"):
+            response = self.client.post(endpoint, data={"data": {}})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(m.request_history[-1].url, "https://httpbin.org/get")
