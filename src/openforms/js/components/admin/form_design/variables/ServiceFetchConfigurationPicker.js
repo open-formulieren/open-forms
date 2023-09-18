@@ -25,6 +25,7 @@ const INITIAL_VALUES = {
   // These fields are mapped to mappingExpression on save
   jsonLogicExpression: {},
   jqExpression: '',
+  cacheTimeout: null,
 };
 
 const ServiceFetchConfigurationPicker = ({
@@ -34,6 +35,8 @@ const ServiceFetchConfigurationPicker = ({
   onFormSave,
 }) => {
   const formLogicContext = useContext(FormLogicContext);
+
+  console.log(initialValues);
 
   const [selectExisting, setSelectExisting] = useState(!!initialValues.id);
   const [selectedServiceFetchConfig, setSelectedServiceFetchConfig] = useState(initialValues.id);
