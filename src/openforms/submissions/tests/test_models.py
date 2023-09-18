@@ -3,7 +3,7 @@ import os
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 from hypothesis import given, settings, strategies as st
 from hypothesis.extra.django import TestCase as HypothesisTestCase
@@ -624,16 +624,16 @@ class SubmissionTests(TestCase):
 
 @temp_private_root()
 class PDFSubmissionReportTests(HypothesisTestCase):
+    @tag("gh-3470")
     @given(
         st.text(
             min_size=1,
             alphabet=st.characters(blacklist_characters="\x00", codec="utf-8"),
         )
     )
-    # see ticket #3470
     @settings(deadline=500)
-    def test_names_donot_break_pdf_generation(self, form_name):
+    def test_names_do_not_break_pdf_saving_to_disk(self, form_name):
         report = SubmissionReportFactory.create(submission__form__name=form_name)
         report.generate_submission_report_pdf()
 
-        self.assertTrue(report.content)
+        self.assertTrue(report.content.storage.exists(report.content.name))
