@@ -2,31 +2,6 @@
 
 from django.db import migrations
 
-from openforms.formio.utils import iter_components
-
-
-def add_show_in_summary_default(apps, schema_editor):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-
-    form_definitions = FormDefinition.objects.all()
-
-    form_definitions_to_update = []
-    for form_definition in form_definitions:
-        updated_form_definition = False
-        for comp in iter_components(configuration=form_definition.configuration):
-            if comp["type"] == "content":
-                comp["showInSummary"] = False
-
-                updated_form_definition = True
-
-        if updated_form_definition:
-            form_definitions_to_update.append(form_definition)
-
-    if form_definitions_to_update:
-        FormDefinition.objects.bulk_update(
-            form_definitions_to_update, fields=["configuration"]
-        )
-
 
 class Migration(migrations.Migration):
 
@@ -34,6 +9,5 @@ class Migration(migrations.Migration):
         ("forms", "0079_replace_cosign_component"),
     ]
 
-    operations = [
-        migrations.RunPython(add_show_in_summary_default, migrations.RunPython.noop)
-    ]
+    # this used to be a data migration, but it's no longer relevant on 2.3.0+
+    operations = []

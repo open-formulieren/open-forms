@@ -17,7 +17,6 @@ import openforms.template.validators
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("analytics_tools", "0001_initial"),
         ("config", "0029_rename_design_tokens"),
     ]
 

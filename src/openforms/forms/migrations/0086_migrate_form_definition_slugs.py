@@ -3,27 +3,11 @@
 from django.db import migrations
 
 
-def populate_formstep_slugs_from_form_definitions(apps, _):
-    """
-    This is possible since the form definition slugs are globally unique.
-    """
-    FormStep = apps.get_model("forms", "FormStep")
-
-    # can't do this in a single query because joins are not permitted
-    steps = list(FormStep.objects.select_related("form_definition"))
-    for formstep in steps:
-        formstep.slug = formstep.form_definition.slug
-    FormStep.objects.bulk_update(steps, fields=["slug"])
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ("forms", "0085_auto_20230802_1025"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            populate_formstep_slugs_from_form_definitions, migrations.RunPython.noop
-        ),
-    ]
+    # this used to be a data migration, but it's no longer relevant on 2.3.0+
+    operations = []

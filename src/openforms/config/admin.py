@@ -157,8 +157,6 @@ class GlobalConfigurationAdmin(
                     "display_sdk_information",
                     "enable_demo_plugins",
                     "enable_react_formio_builder",
-                    "default_test_bsn",
-                    "default_test_kvk",
                     "allow_empty_initiator",
                     "payment_order_id_prefix",
                 ),

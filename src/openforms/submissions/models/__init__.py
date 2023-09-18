@@ -1,4 +1,4 @@
-from .submission import Submission, get_default_bsn, get_default_kvk
+from .submission import Submission
 from .submission_files import (
     SubmissionFileAttachment,
     SubmissionFileAttachmentManager,
@@ -22,6 +22,4 @@ __all__ = [
     "TemporaryFileUpload",
     "submission_file_upload_to",
     "temporary_file_upload_to",
-    "get_default_bsn",
-    "get_default_kvk",
 ]
