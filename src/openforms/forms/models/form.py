@@ -471,7 +471,7 @@ class Form(models.Model):
 
             form_step.save()
 
-        for logic in self.formlogic_set.all():
+        for logic in self.formlogic_set.all().select_related("trigger_from_step"):
             logic.pk = None
             logic.uuid = _uuid.uuid4()
             logic.form = copy
