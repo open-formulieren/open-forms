@@ -6,12 +6,11 @@
     {% endblocktranslate %}
     
     {% if show_form_link %}
-        {% blocktranslate %}
-            You can go to the form page also by clicking on:<br />
-            <a class="utrecht-link utrecht-link--openforms" href="{{ form_url }}">this link</a><br />
+        {% blocktranslate trimmed %}
+            Please visit the form page by navigating to the following link: {{ form_url|urlize }}.<br />
         {% endblocktranslate %}
     {% else %}
-        {% trans "Please go to the webpage of this form on our website and click on the 'co-sign' button." %}<br />
+        {% trans "Please visit the form page on our website and click on the 'co-sign' button." %}<br />
     {% endif %}
 
     {% blocktranslate trimmed %}
