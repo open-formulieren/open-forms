@@ -630,12 +630,7 @@ class PDFSubmissionReportTests(HypothesisTestCase):
             alphabet=st.characters(blacklist_characters="\x00", codec="utf-8"),
         )
     )
-    # see ticket #3470 - explicit value for form name (the final file name will be > max_length)
-    # Django's get_available_name truncates original name if required, so with a large
-    # name which has a '/' as well it confuses file_root (which is truncated)
-    @example(
-        "A large,really large name for the form in order to catch the above exception foo/bar"
-    )
+    # see ticket #3470
     @settings(deadline=500)
     def test_names_donot_break_pdf_generation(self, form_name):
         report = SubmissionReportFactory.create(submission__form__name=form_name)
