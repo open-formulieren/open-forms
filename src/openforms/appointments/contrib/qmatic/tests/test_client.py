@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from django.conf import settings
 from django.core.files import File
 from django.test import TestCase, tag
 
@@ -9,10 +12,12 @@ from simple_certmanager.models import Certificate
 from openforms.utils.tests.logging import disable_logging
 
 from ..client import QmaticClient
-from .utils import TEST_FILES, MockConfigMixin
+from .utils import MockConfigMixin
 
-CLIENT_CERTIFICATE = TEST_FILES / "test.certificate"
-CLIENT_KEY = TEST_FILES / "test.key"
+TEST_CERTS = Path(settings.BASE_DIR) / "src" / "zgw_consumers_ext" / "tests" / "data"
+
+CLIENT_CERTIFICATE = TEST_CERTS / "test.certificate"
+CLIENT_KEY = TEST_CERTS / "test.key"
 
 
 @temp_private_root()
