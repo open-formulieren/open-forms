@@ -76,6 +76,16 @@ class ServiceFetchConfiguration(models.Model):
         null=True,
         help_text=_("For jq, pass a string containing the filter expression"),
     )
+    cache_timeout = models.IntegerField(
+        _("cache timeout"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "The responses for service fetch are cached to prevent repeating the same request "
+            "multiple times when performing the logic check. If specified, the cached responses will expire after the "
+            "timeout (in seconds)."
+        ),
+    )
 
     class Meta:
         verbose_name = _("service fetch configuration")

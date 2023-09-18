@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 
 from django.core.cache import cache
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
 import jq
 from json_logic import jsonLogic
@@ -59,7 +60,13 @@ def perform_service_fetch(
         raw_value = cache.get(cache_key, sentinel)
         if raw_value is sentinel:
             raw_value = client.request(**request_args)
-            cache.set(cache_key, raw_value)
+            cache.set(
+                cache_key,
+                raw_value,
+                timeout=fetch_config.cache_timeout
+                if fetch_config.cache_timeout is not None
+                else DEFAULT_TIMEOUT,
+            )
 
     match fetch_config.data_mapping_type, fetch_config.mapping_expression:
         case DataMappingTypes.jq, expression:

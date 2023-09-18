@@ -29,6 +29,7 @@ class ServiceFetchConfigurationSerializer(serializers.HyperlinkedModelSerializer
             "body",
             "data_mapping_type",
             "mapping_expression",
+            "cache_timeout",
         )
         validators = [
             ModelValidator[ServiceFetchConfiguration](validate_mapping_expression),
