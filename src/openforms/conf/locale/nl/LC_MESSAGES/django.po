@@ -6917,11 +6917,11 @@ msgstr "E-mailonderwerp"
 #: openforms/registrations/contrib/email/config.py:45
 msgid ""
 "Subject of the email sent to the registration backend. You can use the "
-"expressions '{{ form_name }}' and '{{ submission_reference }}' to include "
+"expressions '{{ form_name }}' and '{{ public_reference }}' to include "
 "the form name and the reference number to the submission in the subject."
 msgstr ""
 "Onderwerp van de registratiemail die verstuurd wordt. Je kan de "
-"uitdrukkingen '{{ form_name }}' en '{{ submission_reference }}' gebruiken om "
+"uitdrukkingen '{{ form_name }}' en '{{ public_reference }}' gebruiken om "
 "formuliernaam en registratienummer op te nemen."
 
 #: openforms/registrations/contrib/email/config.py:55
