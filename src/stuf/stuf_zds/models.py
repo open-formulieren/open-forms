@@ -9,7 +9,7 @@ from openforms.utils.validators import validate_digits
 class StufZDSConfigManager(models.Manager):
     def get_queryset(self) -> models.QuerySet:
         qs = super().get_queryset()
-        return qs.select_related("service")
+        return qs.select_related("service", "service__soap_service")
 
 
 class StufZDSConfig(SingletonModel):

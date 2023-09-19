@@ -15,7 +15,7 @@ from openforms.submissions.tests.factories import (
 from soap.constants import SOAPVersion
 from stuf.tests.factories import StufServiceFactory
 
-from ..client import PaymentStatus, StufZDSClient
+from ..client import PaymentStatus, StufZDSClient, ZaakOptions
 from . import StUFZDSTestBase
 from .utils import load_mock, match_text, xml_from_request_history
 
@@ -28,10 +28,11 @@ class StufZDSClientTests(StUFZDSTestBase):
     test the client class directly
     """
 
-    client: StufZDSClient
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-    def setUp(self):
-        self.service = StufServiceFactory.create(
+        cls.service = StufServiceFactory.build(
             zender_organisatie="ZenOrg",
             zender_applicatie="ZenApp",
             zender_administratie="ZenAdmin",
@@ -42,7 +43,7 @@ class StufZDSClientTests(StUFZDSTestBase):
             ontvanger_gebruiker="OntUser",
         )
 
-        self.options = {
+        cls.options: ZaakOptions = {
             "gemeentecode": "1234",
             "omschrijving": "my-form",
             "zds_zaaktype_code": "zt-code",
@@ -51,8 +52,8 @@ class StufZDSClientTests(StUFZDSTestBase):
             "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
             "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
             "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
+            "referentienummer": "only-here-for-typechecker",
         }
-        self.client = StufZDSClient(self.service, self.options)
 
     def assertStuurgegevens(self, xml_doc):
         self.assertXPathEqualDict(
@@ -71,7 +72,7 @@ class StufZDSClientTests(StUFZDSTestBase):
 
     def test_soap_12(self, m):
         self.service.soap_version = SOAPVersion.soap12
-        self.service.save()
+        client = StufZDSClient(self.service, self.options)
 
         m.post(
             self.service.soap_service.url,
@@ -83,7 +84,7 @@ class StufZDSClientTests(StUFZDSTestBase):
             ),
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
-        zaaknr = self.client.create_zaak_identificatie()
+        zaaknr = client.create_zaak_identificatie()
         self.assertEqual(zaaknr, "foo")
 
         request = m.request_history[0]
@@ -116,7 +117,7 @@ class StufZDSClientTests(StUFZDSTestBase):
 
     def test_soap_11(self, m):
         self.service.soap_service.soap_version = SOAPVersion.soap11
-        self.service.save()
+        client = StufZDSClient(self.service, self.options)
 
         m.post(
             self.service.soap_service.url,
@@ -128,7 +129,7 @@ class StufZDSClientTests(StUFZDSTestBase):
             ),
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
-        self.client.create_zaak_identificatie()
+        client.create_zaak_identificatie()
 
         request = m.request_history[0]
         self.assertEqual(request.headers["Content-Type"], "text/xml")
@@ -159,6 +160,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak_identificatie(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(
             self.service.soap_service.url,
             content=load_mock(
@@ -170,7 +172,7 @@ class StufZDSClientTests(StUFZDSTestBase):
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
 
-        identificatie = self.client.create_zaak_identificatie()
+        identificatie = client.create_zaak_identificatie()
 
         request = m.request_history[0]
         self.assertEqual(
@@ -206,13 +208,14 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
             additional_matcher=match_text("zakLk01"),
         )
 
-        self.client.create_zaak("foo", {"bsn": "111222333"}, {}, payment_required=True)
+        client.create_zaak("foo", {"bsn": "111222333"}, {}, payment_required=True)
 
         request = m.request_history[0]
         self.assertEqual(
@@ -252,13 +255,14 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_set_zaak_payment(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),  # reuse?
             additional_matcher=match_text("zakLk01"),
         )
 
-        self.client.set_zaak_payment("foo", partial=True)
+        client.set_zaak_payment("foo", partial=True)
 
         request = m.request_history[0]
         self.assertEqual(
@@ -295,6 +299,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_document_identificatie(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(
             self.service.soap_service.url,
             content=load_mock(
@@ -303,7 +308,7 @@ class StufZDSClientTests(StUFZDSTestBase):
             additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
         )
 
-        identificatie = self.client.create_document_identificatie()
+        identificatie = client.create_document_identificatie()
 
         request = m.request_history[0]
         self.assertEqual(
@@ -339,6 +344,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak_document(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(
             self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
@@ -346,7 +352,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
         submission_report = SubmissionReportFactory.create()
 
-        self.client.create_zaak_document(
+        client.create_zaak_document(
             zaak_id="foo", doc_id="bar", submission_report=submission_report
         )
 
@@ -390,6 +396,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_create_zaak_attachment(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(
             self.service.soap_service.url,
             content=load_mock("voegZaakdocumentToe.xml"),
@@ -400,7 +407,7 @@ class StufZDSClientTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        self.client.create_zaak_attachment(
+        client.create_zaak_attachment(
             zaak_id="foo", doc_id="bar", submission_attachment=submission_attachment
         )
         request = m.request_history[0]
@@ -442,28 +449,29 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_client_wraps_network_error(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(self.service.soap_service.url, exc=RequestException)
         submission_report = SubmissionReportFactory.create()
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak_identificatie()
+            client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak("foo", {"bsn": "111222333"}, {})
+            client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_document_identificatie()
+            client.create_document_identificatie()
 
         with self.assertRaisesRegex(
             RegistrationFailed, r"^error while making backend "
         ):
-            self.client.create_zaak_document(
+            client.create_zaak_document(
                 zaak_id="foo", doc_id="bar", submission_report=submission_report
             )
 
@@ -481,20 +489,21 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_client_wraps_xml_parse_error(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(self.service.soap_service.url, text="> > broken xml < <")
         submission_report = SubmissionReportFactory.create()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak_identificatie()
+            client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak("foo", {"bsn": "111222333"}, {})
+            client.create_zaak("foo", {"bsn": "111222333"}, {})
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_document_identificatie()
+            client.create_document_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^error while parsing "):
-            self.client.create_zaak_document(
+            client.create_zaak_document(
                 zaak_id="foo", doc_id="bar", submission_report=submission_report
             )
 
@@ -512,13 +521,14 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_client_wraps_bad_structure_error(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(self.service.soap_service.url, content=load_mock("dummy.xml"))
 
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
-            self.client.create_zaak_identificatie()
+            client.create_zaak_identificatie()
 
         with self.assertRaisesRegex(RegistrationFailed, r"^cannot find "):
-            self.client.create_document_identificatie()
+            client.create_document_identificatie()
 
         self.assertEqual(
             TimelineLogProxy.objects.filter(
@@ -534,6 +544,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
     def test_parse_error(self, m):
+        client = StufZDSClient(self.service, self.options)
         m.post(
             self.service.soap_service.url,
             status_code=500,
@@ -544,7 +555,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         with self.assertRaisesMessage(
             RegistrationFailed, "error while making backend request"
         ):
-            self.client.create_zaak_identificatie()
+            client.create_zaak_identificatie()
 
         self.assertEqual(
             TimelineLogProxy.objects.filter(
@@ -572,6 +583,7 @@ class StufZDSClientTests(StUFZDSTestBase):
         exactly as it was received (including newlines, spaces...) except for
         identifying information.
         """
+        client = StufZDSClient(self.service, self.options)
         content_bits = (
             b"<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/",
             b'soap/envelope/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">',
@@ -593,6 +605,6 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
         m.post(self.service.soap_service.url, content=b"".join(content_bits))
 
-        identificatie = self.client.create_zaak_identificatie()
+        identificatie = client.create_zaak_identificatie()
 
         self.assertEqual(identificatie, "1234567")

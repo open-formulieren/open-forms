@@ -74,11 +74,11 @@ class APIClient(Session):
         return super().__exit__(*args)
 
     @classmethod
-    def configure_from(cls, factory: APIClientFactory):
+    def configure_from(cls, factory: APIClientFactory, **kwargs):
         base_url = factory.get_client_base_url()
         session_kwargs = factory.get_client_session_kwargs()
         init_kwargs = factory.get_client_init_kwargs() or {}
-        return cls(base_url, session_kwargs, **init_kwargs)
+        return cls(base_url, session_kwargs, **init_kwargs, **kwargs)
 
     def request(self, method, url, *args, **kwargs):
         for attr, val in self._request_kwargs.items():
