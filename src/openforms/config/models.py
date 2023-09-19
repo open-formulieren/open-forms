@@ -98,7 +98,11 @@ class GlobalConfiguration(SingletonModel):
             URLSanitationValidator(),
         ],
     )
-
+    show_form_link_in_cosign_email = models.BooleanField(
+        _("show form link in co-sign email"),
+        default=True,
+        help_text=_("When enabled, a link to the form is shown in the co-sign email."),
+    )
     save_form_email_subject = models.CharField(
         _("subject"),
         max_length=1000,

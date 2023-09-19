@@ -36,6 +36,7 @@ class GlobalConfigurationAdmin(
                 "fields": (
                     "confirmation_email_subject",
                     "confirmation_email_content",
+                    "show_form_link_in_cosign_email",
                 ),
             },
         ),

@@ -1,12 +1,15 @@
 import logging
 
 from django.conf import settings
-from django.utils.translation import ugettext
+from django.template.loader import get_template
+from django.utils import translation
+from django.utils.translation import gettext_lazy as _
 
 from celery import chain
 
 from openforms.celery import app
-from openforms.emails.utils import render_email_template, send_mail_html
+from openforms.config.models import GlobalConfiguration
+from openforms.emails.utils import send_mail_html
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 
@@ -23,39 +26,41 @@ __all__ = ["send_email_cosigner", "on_cosign"]
 def send_email_cosigner(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
 
-    if not (recipient := submission.cosigner_email):
-        logger.warning(
-            "No co-signer email found in the form. Skipping co-sign email for submission %d.",
-            submission.id,
+    with translation.override(submission.language_code):
+        config = GlobalConfiguration.get_solo()
+
+        if not (recipient := submission.cosigner_email):
+            logger.warning(
+                "No co-signer email found in the form. Skipping co-sign email for submission %d.",
+                submission.id,
+            )
+            return
+
+        template = get_template("emails/cosign.html")
+        content = template.render(
+            {
+                "code": submission.public_registration_reference,
+                "form_name": submission.form.name,
+                "form_url": submission.cleaned_form_url,
+                "show_form_link": config.show_form_link_in_cosign_email,
+            }
         )
-        return
 
-    # Send Co-sign email # TODO add configurable templates
-    content = render_email_template(
-        ugettext(
-            'This is a request to co-sign form "{{ form_name }}". Please go to the webpage of this form on our '
-            "website and click on the 'co-sign' button. You will then be redirected to authenticate yourself."
-            "After authentication, fill in the following code to retrieve the form submission:\n\n{{ code }}\n\n."
-        ),
-        context={
-            "code": submission.public_registration_reference,
-            "form_name": submission.form.name,
-        },
-    )
+        try:
+            send_mail_html(
+                subject=_("Co-sign request for {form_name}").format(
+                    form_name=submission.form.name
+                ),
+                html_body=content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[recipient],
+                text_message=content,
+            )
+        except Exception:
+            logevent.cosigner_email_queuing_failure(submission)
+            raise
 
-    try:
-        send_mail_html(
-            subject=f"Co-sign request for {submission.form.name}",
-            html_body=content,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[recipient],
-            text_message=content,
-        )
-    except Exception:
-        logevent.cosigner_email_queuing_failure(submission)
-        raise
-
-    logevent.cosigner_email_queuing_success(submission)
+        logevent.cosigner_email_queuing_success(submission)
 
 
 def on_cosign(submission_id: int) -> None:
