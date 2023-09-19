@@ -1,6 +1,9 @@
 from datetime import datetime, time
 from typing import TYPE_CHECKING
 
+from django.conf import settings
+
+from openforms.registrations.contrib.objects_api.utils import escape_html_manually
 from openforms.typing import JSONObject, JSONValue
 from openforms.utils.date import parse_date
 
@@ -42,11 +45,15 @@ def get_variables_for_context(submission: "Submission") -> dict[str, JSONValue]:
 
     from .service import get_static_variables
 
+    data = submission.data
+    if settings.ESCAPE_REGISTRATION_OUTPUT:
+        data = escape_html_manually(submission.data)
+
     formio_data = FormioData(
         **{
             variable.key: variable.initial_value
             for variable in get_static_variables(submission=submission)
         },
-        **submission.data,
+        **data,
     )
     return formio_data.data
