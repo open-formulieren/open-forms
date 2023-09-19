@@ -9,7 +9,6 @@ from typing import Callable, Literal, TypedDict
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-import requests
 from lxml import etree
 from lxml.etree import _Element
 from requests import RequestException
@@ -363,10 +362,9 @@ class Client(BaseClient):
         )
 
     def check_config(self) -> None:
-        url = f"{self.service.get_endpoint(EndpointType.beantwoord_vraag)}?wsdl"
-        auth_kwargs = self._get_auth_kwargs()
+        url = f"{self.to_absolute_url(EndpointType.beantwoord_vraag)}?wsdl"
         try:
-            response = requests.get(url, **auth_kwargs)
+            response = self.get(url)
             if not response.ok:
                 error_text = parse_soap_error_text(response)
                 raise InvalidPluginConfiguration(

@@ -5,7 +5,7 @@ from soap.constants import EndpointSecurity, EndpointType
 
 from .client import LoggingHook, noop_log
 from .models import StufService
-from .stuf import InvolvedParty, StufService, StuurGegevens, WSSecurity
+from .stuf import InvolvedParty, StuurGegevens, WSSecurity
 
 
 @dataclass

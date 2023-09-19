@@ -349,6 +349,7 @@ class StufZDSRegistration(BasePlugin):
 
     def check_config(self):
         config = StufZDSConfig.get_solo()
+        assert isinstance(config, StufZDSConfig)
         if not config.service_id:
             raise InvalidPluginConfiguration(_("StufService not selected"))
         if not config.gemeentecode:
