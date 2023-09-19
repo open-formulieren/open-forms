@@ -19,16 +19,21 @@ from .typing import APIClientFactory
 sentinel = object()
 
 
-def has_same_base(url: furl, reference: furl) -> bool:
-    if not all(
-        (
-            getattr(url, attr) == getattr(reference, attr)
-            for attr in ("scheme", "username", "password", "host", "port")
-        )
-    ):
-        return False
-    # finally, if all that is the same, the path base should match too
-    return str(url).startswith(str(reference))
+def is_base_url(url: str | furl) -> bool:
+    """
+    Check if a URL is not a relative path/URL.
+
+    A URL is considered a base URL if it has:
+
+    * a scheme
+    * a netloc
+
+    Protocol relative URLs like //example.com cannot be properly handled by requests,
+    as there is no default adapter available.
+    """
+    if not isinstance(url, furl):
+        url = furl(url)
+    return bool(url.scheme and url.netloc)
 
 
 class APIClient(Session):
@@ -97,10 +102,15 @@ class APIClient(Session):
 
     def to_absolute_url(self, maybe_relative_url: str) -> str:
         base_furl = furl(self.base_url)
-        target_furl = furl(maybe_relative_url)
-        is_absolute = target_furl.path.isabsolute
+        # absolute here should be interpreted as "fully qualified url", with a protocol
+        # and netloc
+        is_absolute = is_base_url(maybe_relative_url)
         if is_absolute:
-            if not has_same_base(target_furl, base_furl):
+            # we established the target URL is absolute, so ensure that it's contained
+            # within the self.base_url domain, otherwise you risk sending credentials
+            # intended for the base URL to some other domain.
+            has_same_base = maybe_relative_url.startswith(self.base_url)
+            if not has_same_base:
                 raise InvalidURLError(
                     f"Target URL {maybe_relative_url} has a different base URL than the "
                     f"client ({self.base_url})."

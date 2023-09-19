@@ -10,14 +10,8 @@ from api_client.exceptions import InvalidURLError
 
 from ..client import APIClient
 
-http_methods = st.one_of(
-    st.just("GET"),
-    st.just("OPTIONS"),
-    st.just("HEAD"),
-    st.just("POST"),
-    st.just("PUT"),
-    st.just("PATCH"),
-    st.just("DELETE"),
+http_methods = st.sampled_from(
+    ["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 )
 
 
@@ -122,11 +116,13 @@ class RequestTests(TestCase):
     def test_applies_to_any_http_method(self, method):
         factory = TestFactory()
 
-        with requests_mock.Mocker() as m:
+        with (
+            requests_mock.Mocker() as m,
+            APIClient.configure_from(factory) as client,
+        ):
             m.register_uri(requests_mock.ANY, requests_mock.ANY)
 
-            with APIClient.configure_from(factory) as client:
-                client.request(method, "https://from-factory.example.com/foo")
+            client.request(method, "https://from-factory.example.com/foo")
 
         self.assertEqual(len(m.request_history), 1)
         self.assertEqual(m.last_request.url, "https://from-factory.example.com/foo")
@@ -142,7 +138,10 @@ class RequestTests(TestCase):
         factory = TestFactory()
         client = APIClient.configure_from(factory)
 
-        with requests_mock.Mocker() as m, client:
+        with (
+            requests_mock.Mocker() as m,
+            client,
+        ):
             m.register_uri(requests_mock.ANY, requests_mock.ANY)
 
             client.request(method, "foo")
@@ -163,7 +162,10 @@ class RequestTests(TestCase):
         factory = TestFactory()
         client = APIClient.configure_from(factory)
 
-        with requests_mock.Mocker() as m, client:
+        with (
+            requests_mock.Mocker() as m,
+            client,
+        ):
             m.register_uri(requests_mock.ANY, requests_mock.ANY)
 
             client.request(method, "https://from-factory.example.com/foo/bar")
@@ -175,11 +177,13 @@ class RequestTests(TestCase):
     def test_discouraged_usage_without_context(self, method):
         client = APIClient("https://example.com")
 
-        with requests_mock.Mocker() as m:
+        with (
+            requests_mock.Mocker() as m,
+            patch.object(client, "close", wraps=client.close) as mock_close,
+        ):
             m.register_uri(requests_mock.ANY, requests_mock.ANY)
 
-            with patch.object(client, "close", wraps=client.close) as mock_close:
-                client.request(method, "foo")
+            client.request(method, "foo")
 
         self.assertEqual(len(m.request_history), 1)
         mock_close.assert_called_once()
@@ -188,14 +192,17 @@ class RequestTests(TestCase):
     def test_encouraged_usage_with_context_do_not_close_prematurely(self, method):
         client = APIClient("https://example.com")
 
-        with patch.object(client, "close", wraps=client.close) as mock_close:
-            with requests_mock.Mocker() as m, client:
-                m.register_uri(requests_mock.ANY, requests_mock.ANY)
+        with (
+            patch.object(client, "close", wraps=client.close) as mock_close,
+            requests_mock.Mocker() as m,
+            client,
+        ):
+            m.register_uri(requests_mock.ANY, requests_mock.ANY)
 
-                client.request(method, "foo")
+            client.request(method, "foo")
 
-                # may not be called inside context block
-                mock_close.assert_not_called()
+            # may not be called inside context block
+            mock_close.assert_not_called()
 
         self.assertEqual(len(m.request_history), 1)
         # must be called outside context block
