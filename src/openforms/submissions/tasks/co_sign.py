@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 from django.template.loader import get_template
+from django.utils import translation
 
 from celery import chain
 
@@ -23,38 +24,40 @@ __all__ = ["send_email_cosigner", "on_cosign"]
 @app.task()
 def send_email_cosigner(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
-    config = GlobalConfiguration.get_solo()
 
-    if not (recipient := submission.cosigner_email):
-        logger.warning(
-            "No co-signer email found in the form. Skipping co-sign email for submission %d.",
-            submission.id,
+    with translation.override(submission.language_code):
+        config = GlobalConfiguration.get_solo()
+
+        if not (recipient := submission.cosigner_email):
+            logger.warning(
+                "No co-signer email found in the form. Skipping co-sign email for submission %d.",
+                submission.id,
+            )
+            return
+
+        template = get_template("emails/cosign.html")
+        content = template.render(
+            {
+                "code": submission.public_registration_reference,
+                "form_name": submission.form.name,
+                "form_url": submission.cleaned_form_url,
+                "show_form_link": config.show_form_link_in_cosign_email,
+            }
         )
-        return
 
-    template = get_template("emails/cosign.html")
-    content = template.render(
-        {
-            "code": submission.public_registration_reference,
-            "form_name": submission.form.name,
-            "form_url": submission.cleaned_form_url,
-            "show_form_link": config.show_form_link_in_cosign_email,
-        }
-    )
+        try:
+            send_mail_html(
+                subject=f"Co-sign request for {submission.form.name}",
+                html_body=content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[recipient],
+                text_message=content,
+            )
+        except Exception:
+            logevent.cosigner_email_queuing_failure(submission)
+            raise
 
-    try:
-        send_mail_html(
-            subject=f"Co-sign request for {submission.form.name}",
-            html_body=content,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[recipient],
-            text_message=content,
-        )
-    except Exception:
-        logevent.cosigner_email_queuing_failure(submission)
-        raise
-
-    logevent.cosigner_email_queuing_success(submission)
+        logevent.cosigner_email_queuing_success(submission)
 
 
 def on_cosign(submission_id: int) -> None:
