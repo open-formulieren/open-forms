@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.template.loader import get_template
 from django.utils import translation
+from django.utils.translation import gettext_lazy as _
 
 from celery import chain
 
@@ -47,7 +48,9 @@ def send_email_cosigner(submission_id: int) -> None:
 
         try:
             send_mail_html(
-                subject=f"Co-sign request for {submission.form.name}",
+                subject=_("Co-sign request for {form_name}").format(
+                    form_name=submission.form.name
+                ),
                 html_body=content,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[recipient],
