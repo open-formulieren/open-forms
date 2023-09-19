@@ -23,7 +23,7 @@ from soap.constants import STUF_ZDS_EXPIRY_MINUTES, EndpointType
 
 from ..client import BaseClient
 from ..models import StufService
-from ..service_client_factory import ServiceClientFactory
+from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from ..xml import fromstring
 
 logger = logging.getLogger(__name__)
@@ -97,7 +97,8 @@ class ZaakOptions(TypedDict):
 
 
 def StufZDSClient(service: StufService, options: ZaakOptions) -> "Client":
-    factory = ServiceClientFactory(
+    factory = ServiceClientFactory(service)
+    init_kwargs = get_client_init_kwargs(
         service,
         request_log_hook=partial(logevent.stuf_zds_request, service),
     )
@@ -106,6 +107,7 @@ def StufZDSClient(service: StufService, options: ZaakOptions) -> "Client":
         options=options,
         failure_log_callback=partial(logevent.stuf_zds_failure_response, service),
         success_log_callback=partial(logevent.stuf_zds_success_response, service),
+        **init_kwargs,
     )
 
 

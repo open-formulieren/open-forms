@@ -10,7 +10,7 @@ from soap.constants import EndpointType
 
 from ..client import BaseClient
 from ..models import StufService
-from ..service_client_factory import ServiceClientFactory
+from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from .constants import NAMESPACE_REPLACEMENTS, STUF_BG_EXPIRY_MINUTES
 
 logger = logging.getLogger(__name__)
@@ -20,12 +20,13 @@ def StufBGClient(service: StufService) -> "Client":
     """
     Client instance factory, given a service configured in the database.
     """
-    factory = ServiceClientFactory(
+    factory = ServiceClientFactory(service)
+    init_kwargs = get_client_init_kwargs(
         service,
         request_log_hook=partial(logevent.stuf_bg_request, service),
         response_log_hook=partial(logevent.stuf_bg_response, service),
     )
-    return Client.configure_from(factory)
+    return Client.configure_from(factory, **init_kwargs)
 
 
 class Client(BaseClient):

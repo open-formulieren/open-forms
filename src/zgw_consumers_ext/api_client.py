@@ -43,9 +43,6 @@ class ServiceClientFactory:
 
         return kwargs
 
-    def get_client_init_kwargs(self):
-        return None
-
 
 @dataclass
 class APIKeyAuth(AuthBase):
