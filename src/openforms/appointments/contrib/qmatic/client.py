@@ -3,7 +3,10 @@ from typing import TypedDict
 
 import pytz
 from dateutil.parser import isoparse
-from requests import Session
+from zgw_consumers.models import Service
+
+from api_client.client import APIClient
+from zgw_consumers_ext.api_client import ServiceClientFactory
 
 from .exceptions import QmaticException
 from .models import QmaticConfig
@@ -63,6 +66,19 @@ class BranchDetailDict(TypedDict):
 # API CLIENT IMPLEMENTATIONS, per major version of the API
 
 
+def QmaticClient() -> "Client":
+    """
+    Create a Qmatic client instance from the database configuration.
+    """
+    config = QmaticConfig.get_solo()
+    assert isinstance(config, QmaticConfig)
+    if (service := config.service) is None:
+        raise RuntimeError("No Qmatic service defined, aborting!")
+    assert isinstance(service, Service)
+    service_client_factory = ServiceClientFactory(service)
+    return Client.configure_from(service_client_factory)
+
+
 def startswith_version(url: str) -> bool:
     if url.startswith("v1/"):
         return True
@@ -71,33 +87,21 @@ def startswith_version(url: str) -> bool:
     return False
 
 
-class QmaticClient(Session):
+class Client(APIClient):
     """
-    Lightweight wrapper around Session to work with the API root and auth
-    headers.
+    Client implementation for Qmatic.
     """
 
-    _config: QmaticConfig | None = None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers["Content-Type"] = "application/json"
 
     def request(self, method: str, url: str, *args, **kwargs):
-        if not self._config:
-            config = QmaticConfig.get_solo()
-            assert isinstance(config, QmaticConfig)
-            self._config = config
-
         # ensure there is a version identifier in the URL
         if not startswith_version(url):
             url = f"v1/{url}"
 
-        _temp_client = self._config.service.build_client()
-        headers = {
-            "Content-Type": "application/json",
-            **_temp_client.auth_header,
-        }
-        del _temp_client
-
-        url = f"{self._config.service.api_root}{url}"
-        response = super().request(method, url, headers=headers, *args, **kwargs)
+        response = super().request(method, url, *args, **kwargs)
 
         if response.status_code == 500:
             error_msg = response.headers.get(

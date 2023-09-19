@@ -15,7 +15,7 @@ class UriPathFaker(factory.Faker):
 
 class ServiceFactory(factory.django.DjangoModelFactory):
     label = factory.Sequence(lambda n: f"API-{n}")
-    api_root = UriPathFaker()
+    api_root = UriPathFaker()  # FIXME: this should be a fully qualified URL
 
     class Meta:
         model = "zgw_consumers.Service"
