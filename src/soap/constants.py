@@ -1,5 +1,3 @@
-from typing import Literal, get_args
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -8,12 +6,6 @@ class EndpointSecurity(models.TextChoices):
     basicauth = "basicauth", _("Basic authentication")
     wss = "wss", _("SOAP extension: WS-Security")
     wss_basicauth = "wss_basicauth", _("Both")
-
-
-EndpointSecurityTypeHint = Literal["basicauth", "wss", "wss_basicauth"]
-assert set(get_args(EndpointSecurityTypeHint)) == {
-    member.value for member in EndpointSecurity
-}
 
 
 class SOAPVersion(models.TextChoices):

@@ -15,6 +15,7 @@ from lxml import etree
 from openforms.logging.models import TimelineLogProxy
 from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
 from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
+from stuf.models import StufService
 from stuf.stuf_bg.client import StufBGClient
 from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
@@ -35,7 +36,7 @@ def _stuf_bg_xmlschema_doc():
         return etree.parse(infile)
 
 
-def _extract_soap_body(full_doc: str):
+def _extract_soap_body(full_doc: str | bytes):
     doc = fromstring(full_doc)
     soap_body = doc.xpath(
         "soap:Body",
@@ -44,7 +45,7 @@ def _extract_soap_body(full_doc: str):
     return soap_body
 
 
-def _stuf_bg_response(service):
+def _stuf_bg_response(service: StufService):
     response_body = bytes(
         loader.render_to_string(
             "stuf_bg/tests/responses/StufBgResponse.xml",
@@ -86,9 +87,9 @@ class StufBGConfigTests(TestCase):
 
 class StufBGClientTests(TestCase):
     def setUp(self):
-        self.client = StufBGClient(
-            service=StufServiceFactory.build(soap_service__soap_version="1.1")
-        )
+        super().setUp()
+        self.stuf_service = StufServiceFactory.build(soap_service__soap_version="1.1")
+        self.stufbg_client = StufBGClient(service=self.stuf_service)
 
     def test_order_of_attributes_in_template_is_correct(self):
         # Any attribute we expect to request MUST be listed here
@@ -101,8 +102,10 @@ class StufBGClientTests(TestCase):
         xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
 
         with requests_mock.Mocker() as m:
-            m.post(self.client.service.soap_service.url, status_code=200)
-            self.client.get_values_for_attributes(test_bsn, all_available_attributes)
+            m.post(self.stuf_service.soap_service.url, status_code=200)
+            self.stufbg_client.get_values_for_attributes(
+                test_bsn, all_available_attributes
+            )
 
         request_body = m.last_request.body
         soap_body = _extract_soap_body(request_body)
@@ -114,9 +117,9 @@ class StufBGClientTests(TestCase):
     def test_soap_request_method_and_headers(self):
         test_bsn = "999992314"
         with requests_mock.Mocker() as m:
-            m.post(self.client.service.soap_service.url)
+            m.post(self.stuf_service.soap_service.url)
             # perform request
-            self.client.get_values_for_attributes(test_bsn, FieldChoices.values)
+            self.stufbg_client.get_values_for_attributes(test_bsn, FieldChoices.values)
 
         self.assertEqual(m.last_request.method, "POST")
         self.assertEqual(
@@ -132,9 +135,9 @@ class StufBGClientTests(TestCase):
         test_bsn = "999992314"
 
         with requests_mock.Mocker() as m:
-            m.post(self.client.service.soap_service.url)
+            m.post(self.stuf_service.soap_service.url)
             # perform request
-            self.client.get_values_for_attributes(test_bsn, FieldChoices.values)
+            self.stufbg_client.get_values_for_attributes(test_bsn, FieldChoices.values)
 
         logged_events = TimelineLogProxy.objects.filter_event("stuf_bg_request")
         self.assertTrue(logged_events.exists(), "StUF-BG request wasn't logged.")
@@ -147,11 +150,13 @@ class StufBGClientTests(TestCase):
 
         with requests_mock.Mocker() as m:
             m.post(
-                self.client.service.soap_service.url,
+                self.stuf_service.soap_service.url,
                 status_code=200,
-                content=_stuf_bg_response(self.client.service),
+                content=_stuf_bg_response(self.stuf_service),
             )
-            response_dict = self.client.get_values(test_bsn, available_attributes)
+            response_dict = self.stufbg_client.get_values(
+                test_bsn, available_attributes
+            )
 
         self.assertFalse(_contains_nils(response_dict))
 
@@ -172,7 +177,7 @@ class StufBGClientTests(TestCase):
 
         # now test if all attributes appear as nodes in the request data
         # TODO this is in-accurate as we don't check the actual nodes (nil/no-value etc)
-        for attribute in available_attributes:
+        for attribute in FieldChoices:
             if attribute == "voorvoegselGeslachtsnaam":
                 continue  # That's a nil.
             with self.subTest(attribute=attribute):
@@ -210,10 +215,12 @@ class StufBGClientTests(TestCase):
         :func:`openforms.prefill._fetch_prefill_values`).
         """
         with requests_mock.Mocker() as m:
-            m.post(self.client.service.soap_service.url, content=b"I am not valid XML")
+            m.post(self.stuf_service.soap_service.url, content=b"I am not valid XML")
 
             with self.assertRaises(Exception):
-                self.client.get_values("999992314", list(FieldChoices.values.keys()))
+                self.stufbg_client.get_values(
+                    "999992314", list(FieldChoices.values.keys())
+                )
 
     def test_inp_heeftAlsKinderen(self):
         test_bsn = "999992314"
@@ -221,8 +228,10 @@ class StufBGClientTests(TestCase):
         xmlschema = etree.XMLSchema(_stuf_bg_xmlschema_doc())
 
         with requests_mock.Mocker() as m:
-            m.post(self.client.service.soap_service.url, status_code=200)
-            self.client.get_values_for_attributes(test_bsn, ["inp.heeftAlsKinderen"])
+            m.post(self.stuf_service.soap_service.url, status_code=200)
+            self.stufbg_client.get_values_for_attributes(
+                test_bsn, ["inp.heeftAlsKinderen"]
+            )
 
         request_body = m.last_request.body
         soap_body = _extract_soap_body(request_body)

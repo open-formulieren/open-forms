@@ -4,7 +4,7 @@
 <ZKN:zakLk01 xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lk01</StUF:berichtcode>
-        {% render_stuurgegevens service referentienummer %}
+        {% render_stuurgegevens stuurgegevens referentienummer %}
         <StUF:entiteittype>ZAK</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>

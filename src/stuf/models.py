@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from soap.constants import EndpointSecurity, EndpointSecurityTypeHint
+from soap.constants import EndpointSecurity, EndpointType
 
 
 class StufService(models.Model):
@@ -104,7 +104,7 @@ class StufService(models.Model):
             return certificate.public_certificate.path
         return True
 
-    def get_endpoint(self, type: EndpointSecurityTypeHint) -> str:
+    def get_endpoint(self, type: EndpointType) -> str:
         attr = f"endpoint_{type}"
         value = getattr(self, attr, None)
         if value is None:

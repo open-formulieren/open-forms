@@ -4,7 +4,7 @@
 <ZKN:edcLk01 xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310" xmlns:xmime="http://www.w3.org/2005/05/xmlmime">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lk01</StUF:berichtcode>
-        {% render_stuurgegevens service referentienummer %}
+        {% render_stuurgegevens stuurgegevens referentienummer %}
         <StUF:entiteittype>EDC</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>

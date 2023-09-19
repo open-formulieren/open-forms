@@ -1,29 +1,36 @@
 import logging
+from functools import partial
 from typing import List, Mapping, TypeVar
 
 import xmltodict
 from glom import glom
 
-from openforms.logging.logevent import stuf_bg_request, stuf_bg_response
+from openforms.logging import logevent
 from soap.constants import EndpointType
-from stuf.models import StufService
 
 from ..client import BaseClient
+from ..models import StufService
+from ..service_client_factory import ServiceClientFactory
 from .constants import NAMESPACE_REPLACEMENTS, STUF_BG_EXPIRY_MINUTES
 
 logger = logging.getLogger(__name__)
 
 
-class StufBGClient(BaseClient):
+def StufBGClient(service: StufService) -> "Client":
+    """
+    Client instance factory, given a service configured in the database.
+    """
+    factory = ServiceClientFactory(
+        service,
+        request_log_hook=partial(logevent.stuf_bg_request, service),
+        response_log_hook=partial(logevent.stuf_bg_response, service),
+    )
+    return Client.configure_from(factory)
+
+
+class Client(BaseClient):
     sector_alias = "bg"
     soap_security_expires_minutes = STUF_BG_EXPIRY_MINUTES
-
-    def __init__(self, service: StufService):
-        super().__init__(
-            service,
-            request_log_hook=stuf_bg_request,
-            response_log_hook=stuf_bg_response,
-        )
 
     def get_values_for_attributes(self, bsn: str, attributes) -> bytes:
         context = {

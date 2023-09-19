@@ -26,3 +26,9 @@ class APIClientFactory(Protocol):
                 response = client.get("some/relative/path", timeout=10)
         """
         ...
+
+    def get_client_init_kwargs(self) -> dict[str, Any] | None:  # pragma: no cover
+        """
+        Any additional init kwargs passed to client instantiation.
+        """
+        ...

@@ -4,7 +4,7 @@
 <ZKN:genereerZaakIdentificatie_Di02 xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Di02</StUF:berichtcode>
-        {% render_stuurgegevens service referentienummer %}
+        {% render_stuurgegevens stuurgegevens referentienummer %}
         <StUF:functie>genereerZaakidentificatie</StUF:functie>
     </ZKN:stuurgegevens>
 </ZKN:genereerZaakIdentificatie_Di02>
