@@ -17,7 +17,7 @@ There are two ways to instantiate a client.
 - from a factory (preferred)
 - manually
 
-The factory approach is preffered as it provides the most robust way to honour authentication
+The factory approach is preferred as it provides the most robust way to honour authentication
 configuration such as credentials and mutual TLS parameters.
 
 ### From a factory
@@ -62,7 +62,7 @@ with client:
 - Must support the `requests.Session` API
 - Must be compatible with `zgw_consumers.Service`, `stuf.StUFService` and `soap.SOAPService`
 - Should encourage best practices (closing resources after use)
-- Should not create problems when used with other libraries, e.g. `requests-oath2client`
+- Should not create problems when used with other libraries, e.g. `requests-oauth2client`
 
 The client is "simply" a subclass of `requests.Session` which allows us to achieve many of the above
 constraints.

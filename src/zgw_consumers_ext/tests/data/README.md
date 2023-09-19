@@ -1,4 +1,4 @@
-# Test files for Qmatic
+# Test files for mTLS with zgw_consumers.Service models
 
 ## Certificate and key
 
