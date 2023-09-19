@@ -2,7 +2,7 @@ import json
 import os
 
 from openforms.contrib.kvk.models import KVKConfig
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 
 class KVKTestMixin:

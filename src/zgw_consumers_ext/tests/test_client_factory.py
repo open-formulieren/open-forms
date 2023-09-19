@@ -1,23 +1,15 @@
-from pathlib import Path
-
-from django.core.files import File
 from django.test import TestCase
 
 import requests_mock
 from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
-from simple_certmanager.models import Certificate
 from zgw_consumers.constants import AuthTypes
 
 from api_client import APIClient
+from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ..api_client import ServiceClientFactory
 from ..factories import ServiceFactory
-
-TEST_FILES = Path(__file__).parent.resolve() / "data"
-
-CLIENT_CERTIFICATE = TEST_FILES / "test.certificate"
-CLIENT_KEY = TEST_FILES / "test.key"
 
 
 @temp_private_root()
@@ -26,25 +18,22 @@ class ClientFromServiceTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        with CLIENT_CERTIFICATE.open("rb") as cert_file, CLIENT_KEY.open(
-            "rb"
-        ) as key_file:
-            cls.client_cert_only = Certificate.objects.create(
-                label="Gateway client certificate",
-                type=CertificateTypes.cert_only,
-                public_certificate=File(cert_file, "client_cert.pem"),
-            )
-            cls.client_cert_and_privkey = Certificate.objects.create(
-                label="Gateway client certificate",
-                type=CertificateTypes.key_pair,
-                public_certificate=File(cert_file, "client_cert.pem"),
-                private_key=File(key_file, "client_key.pem"),
-            )
-            cls.server_cert = Certificate.objects.create(
-                label="Gateway server certificate",
-                type=CertificateTypes.cert_only,
-                public_certificate=File(cert_file, "server.pem"),
-            )
+        cls.client_cert_only = CertificateFactory.create(
+            label="Gateway client certificate",
+            type=CertificateTypes.cert_only,
+            public_certificate__filename="client_cert.pem",
+        )
+        cls.client_cert_and_privkey = CertificateFactory.create(
+            label="Gateway client certificate",
+            with_private_key=True,
+            public_certificate__filename="client_cert.pem",
+            private_key__filename="client_key.pem",
+        )
+        cls.server_cert = CertificateFactory.create(
+            label="Gateway server certificate",
+            type=CertificateTypes.cert_only,
+            public_certificate__filename="server.pem",
+        )
 
     def test_no_server_cert_specified(self):
         service = ServiceFactory.build()

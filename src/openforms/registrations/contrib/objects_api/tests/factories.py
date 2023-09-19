@@ -2,7 +2,7 @@ import factory
 from zgw_consumers.constants import APITypes
 
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 
 class ObjectsAPIConfigFactory(factory.django.DjangoModelFactory):

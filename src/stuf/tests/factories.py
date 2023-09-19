@@ -1,27 +1,7 @@
-from pathlib import Path
-
 import factory
 
 from soap.tests.factories import SoapServiceFactory
 from stuf.models import StufService
-
-DATA_DIR = Path(__file__).parent.resolve() / "data"
-
-
-class CertificateFactory(factory.django.DjangoModelFactory):
-    label = factory.Sequence(lambda n: f"certificate-{n}")
-    type = "cert_only"
-    public_certificate = factory.django.FileField(
-        from_path=str(DATA_DIR / "test.certificate")
-    )
-
-    class Meta:
-        model = "simple_certmanager.Certificate"
-
-    class Params:
-        with_private_key = factory.Trait(
-            private_key=factory.django.FileField(from_path=str(DATA_DIR / "test.key"))
-        )
 
 
 class StufServiceFactory(factory.django.DjangoModelFactory):

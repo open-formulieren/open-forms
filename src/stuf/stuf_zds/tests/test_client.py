@@ -1,23 +1,19 @@
-from pathlib import Path
 from unittest import skipIf
 from unittest.mock import patch
 
-from django.core.files import File
 from django.template.loader import render_to_string
 from django.test import TestCase, tag
 
 import requests_mock
 from simple_certmanager.constants import CertificateTypes
-from simple_certmanager.models import Certificate
 
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.tests.utils import can_connect
+from simple_certmanager_ext.tests.factories import CertificateFactory
 from soap.constants import EndpointType
 
 from ...tests.factories import StufServiceFactory
 from ..client import StufZDSClient
-
-TEST_CERTIFICATES = Path(__file__).parent.parent.parent / "tests" / "data"
 
 
 @requests_mock.Mocker()
@@ -26,26 +22,20 @@ class StufZdsClientTest(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        certificate_file = TEST_CERTIFICATES / "test.certificate"
-        key_file = TEST_CERTIFICATES / "test.key"
-
-        with key_file.open("r") as key_f, certificate_file.open("r") as certificate_f:
-            cls.client_certificate = Certificate.objects.create(
-                label="Test client certificate",
-                type=CertificateTypes.key_pair,
-                public_certificate=File(certificate_f, name="test.certificate"),
-                private_key=File(key_f, name="test.key"),
-            )
-            cls.client_certificate_only = Certificate.objects.create(
-                label="Test client certificate (only cert)",
-                type=CertificateTypes.cert_only,
-                public_certificate=File(certificate_f, name="test1.certificate"),
-            )
-            cls.server_certificate = Certificate.objects.create(
-                label="Test server certificate",
-                type=CertificateTypes.cert_only,
-                public_certificate=File(certificate_f, name="test2.certificate"),
-            )
+        cls.client_certificate = CertificateFactory.create(
+            label="Test client certificate",
+            with_private_key=True,
+        )
+        cls.client_certificate_only = CertificateFactory.create(
+            label="Test client certificate (only cert)",
+            type=CertificateTypes.cert_only,
+            public_certificate__filename="test1.certificate",
+        )
+        cls.server_certificate = CertificateFactory.create(
+            label="Test server certificate",
+            type=CertificateTypes.cert_only,
+            public_certificate__filename="test1.certificate",
+        )
 
         cls.client_options = {
             "gemeentecode": "1234",

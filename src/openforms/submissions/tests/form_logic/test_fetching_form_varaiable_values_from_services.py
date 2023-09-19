@@ -17,7 +17,7 @@ from openforms.tests.utils import c_profile
 from openforms.variables.constants import DataMappingTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ...logic.service_fetching import perform_service_fetch
 

@@ -18,7 +18,7 @@ from openforms.template import render_from_string
 from soap.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
 from ..haal_centraal import get_np_children_haal_centraal

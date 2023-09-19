@@ -13,13 +13,13 @@ class SoapServiceFactory(factory.django.DjangoModelFactory):
     class Params:
         with_server_cert = factory.Trait(
             server_certificate=factory.SubFactory(
-                "stuf.tests.factories.CertificateFactory",
+                "simple_certmanager_ext.tests.factories.CertificateFactory",
                 public_certificate__filename="server.cert",
             ),
         )
         with_client_cert = factory.Trait(
             client_certificate=factory.SubFactory(
-                "stuf.tests.factories.CertificateFactory",
+                "simple_certmanager_ext.tests.factories.CertificateFactory",
                 public_certificate__filename="client.cert",
             ),
         )
