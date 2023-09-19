@@ -19,10 +19,11 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tokens import submission_resume_token_generator
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
+from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ....constants import FORM_AUTH_SESSION_KEY
 from ..constants import PLUGIN_ID
-from .utils import TEST_FILES, make_certificate
+from .utils import TEST_FILES
 
 KEY = TEST_FILES / "our_key.pem"
 CERT = TEST_FILES / "our_certificate.pem"
@@ -68,9 +69,16 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cert = make_certificate(KEY, CERT)
+
+        cert = CertificateFactory.create(
+            label="DigiD",
+            with_private_key=True,
+            public_certificate__from_path=CERT,
+            private_key__from_path=KEY,
+        )
 
         config = DigidConfiguration.get_solo()
+        assert isinstance(config, DigidConfiguration)
         config.certificate = cert
         # broker insists using https
         config.base_url = config.entity_id = "https://localhost:8000"

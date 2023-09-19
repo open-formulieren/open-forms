@@ -9,7 +9,7 @@ from api_client import APIClient
 from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ..api_client import ServiceClientFactory
-from ..factories import ServiceFactory
+from .factories import ServiceFactory
 
 
 @temp_private_root()
