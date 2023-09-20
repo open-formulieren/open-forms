@@ -1,8 +1,6 @@
 from functools import partial
 
-from django.conf import settings
 from django.core.cache import caches
-from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -10,6 +8,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from openforms.contrib.bag.client import get_client
 from openforms.locations.api.serializers import (
     GetStreetNameAndCityViewInputSerializer,
     GetStreetNameAndCityViewResultSerializer,
@@ -19,9 +18,9 @@ from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 CACHE_TIMEOUT = 60 * 60 * 24  # 24 hours - address data does NOT update frequently
 
 
-def lookup_address(postcode: str, number: str) -> dict:
-    ClientCls = import_string(settings.OPENFORMS_LOCATION_CLIENT)
-    return ClientCls.get_address(postcode, number)
+def lookup_address(postcode: str, number: str):
+    with get_client() as client:
+        return client.get_address(postcode, number)
 
 
 class GetStreetNameAndCityView(APIView):
@@ -68,7 +67,7 @@ class GetStreetNameAndCityView(APIView):
         # check the cache so we avoid hitting the remote API too often (and risk
         # of being throttled, see #1832)
         address_data = caches["default"].get_or_set(
-            key=f"{settings.OPENFORMS_LOCATION_CLIENT}|{postcode}|{number}",
+            key=f"BAG|get_address|{postcode}|{number}",
             default=partial(lookup_address, postcode, number),
             timeout=CACHE_TIMEOUT,
         )

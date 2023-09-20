@@ -1062,13 +1062,6 @@ if EIDAS_SERVICE_INDEX:
     )
 
 #
-# Location Client
-#
-OPENFORMS_LOCATION_CLIENT = config(
-    "OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient"
-)
-
-#
 # Mozilla Django OIDC DB settings
 #
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"

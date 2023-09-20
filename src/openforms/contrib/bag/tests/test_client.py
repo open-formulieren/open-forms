@@ -1,48 +1,77 @@
-from django.test import TestCase
+import json
+from pathlib import Path
+from unittest.mock import patch
 
+from django.test import SimpleTestCase
+
+import requests
 import requests_mock
-from zds_client import ClientError
-from zgw_consumers.test import mock_service_oas_get
 
-from ..client import BAGClient
-from .base import BagTestMixin
+from openforms.contrib.bag.models import BAGConfig
+from zgw_consumers_ext.tests.factories import ServiceFactory
+
+from ..client import get_client
+
+TEST_FILES = Path(__file__).parent.resolve() / "files"
 
 
-class BAGClientTests(BagTestMixin, TestCase):
+def _load_json_mock(name):
+    with (TEST_FILES / name).open("r") as f:
+        return json.load(f)
+
+
+class BAGClientTests(SimpleTestCase):
+    def setUp(self):
+        super().setUp()
+
+        config = BAGConfig(
+            bag_service=ServiceFactory.build(
+                api_root="https://bag/api/",
+                oas="https://bag/api/schema/openapi.yaml",
+            )
+        )
+        patcher = patch(
+            "openforms.contrib.bag.client.BAGConfig.get_solo", return_value=config
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     @requests_mock.Mocker()
     def test_client_returns_street_name_and_city(self, m):
-        mock_service_oas_get(m, "https://bag/api/", service="bagapiprofileoas3")
         m.get(
             "https://bag/api/adressen?postcode=1015CJ&huisnummer=117",
             status_code=200,
-            json=self.load_json_mock("addresses.json"),
+            json=_load_json_mock("addresses.json"),
         )
 
-        address_data = BAGClient.get_address("1015CJ", 117)
+        with get_client() as client:
+            address_data = client.get_address("1015CJ", "117")
 
-        self.assertEqual(address_data["street_name"], "Keizersgracht")
-        self.assertEqual(address_data["city"], "Amsterdam")
+        assert address_data is not None
+        self.assertEqual(address_data.street_name, "Keizersgracht")
+        self.assertEqual(address_data.city, "Amsterdam")
 
     @requests_mock.Mocker()
     def test_client_returns_empty_value_when_no_results_are_found(self, m):
-        mock_service_oas_get(m, "https://bag/api/", service="bagapiprofileoas3")
         m.get(
             "https://bag/api/adressen?postcode=1015CJ&huisnummer=1",
             status_code=200,
             json={},
         )
 
-        address_data = BAGClient.get_address("1015CJ", 1)
+        with get_client() as client:
+            address_data = client.get_address("1015CJ", "1")
 
-        self.assertEqual(address_data, {})
+        self.assertIsNone(address_data)
 
     @requests_mock.Mocker()
     def test_client_returns_empty_value_when_client_exception_is_thrown(self, m):
-        mock_service_oas_get(m, "https://bag/api/", service="bagapiprofileoas3")
         m.get(
-            "https://bag/api/adressen?postcode=1015CJ&huisnummer=115", exc=ClientError
+            "https://bag/api/adressen?postcode=1015CJ&huisnummer=115",
+            exc=requests.RequestException,
         )
 
-        address_data = BAGClient.get_address("1015CJ", 115)
+        with get_client() as client:
+            address_data = client.get_address("1015CJ", "115")
 
-        self.assertEqual(address_data, {})
+        self.assertIsNone(address_data)

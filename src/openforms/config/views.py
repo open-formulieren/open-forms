@@ -1,14 +1,13 @@
 from typing import Any, Dict, Generator, Optional, Protocol, TypeGuard
 
-from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
 from django.utils.encoding import force_str
-from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 from openforms.appointments.registry import register as appointments_register
+from openforms.contrib.bag.config_check import Check as BAGCheck
 from openforms.contrib.kadaster.config_check import Check as KadasterConfigCheck
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
 from openforms.dmn.registry import register as dmn_register
@@ -147,18 +146,10 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
         )
 
     def get_geo_entries(self) -> list[Entry]:
-        entries = []
-
-        # Location client
-        try:
-            client = import_string(settings.OPENFORMS_LOCATION_CLIENT)
-        except ImportError as e:
-            entries.append(Entry(name=_("unknown"), status=False, error=str(e)))
-        else:
-            entries.append(self.get_plugin_entry(client))
-
-        # Kadaster search
-        entries.append(self.get_plugin_entry(KadasterConfigCheck))
+        entries = [
+            self.get_plugin_entry(BAGCheck),  # Location client
+            self.get_plugin_entry(KadasterConfigCheck),  # Kadaster search
+        ]
 
         return entries
 

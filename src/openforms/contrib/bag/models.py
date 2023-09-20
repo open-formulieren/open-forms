@@ -7,7 +7,12 @@ from zgw_consumers.constants import APITypes
 
 class BAGConfigManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related("bag_service")
+        qs = super().get_queryset()
+        return qs.select_related(
+            "bag_service",
+            "bag_service__client_certificate",
+            "bag_service__server_certificate",
+        )
 
 
 class BAGConfig(SingletonModel):

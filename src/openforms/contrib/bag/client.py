@@ -1,88 +1,68 @@
 import logging
-
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from dataclasses import dataclass
 
 import elasticapm
-from requests import HTTPError
-from zds_client import ClientError
+import requests
 
-from openforms.plugins.exceptions import InvalidPluginConfiguration
+from api_client import APIClient
+from zgw_consumers_ext.api_client import ServiceClientFactory
 
 from .models import BAGConfig
 
 logger = logging.getLogger(__name__)
 
 
-class BAGClient:
-    verbose_name = _("BAG")
+class NoServiceConfigured(RuntimeError):
+    pass
 
-    @classmethod
-    def make_request(cls, client, data):
-        return client.operation(
-            "bevraagAdressen",
-            {},
-            method="GET",
-            request_kwargs=dict(
-                params=data,
-                headers={"Accept": "application/hal+json"},
-            ),
-        )
 
-    @classmethod
+def get_client() -> "BAGClient":
+    config = BAGConfig.get_solo()
+    assert isinstance(config, BAGConfig)
+    if not (service := config.bag_service):
+        raise NoServiceConfigured("No BAG service configured!")
+    service_client_factory = ServiceClientFactory(service)
+    return BAGClient.configure_from(service_client_factory)
+
+
+@dataclass
+class AddressResult:
+    street_name: str
+    city: str
+
+
+class BAGClient(APIClient):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers["Accept"] = "application/hal+json"
+
     @elasticapm.capture_span(span_type="app.bag.query")
-    def get_address(cls, postcode, house_number):
-        config = BAGConfig.get_solo()
-        client = config.bag_service.build_client()
-        data = {"huisnummer": house_number, "postcode": postcode.replace(" ", "")}
+    def get_address(
+        self, postcode: str, house_number: str, reraise_errors: bool = False
+    ) -> AddressResult | None:
+        params = {
+            "huisnummer": house_number,
+            "postcode": postcode.replace(" ", ""),
+        }
 
         try:
-            response = cls.make_request(client, data)
-        except ClientError:
-            logger.exception("Could not retrieve address details from the BAG API")
-            return {}
+            response = self.get("adressen", params=params)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            if reraise_errors:
+                raise exc
+            logger.exception(
+                "Could not retrieve address details from the BAG API", exc_info=exc
+            )
+            return None
 
-        if "_embedded" not in response:
+        response_data = response.json()
+        if "_embedded" not in response_data:
             # No addresses were found
-            return {}
+            return None
 
-        address_data = response["_embedded"]["adressen"][0]
-        address_data["street_name"] = address_data.pop("korteNaam")
-        address_data["city"] = address_data.pop("woonplaatsNaam")
-        return address_data
-
-    @classmethod
-    def check_config(cls):
-        check_house_number = "1"
-        check_postal = "1000AA"
-
-        config = BAGConfig.get_solo()
-        assert isinstance(config, BAGConfig)
-        if not config.bag_service:
-            raise InvalidPluginConfiguration(
-                _("{api_name} endpoint is not configured.").format(
-                    api_name="bag_service"
-                )
-            )
-        client = config.bag_service.build_client()
-        data = {"huisnummer": check_house_number, "postcode": check_postal}
-
-        try:
-            cls.make_request(client, data)
-        except (HTTPError, ClientError) as e:
-            e = e.__cause__ or e
-            raise InvalidPluginConfiguration(
-                _("Invalid response: {exception}").format(exception=e)
-            )
-
-    @staticmethod
-    def get_config_actions():
-        return [
-            (
-                _("Configuration"),
-                reverse(
-                    "admin:bag_bagconfig_change",
-                    args=(BAGConfig.singleton_instance_id,),
-                ),
-            ),
-        ]
+        first_result = response_data["_embedded"]["adressen"][0]
+        return AddressResult(
+            street_name=first_result.pop("korteNaam"),
+            city=first_result.pop("woonplaatsNaam"),
+        )
