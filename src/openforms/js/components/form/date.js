@@ -10,6 +10,7 @@ import {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {getValidationEditForm} from './edit/validationEditFormUtils';
 import {localiseSchema} from './i18n';
 
 const DateTimeField = Formio.Components.components.datetime;
@@ -54,6 +55,12 @@ class DateField extends DateTimeField {
             },
           },
         },
+        customOptions: {
+          // Issue #3443 - Flatpickr is preventing the value from being set when entering it manually if it is outside the set minDate/maxDate range.
+          // With allowInvalidPreload: true, we tell it to set the value also if it is invalid, so that then validators can kick in.
+          // https://github.com/flatpickr/flatpickr/blob/master/src/index.ts#L2498
+          allowInvalidPreload: true,
+        },
       },
       ...extend
     );
@@ -71,14 +78,14 @@ class DateField extends DateTimeField {
   }
 
   static editForm() {
-    const VALIDATION_TAB = {
+    const VALIDATION_TAB = getValidationEditForm({
       ...VALIDATION,
       components: [
         ...VALIDATION.components,
         getMinMaxValidationEditForm('minDate', 'date'),
         getMinMaxValidationEditForm('maxDate', 'date'),
       ],
-    };
+    });
     const TABS = {
       ...DEFAULT_TABS,
       components: [

@@ -56,3 +56,7 @@ src/openforms/fonts/
 
 # typically a symlink (or full copy!) during local dev
 src/openforms/static/sdk
+
+# Custom extensions symlinks
+src/prefill_haalcentraalhr
+src/token_exchange
