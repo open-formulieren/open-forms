@@ -17,7 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from .. import prefill_variables
 from ..contrib.haalcentraal.models import HaalCentraalConfig

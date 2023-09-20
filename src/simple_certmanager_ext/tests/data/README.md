@@ -1,4 +1,4 @@
-# Test files for mTLS with zgw_consumers.Service models
+# Test files for mTLS via simple_certmanager.Certificate models
 
 ## Certificate and key
 

@@ -6,7 +6,7 @@ import requests_mock
 
 from openforms.prefill.contrib.haalcentraal.tests.utils import load_binary_mock
 from openforms.submissions.tests.factories import SubmissionFactory
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..base import PreRequestHookBase
 from ..clients import PreRequestClientContext

@@ -1,23 +1,14 @@
-from pathlib import Path
-
-from django.conf import settings
-from django.core.files import File
 from django.test import TestCase, tag
 
 import requests_mock
 from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
-from simple_certmanager.models import Certificate
 
 from openforms.utils.tests.logging import disable_logging
+from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ..client import QmaticClient
 from .utils import MockConfigMixin
-
-TEST_CERTS = Path(settings.BASE_DIR) / "src" / "zgw_consumers_ext" / "tests" / "data"
-
-CLIENT_CERTIFICATE = TEST_CERTS / "test.certificate"
-CLIENT_KEY = TEST_CERTS / "test.key"
 
 
 @temp_private_root()
@@ -31,20 +22,17 @@ class ClientMutualTLSTests(MockConfigMixin, TestCase):
     def setUpTestData(cls):
         super().setUpTestData()  # type: ignore
 
-        with CLIENT_CERTIFICATE.open("rb") as cert_file, CLIENT_KEY.open(
-            "rb"
-        ) as key_file:
-            cls.client_cert = Certificate.objects.create(
-                label="Gateway client certificate",
-                type=CertificateTypes.key_pair,
-                public_certificate=File(cert_file, "client.pem"),
-                private_key=File(key_file, "client_key.pem"),
-            )
-            cls.server_cert = Certificate.objects.create(
-                label="Gateway server certificate",
-                type=CertificateTypes.cert_only,
-                public_certificate=File(cert_file, "server.pem"),
-            )
+        cls.client_cert = CertificateFactory.create(
+            label="Gateway client certificate",
+            public_certificate__filename="client.pem",
+            with_private_key=True,
+            private_key__filename="client_key.pem",
+        )
+        cls.server_cert = CertificateFactory.create(
+            label="Gateway server certificate",
+            type=CertificateTypes.cert_only,
+            public_certificate__filename="server.pem",
+        )
 
         cls.service.client_certificate = cls.client_cert
         cls.service.server_certificate = cls.server_cert

@@ -29,7 +29,7 @@ from openforms.variables.constants import (
 )
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 
 @override_settings(LANGUAGE_CODE="en")

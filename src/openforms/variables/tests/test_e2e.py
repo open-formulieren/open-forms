@@ -13,7 +13,7 @@ from openforms.forms.tests.factories import (
 )
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 
 class ServiceFetchConfigTests(E2ETestCase):

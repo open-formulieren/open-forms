@@ -1,6 +1,6 @@
 import factory
 
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..models import ServiceFetchConfiguration
 

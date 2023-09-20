@@ -24,7 +24,7 @@ from openforms.prefill.contrib.haalcentraal.tests.utils import (
 )
 from openforms.submissions.models import Submission
 from openforms.utils.urls import reverse_plus
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 CONFIGURATION = {
     "display": "form",

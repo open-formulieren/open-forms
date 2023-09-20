@@ -10,7 +10,7 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import FormLogicFactory
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
-from zgw_consumers_ext.factories import ServiceFactory
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..factories import SubmissionFactory
 from ..mixins import SubmissionsMixin

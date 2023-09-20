@@ -1,4 +1,4 @@
-# Test files for DigiD
+# Test files for EHerkenning
 
 ## Certificate and key
 
@@ -10,8 +10,7 @@ openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out test.certificat
 
 The tests making use of these certificates are:
 
-- `src/openforms/authentication/contrib/digid/tests/test_auth_procedure.py`
-- `src/openforms/authentication/contrib/eherkenning/tests/test_auth.py`
+- `src/openforms/authentication/contrib/eherkenning/tests/test_migrations.py`
 
 These tests will potentially start failing once the test certificate expires.
 
@@ -19,8 +18,9 @@ These tests will potentially start failing once the test certificate expires.
 
 The `our_certificate.pem` and `our_keys.pem` files are used by:
 
-- `src/openforms/authentication/contrib/digid/tests/test_signicat_integration.py`
 - `src/openforms/authentication/contrib/eherkenning/tests/test_signicat_integration.py`
 
-`signicate_metadata.xml` is used by
-`src/openforms/authentication/contrib/digid/tests/test_signicat_integration.py`.
+These must be uploaded with Signicat for live (non-VCR) network communication.
+
+`signicat_metadata.xml` is used by
+`src/openforms/authentication/contrib/eherkenning/tests/test_signicat_integration.py`.

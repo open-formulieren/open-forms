@@ -23,10 +23,11 @@ from openforms.forms.tests.factories import (
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.utils.tests.cache import clear_caches
+from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import create_test_artifact, get_artifact_response
-from .utils import TEST_FILES, make_certificate
+from .utils import TEST_FILES
 
 
 def _create_test_artifact() -> str:
@@ -48,13 +49,12 @@ class DigiDConfigMixin:
     def setUpTestData(cls):
         super().setUpTestData()
 
-        KEY = TEST_FILES / "test.key"
-        CERT = TEST_FILES / "test.certificate"
+        cert = CertificateFactory.create(label="DigiD", with_private_key=True)
+
         METADATA = TEST_FILES / "metadata.xml"
 
-        cert = make_certificate(KEY, CERT)
-
         config = DigidConfiguration.get_solo()
+        assert isinstance(config, DigidConfiguration)
         config.certificate = cert
         config.base_url = "https://test-sp.nl"
         config.entity_id = "https://test-sp.nl"

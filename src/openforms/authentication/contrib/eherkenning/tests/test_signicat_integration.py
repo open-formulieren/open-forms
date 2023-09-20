@@ -19,9 +19,10 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tokens import submission_resume_token_generator
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
+from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ....constants import FORM_AUTH_SESSION_KEY
-from .utils import TEST_FILES, make_certificate
+from .utils import TEST_FILES
 
 PLUGIN_ID = "eherkenning"
 KEY = TEST_FILES / "our_key.pem"
@@ -69,9 +70,16 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cert = make_certificate(KEY, CERT)
+
+        cert = CertificateFactory.create(
+            label="EHerkenning",
+            with_private_key=True,
+            public_certificate__from_path=CERT,
+            private_key__from_path=KEY,
+        )
 
         config = EherkenningConfiguration.get_solo()
+        assert isinstance(config, EherkenningConfiguration)
         config.certificate = cert
         config.idp_service_entity_id = SIGNICAT_BROKER_BASE / "sp/saml"
         # broker insists using https

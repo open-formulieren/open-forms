@@ -15,14 +15,13 @@ from freezegun import freeze_time
 from furl import furl
 from lxml import etree
 from privates.test import temp_private_root
-from simple_certmanager.constants import CertificateTypes
-from simple_certmanager.models import Certificate
 
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.tests.utils import supress_output
 from openforms.utils.tests.cache import clear_caches
+from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import (
@@ -42,20 +41,12 @@ class EIDASConfigMixin:
     def setUpTestData(cls):
         super().setUpTestData()
 
-        KEY = TEST_FILES / "test.key"
-        CERT = TEST_FILES / "test.certificate"
+        cert = CertificateFactory.create(label="eHerkenning", with_private_key=True)
+
         METADATA = TEST_FILES / "eherkenning-metadata.xml"
 
-        with KEY.open("rb") as key_file, CERT.open("rb") as cert_file:
-            cert = Certificate(
-                label="eHerkenning",
-                type=CertificateTypes.key_pair,
-                private_key=File(key_file, KEY.name),
-                public_certificate=File(cert_file, CERT.name),
-            )
-            cert.save()
-
         config = EherkenningConfiguration.get_solo()
+        assert isinstance(config, EherkenningConfiguration)
         config.certificate = cert
         config.base_url = "https://test-sp.nl"
         config.entity_id = "urn:etoegang:DV:00000001111111111000:entities:9000"
