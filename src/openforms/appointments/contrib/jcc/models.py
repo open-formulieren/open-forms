@@ -7,7 +7,11 @@ from solo.models import SingletonModel
 class ConfigManager(models.Manager):
     def get_queryset(self) -> models.QuerySet:
         qs = super().get_queryset()
-        return qs.select_related("service")
+        return qs.select_related(
+            "service",
+            "service__client_certificate",
+            "service__server_certificate",
+        )
 
 
 class JccConfig(SingletonModel):

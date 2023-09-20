@@ -7,7 +7,11 @@ from .constants import EndpointType
 class StufServiceManager(models.Manager):
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.select_related("soap_service")
+        return qs.select_related(
+            "soap_service",
+            "soap_service__client_certificate",
+            "soap_service__server_certificate",
+        )
 
 
 class StufService(models.Model):

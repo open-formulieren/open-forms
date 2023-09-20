@@ -11,6 +11,9 @@ from .models import StufService
 class WSSecurity:
     """
     Capture WS-Security configuration.
+
+    .. note:: when using :module:`zeep`, there are built-in constructs. Prefer using
+       zeep or any other SOAP library over doing this template-based with Django!
     """
 
     use_wss: bool

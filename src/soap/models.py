@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from simple_certmanager.models import Certificate
-from zeep.client import Client
 
 from .constants import EndpointSecurity, SOAPVersion
 
@@ -73,14 +72,6 @@ class SoapService(models.Model):
 
     def __str__(self):
         return self.label
-
-    def build_client(self) -> Client:
-        """
-        Build an SOAP API client from the service configuration.
-        """
-        client = Client(self.url)
-        # auth can be added to zeep.Client in the future if needed
-        return client
 
     def get_cert(self) -> None | str | tuple[str, str]:
         certificate = self.client_certificate

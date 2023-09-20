@@ -19,7 +19,6 @@ def mock_response(filename: str):
     return full_path.read_text()
 
 
-# same behaviour as stuf.models.SoapService.build_client
 ZEEP_CLIENT = Client(WSDL)
 """
 Client singleton to avoid loading the WSDL over and over again, which takes up about
@@ -56,9 +55,8 @@ class MockConfigMixin:
         jcc_config_patcher.start()
         self.addCleanup(jcc_config_patcher.stop)  # type: ignore
 
-        build_client_patcher = patch.object(
-            self.soap_service,
-            "build_client",
+        build_client_patcher = patch(
+            "openforms.appointments.contrib.jcc.client.build_client",
             return_value=ZEEP_CLIENT,
         )
         build_client_patcher.start()
