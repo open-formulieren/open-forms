@@ -26,7 +26,14 @@ class IsBaseUrlTests(SimpleTestCase):
         assume(not item.startswith("http://"))
         assume(not item.startswith("https://"))
 
-        self.assertFalse(is_base_url(item))
+        try:
+            is_base = is_base_url(item)
+        except ValueError:
+            # furl got something that it can't parse as a URL, and we do want to bubble
+            # this error up to the caller
+            pass
+        else:
+            self.assertFalse(is_base)
 
     @given(
         st.sampled_from(["https", "http", "ftp", "file"]),
