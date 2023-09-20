@@ -9,14 +9,16 @@ class EscapeHTMLTests(TestCase):
             "test1": "normal value",
             "test2": "<script>alert();</script>",
             "nested1": {
-                "n_test": {"escape": "<script>alert();</script>"},
+                "n_test": {"n_test1": {"escape": "<script>alert();</script>"}},
             },
         }
         expected = {
             "test1": "normal value",
             "test2": "&lt;script&gt;alert();&lt;/script&gt;",
             "nested1": {
-                "n_test": {"escape": "&lt;script&gt;alert();&lt;/script&gt;"},
+                "n_test": {
+                    "n_test1": {"escape": "&lt;script&gt;alert();&lt;/script&gt;"}
+                },
             },
         }
 
