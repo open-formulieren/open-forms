@@ -4,9 +4,9 @@ from dataclasses import dataclass
 import elasticapm
 import requests
 
-from api_client import APIClient
 from zgw_consumers_ext.api_client import ServiceClientFactory
 
+from ..hal_client import HALClient
 from .models import BAGConfig
 
 logger = logging.getLogger(__name__)
@@ -31,11 +31,7 @@ class AddressResult:
     city: str
 
 
-class BAGClient(APIClient):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.headers["Accept"] = "application/hal+json"
-
+class BAGClient(HALClient):
     @elasticapm.capture_span(span_type="app.bag.query")
     def get_address(
         self, postcode: str, house_number: str, reraise_errors: bool = False

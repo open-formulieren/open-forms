@@ -1,7 +1,23 @@
 from zds_client.schema import get_operation_url
 from zgw_consumers.client import ZGWClient
 
+from api_client import APIClient
 
+HAL_CONTENT_TYPE = "application/hal+json"
+
+
+class HALClient(APIClient):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                "Accept": HAL_CONTENT_TYPE,
+                "Content-Type": HAL_CONTENT_TYPE,
+            }
+        )
+
+
+# deprecated
 class HalClient(ZGWClient):
     def pre_request(self, method, url, kwargs):
         """
