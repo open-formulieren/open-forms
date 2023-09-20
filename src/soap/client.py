@@ -1,7 +1,7 @@
 from zeep.client import Client
 from zeep.transports import Transport
 
-from api_client.client import APIClient as SessionBase
+from api_client.client import APIClient as SessionBase, is_base_url
 
 from .models import SoapService
 from .session_factory import SessionFactory
@@ -32,4 +32,19 @@ def build_client(
 
 
 class SOAPSession(SessionBase):
-    pass
+    def to_absolute_url(self, maybe_relative_url: str) -> str:
+        """
+        Disable base URL validation.
+
+        SOAP services are typically configured with a WSDL which describes the bindings,
+        and the base URL specified is maybe not relevant at all.
+        """
+        is_absolute = is_base_url(maybe_relative_url)
+        if is_absolute:
+            # remove the guard rails as they get in the way when configuring a service
+            # with a WSDL URL.
+            return maybe_relative_url
+
+        # for relative paths -> use the default behaviour, which joins URLs against the
+        # base URL.
+        return super().to_absolute_url(maybe_relative_url)
