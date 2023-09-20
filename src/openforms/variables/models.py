@@ -76,7 +76,7 @@ class ServiceFetchConfiguration(models.Model):
         null=True,
         help_text=_("For jq, pass a string containing the filter expression"),
     )
-    cache_timeout = models.IntegerField(
+    cache_timeout = models.PositiveIntegerField(
         _("cache timeout"),
         blank=True,
         null=True,

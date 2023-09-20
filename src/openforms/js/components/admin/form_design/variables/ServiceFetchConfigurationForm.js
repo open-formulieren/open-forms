@@ -164,7 +164,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
               >
                 <NumberInput
                   id="cacheTimeout"
-                  value={formik.values.cacheTimeout}
+                  value={formik.values.cacheTimeout ?? ''}
                   {...formik.getFieldProps('cacheTimeout')}
                 />
               </Field>

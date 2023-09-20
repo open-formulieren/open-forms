@@ -316,6 +316,11 @@ const saveVariables = async (state, csrftoken) => {
             variable.serviceFetchConfiguration.queryParams
           );
         }
+
+        // cacheTimeout is a number, but if empty it needs to be null
+        if (variable.serviceFetchConfiguration.cacheTimeout === '') {
+          variable.serviceFetchConfiguration.cacheTimeout = null;
+        }
       }
     }
   });

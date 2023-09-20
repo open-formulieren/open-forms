@@ -36,8 +36,6 @@ const ServiceFetchConfigurationPicker = ({
 }) => {
   const formLogicContext = useContext(FormLogicContext);
 
-  console.log(initialValues);
-
   const [selectExisting, setSelectExisting] = useState(!!initialValues.id);
   const [selectedServiceFetchConfig, setSelectedServiceFetchConfig] = useState(initialValues.id);
 
