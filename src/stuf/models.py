@@ -1,7 +1,13 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from soap.constants import EndpointSecurity, EndpointType
+from .constants import EndpointType
+
+
+class StufServiceManager(models.Manager):
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.select_related("soap_service")
 
 
 class StufService(models.Model):
@@ -83,26 +89,14 @@ class StufService(models.Model):
         ),
     )
 
+    objects = StufServiceManager()
+
     class Meta:
         verbose_name = _("StUF service")
         verbose_name_plural = _("StUF services")
 
-    def get_cert(self) -> None | str | tuple[str, str]:
-        certificate = self.soap_service.client_certificate
-        if not certificate:
-            return None
-
-        if certificate.public_certificate and certificate.private_key:
-            return (certificate.public_certificate.path, certificate.private_key.path)
-
-        if certificate.public_certificate:
-            return certificate.public_certificate.path
-
-    def get_verify(self) -> bool | str:
-        certificate = self.soap_service.server_certificate
-        if certificate:
-            return certificate.public_certificate.path
-        return True
+    def __str__(self):
+        return self.soap_service.label
 
     def get_endpoint(self, type: EndpointType) -> str:
         attr = f"endpoint_{type}"
@@ -111,15 +105,11 @@ class StufService(models.Model):
             raise ValueError(f"Endpoint type {type} does not exist.")
         return value or self.soap_service.url
 
-    def get_auth(self) -> tuple[str, str] | None:
-        if (
-            self.soap_service.endpoint_security
-            in [EndpointSecurity.basicauth, EndpointSecurity.wss_basicauth]
-            and self.soap_service.user
-            and self.soap_service.password
-        ):
-            return (self.soap_service.user, self.soap_service.password)
-        return None
+    def get_cert(self) -> None | str | tuple[str, str]:
+        return self.soap_service.get_cert()
 
-    def __str__(self):
-        return self.soap_service.label
+    def get_verify(self) -> bool | str:
+        return self.soap_service.get_verify()
+
+    def get_auth(self) -> tuple[str, str] | None:
+        return self.soap_service.get_auth()

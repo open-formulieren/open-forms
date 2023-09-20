@@ -10,8 +10,8 @@ from simple_certmanager.constants import CertificateTypes
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.tests.utils import can_connect
 from simple_certmanager_ext.tests.factories import CertificateFactory
-from soap.constants import EndpointType
 
+from ...constants import EndpointType
 from ...tests.factories import StufServiceFactory
 from ..client import StufZDSClient, ZaakOptions
 

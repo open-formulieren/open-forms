@@ -6,9 +6,9 @@ import xmltodict
 from glom import glom
 
 from openforms.logging import logevent
-from soap.constants import EndpointType
 
 from ..client import BaseClient
+from ..constants import EndpointType
 from ..models import StufService
 from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from .constants import NAMESPACE_REPLACEMENTS, STUF_BG_EXPIRY_MINUTES

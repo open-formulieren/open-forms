@@ -81,3 +81,30 @@ class SoapService(models.Model):
         client = Client(self.url)
         # auth can be added to zeep.Client in the future if needed
         return client
+
+    def get_cert(self) -> None | str | tuple[str, str]:
+        certificate = self.client_certificate
+        if not certificate:
+            return None
+
+        if certificate.public_certificate and certificate.private_key:
+            return (certificate.public_certificate.path, certificate.private_key.path)
+
+        if certificate.public_certificate:
+            return certificate.public_certificate.path
+
+    def get_verify(self) -> bool | str:
+        certificate = self.server_certificate
+        if certificate:
+            return certificate.public_certificate.path
+        return True
+
+    def get_auth(self) -> tuple[str, str] | None:
+        if (
+            self.endpoint_security
+            in [EndpointSecurity.basicauth, EndpointSecurity.wss_basicauth]
+            and self.user
+            and self.password
+        ):
+            return (self.user, self.password)
+        return None

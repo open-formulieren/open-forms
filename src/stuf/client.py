@@ -21,8 +21,9 @@ from requests.models import Response
 
 from api_client import APIClient, InvalidURLError
 from api_client.client import is_base_url
-from soap.constants import SOAP_VERSION_CONTENT_TYPES, EndpointType, SOAPVersion
+from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 
+from .constants import EndpointType
 from .stuf import StuurGegevens, WSSecurity
 
 logger = logging.getLogger(__name__)

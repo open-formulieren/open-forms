@@ -13,15 +13,6 @@ class SOAPVersion(models.TextChoices):
     soap12 = "1.2", "SOAP 1.2"
 
 
-class EndpointType(models.TextChoices):
-    beantwoord_vraag = "beantwoord_vraag", "BeantwoordVraag"
-    vrije_berichten = "vrije_berichten", "VrijeBerichten"
-    ontvang_asynchroon = "ontvang_asynchroon", "OntvangAsynchroon"
-
-
-STUF_ZDS_EXPIRY_MINUTES = 5
-
-
 SOAP_VERSION_CONTENT_TYPES = {
     SOAPVersion.soap11: "text/xml",
     SOAPVersion.soap12: "application/soap+xml",

@@ -18,12 +18,13 @@ from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
-from soap.constants import STUF_ZDS_EXPIRY_MINUTES, EndpointType
 
 from ..client import BaseClient
+from ..constants import EndpointType
 from ..models import StufService
 from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from ..xml import fromstring
+from .constants import STUF_ZDS_EXPIRY_MINUTES
 
 logger = logging.getLogger(__name__)
 

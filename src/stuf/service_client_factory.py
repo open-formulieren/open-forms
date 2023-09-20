@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from typing import Any
 
-from soap.constants import EndpointSecurity, EndpointType
+from soap.constants import EndpointSecurity
 
 from .client import LoggingHook, noop_log
+from .constants import EndpointType
 from .models import StufService
 from .stuf import InvolvedParty, StuurGegevens, WSSecurity
 
