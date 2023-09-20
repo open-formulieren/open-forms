@@ -50,6 +50,8 @@ class RestoreOriginalCABundleMixin:
 
         if cls._original_requests_ca is not None:
             os.environ["REQUESTS_CA_BUNDLE"] = cls._original_requests_ca
+        elif "REQUESTS_CA_BUNDLE" in os.environ:
+            del os.environ["REQUESTS_CA_BUNDLE"]
 
 
 class SelfSignedCertificateTests(RestoreOriginalCABundleMixin, TestCase):
