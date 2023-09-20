@@ -21,8 +21,8 @@ def add_date_component_settings(apps, schema_editor):
                         translated_errors[language_code]["minDate"] = ""
                         translated_errors[language_code]["maxDate"] = ""
 
-                custom_options = comp.get("customOptions", {})
-                custom_options["allowInvalidPreload"] = True
+                comp.setdefault("customOptions", {})
+                comp["customOptions"]["allowInvalidPreload"] = True
 
                 form_definitions_to_update.append(form_definition)
 

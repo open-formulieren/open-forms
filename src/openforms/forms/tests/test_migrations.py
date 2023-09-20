@@ -80,7 +80,16 @@ class TestAddDateComponentSettings(TestMigrations):
                             "en": {"required": ""},
                             "nl": {"required": ""},
                         },
-                    }
+                    },
+                    {
+                        "key": "anotherDateComponent",
+                        "type": "date",
+                        "label": "Another Date component",
+                        "translatedErrors": {
+                            "en": {"required": ""},
+                            "nl": {"required": ""},
+                        },
+                    },
                 ]
             },
         )
@@ -109,6 +118,11 @@ class TestAddDateComponentSettings(TestMigrations):
 
         self.assertTrue(
             self.form_def.configuration["components"][0]["customOptions"][
+                "allowInvalidPreload"
+            ]
+        )
+        self.assertTrue(
+            self.form_def.configuration["components"][1]["customOptions"][
                 "allowInvalidPreload"
             ]
         )
