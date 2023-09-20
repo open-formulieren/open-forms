@@ -10,7 +10,7 @@ from openforms.typing import DataMapping, JSONObject, JSONValue
 from openforms.utils.json_logic import ComponentMeta
 from openforms.variables.models import ServiceFetchConfiguration
 
-from ..models import SubmissionStep
+from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from .log_utils import log_errors
 from .service_fetching import perform_service_fetch
@@ -56,7 +56,10 @@ class ActionOperation:
         pass
 
     def eval(
-        self, context: DataMapping, log: Callable[[JSONValue], None]
+        self,
+        context: DataMapping,
+        log: Callable[[JSONValue], None],
+        submission: Submission,
     ) -> DataMapping | None:
         """
         Return a mapping [name/path -> new_value] with changes that are to be
@@ -201,6 +204,7 @@ class VariableAction(ActionOperation):
         self,
         context: DataMapping,
         log: Callable[[JSONValue], None],
+        submission: Submission,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
             log({"value": (value := jsonLogic(self.value, context))})
@@ -233,6 +237,7 @@ class ServiceFetchAction(ActionOperation):
         self,
         context: DataMapping,
         log: Callable[[JSONValue], None],
+        submission: Submission,
     ) -> DataMapping:
         # FIXME
         # https://github.com/open-formulieren/open-forms/issues/3052
@@ -246,7 +251,7 @@ class ServiceFetchAction(ActionOperation):
         else:  # the current way
             var = self.rule.form.formvariable_set.get(key=self.variable)
         with log_errors({}, self.rule):  # TODO proper error handling
-            result = perform_service_fetch(var, context)
+            result = perform_service_fetch(var, context, str(submission.uuid))
             log(asdict(result))
             return {var.key: result.value}
 

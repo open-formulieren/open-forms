@@ -67,6 +67,7 @@ class ServiceFetchConfigurationAPITests(APITestCase):
             body={"foo": "bar"},
             data_mapping_type=DataMappingTypes.jq,
             mapping_expression=".foo",
+            cache_timeout=50,
         )
         endpoint = reverse("api:servicefetchconfiguration-list")
         self.client.force_authenticate(user=self.admin_user)
@@ -87,6 +88,7 @@ class ServiceFetchConfigurationAPITests(APITestCase):
             "body": {"foo": "bar"},
             "data_mapping_type": DataMappingTypes.jq.value,
             "mapping_expression": ".foo",
+            "cache_timeout": 50,
         }
 
         self.assertEqual(response.data["results"][0], expected)

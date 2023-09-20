@@ -8,7 +8,7 @@ import ActionButton from 'components/admin/forms/ActionButton';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {TextInput} from 'components/admin/forms/Inputs';
+import {NumberInput, TextInput} from 'components/admin/forms/Inputs';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import MappingArrayInput from 'components/admin/forms/MappingArrayInput';
 import Select from 'components/admin/forms/Select';
@@ -140,6 +140,32 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                   value={formik.values.path}
                   maxLength="1000"
                   {...formik.getFieldProps('path')}
+                />
+              </Field>
+            </FormRow>
+
+            <FormRow>
+              <Field
+                name="cacheTimeout"
+                fieldBox
+                required={false}
+                label={
+                  <FormattedMessage
+                    defaultMessage="Cache timeout"
+                    description="Label cache timeout"
+                  />
+                }
+                helpText={
+                  <FormattedMessage
+                    defaultMessage="After how many seconds should the cached response expire."
+                    description="Help text cache timeout"
+                  />
+                }
+              >
+                <NumberInput
+                  id="cacheTimeout"
+                  value={formik.values.cacheTimeout ?? ''}
+                  {...formik.getFieldProps('cacheTimeout')}
                 />
               </Field>
             </FormRow>

@@ -8670,6 +8670,14 @@ components:
           additionalProperties: {}
           nullable: true
           description: For jq, pass a string containing the filter expression
+        cacheTimeout:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+          description: The responses for service fetch are cached to prevent repeating
+            the same request multiple times when performing the logic check. If specified,
+            the cached responses will expire after the timeout (in seconds).
       required:
       - id
       - name

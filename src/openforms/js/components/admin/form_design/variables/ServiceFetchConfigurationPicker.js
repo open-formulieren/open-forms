@@ -25,6 +25,7 @@ const INITIAL_VALUES = {
   // These fields are mapped to mappingExpression on save
   jsonLogicExpression: {},
   jqExpression: '',
+  cacheTimeout: null,
 };
 
 const ServiceFetchConfigurationPicker = ({

@@ -104,7 +104,10 @@ def evaluate_form_logic(
         name="collect_logic_operations", span_type="app.submissions.logic"
     ):
         for operation in iter_evaluate_rules(
-            rules, data_container, on_rule_check=evaluated_rules.append
+            rules,
+            data_container,
+            on_rule_check=evaluated_rules.append,
+            submission=submission,
         ):
             mutation_operations.append(operation)
 
@@ -228,7 +231,7 @@ def check_submission_logic(
     data_container = DataContainer(state=submission_variables_state)
 
     mutation_operations = []
-    for operation in iter_evaluate_rules(rules, data_container):
+    for operation in iter_evaluate_rules(rules, data_container, submission):
         # component mutations can be skipped as we're not in the context of a single
         # form step.
         if isinstance(operation, PropertyAction):

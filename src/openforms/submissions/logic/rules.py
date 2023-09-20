@@ -122,6 +122,7 @@ class EvaluatedRule:
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
     data_container: DataContainer,
+    submission: Submission,
     on_rule_check: Callable[[EvaluatedRule], None] = lambda noop: None,
 ) -> Iterator[ActionOperation]:
     """
@@ -161,7 +162,9 @@ def iter_evaluate_rules(
 
             for i, operation in enumerate(rule.action_operations):
                 log = partial(operator.setitem, evaluated_rule.action_log_data, i)
-                if mutations := operation.eval(data_container.data, log=log):
+                if mutations := operation.eval(
+                    data_container.data, log=log, submission=submission
+                ):
                     data_container.update(mutations)
                 yield operation
             on_rule_check(evaluated_rule)
