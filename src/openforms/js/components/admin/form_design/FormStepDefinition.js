@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 import Field, {normalizeErrors} from 'components/admin/forms/Field';
@@ -52,6 +52,7 @@ const FormStepDefinition = ({
   errors,
   ...props
 }) => {
+  const intl = useIntl();
   const setSlug = langCode => {
     // do nothing if there's already a slug set
     if (slug) return;
@@ -74,7 +75,7 @@ const FormStepDefinition = ({
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);
-  const componentErrors = getComponentValidationErrors(configuration, errors).map(
+  let componentMessages = getComponentValidationErrors(configuration, errors).map(
     ({component, field, componentLocation, message}) => {
       const location = componentLocation.trim() ? (
         <FormattedMessage
@@ -103,6 +104,44 @@ const FormStepDefinition = ({
       };
     }
   );
+
+  const duplicateKeys = getDuplicatedComponents(componentNamespace)
+    .filter(component =>
+      configuration.components.some(configComponent => configComponent.key === component.key)
+    )
+    .map(component => {
+      const componentLocations = getComponentLocations(formSteps, component.key);
+      const locations = componentLocations.map(location => {
+        return intl.formatMessage(
+          {
+            description: 'Duplicate Key warning location path',
+            defaultMessage: `{location} > {component}`,
+          },
+          {location: location.name, component: component.label}
+        );
+      });
+      return intl.formatMessage(
+        {
+          description: 'Duplicate Key warning component to path',
+          defaultMessage: `"{component}" (in {locations})`,
+        },
+        {component: component.key, locations: locations.join(', ')}
+      );
+    });
+
+  if (duplicateKeys.length > 0 && errors.length === 0)
+    componentMessages.push({
+      level: 'warning',
+      message: (
+        <FormattedMessage
+          description="Warning message for duplicated keys"
+          defaultMessage={`Detected duplicate keys in configuration: {warning}`}
+          values={{
+            warning: duplicateKeys.join(', '),
+          }}
+        />
+      ),
+    });
 
   const erroredLanguages = new Set();
   for (const [errPath] of errors) {
@@ -321,7 +360,7 @@ const FormStepDefinition = ({
 
       <div className="formio-builder-wrapper">
         <ConfigurationErrors errors={errors} />
-        <MessageList messages={componentErrors} />
+        <MessageList messages={componentMessages} />
         <FormIOBuilder
           configuration={configuration}
           onChange={onChange}
@@ -371,6 +410,29 @@ const ConfigurationErrors = ({errors = []}) => {
 
 ConfigurationErrors.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+};
+
+const getDuplicatedComponents = componentNameSpace => {
+  const allKeys = new Set();
+  const duplicates = [];
+  componentNameSpace.forEach(component => {
+    const {key} = component;
+    const keySeen = allKeys.has(key);
+    allKeys.add(key);
+    if (keySeen && !duplicates.some(duplicate => duplicate.key === component.key))
+      duplicates.push(component);
+  });
+
+  return duplicates;
+};
+
+const getComponentLocations = (formSteps, key) => {
+  return formSteps
+    .filter(step => step.configuration.components)
+    .map(step => {
+      if (step.configuration.components.some(component => key == component.key)) return step;
+    })
+    .filter(Boolean);
 };
 
 const getComponentValidationErrors = (configuration, errors) => {
