@@ -5,14 +5,14 @@ from django.utils.translation import ugettext as _
 import requests_mock
 from zgw_consumers.test import mock_service_oas_get
 
-from openforms.contrib.kvk.tests.base import KVKTestMixin
-from openforms.contrib.kvk.validators import (
+from ..validators import (
     KVKBranchNumberRemoteValidator,
     KVKNumberRemoteValidator,
     KVKRSINRemoteValidator,
     validate_branchNumber,
     validate_kvk,
 )
+from .base import KVKTestMixin
 
 
 class KvKValidatorTestCase(TestCase):

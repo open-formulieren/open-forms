@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from requests import RequestException
 from zds_client import ClientError
 
-from openforms.contrib.kvk.client import KVKClientError, KVKSearchClient
+from openforms.contrib.kvk.client import KVKSearchClient, NoServiceConfigured
 from openforms.utils.validators import validate_digits, validate_rsin
 from openforms.validations.registry import register
 
@@ -60,7 +60,7 @@ class KVKRemoteBaseValidator:
         client = KVKSearchClient()
         try:
             result = client.query(**{self.query_param: value})
-        except (RequestException, ClientError, KVKClientError):
+        except (RequestException, ClientError, NoServiceConfigured):
             raise ValidationError(
                 self.error_messages["not_found"],
                 params={"type": self.value_label},

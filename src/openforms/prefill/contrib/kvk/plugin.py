@@ -1,15 +1,15 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any, List
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from glom import GlomError, glom
 from requests import RequestException
-from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.contrib.kvk.client import KVKClientError, KVKProfileClient
+from openforms.contrib.kvk.api_models.basisprofiel import BasisProfiel
+from openforms.contrib.kvk.client import NoServiceConfigured, get_client
 from openforms.contrib.kvk.models import KVKConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
@@ -57,16 +57,15 @@ class KVK_KVKNumberPrefill(BasePlugin):
         submission: Submission,
         attributes: List[str],
         identifier_role: str = IdentifierRoles.main,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
         if not (kvk_value := self.get_identifier_value(submission, identifier_role)):
             return {}
 
-        client = KVKProfileClient()
-
         try:
-            result = client.query(kvk_value)
-        except (RequestException, ClientError, KVKClientError):
+            with get_client() as client:
+                result = client.get_profile(kvk_value)
+        except (RequestException, NoServiceConfigured):
             return {}
 
         self.modify_result(result)
@@ -82,7 +81,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
         return values
 
     @classmethod
-    def modify_result(cls, result: dict):
+    def modify_result(cls, result: BasisProfiel):
         # first try getting the addresses from the embedded 'hoofdvestiging'. Note that
         # this may be absent or empty depending on the type of company (see #1299).
         # If there are no addresses found, we try to get them from 'eigenaar' instead.
@@ -97,29 +96,25 @@ class KVK_KVKNumberPrefill(BasePlugin):
         # Move the desired item from the unordered list to a known place
         address = _select_address(addresses, "bezoekadres")
         if address:
-            result["bezoekadres"] = address
+            result["bezoekadres"] = address  # type: ignore
 
         address = _select_address(addresses, "correspondentieadres")
         if address:
-            result["correspondentieadres"] = address
+            result["correspondentieadres"] = address  # type: ignore
 
     def check_config(self):
         check_kvk = "68750110"
         try:
-            client = KVKProfileClient()
-            result = client.query(check_kvk)
-        except KVKClientError as e:
+            with get_client() as client:
+                result = client.get_profile(check_kvk)
+        except NoServiceConfigured as e:
             raise InvalidPluginConfiguration(
                 _("Configuration error: {exception}").format(exception=e)
             )
-        except ClientError as e:
-            e = e.__cause__ or e
+        except RequestException as exc:
             raise InvalidPluginConfiguration(
-                _("Client error: {exception}").format(exception=e)
+                _("Client error: {exception}").format(exception=exc)
             )
-        except Exception:
-            # pass it on
-            raise
         else:
             if not isinstance(result, dict):
                 raise InvalidPluginConfiguration(_("Response not a dictionary"))

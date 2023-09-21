@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 from zds_client import ClientError
 
 from openforms.config.data import Entry
-from openforms.contrib.kvk.client import KVKClientError, KVKSearchClient
+from openforms.contrib.kvk.client import KVKSearchClient, NoServiceConfigured
 from openforms.contrib.kvk.models import KVKConfig
 
 
@@ -26,7 +26,7 @@ def check_kvk_remote_validator():
     try:
         client = KVKSearchClient()
         results = client.query(kvkNummer=check_kvk)
-    except (KVKClientError, ClientError) as e:
+    except (NoServiceConfigured, ClientError) as e:
         entry.status = None
         entry.error = str(e.__cause__ or e)
     except Exception as e:

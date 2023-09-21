@@ -1,16 +1,50 @@
 import logging
 
 import elasticapm
-from requests import HTTPError, RequestException
+import requests
 from zds_client import ClientError
 
-from openforms.contrib.kvk.models import KVKConfig
+from openforms.contrib.hal_client import HALClient
+from zgw_consumers_ext.api_client import ServiceClientFactory
+
+from .api_models.basisprofiel import BasisProfiel
+from .models import KVKConfig
 
 logger = logging.getLogger(__name__)
 
 
-class KVKClientError(Exception):
+class NoServiceConfigured(RuntimeError):
     pass
+
+
+def get_client() -> "KVKClient":
+    config = KVKConfig.get_solo()
+    assert isinstance(config, KVKConfig)
+    if not (service := config.service):
+        raise NoServiceConfigured("No KVK service configured!")
+    service_client_factory = ServiceClientFactory(service)
+    return KVKClient.configure_from(service_client_factory)
+
+
+class KVKClient(HALClient):
+    def get_profile(self, kvk_nummer: str) -> BasisProfiel:
+        """
+        Retrieve the profile of a single entity by chamber of commerce number.
+
+        Docs: https://developers.kvk.nl/apis/basisprofiel
+        Swagger: https://developers.kvk.nl/documentation/testing/swagger-basisprofiel-api
+
+
+        """
+        path = f"v1/basisprofielen/{kvk_nummer}"
+        try:
+            response = self.get(path)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            logger.exception("exception while making KVK request", exc_info=exc)
+            raise exc
+
+        return response.json()
 
 
 class KVKSearchClient:
@@ -38,40 +72,6 @@ class KVKSearchClient:
             )
         except (RequestException, ClientError) as e:
             logger.exception("exception while making KVK request", exc_info=e)
-            raise e
-        else:
-            return results
-
-
-class KVKProfileClient:
-    # https://api.kvk.nl/api/v1/basisprofielen/{kvkNummer}/hoofdvestiging
-    # https://api.kvk.nl/test/api/v1/basisprofielen/{kvkNummer}/hoofdvestiging
-    # docs: https://developers.kvk.nl/apis/basisprofiel
-
-    @elasticapm.capture_span("app.kvk")
-    def query(self, kvkNummer):
-        config = KVKConfig.get_solo()
-        if not config.profiles:
-            logger.warning("no service defined for KvK client")
-            raise KVKClientError("no service defined")
-
-        client = config.profiles.build_client()
-
-        try:
-            results = client.retrieve(
-                "basisprofielen",
-                url=f"v1/basisprofielen/{kvkNummer}",
-                kvkNummer=kvkNummer,
-            )
-        except RequestException as e:
-            logger.exception("exception while making KVK request", exc_info=e)
-            raise e
-        except ClientError as e:
-            if (
-                not isinstance(e.__cause__, HTTPError)
-                or e.__cause__.response.status_code != 404
-            ):
-                logger.exception("exception while making KVK request", exc_info=e)
             raise e
         else:
             return results
