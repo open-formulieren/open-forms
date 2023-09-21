@@ -13,7 +13,7 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.api.views.mixins import ListMixin
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
-from ..client import get_locatieserver_client
+from ..clients import get_locatieserver_client
 from .serializers import (
     AddressSearchResultSerializer,
     LatLngSearchInputSerializer,

@@ -6,7 +6,7 @@ import requests
 from openforms.config.data import Action
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from .client import get_locatieserver_client
+from .clients import get_locatieserver_client
 from .models import KadasterApiConfig
 
 
