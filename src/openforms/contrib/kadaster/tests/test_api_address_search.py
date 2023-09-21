@@ -32,7 +32,7 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
         self.config = KadasterApiConfig(search_service=self.kadaster_service)
         config_patcher = patch(
-            "openforms.contrib.kadaster.client.KadasterApiConfig.get_solo",
+            "openforms.contrib.kadaster.clients.KadasterApiConfig.get_solo",
             return_value=self.config,
         )
         self.config_mock = config_patcher.start()

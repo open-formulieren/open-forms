@@ -3,12 +3,11 @@ from typing import Any, Dict, Generator, Optional, Protocol, TypeGuard
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
 from django.utils.encoding import force_str
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 
 from openforms.appointments.registry import register as appointments_register
-from openforms.contrib.bag.config_check import Check as BAGCheck
-from openforms.contrib.kadaster.config_check import Check as KadasterConfigCheck
+from openforms.contrib.kadaster.config_check import BAGCheck, LocatieServerCheck
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
 from openforms.dmn.registry import register as dmn_register
 from openforms.payments.registry import register as payments_register
@@ -148,13 +147,14 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
     def get_geo_entries(self) -> list[Entry]:
         entries = [
             self.get_plugin_entry(BAGCheck),  # Location client
-            self.get_plugin_entry(KadasterConfigCheck),  # Kadaster search
+            self.get_plugin_entry(LocatieServerCheck),  # Kadaster search
         ]
 
         return entries
 
     def get_clamav_entry(self):
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         config_url = reverse(
             "admin:config_globalconfiguration_change", args=(config.pk,)
         )

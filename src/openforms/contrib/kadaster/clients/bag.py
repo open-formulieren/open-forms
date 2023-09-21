@@ -4,25 +4,9 @@ from dataclasses import dataclass
 import elasticapm
 import requests
 
-from zgw_consumers_ext.api_client import ServiceClientFactory
-
-from ..hal_client import HALClient
-from .models import BAGConfig
+from openforms.contrib.hal_client import HALClient
 
 logger = logging.getLogger(__name__)
-
-
-class NoServiceConfigured(RuntimeError):
-    pass
-
-
-def get_client() -> "BAGClient":
-    config = BAGConfig.get_solo()
-    assert isinstance(config, BAGConfig)
-    if not (service := config.bag_service):
-        raise NoServiceConfigured("No BAG service configured!")
-    service_client_factory = ServiceClientFactory(service)
-    return BAGClient.configure_from(service_client_factory)
 
 
 @dataclass

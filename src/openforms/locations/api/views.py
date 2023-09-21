@@ -8,7 +8,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from openforms.contrib.bag.client import get_client
+from openforms.contrib.kadaster.clients import get_bag_client
 from openforms.locations.api.serializers import (
     GetStreetNameAndCityViewInputSerializer,
     GetStreetNameAndCityViewResultSerializer,
@@ -19,7 +19,7 @@ CACHE_TIMEOUT = 60 * 60 * 24  # 24 hours - address data does NOT update frequent
 
 
 def lookup_address(postcode: str, number: str):
-    with get_client() as client:
+    with get_bag_client() as client:
         return client.get_address(postcode, number)
 
 

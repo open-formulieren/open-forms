@@ -10,7 +10,7 @@ import requests_mock
 from openforms.contrib.bag.models import BAGConfig
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
-from ..client import get_client
+from ..clients import get_bag_client
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"
 
@@ -31,7 +31,7 @@ class BAGClientTests(SimpleTestCase):
             )
         )
         patcher = patch(
-            "openforms.contrib.bag.client.BAGConfig.get_solo", return_value=config
+            "openforms.contrib.kadaster.clients.BAGConfig.get_solo", return_value=config
         )
         patcher.start()
         self.addCleanup(patcher.stop)
@@ -44,7 +44,7 @@ class BAGClientTests(SimpleTestCase):
             json=_load_json_mock("addresses.json"),
         )
 
-        with get_client() as client:
+        with get_bag_client() as client:
             address_data = client.get_address("1015CJ", "117")
 
         assert address_data is not None
@@ -59,7 +59,7 @@ class BAGClientTests(SimpleTestCase):
             json={},
         )
 
-        with get_client() as client:
+        with get_bag_client() as client:
             address_data = client.get_address("1015CJ", "1")
 
         self.assertIsNone(address_data)
@@ -71,7 +71,7 @@ class BAGClientTests(SimpleTestCase):
             exc=requests.RequestException,
         )
 
-        with get_client() as client:
+        with get_bag_client() as client:
             address_data = client.get_address("1015CJ", "115")
 
         self.assertIsNone(address_data)
