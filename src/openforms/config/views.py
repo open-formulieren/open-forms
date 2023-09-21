@@ -120,15 +120,9 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             plugin.check_config()
         except Exception as e:
             status, error = False, str(e)
+
         try:
             actions = plugin.get_config_actions()
-        except NotImplementedError:
-            actions: list[Action] = [
-                (
-                    "Not implemented",
-                    "TODO: REMOVE THIS WHEN ALL PLUGINS HAVE THIS FUNCTION.",
-                )
-            ]
         except Exception as e:
             actions = [
                 (
