@@ -26,6 +26,9 @@ class KadasterApiConfigManager(models.Manager):
             "search_service",
             "search_service__client_certificate",
             "search_service__server_certificate",
+            "bag_service",
+            "bag_service__client_certificate",
+            "bag_service__server_certificate",
         )
 
 
@@ -41,6 +44,16 @@ class KadasterApiConfig(SingletonModel):
         limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
         default=get_default_search_service,
+    )
+
+    bag_service = models.ForeignKey(
+        "zgw_consumers.Service",
+        verbose_name=_("BAG service"),
+        on_delete=models.SET_NULL,
+        null=True,
+        limit_choices_to={"api_type": APITypes.orc},
+        related_name="+",
+        help_text=_("Select which service to use for the BAG API."),
     )
 
     objects = KadasterApiConfigManager()
