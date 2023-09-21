@@ -1,11 +1,10 @@
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
-from zds_client import ClientError
-
 from openforms.config.data import Entry
-from openforms.contrib.kvk.client import KVKSearchClient, NoServiceConfigured
-from openforms.contrib.kvk.models import KVKConfig
+
+from .client import NoServiceConfigured, get_client
+from .models import KVKConfig
 
 
 def check_kvk_remote_validator():
@@ -24,24 +23,26 @@ def check_kvk_remote_validator():
     )
     check_kvk = "68750110"
     try:
-        client = KVKSearchClient()
-        results = client.query(kvkNummer=check_kvk)
-    except (NoServiceConfigured, ClientError) as e:
+        with get_client() as client:
+            results = client.get_search_results({"kvkNummer": check_kvk})
+    except NoServiceConfigured as exc:
         entry.status = None
-        entry.error = str(e.__cause__ or e)
-    except Exception as e:
+        entry.error = str(exc)
+    except Exception as exc:
         entry.status = False
-        entry.error = str(e)
+        entry.error = str(exc)
     else:
         if not isinstance(results, dict):
             entry.status = False
             entry.error = _("Response not a dictionary")
             return entry
+
         items = results.get("resultaten")
         if not items or not isinstance(items, list):
             entry.status = False
             entry.error = _("Response does not contain results")
             return entry
+
         num = items[0].get("kvkNummer", None)
         if num != check_kvk:
             entry.status = False
@@ -49,6 +50,7 @@ def check_kvk_remote_validator():
                 kvk=check_kvk
             )
             return results
+
         entry.status = True
 
     return entry

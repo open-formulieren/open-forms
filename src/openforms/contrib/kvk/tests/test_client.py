@@ -7,25 +7,24 @@ from django.test import TestCase
 
 import requests
 import requests_mock
-from zgw_consumers.test import mock_service_oas_get
 
-from ..client import KVKSearchClient, get_client
+from ..client import get_client
 from .base import KVKTestMixin, load_json_mock
 
 
 class KVKSearchClientTestCase(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_client(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=69599084",
+            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
             status_code=200,
             json=load_json_mock("zoeken_response.json"),
         )
 
-        client = KVKSearchClient()
-        # exists
-        res = client.query(kvkNummer=69599084)
+        with get_client() as client:
+            # exists
+            res = client.get_search_results({"kvkNummer": "69599084"})
+
         self.assertIsNotNone(res)
         self.assertIsNotNone(res["resultaten"])
         self.assertIsNotNone(res["resultaten"][0])
@@ -33,25 +32,23 @@ class KVKSearchClientTestCase(KVKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_client_404(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=69599084",
+            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
             status_code=404,
         )
-        client = KVKSearchClient()
-        with self.assertRaises(ClientError):
-            client.query(kvkNummer=69599084)
+        with get_client() as client:
+            with self.assertRaises(requests.HTTPError):
+                client.get_search_results({"kvkNummer": "69599084"})
 
     @requests_mock.Mocker()
     def test_client_500(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=69599084",
+            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
             status_code=500,
         )
-        client = KVKSearchClient()
-        with self.assertRaises(RequestException):
-            client.query(kvkNummer=69599084)
+        with get_client() as client:
+            with self.assertRaises(requests.RequestException):
+                client.get_search_results({"kvkNummer": "69599084"})
 
 
 class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
