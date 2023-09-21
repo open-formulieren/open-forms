@@ -41,9 +41,9 @@ class Migration(migrations.Migration):
         ("kadaster", "0002_kadasterapiconfig_bag_service"),
         ("bag", "0001_initial"),
     ]
-    # run_before = [
-    #     ("bag", "0002_remove_bagconfig"),
-    # ]
+    run_before = [
+        ("bag", "0002_remove_bagconfig"),
+    ]
 
     operations = [
         migrations.RunPython(from_bag_to_kadaster, from_kadaster_to_bag),

@@ -1,4 +1,3 @@
-from openforms.contrib.bag.models import BAGConfig
 from zgw_consumers_ext.api_client import ServiceClientFactory
 
 from ..models import KadasterApiConfig
@@ -20,8 +19,8 @@ def get_locatieserver_client() -> LocatieServerClient:
 
 
 def get_bag_client() -> BAGClient:
-    config = BAGConfig.get_solo()
-    assert isinstance(config, BAGConfig)
+    config = KadasterApiConfig.get_solo()
+    assert isinstance(config, KadasterApiConfig)
     if not (service := config.bag_service):
         raise NoServiceConfigured("No BAG service configured!")
     service_client_factory = ServiceClientFactory(service)

@@ -8,8 +8,8 @@ from django.utils.translation import gettext_lazy as _
 
 import requests_mock
 
-from openforms.contrib.bag.client import AddressResult
-from openforms.contrib.bag.models import BAGConfig
+from openforms.contrib.kadaster.clients.bag import AddressResult
+from openforms.contrib.kadaster.models import KadasterApiConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from zgw_consumers_ext.tests.factories import ServiceFactory
@@ -156,11 +156,11 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         # assert that the client call was only made once
         m_lookup_address.assert_called_once_with("1015CJ", "117")
 
-    @patch("openforms.contrib.bag.client.BAGConfig.get_solo")
+    @patch("openforms.contrib.kadaster.clients.KadasterApiConfig.get_solo")
     def test_bag_config_client_used(self, m_get_solo):
         submission = SubmissionFactory.create()
         self._add_submission_to_session(submission)
-        m_get_solo.return_value = BAGConfig(
+        m_get_solo.return_value = KadasterApiConfig(
             bag_service=ServiceFactory.build(
                 api_root="https://bag/api/",
                 oas="https://bag/api/schema/openapi.yaml",

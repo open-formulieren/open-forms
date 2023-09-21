@@ -7,10 +7,10 @@ from django.test import SimpleTestCase
 import requests
 import requests_mock
 
-from openforms.contrib.bag.models import BAGConfig
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..clients import get_bag_client
+from ..models import KadasterApiConfig
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"
 
@@ -24,14 +24,16 @@ class BAGClientTests(SimpleTestCase):
     def setUp(self):
         super().setUp()
 
-        config = BAGConfig(
+        config = KadasterApiConfig(
+            search_service=None,  # unused, but would otherwise execute queries
             bag_service=ServiceFactory.build(
                 api_root="https://bag/api/",
                 oas="https://bag/api/schema/openapi.yaml",
-            )
+            ),
         )
         patcher = patch(
-            "openforms.contrib.kadaster.clients.BAGConfig.get_solo", return_value=config
+            "openforms.contrib.kadaster.clients.KadasterApiConfig.get_solo",
+            return_value=config,
         )
         patcher.start()
         self.addCleanup(patcher.stop)

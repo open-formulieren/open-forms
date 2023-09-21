@@ -211,7 +211,7 @@ INSTALLED_APPS = [
     "openforms.contrib.brp",
     "openforms.contrib.kadaster",
     "openforms.contrib.kvk",
-    "openforms.contrib.bag.apps.BAGConfig",
+    "openforms.contrib.bag.apps.BAGConfig",  # TODO: remove once 2.4.0 is released
     "openforms.contrib.microsoft.apps.MicrosoftApp",
     "openforms.dmn",
     "openforms.dmn.contrib.camunda",

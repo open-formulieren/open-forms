@@ -1,5 +1,4 @@
 [
-    "bag.BAGConfig",
     "brp.BRPConfig",
     "config.RichTextColor",
     "forms.FormLogic",

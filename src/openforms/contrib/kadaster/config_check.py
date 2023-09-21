@@ -4,7 +4,6 @@ from django.utils.translation import gettext, gettext_lazy as _
 import requests
 
 from openforms.config.data import Action
-from openforms.contrib.bag.models import BAGConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from .clients import NoServiceConfigured, get_bag_client, get_locatieserver_client
@@ -65,7 +64,7 @@ class BAGCheck:
                 gettext("Configuration"),
                 reverse(
                     "admin:bag_bagconfig_change",
-                    args=(BAGConfig.singleton_instance_id,),
+                    args=(KadasterApiConfig.singleton_instance_id,),
                 ),
             ),
         ]
