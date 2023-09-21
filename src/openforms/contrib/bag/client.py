@@ -32,6 +32,12 @@ class AddressResult:
 
 
 class BAGClient(HALClient):
+    """
+    Client for the LV BAG API.
+
+    Documentation: https://lvbag.github.io/BAG-API/Technische%20specificatie/Redoc/
+    """
+
     @elasticapm.capture_span(span_type="app.bag.query")
     def get_address(
         self, postcode: str, house_number: str, reraise_errors: bool = False
