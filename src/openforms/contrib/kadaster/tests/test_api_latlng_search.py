@@ -7,7 +7,6 @@ import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from zgw_consumers.test import mock_service_oas_get
 
 from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -33,7 +32,7 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
         self.config = KadasterApiConfig(search_service=self.kadaster_service)
         config_patcher = patch(
-            "openforms.contrib.kadaster.api.views.KadasterApiConfig.get_solo",
+            "openforms.contrib.kadaster.client.KadasterApiConfig.get_solo",
             return_value=self.config,
         )
         self.config_mock = config_patcher.start()
@@ -41,12 +40,6 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
     @requests_mock.Mocker()
     def test_call_with_query_parameter_utrecht(self, m):
-        mock_service_oas_get(
-            m,
-            url="https://kadaster/",
-            service="locatieserver_openapi",
-            oas_url="https://kadaster/api/schema/openapi.yaml",
-        )
         m.get(
             "https://kadaster/v3_1/reverse",
             status_code=200,
@@ -136,12 +129,6 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
     @requests_mock.Mocker()
     def test_call_with_api_get_bag_response_exception(self, m):
-        mock_service_oas_get(
-            m,
-            url="https://kadaster/",
-            service="locatieserver_openapi",
-            oas_url="https://kadaster/api/schema/openapi.yaml",
-        )
         m.get(
             "https://kadaster/v3_1/reverse",
             exc=requests.RequestException,
@@ -155,12 +142,6 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
     @requests_mock.Mocker()
     def test_call_with_api_return_something_other_then_200(self, m):
-        mock_service_oas_get(
-            m,
-            url="https://kadaster/",
-            service="locatieserver_openapi",
-            oas_url="https://kadaster/api/schema/openapi.yaml",
-        )
         m.get(
             "https://kadaster/v3_1/reverse",
             status_code=400,
@@ -182,12 +163,6 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
     @requests_mock.Mocker()
     def test_call_with_api_return_data_not_having_response(self, m):
-        mock_service_oas_get(
-            m,
-            url="https://kadaster/",
-            service="locatieserver_openapi",
-            oas_url="https://kadaster/api/schema/openapi.yaml",
-        )
         m.get("https://kadaster/v3_1/reverse", status_code=200, json={})
 
         url = reverse("api:geo:latlng-search")
@@ -199,12 +174,6 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
     @requests_mock.Mocker()
     def test_call_with_api_return_data_not_having_docs(self, m):
-        mock_service_oas_get(
-            m,
-            url="https://kadaster/",
-            service="locatieserver_openapi",
-            oas_url="https://kadaster/api/schema/openapi.yaml",
-        )
         m.get(
             "https://kadaster/v3_1/reverse",
             status_code=200,
@@ -227,12 +196,6 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
 
     @requests_mock.Mocker()
     def test_call_with_api_return_data_not_having_weergavenaam(self, m):
-        mock_service_oas_get(
-            m,
-            url="https://kadaster/",
-            service="locatieserver_openapi",
-            oas_url="https://kadaster/api/schema/openapi.yaml",
-        )
         m.get(
             "https://kadaster/v3_1/reverse",
             status_code=200,

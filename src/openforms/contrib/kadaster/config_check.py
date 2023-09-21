@@ -1,14 +1,13 @@
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
 
-from requests import HTTPError
-from zds_client import ClientError
+import requests
 
 from openforms.config.data import Action
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
+from .client import get_locatieserver_client
 from .models import KadasterApiConfig
-from .search import free_address_search
 
 
 class Check:
@@ -16,17 +15,13 @@ class Check:
 
     @staticmethod
     def check_config():
-        config = KadasterApiConfig.get_solo()
-        assert isinstance(config, KadasterApiConfig)
-
-        client = config.get_client()
         try:
-            free_address_search(client, "Amsterdam")
-        except (HTTPError, ClientError) as e:
-            e = e.__cause__ or e
+            with get_locatieserver_client() as client:
+                client.free_address_search("Amsterdam", reraise_errors=True)
+        except requests.RequestException as exc:
             raise InvalidPluginConfiguration(
-                _("Invalid response: {exception}").format(exception=e)
-            )
+                _("Invalid response: {exception}").format(exception=exc)
+            ) from exc
 
     @staticmethod
     def get_config_actions() -> list[Action]:

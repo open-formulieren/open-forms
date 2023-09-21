@@ -5,8 +5,6 @@ from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
-from openforms.pre_requests.clients import PreRequestZGWClient
-
 
 def get_default_search_service():
     default_service, _ = Service.objects.get_or_create(
@@ -23,7 +21,12 @@ def get_default_search_service():
 
 class KadasterApiConfigManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related("search_service")
+        qs = super().get_queryset()
+        return qs.select_related(
+            "search_service",
+            "search_service__client_certificate",
+            "search_service__server_certificate",
+        )
 
 
 class KadasterApiConfig(SingletonModel):
@@ -44,17 +47,3 @@ class KadasterApiConfig(SingletonModel):
 
     class Meta:
         verbose_name = _("Kadaster API configuration")
-
-    def get_client(self) -> PreRequestZGWClient:
-        client = self.search_service.build_client()
-        assert isinstance(client, PreRequestZGWClient)
-        # the OpenAPI spec does not use any semantic suffixes
-        client.operation_suffix_mapping = {
-            "list": "",
-            "retrieve": "",
-            "create": "",
-            "update": "",
-            "partial_update": "",
-            "delete": "",
-        }
-        return client
