@@ -3,6 +3,7 @@ from django.test import SimpleTestCase
 from django.utils.translation import ugettext as _
 
 import requests_mock
+from privates.test import temp_private_root
 
 from ..validators import (
     KVKBranchNumberRemoteValidator,
@@ -44,6 +45,7 @@ class KvKValidatorTestCase(SimpleTestCase):
             validate_branchNumber("11223-445566")
 
 
+@temp_private_root()
 class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_kvkNumber_validator(self, m):

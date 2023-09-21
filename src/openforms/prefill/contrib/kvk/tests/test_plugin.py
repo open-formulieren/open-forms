@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 import requests_mock
+from privates.test import temp_private_root
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.tests.factories import AuthInfoFactory
@@ -11,6 +12,7 @@ from ..constants import Attributes
 from ..plugin import KVK_KVKNumberPrefill
 
 
+@temp_private_root()
 class KVKPrefillTest(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_prefill_values(self, m):

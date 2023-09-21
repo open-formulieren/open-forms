@@ -1,25 +1,20 @@
-"""
-TODO: replace with VCR tests against the public test environment.
-
-Test env: https://developers.kvk.nl/documentation/testing
-"""
-from django.test import TestCase
+from django.test import SimpleTestCase
 
 import requests
 import requests_mock
+from privates.test import temp_private_root
+
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_client
-from .base import KVKTestMixin, load_json_mock
+from .base import TEST_FILES, KVKTestMixin
 
 
-class KVKSearchClientTestCase(KVKTestMixin, TestCase):
-    @requests_mock.Mocker()
-    def test_client(self, m):
-        m.get(
-            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
-            status_code=200,
-            json=load_json_mock("zoeken_response.json"),
-        )
+@temp_private_root()
+class KVKSearchClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
+    VCR_TEST_FILES = TEST_FILES
+
+    def test_client(self):
 
         with get_client() as client:
             # exists
@@ -30,34 +25,25 @@ class KVKSearchClientTestCase(KVKTestMixin, TestCase):
         self.assertIsNotNone(res["resultaten"][0])
         self.assertEqual(res["resultaten"][0]["kvkNummer"], "69599084")
 
-    @requests_mock.Mocker()
-    def test_client_404(self, m):
-        m.get(
-            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
-            status_code=404,
-        )
+    def test_client_404(self):
         with get_client() as client:
             with self.assertRaises(requests.HTTPError):
-                client.get_search_results({"kvkNummer": "69599084"})
+                client.get_search_results({"kvkNummer": "12345678"})
 
     @requests_mock.Mocker()
     def test_client_500(self, m):
-        m.get(
-            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
-            status_code=500,
-        )
+        m.get(requests_mock.ANY, status_code=500)
+
         with get_client() as client:
             with self.assertRaises(requests.RequestException):
                 client.get_search_results({"kvkNummer": "69599084"})
 
 
-class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
-    @requests_mock.Mocker()
-    def test_client(self, m):
-        m.get(
-            f"{self.api_root}v1/basisprofielen/69599084",
-            json=load_json_mock("basisprofiel_response.json"),
-        )
+@temp_private_root()
+class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
+    VCR_TEST_FILES = TEST_FILES
+
+    def test_client(self):
 
         with get_client() as client:
             # exists
@@ -66,18 +52,13 @@ class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
         self.assertIsNotNone(res)
         self.assertEqual(res["kvkNummer"], "69599084")
 
-    @requests_mock.Mocker()
-    def test_client_vve(self, m):
+    def test_client_vve(self):
         """
         Test response for a VVE-type company.
 
         Regression for #1299 where no "hoofdvestiging" data is present and address
         information must be sourced elsewhere.
         """
-        m.get(
-            f"{self.api_root}v1/basisprofielen/90000749",
-            json=load_json_mock("basisprofiel_response_vve.json"),
-        )
 
         with get_client() as client:
             # exists
@@ -86,22 +67,15 @@ class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
         self.assertIsNotNone(res)
         self.assertEqual(res["kvkNummer"], "90000749")
 
-    @requests_mock.Mocker()
-    def test_client_404(self, m):
-        m.get(
-            f"{self.api_root}v1/basisprofielen/69599084",
-            status_code=404,
-        )
+    def test_client_404(self):
         with get_client() as client:
             with self.assertRaises(requests.HTTPError):
-                client.get_profile("69599084")
+                client.get_profile("12345678")
 
     @requests_mock.Mocker()
     def test_client_500(self, m):
-        m.get(
-            f"{self.api_root}v1/basisprofielen/69599084",
-            status_code=500,
-        )
+        m.get(requests_mock.ANY, status_code=500)
+
         with get_client() as client:
             with self.assertRaises(requests.RequestException):
                 client.get_profile("69599084")
