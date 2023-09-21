@@ -7,13 +7,27 @@ from zgw_consumers.constants import APITypes
 
 class KVKConfigManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related("_service", "_profiles")
+        qs = super().get_queryset()
+        return qs.select_related(
+            "_service",
+            "_profiles",
+        )
 
 
 class KVKConfig(SingletonModel):
     """
-    Global configuration and defaults
+    Global configuration and defaults.
     """
+
+    service = models.OneToOneField(
+        "zgw_consumers.Service",
+        verbose_name=_("KvK API"),
+        help_text=_("Service for API interaction with the KVK."),
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.orc},
+        related_name="+",
+        null=True,
+    )
 
     _service = models.OneToOneField(
         "zgw_consumers.Service",
@@ -49,7 +63,7 @@ class KVKConfig(SingletonModel):
     # requests.
 
     @property
-    def service(self):
+    def legacy_service(self):
         s = self._service
         s.api_root = s.api_root.replace("/v1/zoeken", "")
         return s
