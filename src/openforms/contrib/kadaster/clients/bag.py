@@ -20,6 +20,11 @@ class BAGClient(HALClient):
     Client for the LV BAG API.
 
     Documentation: https://lvbag.github.io/BAG-API/Technische%20specificatie/Redoc/
+
+    NOTE: this is apparently also part of Haal Centraal:
+    https://vng-realisatie.github.io/Haal-Centraal-BAG-bevragen/getting-started
+
+    This client is expected to work with both v1 and v2 of the API's.
     """
 
     @elasticapm.capture_span(span_type="app.bag.query")
