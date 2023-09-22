@@ -460,7 +460,7 @@ LOGGING = {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
             "level": "DEBUG",
         },
-        "requests": {
+        "log_outgoing_requests": {
             "handlers": ["log_outgoing_requests", "save_outgoing_requests"]
             if LOG_REQUESTS
             else [],
