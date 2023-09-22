@@ -1,0 +1,15 @@
+@import '../../vars';
+
+.openforms-error-widget {
+  display: inline-block;
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &--error-text {
+    color: $color-error;
+  }
+}

@@ -1,3 +1,4 @@
+import inspect
 from dataclasses import dataclass
 from functools import wraps
 from typing import Type
@@ -70,41 +71,58 @@ def conditional_search_engine_index(config_attr: str, content="noindex, nofollow
     return decorator
 
 
-def dbfields_exception_handler(
-    exceptions: tuple[Type[Exception]],
-):
+def supress_requests_errors(fields: list[str] = []):
     """
     A decorator that wraps a try catch around the formfields_for_dbfields function.
     If the decorator catches an exception it will return a base formfield with
-    an error message discribing that an error has occured.
+    an error message describing that an error has occurred.
 
     Args:
-        exceptions (tuple[Type[Exception]]): _description_
+        fields (list[str], optional): _description_. Defaults to [].
     """
 
-    def decorate(func):
-        def _handle_exceptions(db_field, request, *args, **kwargs):
+    def formfield_for_dbfield_wrapper(func):
+        def _handle_formfield_for_dbfield_exceptions(self, db_field, request, **kwargs):
+            if db_field.verbose_name not in fields:
+                return func(self=self, db_field=db_field, request=request, **kwargs)
+
             try:
-                return func(db_field, request, *args, **kwargs)
-            except exceptions:
-                error_message = _(
-                    "Could not load data for field '{verbose_name}' - enable and check the request logs for more details"
-                ).format(verbose_name=db_field.verbose_name)
+                return func(self=self, db_field=db_field, request=request, **kwargs)
+            except Exception:
+                kwargs = {**self.formfield_overrides[db_field.__class__], **kwargs}
 
-                # filter out duplicated messages that get generated because of the returning form.field
-                if error_message not in [
-                    x.message for x in messages.get_messages(request)
-                ]:
-                    messages.error(request, error_message)
+                class CustomWidget(kwargs["widget"]):
+                    def render(self, *args, **kwargs):
+                        output = super().render(*args, **kwargs)
 
-                # return form.field instance for crashing field
-                # TODO: Dynamicly add widget to form.field with decorated ModelAdmin formfield_overrides
+                        error_message = _(
+                            "Could not load data - enable and check the request logs for more details"
+                        )
+
+                        html = f"""
+                            <div class="openforms-error-widget">
+                                <div class="openforms-error-widget__column">
+                                    {output}
+                                    <small class="openforms-error-widget--error-text">{error_message}</small>
+                                </div>
+                            </div>
+                        """
+
+                        return html
+
                 return db_field.formfield(
                     help_text=db_field.help_text,
                     validators=db_field.validators,
-                    disabled=True,
+                    widget=CustomWidget,
                 )
 
-        return _handle_exceptions
+        return _handle_formfield_for_dbfield_exceptions
 
-    return decorate
+    def model_admin_wrapper(admin_class):
+        for name, func in inspect.getmembers(admin_class):
+            if name == "formfield_for_dbfield":
+                setattr(admin_class, name, formfield_for_dbfield_wrapper(func))
+
+        return admin_class
+
+    return model_admin_wrapper
