@@ -6,20 +6,12 @@ from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
 
+from openforms.contrib.haal_centraal.constants import BRPVersions
+
 from .client import HaalCentraalClient, HaalCentraalV1Client, HaalCentraalV2Client
 from .constants import Attributes, AttributesV2, HaalCentraalVersion
 
 logger = logging.getLogger(__name__)
-
-VERSION_TO_ATTRIBUTES_MAP = {
-    HaalCentraalVersion.haalcentraal13: Attributes,
-    HaalCentraalVersion.haalcentraal20: AttributesV2,
-}
-
-VERSION_TO_CLIENT_CLASS_MAP: dict[str, type[HaalCentraalClient]] = {
-    HaalCentraalVersion.haalcentraal13: HaalCentraalV1Client,
-    HaalCentraalVersion.haalcentraal20: HaalCentraalV2Client,
-}
 
 
 class HaalCentraalConfigManager(models.Manager):
@@ -52,15 +44,6 @@ class HaalCentraalConfig(SingletonModel):
 
     class Meta:
         verbose_name = _("Haal Centraal configuration")
-
-    def build_client(self) -> HaalCentraalClient | None:
-        ClientCls = VERSION_TO_CLIENT_CLASS_MAP.get(self.version)
-        if not self.service or ClientCls is None:
-            logger.info(
-                "Haal Centraal Config hasn't been setup properly, make sure to configure the service properly."
-            )
-            return None
-        return ClientCls(self.service.build_client())
 
     def get_attributes(self) -> type[Attributes] | type[AttributesV2]:
         if not self.service:

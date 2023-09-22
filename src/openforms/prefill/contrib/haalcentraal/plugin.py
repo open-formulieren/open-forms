@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Iterable, Optional
 
+from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -9,23 +10,30 @@ from glom import GlomError, glom
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.haal_centraal.clients import NoServiceConfigured, get_brp_client
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.pre_requests.clients import PreRequestClientContext
-from openforms.prefill.contrib.haalcentraal.constants import Attributes
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...constants import IdentifierRole, IdentifierRoles
 from ...registry import register
-from .models import HaalCentraalConfig
+from .constants import Attributes, AttributesV2
 
 logger = logging.getLogger(__name__)
+
+
+VERSION_TO_ATTRIBUTES_MAP: dict[BRPVersions, type[models.TextChoices]] = {
+    BRPVersions.v13: Attributes,
+    BRPVersions.v20: AttributesV2,
+}
 
 
 def get_config() -> HaalCentraalConfig | None:
     config = HaalCentraalConfig.get_solo()
     assert isinstance(config, HaalCentraalConfig)
-    if not config.service:
+    if not config.brp_personen_service:
         logger.warning("No service defined for Haal Centraal prefill.")
         return None
     return config
@@ -38,10 +46,14 @@ class HaalCentraalPrefill(BasePlugin):
 
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
-        config = get_config()
-        if config is None:
-            return Attributes.choices
-        return config.get_attributes().choices
+        match get_config():
+            case HaalCentraalConfig(
+                version=version
+            ) if version in VERSION_TO_ATTRIBUTES_MAP:
+                AttributesCls = VERSION_TO_ATTRIBUTES_MAP[version]
+            case _:
+                AttributesCls = Attributes
+        return AttributesCls.choices
 
     @classmethod
     def _get_values_for_bsn(

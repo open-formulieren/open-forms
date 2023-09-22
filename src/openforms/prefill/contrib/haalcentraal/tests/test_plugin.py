@@ -1,14 +1,14 @@
-from typing import Literal
 from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from glom import glom
-from zds_client.oas import schema_fetcher
 from zgw_consumers.models import Service
-from zgw_consumers.test import mock_service_oas_get
 
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
+from openforms.contrib.haal_centraal.tests.utils import load_json_mock
 from openforms.pre_requests.base import PreRequestHookBase
 from openforms.pre_requests.registry import Registry
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -16,10 +16,8 @@ from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....constants import IdentifierRoles
 from ....registry import register
-from ..constants import Attributes, HaalCentraalVersion
-from ..models import VERSION_TO_ATTRIBUTES_MAP, HaalCentraalConfig
-from ..plugin import HaalCentraalPrefill
-from .utils import load_json_mock
+from ..constants import Attributes
+from ..plugin import VERSION_TO_ATTRIBUTES_MAP, HaalCentraalPrefill
 
 
 class AttributeResolutionTests(SimpleTestCase):
@@ -28,8 +26,8 @@ class AttributeResolutionTests(SimpleTestCase):
         Test that the attributes constant is compatible with the response data.
         """
         mock_files = {
-            HaalCentraalVersion.haalcentraal13: "ingeschrevenpersonen.v1-full.json",
-            HaalCentraalVersion.haalcentraal20: "ingeschrevenpersonen.v2-full-find-personen-response.json",
+            BRPVersions.v13: "ingeschrevenpersonen.v1-full.json",
+            BRPVersions.v20: "ingeschrevenpersonen.v2-full-find-personen-response.json",
         }
 
         for version, attributes in VERSION_TO_ATTRIBUTES_MAP.items():
@@ -41,11 +39,17 @@ class AttributeResolutionTests(SimpleTestCase):
 
     def test_get_available_attributes(self):
         service = ServiceFactory.build()
-        for version in HaalCentraalVersion:
+        for version in BRPVersions:
             with self.subTest(version=version):
-                config = HaalCentraalConfig(version=version, service=service)
+                config = HaalCentraalConfig(
+                    brp_personen_service=service, brp_personen_version=version
+                )
 
-                attrs = config.get_attributes().choices
+                with patch(
+                    "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+                    return_value=config,
+                ):
+                    attrs = HaalCentraalPrefill.get_available_attributes()
 
                 self.assertIsInstance(attrs, list)  # type: ignore
                 self.assertIsInstance(attrs[0], tuple)  # type: ignore
@@ -63,8 +67,7 @@ class HaalCentraalPluginTests:
     """
 
     # specify in subclasses
-    version: HaalCentraalVersion
-    schema_yaml_name: Literal["personen", "personen-v2"]
+    version: BRPVersions
 
     # set in setUp
     service: Service
@@ -86,17 +89,7 @@ class HaalCentraalPluginTests:
         self.requests_mock = requests_mock.Mocker()
 
         self.requests_mock.start()
-        mock_service_oas_get(
-            self.requests_mock,
-            url=self.service.api_root,
-            service=self.schema_yaml_name,
-            oas_url=self.service.oas,
-        )
         self.addCleanup(self.requests_mock.stop)  # type: ignore
-
-        # ensure the schema cache is cleared before and after each test
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)  # type: ignore
 
     def test_get_available_attributes(self):
         attributes = HaalCentraalPrefill.get_available_attributes()
@@ -195,8 +188,7 @@ class HaalCentraalPluginTests:
 
 
 class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
-    version = HaalCentraalVersion.haalcentraal13
-    schema_yaml_name = "personen"
+    version = BRPVersions.v13
 
     @classmethod
     def setUpTestData(cls):
@@ -240,8 +232,7 @@ class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
 
 
 class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
-    version = HaalCentraalVersion.haalcentraal20
-    schema_yaml_name = "personen-v2"
+    version = BRPVersions.v20
 
     @classmethod
     def setUpTestData(cls):
