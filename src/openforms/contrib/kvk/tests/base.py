@@ -55,7 +55,7 @@ class KVKTestMixin:
             "openforms.contrib.kvk.client.KVKConfig.get_solo",
             return_value=KVKConfig(service=KVK_SERVICE),
         )
-        patcher.start()
+        self.config_mock = patcher.start()
         self.addCleanup(patcher.stop)
 
         # ensure that the certificate exists on disk, even with SimpleTestCase

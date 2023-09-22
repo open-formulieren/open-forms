@@ -5,10 +5,14 @@ from pathlib import Path
 
 from django.test import TestCase
 
+import requests_mock
+
+from api_client import InvalidURLError
 from simple_certmanager_ext.tests.factories import CertificateFactory
 
-from ..client import build_client
+from ..client import SOAPSession, build_client
 from ..constants import EndpointSecurity
+from ..session_factory import SessionFactory
 from .factories import SoapServiceFactory
 
 WSDL = Path(__file__).parent.resolve() / "data" / "sample.wsdl"
@@ -126,3 +130,32 @@ class ClientTransportTests(TestCase):
                 client = build_client(service)
 
                 self.assertIsNotNone(client.transport.session.auth)
+
+    @requests_mock.Mocker()
+    def test_no_absolute_url_sanitization(self, m):
+        m.post("https://other-base.example.com")
+        service = SoapServiceFactory.build(url=WSDL_URI)
+        session_factory = SessionFactory(service)
+        session = SOAPSession.configure_from(session_factory)
+
+        try:
+            with session:
+                session.post("https://other-base.example.com")
+        except InvalidURLError as exc:
+            raise self.failureException(
+                "SOAP session should not block non-base URL requests"
+            ) from exc
+
+        self.assertGreater(len(m.request_history), 0)
+
+    @requests_mock.Mocker()
+    def test_default_behaviour_relative_paths(self, m):
+        m.post("https://example.com/api/relative")
+        service = SoapServiceFactory.build(url="https://example.com/")
+        session_factory = SessionFactory(service)
+        session = SOAPSession.configure_from(session_factory)
+
+        with session:
+            session.post("api/relative")
+
+        self.assertEqual(m.last_request.url, "https://example.com/api/relative")

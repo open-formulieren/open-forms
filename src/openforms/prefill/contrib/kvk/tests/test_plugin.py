@@ -13,7 +13,7 @@ from ..plugin import KVK_KVKNumberPrefill
 
 
 @temp_private_root()
-class KVKPrefillTest(KVKTestMixin, TestCase):
+class KVKPrefillTests(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_get_prefill_values(self, m):
         m.get(
@@ -120,3 +120,20 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         self.assertIsInstance(attrs, list)
         self.assertIsInstance(attrs[0], tuple)
         self.assertEqual(len(attrs[0]), 2)
+
+    def test_plugin_usage_without_configuring_kvk_service(self):
+        config = self.config_mock.return_value
+        config.service = None  # remove KVK service configuration
+        plugin = KVK_KVKNumberPrefill(identifier="kvk")
+        submission = SubmissionFactory.create(
+            auth_info__value="69599084",
+            auth_info__plugin="kvk",
+            auth_info__attribute=AuthAttribute.kvk,
+        )
+
+        values = plugin.get_prefill_values(
+            submission,
+            [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
+        )
+
+        self.assertEqual(values, {})

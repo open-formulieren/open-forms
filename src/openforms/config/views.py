@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 from openforms.appointments.registry import register as appointments_register
 from openforms.contrib.kadaster.config_check import BAGCheck, LocatieServerCheck
-from openforms.contrib.kvk.checks import check_kvk_remote_validator
+from openforms.contrib.kvk.checks import KVKRemoteValidatorCheck
 from openforms.dmn.registry import register as dmn_register
 from openforms.payments.registry import register as payments_register
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -61,7 +61,10 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             sections += [
                 {
                     "name": _("Address lookup plugins"),
-                    "entries": self.get_geo_entries(),
+                    "entries": [
+                        self.get_plugin_entry(BAGCheck),  # Location client
+                        self.get_plugin_entry(LocatieServerCheck),  # Kadaster search
+                    ],
                 },
             ]
 
@@ -69,7 +72,10 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             sections += [
                 {
                     "name": _("Validator plugins"),
-                    "entries": [check_kvk_remote_validator()],
+                    "entries": [
+                        # uses KVK 'zoeken' client
+                        self.get_plugin_entry(KVKRemoteValidatorCheck),
+                    ],
                 },
             ]
 
@@ -137,14 +143,6 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             actions=actions,
             error=error,
         )
-
-    def get_geo_entries(self) -> list[Entry]:
-        entries = [
-            self.get_plugin_entry(BAGCheck),  # Location client
-            self.get_plugin_entry(LocatieServerCheck),  # Kadaster search
-        ]
-
-        return entries
 
     def get_clamav_entry(self):
         config = GlobalConfiguration.get_solo()

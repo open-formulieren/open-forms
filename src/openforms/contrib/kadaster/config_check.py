@@ -42,16 +42,13 @@ class BAGCheck:
     @staticmethod
     def check_config():
         try:
-            client = get_bag_client()
+            with get_bag_client() as client:
+                client.get_address("1000AA", "1", reraise_errors=True)
         except NoServiceConfigured as exc:
             msg = _("{api_name} endpoint is not configured.").format(
                 api_name="bag_service"
             )
             raise InvalidPluginConfiguration(msg) from exc
-
-        try:
-            with client:
-                client.get_address("1000AA", "1", reraise_errors=True)
         except requests.RequestException as exc:
             raise InvalidPluginConfiguration(
                 _("Invalid response: {exception}").format(exception=exc)

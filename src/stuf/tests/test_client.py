@@ -13,6 +13,7 @@ from django.test import SimpleTestCase
 import requests_mock
 from privates.test import temp_private_root
 
+from api_client import InvalidURLError
 from soap.constants import EndpointSecurity
 
 from ..client import BaseClient
@@ -48,6 +49,18 @@ class BaseClientRequestsInterfaceTests(SimpleTestCase):
             headers["SOAPAction"],
             "http://www.egem.nl/StUF/sector/sa/0310/someSOAPAction",
         )
+
+    def test_url_and_path_sanitization(self):
+        service = StufServiceFactory.build(soap_service__url="https://example.com/")
+        client = build_client(service, sector_alias="sa")
+
+        with self.subTest("Absolute URL"):
+            with self.assertRaises(InvalidURLError):
+                client.request("ANY", url="https://other-base.example.com")
+
+        with self.subTest("non-existing endpoint type"):
+            with self.assertRaises(InvalidURLError):
+                client.request("ANY", url="i-do-not-exist")
 
 
 @requests_mock.Mocker()

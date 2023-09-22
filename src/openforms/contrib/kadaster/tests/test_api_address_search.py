@@ -8,9 +8,9 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.appointments.contrib.qmatic.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..models import KadasterApiConfig
 
@@ -271,3 +271,47 @@ class AddressSearchApiTests(SubmissionsMixin, APITestCase):
                 },
             ],
         )
+
+    @requests_mock.Mocker()
+    def test_malformed_coordinates(self, m):
+        # Hypothetical response where the geometry is not a two-tuple point.
+        m.get(
+            "https://kadaster/v3_1/free",
+            status_code=200,
+            json={
+                "response": {
+                    "numFound": 1,
+                    "start": 0,
+                    "maxScore": 9.7794895,
+                    "numFoundExact": True,
+                    "docs": [
+                        {
+                            "bron": "Bestuurlijke Grenzen",
+                            "identificatie": "0344",
+                            "provinciecode": "PV26",
+                            "type": "gemeente",
+                            "provincienaam": "Utrecht",
+                            # added a Z coordinate which would crash parsing
+                            "centroide_ll": "POINT(5.0747543 52.09113798 1)",
+                            "gemeentecode": "0344",
+                            "weergavenaam": "Gemeente Utrecht",
+                            "provincieafkorting": "UT",
+                            # added a Z coordinate which would crash parsing
+                            "centroide_rd": "POINT(133587.182 455921.594 1)",
+                            "id": "gem-df0ca8ab37eccea5217e2a13f74d2833",
+                            "gemeentenaam": "Utrecht",
+                            "score": 9.7794895,
+                        },
+                    ],
+                }
+            },
+        )
+
+        url = reverse("api:geo:address-search")
+        self._add_submission_to_session(self.submission)
+
+        response = self.client.get(url, {"q": "utrecht"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        body = response.json()
+        self.assertEqual(body, [])

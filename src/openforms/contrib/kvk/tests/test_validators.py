@@ -87,6 +87,24 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             validator("bork")
 
     @requests_mock.Mocker()
+    def test_kvkNumber_validator_emptyish_results(self, m):
+        bad_responses = (
+            {"resultaten": []},
+            {},
+        )
+        validate = KVKNumberRemoteValidator()
+
+        for response_json in bad_responses:
+            with self.subTest(response_json=response_json):
+                m.get(
+                    f"{self.api_root}v1/zoeken?kvkNummer=69599084",
+                    json=response_json,
+                )
+
+                with self.assertRaises(ValidationError):
+                    validate("69599084")
+
+    @requests_mock.Mocker()
     def test_rsin_validator(self, m):
         m.get(
             f"{self.api_root}v1/zoeken?rsin=111222333",
