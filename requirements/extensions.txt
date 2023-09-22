@@ -247,7 +247,7 @@ django-ipware==5.0.0
     # via
     #   -r requirements/base.txt
     #   django-axes
-django-log-outgoing-requests==0.5.1
+django-log-outgoing-requests==0.5.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
