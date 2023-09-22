@@ -4,7 +4,6 @@ from django.test import SimpleTestCase
 
 import requests_mock
 from glom import glom
-from zgw_consumers.models import Service
 
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
@@ -27,10 +26,6 @@ class HaalCentraalFindPersonTests:
     # specify in subclasses
     version: BRPVersions
 
-    # set in setUp
-    service: Service
-    config: HaalCentraalConfig
-
     # possibly override for different versions, but at least v1 and v2 support both of these
     attributes_to_query = (
         "naam.voornamen",
@@ -41,19 +36,18 @@ class HaalCentraalFindPersonTests:
         super().setUp()  # type: ignore
 
         # set up patcher for the configuration
-        self.service = ServiceFactory.build(
-            api_root="https://personen/api/",
-            oas="https://this.is.ignored",
-        )
-        self.config = HaalCentraalConfig(
-            brp_personen_service=self.service,
+        config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen/api/",
+                oas="https://this.is.ignored",
+            ),
             brp_personen_version=self.version,
         )
         config_patcher = patch(
             "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
-            return_value=self.config,
+            return_value=config,
         )
-        self.config_mock = config_patcher.start()
+        config_patcher.start()
         self.addCleanup(config_patcher.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks

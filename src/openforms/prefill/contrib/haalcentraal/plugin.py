@@ -4,10 +4,11 @@ from typing import Any, Iterable, Optional
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from glom import GlomError, glom
-from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.contrib.haal_centraal.clients import NoServiceConfigured, get_brp_client
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.pre_requests.clients import PreRequestClientContext
 from openforms.prefill.contrib.haalcentraal.constants import Attributes
@@ -32,7 +33,7 @@ def get_config() -> HaalCentraalConfig | None:
 
 @register("haalcentraal")
 class HaalCentraalPrefill(BasePlugin):
-    verbose_name = _("Haal Centraal")
+    verbose_name = _("Haal Centraal: BRP Personen Bevragen")
     requires_auth = AuthAttribute.bsn
 
     @staticmethod
@@ -152,30 +153,32 @@ class HaalCentraalPrefill(BasePlugin):
 
     def check_config(self):
         """
+        Check if the admin configuration is valid.
+
         The purpose of this fuction is to simply check the connection to the
         service, so we are using dummy data and an endpoint which does not exist.
-        We want to avoid calls to the national registration by using bsn numbers.
+        We want to avoid calls to the national registration by using a (valid) BSN.
         """
-        config = HaalCentraalConfig.get_solo()
-        assert isinstance(config, HaalCentraalConfig)
-        if not config.service:
-            raise InvalidPluginConfiguration(_("Service not selected"))
-
-        client = config.build_client()
-        assert client is not None
         try:
-            client.make_config_test_request()
-        except ClientError as e:
+            with get_brp_client() as client:
+                client.make_config_test_request()
+        # Possibly no service or (valid) version is set.
+        except NoServiceConfigured as exc:
+            raise InvalidPluginConfiguration(_("Service not selected")) from exc
+        except RuntimeError as exc:
+            raise InvalidPluginConfiguration(exc.args[0]) from exc
+        # The request itself can error
+        except requests.RequestException as exc:
             raise InvalidPluginConfiguration(
-                _("Client error: {exception}").format(exception=e)
-            )
+                _("Client error: {exception}").format(exception=exc)
+            ) from exc
 
     def get_config_actions(self):
         return [
             (
                 _("Configuration"),
                 reverse(
-                    "admin:prefill_haalcentraal_haalcentraalconfig_change",
+                    "admin:haalcentraal_haalcentraalconfig_change",
                     args=(HaalCentraalConfig.singleton_instance_id,),
                 ),
             ),

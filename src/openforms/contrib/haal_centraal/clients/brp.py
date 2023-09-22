@@ -106,7 +106,7 @@ class V2Client(BRPClient):
                 reraise_errors=True,
             )
         except requests.HTTPError as exc:
-            if (response := exc.response) and response.status_code == 400:
+            if (response := exc.response) is not None and response.status_code == 400:
                 return
             raise exc
 
