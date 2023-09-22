@@ -8,7 +8,7 @@ class NoServiceConfigured(RuntimeError):
     pass
 
 
-def get_brp_client() -> BRPClient:
+def get_brp_client(**kwargs) -> BRPClient:
     config = HaalCentraalConfig.get_solo()
     assert isinstance(config, HaalCentraalConfig)
     if not (service := config.brp_personen_service):
@@ -22,4 +22,4 @@ def get_brp_client() -> BRPClient:
         )
 
     service_client_factory = ServiceClientFactory(service)
-    return ClientCls.configure_from(service_client_factory)
+    return ClientCls.configure_from(service_client_factory, **kwargs)

@@ -24,8 +24,12 @@ AUTH_ATTRIBUTE_TO_CONFIG_FIELD = {
 }
 
 
-def get_default_plugin_for_auth_attribute(auth_attribute: str) -> Optional[str]:
-    if not (config_field := AUTH_ATTRIBUTE_TO_CONFIG_FIELD.get(auth_attribute)):
+def get_default_plugin_for_auth_attribute(
+    auth_attribute: AuthAttribute | None,
+) -> Optional[str]:
+    if not auth_attribute or not (
+        config_field := AUTH_ATTRIBUTE_TO_CONFIG_FIELD.get(auth_attribute)
+    ):
         logger.info("Unsupported auth_attribute '%s'", auth_attribute)
         return
 
@@ -38,7 +42,9 @@ def get_default_plugin_for_auth_attribute(auth_attribute: str) -> Optional[str]:
     return default_plugin
 
 
-def add_co_sign_representation(submission: Submission, auth_attribute: str):
+def add_co_sign_representation(
+    submission: Submission, auth_attribute: AuthAttribute | None
+):
     default_plugin = get_default_plugin_for_auth_attribute(auth_attribute)
     # configuration may be incomplete, do nothing in that case!
     if not default_plugin:

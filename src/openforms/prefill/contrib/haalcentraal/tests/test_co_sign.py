@@ -1,23 +1,21 @@
-from typing import Literal
 from unittest.mock import patch
 
 from django.test import TestCase
 
 import requests_mock
-from zgw_consumers.models import Service
-from zgw_consumers.test import mock_service_oas_get
 
-from openforms.prefill.contrib.haalcentraal.constants import HaalCentraalVersion
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
+from openforms.contrib.haal_centraal.tests.utils import load_json_mock
 from openforms.submissions.tests.factories import SubmissionFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig
 from ....registry import register
-from ..models import HaalCentraalConfig
-from .utils import load_json_mock
+from ..plugin import PLUGIN_IDENTIFIER
 
-plugin = register["haalcentraal"]
+plugin = register[PLUGIN_IDENTIFIER]
 
 
 class CoSignPrefillTests:
@@ -31,12 +29,7 @@ class CoSignPrefillTests:
     """
 
     # specify in subclasses
-    version: HaalCentraalVersion
-    schema_yaml_name: Literal["personen", "personen-v2"]
-
-    # set in setUp
-    service: Service
-    config: HaalCentraalConfig
+    version: BRPVersions
 
     def setUp(self):
         super().setUp()  # type: ignore
@@ -50,23 +43,29 @@ class CoSignPrefillTests:
         self.addCleanup(co_sign_config_patcher.stop)  # type: ignore
 
         # set up patcher for the configuration
-        self.config = HaalCentraalConfig(version=self.version, service=self.service)
-        haalcentraal_config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=self.config,
+        hc_config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen/api/",
+                oas="https://this.is.ignored",
+            ),
+            brp_personen_version=self.version,
         )
-        self.config_mock = haalcentraal_config_patcher.start()
-        self.addCleanup(haalcentraal_config_patcher.stop)  # type: ignore
+        hc_config_patcher = patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=hc_config,
+        )
+        hc_config_patcher.start()
+        self.addCleanup(hc_config_patcher.stop)  # type: ignore
+        hc_config_patcher2 = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=hc_config,
+        )
+        hc_config_patcher2.start()
+        self.addCleanup(hc_config_patcher2.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
         self.requests_mock.start()
-        mock_service_oas_get(
-            self.requests_mock,
-            url=self.service.api_root,
-            service=self.schema_yaml_name,
-            oas_url=self.service.oas,
-        )
         self.addCleanup(self.requests_mock.stop)  # type: ignore
 
     def test_store_names_on_co_sign_auth(self):
@@ -116,17 +115,7 @@ class CoSignPrefillTests:
 
 
 class CoSignPrefillV1Tests(CoSignPrefillTests, TestCase):
-    version = HaalCentraalVersion.haalcentraal13
-    schema_yaml_name = "personen"
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
+    version = BRPVersions.v13
 
     def test_store_names_on_co_sign_auth(self):
         self.requests_mock.get(
@@ -146,17 +135,7 @@ class CoSignPrefillV1Tests(CoSignPrefillTests, TestCase):
 
 
 class CoSignPrefillV2Tests(CoSignPrefillTests, TestCase):
-    version = HaalCentraalVersion.haalcentraal20
-    schema_yaml_name = "personen-v2"
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
+    version = BRPVersions.v20
 
     def test_store_names_on_co_sign_auth(self):
         self.requests_mock.post(
@@ -180,12 +159,13 @@ class CoSignPrefillEmptyConfigTests(TestCase):
         super().setUp()
 
         # mock out django-solo interface (we don't have to deal with caches then)
-        self.config = HaalCentraalConfig(version="", service=None)
         config_patcher = patch(
             "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=self.config,
+            return_value=HaalCentraalConfig(
+                brp_personen_version="", brp_personen_service=None
+            ),
         )
-        self.config_mock = config_patcher.start()
+        config_patcher.start()
         self.addCleanup(config_patcher.stop)  # type: ignore
 
         co_sign_config_patcher = patch(

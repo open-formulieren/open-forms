@@ -4,7 +4,6 @@ from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from glom import glom
-from zgw_consumers.models import Service
 
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
@@ -15,9 +14,13 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....constants import IdentifierRoles
-from ....registry import register
-from ..constants import Attributes
-from ..plugin import VERSION_TO_ATTRIBUTES_MAP, HaalCentraalPrefill
+from ..constants import Attributes as DefaultAttributes
+from ..plugin import (
+    PLUGIN_IDENTIFIER,
+    VERSION_TO_ATTRIBUTES_MAP,
+    HaalCentraalPrefill,
+    get_attributes_cls,
+)
 
 
 class AttributeResolutionTests(SimpleTestCase):
@@ -70,24 +73,34 @@ class HaalCentraalPluginTests:
     version: BRPVersions
 
     # set in setUp
-    service: Service
     config: HaalCentraalConfig
 
     def setUp(self):
         super().setUp()  # type: ignore
 
         # set up patcher for the configuration
-        self.config = HaalCentraalConfig(version=self.version, service=self.service)
+        config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen/api/",
+                oas="https://this.is.ignored",
+            ),
+            brp_personen_version=self.version,
+        )
         config_patcher = patch(
             "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=self.config,
+            return_value=config,
         )
-        self.config_mock = config_patcher.start()
+        config_patcher.start()
         self.addCleanup(config_patcher.stop)  # type: ignore
+        config_patcher2 = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=config,
+        )
+        config_patcher2.start()
+        self.addCleanup(config_patcher2.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
-
         self.requests_mock.start()
         self.addCleanup(self.requests_mock.stop)  # type: ignore
 
@@ -98,16 +111,16 @@ class HaalCentraalPluginTests:
         self.assertEqual(attributes, expected)  # type: ignore
 
     def test_prefill_values(self):
-        attributes = self.config.get_attributes()
-
+        Attributes = get_attributes_cls()
         submission = SubmissionFactory.create(auth_info__value="999990676")
         assert submission.is_authenticated
+        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
-        haalcentraal_plugin = register["haalcentraal"]
-        values = haalcentraal_plugin.get_prefill_values(
+        values = plugin.get_prefill_values(
             submission,
-            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+            attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
         )
+
         expected = {
             "naam.voornamen": "Cornelia Francisca",
             "naam.geslachtsnaam": "Wiegman",
@@ -115,33 +128,33 @@ class HaalCentraalPluginTests:
         self.assertEqual(values, expected)  # type: ignore
 
     def test_prefill_values_not_authenticated(self):
-        attributes = self.config.get_attributes()
-
+        Attributes = get_attributes_cls()
         submission = SubmissionFactory.create()
         assert not submission.is_authenticated
+        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
-        haalcentraal_plugin = register["haalcentraal"]
-        values = haalcentraal_plugin.get_prefill_values(
+        values = plugin.get_prefill_values(
             submission,
-            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+            attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
         )
+
         self.assertEqual(values, {})  # type: ignore
 
     def test_prefill_values_for_gemachtigde(self):
-        attributes = self.config.get_attributes()
-
+        Attributes = get_attributes_cls()
         submission = SubmissionFactory.create(
             auth_info__value="111111111",
             auth_info__machtigen={"identifier_value": "999990676"},
         )
         assert submission.is_authenticated
+        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
-        haalcentraal_plugin = register["haalcentraal"]
-        values = haalcentraal_plugin.get_prefill_values(
+        values = plugin.get_prefill_values(
             submission,
-            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+            attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
             identifier_role=IdentifierRoles.authorised_person,
         )
+
         self.assertEqual(
             values,
             {
@@ -151,16 +164,16 @@ class HaalCentraalPluginTests:
         )  # type: ignore
 
     def test_person_not_found_returns_empty(self):
-        attributes = self.config.get_attributes()
+        Attributes = get_attributes_cls()
         submission = SubmissionFactory.create(auth_info__value="999990676")
         assert submission.is_authenticated
 
-        haalcentraal_plugin = register["haalcentraal"]
-        values = haalcentraal_plugin.get_prefill_values(
-            submission,
-            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
-        )
+        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
+        values = plugin.get_prefill_values(
+            submission,
+            attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
+        )
         self.assertEqual(values, {})  # type: ignore
 
     def test_pre_request_hooks_called(self):
@@ -173,13 +186,13 @@ class HaalCentraalPluginTests:
                 mock(*args, **kwargs)
 
         with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
-            attributes = self.config.get_attributes()
+            Attributes = get_attributes_cls()
             submission = SubmissionFactory.create(auth_info__value="999990676")
-            haalcentraal_plugin = register["haalcentraal"]
+            plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
-            haalcentraal_plugin.get_prefill_values(
+            plugin.get_prefill_values(
                 submission,
-                attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+                attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
             )
 
             mock.assert_called_once()
@@ -189,15 +202,6 @@ class HaalCentraalPluginTests:
 
 class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
     version = BRPVersions.v13
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
 
     def test_prefill_values(self):
         self.requests_mock.get(
@@ -233,15 +237,6 @@ class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
 
 class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
     version = BRPVersions.v20
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
 
     def test_prefill_values(self):
         self.requests_mock.post(
@@ -280,30 +275,36 @@ class HaalCentraalEmptyConfigTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.config = HaalCentraalConfig(version="", service=None)
+        config = HaalCentraalConfig(brp_personen_version="", brp_personen_service=None)
         config_patcher = patch(
             "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=self.config,
+            return_value=config,
         )
-        self.config_mock = config_patcher.start()
+        config_patcher.start()
+        config_patcher2 = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=config,
+        )
+        config_patcher2.start()
+        self.addCleanup(config_patcher2.stop)  # type: ignore
         self.addCleanup(config_patcher.stop)  # type: ignore
 
     def test_get_available_attributes(self):
         attributes = HaalCentraalPrefill.get_available_attributes()
 
-        self.assertEqual(attributes, Attributes.choices)
+        self.assertEqual(attributes, DefaultAttributes.choices)
 
     def test_get_prefill_values(self):
-        attributes = self.config.get_attributes()
+        Attributes = get_attributes_cls()
 
-        haalcentraal_plugin = register["haalcentraal"]
+        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
 
         with self.subTest("unauthenticated submission"):
             submission = SubmissionFactory.build()
             assert not submission.is_authenticated
 
-            values = haalcentraal_plugin.get_prefill_values(
-                submission, attributes=(attributes.naam_voornamen,)
+            values = plugin.get_prefill_values(
+                submission, attributes=(Attributes.naam_voornamen,)
             )
 
             self.assertEqual(values, {})
@@ -312,8 +313,8 @@ class HaalCentraalEmptyConfigTests(TestCase):
             submission = SubmissionFactory.create(auth_info__value="999990676")
             assert submission.is_authenticated
 
-            values = haalcentraal_plugin.get_prefill_values(
-                submission, attributes=(attributes.naam_voornamen,)
+            values = plugin.get_prefill_values(
+                submission, attributes=(Attributes.naam_voornamen,)
             )
 
             self.assertEqual(values, {})
