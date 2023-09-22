@@ -1,21 +1,21 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import SimpleTestCase
 from django.utils.translation import ugettext as _
 
 import requests_mock
-from zgw_consumers.test import mock_service_oas_get
+from privates.test import temp_private_root
 
-from openforms.contrib.kvk.tests.base import KVKTestMixin
-from openforms.contrib.kvk.validators import (
+from ..validators import (
     KVKBranchNumberRemoteValidator,
     KVKNumberRemoteValidator,
     KVKRSINRemoteValidator,
     validate_branchNumber,
     validate_kvk,
 )
+from .base import KVKTestMixin, load_json_mock
 
 
-class KvKValidatorTestCase(TestCase):
+class KvKValidatorTestCase(SimpleTestCase):
     @staticmethod
     def test_valid_kvks():
         validate_kvk("12345678")
@@ -45,21 +45,21 @@ class KvKValidatorTestCase(TestCase):
             validate_branchNumber("11223-445566")
 
 
-class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
+@temp_private_root()
+class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_kvkNumber_validator(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=69599084",
+            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
             status_code=200,
-            json=self.load_json_mock("zoeken_response.json"),
+            json=load_json_mock("zoeken_response.json"),
         )
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=90004760",
+            f"{self.api_root}v1/zoeken?kvkNummer=90004760",
             status_code=404,
         )
         m.get(
-            "https://companies/v1/zoeken?kvkNummer=68750110",
+            f"{self.api_root}v1/zoeken?kvkNummer=68750110",
             status_code=500,
         )
 
@@ -87,15 +87,32 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
             validator("bork")
 
     @requests_mock.Mocker()
+    def test_kvkNumber_validator_emptyish_results(self, m):
+        bad_responses = (
+            {"resultaten": []},
+            {},
+        )
+        validate = KVKNumberRemoteValidator()
+
+        for response_json in bad_responses:
+            with self.subTest(response_json=response_json):
+                m.get(
+                    f"{self.api_root}v1/zoeken?kvkNummer=69599084",
+                    json=response_json,
+                )
+
+                with self.assertRaises(ValidationError):
+                    validate("69599084")
+
+    @requests_mock.Mocker()
     def test_rsin_validator(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
-            "https://companies/v1/zoeken?rsin=111222333",
+            f"{self.api_root}v1/zoeken?rsin=111222333",
             status_code=200,
-            json=self.load_json_mock("zoeken_response.json"),
+            json=load_json_mock("zoeken_response.json"),
         )
         m.get(
-            "https://companies/v1/zoeken?rsin=063308836",
+            f"{self.api_root}v1/zoeken?rsin=063308836",
             status_code=404,
         )
 
@@ -120,14 +137,13 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_branchNumber_validator(self, m):
-        mock_service_oas_get(m, "https://companies/api/", service="zoeken_openapi")
         m.get(
-            "https://companies/v1/zoeken?vestigingsnummer=112233445566",
+            f"{self.api_root}v1/zoeken?vestigingsnummer=112233445566",
             status_code=200,
-            json=self.load_json_mock("zoeken_response.json"),
+            json=load_json_mock("zoeken_response.json"),
         )
         m.get(
-            "https://companies/v1/zoeken?vestigingsnummer=665544332211",
+            f"{self.api_root}v1/zoeken?vestigingsnummer=665544332211",
             status_code=404,
         )
 

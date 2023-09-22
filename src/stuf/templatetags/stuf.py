@@ -1,19 +1,16 @@
-from dataclasses import dataclass
 from datetime import timedelta
-from typing import Any, Literal
+from typing import Any
 
 from django.template import Library
 from django.utils import dateformat, timezone
 
-from soap.constants import EndpointSecurity
-
-from ..models import StufService
+from ..client import StuurGegevens, WSSecurity
 
 register = Library()
 
 
 @register.inclusion_tag("stuf/includes/security.xml")
-def render_security(service: StufService, expiry_minutes: int) -> dict[str, Any]:
+def render_security(wss: WSSecurity, expiry_minutes: int) -> dict[str, Any]:
     """
     Provide the security headers block based on service configuration.
 
@@ -37,48 +34,23 @@ def render_security(service: StufService, expiry_minutes: int) -> dict[str, Any]
     now = timezone.localtime(timezone.now(), timezone=timezone.utc)
     expires_at = now + timedelta(minutes=expiry_minutes)
     return {
-        "use_wss": (
-            service.soap_service.endpoint_security
-            in [EndpointSecurity.wss, EndpointSecurity.wss_basicauth]
-        ),
-        "wss_username": service.soap_service.user,
-        "wss_password": service.soap_service.password,
+        "use_wss": wss.use_wss,
+        "wss_username": wss.wss_username,
+        "wss_password": wss.wss_password,
         "wss_created": now.isoformat(timespec="seconds").replace("+00:00", "Z"),
         "wss_expires": expires_at.isoformat(timespec="seconds").replace("+00:00", "Z"),
     }
 
 
-@dataclass
-class InvolvedParty:
-    applicatie: str
-    organisatie: str = ""
-    administratie: str = ""
-    gebruiker: str = ""
-
-    NAMES = (
-        "applicatie",
-        "organisatie",
-        "administratie",
-        "gebruiker",
-    )
-
-    @classmethod
-    def from_service_configuration(
-        cls,
-        service: StufService,
-        prefix: Literal["zender", "ontvanger"],
-    ) -> "InvolvedParty":
-        kwargs = {name: getattr(service, f"{prefix}_{name}", "") for name in cls.NAMES}
-        return cls(**kwargs)
-
-
 @register.inclusion_tag("stuf/includes/stuurgegevens.xml")
-def render_stuurgegevens(service: StufService, referentienummer: str) -> dict[str, Any]:
+def render_stuurgegevens(
+    stuurgegevens: StuurGegevens, referentienummer: str
+) -> dict[str, Any]:
     tijdstip_bericht = timezone.now()
     tijdstip_bericht = dateformat.format(tijdstip_bericht, "YmdHis")
     return {
-        "zender": InvolvedParty.from_service_configuration(service, "zender"),
-        "ontvanger": InvolvedParty.from_service_configuration(service, "ontvanger"),
+        "zender": stuurgegevens.zender,
+        "ontvanger": stuurgegevens.ontvanger,
         "referentienummer": referentienummer,
         "tijdstip_bericht": tijdstip_bericht,
     }

@@ -1,7 +1,10 @@
+import uuid
+
 from django.core.management import BaseCommand
 
-from openforms.registrations.contrib.stuf_zds.client import StufZDSClient
 from soap.models import SoapService
+from stuf.models import StufService
+from stuf.stuf_zds.client import StufZDSClient, ZaakOptions
 
 
 class Command(BaseCommand):
@@ -25,21 +28,24 @@ class Command(BaseCommand):
         # add auth like user/password and certificates
 
     def handle(self, *args, **options):
-        service = SoapService()
-        service.url = options["url"]
-        service.ontvanger_organisatie = "ORG"
-        service.ontvanger_applicatie = "TTA"
-        service.zender_organisatie = "KING"
-        service.zender_applicatie = "TTA"
+        service = StufService(
+            soap_service=SoapService(url=options["url"]),
+            ontvanger_organisatie="ORG",
+            ontvanger_applicatie="TTA",
+            zender_organisatie="KING",
+            zender_applicatie="TTA",
+        )
 
-        client_options = {
+        client_options: ZaakOptions = {
             "gemeentecode": "1234",
             "omschrijving": "my-form",
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
             "zds_zaaktype_status_code": "zt-st-code",
             "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
+            "zds_zaakdoc_vertrouwelijkheid": "VERTROUWELIJK",
             "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
+            "referentienummer": str(uuid.uuid4()),
         }
 
         client = StufZDSClient(service, client_options)
@@ -57,7 +63,7 @@ class Command(BaseCommand):
                 data["anp_id"] = "12345678901234567"
 
             zaak_id = client.create_zaak_identificatie()
-            client.create_zaak(zaak_id, data)
+            client.create_zaak(zaak_id, data, extra_data={})
 
         elif options["create"] == "document":
             data = {

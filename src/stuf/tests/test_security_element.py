@@ -6,6 +6,8 @@ from lxml import etree
 
 from soap.constants import EndpointSecurity
 
+from ..client import BaseClient
+from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from .factories import StufServiceFactory
 
 
@@ -21,14 +23,14 @@ class SecurityElementTests(SimpleTestCase):
             soap_service__password="some-password",
             soap_service__endpoint_security=EndpointSecurity.wss,
         )
+        factory = ServiceClientFactory(service)
+        client = BaseClient.configure_from(factory, **get_client_init_kwargs(service))
+        client.soap_security_expires_minutes = 5
+        context = client.build_base_context()
 
-        output = render_to_string(
-            "stuf/soap_envelope.xml",
-            context={
-                "service": service,
-                "security_expires_minutes": 5,
-            },
-        ).encode("utf-8")
+        output = render_to_string("stuf/soap_envelope.xml", context=context).encode(
+            "utf-8"
+        )
 
         xml_doc = etree.fromstring(output)
         security = xml_doc.xpath("soap:Header/wss:Security", namespaces=nsmap)[0]

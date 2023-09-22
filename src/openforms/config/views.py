@@ -1,16 +1,14 @@
 from typing import Any, Dict, Generator, Optional, Protocol, TypeGuard
 
-from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
 from django.utils.encoding import force_str
-from django.utils.module_loading import import_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 
 from openforms.appointments.registry import register as appointments_register
-from openforms.contrib.kadaster.config_check import Check as KadasterConfigCheck
-from openforms.contrib.kvk.checks import check_kvk_remote_validator
+from openforms.contrib.kadaster.config_check import BAGCheck, LocatieServerCheck
+from openforms.contrib.kvk.checks import KVKRemoteValidatorCheck
 from openforms.dmn.registry import register as dmn_register
 from openforms.payments.registry import register as payments_register
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -63,7 +61,10 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             sections += [
                 {
                     "name": _("Address lookup plugins"),
-                    "entries": self.get_geo_entries(),
+                    "entries": [
+                        self.get_plugin_entry(BAGCheck),  # Location client
+                        self.get_plugin_entry(LocatieServerCheck),  # Kadaster search
+                    ],
                 },
             ]
 
@@ -71,7 +72,10 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             sections += [
                 {
                     "name": _("Validator plugins"),
-                    "entries": [check_kvk_remote_validator()],
+                    "entries": [
+                        # uses KVK 'zoeken' client
+                        self.get_plugin_entry(KVKRemoteValidatorCheck),
+                    ],
                 },
             ]
 
@@ -122,15 +126,9 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             plugin.check_config()
         except Exception as e:
             status, error = False, str(e)
+
         try:
             actions = plugin.get_config_actions()
-        except NotImplementedError:
-            actions: list[Action] = [
-                (
-                    "Not implemented",
-                    "TODO: REMOVE THIS WHEN ALL PLUGINS HAVE THIS FUNCTION.",
-                )
-            ]
         except Exception as e:
             actions = [
                 (
@@ -146,24 +144,9 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             error=error,
         )
 
-    def get_geo_entries(self) -> list[Entry]:
-        entries = []
-
-        # Location client
-        try:
-            client = import_string(settings.OPENFORMS_LOCATION_CLIENT)
-        except ImportError as e:
-            entries.append(Entry(name=_("unknown"), status=False, error=str(e)))
-        else:
-            entries.append(self.get_plugin_entry(client))
-
-        # Kadaster search
-        entries.append(self.get_plugin_entry(KadasterConfigCheck))
-
-        return entries
-
     def get_clamav_entry(self):
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         config_url = reverse(
             "admin:config_globalconfiguration_change", args=(config.pk,)
         )

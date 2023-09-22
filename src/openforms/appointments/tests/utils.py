@@ -1,10 +1,7 @@
-import os
-
-from django.conf import settings
-
 from soap.tests.factories import SoapServiceFactory
 
 from ..contrib.jcc.models import JccConfig
+from ..contrib.jcc.tests.utils import WSDL
 from ..models import AppointmentsConfig
 
 
@@ -15,11 +12,5 @@ def setup_jcc() -> None:
     appointments_config.save()
 
     config = JccConfig.get_solo()
-    wsdl = os.path.abspath(
-        os.path.join(
-            settings.DJANGO_PROJECT_DIR,
-            "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-        )
-    )
-    config.service = SoapServiceFactory.create(url=wsdl)
+    config.service = SoapServiceFactory.create(url=str(WSDL))
     config.save()

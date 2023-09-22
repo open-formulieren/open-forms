@@ -3,12 +3,12 @@ import logging
 import uuid
 from collections import OrderedDict
 from datetime import datetime
-from typing import Literal, TypedDict
+from functools import partial
+from typing import Callable, Literal, TypedDict
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-import requests
 from lxml import etree
 from lxml.etree import _Element
 from requests import RequestException
@@ -18,11 +18,13 @@ from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
-from soap.constants import STUF_ZDS_EXPIRY_MINUTES, EndpointType
 
 from ..client import BaseClient
+from ..constants import EndpointType
 from ..models import StufService
+from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from ..xml import fromstring
+from .constants import STUF_ZDS_EXPIRY_MINUTES
 
 logger = logging.getLogger(__name__)
 
@@ -94,22 +96,37 @@ class ZaakOptions(TypedDict):
     referentienummer: str
 
 
-class StufZDSClient(BaseClient):
+def StufZDSClient(service: StufService, options: ZaakOptions) -> "Client":
+    factory = ServiceClientFactory(service)
+    init_kwargs = get_client_init_kwargs(
+        service,
+        request_log_hook=partial(logevent.stuf_zds_request, service),
+    )
+    return Client.configure_from(
+        factory,
+        options=options,
+        failure_log_callback=partial(logevent.stuf_zds_failure_response, service),
+        success_log_callback=partial(logevent.stuf_zds_success_response, service),
+        **init_kwargs,
+    )
+
+
+class Client(BaseClient):
     sector_alias = "zkn"
     soap_security_expires_minutes = STUF_ZDS_EXPIRY_MINUTES
 
-    def __init__(self, service: StufService, options: ZaakOptions):
-        """
-        Initialize the client instance.
-
-        :arg options: Values from the ``ZaakOptionsSerializer``, amended with
-          'omschrijving' and 'referentienummer'.
-        """
-        super().__init__(
-            service,
-            request_log_hook=logevent.stuf_zds_request,
-        )
-        self.options = options
+    def __init__(
+        self,
+        *args,
+        options: ZaakOptions,
+        failure_log_callback: Callable[[str], None],
+        success_log_callback: Callable[[str], None],
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.zds_options = options
+        self.log_stuf_zds_failure = failure_log_callback
+        self.log_stuf_zds_success = success_log_callback
 
     def execute_call(self, *args, **kwargs) -> _Element:
         """
@@ -131,8 +148,7 @@ class StufZDSClient(BaseClient):
 
         # logging context
         ref_nr = context["referentienummer"]
-        endpoint_type = kwargs["endpoint_type"]
-        _url = self.service.get_endpoint(type=endpoint_type)
+        _url = self.to_absolute_url(kwargs["endpoint_type"])
 
         try:
             response = self.templated_request(*args, **kwargs)
@@ -142,7 +158,7 @@ class StufZDSClient(BaseClient):
                 ref_nr,
                 extra={"ref_nr": ref_nr},
             )
-            logevent.stuf_zds_failure_response(self.service, _url)
+            self.log_stuf_zds_failure(_url)
             raise RegistrationFailed("error while making backend request") from e
 
         if (status_code := response.status_code) < 200 or status_code >= 400:
@@ -153,7 +169,7 @@ class StufZDSClient(BaseClient):
                 error_text,
                 extra={"ref_nr": ref_nr},
             )
-            logevent.stuf_zds_failure_response(self.service, _url)
+            self.log_stuf_zds_failure(_url)
             raise RegistrationFailed(
                 f"error while making backend request: HTTP {status_code}: {error_text}",
                 response=response,
@@ -162,12 +178,12 @@ class StufZDSClient(BaseClient):
         try:
             xml = fromstring(response.content)
         except etree.XMLSyntaxError as e:
-            logevent.stuf_zds_failure_response(self.service, _url)
+            self.log_stuf_zds_failure(_url)
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
             ) from e
 
-        logevent.stuf_zds_success_response(self.service, _url)
+        self.log_stuf_zds_success(_url)
         return xml
 
     def create_zaak_identificatie(self) -> str:
@@ -199,13 +215,17 @@ class StufZDSClient(BaseClient):
         context = {
             "tijdstip_registratie": fmt_soap_datetime(now),
             "datum_vandaag": fmt_soap_date(now),
-            "zds_zaaktype_code": self.options["zds_zaaktype_code"],
-            "zds_zaaktype_omschrijving": self.options.get("zds_zaaktype_omschrijving"),
-            "zds_zaaktype_status_code": self.options.get("zds_zaaktype_status_code"),
-            "zds_zaaktype_status_omschrijving": self.options.get(
+            "zds_zaaktype_code": self.zds_options["zds_zaaktype_code"],
+            "zds_zaaktype_omschrijving": self.zds_options.get(
+                "zds_zaaktype_omschrijving"
+            ),
+            "zds_zaaktype_status_code": self.zds_options.get(
+                "zds_zaaktype_status_code"
+            ),
+            "zds_zaaktype_status_omschrijving": self.zds_options.get(
                 "zds_zaaktype_status_omschrijving"
             ),
-            "zaak_omschrijving": self.options["omschrijving"],
+            "zaak_omschrijving": self.zds_options["omschrijving"],
             "zaak_identificatie": zaak_identificatie,
             "extra": extra_data,
             "betalings_indicatie": (
@@ -275,11 +295,11 @@ class StufZDSClient(BaseClient):
         context = {
             "tijdstip_registratie": fmt_soap_datetime(now),
             "datum_vandaag": fmt_soap_date(now),
-            "zaak_omschrijving": self.options["omschrijving"],
-            "zds_documenttype_omschrijving_inzending": self.options[
+            "zaak_omschrijving": self.zds_options["omschrijving"],
+            "zds_documenttype_omschrijving_inzending": self.zds_options[
                 "zds_documenttype_omschrijving_inzending"
             ],
-            "zds_zaakdoc_vertrouwelijkheid": self.options[
+            "zds_zaakdoc_vertrouwelijkheid": self.zds_options[
                 "zds_zaakdoc_vertrouwelijkheid"
             ],
             "zaak_identificatie": zaak_id,
@@ -343,10 +363,9 @@ class StufZDSClient(BaseClient):
         )
 
     def check_config(self) -> None:
-        url = f"{self.service.get_endpoint(EndpointType.beantwoord_vraag)}?wsdl"
-        auth_kwargs = self._get_auth_kwargs()
+        url = f"{self.to_absolute_url(EndpointType.beantwoord_vraag)}?wsdl"
         try:
-            response = requests.get(url, **auth_kwargs)
+            response = self.get(url)
             if not response.ok:
                 error_text = parse_soap_error_text(response)
                 raise InvalidPluginConfiguration(

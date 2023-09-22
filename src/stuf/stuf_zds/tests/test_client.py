@@ -10,10 +10,10 @@ from simple_certmanager.constants import CertificateTypes
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.tests.utils import can_connect
 from simple_certmanager_ext.tests.factories import CertificateFactory
-from soap.constants import EndpointType
 
+from ...constants import EndpointType
 from ...tests.factories import StufServiceFactory
-from ..client import StufZDSClient
+from ..client import StufZDSClient, ZaakOptions
 
 
 @requests_mock.Mocker()
@@ -37,7 +37,7 @@ class StufZdsClientTest(TestCase):
             public_certificate__filename="test1.certificate",
         )
 
-        cls.client_options = {
+        cls.client_options: ZaakOptions = {
             "gemeentecode": "1234",
             "omschrijving": "my-form",
             "zds_zaaktype_code": "zt-code",
@@ -46,6 +46,7 @@ class StufZdsClientTest(TestCase):
             "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
             "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
             "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
+            "referentienummer": "only-here-for-typechecker",
         }
 
     def test_mutual_tls(self, m):
@@ -63,8 +64,7 @@ class StufZdsClientTest(TestCase):
 
         client.create_zaak(zaak_identificatie="ZAAK-01", zaak_data={}, extra_data={})
 
-        history = m.request_history
-        request_with_tls = history[-1]
+        request_with_tls = m.last_request
 
         self.assertEqual(
             self.server_certificate.public_certificate.path, request_with_tls.verify
@@ -132,11 +132,11 @@ class StufZdsRegressionTests(TestCase):
         We cannot mock the calls using requests_mock here as the crash happens inside
         http.client, used by requests.
         """
-        stuf_service = StufServiceFactory.create()
-        client = StufZDSClient(stuf_service, {})
+        stuf_service = StufServiceFactory.build()
+        client = StufZDSClient(stuf_service, {})  # type: ignore
 
         with patch.object(
-            client.service, "get_endpoint", return_value="https://example.com"
+            client, "to_absolute_url", return_value="https://example.com"
         ):
             context = {
                 **client.build_base_context(),

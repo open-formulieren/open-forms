@@ -41,7 +41,12 @@ class APIClient(Session):
     _request_kwargs: dict[str, Any]
     _in_context_manager: bool = False
 
-    def __init__(self, base_url: str, request_kwargs: dict[str, Any] | None = None):
+    def __init__(
+        self,
+        base_url: str,
+        request_kwargs: dict[str, Any] | None = None,
+        **kwargs,  # subclasses may require additional configuration
+    ):
         # base class does not take any kwargs
         super().__init__()
         # normalize to dict
@@ -69,10 +74,10 @@ class APIClient(Session):
         return super().__exit__(*args)
 
     @classmethod
-    def configure_from(cls, factory: APIClientFactory):
+    def configure_from(cls, factory: APIClientFactory, **kwargs):
         base_url = factory.get_client_base_url()
         session_kwargs = factory.get_client_session_kwargs()
-        return cls(base_url, session_kwargs)
+        return cls(base_url, session_kwargs, **kwargs)
 
     def request(self, method, url, *args, **kwargs):
         for attr, val in self._request_kwargs.items():

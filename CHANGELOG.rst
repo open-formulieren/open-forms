@@ -2,6 +2,30 @@
 Changelog
 =========
 
+2.4.0 "..." (2023-09-??)
+========================
+
+.. warning:: These release notes are in development!
+
+Upgrade procedure
+-----------------
+
+**KVK configuration**
+
+We've done some extensive code and configuration cleanups, and the KVK configuration may
+be affected by this. The service configuration for the "zoeken" and "basisprofiel" API's
+has been merged into a single service. Normally this configuration update should have
+been performed correctly automatically, but we can't rule out possible mistakes with
+more exotic configurations via API gateways.
+
+Please check and update your configuration if necessary - you can check this via:
+**Admin** > **Configuratie** > **Configuratie overzicht** and look for the KVK entries.
+
+If you run into any errors, then please check your certificate configuration, API key
+and validate that the API root does *not* include the ``v1/`` suffix. An example of a
+correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/``.
+
+
 2.3.0 "Cruquius" (2023-08-24)
 =============================
 

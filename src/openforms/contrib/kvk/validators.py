@@ -1,13 +1,15 @@
+from typing import Literal, cast
+
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 from requests import RequestException
-from zds_client import ClientError
 
-from openforms.contrib.kvk.client import KVKClientError, KVKSearchClient
 from openforms.utils.validators import validate_digits, validate_rsin
 from openforms.validations.registry import register
+
+from .client import NoServiceConfigured, SearchParams, get_client
 
 
 @deconstructible
@@ -46,7 +48,7 @@ validate_branchNumber = KVKBranchNumberValidator()
 
 
 class KVKRemoteBaseValidator:
-    query_param: str
+    query_param: Literal["kvkNummer", "rsin", "vestigingsnummer"]
     value_label: str
 
     error_messages = {
@@ -54,27 +56,30 @@ class KVKRemoteBaseValidator:
         "too_short": _("%(type)s should have %(size)i characters."),
     }
 
-    def __call__(self, value):
+    def __call__(self, value: str) -> bool:
         assert self.query_param
+        query = cast(
+            SearchParams, {self.query_param: value}
+        )  # isinstance isn't supported
 
-        client = KVKSearchClient()
         try:
-            result = client.query(**{self.query_param: value})
-        except (RequestException, ClientError, KVKClientError):
+            with get_client() as client:
+                result = client.get_search_results(query_params=query)
+        except (RequestException, NoServiceConfigured):
             raise ValidationError(
                 self.error_messages["not_found"],
                 params={"type": self.value_label},
                 code="invalid",
             )
-        else:
-            if not len(result.get("resultaten", [])):
-                raise ValidationError(
-                    self.error_messages["not_found"],
-                    params={"type": self.value_label},
-                    code="invalid",
-                )
-            else:
-                return True
+
+        if not len(result.get("resultaten", [])):
+            raise ValidationError(
+                self.error_messages["not_found"],
+                params={"type": self.value_label},
+                code="invalid",
+            )
+
+        return True
 
 
 @register("kvk-kvkNumber", verbose_name=_("KvK number"), for_components=("textfield",))

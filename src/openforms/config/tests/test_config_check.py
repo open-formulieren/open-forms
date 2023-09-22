@@ -78,11 +78,7 @@ class ConfigCheckTests(TestCase):
         "stuf.stuf_zds.client.parse_soap_error_text", return_value="(parsed error text)"
     )
     def test_check_config_service_failure_correctly_reported(self, m, *mocks):
-        self.service = StufServiceFactory.create()
-        config = StufZDSConfig.get_solo()
-        config.service = self.service
-        config.gemeentecode = "1234"
-        config.save()
+        config = StufZDSConfig(service=StufServiceFactory.create(), gemeentecode="1234")
         m.get(
             "http://zaken/soap/?wsdl",
             status_code=500,
@@ -92,7 +88,11 @@ class ConfigCheckTests(TestCase):
         user = StaffUserFactory(user_permissions=["configuration_overview"])
         self.client.force_login(user)
 
-        response = self.client.get(self.url)
+        with patch(
+            "openforms.registrations.contrib.stuf_zds.plugin.StufZDSConfig.get_solo",
+            return_value=config,
+        ):
+            response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
         expected_entry = format_html(

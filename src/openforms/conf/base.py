@@ -211,7 +211,7 @@ INSTALLED_APPS = [
     "openforms.contrib.brp",
     "openforms.contrib.kadaster",
     "openforms.contrib.kvk",
-    "openforms.contrib.bag.apps.BAGConfig",
+    "openforms.contrib.bag.apps.BAGConfig",  # TODO: remove once 2.4.0 is released
     "openforms.contrib.microsoft.apps.MicrosoftApp",
     "openforms.dmn",
     "openforms.dmn.contrib.camunda",
@@ -930,9 +930,6 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
         BASE_DIR, "src/openforms/registrations/contrib/objects_api/tests/files"
     ),
     os.path.join(BASE_DIR, "src/openforms/prefill/contrib/haalcentraal/tests/files"),
-    os.path.join(BASE_DIR, "src/openforms/contrib/kvk/tests/files"),
-    os.path.join(BASE_DIR, "src/openforms/contrib/bag/tests/files"),
-    os.path.join(BASE_DIR, "src/openforms/contrib/kadaster/tests/files/"),
 ]
 
 #
@@ -1060,13 +1057,6 @@ if EIDAS_SERVICE_INDEX:
             "classifiers": ["eIDAS-inbound"],
         }
     )
-
-#
-# Location Client
-#
-OPENFORMS_LOCATION_CLIENT = config(
-    "OPENFORMS_LOCATION_CLIENT", "openforms.contrib.bag.client.BAGClient"
-)
 
 #
 # Mozilla Django OIDC DB settings

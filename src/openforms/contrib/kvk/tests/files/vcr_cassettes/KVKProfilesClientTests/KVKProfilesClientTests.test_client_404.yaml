@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/hal+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/hal+json
+      User-Agent:
+      - python-requests/2.31.0
+      apikey:
+      - l7xx1f2691f2520d487b902f4e0b57a0b197
+    method: GET
+    uri: https://api.kvk.nl/test/api/v1/basisprofielen/12345678
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAKtWSssvLVGyiq5WSs5PSVWyUvIMcLEEAiUdpfzc4uSMosysssy8dKCEY056am5q
+        XqpCSWpyRl4mUC5VAaRZT6k2thYAfL7PzUgAAAA=
+    headers:
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '86'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 21 Sep 2023 16:14:52 GMT
+      Server:
+      - unknown
+      strict-transport-security:
+      - max-age=157680000 ; includeSubDomains
+    status:
+      code: 500
+      message: ''
+version: 1

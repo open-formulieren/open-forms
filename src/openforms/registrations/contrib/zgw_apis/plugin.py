@@ -407,7 +407,7 @@ class ZGWRegistration(BasePlugin):
             (
                 gettext("Configuration"),
                 reverse(
-                    "admin:admin:zgw_apis_zgwapigroupconfig_changelist",
+                    "admin:zgw_apis_zgwapigroupconfig_changelist",
                 ),
             ),
         ]

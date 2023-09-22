@@ -1,0 +1,45 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/hal+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/hal+json
+      User-Agent:
+      - python-requests/2.31.0
+      apikey:
+      - l7xx1f2691f2520d487b902f4e0b57a0b197
+    method: GET
+    uri: https://api.kvk.nl/test/api/v1/zoeken?kvkNummer=12345678
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAC2KsQ6DMBBDf+V0M6oQEgtzO3RjRx0iYkJoyaEEMoD4d64Si/X87IMH2VZuuoN7
+        seCG3+2zrsqSC5Y59WP0U/bB6fCKtPspkAP+4ZARkkKWYNVYD8rys6JsjHaQLPeNdsF3MdHMWBHT
+        g8/PeQHyrtlsegAAAA==
+    headers:
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '127'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 21 Sep 2023 16:11:54 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - unknown
+      strict-transport-security:
+      - max-age=157680000 ; includeSubDomains
+    status:
+      code: 404
+      message: ''
+version: 1

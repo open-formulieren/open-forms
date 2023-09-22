@@ -1,27 +1,64 @@
 import json
-import os
+from pathlib import Path
+from typing import Literal
+from unittest.mock import patch
+
+from simple_certmanager.constants import CertificateTypes
+from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.contrib.kvk.models import KVKConfig
+from simple_certmanager_ext.tests.factories import CertificateFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
+
+TEST_FILES = Path(__file__).parent.resolve() / "files"
+
+G1_ROOT = TEST_FILES / "Staat_der_Nederlanden_Private_Root_CA_-_G1.crt"
+
+TestFileNames = Literal[
+    "basisprofiel_response.json",
+    "basisprofiel_response_vve.json",
+    "zoeken_response.json",
+]
+
+
+def load_json_mock(name: TestFileNames):
+    with (TEST_FILES / name).open("r") as f:
+        return json.load(f)
+
+
+# See https://developers.kvk.nl/documentation/testing
+SERVER_CERT = CertificateFactory.build(
+    label="Staat der Nederlanden Private Root CA - G1",
+    type=CertificateTypes.cert_only,
+    public_certificate__filepath=str(G1_ROOT),
+)
+
+KVK_SERVICE = ServiceFactory.build(
+    api_root="https://api.kvk.nl/test/api/",
+    oas="https://api.kvk.nl/test/api/",  # ignored/unused
+    api_type=APITypes.orc,
+    auth_type=AuthTypes.api_key,
+    header_key="apikey",
+    header_value="l7xx1f2691f2520d487b902f4e0b57a0b197",
+    server_certificate=SERVER_CERT,
+)
 
 
 class KVKTestMixin:
-    def load_json_mock(self, name):
-        path = os.path.join(os.path.dirname(__file__), "files", name)
-        with open(path, "r") as f:
-            return json.load(f)
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
+    api_root = KVK_SERVICE.api_root
 
-        config = KVKConfig.get_solo()
-        config._service = ServiceFactory(
-            api_root="https://companies/",
-            oas="https://companies/api/schema/openapi.yaml",
+    def setUp(self):
+        super().setUp()
+
+        patcher = patch(
+            "openforms.contrib.kvk.client.KVKConfig.get_solo",
+            return_value=KVKConfig(service=KVK_SERVICE),
         )
-        config._profiles = ServiceFactory(
-            api_root="https://basisprofiel/",
-            oas="https://basisprofiel/schema/openapi.yaml",
-        )
-        config.save()
+        self.config_mock = patcher.start()
+        self.addCleanup(patcher.stop)
+
+        # ensure that the certificate exists on disk, even with SimpleTestCase
+        g1_cert = Path(SERVER_CERT.public_certificate.path)
+        if not g1_cert.exists():
+            g1_cert.write_bytes(G1_ROOT.read_bytes())

@@ -6,8 +6,13 @@ from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests_mock
+
+from openforms.contrib.kadaster.clients.bag import AddressResult
+from openforms.contrib.kadaster.models import KadasterApiConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 CACHES = settings.CACHES.copy()
 CACHES["default"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
@@ -26,15 +31,15 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.addCleanup(caches["default"].clear)
         self._add_submission_to_session(self.submission)
 
-    @patch("openforms.locations.api.views.import_string")
-    def test_getting_street_name_and_city(self, import_string_mock):
-        import_string_mock.return_value.get_address.return_value = {
-            "street_name": "Keizersgracht",
-            "city": "Amsterdam",
-        }
+    @patch("openforms.locations.api.views.lookup_address")
+    def test_getting_street_name_and_city(self, m_lookup_address):
+        m_lookup_address.return_value = AddressResult(
+            street_name="Keizersgracht", city="Amsterdam"
+        )
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ&house_number=117"
+            reverse("api:get-street-name-and-city-list"),
+            {"postcode": "1015CJ", "house_number": "117"},
         )
 
         self.assertEqual(response.status_code, 200)
@@ -49,7 +54,8 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     def test_getting_street_name_and_city_without_post_code_returns_error(self, _mock):
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?house_number=117"
+            reverse("api:get-street-name-and-city-list"),
+            {"house_number": "117"},
         )
 
         self.assertEqual(response.status_code, 400)
@@ -81,7 +87,8 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     ):
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ"
+            reverse("api:get-street-name-and-city-list"),
+            {"postcode": "1015CJ"},
         )
 
         self.assertEqual(response.status_code, 400)
@@ -104,17 +111,17 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
             },
         )
 
-    @patch("openforms.locations.api.views.import_string")
+    @patch("openforms.locations.api.views.lookup_address")
     def test_getting_street_name_and_city_with_extra_query_params_ignores_extra_param(
-        self, import_string_mock
+        self, m_lookup_address
     ):
-        import_string_mock.return_value.get_address.return_value = {
-            "street_name": "Keizersgracht",
-            "city": "Amsterdam",
-        }
+        m_lookup_address.return_value = AddressResult(
+            street_name="Keizersgracht", city="Amsterdam"
+        )
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ&house_number=117&random=param"
+            reverse("api:get-street-name-and-city-list"),
+            {"postcode": "1015CJ", "house_number": "117", "random": "param"},
         )
 
         self.assertEqual(response.status_code, 200)
@@ -122,24 +129,24 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.assertEqual(response.json()["streetName"], "Keizersgracht")
         self.assertEqual(response.json()["city"], "Amsterdam")
 
-    @patch("openforms.locations.api.views.import_string")
-    def test_address_not_found_returns_empty_200_response(self, import_string_mock):
-        import_string_mock.return_value.get_address.return_value = {}
+    @patch("openforms.locations.api.views.lookup_address")
+    def test_address_not_found_returns_empty_200_response(self, m_lookup_address):
+        m_lookup_address.return_value = None
 
         response = self.client.get(
-            f"{reverse('api:get-street-name-and-city-list')}?postcode=1015CJ&house_number=1"
+            reverse("api:get-street-name-and-city-list"),
+            {"postcode": "1015CJ", "house_number": "1"},
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {})
 
     @tag("gh-1832")
-    @patch("openforms.locations.api.views.import_string")
-    def test_endpoint_uses_caching(self, import_string_mock):
-        import_string_mock.return_value.get_address.return_value = {
-            "street_name": "Keizersgracht",
-            "city": "Amsterdam",
-        }
+    @patch("openforms.locations.api.views.lookup_address")
+    def test_endpoint_uses_caching(self, m_lookup_address):
+        m_lookup_address.return_value = AddressResult(
+            street_name="Keizersgracht", city="Amsterdam"
+        )
         endpoint = reverse("api:get-street-name-and-city-list")
 
         # make the request twice, second one should use cache
@@ -147,6 +154,28 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.client.get(endpoint, {"postcode": "1015CJ", "house_number": "117"})
 
         # assert that the client call was only made once
-        import_string_mock.return_value.get_address.assert_called_once_with(
-            "1015CJ", "117"
+        m_lookup_address.assert_called_once_with("1015CJ", "117")
+
+    @patch("openforms.contrib.kadaster.clients.KadasterApiConfig.get_solo")
+    def test_bag_config_client_used(self, m_get_solo):
+        submission = SubmissionFactory.create()
+        self._add_submission_to_session(submission)
+        m_get_solo.return_value = KadasterApiConfig(
+            bag_service=ServiceFactory.build(
+                api_root="https://bag/api/",
+                oas="https://bag/api/schema/openapi.yaml",
+            )
         )
+        endpoint = reverse("api:get-street-name-and-city-list")
+
+        with requests_mock.Mocker() as m:
+            m.get(
+                "https://bag/api/adressen?huisnummer=117&postcode=1015CJ", json={}
+            )  # pretend there are no results
+
+            response = self.client.get(
+                endpoint, {"postcode": "1015CJ", "house_number": "117"}
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {})

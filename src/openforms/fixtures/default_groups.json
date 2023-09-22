@@ -20,26 +20,6 @@
                 "user"
             ],
             [
-                "add_bagconfig",
-                "bag",
-                "bagconfig"
-            ],
-            [
-                "change_bagconfig",
-                "bag",
-                "bagconfig"
-            ],
-            [
-                "delete_bagconfig",
-                "bag",
-                "bagconfig"
-            ],
-            [
-                "view_bagconfig",
-                "bag",
-                "bagconfig"
-            ],
-            [
                 "add_brpconfig",
                 "brp",
                 "brpconfig"
@@ -747,26 +727,6 @@
                 "view_accesslog",
                 "axes",
                 "accesslog"
-            ],
-            [
-                "add_bagconfig",
-                "bag",
-                "bagconfig"
-            ],
-            [
-                "change_bagconfig",
-                "bag",
-                "bagconfig"
-            ],
-            [
-                "delete_bagconfig",
-                "bag",
-                "bagconfig"
-            ],
-            [
-                "view_bagconfig",
-                "bag",
-                "bagconfig"
             ],
             [
                 "add_brpconfig",

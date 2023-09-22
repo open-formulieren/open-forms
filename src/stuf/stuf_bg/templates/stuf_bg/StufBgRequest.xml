@@ -3,7 +3,7 @@
 <ns:npsLv01 xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310">
     <ns:stuurgegevens>
         <StUF:berichtcode>Lv01</StUF:berichtcode>
-        {% render_stuurgegevens service referentienummer %}
+        {% render_stuurgegevens stuurgegevens referentienummer %}
         <StUF:entiteittype>NPS</StUF:entiteittype>
     </ns:stuurgegevens>
     <ns:parameters>

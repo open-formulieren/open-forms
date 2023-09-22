@@ -5,7 +5,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 >
     <soapenv:Header>
-        {% render_security service security_expires_minutes %}
+        {% render_security wss_security security_expires_minutes %}
     </soapenv:Header>
     <soapenv:Body>
         {% block body %}{% endblock %}
