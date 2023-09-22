@@ -43,7 +43,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         label=_("email subject"),
         help_text=_(
             "Subject of the email sent to the registration backend. You can use the expressions "
-            "'{{ form_name }}' and '{{ submission_reference }}' to include the form name and the reference "
+            "'{{ form_name }}' and '{{ public_reference }}' to include the form name and the reference "
             "number to the submission in the subject."
         ),
         required=False,
