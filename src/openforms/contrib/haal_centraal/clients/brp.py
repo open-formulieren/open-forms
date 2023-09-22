@@ -6,8 +6,8 @@ Open Forms supports v1 and v2 of the APIs.
 Documentation for v2: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/getting-started
 """
 import logging
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Protocol
 
 import requests
 
@@ -20,30 +20,24 @@ from ..constants import BRPVersions
 logger = logging.getLogger(__name__)
 
 
-class BRPClient(Protocol):
-    """
-    Interface for any BRP Client (major) version implementation.
-    """
-
-    context: PreRequestClientContext | None
-
-    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
-        ...
-
-    def make_config_test_request(self) -> None:  # pragma: no cover
-        ...
-
-
-class BaseClient(HALClient):
-    def __init__(self, context: PreRequestClientContext | None, *args, **kwargs):
+class BRPClient(HALClient, ABC):
+    def __init__(self, *args, context: PreRequestClientContext | None = None, **kwargs):
         super().__init__(*args, **kwargs)
 
         # TODO: check how we can make the context work with pre-requests & if we can
         # namespace this thing better
         self.context = context
 
+    @abstractmethod
+    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
+        ...
 
-class V1Client(BaseClient):
+    @abstractmethod
+    def make_config_test_request(self) -> None:  # pragma: no cover
+        ...
+
+
+class V1Client(BRPClient):
     """
     BRP Personen Bevragen 1.3 compatible client.
     """
@@ -65,7 +59,7 @@ class V1Client(BaseClient):
             response.raise_for_status()
 
 
-class V2Client(BaseClient):
+class V2Client(BRPClient):
     """
     BRP Personen Bevragen 2.0 compatible client.
     """

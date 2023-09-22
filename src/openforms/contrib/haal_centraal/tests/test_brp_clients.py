@@ -1,17 +1,15 @@
-from typing import Literal
 from unittest.mock import patch
 
 from django.test import SimpleTestCase
 
 import requests_mock
 from glom import glom
-from zds_client.oas import schema_fetcher
 from zgw_consumers.models import Service
-from zgw_consumers.test import mock_service_oas_get
 
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
-from ..constants import HaalCentraalVersion
+from ..clients import get_brp_client
+from ..constants import BRPVersions
 from ..models import HaalCentraalConfig
 from .utils import load_json_mock
 
@@ -27,23 +25,32 @@ class HaalCentraalFindPersonTests:
     """
 
     # specify in subclasses
-    version: HaalCentraalVersion
-    schema_yaml_name: Literal["personen", "personen-v2"]
+    version: BRPVersions
 
     # set in setUp
     service: Service
     config: HaalCentraalConfig
 
+    # possibly override for different versions, but at least v1 and v2 support both of these
+    attributes_to_query = (
+        "naam.voornamen",
+        "naam.geslachtsnaam",
+    )
+
     def setUp(self):
         super().setUp()  # type: ignore
 
         # set up patcher for the configuration
+        self.service = ServiceFactory.build(
+            api_root="https://personen/api/",
+            oas="https://this.is.ignored",
+        )
         self.config = HaalCentraalConfig(
-            version=self.version,
-            service=self.service,
+            brp_personen_service=self.service,
+            brp_personen_version=self.version,
         )
         config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
             return_value=self.config,
         )
         self.config_mock = config_patcher.start()
@@ -52,76 +59,51 @@ class HaalCentraalFindPersonTests:
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
         self.requests_mock.start()
-        mock_service_oas_get(
-            self.requests_mock,
-            url=self.service.api_root,
-            service=self.schema_yaml_name,
-            oas_url=self.service.oas,
-        )
         self.addCleanup(self.requests_mock.stop)  # type: ignore
 
-        # ensure the schema cache is cleared before and after each test
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)  # type: ignore
-
     def test_find_person_succesfully(self):
-        attributes = self.config.get_attributes()
-        client = self.config.build_client()
-        assert client is not None
+        with get_brp_client() as client:
+            raw_data = client.find_person(
+                "999990676", attributes=self.attributes_to_query
+            )
 
-        attributes = [attributes.naam_voornamen, attributes.naam_geslachtsnaam]
-        raw_data = client.find_person("999990676", attributes=attributes)
-
-        values = {attr: glom(raw_data, attr) for attr in attributes}
+        values = {attr: glom(raw_data, attr) for attr in self.attributes_to_query}
         expected = {
             "naam.voornamen": "Cornelia Francisca",
             "naam.geslachtsnaam": "Wiegman",
         }
         self.assertEqual(values, expected)  # type: ignore
 
-    def test_find_person_unsuccesfully(self):
-        attributes = self.config.get_attributes()
-        client = self.config.build_client()
-        assert client is not None
-
-        attributes = [attributes.naam_voornamen, attributes.naam_geslachtsnaam]
-        raw_data = client.find_person(bsn="999990676", attributes=attributes)
+    def test_person_not_found(self):
+        with get_brp_client() as client:
+            raw_data = client.find_person(
+                bsn="999990676", attributes=self.attributes_to_query
+            )
 
         self.assertIsNone(raw_data)  # type: ignore
 
     def test_find_person_server_error(self):
-        attributes = self.config.get_attributes()
-        client = self.config.build_client()
-        assert client is not None
         self.requests_mock.register_uri(
             requests_mock.ANY,
             requests_mock.ANY,
-            additional_matcher=lambda request: "openapi.yaml" not in request.url,
-            # additional_matcher=lambda request: "yaml" not in request.url,
             status_code=500,
         )
 
-        attributes = [attributes.naam_voornamen, attributes.naam_geslachtsnaam]
-        raw_data = client.find_person(bsn="999990676", attributes=attributes)
+        with get_brp_client() as client:
+            raw_data = client.find_person(
+                bsn="999990676", attributes=self.attributes_to_query
+            )
 
         self.assertIsNone(raw_data)  # type: ignore
 
     def test_default_client_context(self):
-        client = self.config.build_client()
+        client = get_brp_client()
 
         self.assertIsNone(client.context)  # type: ignore
 
 
 class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
-    version = HaalCentraalVersion.haalcentraal13
-    schema_yaml_name = "personen"
-
-    def setUp(self):
-        self.service = ServiceFactory.build(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        super().setUp()
+    version = BRPVersions.v13
 
     def test_find_person_succesfully(self):
         self.requests_mock.get(
@@ -131,23 +113,15 @@ class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
         )
         super().test_find_person_succesfully()
 
-    def test_find_person_unsuccesfully(self):
+    def test_person_not_found(self):
         self.requests_mock.get(
             "https://personen/api/ingeschrevenpersonen/999990676", status_code=404
         )
-        super().test_find_person_unsuccesfully()
+        super().test_person_not_found()
 
 
 class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
-    version = HaalCentraalVersion.haalcentraal20
-    schema_yaml_name = "personen-v2"
-
-    def setUp(self):
-        self.service = ServiceFactory.build(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        super().setUp()
+    version = BRPVersions.v20
 
     def test_find_person_succesfully(self):
         self.requests_mock.post(
@@ -157,9 +131,9 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
         )
         super().test_find_person_succesfully()
 
-    def test_find_person_unsuccesfully(self):
+    def test_person_not_found(self):
         self.requests_mock.post("https://personen/api/personen", status_code=404)
-        super().test_find_person_unsuccesfully()
+        super().test_person_not_found()
 
     def test_find_person_without_personen_key(self):
         self.requests_mock.post(
@@ -169,4 +143,4 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
                 "ingeschrevenpersonen.v2-full-find-personen-response.json"
             ),
         )
-        super().test_find_person_unsuccesfully()
+        super().test_person_not_found()
