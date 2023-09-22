@@ -60,7 +60,7 @@ class BAGCheck:
             (
                 gettext("Configuration"),
                 reverse(
-                    "admin:bag_bagconfig_change",
+                    "admin:kadaster_kadasterapiconfig_change",
                     args=(KadasterApiConfig.singleton_instance_id,),
                 ),
             ),

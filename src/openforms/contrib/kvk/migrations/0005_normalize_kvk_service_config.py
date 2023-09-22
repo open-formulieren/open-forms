@@ -44,7 +44,7 @@ def set_kvk_service(apps, _):
         return
 
     roots = []
-    _existing = None  # to borrow the API credentials from
+    _existing = None  # to borrow the API credentials from the service
 
     if service := config._service:
         _existing = service
