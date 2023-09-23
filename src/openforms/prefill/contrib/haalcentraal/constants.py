@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-class Attributes(models.TextChoices):
+class AttributesV1(models.TextChoices):
     """
     this code was (at some point) generated from an API-spec, so names and labels are in Dutch if the spec was Dutch
 

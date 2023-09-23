@@ -14,7 +14,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....constants import IdentifierRoles
-from ..constants import Attributes as DefaultAttributes
+from ..constants import AttributesV1 as DefaultAttributes
 from ..plugin import (
     PLUGIN_IDENTIFIER,
     VERSION_TO_ATTRIBUTES_MAP,

@@ -20,19 +20,19 @@ from openforms.submissions.models import Submission
 from ...base import BasePlugin
 from ...constants import IdentifierRoles
 from ...registry import register
-from .constants import Attributes, AttributesV2
+from .constants import AttributesV1, AttributesV2
 
 logger = logging.getLogger(__name__)
 
 PLUGIN_IDENTIFIER = "haalcentraal"
 
 VERSION_TO_ATTRIBUTES_MAP = {
-    BRPVersions.v13: Attributes,
+    BRPVersions.v13: AttributesV1,
     BRPVersions.v20: AttributesV2,
 }
 
 
-AttributesSequence: TypeAlias = Sequence[Attributes | AttributesV2]
+AttributesSequence: TypeAlias = Sequence[AttributesV1 | AttributesV2]
 
 
 def get_attributes_cls():
@@ -45,7 +45,7 @@ def get_attributes_cls():
         ) if version in VERSION_TO_ATTRIBUTES_MAP:
             return VERSION_TO_ATTRIBUTES_MAP[version]
         case _:
-            return Attributes
+            return AttributesV1
 
 
 @register(PLUGIN_IDENTIFIER)
