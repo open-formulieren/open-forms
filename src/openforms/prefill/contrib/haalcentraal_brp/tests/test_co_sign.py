@@ -51,17 +51,11 @@ class CoSignPrefillTests:
             brp_personen_version=self.version,
         )
         hc_config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
             return_value=hc_config,
         )
         hc_config_patcher.start()
         self.addCleanup(hc_config_patcher.stop)  # type: ignore
-        hc_config_patcher2 = patch(
-            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
-            return_value=hc_config,
-        )
-        hc_config_patcher2.start()
-        self.addCleanup(hc_config_patcher2.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
@@ -160,7 +154,7 @@ class CoSignPrefillEmptyConfigTests(TestCase):
 
         # mock out django-solo interface (we don't have to deal with caches then)
         config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
             return_value=HaalCentraalConfig(
                 brp_personen_version="", brp_personen_service=None
             ),

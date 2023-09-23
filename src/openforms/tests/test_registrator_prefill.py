@@ -8,6 +8,7 @@ from django_webtest import WebTest
 from furl import furl
 from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
+from zgw_consumers.test import mock_service_oas_get
 
 from openforms.accounts.models import User
 from openforms.authentication.constants import (
@@ -15,13 +16,10 @@ from openforms.authentication.constants import (
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
 )
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
+from openforms.contrib.haal_centraal.tests.utils import load_json_mock
 from openforms.forms.tests.factories import FormStepFactory
-from openforms.prefill.contrib.haalcentraal.constants import Attributes
-from openforms.prefill.contrib.haalcentraal.models import HaalCentraalConfig
-from openforms.prefill.contrib.haalcentraal.tests.utils import (
-    load_binary_mock,
-    load_json_mock,
-)
+from openforms.prefill.contrib.haalcentraal_brp.constants import AttributesV1
 from openforms.submissions.models import Submission
 from openforms.utils.urls import reverse_plus
 from zgw_consumers_ext.tests.factories import ServiceFactory
@@ -35,7 +33,7 @@ CONFIGURATION = {
             "label": "Voornamen",
             "prefill": {
                 "plugin": "haalcentraal",
-                "attribute": Attributes.naam_voornamen,
+                "attribute": AttributesV1.naam_voornamen,
             },
             "multiple": False,
         },
@@ -84,7 +82,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend.get_token"
     )
     @patch("mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo")
-    @patch("openforms.prefill.contrib.haalcentraal.models.HaalCentraalConfig.get_solo")
+    @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
     @patch("openforms.logging.logevent._create_log")
     def test_flow(
         self,
@@ -98,11 +96,12 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
     ):
         self.assertFalse(User.objects.exists())
 
+        hc_brp_service = ServiceFactory.build(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
         mock_haalcentraal_solo.return_value = HaalCentraalConfig(
-            service=ServiceFactory(
-                api_root="https://personen/api/",
-                oas="https://personen/api/schema/openapi.yaml",
-            )
+            brp_personen_service=hc_brp_service
         )
 
         mock_get_solo.return_value = OpenIDConnectConfig(
@@ -234,10 +233,11 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         }
 
         with requests_mock.Mocker(real_http=False) as m:
-            m.get(
-                "https://personen/api/schema/openapi.yaml?v=3",
-                status_code=200,
-                content=load_binary_mock("personen.yaml"),
+            mock_service_oas_get(
+                m,
+                url=hc_brp_service.api_root,
+                oas_url=hc_brp_service.oas,
+                service="personen",
             )
             m.get(
                 "https://personen/api/ingeschrevenpersonen/999990676",

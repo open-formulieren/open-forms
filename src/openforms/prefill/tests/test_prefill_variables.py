@@ -3,8 +3,10 @@ from unittest.mock import patch
 from django.test import RequestFactory, TestCase, TransactionTestCase
 
 import requests_mock
+from zgw_consumers.test import mock_service_oas_get
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import (
     FormioConfigurationWrapper,
     get_dynamic_configuration,
@@ -20,8 +22,6 @@ from openforms.submissions.tests.factories import (
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from .. import prefill_variables
-from ..contrib.haalcentraal.models import HaalCentraalConfig
-from ..contrib.haalcentraal.tests.utils import load_binary_mock
 
 CONFIGURATION = {
     "display": "form",
@@ -194,24 +194,21 @@ class PrefillVariablesTests(TestCase):
 
 class PrefillVariablesTransactionTests(TransactionTestCase):
     @requests_mock.Mocker()
-    @patch("openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo")
+    @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
     def test_no_success_message_on_failure(self, m, m_solo):
-        m.get(
-            "https://personen/api/schema/openapi.yaml?v=3",
-            status_code=200,
-            content=load_binary_mock("personen.yaml"),
+        service = ServiceFactory.build(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+        mock_service_oas_get(
+            m, url=service.api_root, oas_url=service.oas, service="personen"
         )
         m.get(
             "https://personen/api/ingeschrevenpersonen/999990676",
             status_code=404,
         )
 
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config = HaalCentraalConfig(service=service)
-        m_solo.return_value = config
+        m_solo.return_value = HaalCentraalConfig(brp_personen_service=service)
 
         form_step = FormStepFactory.create(
             form_definition__configuration={

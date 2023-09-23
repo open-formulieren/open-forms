@@ -120,7 +120,7 @@ def apply_prefill(configuration: dict, submission: "Submission", register=None) 
 
 class PrefillHookTests(TransactionTestCase):
     @patch(
-        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalPrefill.get_prefill_values",
+        "openforms.prefill.contrib.haalcentraal_brp.plugin.HaalCentraalPrefill.get_prefill_values",
         return_value={"naam.voornamen": "John", "naam.geslachtsnaam": "Dodo"},
     )
     def test_fetch_values_with_multiple_people(self, m_haal_centraal):
@@ -161,7 +161,7 @@ class PrefillHookTests(TransactionTestCase):
         self.assertEqual(surname_authorised_person.value, "Dodo")
 
     @patch(
-        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalPrefill.get_prefill_values",
+        "openforms.prefill.contrib.haalcentraal_brp.plugin.HaalCentraalPrefill.get_prefill_values",
         return_value={"naam.voornamen": "John", "naam.geslachtsnaam": "Dodo"},
     )
     @patch(

@@ -49,7 +49,7 @@ class AttributeResolutionTests(SimpleTestCase):
                 )
 
                 with patch(
-                    "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+                    "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
                     return_value=config,
                 ):
                     attrs = HaalCentraalPrefill.get_available_attributes()
@@ -87,17 +87,11 @@ class HaalCentraalPluginTests:
             brp_personen_version=self.version,
         )
         config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
             return_value=config,
         )
         config_patcher.start()
         self.addCleanup(config_patcher.stop)  # type: ignore
-        config_patcher2 = patch(
-            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
-            return_value=config,
-        )
-        config_patcher2.start()
-        self.addCleanup(config_patcher2.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
@@ -277,16 +271,10 @@ class HaalCentraalEmptyConfigTests(TestCase):
 
         config = HaalCentraalConfig(brp_personen_version="", brp_personen_service=None)
         config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            "openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo",
             return_value=config,
         )
         config_patcher.start()
-        config_patcher2 = patch(
-            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
-            return_value=config,
-        )
-        config_patcher2.start()
-        self.addCleanup(config_patcher2.stop)  # type: ignore
         self.addCleanup(config_patcher.stop)  # type: ignore
 
     def test_get_available_attributes(self):

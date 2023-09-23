@@ -3,6 +3,7 @@ from pathlib import Path
 from textwrap import dedent
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core.management import call_command
 from django.test import SimpleTestCase, override_settings
 
@@ -47,9 +48,9 @@ class TestGetPropertiesFromOAS(SimpleTestCase):
         stdout = StringIO()
 
         oas_uri = (
-            Path(__file__).parent.parent
+            Path(settings.DJANGO_PROJECT_DIR)
             / "contrib"
-            / "haalcentraal"
+            / "haal_centraal"
             / "tests"
             / "files"
             / "personen.yaml"

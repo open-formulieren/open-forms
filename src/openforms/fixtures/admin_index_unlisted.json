@@ -12,7 +12,6 @@
     "of_authentication.RegistratorInfo",
     "payments_ogone.OgoneMerchant",
     "haalcentraal.HaalCentraalConfig",
-    "prefill_haalcentraal.HaalCentraalConfig",
     "qmatic.QmaticConfig",
     "registrations_email.EmailConfig",
     "registrations_microsoft_graph.MSGraphRegistrationConfig",

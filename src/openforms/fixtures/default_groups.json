@@ -106,22 +106,22 @@
             ],
             [
                 "add_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "change_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "delete_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "view_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
@@ -1225,22 +1225,22 @@
             ],
             [
                 "add_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "change_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "delete_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "view_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
