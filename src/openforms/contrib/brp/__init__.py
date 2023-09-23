@@ -1,6 +1,4 @@
 """
-TODO:
-
-* move prefill haal centraal configuration to contrib.haalcentraal.brp
-* remove brp config in favour of Haal Centraal client(s) (v1 and v2!)
+This Django app is obsolete. The code is left here so that migrations can run,
+but after Open Forms 2.4.0 this package will be removed completely.
 """

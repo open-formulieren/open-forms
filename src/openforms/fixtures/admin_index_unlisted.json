@@ -1,5 +1,4 @@
 [
-    "brp.BRPConfig",
     "config.RichTextColor",
     "forms.FormLogic",
     "forms.FormsExport",

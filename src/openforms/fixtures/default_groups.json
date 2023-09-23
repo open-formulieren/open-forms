@@ -20,26 +20,6 @@
                 "user"
             ],
             [
-                "add_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "change_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "delete_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "view_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
                 "add_globalconfiguration",
                 "config",
                 "globalconfiguration"
@@ -727,26 +707,6 @@
                 "view_accesslog",
                 "axes",
                 "accesslog"
-            ],
-            [
-                "add_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "change_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "delete_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "view_brpconfig",
-                "brp",
-                "brpconfig"
             ],
             [
                 "add_globalconfiguration",
