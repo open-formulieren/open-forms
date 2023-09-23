@@ -645,8 +645,3 @@ class AttributesV2(models.TextChoices):
     )
     overlijden_datum_jaar = "overlijden.datum.jaar", _("Overlijden > Datum > Jaar")
     overlijden_datum_maand = "overlijden.datum.maand", _("Overlijden > Datum > Maand")
-
-
-class HaalCentraalVersion(models.TextChoices):
-    haalcentraal13 = "1.3", "BRP Bevragen Personen 1.3"
-    haalcentraal20 = "2.0", "BRP Bevragen Personen 2.0"
