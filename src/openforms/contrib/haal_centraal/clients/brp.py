@@ -8,6 +8,7 @@ Documentation for v2: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/ge
 import logging
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 import requests
 
@@ -18,6 +19,24 @@ from openforms.typing import JSONObject
 from ..constants import BRPVersions
 
 logger = logging.getLogger(__name__)
+
+# DATA MODEL DEFINITIONS
+
+
+@dataclass
+class Name:
+    voornamen: str
+    voorvoegsel: str
+    geslachtsnaam: str
+
+
+@dataclass
+class Person:
+    bsn: str
+    name: Name
+
+
+# CLIENT IMPLEMENTATIONS
 
 
 class BRPClient(HALClient, ABC):
@@ -30,6 +49,13 @@ class BRPClient(HALClient, ABC):
 
     @abstractmethod
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
+        ...
+
+    @abstractmethod
+    def get_children(self, bsn: str) -> list[Person]:  # pragma: no cover
+        """
+        Look up the children of the person with the given BSN.
+        """
         ...
 
     @abstractmethod
@@ -51,6 +77,27 @@ class V1Client(BRPClient):
             return None
 
         return response.json()
+
+    def get_children(self, bsn: str) -> list[Person]:
+        # FIXME: I suspect that Open Personen's API spec is wrong here, let's see if
+        # we can find an old V1 API spec.
+        response = self.get(f"ingeschrevenpersonen/{bsn}/kinderen")
+        response.raise_for_status()
+        response_data = response.json()["_embedded"]
+
+        persons = []
+        for kind in response_data["kinderen"]:
+            name_data = kind["_embedded"]["naam"]
+            person = Person(
+                bsn=kind["burgerservicenummer"],
+                name=Name(
+                    voornamen=name_data["voornamen"],
+                    voorvoegsel=name_data["voorvoegsel"],
+                    geslachtsnaam=name_data["geslachtsnaam"],
+                ),
+            )
+            persons.append(person)
+        return persons
 
     def make_config_test_request(self):
         # expected to 404
@@ -97,6 +144,10 @@ class V2Client(BRPClient):
             return None
 
         return personen[0]
+
+    def get_children(self, bsn: str) -> list[Person]:
+        fields = ["kinderen.burgerservicenummer", "kinderen.naam"]
+        raise NotImplementedError
 
     def make_config_test_request(self):
         try:
