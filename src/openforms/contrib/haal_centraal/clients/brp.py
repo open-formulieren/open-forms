@@ -146,8 +146,32 @@ class V2Client(BRPClient):
         return personen[0]
 
     def get_children(self, bsn: str) -> list[Person]:
-        fields = ["kinderen.burgerservicenummer", "kinderen.naam"]
-        raise NotImplementedError
+        body = {
+            "type": "RaadpleegMetBurgerservicenummer",
+            "burgerservicenummer": [bsn],
+            "fields": ["kinderen.burgerservicenummer", "kinderen.naam"],
+        }
+        response = self.post("personen", json=body)
+        response.raise_for_status()
+
+        data = response.json()
+        if not (personen := data.get("personen", [])):
+            logger.debug("Person not found")
+            return []
+
+        children_data = personen[0]["kinderen"]
+        children = [
+            Person(
+                bsn=child["burgerservicenummer"],
+                name=Name(
+                    voornamen=child["naam"]["voornamen"],
+                    voorvoegsel=child["naam"]["voorvoegsel"],
+                    geslachtsnaam=child["naam"]["geslachtsnaam"],
+                ),
+            )
+            for child in children_data
+        ]
+        return children
 
     def make_config_test_request(self):
         try:
