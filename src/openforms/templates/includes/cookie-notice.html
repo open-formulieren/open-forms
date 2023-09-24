@@ -39,6 +39,7 @@
 
     <script type="module" nonce="{{ request.csp_nonce }}">
         import {showCookieBar} from '{{ cookiebar_src }}';
+        const varName = '{{ analytics_varname|escapejs }}';
         showCookieBar({
           statusUrl: '{{ status_url|escapejs }}',
           templateSelector: '#cookie-consent__cookie-bar',
@@ -46,8 +47,15 @@
           acceptSelector: '.cookie-notice__accept',
           declineSelector: '.cookie-notice__decline',
           insertBefore: '#cookie-consent__cookie-bar',
-          onAccept: (groups, event) => console.log('ACCEPTED', groups),
-          onDecline: (groups, event) => console.log('DECLINED', groups),
+          onAccept: (groups) => {
+            const isAnalyticsEnabled = groups.find(group => group.varname === varName);
+            if (!isAnalyticsEnabled) return;
+            const analyticsTemplateNodes = document.querySelectorAll('.analytics-scripts');
+            analyticsTemplateNodes.forEach(templateNode => {
+                const clone = templateNode.content.cloneNode(true);
+                templateNode.parentNode.insertBefore(clone, templateNode);
+            })
+          },
         });
     </script>
 {% endif %}
