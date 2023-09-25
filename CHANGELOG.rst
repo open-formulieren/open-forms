@@ -2,10 +2,10 @@
 Changelog
 =========
 
-2.4.0 "..." (2023-09-??)
+2.4.0 "..." (2023-??-??)
 ========================
 
-.. warning:: These release notes are in development!
+.. note:: These release notes are in development!
 
 Upgrade procedure
 -----------------
@@ -25,6 +25,90 @@ If you run into any errors, then please check your certificate configuration, AP
 and validate that the API root does *not* include the ``v1/`` suffix. An example of a
 correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/``.
 
+2.4.0-alpha.0 (2023-09-??)
+==========================
+
+.. note:: These release notes are in development!
+
+**Bugfixes**
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [#3445] Fixed not being able to enter more decimals for latitude/longitude in the map
+  component configuration.
+* [#3423] Fixed import crash with forms using service fetch.
+* [#3420] Fixed styling of cookie overview page.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* [#3437] Improved robustness of outgoing request logging solution.
+* Included latest SDK bugfix release.
+
+2.3.1 (2023-09-25)
+==================
+
+Periodic bugfix release
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [#3445] Fixed not being able to enter more decimals for latitude/longitude in the map
+  component configuration.
+* [#3423] Fixed import crash with forms using service fetch.
+* [#3420] Fixed styling of cookie overview page.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* [#3437] Improved robustness of outgoing request logging solution.
+* Included latest SDK bugfix release.
+
+2.2.3 (2023-09-25)
+==================
+
+Periodic bugfix release
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [#3423] Fixed import crash with forms using service fetch.
+* [#3420] Fixed styling of cookie overview page.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* [#3437] Improved robustness of outgoing request logging solution.
+* Included latest SDK bugfix release.
+
+2.1.7 (2023-09-25)
+==================
+
+Periodic bugfix release
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [#3420] Fixed styling of cookie overview page.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* Included latest SDK bugfix release.
+
+2.0.11 (2023-09-25)
+===================
+
+Final bugfix release in the ``2.0.x`` series.
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* Included latest SDK bugfix release.
 
 2.3.0 "Cruquius" (2023-08-24)
 =============================
