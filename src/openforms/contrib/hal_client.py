@@ -6,7 +6,7 @@ from api_client import APIClient
 HAL_CONTENT_TYPE = "application/hal+json"
 
 
-class HALClient(APIClient):
+class HALMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.headers.update(
@@ -15,6 +15,10 @@ class HALClient(APIClient):
                 "Content-Type": HAL_CONTENT_TYPE,
             }
         )
+
+
+class HALClient(HALMixin, APIClient):
+    pass
 
 
 # deprecated

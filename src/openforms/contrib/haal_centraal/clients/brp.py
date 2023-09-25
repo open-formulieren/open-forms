@@ -12,7 +12,8 @@ from dataclasses import dataclass
 
 import requests
 
-from openforms.contrib.hal_client import HALClient
+from api_client import APIClient
+from openforms.contrib.hal_client import HALMixin
 from openforms.pre_requests.clients import PreRequestMixin
 from openforms.typing import JSONObject
 
@@ -39,7 +40,7 @@ class Person:
 # CLIENT IMPLEMENTATIONS
 
 
-class BRPClient(PreRequestMixin, HALClient, ABC):
+class BRPClient(PreRequestMixin, ABC, APIClient):
     @abstractmethod
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
         ...
@@ -56,7 +57,7 @@ class BRPClient(PreRequestMixin, HALClient, ABC):
         ...
 
 
-class V1Client(BRPClient):
+class V1Client(HALMixin, BRPClient):
     """
     BRP Personen Bevragen 1.3 compatible client.
 
@@ -106,8 +107,7 @@ class V2Client(BRPClient):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 1. they don't expect hal+json as request content-type (!)
-        # 2. requests encodes the json kwarg as utf-8, no extra action needed
+        # requests encodes the json kwarg as utf-8, no extra action needed
         self.headers["Content-Type"] = "application/json; charset=utf-8"
 
     def find_person(
