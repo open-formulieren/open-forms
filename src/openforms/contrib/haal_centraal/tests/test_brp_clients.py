@@ -93,7 +93,7 @@ class HaalCentraalFindPersonTests:
     def test_default_client_context(self):
         client = get_brp_client()
 
-        self.assertIsNone(client.context)  # type: ignore
+        self.assertIsNone(client.pre_request_context)  # type: ignore
 
 
 class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):

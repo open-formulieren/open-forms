@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import requests
 
 from openforms.contrib.hal_client import HALClient
-from openforms.pre_requests.clients import PreRequestClientContext
+from openforms.pre_requests.clients import PreRequestMixin
 from openforms.typing import JSONObject
 
 from ..constants import BRPVersions
@@ -39,14 +39,7 @@ class Person:
 # CLIENT IMPLEMENTATIONS
 
 
-class BRPClient(HALClient, ABC):
-    def __init__(self, *args, context: PreRequestClientContext | None = None, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # TODO: check how we can make the context work with pre-requests & if we can
-        # namespace this thing better
-        self.context = context
-
+class BRPClient(PreRequestMixin, HALClient, ABC):
     @abstractmethod
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
         ...
