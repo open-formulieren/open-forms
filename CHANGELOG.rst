@@ -2,6 +2,19 @@
 Changelog
 =========
 
+2.0.11 (2023-09-25)
+===================
+
+Final bugfix release in the ``2.0.x`` series.
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* Included latest SDK bugfix release.
+
 2.0.10 (2023-08-24)
 ===================
 
