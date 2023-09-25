@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import SimpleTestCase
 
 import requests_mock
+from zgw_consumers.test import mock_service_oas_get
 
-from openforms.prefill.contrib.haalcentraal.tests.utils import load_binary_mock
 from openforms.submissions.tests.factories import SubmissionFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
@@ -13,7 +13,7 @@ from ..clients import PreRequestClientContext
 from ..registry import Registry
 
 
-class PreRequestHooksTest(TestCase):
+class PreRequestHooksTest(SimpleTestCase):
     def test_pre_request_hook(self):
         register = Registry()
 
@@ -23,24 +23,20 @@ class PreRequestHooksTest(TestCase):
                 kwargs.setdefault("headers", {})
                 kwargs["headers"].update({"test": "test"})
 
-        submission = SubmissionFactory.create()
-        some_service = ServiceFactory(
+        submission = SubmissionFactory.build()
+        service = ServiceFactory.build(
             api_root="https://personen/api/",
             oas="https://personen/api/schema/openapi.yaml",
         )
-        client = some_service.build_client()
+        client = service.build_client()
         client.context = PreRequestClientContext(submission=submission)
 
         with requests_mock.Mocker() as m:
-            m.get(
-                "https://personen/api/schema/openapi.yaml?v=3",
-                status_code=200,
-                content=load_binary_mock("personen.yaml"),
+            mock_service_oas_get(
+                m, url=service.api_root, oas_url=service.oas, service="personen"
             )
-            m.get(
-                "https://personen/api/test/path",
-                status_code=200,
-            )
+
+            m.get("https://personen/api/test/path", status_code=200)
 
             with patch("openforms.pre_requests.clients.registry", new=register):
                 client.request(path="/api/test/path", operation="test")

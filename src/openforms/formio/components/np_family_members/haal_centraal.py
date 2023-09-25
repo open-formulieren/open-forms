@@ -1,39 +1,23 @@
 from typing import List, Tuple
 
-from openforms.contrib.brp.models import BRPConfig
+from openforms.contrib.haal_centraal.clients import get_brp_client
+from openforms.contrib.haal_centraal.clients.brp import Person
 
 
 def get_np_children_haal_centraal(bsn: str) -> List[Tuple[str, str]]:
-    # XXX: check the usage of this component in production, perhaps we can deprecate and
-    # remove it instead.
-    # otherwise: make Haal Centraal v2 compatible
-    config = BRPConfig.get_solo()
-    assert isinstance(config, BRPConfig)
-    client = config.get_client()
+    # TODO: add tests for missing configuration and error handling!
+    with get_brp_client() as client:
+        children_data = client.get_children(bsn)
 
-    # actual operation ID from standard! but Open Personen has the wrong one
-    # operation_id = "ingeschrevenpersonenBurgerservicenummerkinderen"
-    operation_id = "ingeschrevenpersonen_kinderen_list"
-    # path = client.get_operation_url(operation_id, burgerservicenummer=bsn)
-    path = client.get_operation_url(
-        operation_id, ingeschrevenpersonen_burgerservicenummer=bsn
-    )
-
-    response_data = client.request(path=path, operation=operation_id)
-    children = response_data["_embedded"]["kinderen"]
-
-    child_choices = [
-        (child["burgerservicenummer"], get_np_name(child)) for child in children
-    ]
+    child_choices = [(child.bsn, get_np_name(child)) for child in children_data if bsn]
     return child_choices
 
 
-def get_np_name(natuurlijk_persoon: dict) -> str:
-    embedded = natuurlijk_persoon["_embedded"]["naam"]
+def get_np_name(person: Person) -> str:
     bits = [
-        embedded.get("voornamen", ""),
-        embedded.get("voorvoegsel", ""),
-        embedded.get("geslachtsnaam", ""),
+        person.name.voornamen,
+        person.name.voorvoegsel,
+        person.name.geslachtsnaam,
     ]
     relevant_bits = [bit for bit in bits if bit]
     return " ".join(relevant_bits).strip()

@@ -1,5 +1,4 @@
 [
-    "brp.BRPConfig",
     "config.RichTextColor",
     "forms.FormLogic",
     "forms.FormsExport",
@@ -11,7 +10,7 @@
     "of_authentication.AuthInfo",
     "of_authentication.RegistratorInfo",
     "payments_ogone.OgoneMerchant",
-    "prefill_haalcentraal.HaalCentraalConfig",
+    "haalcentraal.HaalCentraalConfig",
     "qmatic.QmaticConfig",
     "registrations_email.EmailConfig",
     "registrations_microsoft_graph.MSGraphRegistrationConfig",

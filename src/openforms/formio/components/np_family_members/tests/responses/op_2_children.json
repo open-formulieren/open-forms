@@ -7,140 +7,136 @@
     "_embedded": {
         "kinderen": [
             {
-                "_embedded": {
-                    "naam": {
-                        "_embedded": {
-                            "inOnderzoek": {
-                                "_embedded": {
-                                    "datumIngangOnderzoek": {
-                                        "dag": 0,
-                                        "datum": "string",
-                                        "jaar": 0,
-                                        "maand": 0
-                                    }
-                                },
-                                "geslachtsnaam": true,
-                                "voornamen": true,
-                                "voorvoegsel": false
-                            }
-                        },
-                        "geslachtsnaam": "Doe",
-                        "voorletters": "string",
-                        "voornamen": "Bolly",
-                        "voorvoegsel": "van"
-                    },
-                    "geboorte": {
-                        "_embedded": {
-                            "datum": {
-                                "dag": 1,
-                                "datum": "19950101",
-                                "jaar": 1995,
-                                "maand": 1
+                "naam": {
+                    "_embedded": {
+                        "inOnderzoek": {
+                            "_embedded": {
+                                "datumIngangOnderzoek": {
+                                    "dag": 0,
+                                    "datum": "string",
+                                    "jaar": 0,
+                                    "maand": 0
+                                }
                             },
-                            "land": {
-                                "code": "",
-                                "omschrijving": ""
-                            },
-                            "plaats": {
-                                "code": "",
-                                "omschrijving": ""
-                            },
-                            "inOnderzoek": {
-                                "_embedded": {
-                                    "datumIngangOnderzoek": {
-                                        "dag": 0,
-                                        "datum": "string",
-                                        "jaar": 0,
-                                        "maand": 0
-                                    }
-                                },
-                                "datum": true,
-                                "land": true,
-                                "plaats": true
-                            }
+                            "geslachtsnaam": true,
+                            "voornamen": true,
+                            "voorvoegsel": false
                         }
                     },
-                    "inOnderzoek": {
-                        "_embedded": {
-                            "datumIngangOnderzoek": {
-                                "dag": 0,
-                                "datum": "",
-                                "jaar": 0,
-                                "maand": 0
-                            }
+                    "geslachtsnaam": "Doe",
+                    "voorletters": "string",
+                    "voornamen": "Bolly",
+                    "voorvoegsel": "van"
+                },
+                "geboorte": {
+                    "_embedded": {
+                        "datum": {
+                            "dag": 1,
+                            "datum": "19950101",
+                            "jaar": 1995,
+                            "maand": 1
                         },
-                        "burgerservicenummer": true
+                        "land": {
+                            "code": "",
+                            "omschrijving": ""
+                        },
+                        "plaats": {
+                            "code": "",
+                            "omschrijving": ""
+                        },
+                        "inOnderzoek": {
+                            "_embedded": {
+                                "datumIngangOnderzoek": {
+                                    "dag": 0,
+                                    "datum": "string",
+                                    "jaar": 0,
+                                    "maand": 0
+                                }
+                            },
+                            "datum": true,
+                            "land": true,
+                            "plaats": true
+                        }
                     }
+                },
+                "inOnderzoek": {
+                    "_embedded": {
+                        "datumIngangOnderzoek": {
+                            "dag": 0,
+                            "datum": "",
+                            "jaar": 0,
+                            "maand": 0
+                        }
+                    },
+                    "burgerservicenummer": true
                 },
                 "burgerservicenummer": "456789123",
                 "geheimhoudingPersoonsgegevens": true,
                 "leeftijd": 26
             },
             {
-                "_embedded": {
-                    "naam": {
-                        "_embedded": {
-                            "inOnderzoek": {
-                                "_embedded": {
-                                    "datumIngangOnderzoek": {
-                                        "dag": 0,
-                                        "datum": "string",
-                                        "jaar": 0,
-                                        "maand": 0
-                                    }
-                                },
-                                "geslachtsnaam": true,
-                                "voornamen": true,
-                                "voorvoegsel": false
-                            }
-                        },
-                        "geslachtsnaam": "Doe",
-                        "voorletters": "string",
-                        "voornamen": "Billy",
-                        "voorvoegsel": "van"
-                    },
-                    "geboorte": {
-                        "_embedded": {
-                            "datum": {
-                                "dag": 1,
-                                "datum": "19900101",
-                                "jaar": 1990,
-                                "maand": 1
+                "naam": {
+                    "_embedded": {
+                        "inOnderzoek": {
+                            "_embedded": {
+                                "datumIngangOnderzoek": {
+                                    "dag": 0,
+                                    "datum": "string",
+                                    "jaar": 0,
+                                    "maand": 0
+                                }
                             },
-                            "land": {
-                                "code": "",
-                                "omschrijving": ""
-                            },
-                            "plaats": {
-                                "code": "",
-                                "omschrijving": ""
-                            },
-                            "inOnderzoek": {
-                                "_embedded": {
-                                    "datumIngangOnderzoek": {
-                                        "dag": 0,
-                                        "datum": "string",
-                                        "jaar": 0,
-                                        "maand": 0
-                                    }
-                                },
-                                "datum": true,
-                                "land": true,
-                                "plaats": true
-                            }
+                            "geslachtsnaam": true,
+                            "voornamen": true,
+                            "voorvoegsel": false
                         }
                     },
-                    "inOnderzoek": {
-                        "_embedded": {
-                            "datumIngangOnderzoek": {
-                                "dag": 0,
-                                "datum": "",
-                                "jaar": 0,
-                                "maand": 0
-                            }
+                    "geslachtsnaam": "Doe",
+                    "voorletters": "string",
+                    "voornamen": "Billy",
+                    "voorvoegsel": "van"
+                },
+                "geboorte": {
+                    "_embedded": {
+                        "datum": {
+                            "dag": 1,
+                            "datum": "19900101",
+                            "jaar": 1990,
+                            "maand": 1
                         },
-                        "burgerservicenummer": true
+                        "land": {
+                            "code": "",
+                            "omschrijving": ""
+                        },
+                        "plaats": {
+                            "code": "",
+                            "omschrijving": ""
+                        },
+                        "inOnderzoek": {
+                            "_embedded": {
+                                "datumIngangOnderzoek": {
+                                    "dag": 0,
+                                    "datum": "string",
+                                    "jaar": 0,
+                                    "maand": 0
+                                }
+                            },
+                            "datum": true,
+                            "land": true,
+                            "plaats": true
+                        }
                     }
+                },
+                "inOnderzoek": {
+                    "_embedded": {
+                        "datumIngangOnderzoek": {
+                            "dag": 0,
+                            "datum": "",
+                            "jaar": 0,
+                            "maand": 0
+                        }
+                    },
+                    "burgerservicenummer": true
                 },
                 "burgerservicenummer": "789123456",
                 "geheimhoudingPersoonsgegevens": true,

@@ -20,26 +20,6 @@
                 "user"
             ],
             [
-                "add_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "change_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "delete_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "view_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
                 "add_globalconfiguration",
                 "config",
                 "globalconfiguration"
@@ -106,22 +86,22 @@
             ],
             [
                 "add_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "change_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "delete_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "view_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
@@ -729,26 +709,6 @@
                 "accesslog"
             ],
             [
-                "add_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "change_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "delete_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
-                "view_brpconfig",
-                "brp",
-                "brpconfig"
-            ],
-            [
                 "add_globalconfiguration",
                 "config",
                 "globalconfiguration"
@@ -1225,22 +1185,22 @@
             ],
             [
                 "add_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "change_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "delete_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [
                 "view_haalcentraalconfig",
-                "prefill_haalcentraal",
+                "haalcentraal",
                 "haalcentraalconfig"
             ],
             [

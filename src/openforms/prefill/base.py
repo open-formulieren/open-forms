@@ -1,13 +1,14 @@
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 
-from .constants import IdentifierRole, IdentifierRoles
+from .constants import IdentifierRoles
 
 
 class BasePlugin(AbstractBasePlugin):
-    requires_auth = None
+    requires_auth: AuthAttribute | None = None
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         """
@@ -21,7 +22,7 @@ class BasePlugin(AbstractBasePlugin):
         self,
         submission: Submission,
         attributes: List[str],
-        identifier_role: str = IdentifierRoles.main,
+        identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> Dict[str, Any]:
         """
         Given the requested attributes, look up the appropriate values and return them.
@@ -60,7 +61,7 @@ class BasePlugin(AbstractBasePlugin):
         )  # pragma: nocover
 
     def get_identifier_value(
-        self, submission: Submission, identifier_role: IdentifierRole
+        self, submission: Submission, identifier_role: IdentifierRoles
     ) -> str | None:
         """
         Given a submission and the role of the identifier, return the value of the identifier.

@@ -1,61 +1,71 @@
 import logging
-from typing import Any, Iterable, Optional
+from collections.abc import Sequence
+from typing import Any, Optional, TypeAlias
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from glom import GlomError, glom
-from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.contrib.haal_centraal.clients import NoServiceConfigured, get_brp_client
+from openforms.contrib.haal_centraal.clients.brp import BRPClient
+from openforms.contrib.haal_centraal.constants import BRPVersions
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.pre_requests.clients import PreRequestClientContext
-from openforms.prefill.contrib.haalcentraal.constants import Attributes
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
-from ...constants import IdentifierRole, IdentifierRoles
+from ...constants import IdentifierRoles
 from ...registry import register
-from .models import HaalCentraalConfig
+from .constants import AttributesV1, AttributesV2
 
 logger = logging.getLogger(__name__)
 
+PLUGIN_IDENTIFIER = "haalcentraal"
 
-def get_config() -> HaalCentraalConfig | None:
+VERSION_TO_ATTRIBUTES_MAP = {
+    BRPVersions.v13: AttributesV1,
+    BRPVersions.v20: AttributesV2,
+}
+
+
+AttributesSequence: TypeAlias = Sequence[AttributesV1 | AttributesV2]
+
+
+def get_attributes_cls():
     config = HaalCentraalConfig.get_solo()
     assert isinstance(config, HaalCentraalConfig)
-    if not config.service:
-        logger.warning("No service defined for Haal Centraal prefill.")
-        return None
-    return config
+
+    match config:
+        case HaalCentraalConfig(
+            brp_personen_version=version
+        ) if version in VERSION_TO_ATTRIBUTES_MAP:
+            return VERSION_TO_ATTRIBUTES_MAP[version]
+        case _:
+            return AttributesV1
 
 
-@register("haalcentraal")
+@register(PLUGIN_IDENTIFIER)
 class HaalCentraalPrefill(BasePlugin):
-    verbose_name = _("Haal Centraal")
+    verbose_name = _("Haal Centraal: BRP Personen Bevragen")
     requires_auth = AuthAttribute.bsn
 
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
-        config = get_config()
-        if config is None:
-            return Attributes.choices
-        return config.get_attributes().choices
+        AttributesCls = get_attributes_cls()
+        return AttributesCls.choices
 
     @classmethod
     def _get_values_for_bsn(
         cls,
-        config: HaalCentraalConfig,
-        submission: Submission | None,
+        client: BRPClient,
         bsn: str,
-        attributes: Iterable[str],
+        attributes: AttributesSequence,
     ) -> dict[str, Any]:
-        client = config.build_client()
-        assert client is not None
-        client.context = PreRequestClientContext(submission=submission)
-
-        data = client.find_person(bsn, attributes=attributes)
-        if not data:
+        if not (data := client.find_person(bsn, attributes=attributes)):
             return {}
 
         values = dict()
@@ -73,7 +83,7 @@ class HaalCentraalPrefill(BasePlugin):
 
     @classmethod
     def get_identifier_value(
-        cls, submission: Submission, identifier_role: IdentifierRole
+        cls, submission: Submission, identifier_role: IdentifierRoles
     ) -> str | None:
         if not submission.is_authenticated:
             return
@@ -91,17 +101,22 @@ class HaalCentraalPrefill(BasePlugin):
     def get_prefill_values(
         cls,
         submission: Submission,
-        attributes: list[str],
-        identifier_role: IdentifierRole = IdentifierRoles.main,
+        attributes: AttributesSequence,
+        identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, Any]:
-        if (config := get_config()) is None:
+        try:
+            client = get_brp_client(
+                context=PreRequestClientContext(submission=submission)
+            )
+        except NoServiceConfigured:
             return {}
 
         if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
             logger.info("No appropriate identifier found on the submission.")
             return {}
 
-        return cls._get_values_for_bsn(config, submission, bsn_value, attributes)
+        with client:
+            return cls._get_values_for_bsn(client, bsn_value, attributes)
 
     @classmethod
     def get_co_sign_values(
@@ -118,32 +133,34 @@ class HaalCentraalPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        config = get_config()
-        if config is None:
+        try:
+            client = get_brp_client(
+                context=PreRequestClientContext(submission=submission)
+            )
+        except NoServiceConfigured:
             return ({}, "")
 
-        version_atributes = config.get_attributes()
+        Attributes = get_attributes_cls()
+        with client:
+            values = cls._get_values_for_bsn(
+                client,
+                identifier,
+                (
+                    Attributes.naam_voornamen,
+                    Attributes.naam_voorvoegsel,
+                    Attributes.naam_geslachtsnaam,
+                    Attributes.naam_voorletters,
+                ),
+            )
 
-        values = cls._get_values_for_bsn(
-            config,
-            submission,
-            identifier,
-            (
-                version_atributes.naam_voornamen,
-                version_atributes.naam_voorvoegsel,
-                version_atributes.naam_geslachtsnaam,
-                version_atributes.naam_voorletters,
-            ),
-        )
-
-        first_names = values.get(version_atributes.naam_voornamen, "")
-        first_letters = values.get(version_atributes.naam_voorletters) or " ".join(
+        first_names = values.get(Attributes.naam_voornamen, "")
+        first_letters = values.get(Attributes.naam_voorletters) or " ".join(
             [f"{name[0]}." for name in first_names.split(" ") if name]
         )
         representation_bits = [
             first_letters,
-            values.get(version_atributes.naam_voorvoegsel, ""),
-            values.get(version_atributes.naam_geslachtsnaam, ""),
+            values.get(Attributes.naam_voorvoegsel, ""),
+            values.get(Attributes.naam_geslachtsnaam, ""),
         ]
         return (
             values,
@@ -152,30 +169,32 @@ class HaalCentraalPrefill(BasePlugin):
 
     def check_config(self):
         """
+        Check if the admin configuration is valid.
+
         The purpose of this fuction is to simply check the connection to the
         service, so we are using dummy data and an endpoint which does not exist.
-        We want to avoid calls to the national registration by using bsn numbers.
+        We want to avoid calls to the national registration by using a (valid) BSN.
         """
-        config = HaalCentraalConfig.get_solo()
-        assert isinstance(config, HaalCentraalConfig)
-        if not config.service:
-            raise InvalidPluginConfiguration(_("Service not selected"))
-
-        client = config.build_client()
-        assert client is not None
         try:
-            client.make_config_test_request()
-        except ClientError as e:
+            with get_brp_client() as client:
+                client.make_config_test_request()
+        # Possibly no service or (valid) version is set.
+        except NoServiceConfigured as exc:
+            raise InvalidPluginConfiguration(_("Service not selected")) from exc
+        except RuntimeError as exc:
+            raise InvalidPluginConfiguration(exc.args[0]) from exc
+        # The request itself can error
+        except requests.RequestException as exc:
             raise InvalidPluginConfiguration(
-                _("Client error: {exception}").format(exception=e)
-            )
+                _("Client error: {exception}").format(exception=exc)
+            ) from exc
 
     def get_config_actions(self):
         return [
             (
                 _("Configuration"),
                 reverse(
-                    "admin:prefill_haalcentraal_haalcentraalconfig_change",
+                    "admin:haalcentraal_haalcentraalconfig_change",
                     args=(HaalCentraalConfig.singleton_instance_id,),
                 ),
             ),

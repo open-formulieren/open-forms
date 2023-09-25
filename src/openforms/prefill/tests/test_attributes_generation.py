@@ -1,6 +1,7 @@
 from pathlib import Path
 from textwrap import dedent
 
+from django.conf import settings
 from django.test import SimpleTestCase
 
 from ..attributes_generator import (
@@ -9,9 +10,9 @@ from ..attributes_generator import (
 )
 
 OAS_URI = (
-    Path(__file__).parent.parent
+    Path(settings.DJANGO_PROJECT_DIR)
     / "contrib"
-    / "haalcentraal"
+    / "haal_centraal"
     / "tests"
     / "files"
     / "personen.yaml"

@@ -8,10 +8,9 @@ from django.utils.translation import gettext as _
 
 import requests_mock
 from zds_client.oas import schema_fetcher
-from zgw_consumers.test import mock_service_oas_get
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.contrib.brp.models import BRPConfig
+from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import get_dynamic_configuration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.template import render_from_string
@@ -84,22 +83,18 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             {"value": "333444555", "label": "Jane Doe"},
         )
 
-    @patch(
-        "openforms.formio.components.np_family_members.haal_centraal.BRPConfig.get_solo"
-    )
+    @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
     def test_get_children_haal_centraal(self, mock_brp_config_get_solo):
-        service = ServiceFactory.build(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
+        mock_brp_config_get_solo.return_value = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen/api/",
+                oas="https://this.is.irrelevant",
+            )
         )
-        mock_brp_config_get_solo.return_value = BRPConfig(brp_service=service)
         with (TEST_FILES / "op_2_children.json").open("r") as infile:
             json_response = json.load(infile)
 
         with requests_mock.Mocker() as m:
-            mock_service_oas_get(
-                m, url=service.api_root, service="personen", oas_url=service.oas
-            )
             m.get(
                 "https://personen/api/ingeschrevenpersonen/111222333/kinderen",
                 status_code=200,
