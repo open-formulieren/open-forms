@@ -34,6 +34,9 @@ SELECT_EHERKENNING_SIM = SIGNICAT_BROKER_BASE / "authn/simulator/selection/eh"
 
 
 @patch(
+    "openforms.submissions.tokens.submission_resume_token_generator.secret", new="dummy"
+)
+@patch(
     "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
     lambda *_, **__: "ONELOGIN_123456",
 )
@@ -207,6 +210,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         # prep the URL for Django test client consumption
         acs_url.remove(netloc=True, scheme=True)
         acs_response = self.client.get(acs_url.url, follow=True)
+        assert acs_response.status_code == 200
 
         # we are logged in
         self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)

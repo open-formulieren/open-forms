@@ -33,6 +33,9 @@ SIGNICAT_BROKER_BASE = furl("https://maykin.pre.ie01.signicat.pro/broker")
 
 
 @patch(
+    "openforms.submissions.tokens.submission_resume_token_generator.secret", new="dummy"
+)
+@patch(
     "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
     lambda *_, **__: "ONELOGIN_123456",
 )
@@ -484,6 +487,7 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         clear_caches()
 
         acs_response = self.client.get(acs_url.url, follow=True)
+        assert acs_response.status_code == 200
         # we are not not logged in
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
         # and are redirected back to the broker
