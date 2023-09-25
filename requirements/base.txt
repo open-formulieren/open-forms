@@ -171,7 +171,7 @@ django-hijack==3.4.1
     # via -r requirements/base.in
 django-ipware==5.0.0
     # via django-axes
-django-log-outgoing-requests==0.5.1
+django-log-outgoing-requests==0.5.2
     # via -r requirements/base.in
 django-modeltranslation==0.18.12
     # via -r requirements/base.in
