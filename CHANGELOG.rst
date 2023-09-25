@@ -2,6 +2,23 @@
 Changelog
 =========
 
+2.2.3 (2023-09-25)
+==================
+
+Periodic bugfix release
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [#3423] Fixed import crash with forms using service fetch.
+* [#3420] Fixed styling of cookie overview page.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* [#3437] Improved robustness of outgoing request logging solution.
+* Included latest SDK bugfix release.
+
 2.2.2 (2023-08-24)
 ==================
 
