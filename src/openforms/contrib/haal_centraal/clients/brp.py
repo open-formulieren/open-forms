@@ -59,6 +59,8 @@ class BRPClient(PreRequestMixin, HALClient, ABC):
 class V1Client(BRPClient):
     """
     BRP Personen Bevragen 1.3 compatible client.
+
+    Hosted API Documentation: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc
     """
 
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
@@ -72,15 +74,13 @@ class V1Client(BRPClient):
         return response.json()
 
     def get_children(self, bsn: str) -> list[Person]:
-        # FIXME: I suspect that Open Personen's API spec is wrong here, let's see if
-        # we can find an old V1 API spec.
         response = self.get(f"ingeschrevenpersonen/{bsn}/kinderen")
         response.raise_for_status()
         response_data = response.json()["_embedded"]
 
         persons = []
         for kind in response_data["kinderen"]:
-            name_data = kind["_embedded"]["naam"]
+            name_data = kind["naam"]
             person = Person(
                 bsn=kind["burgerservicenummer"],
                 name=Name(

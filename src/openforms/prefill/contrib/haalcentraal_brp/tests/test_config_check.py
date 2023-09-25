@@ -51,6 +51,16 @@ class ConfigCheckTests:
         ):
             plugin.check_config()
 
+    def test_invalid_version_raises_exception(self):
+        self.config.brp_personen_version = "0.999"
+        assert self.config.brp_personen_version not in BRPVersions.values
+
+        with self.assertRaisesMessage(
+            InvalidPluginConfiguration,
+            "No suitable client class configured for API version 0.999",
+        ):
+            plugin.check_config()
+
     def test_404_client_error_returns_None(self):
         result = plugin.check_config()
         self.assertIsNone(result)

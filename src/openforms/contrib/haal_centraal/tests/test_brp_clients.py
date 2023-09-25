@@ -90,6 +90,17 @@ class HaalCentraalFindPersonTests:
 
         self.assertIsNone(raw_data)  # type: ignore
 
+    def test_get_kinderen(self):
+        with get_brp_client() as client:
+            children = client.get_children(bsn="999990676")
+
+        self.assertEqual(len(children), 1)  # type: ignore
+        child = children[0]
+        self.assertEqual(child.bsn, "999991863")  # type: ignore
+        self.assertEqual(child.name.voornamen, "Frieda")  # type: ignore
+        self.assertEqual(child.name.voorvoegsel, "")  # type: ignore
+        self.assertEqual(child.name.geslachtsnaam, "Kroket")  # type: ignore
+
     def test_default_client_context(self):
         client = get_brp_client()
 
@@ -112,6 +123,42 @@ class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
             "https://personen/api/ingeschrevenpersonen/999990676", status_code=404
         )
         super().test_person_not_found()
+
+    def test_get_kinderen(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetKinderen
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676/kinderen",
+            json={
+                "_links": {
+                    "self": {
+                        "href": "https://personen/api/ingeschrevenpersonen/999990676/kinderen",
+                        "templated": False,
+                        "title": "",
+                    }
+                },
+                "_embedded": {
+                    "kinderen": [
+                        {
+                            "burgerservicenummer": "999991863",
+                            "leeftijd": 12,
+                            "naam": {
+                                "geslachtsnaam": "Kroket",
+                                "voorletters": "F.",
+                                "voornamen": "Frieda",
+                                "voorvoegsel": "",
+                                # "adellijkeTitelPredikaat": {...},
+                                # "inOnderzoek": {...},
+                            },
+                            "geheimhoudingPersoonsgegevens": True,
+                            # "inOnderzoek": {...},
+                            # "geboorte": {...},
+                            # "_links": {...},
+                        }
+                    ],
+                },
+            },
+        )
+        super().test_get_kinderen()
 
 
 class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
@@ -138,3 +185,65 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
             ),
         )
         super().test_person_not_found()
+
+    def test_get_kinderen(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/redoc#tag/Personen/operation/Personen
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            json={
+                "type": "RaadpleegMetBurgerservicenummer",
+                "personen": [
+                    {
+                        "kinderen": [
+                            {
+                                # only kinderen.burgerservicenummer and kinderen.naam are requested!
+                                "burgerservicenummer": "999991863",
+                                "naam": {
+                                    "voornamen": "Frieda",
+                                    "voorvoegsel": "",
+                                    "geslachtsnaam": "Kroket",
+                                    "voorletters": "F.",
+                                    # "adellijkeTitelPredikaat": {...},
+                                    # "inOnderzoek": {...},
+                                },
+                            }
+                        ],
+                    }
+                ],
+            },
+        )
+        super().test_get_kinderen()
+
+    def test_get_kinderen_person_not_found_results(self):
+        # TODO: replace this with VCR and the Docker container of BRP v2
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            json={
+                "type": "RaadpleegMetBurgerservicenummer",
+                "personen": [],
+            },
+        )
+
+        with get_brp_client() as client:
+            children = client.get_children(bsn="999990676")
+
+        self.assertEqual(children, [])
+
+
+class ClientFactoryTests(SimpleTestCase):
+    def test_invalid_version_raises_error(self):
+        config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen/api/",
+                oas="https://this.is.ignored",
+            ),
+            brp_personen_version="0.999",
+        )
+        assert config.brp_personen_version not in BRPVersions.values
+
+        with patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=config,
+        ):
+            with self.assertRaises(RuntimeError):
+                get_brp_client()
