@@ -1874,6 +1874,13 @@ class ObjectsAPIBackendTests(TestCase):
 
     @override_settings(ESCAPE_REGISTRATION_OUTPUT=True)
     def test_submission_with_objects_api_escapes_html(self, m):
+        content_template = """
+            {
+            "summary": {% json_summary %},
+            "manual_variable": "{{ voornaam }}"
+            }
+            """
+
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -1903,6 +1910,7 @@ class ObjectsAPIBackendTests(TestCase):
             organisatie_rsin="123456782",
             zaak_vertrouwelijkheidaanduiding="geheim",
             doc_vertrouwelijkheidaanduiding="geheim",
+            content_json=content_template,
         )
 
         expected_result = {
@@ -1919,10 +1927,11 @@ class ObjectsAPIBackendTests(TestCase):
                         }
                     },
                     "type": objects_form_options["productaanvraag_type"],
+                    "bsn": "123456788",
+                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                    "attachments": [],
                     "submission_id": str(submission.uuid),
                     "language_code": "en",
-                    "attachments": [],
-                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
                 },
                 "geometry": "",
                 "startAt": date.today().isoformat(),
@@ -1932,6 +1941,7 @@ class ObjectsAPIBackendTests(TestCase):
                 "correctedBy": "",
             },
         }
+
         expected_document_result = generate_oas_component(
             "documenten",
             "schemas/EnkelvoudigInformatieObject",
@@ -2011,6 +2021,16 @@ class ObjectsAPIBackendTests(TestCase):
         }
 
         object_create_body = object_create.json()
+        posted_record_data = object_create_body["record"]["data"]
+        expected_record_data = {
+            "summary": {
+                "step_slug": {
+                    "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
+                },
+            },
+            "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
+        }
+
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertEqual(object_create_body, expected_object_body)
+        self.assertEqual(posted_record_data, expected_record_data)

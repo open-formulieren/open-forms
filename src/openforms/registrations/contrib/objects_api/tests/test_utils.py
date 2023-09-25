@@ -1,36 +1,56 @@
 from django.test import TestCase
 
-from ..utils import escape_html_manually
+from ..utils import html_escape_json
 
 
 class EscapeHTMLTests(TestCase):
-    def test_given_dict_values_are_escaped(self):
-        sample = {
+    def test_given_dicts_values_are_escaped(self):
+        dict_sample = {
             "test1": "normal value",
-            "test2": "<script>alert();</script>",
-            "nested1": {
-                "n_test": {"n_test1": {"escape": "<script>alert();</script>"}},
+            "test2": """<>'"&""",
+            "nested_dict": {
+                "nested_dict1": {"nested_dict2": {"escape": """<>'"&"""}},
             },
+            "nested_list": [
+                "escape < me",
+                {"leave > me": "escape & me"},
+            ],
         }
-        expected = {
+
+        expected_dict = {
             "test1": "normal value",
-            "test2": "&lt;script&gt;alert();&lt;/script&gt;",
-            "nested1": {
-                "n_test": {
-                    "n_test1": {"escape": "&lt;script&gt;alert();&lt;/script&gt;"}
+            "test2": "&lt;&gt;&#x27;&quot;&amp;",
+            "nested_dict": {
+                "nested_dict1": {
+                    "nested_dict2": {"escape": "&lt;&gt;&#x27;&quot;&amp;"}
                 },
             },
+            "nested_list": [
+                "escape &lt; me",
+                {"leave > me": "escape &amp; me"},
+            ],
         }
 
-        result = escape_html_manually(sample)
+        dict_result = html_escape_json(dict_sample)
 
-        self.assertEqual(expected, result)
+        self.assertEqual(expected_dict, dict_result)
 
-    def test_not_type_of_dict_returns_empty_dict(self):
-        samples = [["test"], "test", 6]
+    def test_given_lists_values_are_escaped(self):
+        list_sample = [
+            "test",
+            """<>'"&""",
+            "escape < me",
+            ["escape < me"],
+            [{"nested_dict": "escape < me"}],
+        ]
+        expected_list = [
+            "test",
+            "&lt;&gt;&#x27;&quot;&amp;",
+            "escape &lt; me",
+            ["escape &lt; me"],
+            [{"nested_dict": "escape &lt; me"}],
+        ]
 
-        for sample in samples:
-            with self.subTest(sample=sample):
-                result = escape_html_manually(sample)
+        list_result = html_escape_json(list_sample)
 
-                self.assertEqual(result, {})
+        self.assertEqual(expected_list, list_result)

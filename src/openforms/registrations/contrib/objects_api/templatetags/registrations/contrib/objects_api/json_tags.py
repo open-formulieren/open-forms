@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.safestring import SafeString
 
 from openforms.formio.rendering.structured import render_json
-from openforms.registrations.contrib.objects_api.utils import escape_html_manually
+from openforms.registrations.contrib.objects_api.utils import html_escape_json
 
 register = template.Library()
 
@@ -29,6 +29,6 @@ def json_summary(context):
     json_data = render_json(submission)
 
     if settings.ESCAPE_REGISTRATION_OUTPUT:
-        json_data = escape_html_manually(json_data)
+        json_data = html_escape_json(json_data)
 
     return SafeString(json.dumps(json_data))

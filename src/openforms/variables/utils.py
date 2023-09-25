@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from django.conf import settings
 
-from openforms.registrations.contrib.objects_api.utils import escape_html_manually
+from openforms.registrations.contrib.objects_api.utils import html_escape_json
 from openforms.typing import JSONObject, JSONValue
 from openforms.utils.date import parse_date
 
@@ -47,7 +47,7 @@ def get_variables_for_context(submission: "Submission") -> dict[str, JSONValue]:
 
     data = submission.data
     if settings.ESCAPE_REGISTRATION_OUTPUT:
-        data = escape_html_manually(submission.data)
+        data = html_escape_json(submission.data)
 
     formio_data = FormioData(
         **{
