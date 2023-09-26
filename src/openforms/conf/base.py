@@ -593,10 +593,16 @@ if SUBPATH:
         STATIC_URL = f"{SUBPATH}{STATIC_URL}"
         MEDIA_URL = f"{SUBPATH}{MEDIA_URL}"
 
-# Objects API registration backend maximum JSON body size in bytes
+#
+# Objects API
+#
+
+# Registration backend maximum JSON body size in bytes
 MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
     "MAX_UNTRUSTED_JSON_PARSE_SIZE", 1_000_000
 )  # 1mb in bytes
+# Perform HTML escaping on user's data-input
+ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
 
 
 ##############################

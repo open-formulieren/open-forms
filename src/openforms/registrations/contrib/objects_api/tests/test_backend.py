@@ -1,7 +1,7 @@
 import textwrap
 from datetime import date
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 import requests_mock
 from zds_client.oas import schema_fetcher
@@ -22,8 +22,6 @@ from .factories import ObjectsAPIConfigFactory
 
 @requests_mock.Mocker()
 class ObjectsAPIBackendTests(TestCase):
-    maxDiff = None
-
     @classmethod
     def setUpTestData(cls):
         ObjectsAPIConfigFactory.create(
@@ -1873,3 +1871,96 @@ class ObjectsAPIBackendTests(TestCase):
             document_create_attachment_body["vertrouwelijkheidaanduiding"], "geheim"
         )
         self.assertEqual(document_create_attachment_body["titel"], "A Custom Title")
+
+    @override_settings(ESCAPE_REGISTRATION_OUTPUT=True)
+    def test_submission_with_objects_api_escapes_html(self, m):
+        content_template = textwrap.dedent(
+            """
+            {
+            "summary": {% json_summary %},
+            "manual_variable": "{{ variables.voornaam }}"
+            }
+            """
+        )
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+            ],
+            submitted_data={"voornaam": "<script>alert();</script>"},
+            language_code="en",
+        )
+
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.slug
+
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+
+        objects_form_options = dict(
+            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
+            objecttype_version=2,
+            productaanvraag_type="testproduct",
+            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
+            upload_submission_csv=True,
+            informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/5",
+            organisatie_rsin="123456782",
+            zaak_vertrouwelijkheidaanduiding="geheim",
+            doc_vertrouwelijkheidaanduiding="geheim",
+            content_json=content_template,
+        )
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=lambda req, ctx: {
+                "url": "https://objecten.nl/api/v1/objects/1",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "type": objects_form_options["objecttype"],
+                "record": {
+                    "index": 0,
+                    "typeVersion": objects_form_options["objecttype_version"],
+                    "data": req.json()["record"]["data"],
+                    "geometry": None,
+                    "startAt": date.today().isoformat(),
+                    "endAt": "",
+                    "registrationAt": date.today().isoformat(),
+                    "correctionFor": 0,
+                    "correctedBy": "",
+                },
+            },
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=generate_oas_component(
+                "documenten",
+                "schemas/EnkelvoudigInformatieObject",
+                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            ),
+        )
+
+        plugin = ObjectsAPIRegistration("objects_api")
+        plugin.register_submission(submission, objects_form_options)
+
+        self.assertEqual(len(m.request_history), 5)
+
+        expected_record_data = {
+            "summary": {
+                step_slug: {
+                    "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
+                },
+            },
+            "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
+        }
+        object_create = m.last_request
+        object_create_body = object_create.json()
+        posted_record_data = object_create_body["record"]["data"]
+        self.assertEqual(object_create.method, "POST")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
+        self.assertEqual(posted_record_data, expected_record_data)
