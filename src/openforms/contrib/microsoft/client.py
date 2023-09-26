@@ -6,9 +6,9 @@ from typing import TypedDict
 
 from O365 import Account
 
-from openforms.contrib.microsoft.constants import ConflictHandling
-from openforms.contrib.microsoft.exceptions import MSAuthenticationError
-from openforms.contrib.microsoft.models import MSGraphService
+from .constants import ConflictHandling
+from .exceptions import MSAuthenticationError
+from .models import MSGraphService
 
 
 class MSGraphClient:

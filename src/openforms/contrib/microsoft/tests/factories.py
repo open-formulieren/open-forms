@@ -1,6 +1,6 @@
 import factory
 
-from openforms.contrib.microsoft.models import MSGraphService
+from ..models import MSGraphService
 
 
 class MSGraphServiceFactory(factory.django.DjangoModelFactory):
