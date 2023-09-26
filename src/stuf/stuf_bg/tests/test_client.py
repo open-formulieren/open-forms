@@ -1,10 +1,11 @@
 from functools import lru_cache
 from pathlib import Path
 from random import shuffle
+from unittest.mock import patch
 
 from django.conf import settings
 from django.template import loader
-from django.test import TestCase, tag
+from django.test import SimpleTestCase, TestCase, tag
 from django.utils import timezone
 
 import requests_mock
@@ -16,12 +17,13 @@ from openforms.logging.models import TimelineLogProxy
 from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
 from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 from stuf.models import StufService
-from stuf.stuf_bg.client import StufBGClient
-from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
-from stuf.stuf_bg.models import StufBGConfig
 from stuf.stuf_zds.client import nsmap
 from stuf.tests.factories import StufServiceFactory
 from stuf.xml import fromstring
+
+from ..client import NoServiceConfigured, StufBGClient, get_client
+from ..constants import NAMESPACE_REPLACEMENTS, FieldChoices
+from ..models import StufBGConfig
 
 PATH_XSDS = (Path(settings.BASE_DIR) / "src" / "stuf" / "stuf_bg" / "xsd").resolve()
 STUF_BG_XSD = PATH_XSDS / "bg0310" / "vraagAntwoord" / "bg0310_namespace.xsd"
@@ -70,21 +72,23 @@ def _stuf_bg_response(service: StufService):
     return response_body
 
 
-class StufBGConfigTests(TestCase):
-    def test_client_requires_a_service(self):
-        config = StufBGConfig(service=None)
-
-        with self.assertRaises(RuntimeError):
-            config.get_client()
+class StufBGConfigTests(SimpleTestCase):
+    @patch(
+        "stuf.stuf_bg.client.StufBGConfig.get_solo",
+        return_value=StufBGConfig(service=None),
+    )
+    def test_client_requires_a_service(self, m_get_solo):
+        with self.assertRaises(NoServiceConfigured):
+            get_client()
 
     def test_all_prefill_attributes_are_mapped(self):
-        available_attributes = FieldChoices.values
-        for attribute in available_attributes:
+        for attribute in FieldChoices:
             with self.subTest(attribute=attribute):
                 glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
                 self.assert_(glom_target, f"unmapped attribute: {attribute}")
 
 
+# not SimpleTestCase because of openforms.logging.logevent usage
 class StufBGClientTests(TestCase):
     def setUp(self):
         super().setUp()

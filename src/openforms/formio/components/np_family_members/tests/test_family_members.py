@@ -107,9 +107,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
             self.assertEqual(("789123456", "Billy van Doe"), kids_choices[1])
 
-    @patch(
-        "openforms.formio.components.np_family_members.stuf_bg.StufBGConfig.get_solo"
-    )
+    @patch("stuf.stuf_bg.client.StufBGConfig.get_solo")
     def test_get_children_stuf_bg(self, mock_stufbg_config_get_solo):
         stuf_bg_service = StufServiceFactory.build()
         mock_stufbg_config_get_solo.return_value = StufBGConfig(service=stuf_bg_service)
