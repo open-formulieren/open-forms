@@ -80,7 +80,9 @@ class JsonSummaryTests(TestCase):
             disable_autoescape=True,
         )
 
-        expected = '{"formstep-slug": {"voornaam": "<script>alert();</script>"""}}'
+        # double quotes are escaped by json.dumps() and not by our html_escape_json function
+        # that's why we expect the text not be escaped except for the double quotes
+        expected = '{"formstep-slug": {"voornaam": "<script>alert();</script>\\"\\""}}'
 
         self.assertEqual(rendered, expected)
 

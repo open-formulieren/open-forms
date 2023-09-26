@@ -1874,12 +1874,14 @@ class ObjectsAPIBackendTests(TestCase):
 
     @override_settings(ESCAPE_REGISTRATION_OUTPUT=True)
     def test_submission_with_objects_api_escapes_html(self, m):
-        content_template = """
+        content_template = textwrap.dedent(
+            """
             {
             "summary": {% json_summary %},
-            "manual_variable": "{{ voornaam }}"
+            "manual_variable": "{{ variables.voornaam }}"
             }
             """
+        )
 
         submission = SubmissionFactory.from_components(
             [
@@ -1889,11 +1891,12 @@ class ObjectsAPIBackendTests(TestCase):
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_voornamen,
                     },
-                }
+                },
             ],
             submitted_data={"voornaam": "<script>alert();</script>"},
             language_code="en",
         )
+
         submission_step = submission.steps[0]
         step_slug = submission_step.form_step.slug
 
@@ -1922,16 +1925,18 @@ class ObjectsAPIBackendTests(TestCase):
                 "typeVersion": objects_form_options["objecttype_version"],
                 "data": {
                     "data": {
-                        f"{step_slug}": {
-                            "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
-                        }
+                        "summary": {
+                            f"{step_slug}": {
+                                "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
+                            },
+                        },
+                        "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
                     },
                     "type": objects_form_options["productaanvraag_type"],
-                    "bsn": "123456788",
-                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-                    "attachments": [],
                     "submission_id": str(submission.uuid),
                     "language_code": "en",
+                    "attachments": [],
+                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
                 },
                 "geometry": "",
                 "startAt": date.today().isoformat(),
@@ -1941,7 +1946,6 @@ class ObjectsAPIBackendTests(TestCase):
                 "correctedBy": "",
             },
         }
-
         expected_document_result = generate_oas_component(
             "documenten",
             "schemas/EnkelvoudigInformatieObject",
@@ -1993,43 +1997,17 @@ class ObjectsAPIBackendTests(TestCase):
             object_create,
         ) = m.request_history
 
-        expected_object_body = {
-            "type": "https://objecttypen.nl/api/v1/objecttypes/2",
-            "record": {
-                "typeVersion": 2,
-                "data": {
-                    "bron": {
-                        "naam": "Open Formulieren",
-                        "kenmerk": str(submission.uuid),
-                    },
-                    "type": "testproduct",
-                    "aanvraaggegevens": {
-                        f"{step_slug}": {
-                            "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
-                        }
-                    },
-                    "taal": "en",
-                    "betrokkenen": [
-                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
-                    ],
-                    "pdf": expected_document_result["url"],
-                    "csv": expected_csv_document_result["url"],
-                    "bijlagen": [],
-                },
-                "startAt": date.today().isoformat(),
-            },
-        }
-
-        object_create_body = object_create.json()
-        posted_record_data = object_create_body["record"]["data"]
         expected_record_data = {
             "summary": {
-                "step_slug": {
+                step_slug: {
                     "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
                 },
             },
             "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
         }
+
+        object_create_body = object_create.json()
+        posted_record_data = object_create_body["record"]["data"]
 
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
