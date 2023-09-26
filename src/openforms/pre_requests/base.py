@@ -19,7 +19,7 @@ class PreRequestHookBase(ABC, AbstractBasePlugin):
         self,
         method: str,
         url: str,
-        kwargs: dict,
+        kwargs: dict | None,
         context: PreRequestClientContext | None = None,
     ) -> None:
         raise NotImplementedError()  # pragma: nocover

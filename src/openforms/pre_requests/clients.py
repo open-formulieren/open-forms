@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Optional, TypedDict
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from requests.models import PreparedRequest, Request
 from zgw_consumers.client import ZGWClient
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class PreRequestClientContext(TypedDict):
-    submission: Optional["Submission"]
+    submission: Submission | None
 
 
 class PreRequestZGWClient(ZGWClient):
@@ -18,12 +20,13 @@ class PreRequestZGWClient(ZGWClient):
     A :class:`zgw_consumers.client.ZGWClient` with pre-requests support.
 
     .. note:: this client is being deprecated in favour of a pure requests approach,
-       using :class:`api_client.APIClient`
+       using :class:`api_client.APIClient` and
+       :class:`pre_requests.clients.PreRequestMixin`.
     """
 
     _context = None
 
-    def pre_request(self, method: str, url: str, kwargs: Optional[dict] = None) -> Any:
+    def pre_request(self, method: str, url: str, kwargs: dict | None = None) -> Any:
         result = super().pre_request(method, url, kwargs)
 
         for pre_request in registry:
@@ -32,7 +35,7 @@ class PreRequestZGWClient(ZGWClient):
         return result
 
     @property
-    def context(self) -> Optional[PreRequestClientContext]:
+    def context(self) -> PreRequestClientContext | None:
         return self._context
 
     @context.setter
@@ -80,4 +83,4 @@ class PreRequestMixin:
         for key, value in kwargs.items():
             setattr(request, key, value)
 
-        return super().prepare_request(request)
+        return super().prepare_request(request)  # type: ignore
