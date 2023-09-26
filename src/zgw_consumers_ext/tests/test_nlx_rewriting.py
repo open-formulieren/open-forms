@@ -3,14 +3,8 @@ from django.test import TestCase
 import requests_mock
 from zgw_consumers.constants import AuthTypes
 
-from api_client import APIClient
-
-from ..api_client import NLXMixin, build_client
+from ..api_client import build_client
 from .factories import ServiceFactory
-
-
-class NLXClient(NLXMixin, APIClient):
-    pass
 
 
 class NLXClientTests(TestCase):
