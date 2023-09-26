@@ -62,4 +62,4 @@ class EscapeHTMLTests(TestCase):
             with self.subTest(sample=sample):
                 result = html_escape_json(sample)
 
-            self.assertEqual(result, sample)
+                self.assertIs(result, sample)

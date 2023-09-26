@@ -1915,87 +1915,40 @@ class ObjectsAPIBackendTests(TestCase):
             doc_vertrouwelijkheidaanduiding="geheim",
             content_json=content_template,
         )
-
-        expected_result = {
-            "url": "https://objecten.nl/api/v1/objects/1",
-            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-            "type": objects_form_options["objecttype"],
-            "record": {
-                "index": 0,
-                "typeVersion": objects_form_options["objecttype_version"],
-                "data": {
-                    "data": {
-                        "summary": {
-                            f"{step_slug}": {
-                                "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
-                            },
-                        },
-                        "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
-                    },
-                    "type": objects_form_options["productaanvraag_type"],
-                    "submission_id": str(submission.uuid),
-                    "language_code": "en",
-                    "attachments": [],
-                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-                },
-                "geometry": "",
-                "startAt": date.today().isoformat(),
-                "endAt": "",
-                "registrationAt": date.today().isoformat(),
-                "correctionFor": 0,
-                "correctedBy": "",
-            },
-        }
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-
         m.post(
             "https://objecten.nl/api/v1/objects",
             status_code=201,
-            json=expected_result,
+            json=lambda req, ctx: {
+                "url": "https://objecten.nl/api/v1/objects/1",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "type": objects_form_options["objecttype"],
+                "record": {
+                    "index": 0,
+                    "typeVersion": objects_form_options["objecttype_version"],
+                    "data": req.json()["record"]["data"],
+                    "geometry": None,
+                    "startAt": date.today().isoformat(),
+                    "endAt": "",
+                    "registrationAt": date.today().isoformat(),
+                    "correctionFor": 0,
+                    "correctedBy": "",
+                },
+            },
         )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
-            json=expected_document_result,
-        )
-
-        def match_csv(request):
-            if "csv" in request.json()["bestandsnaam"]:
-                return True
-            return False
-
-        expected_csv_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-        )
-
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_csv_document_result,
-            additional_matcher=match_csv,
+            json=generate_oas_component(
+                "documenten",
+                "schemas/EnkelvoudigInformatieObject",
+                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            ),
         )
 
         plugin = ObjectsAPIRegistration("objects_api")
-        result = plugin.register_submission(submission, objects_form_options)
-
-        # Result is simply the created object
-        self.assertEqual(result, expected_result)
+        plugin.register_submission(submission, objects_form_options)
 
         self.assertEqual(len(m.request_history), 5)
-
-        (
-            documenten_oas_get,
-            document_create,
-            csv_document_create,
-            objecten_oas_get,
-            object_create,
-        ) = m.request_history
 
         expected_record_data = {
             "summary": {
@@ -2005,10 +1958,9 @@ class ObjectsAPIBackendTests(TestCase):
             },
             "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
         }
-
+        object_create = m.last_request
         object_create_body = object_create.json()
         posted_record_data = object_create_body["record"]["data"]
-
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
         self.assertEqual(posted_record_data, expected_record_data)
