@@ -14,6 +14,7 @@ from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.tests.utils import c_profile
+from openforms.utils.tests.nlx import DisableNLXRewritingMixin
 from openforms.variables.constants import DataMappingTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
@@ -35,7 +36,7 @@ def data_mapping_values() -> st.SearchStrategy[Any]:
     return st.one_of(st.text(), st.integers(), st.floats(), st.dates(), st.datetimes())
 
 
-class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
+class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

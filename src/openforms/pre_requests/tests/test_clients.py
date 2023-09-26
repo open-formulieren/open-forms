@@ -6,6 +6,7 @@ import requests_mock
 from zgw_consumers.test import mock_service_oas_get
 
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.utils.tests.nlx import DisableNLXRewritingMixin
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..base import PreRequestHookBase
@@ -13,7 +14,7 @@ from ..clients import PreRequestClientContext
 from ..registry import Registry
 
 
-class PreRequestHooksTest(SimpleTestCase):
+class PreRequestHooksTest(DisableNLXRewritingMixin, SimpleTestCase):
     def test_pre_request_hook(self):
         register = Registry()
 

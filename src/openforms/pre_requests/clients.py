@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, TypedDict
 
 from requests.models import PreparedRequest, Request
 from zgw_consumers.client import ZGWClient
+from zgw_consumers.nlx import NLXClientMixin
 
 from .registry import register as registry
 
@@ -15,7 +16,7 @@ class PreRequestClientContext(TypedDict):
     submission: Submission | None
 
 
-class PreRequestZGWClient(ZGWClient):
+class PreRequestZGWClient(NLXClientMixin, ZGWClient):
     """
     A :class:`zgw_consumers.client.ZGWClient` with pre-requests support.
 
