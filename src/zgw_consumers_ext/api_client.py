@@ -69,3 +69,7 @@ class ZGWAuth(AuthBase):
     def __call__(self, request: PreparedRequest):
         request.headers.update(self.auth.credentials())
         return request
+
+
+class NLXMixin:
+    pass

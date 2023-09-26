@@ -3,12 +3,14 @@ from django.test import TestCase
 import requests_mock
 from zgw_consumers.constants import AuthTypes
 
+from api_client import APIClient
+
+from ..api_client import NLXMixin, build_client
 from .factories import ServiceFactory
 
-DUMMY_SCHEMA = {
-    "openapi": "3.0.1",
-    "paths": {},
-}
+
+class NLXClient(NLXMixin, APIClient):
+    pass
 
 
 class NLXClientTests(TestCase):
@@ -20,18 +22,15 @@ class NLXClientTests(TestCase):
             auth_type=AuthTypes.no_auth,
             nlx="http://localhost:8081/:serial-number/:service/",
         )
-        client = nlx_service.build_client()
-        client.schema = DUMMY_SCHEMA
+        client = build_client(nlx_service)
+
         m.get(
             "http://localhost:8081/:serial-number/:service/some-resource",
             json=lambda req, _: {"url": req.url},
         )
 
-        response_data = client.request(
-            path="some-resource",
-            operation="dummy-operation",
-            method="GET",
-        )
+        with client:
+            response_data = client.get("some-resource").json()
 
         self.assertEqual(m.last_request.method, "GET")
         self.assertEqual(
