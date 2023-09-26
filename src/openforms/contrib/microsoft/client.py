@@ -1,3 +1,12 @@
+"""
+Microsoft (graph) API client.
+
+This client implementation wraps around the API client/integration implemented in the
+O365 package. While it uses requests-oauth2client under the hood, we opt to *not*
+use our own :module:`api_client` implementation here, as the typical Dutch API/service
+requirements such as mTLS are not relevant. The service model definition also does not
+allow configuring any of those aspects.
+"""
 import json
 import os
 from io import BytesIO
