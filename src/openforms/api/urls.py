@@ -10,6 +10,7 @@ from drf_spectacular.views import (
 from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
+from openforms.contrib.kadaster.api.views import AddressAutocompleteView
 from openforms.forms.api.viewsets import (
     CategoryViewSet,
     FormDefinitionViewSet,
@@ -97,7 +98,13 @@ urlpatterns = [
                 path("forms-import", FormsImportAPIView.as_view(), name="forms-import"),
                 path("prefill/", include("openforms.prefill.api.urls")),
                 path("validation/", include("openforms.validations.api.urls")),
-                path("location/", include("openforms.locations.api.urls")),
+                # TODO: in Open Forms v3, this must become a simple RedirectView to the
+                # endpoint for openforms.contrib.kadaster.api.views.AddressAutocomplete
+                path(
+                    "location/get-street-name-and-city",
+                    AddressAutocompleteView.as_view(),
+                    name="get-street-name-and-city-list",
+                ),
                 path(
                     "logic/description",
                     GenerateLogicDescriptionView.as_view(),

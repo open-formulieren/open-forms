@@ -8,11 +8,12 @@ from django.utils.translation import gettext_lazy as _
 
 import requests_mock
 
-from openforms.contrib.kadaster.clients.bag import AddressResult
-from openforms.contrib.kadaster.models import KadasterApiConfig
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from zgw_consumers_ext.tests.factories import ServiceFactory
+
+from ..clients.bag import AddressResult
+from ..models import KadasterApiConfig
 
 CACHES = settings.CACHES.copy()
 CACHES["default"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
@@ -31,7 +32,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.addCleanup(caches["default"].clear)
         self._add_submission_to_session(self.submission)
 
-    @patch("openforms.locations.api.views.lookup_address")
+    @patch("openforms.contrib.kadaster.api.views.lookup_address")
     def test_getting_street_name_and_city(self, m_lookup_address):
         m_lookup_address.return_value = AddressResult(
             street_name="Keizersgracht", city="Amsterdam"
@@ -111,7 +112,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
             },
         )
 
-    @patch("openforms.locations.api.views.lookup_address")
+    @patch("openforms.contrib.kadaster.api.views.lookup_address")
     def test_getting_street_name_and_city_with_extra_query_params_ignores_extra_param(
         self, m_lookup_address
     ):
@@ -129,7 +130,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.assertEqual(response.json()["streetName"], "Keizersgracht")
         self.assertEqual(response.json()["city"], "Amsterdam")
 
-    @patch("openforms.locations.api.views.lookup_address")
+    @patch("openforms.contrib.kadaster.api.views.lookup_address")
     def test_address_not_found_returns_empty_200_response(self, m_lookup_address):
         m_lookup_address.return_value = None
 
@@ -142,7 +143,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.assertEqual(response.json(), {})
 
     @tag("gh-1832")
-    @patch("openforms.locations.api.views.lookup_address")
+    @patch("openforms.contrib.kadaster.api.views.lookup_address")
     def test_endpoint_uses_caching(self, m_lookup_address):
         m_lookup_address.return_value = AddressResult(
             street_name="Keizersgracht", city="Amsterdam"
