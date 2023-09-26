@@ -54,3 +54,12 @@ class EscapeHTMLTests(TestCase):
         list_result = html_escape_json(list_sample)
 
         self.assertEqual(expected_list, list_result)
+
+    def test_different_input(self):
+        samples = [5, 5.9, None, True]
+
+        for sample in samples:
+            with self.subTest(sample=sample):
+                result = html_escape_json(sample)
+
+            self.assertEqual(result, sample)
