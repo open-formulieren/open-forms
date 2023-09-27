@@ -75,15 +75,3 @@ def check_config():
                         exception=f"HTTP status {res.status_code}",
                     )
                 )
-
-    fields = [
-        "productaanvraag_type",
-        "objecttype_version",
-        "organisatie_rsin",
-    ]
-    for service_field in fields:
-        value = getattr(config, service_field)
-        if not value:
-            raise InvalidPluginConfiguration(
-                _("Empty or invalid value for '{field}'").format(field=service_field)
-            )

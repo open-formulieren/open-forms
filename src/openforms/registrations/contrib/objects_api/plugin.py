@@ -32,6 +32,8 @@ from .checks import check_config
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 
+PLUGIN_IDENTIFIER = "objects_api"
+
 
 def get_drc() -> ZGWClient:
     config = ObjectsAPIConfig.get_solo()
@@ -56,7 +58,7 @@ def build_options(plugin_options: dict, key_mapping: dict) -> dict:
     return options
 
 
-@register("objects_api")
+@register(PLUGIN_IDENTIFIER)
 class ObjectsAPIRegistration(BasePlugin):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
