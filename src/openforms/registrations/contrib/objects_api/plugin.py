@@ -1,6 +1,5 @@
 import json
 import sys
-from datetime import date
 from typing import Any, Dict, NoReturn
 
 from django.conf import settings
@@ -10,6 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.contrib.zgw.clients import DocumentenClient
+from openforms.contrib.zgw.clients.utils import get_today
 from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_csv_document,
@@ -81,8 +81,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
         # Prepare all documents to relate to the Objects API record
         with get_documents_client() as documents_client:
-            # TODO: refactor this once zgw registration is updated for new clients too
-            get_drc = lambda: documents_client
 
             # Create the document for the PDF summary
             submission_report = SubmissionReport.objects.get(submission=submission)
@@ -96,10 +94,10 @@ class ObjectsAPIRegistration(BasePlugin):
             )
 
             document = create_report_document(
-                submission.form.admin_name,
-                submission_report,
-                submission_report_options,
-                get_drc=get_drc,
+                client=documents_client,
+                name=submission.form.admin_name,
+                submission_report=submission_report,
+                options=submission_report_options,
             )
 
             # Register the attachments
@@ -128,10 +126,10 @@ class ObjectsAPIRegistration(BasePlugin):
                         attachment_options[key] = value
 
                 attachment_document = create_attachment_document(
-                    submission.form.admin_name,
-                    attachment,
-                    attachment_options,
-                    get_drc=get_drc,
+                    client=documents_client,
+                    name=submission.form.admin_name,
+                    submission_attachment=attachment,
+                    options=attachment_options,
                 )
                 attachments.append(attachment_document["url"])
 
@@ -189,10 +187,7 @@ class ObjectsAPIRegistration(BasePlugin):
             "record": {
                 "typeVersion": options["objecttype_version"],
                 "data": record_data,
-                # FIXME: do this based on appropriate timezone instead of using the naive
-                # datetime.date. This works as long as servers are in the Europe/Amsterdam
-                # timezone.
-                "startAt": date.today().isoformat(),
+                "startAt": get_today(),
             },
         }
         apply_data_mapping(
@@ -258,11 +253,10 @@ def register_submission_csv(
 
     language_code_2b = to_iso639_2b(submission.language_code)
     submission_csv_document = create_csv_document(
-        f"{submission.form.admin_name} (csv)",
-        submission_csv,
-        submission_csv_options,
-        # TODO: refactor this once zgw registration is updated for new clients too
-        get_drc=lambda: documents_client,
+        client=documents_client,
+        name=f"{submission.form.admin_name} (csv)",
+        csv_data=submission_csv,
+        options=submission_csv_options,
         language=language_code_2b,
     )
 
