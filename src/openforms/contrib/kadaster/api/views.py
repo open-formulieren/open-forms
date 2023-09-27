@@ -1,7 +1,7 @@
 import logging
 from functools import partial
 
-from django.core.cache import caches
+from django.core.cache import cache
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.views.mixins import ListMixin
+from openforms.contrib.kadaster.clients.bag import AddressResult
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
 from ..clients import get_bag_client, get_locatieserver_client
@@ -32,7 +33,7 @@ ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT = (
 )  # 24 hours - address data does NOT update frequently
 
 
-def lookup_address(postcode: str, number: str):
+def lookup_address(postcode: str, number: str) -> AddressResult | None:
     with get_bag_client() as client:
         return client.get_address(postcode, number)
 
@@ -79,7 +80,7 @@ class AddressAutocompleteView(APIView):
 
         # check the cache so we avoid hitting the remote API too often (and risk
         # of being throttled, see #1832)
-        address_data = caches["default"].get_or_set(
+        address_data = cache.get_or_set(
             key=f"BAG|get_address|{postcode}|{number}",
             default=partial(lookup_address, postcode, number),
             timeout=ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT,
