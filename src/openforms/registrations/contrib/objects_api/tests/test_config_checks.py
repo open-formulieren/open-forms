@@ -6,7 +6,6 @@ from django.test import SimpleTestCase
 import requests
 import requests_mock
 from zgw_consumers.constants import APITypes
-from zgw_consumers.test import mock_service_oas_get
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
@@ -23,38 +22,24 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
         self.config = ObjectsAPIConfig(
             objects_service=ServiceFactory.build(
                 api_root="https://objects.example.com/api/v1/",
-                oas="https://objects.example.com/api/v1/",
             ),
             drc_service=ServiceFactory.build(
                 api_root="https://documents.example.com/api/v1/",
-                oas="https://documents.example.com/api/v1/",
                 api_type=APITypes.drc,
             ),
-            catalogi_service=ServiceFactory.build(),
+            catalogi_service=None,
             productaanvraag_type="Productaanvraag",
             objecttype_version=42,
             organisatie_rsin="123456782",
         )
         patcher = patch(
-            "openforms.registrations.contrib.objects_api.checks.ObjectsAPIConfig.get_solo",
+            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
             return_value=self.config,
         )
         self.mock_get_solo = patcher.start()
         self.addCleanup(patcher.stop)
 
     def _mockForValidServiceConfiguration(self, m: requests_mock.Mocker) -> None:
-        mock_service_oas_get(
-            m,
-            "https://objects.example.com/api/v1/",
-            oas_url="https://objects.example.com/api/v1/",
-            service="objecten",
-        )
-        mock_service_oas_get(
-            m,
-            "https://documents.example.com/api/v1/",
-            oas_url="https://documents.example.com/api/v1/",
-            service="documenten",
-        )
         m.get(
             "https://objects.example.com/api/v1/objects",
             json={"results": []},
@@ -71,8 +56,24 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
         with self.assertRaises(InvalidPluginConfiguration):
             plugin.check_config()
 
-    def test_no_documents_service_configured(self):
+    @requests_mock.Mocker()
+    def test_objects_service_misconfigured(self, m):
+        m.get(
+            "https://objects.example.com/api/v1/objects",
+            exc=requests.ConnectionError,
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    @requests_mock.Mocker()
+    def test_no_documents_service_configured(self, m):
         self.config.drc_service = None
+        m.get(
+            "https://objects.example.com/api/v1/objects",
+            json={"results": []},
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with self.assertRaises(InvalidPluginConfiguration):
