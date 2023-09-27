@@ -1,17 +1,31 @@
 import logging
 from base64 import b64encode
 from datetime import date
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Protocol
 
 from django.utils import timezone
 
-from zgw_consumers.client import ZGWClient
 from zgw_consumers.models import Service
 
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 from openforms.translations.utils import to_iso639_2b
 
 logger = logging.getLogger(__name__)
+
+
+class ZGWClient(Protocol):
+    def list(
+        self, resource: str, params: dict | None, **kwargs
+    ) -> list | dict:  # pragma: no cover
+        ...
+
+    def create(self, resource: str, data: dict, **kwargs) -> dict:  # pragma: no cover
+        ...
+
+    def partial_update(
+        self, resource: str, data: dict, url: str = "", **kwargs
+    ) -> dict:  # pragma: no cover
+        ...
 
 
 def create_zaak(

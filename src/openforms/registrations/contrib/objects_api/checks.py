@@ -32,7 +32,7 @@ def check_config():
         except NoServiceConfigured as exc:
             raise InvalidPluginConfiguration(
                 _("{api_name} endpoint is not configured.").format(api_name=api_name)
-            )
+            ) from exc
         except requests.RequestException as exc:
             raise InvalidPluginConfiguration(
                 _("Client error: {exception}").format(exception=exc)

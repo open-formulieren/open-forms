@@ -8,6 +8,7 @@ The clients used are:
 * Catalogi API client, for displaying contextually relevant possible document types
   in the form builder
 """
+from openforms.contrib.zgw.clients import DocumentenClient
 from zgw_consumers_ext.api_client import NLXClient, build_client
 
 from .models import ObjectsAPIConfig
@@ -25,9 +26,9 @@ def get_objects_client() -> NLXClient:
     return build_client(service)
 
 
-def get_documents_client() -> NLXClient:
+def get_documents_client() -> DocumentenClient:
     config = ObjectsAPIConfig.get_solo()
     assert isinstance(config, ObjectsAPIConfig)
     if not (service := config.drc_service):
         raise NoServiceConfigured("No Documents API service configured!")
-    return build_client(service)
+    return build_client(service, client_factory=DocumentenClient)

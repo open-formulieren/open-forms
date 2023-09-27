@@ -7,18 +7,19 @@ from django.test import TestCase, override_settings
 import requests_mock
 import tablib
 from freezegun import freeze_time
-from zgw_consumers.test.schema_mock import mock_service_oas_get
+from zgw_consumers.constants import APITypes
 
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
-from ..plugin import ObjectsAPIRegistration
-from .factories import ObjectsAPIConfigFactory
+from ..models import ObjectsAPIConfig
+from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
 
-class ObjectsAPIBackendTests(TestCase):
+class JSONTemplatingTests(TestCase):
     maxDiff = None
 
     @requests_mock.Mocker()
@@ -34,32 +35,33 @@ class ObjectsAPIBackendTests(TestCase):
             form_definition_kwargs={"slug": "test-step-tralala"},
             auth_info__value="123456789",
         )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission.submissionstep_set.first()
-        )
-
-        object_api_global_config = ObjectsAPIConfigFactory(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            objects_service__oas="https://objecten.nl/api/v1/schema/openapi.yaml",
+        SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
+        config = ObjectsAPIConfig(
+            objects_service=ServiceFactory.build(
+                api_root="https://objecten.nl/api/v1/",
+                api_type=APITypes.orc,
+            ),
+            drc_service=ServiceFactory.build(
+                api_root="https://documenten.nl/api/v1/",
+                api_type=APITypes.drc,
+            ),
             productaanvraag_type="terugbelnotitie",
         )
-
-        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-        )
-
-        plugin = ObjectsAPIRegistration("objects_api")
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.ObjectsAPIConfig.get_solo",
-            return_value=object_api_global_config,
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_report_document",
-            return_value={"url": "http://oz.nl/pdf-report"},
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_attachment_document",
-            return_value={"url": "http://oz.nl/attachment-url"},
+        m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        with (
+            patch(
+                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                return_value={"url": "http://oz.nl/pdf-report"},
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_attachment_document",
+                return_value={"url": "http://oz.nl/attachment-url"},
+            ),
         ):
             plugin.register_submission(
                 submission,
@@ -69,10 +71,7 @@ class ObjectsAPIBackendTests(TestCase):
                 },
             )
 
-        history = m.request_history
-
-        posted_object = history[-1].json()
-
+        posted_object = m.last_request.json()
         self.assertEqual(
             posted_object,
             {
@@ -101,9 +100,15 @@ class ObjectsAPIBackendTests(TestCase):
     @requests_mock.Mocker()
     @freeze_time("2022-09-12")
     def test_custom_template(self, m):
-        object_api_global_config = ObjectsAPIConfigFactory(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            objects_service__oas="https://objecten.nl/api/v1/schema/openapi.yaml",
+        config = ObjectsAPIConfig(
+            objects_service=ServiceFactory.build(
+                api_root="https://objecten.nl/api/v1/",
+                api_type=APITypes.orc,
+            ),
+            drc_service=ServiceFactory.build(
+                api_root="https://documenten.nl/api/v1/",
+                api_type=APITypes.drc,
+            ),
             content_json=textwrap.dedent(
                 """
                 {
@@ -137,32 +142,30 @@ class ObjectsAPIBackendTests(TestCase):
             auth_info__attribute="bsn",
             auth_info__value="123456789",
         )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission.submissionstep_set.first()
-        )
-
-        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-        )
-
-        plugin = ObjectsAPIRegistration("objects_api")
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.ObjectsAPIConfig.get_solo",
-            return_value=object_api_global_config,
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_report_document",
-            return_value={"url": "http://oz.nl/pdf-report"},
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_attachment_document",
-            return_value={"url": "http://oz.nl/attachment-url"},
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_submission_export",
-            return_value=tablib.Dataset(),
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_csv_document",
-            return_value={"url": "http://oz.nl/csv-report"},
+        SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
+        m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        with (
+            patch(
+                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                return_value={"url": "http://oz.nl/pdf-report"},
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_attachment_document",
+                return_value={"url": "http://oz.nl/attachment-url"},
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_submission_export",
+                return_value=tablib.Dataset(),
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_csv_document",
+                return_value={"url": "http://oz.nl/csv-report"},
+            ),
         ):
             plugin.register_submission(
                 submission,
@@ -175,10 +178,7 @@ class ObjectsAPIBackendTests(TestCase):
                 },
             )
 
-        history = m.request_history
-
-        posted_object = history[-1].json()
-
+        posted_object = m.last_request.json()
         self.assertEqual(
             posted_object,
             {
@@ -216,8 +216,15 @@ class ObjectsAPIBackendTests(TestCase):
     @override_settings(MAX_UNTRUSTED_JSON_PARSE_SIZE=10)
     def test_submission_with_objects_api_content_json_exceed_max_file_limit(self):
         submission = SubmissionFactory.create(with_report=True)
-
-        object_api_global_config = ObjectsAPIConfigFactory(
+        config = ObjectsAPIConfig(
+            objects_service=ServiceFactory.build(
+                api_root="https://objecten.nl/api/v1/",
+                api_type=APITypes.orc,
+            ),
+            drc_service=ServiceFactory.build(
+                api_root="https://documenten.nl/api/v1/",
+                api_type=APITypes.drc,
+            ),
             content_json=textwrap.dedent(
                 """
                 {
@@ -245,13 +252,16 @@ class ObjectsAPIBackendTests(TestCase):
             ),
         )
 
-        plugin = ObjectsAPIRegistration("objects_api")
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.ObjectsAPIConfig.get_solo",
-            return_value=object_api_global_config,
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_report_document",
-            return_value={"url": "http://of.nl/pdf-report"},
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        with (
+            patch(
+                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                return_value={"url": "http://of.nl/pdf-report"},
+            ),
         ):
             with self.assertRaises(
                 SuspiciousOperation,
@@ -261,19 +271,28 @@ class ObjectsAPIBackendTests(TestCase):
 
     def test_submission_with_objects_api_content_json_not_valid_json(self):
         submission = SubmissionFactory.create(with_report=True)
-
-        object_api_global_config = ObjectsAPIConfigFactory(
+        config = ObjectsAPIConfig(
+            objects_service=ServiceFactory.build(
+                api_root="https://objecten.nl/api/v1/",
+                api_type=APITypes.orc,
+            ),
+            drc_service=ServiceFactory.build(
+                api_root="https://documenten.nl/api/v1/",
+                api_type=APITypes.drc,
+            ),
             content_json='{"key": "value",}',  # Invalid JSON,
         )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
-        plugin = ObjectsAPIRegistration("objects_api")
-
-        with patch(
-            "openforms.registrations.contrib.objects_api.plugin.ObjectsAPIConfig.get_solo",
-            return_value=object_api_global_config,
-        ), patch(
-            "openforms.registrations.contrib.objects_api.plugin.create_report_document",
-            return_value={"url": "http://of.nl/pdf-report"},
+        with (
+            patch(
+                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
+            patch(
+                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                return_value={"url": "http://of.nl/pdf-report"},
+            ),
         ):
             with self.assertRaises(RuntimeError):
                 plugin.register_submission(submission, {})

@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeVar
 
 from requests.auth import AuthBase
 from requests.models import PreparedRequest
@@ -13,7 +13,10 @@ from .nlx import NLXClient
 logger = logging.getLogger(__name__)
 
 
-def build_client(service: Service, client_factory=NLXClient):
+T = TypeVar("T", bound=NLXClient)
+
+
+def build_client(service: Service, client_factory: type[T] = NLXClient) -> T:
     """
     Build a client for a given :class:`zgw_consumers.models.Service`.
     """
