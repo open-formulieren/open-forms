@@ -23,6 +23,7 @@ from openforms.submissions.mapping import (
 )
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from stuf.stuf_zds.client import NoServiceConfigured, ZaakOptions, get_client
 from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from stuf.stuf_zds.models import StufZDSConfig
 
@@ -31,6 +32,8 @@ from ...utils import execute_unless_result_exists
 from .utils import flatten_data
 
 logger = logging.getLogger(__name__)
+
+PLUGIN_IDENTIFIER = "stuf-zds-create-zaak"
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -154,7 +157,7 @@ def _gender_choices(value):
     return value
 
 
-@register("stuf-zds-create-zaak")
+@register(PLUGIN_IDENTIFIER)
 class StufZDSRegistration(BasePlugin):
     verbose_name = _("StUF-ZDS")
     configuration_options = ZaakOptionsSerializer
@@ -195,11 +198,10 @@ class StufZDSRegistration(BasePlugin):
         ),
     }
 
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        config = StufZDSConfig.get_solo()
-        config.apply_defaults_to(options)
-
-        with config.get_client(options) as client:
+    def pre_register_submission(
+        self, submission: "Submission", options: ZaakOptions
+    ) -> None:
+        with get_client(options=options) as client:
             # obtain a zaaknummer & save it - first, check if we have an intermediate result
             # from earlier attempts. if we do, do not generate a new number
             zaak_id = execute_unless_result_exists(
@@ -213,8 +215,8 @@ class StufZDSRegistration(BasePlugin):
         submission.save()
 
     def register_submission(
-        self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+        self, submission: Submission, options: ZaakOptions
+    ) -> dict | None:
         """
         Register the submission by creating a ZAAK.
 
@@ -225,12 +227,8 @@ class StufZDSRegistration(BasePlugin):
         prevents Open Forms from reserving case numbers over and over again (for
         example). See #1183 for a reported issue about this.
         """
-        config = StufZDSConfig.get_solo()
-        config.apply_defaults_to(options)
-
         options["omschrijving"] = submission.form.admin_name
-
-        with config.get_client(options) as client:
+        with get_client(options=options) as client:
             # Zaak ID reserved during the pre-registration phase
             zaak_id = submission.public_registration_reference
 
@@ -339,10 +337,8 @@ class StufZDSRegistration(BasePlugin):
         """
         return result["zaak"]
 
-    def update_payment_status(self, submission: "Submission", options: dict):
-        config = StufZDSConfig.get_solo()
-        config.apply_defaults_to(options)
-        with config.get_client(options) as client:
+    def update_payment_status(self, submission: "Submission", options: ZaakOptions):
+        with get_client(options) as client:
             client.set_zaak_payment(
                 submission.registration_result["zaak"],
             )
@@ -350,23 +346,26 @@ class StufZDSRegistration(BasePlugin):
     def check_config(self):
         config = StufZDSConfig.get_solo()
         assert isinstance(config, StufZDSConfig)
-        if not config.service_id:
-            raise InvalidPluginConfiguration(_("StufService not selected"))
+
         if not config.gemeentecode:
             raise InvalidPluginConfiguration(
                 _("StufService missing setting '{name}'").format(name="gemeentecode")
             )
 
-        options = {
+        options: ZaakOptions = {
             "omschrijving": "MyForm",
             "zds_zaaktype_code": "test",
             "zds_zaaktype_omschrijving": "test",
             "zds_zaaktype_status_code": "test",
             "zds_zaaktype_status_omschrijving": "test",
             "zds_documenttype_omschrijving_inzending": "test",
-        }
-        config.apply_defaults_to(options)
-        with config.get_client(options) as client:
+        }  # type: ignore
+        try:
+            client = get_client(options)
+        except NoServiceConfigured:
+            raise InvalidPluginConfiguration(_("StufService not selected"))
+
+        with client:
             try:
                 client.check_config()
             except Exception as e:

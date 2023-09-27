@@ -12,8 +12,21 @@ from ..constants import EndpointType
 from ..models import StufService
 from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from .constants import NAMESPACE_REPLACEMENTS, STUF_BG_EXPIRY_MINUTES
+from .models import StufBGConfig
 
 logger = logging.getLogger(__name__)
+
+
+class NoServiceConfigured(RuntimeError):
+    pass
+
+
+def get_client() -> "Client":
+    config = StufBGConfig.get_solo()
+    assert isinstance(config, StufBGConfig)
+    if not (service := config.service):
+        raise NoServiceConfigured("You must configure a service!")
+    return StufBGClient(service)
 
 
 def StufBGClient(service: StufService) -> "Client":

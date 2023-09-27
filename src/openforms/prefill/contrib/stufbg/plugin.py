@@ -1,17 +1,18 @@
 import logging
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from glom import T as Target, glom
 from lxml import etree
-from requests import HTTPError, RequestException
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 from openforms.utils.xml import fromstring
+from stuf.stuf_bg.client import NoServiceConfigured, get_client
 from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 
@@ -95,15 +96,14 @@ class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
     requires_auth = AuthAttribute.bsn
 
-    def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
+    def get_available_attributes(self) -> list[tuple[str, str]]:
         return FieldChoices.choices
 
     def _get_values_for_bsn(
-        self, bsn: str, attributes: Iterable[str]
-    ) -> Dict[str, Any]:
-        config = StufBGConfig.get_solo()
-        with config.get_client() as client:
-            data = client.get_values(bsn, attributes)
+        self, bsn: str, attributes: list[FieldChoices]
+    ) -> dict[str, Any]:
+        with get_client() as client:
+            data = client.get_values(bsn, [str(attr) for attr in attributes])
 
         response_dict = {}
         for attribute in attributes:
@@ -146,9 +146,9 @@ class StufBgPrefill(BasePlugin):
     def get_prefill_values(
         self,
         submission: Submission,
-        attributes: List[str],
+        attributes: list[FieldChoices],
         identifier_role: str = IdentifierRoles.main,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         if not (bsn_value := self.get_identifier_value(submission, identifier_role)):
             #  If there is no bsn we can't prefill any values so just return
             logger.info("No BSN associated with submission, cannot prefill.")
@@ -156,7 +156,7 @@ class StufBgPrefill(BasePlugin):
 
         return self._get_values_for_bsn(bsn_value, attributes)
 
-    def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
+    def get_co_sign_values(self, identifier: str) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 
@@ -170,11 +170,11 @@ class StufBgPrefill(BasePlugin):
         """
         values = self._get_values_for_bsn(
             identifier,
-            (
+            [
                 FieldChoices.voornamen,
                 FieldChoices.voorvoegselGeslachtsnaam,
                 FieldChoices.geslachtsnaam,
-            ),
+            ],
         )
         representation_bits = [
             " ".join(
@@ -190,41 +190,36 @@ class StufBgPrefill(BasePlugin):
 
     def check_config(self):
         check_bsn = "111222333"
-
-        config = StufBGConfig.get_solo()
-        if not config.service:
-            raise InvalidPluginConfiguration(_("Service not selected"))
-
-        client = config.get_client()
         try:
-            response = client.templated_request(
-                "npsLv01",
-                template="stuf_bg/StufBgRequest.xml",
-                context={"bsn": check_bsn},
-            )
-            response.raise_for_status()
-        except (RequestException, HTTPError) as e:
-            raise InvalidPluginConfiguration(
-                _("Client error: {exception}").format(exception=e)
-            )
-        else:
-            try:
-                xml = fromstring(response.content)
-            except etree.XMLSyntaxError as e:
-                raise InvalidPluginConfiguration(
-                    _("SyntaxError in response: {exception}").format(exception=e)
+            with get_client() as client:
+                response = client.templated_request(
+                    "npsLv01",
+                    template="stuf_bg/StufBgRequest.xml",
+                    context={"bsn": check_bsn},
                 )
-            else:
-                # we expect a valid 'object not found' response,
-                #   but also accept an empty response (for 3rd party backend implementation reasons)
-                if not is_object_not_found_response(
-                    xml
-                ) and not is_empty_wrapped_response(xml):
-                    raise InvalidPluginConfiguration(
-                        _(
-                            "Unexpected response: expected '{message}' SOAP response"
-                        ).format(message="Object niet gevonden")
-                    )
+                response.raise_for_status()
+        except NoServiceConfigured as exc:
+            raise InvalidPluginConfiguration(_("Service not selected")) from exc
+        except requests.RequestException as exc:
+            raise InvalidPluginConfiguration(
+                _("Client error: {exception}").format(exception=exc)
+            ) from exc
+
+        try:
+            xml = fromstring(response.content)
+        except etree.XMLSyntaxError as exc:
+            raise InvalidPluginConfiguration(
+                _("SyntaxError in response: {exception}").format(exception=exc)
+            ) from exc
+
+        # we expect a valid 'object not found' response,
+        #   but also accept an empty response (for 3rd party backend implementation reasons)
+        if not is_object_not_found_response(xml) and not is_empty_wrapped_response(xml):
+            raise InvalidPluginConfiguration(
+                _("Unexpected response: expected '{message}' SOAP response").format(
+                    message="Object niet gevonden"
+                )
+            )
 
     def get_config_actions(self):
         return [

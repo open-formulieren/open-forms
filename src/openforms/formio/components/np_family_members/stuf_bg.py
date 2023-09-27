@@ -1,18 +1,11 @@
 from typing import List, Tuple
 
-from stuf.stuf_bg.models import StufBGConfig
+from stuf.stuf_bg.client import get_client
 
 
 def get_np_children_stuf_bg(bsn: str) -> List[Tuple[str, str]]:
-    config = StufBGConfig.get_solo()
-    assert isinstance(config, StufBGConfig)
-    client = config.get_client()
-
-    attributes = [
-        "inp.heeftAlsKinderen",
-    ]
-
-    data = client.get_values(bsn, attributes)
+    with get_client() as client:
+        data = client.get_values(bsn, ["inp.heeftAlsKinderen"])
 
     # Kids
     child_choices = []

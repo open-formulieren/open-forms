@@ -20,13 +20,5 @@ class StufBGConfig(SingletonModel):
 
     objects = ConfigManager()
 
-    def get_client(self):
-        from .client import StufBGClient
-
-        if not self.service:
-            raise RuntimeError("You must configure a service!")
-
-        return StufBGClient(self.service)
-
     class Meta:
         verbose_name = _("StUF-BG configuration")

@@ -1,10 +1,15 @@
 from django.urls import path
 
-from .views import AddressSearchView, LatLngSearchView
+from .views import AddressAutocompleteView, AddressSearchView, LatLngSearchView
 
 app_name = "geo"
 
 urlpatterns = [
+    path(
+        "address-autocomplete",
+        AddressAutocompleteView.as_view(),
+        name="address-autocomplete",
+    ),
     path(
         "address-search",
         AddressSearchView.as_view(),

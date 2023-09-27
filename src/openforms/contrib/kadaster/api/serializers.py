@@ -4,6 +4,22 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 
+class GetStreetNameAndCityViewInputSerializer(serializers.Serializer):
+    postcode = serializers.CharField(
+        label=_("postal code"), help_text=_("Postal code to use in search")
+    )
+    house_number = serializers.CharField(
+        label=_("house number"), help_text=_("House number to use in search")
+    )
+
+
+class GetStreetNameAndCityViewResultSerializer(serializers.Serializer):
+    street_name = serializers.CharField(
+        label=_("street name"), help_text=_("Found street name")
+    )
+    city = serializers.CharField(label=_("city"), help_text=_("Found city"))
+
+
 class LatitudeLongitudeSerializer(serializers.Serializer):
     lat = serializers.FloatField(label=_("Latitude"))
     lng = serializers.FloatField(label=_("Longitude"))
@@ -15,7 +31,7 @@ class RijksDriehoekSerializer(serializers.Serializer):
 
 
 class AddressSearchResultSerializer(serializers.Serializer):
-    label = serializers.CharField(label=_("Location name"))
+    label = serializers.CharField(label=_("Location name"))  # type: ignore
     lat_lng = LatitudeLongitudeSerializer(
         label=_("Latitude/longitude"),
         help_text=_("Latitude and longitude in the WGS 84 coordinate system."),
@@ -47,4 +63,4 @@ class LatLngSearchInputSerializer(serializers.Serializer):
 
 
 class LatLngSearchResultSerializer(serializers.Serializer):
-    label = serializers.CharField(label=_("Closest address"))
+    label = serializers.CharField(label=_("Closest address"))  # type: ignore

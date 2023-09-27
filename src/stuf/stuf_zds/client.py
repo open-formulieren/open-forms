@@ -25,6 +25,7 @@ from ..models import StufService
 from ..service_client_factory import ServiceClientFactory, get_client_init_kwargs
 from ..xml import fromstring
 from .constants import STUF_ZDS_EXPIRY_MINUTES
+from .models import StufZDSConfig
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,19 @@ class ZaakOptions(TypedDict):
     # extra's
     omschrijving: str
     referentienummer: str
+
+
+class NoServiceConfigured(RuntimeError):
+    pass
+
+
+def get_client(options: ZaakOptions) -> "Client":
+    config = StufZDSConfig.get_solo()
+    assert isinstance(config, StufZDSConfig)
+    config.apply_defaults_to(options)
+    if not (service := config.service):
+        raise NoServiceConfigured("You must configure a service!")
+    return StufZDSClient(service, options)
 
 
 def StufZDSClient(service: StufService, options: ZaakOptions) -> "Client":

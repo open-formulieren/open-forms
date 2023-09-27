@@ -36,10 +36,5 @@ class StufZDSConfig(SingletonModel):
     def apply_defaults_to(self, options):
         options.setdefault("gemeentecode", self.gemeentecode)
 
-    def get_client(self, options):
-        from .client import StufZDSClient
-
-        return StufZDSClient(self.service, options)
-
     class Meta:
         verbose_name = _("StUF-ZDS configuration")

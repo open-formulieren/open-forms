@@ -7,7 +7,7 @@ for the deprecated defusedxml.lxml module and the defaults applied in defusedxml
 from lxml.etree import XMLParser, fromstring as _fromstring
 
 
-def fromstring(content: str):
+def fromstring(content: str | bytes):
     """
     Create an LXML etree from the string content without resolving entities.
 
