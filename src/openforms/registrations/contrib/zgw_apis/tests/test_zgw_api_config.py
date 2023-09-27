@@ -1,10 +1,8 @@
 from unittest.mock import patch
 
 from django.test import TestCase
-from django.urls import reverse
 
 import requests_mock
-from django_webtest import WebTest
 from privates.test import temp_private_root
 from requests.models import HTTPError
 from zds_client.oas import schema_fetcher
@@ -12,7 +10,6 @@ from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
-from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
@@ -30,6 +27,7 @@ from .factories import ZGWApiGroupConfigFactory
 class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         cls.zgw_group1 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-1.nl/api/v1/",
             zrc_service__oas="https://zaken-1.nl/api/v1/schema/openapi.yaml",
@@ -547,58 +545,3 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             api_group = plugin.get_zgw_config({})
 
         self.assertEqual(api_group, self.zgw_group1)
-
-
-@temp_private_root()
-class ZGWApiGroupConfigAdminTests(WebTest):
-    csrf_checks = False
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.zgw_group = ZGWApiGroupConfigFactory.create(
-            zrc_service__api_root="https://zaken-1.nl/api/v1/",
-            zrc_service__oas="https://zaken-1.nl/api/v1/schema/openapi.yaml",
-            drc_service__api_root="https://documenten-1.nl/api/v1/",
-            drc_service__oas="https://documenten-1.nl/api/v1/schema/openapi.yaml",
-            ztc_service__api_root="https://catalogus-1.nl/api/v1/",
-            ztc_service__oas="https://catalogus-1.nl/api/v1/schema/openapi.yaml",
-            zaaktype="https://catalogi-1.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi-1.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.openbaar,
-        )
-
-    def setUp(self):
-        super().setUp()
-        # reset cache to keep request_history indexes consistent
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)
-
-    def test_admin_while_services_are_down(self):
-        superuser = SuperUserFactory.create(app=self.app)
-
-        # calling admin page without requests calls being set up to mimic services that are down.
-        response = self.app.get(
-            reverse("admin:zgw_apis_zgwapigroupconfig_change", args=(1,)),
-            user=superuser,
-        )
-        self.assertEqual(response.status_code, 200)
-
-        zaaktype = response.context["adminform"].form["zaaktype"]
-        self.assertEqual(zaaktype.initial, self.zgw_group.zaaktype)
-
-        zaaktype_rendered_widget = zaaktype.field.widget.render(
-            zaaktype.name, [zaaktype.initial]
-        )
-
-        self.assertIn(
-            "Could not load data - enable and check the request logs for more details",
-            zaaktype_rendered_widget,
-        )
-
-        response.forms[0].submit()
-        self.zgw_group.refresh_from_db()
-
-        self.assertEqual(
-            self.zgw_group.zaaktype, "https://catalogi-1.nl/api/v1/zaaktypen/1"
-        )

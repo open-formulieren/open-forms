@@ -1,72 +1,65 @@
 from django import forms
-from django.contrib.admin.widgets import AdminTextInputWidget
-from django.db import models
-from django.test import SimpleTestCase
-from django.test.client import RequestFactory
+from django.contrib import admin
+from django.contrib.admin import AdminSite
+from django.test import RequestFactory, SimpleTestCase
+from django.utils.translation import gettext as _
 
 import requests
 
-from openforms.utils.decorators import supress_requests_errors
+from openforms.accounts.models import User
+from openforms.utils.decorators import suppress_requests_errors
+
+
+@suppress_requests_errors(User, fields=["first_name"])
+class TestAdmin(admin.ModelAdmin):
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name in ["first_name", "last_name"]:
+            raise requests.RequestException
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 class DbFieldsExceptionHandlerTests(SimpleTestCase):
     def setUp(self):
-        self.db_field = models.CharField(
-            "db field",
-            blank=True,
-            help_text="help text",
-        )
-
+        super().setUp()
         self.request = RequestFactory().get("/test")
 
-    def test_no_exception_detected(self):
-        @supress_requests_errors(fields=["db field"])
-        class TestClass:
-            formfield_overrides = {models.CharField: {"widget": AdminTextInputWidget}}
+    def test_none_crashing_field(self):
+        model_admin = TestAdmin(User, AdminSite(name="test"))
 
-            def formfield_for_dbfield(self, db_field, request, **kwargs):
-                return forms.CharField(
-                    label="db field",
-                    help_text="help text",
-                )
-
-        form_field = TestClass.formfield_for_dbfield(
-            TestClass, db_field=self.db_field, request=self.request
+        formfield = model_admin.formfield_for_dbfield(
+            User._meta.get_field("username"), self.request
         )
 
-        self.assertIsInstance(form_field, forms.CharField)
-        self.assertNotIn(
-            "Could not load data - enable and check the request logs for more details",
-            form_field.widget.render("db field", None),
+        self.assertIsInstance(formfield, forms.CharField)
+        self.assertHTMLEqual(
+            formfield.widget.render("username", None),
+            '<input class="vTextField" maxlength="150" name="username" type="text">',
         )
 
-    def test_trigger_exception(self):
-        @supress_requests_errors(fields=["db field"])
-        class TestClass:
-            formfield_overrides = {models.CharField: {"widget": AdminTextInputWidget}}
+    def test_crashing_field_that_is_in_suppress_requests_errors_field_params(
+        self,
+    ):
+        model_admin = TestAdmin(User, AdminSite(name="test"))
 
-            def formfield_for_dbfield(self, db_field, request, **kwargs):
-                raise requests.exceptions.RequestException()
-
-        form_field = TestClass.formfield_for_dbfield(
-            TestClass, db_field=self.db_field, request=self.request
+        formfield = model_admin.formfield_for_dbfield(
+            User._meta.get_field("first_name"), self.request
         )
 
-        self.assertIsInstance(form_field, forms.CharField)
+        self.assertIsInstance(formfield, forms.CharField)
         self.assertIn(
-            "Could not load data - enable and check the request logs for more details",
-            form_field.widget.render("db field", None),
+            _(
+                "Could not load data - enable and check the request logs for more details."
+            ),
+            formfield.widget.render("first_name", None),
         )
 
-    def test_raising_error_for_crashing_fields_that_are_not_provided(self):
-        @supress_requests_errors()
-        class TestClass:
-            formfield_overrides = {models.CharField: {"widget": AdminTextInputWidget}}
-
-            def formfield_for_dbfield(self, db_field, request, **kwargs):
-                raise requests.exceptions.RequestException()
+    def test_crashing_field_that_is_not_in_suppress_requests_errors_field_params(
+        self,
+    ):
+        model_admin = TestAdmin(User, AdminSite(name="test"))
 
         with self.assertRaises(requests.exceptions.RequestException):
-            TestClass.formfield_for_dbfield(
-                TestClass, db_field=self.db_field, request=self.request
+            model_admin.formfield_for_dbfield(
+                User._meta.get_field("last_name"), self.request
             )

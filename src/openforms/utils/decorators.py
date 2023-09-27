@@ -1,12 +1,14 @@
-import inspect
 from dataclasses import dataclass
 from functools import wraps
-from typing import Type
 
-from django.contrib import messages
+from django.contrib import admin
+from django.db import models
 from django.utils.cache import patch_vary_headers
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache as django_never_cache
+
+import requests
 
 from openforms.config.models import GlobalConfiguration
 
@@ -71,58 +73,63 @@ def conditional_search_engine_index(config_attr: str, content="noindex, nofollow
     return decorator
 
 
-def supress_requests_errors(fields: list[str] = []):
+def suppress_requests_errors(model: type[models.Model], fields: list[str]):
     """
-    A decorator that wraps a try catch around the formfields_for_dbfields function.
-    If the decorator catches an exception it will return a base formfield with
-    an error message describing that an error has occurred.
+    Add robustness to admin fields making outgoing requests that may fail.
 
-    Args:
-        fields (list[str], optional): _description_. Defaults to [].
+    If a :class:`requests.RequestException`is caught, return the base (non-enhanced)
+    form field that Django would generate by default and append an error message
+    for the end-user.
+
+    :arg fields: A list of model field names for which to suppress errors.
     """
 
-    def formfield_for_dbfield_wrapper(func):
-        def _handle_formfield_for_dbfield_exceptions(self, db_field, request, **kwargs):
-            if db_field.verbose_name not in fields:
-                return func(self=self, db_field=db_field, request=request, **kwargs)
+    def fallback(self, db_field, request, *args, **kwargs):
+        kwargs = {**self.formfield_overrides[db_field.__class__], **kwargs}
 
-            try:
-                return func(self=self, db_field=db_field, request=request, **kwargs)
-            except Exception:
-                kwargs = {**self.formfield_overrides[db_field.__class__], **kwargs}
+        class CustomWidget(kwargs["widget"]):
+            def render(self, *args, **kwargs):
+                output = super().render(*args, **kwargs)
 
-                class CustomWidget(kwargs["widget"]):
-                    def render(self, *args, **kwargs):
-                        output = super().render(*args, **kwargs)
-
-                        error_message = _(
-                            "Could not load data - enable and check the request logs for more details"
-                        )
-
-                        html = f"""
-                            <div class="openforms-error-widget">
-                                <div class="openforms-error-widget__column">
-                                    {output}
-                                    <small class="openforms-error-widget--error-text">{error_message}</small>
-                                </div>
-                            </div>
-                        """
-
-                        return html
-
-                return db_field.formfield(
-                    help_text=db_field.help_text,
-                    validators=db_field.validators,
-                    widget=CustomWidget,
+                error_message = _(
+                    "Could not load data - enable and check the request logs for more details."
                 )
 
-        return _handle_formfield_for_dbfield_exceptions
+                html = format_html(
+                    """
+                    <div class="openforms-error-widget">
+                        <div class="openforms-error-widget__column">
+                            {}
+                            <small class="openforms-error-widget openforms-error-widget--error-text">{}</small>
+                        </div>
+                    </div>""",
+                    output,
+                    error_message,
+                )
 
-    def model_admin_wrapper(admin_class):
-        for name, func in inspect.getmembers(admin_class):
-            if name == "formfield_for_dbfield":
-                setattr(admin_class, name, formfield_for_dbfield_wrapper(func))
+                return html
+
+        kwargs["widget"] = CustomWidget
+        return db_field.formfield(**kwargs)
+
+    def _decorator(admin_class: type[admin.ModelAdmin]):
+        original_func = admin_class.formfield_for_dbfield
+        for field in fields:
+            assert model._meta.get_field(field)
+
+        @wraps(original_func)
+        def _wrapped(self, db_field, request, *args, **kwargs):
+            field_name = db_field.name
+
+            try:
+                return original_func(self, db_field, request, *args, **kwargs)
+            except requests.RequestException as exc:
+                if field_name not in fields:
+                    raise exc
+                return fallback(self, db_field, request, *args, **kwargs)
+
+        admin_class.formfield_for_dbfield = _wrapped
 
         return admin_class
 
-    return model_admin_wrapper
+    return _decorator
