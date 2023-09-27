@@ -71,8 +71,8 @@ def set_kvk_service(apps, _):
         api_root=common_root,
         defaults={
             "label": "KVK API",
-            "oas_url": common_root,  # expected to 404, but that's okay, we don't use it
-            "type": APITypes.orc,
+            "oas": common_root,  # expected to 404, but that's okay, we don't use it
+            "api_type": APITypes.orc,
             "auth_type": _existing.auth_type if _existing else AuthTypes.api_key,
             "header_key": _existing.header_key if _existing else "apikey",
             # can't provide a default for this
