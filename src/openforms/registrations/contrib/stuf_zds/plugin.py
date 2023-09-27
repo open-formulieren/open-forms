@@ -33,6 +33,8 @@ from .utils import flatten_data
 
 logger = logging.getLogger(__name__)
 
+PLUGIN_IDENTIFIER = "stuf-zds-create-zaak"
+
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     gemeentecode = serializers.CharField(
@@ -155,7 +157,7 @@ def _gender_choices(value):
     return value
 
 
-@register("stuf-zds-create-zaak")
+@register(PLUGIN_IDENTIFIER)
 class StufZDSRegistration(BasePlugin):
     verbose_name = _("StUF-ZDS")
     configuration_options = ZaakOptionsSerializer

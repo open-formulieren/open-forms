@@ -53,6 +53,18 @@ class StufBgPrefillTests(TestCase):
         stufbg_config_patcher.start()
         self.addCleanup(stufbg_config_patcher.stop)
 
+    def test_getting_available_attributes(self):
+        attributes = self.plugin.get_available_attributes()
+        self.assertIsInstance(attributes, list)
+
+        for entry in attributes:
+            with self.subTest(entry=entry):
+                self.assertIsInstance(entry, tuple)
+                self.assertEqual(len(entry), 2)
+                value, label = entry
+                self.assertEqual(value, str(value))
+                self.assertEqual(label, str(label))
+
     def test_get_available_attributes_returns_correct_attributes(self):
         client_patcher = mock_stufbg_client("StufBgResponse.xml")
         self.addCleanup(client_patcher.stop)
@@ -241,12 +253,19 @@ class StufBgCheckTests(TestCase):
         self.plugin = StufBgPrefill("test-plugin")
 
         # mock out django-solo interface (we don't have to deal with caches then)
+        self.config = StufBGConfig(service=self.stuf_bg_service)
         stufbg_config_patcher = patch(
             "openforms.prefill.contrib.stufbg.plugin.StufBGConfig.get_solo",
-            return_value=StufBGConfig(service=self.stuf_bg_service),
+            return_value=self.config,
         )
         stufbg_config_patcher.start()
         self.addCleanup(stufbg_config_patcher.stop)
+
+    def test_no_service_configured(self):
+        self.config.service = None
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            self.plugin.check_config()
 
     def test_check_config_exception(self):
         with patch(
@@ -255,6 +274,13 @@ class StufBgCheckTests(TestCase):
         ):
             with self.assertRaises(InvalidPluginConfiguration):
                 self.plugin.check_config()
+
+    @requests_mock.Mocker()
+    def test_check_config_invalid_xml_returned(self, m):
+        m.register_uri(requests_mock.ANY, requests_mock.ANY, json={"not": "xml"})
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            self.plugin.check_config()
 
     def test_check_config_ok_not_found(self):
         try:
