@@ -7,44 +7,35 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ("custom_field_types", "0002_alter_familymemberstypeconfig_table"),
-    ]
-
     operations = [
-        migrations.SeparateDatabaseAndState(
-            state_operations=[
-                migrations.CreateModel(
-                    name="FamilyMembersTypeConfig",
-                    fields=[
-                        (
-                            "id",
-                            models.AutoField(
-                                auto_created=True,
-                                primary_key=True,
-                                serialize=False,
-                                verbose_name="ID",
-                            ),
-                        ),
-                        (
-                            "data_api",
-                            models.CharField(
-                                choices=[
-                                    ("haal_centraal", "Haal Centraal"),
-                                    ("stuf_bg", "StufBg"),
-                                ],
-                                help_text="Which API to use to retrieve the data of the family members.",
-                                max_length=100,
-                                verbose_name="data api",
-                            ),
-                        ),
-                    ],
-                    options={
-                        "verbose_name": "Family members type configuration",
-                        "db_table": "custom_field_types_familymemberstypeconfig",
-                    },
+        migrations.CreateModel(
+            name="FamilyMembersTypeConfig",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "data_api",
+                    models.CharField(
+                        choices=[
+                            ("haal_centraal", "Haal Centraal"),
+                            ("stuf_bg", "StufBg"),
+                        ],
+                        help_text="Which API to use to retrieve the data of the family members.",
+                        max_length=100,
+                        verbose_name="data api",
+                    ),
                 ),
             ],
-            database_operations=[],
+            options={
+                "verbose_name": "Family members type configuration",
+                "db_table": "custom_field_types_familymemberstypeconfig",
+            },
         ),
     ]
