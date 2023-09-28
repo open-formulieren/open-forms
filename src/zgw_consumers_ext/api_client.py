@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from typing import Any
 
@@ -6,6 +7,18 @@ from requests.models import PreparedRequest
 from zds_client import ClientAuth
 from zgw_consumers.constants import AuthTypes
 from zgw_consumers.models import Service
+
+from .nlx import NLXClient
+
+logger = logging.getLogger(__name__)
+
+
+def build_client(service: Service, client_factory=NLXClient):
+    """
+    Build a client for a given :class:`zgw_consumers.models.Service`.
+    """
+    factory = ServiceClientFactory(service)
+    return client_factory.configure_from(factory, nlx_base_url=service.nlx)
 
 
 @dataclass
