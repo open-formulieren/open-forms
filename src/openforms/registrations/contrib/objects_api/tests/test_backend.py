@@ -432,6 +432,48 @@ class ObjectsAPIBackendTests(TestCase):
                 expected_document_result["url"],
             )
 
+    def test_submission_with_objects_api_backend_missing_csv_iotype(self, m):
+        submission = SubmissionFactory.create(with_report=True, completed=True)
+        # Set up API mocks
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=get_create_json,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        plugin.register_submission(
+            submission,
+            {
+                "upload_submission_csv": True,
+                "informatieobjecttype_submission_csv": "",
+            },
+        )
+
+        # check the requests made
+        self.assertEqual(len(m.request_history), 2)
+        object_create = m.last_request
+
+        with self.subTest("object create call and registration result"):
+            submitted_object_data = object_create.json()
+
+            self.assertEqual(submitted_object_data["record"]["data"]["csv"], "")
+            self.assertEqual(
+                submitted_object_data["record"]["data"]["pdf"],
+                expected_document_result["url"],
+            )
+
     def test_submission_with_objects_api_backend_override_content_json(self, m):
         submission = SubmissionFactory.from_components(
             [

@@ -4,6 +4,7 @@ from django.test import TestCase, override_settings, tag
 
 import requests_mock
 from freezegun import freeze_time
+from furl import furl
 from glom import glom
 from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
@@ -965,6 +966,38 @@ class ZGWBackendTests(TestCase):
             post_data["betrokkeneIdentificatie"]["identificatie"],
             "123456782",
         )
+
+    def test_submission_roltype_initiator_not_found(self, m):
+        submission = SubmissionFactory.create(
+            completed_not_preregistered=True, with_report=True
+        )
+        zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
+        )
+        self.install_mocks(m)
+        roltypen_url = furl("https://catalogus.nl/api/v1/roltypen").set(
+            {
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "omschrijvingGeneriek": "initiator",
+            }
+        )
+        m.get(
+            str(roltypen_url),
+            status_code=200,
+            json={"count": 0, "next": None, "previous": None, "results": []},
+        )
+
+        plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
+        result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
+        self.assertIsNone(result["rol"])
 
     def test_retried_registration_with_internal_reference(self, m):
         """

@@ -481,9 +481,30 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         self.assertEqual(list_documenten_2.hostname, "documenten-2.nl")
         self.assertEqual(list_zaaktypen_2.hostname, "catalogus-2.nl")
 
-    def test_check_config_no_service(self, m):
+    def test_check_config_no_zrc_service(self, m):
         self.install_mocks(m)
-        ZGWApiGroupConfigFactory.create(zrc_service=None)
+        self.zgw_group1.zrc_service = None
+        self.zgw_group1.save()
+
+        plugin = ZGWRegistration("zgw")
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    def test_check_config_no_drc_service(self, m):
+        self.install_mocks(m)
+        self.zgw_group1.drc_service = None
+        self.zgw_group1.save()
+
+        plugin = ZGWRegistration("zgw")
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    def test_check_config_no_ztc_service(self, m):
+        self.install_mocks(m)
+        self.zgw_group1.ztc_service = None
+        self.zgw_group1.save()
 
         plugin = ZGWRegistration("zgw")
 
