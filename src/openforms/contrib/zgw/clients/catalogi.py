@@ -1,7 +1,8 @@
-from typing import Callable, TypedDict
+from typing import Callable
 
-from api_client.client import APIClient
 from zgw_consumers_ext.api_client import NLXClient
+
+from .utils import pagination_helper
 
 
 def noop_matcher(roltypen: list) -> list:
@@ -17,26 +18,6 @@ def omschrijving_matcher(omschrijving: str):
         return matches
 
     return match_omschrijving
-
-
-class PaginatedResponseData(TypedDict):
-    count: int
-    next: str
-    previous: str
-    results: list
-
-
-def pagination_helper(client: APIClient, paginated_data: PaginatedResponseData):
-    def _iter(_data):
-        for result in _data["results"]:
-            yield result
-        if next_url := _data["next"]:
-            response = client.get(next_url)
-            response.raise_for_status()
-            data = response.json()
-            yield from _iter(data)
-
-    return _iter(paginated_data)
 
 
 class CatalogiClient(NLXClient):
