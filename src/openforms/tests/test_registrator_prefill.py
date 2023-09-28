@@ -8,7 +8,6 @@ from django_webtest import WebTest
 from furl import furl
 from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
-from zgw_consumers.test import mock_service_oas_get
 
 from openforms.accounts.models import User
 from openforms.authentication.constants import (
@@ -96,10 +95,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
     ):
         self.assertFalse(User.objects.exists())
 
-        hc_brp_service = ServiceFactory.build(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
+        hc_brp_service = ServiceFactory.build(api_root="https://personen/api/")
         mock_haalcentraal_solo.return_value = HaalCentraalConfig(
             brp_personen_service=hc_brp_service
         )
@@ -233,12 +229,6 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         }
 
         with requests_mock.Mocker(real_http=False) as m:
-            mock_service_oas_get(
-                m,
-                url=hc_brp_service.api_root,
-                oas_url=hc_brp_service.oas,
-                service="personen",
-            )
             m.get(
                 "https://personen/api/ingeschrevenpersonen/999990676",
                 status_code=200,
