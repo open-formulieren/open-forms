@@ -198,7 +198,8 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             m.get(
                 furl("https://httpbin.org/response-headers")
                 .set({"freeform": field_value})
-                .url
+                .url,
+                json={},
             )
             _ = perform_service_fetch(var, context)
             request = m.last_request
@@ -232,7 +233,8 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             m.get(
                 furl("https://httpbin.org/redirect-to")
                 .set({"url": some_text, "status_code": some_value})
-                .url
+                .url,
+                json={},
             )
             _ = perform_service_fetch(var, context)
             request = m.last_request

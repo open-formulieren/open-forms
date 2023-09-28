@@ -161,20 +161,19 @@ class ServiceFetchConfiguration(models.Model):
             for param, values in (self.query_params or {}).items()
         }
 
-        request_args = dict(
-            path=render_from_string(
+        # Interface of :meth:`requests.Sesssion.request`
+        request_args = {
+            "method": self.method,
+            # client class automatically adds this to the API root
+            "url": render_from_string(
                 self.path,
                 escaped_for_path,
                 backend=sandbox_backend,
                 disable_autoescape=True,
             ),
-            params=query_params,
-            method=self.method,
-            headers=headers,
-            # XXX operationId is a required parameter to zds-client...
-            # Maybe offer as alternative to path and method?
-            operation="",
-        )
+            "params": query_params,
+            "headers": headers,
+        }
         if self.body is not None:
             request_args["json"] = self.body
         return request_args
