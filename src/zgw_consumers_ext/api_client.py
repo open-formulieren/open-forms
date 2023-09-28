@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T", bound=NLXClient)
 
 
-def build_client(service: Service, client_factory: type[T] = NLXClient) -> T:
+def build_client(service: Service, client_factory: type[T] = NLXClient, **kwargs) -> T:
     """
     Build a client for a given :class:`zgw_consumers.models.Service`.
     """
     factory = ServiceClientFactory(service)
-    return client_factory.configure_from(factory, nlx_base_url=service.nlx)
+    return client_factory.configure_from(factory, nlx_base_url=service.nlx, **kwargs)
 
 
 @dataclass

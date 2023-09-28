@@ -3,8 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, TypedDict
 
 from requests.models import PreparedRequest, Request
-from zgw_consumers.client import ZGWClient
-from zgw_consumers.nlx import NLXClientMixin
 
 from .registry import register as registry
 
@@ -14,34 +12,6 @@ if TYPE_CHECKING:
 
 class PreRequestClientContext(TypedDict):
     submission: Submission | None
-
-
-class PreRequestZGWClient(NLXClientMixin, ZGWClient):
-    """
-    A :class:`zgw_consumers.client.ZGWClient` with pre-requests support.
-
-    .. note:: this client is being deprecated in favour of a pure requests approach,
-       using :class:`api_client.APIClient` and
-       :class:`pre_requests.clients.PreRequestMixin`.
-    """
-
-    _context = None
-
-    def pre_request(self, method: str, url: str, kwargs: dict | None = None) -> Any:
-        result = super().pre_request(method, url, kwargs)
-
-        for pre_request in registry:
-            pre_request(method, url, kwargs, context=self._context)
-
-        return result
-
-    @property
-    def context(self) -> PreRequestClientContext | None:
-        return self._context
-
-    @context.setter
-    def context(self, context: PreRequestClientContext) -> None:
-        self._context = context
 
 
 KNOWN_REQUEST_KWARG_ATTRIBUTES = (

@@ -3,15 +3,20 @@ from unittest.mock import patch
 from django.test import SimpleTestCase
 
 import requests_mock
-from zgw_consumers.test import mock_service_oas_get
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
+from zgw_consumers_ext.api_client import build_client
+from zgw_consumers_ext.nlx import NLXClient
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..base import PreRequestHookBase
-from ..clients import PreRequestClientContext
+from ..clients import PreRequestClientContext, PreRequestMixin
 from ..registry import Registry
+
+
+class PreRequestsClient(PreRequestMixin, NLXClient):
+    pass
 
 
 class PreRequestHooksTest(DisableNLXRewritingMixin, SimpleTestCase):
@@ -25,22 +30,21 @@ class PreRequestHooksTest(DisableNLXRewritingMixin, SimpleTestCase):
                 kwargs["headers"].update({"test": "test"})
 
         submission = SubmissionFactory.build()
-        service = ServiceFactory.build(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
+        service = ServiceFactory.build(api_root="https://personen/api/")
+        client = build_client(
+            service,
+            client_factory=PreRequestsClient,
+            context=PreRequestClientContext(submission=submission),
         )
-        client = service.build_client()
-        client.context = PreRequestClientContext(submission=submission)
 
-        with requests_mock.Mocker() as m:
-            mock_service_oas_get(
-                m, url=service.api_root, oas_url=service.oas, service="personen"
-            )
-
+        with (
+            requests_mock.Mocker() as m,
+            client,
+        ):
             m.get("https://personen/api/test/path", status_code=200)
 
             with patch("openforms.pre_requests.clients.registry", new=register):
-                client.request(path="/api/test/path", operation="test")
+                client.get("test/path")
 
             last_request = m.request_history[-1]
 

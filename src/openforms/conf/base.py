@@ -929,7 +929,6 @@ SPECTACULAR_SETTINGS = {
 #
 # ZGW Consumers
 #
-ZGW_CONSUMERS_CLIENT_CLASS = "openforms.pre_requests.clients.PreRequestZGWClient"
 ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/registrations/contrib/zgw_apis/tests/files"),
     os.path.join(
