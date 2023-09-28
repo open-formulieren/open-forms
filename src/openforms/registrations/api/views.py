@@ -5,7 +5,6 @@ from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 from zgw_consumers.api_models.base import factory
 from zgw_consumers.api_models.catalogi import Catalogus, InformatieObjectType
-from zgw_consumers.service import get_paginated_results
 
 from openforms.api.views import ListMixin
 
@@ -83,13 +82,12 @@ class InformatieObjectTypenListView(ListMixin, APIView):
         if not client:
             return []
 
-        catalogus_data = get_paginated_results(client, "catalogus")
+        catalogus_data = client.get_all_catalogi()
         catalogus_mapping = {
             catalogus["url"]: catalogus for catalogus in catalogus_data
         }
 
-        # FIXME: update to new client approach
-        iotypen_data = get_paginated_results(client, "informatieobjecttype")
+        iotypen_data = client.get_all_informatieobjecttypen()
         iotypen = [
             {
                 "informatieobjecttype": factory(InformatieObjectType, iotype),
