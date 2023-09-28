@@ -88,6 +88,7 @@ class InformatieObjectTypenListView(ListMixin, APIView):
             catalogus["url"]: catalogus for catalogus in catalogus_data
         }
 
+        # FIXME: update to new client approach
         iotypen_data = get_paginated_results(client, "informatieobjecttype")
         iotypen = [
             {

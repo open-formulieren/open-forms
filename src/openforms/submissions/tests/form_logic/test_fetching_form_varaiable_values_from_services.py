@@ -51,6 +51,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         # prevent parsing the yaml over and over and over
         cls.service.id = 1  # need pk for __hash__
+        # FIXME: update to new client approach
         cls.service.build_client = lru_cache(1)(cls.service.build_client)
 
         # populate the schema cache *before* any test runs, otherwise this causes flakiness

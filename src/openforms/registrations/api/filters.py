@@ -36,6 +36,7 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
         return fields
 
     def get_ztc_client(self) -> ZGWClient | None:
+        # FIXME: update to use new client approach
         registration_backend = self.validated_data.get("registration_backend")
         zgw_api_group = self.validated_data.get("zgw_api_group")
 
@@ -43,9 +44,11 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
             return zgw_api_group.ztc_service.build_client()
         elif registration_backend == "objects_api":
             config = ObjectsAPIConfig.get_solo()
+            assert isinstance(config, ObjectsAPIConfig)
             if config.catalogi_service:
                 return config.catalogi_service.build_client()
 
         config = ZgwConfig.get_solo()
+        assert isinstance(config, ZgwConfig)
         if config.default_zgw_api_group:
             return config.default_zgw_api_group.ztc_service.build_client()
