@@ -12,6 +12,13 @@ import tablib
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.constants import (
+    X_OF_CONTENT_TYPE_HEADER,
+    X_OF_CONTENT_UUID_HEADER,
+    X_OF_EVENT_HEADER,
+    EmaiContentTypeChoices,
+    EmailEventChoices,
+)
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -1039,3 +1046,29 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         with self.subTest("Attachment in fieldset"):
             self.assertIn("attachmentInFieldset.png", body_text)
             self.assertIn("attachmentInFieldset.png", body_html)
+
+    def test_extra_headers(self):
+        submission = SubmissionFactory.create()
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+        )
+        email_submission = EmailRegistration("email")
+
+        with patch(
+            "openforms.registrations.contrib.email.plugin.send_mail_html"
+        ) as mock_send:
+            email_submission.register_submission(submission, email_form_options)
+
+        args = mock_send.call_args.kwargs
+        self.assertEqual(
+            args["extra_headers"][X_OF_CONTENT_UUID_HEADER],
+            str(submission.uuid),
+        )
+        self.assertEqual(
+            args["extra_headers"][X_OF_CONTENT_TYPE_HEADER],
+            EmaiContentTypeChoices.submission,
+        )
+        self.assertEqual(
+            args["extra_headers"][X_OF_EVENT_HEADER],
+            EmailEventChoices.registration,
+        )
