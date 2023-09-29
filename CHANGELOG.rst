@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.2.4 (2023-09-29)
+==================
+
+Hotfix for WebKit based browsers
+
+* [#3511] Fixed user input "flickering" in forms with certain (backend) logic on Safari
+  & other WebKit based browsers (via SDK patch).
+
 2.2.3 (2023-09-25)
 ==================
 
