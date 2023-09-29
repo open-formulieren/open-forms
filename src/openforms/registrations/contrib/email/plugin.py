@@ -11,7 +11,7 @@ from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,
     X_OF_CONTENT_UUID_HEADER,
     X_OF_EVENT_HEADER,
-    EmaiContentTypeChoices,
+    EmailContentTypeChoices,
     EmailEventChoices,
 )
 from openforms.emails.utils import (
@@ -181,7 +181,7 @@ class EmailRegistration(BasePlugin):
             text_message=text_content,
             extra_headers={
                 "Content-Language": submission.language_code,
-                X_OF_CONTENT_TYPE_HEADER: EmaiContentTypeChoices.submission,
+                X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
                 X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
                 X_OF_EVENT_HEADER: EmailEventChoices.registration,
             },

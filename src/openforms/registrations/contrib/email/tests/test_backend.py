@@ -16,7 +16,7 @@ from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,
     X_OF_CONTENT_UUID_HEADER,
     X_OF_EVENT_HEADER,
-    EmaiContentTypeChoices,
+    EmailContentTypeChoices,
     EmailEventChoices,
 )
 from openforms.forms.tests.factories import (
@@ -1066,7 +1066,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         self.assertEqual(
             args["extra_headers"][X_OF_CONTENT_TYPE_HEADER],
-            EmaiContentTypeChoices.submission,
+            EmailContentTypeChoices.submission,
         )
         self.assertEqual(
             args["extra_headers"][X_OF_EVENT_HEADER],
