@@ -7,6 +7,13 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import get_language_info, ugettext_lazy as _
 
+from openforms.emails.constants import (
+    X_OF_CONTENT_TYPE_HEADER,
+    X_OF_CONTENT_UUID_HEADER,
+    X_OF_EVENT_HEADER,
+    EmailContentTypeChoices,
+    EmailEventChoices,
+)
 from openforms.emails.utils import (
     render_email_template,
     send_mail_html,
@@ -172,7 +179,12 @@ class EmailRegistration(BasePlugin):
             fail_silently=False,
             attachment_tuples=attachments,
             text_message=text_content,
-            extra_headers={"Content-Language": submission.language_code},
+            extra_headers={
+                "Content-Language": submission.language_code,
+                X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
+                X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
+                X_OF_EVENT_HEADER: EmailEventChoices.registration,
+            },
         )
 
     def get_reference_from_result(self, result: None) -> NoReturn:
