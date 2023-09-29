@@ -46,6 +46,22 @@ correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/`
 * [#3437] Improved robustness of outgoing request logging solution.
 * Included latest SDK bugfix release.
 
+2.3.2 (2023-09-29)
+==================
+
+Hotfix for WebKit based browsers
+
+* [#3511] Fixed user input "flickering" in forms with certain (backend) logic on Safari
+  & other WebKit based browsers (via SDK patch).
+
+2.2.4 (2023-09-29)
+==================
+
+Hotfix for WebKit based browsers
+
+* [#3511] Fixed user input "flickering" in forms with certain (backend) logic on Safari
+  & other WebKit based browsers (via SDK patch).
+
 2.3.1 (2023-09-25)
 ==================
 
