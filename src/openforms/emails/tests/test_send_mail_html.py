@@ -219,6 +219,27 @@ class HTMLEmailLoggingTest(TestCase):
 
         self.assertEqual(0, logs.count())
 
+    def test_other_content_than_submission(self):
+        with patch.object(
+            EmailBackend, "send_messages", side_effect=Exception("Cant send email!")
+        ):
+            send_mail_html(
+                "My Subject",
+                "<p>My Message</p>",
+                "foo@sender.com",
+                ["foo@bar.baz"],
+                extra_headers={
+                    "Content-Language": "BLA",
+                    X_OF_CONTENT_TYPE_HEADER: "NOT SUBMISSION",
+                },
+            )
+
+        logs = TimelineLogProxy.objects.filter(
+            template="logging/events/email_status_change.txt"
+        )
+
+        self.assertEqual(0, logs.count())
+
 
 class DesignTokenFilterTest(TestCase):
     """unit tests for ``emails.context._get_design_token_values``"""

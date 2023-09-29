@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -6,7 +8,14 @@ from django_yubin.models import Message
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 
-from .constants import X_OF_CONTENT_UUID_HEADER, X_OF_EVENT_HEADER
+from .constants import (
+    X_OF_CONTENT_TYPE_HEADER,
+    X_OF_CONTENT_UUID_HEADER,
+    X_OF_EVENT_HEADER,
+    EmaiContentTypeChoices,
+)
+
+logger = logging.getLogger(__name__)
 
 
 @receiver(post_save, sender=Message)
@@ -15,6 +24,13 @@ def yubin_messages_status_change_handler(signal, sender, instance, created, **kw
         return
 
     message = instance.get_email_message()
+    has_submission = (
+        message.extra_headers.get(X_OF_CONTENT_TYPE_HEADER, "")
+        == EmaiContentTypeChoices.submission
+    )
+    if not has_submission:
+        return
+
     submission_uuid = message.extra_headers.get(X_OF_CONTENT_UUID_HEADER)
     event = message.extra_headers.get(X_OF_EVENT_HEADER)
     if not submission_uuid:
@@ -23,7 +39,12 @@ def yubin_messages_status_change_handler(signal, sender, instance, created, **kw
     status_label = instance.get_status_display()
     submission = Submission.objects.filter(uuid=submission_uuid).first()
     if not submission:
-        # Maybe add logging in case a submission is deleted before the email is sent?
+        logger.debug(
+            "The status of the email for the event %s for submission %s has changed to %s. However, the submission no longer exists.",
+            event,
+            submission_uuid,
+            status_label,
+        )
         return
 
     logevent.email_status_change(submission, event, status_label)
