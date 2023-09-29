@@ -7,6 +7,7 @@ from django.core.mail.backends.smtp import EmailBackend
 from django.template.loader import get_template
 from django.test import TestCase, override_settings
 
+from django_yubin.models import Message
 from pyquery import PyQuery
 
 from openforms.config.models import GlobalConfiguration
@@ -155,7 +156,8 @@ class HTMLEmailLoggingTest(TestCase):
             logs[0].extra_data,
             {
                 "event": EmailEventChoices.registration,
-                "status": "Queued",
+                "status": Message.STATUS_QUEUED,
+                "status_label": "Queued",
                 "log_event": "email_status_change",
             },
         )
@@ -163,7 +165,8 @@ class HTMLEmailLoggingTest(TestCase):
             logs[1].extra_data,
             {
                 "event": EmailEventChoices.registration,
-                "status": "In process",
+                "status": Message.STATUS_IN_PROCESS,
+                "status_label": "In process",
                 "log_event": "email_status_change",
             },
         )
@@ -171,7 +174,8 @@ class HTMLEmailLoggingTest(TestCase):
             logs[2].extra_data,
             {
                 "event": EmailEventChoices.registration,
-                "status": "Failed",
+                "status": Message.STATUS_FAILED,
+                "status_label": "Failed",
                 "log_event": "email_status_change",
             },
         )

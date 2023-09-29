@@ -687,12 +687,15 @@ def form_deactivated(form: "Form"):
 
 
 # - - -
-def email_status_change(submission: "Submission", event: str, status: str):
+def email_status_change(
+    submission: "Submission", event: str, status: int, status_label: str
+):
     _create_log(
         submission,
         "email_status_change",
         extra_data={
             "event": event,
             "status": status,
+            "status_label": status_label,
         },
     )
