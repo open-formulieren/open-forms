@@ -12,7 +12,7 @@ from .constants import (
     X_OF_CONTENT_TYPE_HEADER,
     X_OF_CONTENT_UUID_HEADER,
     X_OF_EVENT_HEADER,
-    EmaiContentTypeChoices,
+    EmailContentTypeChoices,
 )
 
 logger = logging.getLogger(__name__)
@@ -26,15 +26,14 @@ def yubin_messages_status_change_handler(signal, sender, instance, created, **kw
     message = instance.get_email_message()
     has_submission = (
         message.extra_headers.get(X_OF_CONTENT_TYPE_HEADER, "")
-        == EmaiContentTypeChoices.submission
+        == EmailContentTypeChoices.submission
     )
     if not has_submission:
         return
 
     submission_uuid = message.extra_headers.get(X_OF_CONTENT_UUID_HEADER)
+    assert submission_uuid
     event = message.extra_headers.get(X_OF_EVENT_HEADER)
-    if not submission_uuid:
-        return
 
     status_label = instance.get_status_display()
     submission = Submission.objects.filter(uuid=submission_uuid).first()

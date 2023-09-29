@@ -12,5 +12,5 @@ class EmailEventChoices(models.TextChoices):
     cosign_confirmation = "cosign_confirmation", _("Co-sign confirmation")
 
 
-class EmaiContentTypeChoices(models.TextChoices):
+class EmailContentTypeChoices(models.TextChoices):
     submission = "submission.submission", _("Submission")

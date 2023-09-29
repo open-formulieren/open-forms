@@ -18,7 +18,7 @@ from ..constants import (
     X_OF_CONTENT_TYPE_HEADER,
     X_OF_CONTENT_UUID_HEADER,
     X_OF_EVENT_HEADER,
-    EmaiContentTypeChoices,
+    EmailContentTypeChoices,
     EmailEventChoices,
 )
 from ..context import _get_design_token_values
@@ -141,7 +141,7 @@ class HTMLEmailLoggingTest(TestCase):
                 ["foo@bar.baz"],
                 extra_headers={
                     "Content-Language": "BLA",
-                    X_OF_CONTENT_TYPE_HEADER: EmaiContentTypeChoices.submission,
+                    X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
                     X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
                     X_OF_EVENT_HEADER: EmailEventChoices.registration,
                 },
@@ -211,7 +211,7 @@ class HTMLEmailLoggingTest(TestCase):
                 ["foo@bar.baz"],
                 extra_headers={
                     "Content-Language": "BLA",
-                    X_OF_CONTENT_TYPE_HEADER: EmaiContentTypeChoices.submission,
+                    X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
                     X_OF_CONTENT_UUID_HEADER: "159d0127-3384-4209-9dbd-c18d04188df6",
                     X_OF_EVENT_HEADER: EmailEventChoices.registration,
                 },
