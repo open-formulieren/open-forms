@@ -717,6 +717,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "log_outgoing_requests_ext.tasks.cleanup_request_logs",
         "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
+    "send-daily-digest": {
+        "task": "openforms.emails.tasks.send_email_digest",
+        "schedule": crontab(hour=0, minute=0, day_of_week="*"),
+    },
 }
 
 RETRY_SUBMISSIONS_TIME_LIMIT = config(
