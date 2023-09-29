@@ -1,0 +1,10 @@
+{% load static i18n %}
+
+<p>
+    {% blocktranslate %}Here is a summary of the emails that failed to send yesterday:{% endblocktranslate %}
+</p>
+<ul>
+    {% for log in logs %}<li>- Email for the event "{{ log.event }}" for submission {{ log.submission_uuid }}.</li>
+    {% endfor %}
+</ul>
+
