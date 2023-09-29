@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead  status=log.extra_data.status_label event=log.extra_data.event %}
+   {{ lead }}: The status of the email being sent for the event "{{ event }}" has changed. It is now: "{{ status }}"
+{% endblocktrans %}

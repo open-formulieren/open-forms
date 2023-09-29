@@ -684,3 +684,18 @@ def form_activated(form: "Form"):
 
 def form_deactivated(form: "Form"):
     _create_log(form, "form_deactivated")
+
+
+# - - -
+def email_status_change(
+    submission: "Submission", event: str, status: int, status_label: str
+):
+    _create_log(
+        submission,
+        "email_status_change",
+        extra_data={
+            "event": event,
+            "status": status,
+            "status_label": status_label,
+        },
+    )

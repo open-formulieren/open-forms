@@ -1,14 +1,28 @@
+from unittest.mock import patch
+
 from django.conf import settings
 from django.core import mail
 from django.core.exceptions import SuspiciousOperation
+from django.core.mail.backends.smtp import EmailBackend
 from django.template.loader import get_template
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from django_yubin.models import Message
 from pyquery import PyQuery
 
 from openforms.config.models import GlobalConfiguration
-from openforms.emails.context import _get_design_token_values
-from openforms.emails.utils import send_mail_html
+from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..constants import (
+    X_OF_CONTENT_TYPE_HEADER,
+    X_OF_CONTENT_UUID_HEADER,
+    X_OF_EVENT_HEADER,
+    EmailContentTypeChoices,
+    EmailEventChoices,
+)
+from ..context import _get_design_token_values
+from ..utils import send_mail_html
 
 
 class HTMLEmailWrapperTest(TestCase):
@@ -106,6 +120,129 @@ class HTMLEmailWrapperTest(TestCase):
                 "foo@sender.com",
                 ["foo@bar.baz"],
             )
+
+
+@override_settings(
+    EMAIL_BACKEND="django_yubin.backends.QueuedEmailBackend",
+    CELERY_TASK_ALWAYS_EAGER=True,
+    LANGUAGE_CODE="en",
+)
+class HTMLEmailLoggingTest(TestCase):
+    def test_logging_email_status(self):
+        submission = SubmissionFactory.create()
+
+        with patch.object(
+            EmailBackend, "send_messages", side_effect=Exception("Cant send email!")
+        ):
+            send_mail_html(
+                "My Subject",
+                "<p>My Message</p>",
+                "foo@sender.com",
+                ["foo@bar.baz"],
+                extra_headers={
+                    "Content-Language": "BLA",
+                    X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
+                    X_OF_CONTENT_UUID_HEADER: str(submission.uuid),
+                    X_OF_EVENT_HEADER: EmailEventChoices.registration,
+                },
+            )
+
+        logs = TimelineLogProxy.objects.filter(
+            template="logging/events/email_status_change.txt"
+        )
+
+        self.assertEqual(logs[0].content_object, submission)
+        self.assertEqual(
+            logs[0].extra_data,
+            {
+                "event": EmailEventChoices.registration,
+                "status": Message.STATUS_QUEUED,
+                "status_label": "Queued",
+                "log_event": "email_status_change",
+            },
+        )
+        self.assertEqual(
+            logs[1].extra_data,
+            {
+                "event": EmailEventChoices.registration,
+                "status": Message.STATUS_IN_PROCESS,
+                "status_label": "In process",
+                "log_event": "email_status_change",
+            },
+        )
+        self.assertEqual(
+            logs[2].extra_data,
+            {
+                "event": EmailEventChoices.registration,
+                "status": Message.STATUS_FAILED,
+                "status_label": "Failed",
+                "log_event": "email_status_change",
+            },
+        )
+
+    def test_no_extra_headers(self):
+        with patch.object(
+            EmailBackend, "send_messages", side_effect=Exception("Cant send email!")
+        ):
+            send_mail_html(
+                "My Subject",
+                "<p>My Message</p>",
+                "foo@sender.com",
+                ["foo@bar.baz"],
+                extra_headers={
+                    "Content-Language": "BLA",  # No extra headers
+                },
+            )
+
+        logs = TimelineLogProxy.objects.filter(
+            template="logging/events/email_status_change.txt"
+        )
+
+        self.assertEqual(0, logs.count())
+
+    def test_submission_deleted_before_sending_email(self):
+        with patch.object(
+            EmailBackend, "send_messages", side_effect=Exception("Cant send email!")
+        ):
+            send_mail_html(
+                "My Subject",
+                "<p>My Message</p>",
+                "foo@sender.com",
+                ["foo@bar.baz"],
+                extra_headers={
+                    "Content-Language": "BLA",
+                    X_OF_CONTENT_TYPE_HEADER: EmailContentTypeChoices.submission,
+                    X_OF_CONTENT_UUID_HEADER: "159d0127-3384-4209-9dbd-c18d04188df6",
+                    X_OF_EVENT_HEADER: EmailEventChoices.registration,
+                },
+            )
+
+        logs = TimelineLogProxy.objects.filter(
+            template="logging/events/email_status_change.txt"
+        )
+
+        self.assertEqual(0, logs.count())
+
+    def test_other_content_than_submission(self):
+        with patch.object(
+            EmailBackend, "send_messages", side_effect=Exception("Cant send email!")
+        ):
+            send_mail_html(
+                "My Subject",
+                "<p>My Message</p>",
+                "foo@sender.com",
+                ["foo@bar.baz"],
+                extra_headers={
+                    "Content-Language": "BLA",
+                    X_OF_CONTENT_TYPE_HEADER: "NOT SUBMISSION",
+                },
+            )
+
+        logs = TimelineLogProxy.objects.filter(
+            template="logging/events/email_status_change.txt"
+        )
+
+        self.assertEqual(0, logs.count())
 
 
 class DesignTokenFilterTest(TestCase):
