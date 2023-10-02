@@ -2,8 +2,33 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from simple_certmanager.models import Certificate
+from typing_extensions import Never
+from zeep.wsse.signature import Signature
+from zeep.wsse.username import UsernameToken
 
 from .constants import EndpointSecurity, SOAPVersion
+
+
+class UnknownChoiceError(ValueError):
+    def __init__(self, instance: models.Model, field_name: str):
+        self.model = type(instance)
+        self.field: models.Field = getattr(self.model, field_name)
+        self.value = getattr(instance, field_name)
+        # This won't contain the
+        valid_values = self.field.choices
+        super().__init__(
+            _(
+                "Unexpected value %(value) for %(field). Expected one from %(valid_values)r"
+            ).format(
+                value=self.value,
+                field=self.field.verbose_name,
+                valid_values=valid_values,
+            )
+        )
+
+
+def _unreachable(arg: Never) -> None:
+    pass
 
 
 class SoapService(models.Model):
@@ -84,6 +109,8 @@ class SoapService(models.Model):
         if certificate.public_certificate:
             return certificate.public_certificate.path
 
+        return None
+
     def get_verify(self) -> bool | str:
         certificate = self.server_certificate
         if certificate:
@@ -99,3 +126,30 @@ class SoapService(models.Model):
         ):
             return (self.user, self.password)
         return None
+
+    def get_wsse(
+        self,
+    ) -> Signature | UsernameToken | tuple[UsernameToken, Signature] | None:
+        sig = lambda: Signature(
+            self.client_certificate.private_key.path,
+            self.client_certificate.public_certificate.path,
+        )
+
+        basic = lambda: UsernameToken(self.user, self.password)
+
+        match self.endpoint_security:
+            case EndpointSecurity.wss:
+                return sig()
+            case EndpointSecurity.wss_basicauth:
+                return (basic(), sig())
+            case EndpointSecurity.basicauth:
+                return basic()
+            case "":
+                return None
+            case _:
+                raise UnknownChoiceError(
+                    instance=self,
+                    field_name="endpoint_security",
+                )
+
+        _unreachable(self.endpoint_security)

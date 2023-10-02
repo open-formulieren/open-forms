@@ -4,12 +4,13 @@ Test the client factory from SOAPService configuration.
 import signal
 from pathlib import Path
 
-from django.test import SimpleTestCase, override_settings
+from django.test import TestCase, override_settings
 
 import requests_mock
 from ape_pie import InvalidURLError
 from requests.exceptions import RequestException
 from simple_certmanager.test.factories import CertificateFactory
+from zeep.wsse import Signature, UsernameToken
 
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -23,26 +24,31 @@ WSDL = DATA_DIR / "sample.wsdl"
 WSDL_URI = str(WSDL)
 
 
-class ClientTransportTests(OFVCRMixin, SimpleTestCase):
+class ClientTransportTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = DATA_DIR
 
     @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        cls.client_cert_only = CertificateFactory.build(
+        cls.client_cert_only = CertificateFactory.create(
             label="Gateway client certificate",
             public_certificate__filename="client_cert.pem",
         )
-        cls.client_cert_and_privkey = CertificateFactory.build(
+        cls.client_cert_and_privkey = CertificateFactory.create(
             label="Gateway client certificate",
             with_private_key=True,
             public_certificate__filename="client_cert.pem",
             private_key__filename="client_key.pem",
         )
-        cls.server_cert = CertificateFactory.build(
+        cls.server_cert = CertificateFactory.create(
             label="Gateway server certificate",
             public_certificate__filename="server.pem",
+        )
+        cls.server_cert_and_privkey = CertificateFactory.create(
+            label="Gateway server certificate",
+            public_certificate__filename="server.pem",
+            with_private_key=True,
         )
 
     def test_no_server_cert_specified(self):
@@ -121,21 +127,70 @@ class ClientTransportTests(OFVCRMixin, SimpleTestCase):
 
     def test_basic_auth(self):
         username_password = (
-            EndpointSecurity.basicauth,
-            EndpointSecurity.wss_basicauth,
+            (EndpointSecurity.basicauth, None),
+            (EndpointSecurity.wss_basicauth, self.client_cert_and_privkey),
         )
-        for security in username_password:
+        for security, cert in username_password:
             with self.subTest(security=security):
                 service = SoapServiceFactory.build(
                     url=WSDL_URI,
                     endpoint_security=security,
                     user="admin",
                     password="supersecret",
+                    client_certificate=cert,
                 )
 
                 client = build_client(service)
 
                 self.assertIsNotNone(client.transport.session.auth)
+
+    def test_wsse(self):
+        # wss endpoint security options should add a zeep.wsse.Signature
+        # to the Client, so it can be used when the wsdl specifies it for a message
+        # in an operation
+
+        service = SoapServiceFactory.build(
+            url=WSDL_URI,
+            endpoint_security=EndpointSecurity.wss,
+            client_certificate=self.client_cert_and_privkey,
+        )
+
+        client = build_client(service)
+
+        self.assertIsInstance(client.wsse, Signature)
+        self.assertIsNotNone(client.wsse.key_data)
+        self.assertIsNotNone(client.wsse.cert_data)
+
+    def test_wsse_basicauth(self):
+        # wss endpoint security options should add a zeep.wsse.Signature
+        # to the Client, so it can be used when the wsdl specifies it for a message
+        # in an operation
+
+        service = SoapServiceFactory.build(
+            url=WSDL_URI,
+            endpoint_security=EndpointSecurity.wss_basicauth,
+            user="admin",
+            password="supersecret",
+            client_certificate=self.client_cert_and_privkey,
+        )
+
+        client = build_client(service)
+
+        sig: Signature = next(
+            extension for extension in client.wsse if isinstance(extension, Signature)
+        )
+
+        self.assertIsNotNone(sig.key_data)
+        self.assertIsNotNone(sig.cert_data)
+
+        usertoken: UsernameToken = next(
+            extension
+            for extension in client.wsse
+            if isinstance(extension, UsernameToken)
+        )
+
+        self.assertEqual(usertoken.username, "admin")
+        self.assertEqual(usertoken.password, "supersecret")
 
     @requests_mock.Mocker()
     def test_no_absolute_url_sanitization(self, m):

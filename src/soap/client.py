@@ -31,7 +31,12 @@ def build_client(
         session=session,
         timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
     )
-    client = client_factory(service.url, transport=transport, **kwargs)
+    client = client_factory(
+        service.url,
+        transport=transport,
+        wsse=service.get_wsse(),
+        **kwargs,
+    )
     return client
 
 
