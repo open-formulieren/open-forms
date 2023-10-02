@@ -36,15 +36,18 @@ Configuration
    * **Authorization type**: API key *(but can differ per supplier)*
    * **Header key**: Authorization
    * **Header value**: *The API key from step 1*
-   * **OAS**: *URL to the Open API-specification provided by supplier or use the Github raw URL*
 
 4. Click **Save**
-5. Navigate to **Configuration** > **Overview**. In the **Prefill plugin** group, click on **Configuration** for the **Haal Centraal** line.
-6. Select for the **Haal Centraal API**, the **[ORC (Overige)] My BRP API**
+5. Navigate to **Configuration** > **Configuration overview**. In the **Prefill plugins**
+   group, click on **Configuration** for the **Haal Centraal: BRP Personen Bevragen**
+   line.
+6. Select for the **BRP Personen Bevragen API**, the **[ORC (Overige)] My BRP API**
    option, that we just created in step 3.
-7. Click **Save**
+7. Select the correct version for **BRP Personen Bevragen API version** - new
+   installations likely use ``v2.0``.
+8. Click **Save**
 
-The Haal Centraal configuration is now completed.
+The Haal Centraal configuration is now complete.
 
 
 Technical
@@ -53,5 +56,6 @@ Technical
 ================  ===================
 API               Supported versions
 ================  ===================
-BRP bevragen API  1.0
+BRP bevragen API  2.0
+BRP bevragen API  1.3
 ================  ===================
