@@ -16,7 +16,7 @@ platforms:
   - windows
   - mac
 
-developmentStatus: beta
+developmentStatus: stable
 
 description:
   nl:
