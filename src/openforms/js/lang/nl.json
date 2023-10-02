@@ -15,7 +15,7 @@
     "originalDefault": "Path"
   },
   "+dcsE0": {
-    "defaultMessage": "Remove value",
+    "defaultMessage": "Reset waarde",
     "description": "Delete datetime value",
     "originalDefault": "Remove value"
   },
@@ -576,7 +576,7 @@
     "originalDefault": "Use existing form definition"
   },
   "GO9yud": {
-    "defaultMessage": "When the form should be activated.",
+    "defaultMessage": "Datum en tijdstip waarop het formulier geactiveerd moet worden.",
     "description": "Form activation field help text",
     "originalDefault": "When the form should be activated."
   },
@@ -785,6 +785,11 @@
     "description": "Add process variable button",
     "originalDefault": "Add variable"
   },
+  "LiXrER": {
+    "defaultMessage": "De gekozen trigger-stap bestaat niet (meer) in het formulier. Gelieve deze te wijzigen.",
+    "description": "Warning missing trigger step",
+    "originalDefault": "The selected trigger step could not be found in this form! Please change it!"
+  },
   "LrlAVD": {
     "defaultMessage": "Gegevensverwerking",
     "description": "Service fetch configuration try it out tabpanel data extraction fieldset title",
@@ -870,6 +875,12 @@
     "defaultMessage": "Prefill-bron",
     "description": "Variable table identifier role attribute title",
     "originalDefault": "Prefill identifier role"
+  },
+  "OmQdqG": {
+    "defaultMessage": "Cache timeout",
+    "description": "Label cache timeout",
+    "isTranslated": true,
+    "originalDefault": "Cache timeout"
   },
   "OobRu3": {
     "defaultMessage": "Geavanceerd",
@@ -1047,6 +1058,11 @@
     "defaultMessage": "URL-deel",
     "description": "Form slug field label",
     "originalDefault": "Slug"
+  },
+  "Tfpxsi": {
+    "defaultMessage": "Er ging iets fout bij het weergeven van deze logicaregel. Om het probleem te debuggen tonen we de JSON-definitie:",
+    "description": "Unexpected error message in logic rule",
+    "originalDefault": "Something went wrong while rendering this logic rule! For debugging, here is the JSON of the logic rule:"
   },
   "TjjvQL": {
     "defaultMessage": "dagen",
@@ -1261,7 +1277,7 @@
     "originalDefault": "Full request"
   },
   "brvKtm": {
-    "defaultMessage": "Activate on",
+    "defaultMessage": "Activeren op",
     "description": "Form activation field label",
     "originalDefault": "Activate on"
   },
@@ -1658,7 +1674,7 @@
     "originalDefault": "Version"
   },
   "nFXYHB": {
-    "defaultMessage": "When the form should be deactivated.",
+    "defaultMessage": "Datum en tijdstip waarop het formulier gedeactiveerd moet worden.",
     "description": "Form deactivation field help text",
     "originalDefault": "When the form should be deactivated."
   },
@@ -1771,6 +1787,11 @@
     "defaultMessage": "URL-deel",
     "description": "Form step slug label",
     "originalDefault": "Step slug"
+  },
+  "r4OkBj": {
+    "defaultMessage": "😬 Er ging iets fout.",
+    "description": "Unexpected error message",
+    "originalDefault": "Oh no! Something went wrong."
   },
   "r5Olb9": {
     "defaultMessage": "Beheer complexe procesvariabelen",
@@ -1887,6 +1908,11 @@
     "description": "Manage process vars alias help text",
     "originalDefault": "The variable name to be used for the process instance."
   },
+  "w4e4jx": {
+    "defaultMessage": "Na hoeveel seconden moeten gecachete resultaten vervallen.",
+    "description": "Help text cache timeout",
+    "originalDefault": "After how many seconds should the cached response expire."
+  },
   "wIaGgb": {
     "defaultMessage": "Opschoonmethode voor niet voltooide inzendingen",
     "description": "Errored Submissions Removal Method field label",
@@ -1908,7 +1934,7 @@
     "originalDefault": "Component where products for an appointment will be shown"
   },
   "x+ORaW": {
-    "defaultMessage": "Deactivate on",
+    "defaultMessage": "Deactiveren op",
     "description": "Form deactivation field label",
     "originalDefault": "Deactivate on"
   },

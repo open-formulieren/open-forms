@@ -779,6 +779,11 @@
     "description": "Add process variable button",
     "originalDefault": "Add variable"
   },
+  "LiXrER": {
+    "defaultMessage": "The selected trigger step could not be found in this form! Please change it!",
+    "description": "Warning missing trigger step",
+    "originalDefault": "The selected trigger step could not be found in this form! Please change it!"
+  },
   "LrlAVD": {
     "defaultMessage": "Data extraction",
     "description": "Service fetch configuration try it out tabpanel data extraction fieldset title",
@@ -863,6 +868,11 @@
     "defaultMessage": "Prefill identifier role",
     "description": "Variable table identifier role attribute title",
     "originalDefault": "Prefill identifier role"
+  },
+  "OmQdqG": {
+    "defaultMessage": "Cache timeout",
+    "description": "Label cache timeout",
+    "originalDefault": "Cache timeout"
   },
   "OobRu3": {
     "defaultMessage": "Advanced",
@@ -1038,6 +1048,11 @@
     "defaultMessage": "Slug",
     "description": "Form slug field label",
     "originalDefault": "Slug"
+  },
+  "Tfpxsi": {
+    "defaultMessage": "Something went wrong while rendering this logic rule! For debugging, here is the JSON of the logic rule:",
+    "description": "Unexpected error message in logic rule",
+    "originalDefault": "Something went wrong while rendering this logic rule! For debugging, here is the JSON of the logic rule:"
   },
   "TjjvQL": {
     "defaultMessage": "days",
@@ -1759,6 +1774,11 @@
     "description": "Form step slug label",
     "originalDefault": "Step slug"
   },
+  "r4OkBj": {
+    "defaultMessage": "Oh no! Something went wrong.",
+    "description": "Unexpected error message",
+    "originalDefault": "Oh no! Something went wrong."
+  },
   "r5Olb9": {
     "defaultMessage": "Manage complex process variables",
     "description": "Camunda complex process vars modal title",
@@ -1873,6 +1893,11 @@
     "defaultMessage": "The variable name to be used for the process instance.",
     "description": "Manage process vars alias help text",
     "originalDefault": "The variable name to be used for the process instance."
+  },
+  "w4e4jx": {
+    "defaultMessage": "After how many seconds should the cached response expire.",
+    "description": "Help text cache timeout",
+    "originalDefault": "After how many seconds should the cached response expire."
   },
   "wIaGgb": {
     "defaultMessage": "Errored Submissions Removal Method",
