@@ -65,6 +65,7 @@ General purpose functionality
 .. toctree::
     :maxdepth: 1
 
+    api-clients
     core/utils
     core/tokens
     core/testing-tools
