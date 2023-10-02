@@ -45,6 +45,13 @@ Decorators
    :members:
 
 
+Admin decorators
+----------------
+
+.. automodule:: openforms.admin.decorators
+   :members:
+
+
 URL handling and manipulation
 -----------------------------
 

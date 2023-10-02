@@ -1,0 +1,17 @@
+@use 'microscope-sass/lib/bem';
+@import 'microscope-sass/lib/typography';
+@import '../../vars';
+
+.openforms-error-widget {
+  display: inline-block;
+
+  @include bem.element('column') {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  @include bem.modifier('error-text') {
+    color: $color-error;
+  }
+}

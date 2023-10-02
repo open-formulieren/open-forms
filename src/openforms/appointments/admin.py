@@ -9,6 +9,8 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
 
+from openforms.admin.decorators import suppress_requests_errors
+
 from .base import BasePlugin
 from .constants import AppointmentDetailsStatus
 from .fields import AppointmentBackendChoiceField
@@ -26,6 +28,7 @@ class PluginFieldMixin:
         return super().formfield_for_dbfield(db_field, request, **kwargs)  # type: ignore
 
 
+@suppress_requests_errors(AppointmentsConfig, fields=["limit_to_location"])
 @admin.register(AppointmentsConfig)
 class AppointmentsConfigAdmin(PluginFieldMixin, SingletonModelAdmin):
     def formfield_for_dbfield(self, db_field, request, **kwargs):
