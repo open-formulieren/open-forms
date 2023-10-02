@@ -142,10 +142,15 @@ class EmailDigestTaskTest(TestCase):
         )
 
     def test_no_email_send_if_no_logs(self):
-        with patch("openforms.emails.tasks.send_mail_html") as patch_email:
+        with patch(
+            "openforms.emails.tasks.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                recipients_email_digest=["tralala@test.nl"]
+            ),
+        ):
             send_email_digest()
 
-        patch_email.assert_not_called()
+        self.assertEqual(0, len(mail.outbox))
 
     def test_no_recipients(self):
         submission = SubmissionFactory.create()
