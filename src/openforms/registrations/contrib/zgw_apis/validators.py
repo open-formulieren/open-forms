@@ -1,10 +1,10 @@
-from functools import partial
-
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from openforms.contrib.zgw.service import match_omschrijving, retrieve_roltypen
+from openforms.contrib.zgw.clients.catalogi import omschrijving_matcher
+
+from .client import get_catalogi_client
 
 
 class RoltypeOmschrijvingValidator:
@@ -12,15 +12,13 @@ class RoltypeOmschrijvingValidator:
         if not ("medewerker_roltype" in data and "zaaktype" in data):
             return
 
-        roltype = retrieve_roltypen(
-            matcher=partial(
-                match_omschrijving, omschrijving=data["medewerker_roltype"]
-            ),
-            query_params={"zaaktype": data["zaaktype"]},
-            ztc_client=data["zgw_api_group"].ztc_service.build_client(),
-        )
+        with get_catalogi_client(data["zgw_api_group"]) as client:
+            roltypen = client.list_roltypen(
+                zaaktype=data["zaaktype"],
+                matcher=omschrijving_matcher(data["medewerker_roltype"]),
+            )
 
-        if not roltype:
+        if not roltypen:
             raise serializers.ValidationError(
                 detail=_(
                     "Could not find a roltype with this description related to the zaaktype"

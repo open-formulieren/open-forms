@@ -10,6 +10,7 @@ from json_logic import jsonLogic
 from openforms.forms.models import FormVariable
 from openforms.typing import DataMapping, JSONObject, JSONValue
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
+from zgw_consumers_ext.api_client import build_client
 
 
 @dataclass
@@ -20,9 +21,6 @@ class FetchResult:
     # zds Client returns json, we don't have access to
     # response_body: str  # base64 as services could return any bytearray
     # response_headers: JSONObject
-
-
-sentinel = object()
 
 
 def perform_service_fetch(
@@ -49,24 +47,25 @@ def perform_service_fetch(
         )
     fetch_config: ServiceFetchConfiguration = var.service_fetch_configuration
 
-    client = fetch_config.service.build_client()
+    client = build_client(fetch_config.service)
     request_args = fetch_config.request_arguments(context)
 
+    def _do_fetch():
+        with client:
+            response = client.request(**request_args)
+            response.raise_for_status()
+        return response.json()
+
     if not submission_uuid:
-        raw_value = client.request(**request_args)
+        raw_value = _do_fetch()
     else:
         cache_key = hash(submission_uuid + json.dumps(request_args, sort_keys=True))
-
-        raw_value = cache.get(cache_key, sentinel)
-        if raw_value is sentinel:
-            raw_value = client.request(**request_args)
-            cache.set(
-                cache_key,
-                raw_value,
-                timeout=fetch_config.cache_timeout
-                if fetch_config.cache_timeout is not None
-                else DEFAULT_TIMEOUT,
-            )
+        timeout = (
+            _timeout
+            if (_timeout := fetch_config.cache_timeout) is not None
+            else DEFAULT_TIMEOUT
+        )
+        raw_value = cache.get_or_set(cache_key, default=_do_fetch, timeout=timeout)
 
     match fetch_config.data_mapping_type, fetch_config.mapping_expression:
         case DataMappingTypes.jq, expression:

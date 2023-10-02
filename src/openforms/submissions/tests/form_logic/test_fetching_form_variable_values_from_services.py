@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 from unittest import skip
-from urllib.parse import unquote_plus
+from urllib.parse import unquote
 
 from django.test import SimpleTestCase, tag
 
@@ -26,7 +26,6 @@ DEFAULT_REQUEST_HEADERS = {
     "Accept",
     "Accept-Encoding",
     "Connection",
-    "Content-Type",
     "User-Agent",
 }
 
@@ -51,6 +50,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
         # prevent parsing the yaml over and over and over
         cls.service.id = 1  # need pk for __hash__
+        # FIXME: update to new client approach
         cls.service.build_client = lru_cache(1)(cls.service.build_client)
 
         # populate the schema cache *before* any test runs, otherwise this causes flakiness
@@ -85,7 +85,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         context = {"seconds": 6}
 
         with requests_mock.Mocker() as m:
-            m.get(requests_mock.ANY)
+            m.get(requests_mock.ANY, json={})
             perform_service_fetch(var, context)
             request = m.last_request
 
@@ -103,7 +103,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         context = {"seconds": 6, "second_fragments": "5"}
 
         with requests_mock.Mocker() as m:
-            m.get(requests_mock.ANY)
+            m.get(requests_mock.ANY, json={})
             perform_service_fetch(var, context)
             request = m.last_request
 
@@ -113,7 +113,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         context = {"seconds": 6, "second_fragments": "{{seconds}}"}
 
         with requests_mock.Mocker() as m:
-            m.get(requests_mock.ANY)
+            m.get(requests_mock.ANY, json={})
             perform_service_fetch(var, context)
             request = m.last_request
 
@@ -136,7 +136,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         )
 
         with requests_mock.Mocker() as m:
-            m.get(requests_mock.ANY)
+            m.get(requests_mock.ANY, json={})
             _ = perform_service_fetch(var, context)
             request = m.last_request
 
@@ -149,7 +149,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         self.assertNotIn("/", rest)
         self.assertNotIn(" ", rest)
         # the service should get the value
-        self.assertEqual(unquote_plus(rest), str(field_value))
+        self.assertEqual(unquote(rest), str(field_value))
 
         # I guess if `rest` is unmangled, the following assertions are
         # tautologies; Better safe than sorry. They MUST hold, even if I can't
@@ -197,7 +197,8 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             m.get(
                 furl("https://httpbin.org/response-headers")
                 .set({"freeform": field_value})
-                .url
+                .url,
+                json={},
             )
             _ = perform_service_fetch(var, context)
             request = m.last_request
@@ -231,7 +232,8 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             m.get(
                 furl("https://httpbin.org/redirect-to")
                 .set({"url": some_text, "status_code": some_value})
-                .url
+                .url,
+                json={},
             )
             _ = perform_service_fetch(var, context)
             request = m.last_request
@@ -261,7 +263,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
 
     @requests_mock.Mocker()
     def test_it_sends_request_headers(self, m):
-        m.get("https://httpbin.org/get")
+        m.get("https://httpbin.org/get", json={})
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
@@ -277,7 +279,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         self.assertIn(("X-Brony-Identity", "Jumper"), request_headers.items())
 
     def test_it_can_construct_simple_header_parameters(self):
-        "Assert a happy path"
+        """Assert a happy path"""
         # https://swagger.io/docs/specification/describing-parameters/#header-parameters
         context = {"some_value": "x"}
         var = FormVariableFactory.build(
@@ -289,7 +291,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             )
         )
         with requests_mock.Mocker(case_sensitive=True) as m:
-            m.get("https://httpbin.org/cache")
+            m.get("https://httpbin.org/cache", json={})
             _ = perform_service_fetch(var, context)
             request = m.last_request
 
@@ -310,7 +312,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         )
 
         with requests_mock.Mocker(case_sensitive=True) as m:
-            m.get("https://httpbin.org/cache")
+            m.get("https://httpbin.org/cache", json={})
             try:
                 # when we bind
                 _ = perform_service_fetch(var, context)

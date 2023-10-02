@@ -10,9 +10,9 @@ os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
 os.environ.setdefault("VERSION_TAG", "dev")
 
-os.environ.setdefault("DB_NAME", "openforms"),
-os.environ.setdefault("DB_USER", "openforms"),
-os.environ.setdefault("DB_PASSWORD", "openforms"),
+os.environ.setdefault("DB_NAME", "openforms")
+os.environ.setdefault("DB_USER", "openforms")
+os.environ.setdefault("DB_PASSWORD", "openforms")
 
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("NUM_PROXIES", "0")

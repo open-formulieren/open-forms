@@ -6,7 +6,6 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from privates.test import temp_private_root
-from zgw_consumers.client import ZGWClient
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.payments.constants import PaymentStatus
@@ -70,8 +69,8 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
 
         # invoke the chain
         with patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.set_zaak_payment"
-        ) as mock_set_zaak_payment:
+            "openforms.registrations.contrib.zgw_apis.client.ZakenClient.set_payment_status"
+        ) as mock_set_payment_status:
             on_completion_retry(submission.id)()
 
         submission.refresh_from_db()
@@ -82,9 +81,12 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         # that last_register_date is updated if it runs)
         self.assertEqual(submission.last_register_date, original_register_date)
         self.assertEqual(appointment_info.appointment_id, original_appointment_id)
-        mock_set_zaak_payment.assert_called_once()
-        self.assertTrue(isinstance(mock_set_zaak_payment.call_args[0][0], ZGWClient))
-        self.assertEqual(mock_set_zaak_payment.call_args[0][1], "https://example.com")
+        mock_set_payment_status.assert_called_once_with(
+            {
+                "url": "https://example.com",
+                "identificatie": "ZAAK-123",
+            }
+        )
 
     def test_payment_status_update_still_fails(self):
         zgw_group = ZGWApiGroupConfigFactory.create()
@@ -122,10 +124,10 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
 
         # invoke the chain
         patcher = patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.set_zaak_payment",
+            "openforms.registrations.contrib.zgw_apis.client.ZakenClient.set_payment_status",
             side_effect=Exception("Something went wrong"),
         )
-        with patcher as mock_set_zaak_payment, self.assertRaises(Exception):
+        with (patcher as mock_set_payment_status, self.assertRaises(Exception)):
             on_completion_retry(submission.id)()
 
         submission.refresh_from_db()
@@ -136,9 +138,12 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         # that last_register_date is updated if it runs)
         self.assertEqual(submission.last_register_date, original_register_date)
         self.assertEqual(appointment_info.appointment_id, original_appointment_id)
-        mock_set_zaak_payment.assert_called_once()
-        self.assertTrue(isinstance(mock_set_zaak_payment.call_args[0][0], ZGWClient))
-        self.assertEqual(mock_set_zaak_payment.call_args[0][1], "https://example.com")
+        mock_set_payment_status.assert_called_once_with(
+            {
+                "url": "https://example.com",
+                "identificatie": "ZAAK-123",
+            }
+        )
 
 
 @temp_private_root()

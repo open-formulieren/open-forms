@@ -121,7 +121,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
     def from_components(
         cls,
         components_list: List[dict],
-        submitted_data: dict = None,
+        submitted_data: dict | None = None,
         form_definition_kwargs: dict | None = None,
         **kwargs,
     ) -> Submission:

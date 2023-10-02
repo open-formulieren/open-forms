@@ -1,7 +1,6 @@
 import logging
-import typing
 from functools import partial, wraps
-from typing import Dict, List, Optional, Tuple
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
@@ -9,20 +8,14 @@ from django.utils.translation import gettext, gettext_lazy as _
 import requests
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from zds_client import ClientError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.config.data import Action
+from openforms.contrib.zgw.clients.catalogi import omschrijving_matcher
 from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
-    create_rol,
-    create_status,
-    create_zaak,
-    match_omschrijving,
-    relate_document,
-    retrieve_roltypen,
-    set_zaak_payment,
 )
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
@@ -35,12 +28,9 @@ from ...exceptions import RegistrationFailed
 from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
+from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig, ZgwConfig
 from .validators import RoltypeOmschrijvingValidator
-
-if typing.TYPE_CHECKING:  # pragma: no cover
-    from zgw_consumers.client import ZGWClient
-
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +38,8 @@ logger = logging.getLogger(__name__)
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.all(),
-        help_text=_("Which ZGW API set to use."),
-        label=_("ZGW API set"),
+        help_text=_("Which ZGW API set to use."),  # type: ignore
+        label=_("ZGW API set"),  # type: ignore
         required=False,
     )
     zaaktype = serializers.URLField(
@@ -122,7 +112,7 @@ def wrap_api_errors(func):
     def decorator(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (requests.RequestException, ClientError) as exc:
+        except requests.RequestException as exc:
             raise RegistrationFailed from exc
 
     return decorator
@@ -200,19 +190,23 @@ class ZGWRegistration(BasePlugin):
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
 
-        _create_zaak = partial(
-            create_zaak,
-            zrc_client=zgw.zrc_service.build_client(),
-            options=options,
-            payment_required=submission.payment_required,
-            existing_reference=submission.public_registration_reference,
-            **zaak_data,
-        )
-        zaak = execute_unless_result_exists(
-            _create_zaak,
-            submission,
-            "intermediate.zaak",
-        )
+        with get_zaken_client(zgw) as zaken_client:
+            _create_zaak = partial(
+                zaken_client.create_zaak,
+                zaaktype=options["zaaktype"],
+                bronorganisatie=options["organisatie_rsin"],
+                vertrouwelijkheidaanduiding=options.get(
+                    "zaak_vertrouwelijkheidaanduiding", ""
+                ),
+                payment_required=submission.payment_required,
+                existing_reference=submission.public_registration_reference,
+                **zaak_data,
+            )
+            zaak = execute_unless_result_exists(
+                _create_zaak,
+                submission,
+                "intermediate.zaak",
+            )
 
         result = {"zaak": zaak}
         submission.registration_result.update(result)
@@ -222,41 +216,18 @@ class ZGWRegistration(BasePlugin):
         submission.save()
 
     @wrap_api_errors
-    def register_submission(
-        self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    def register_submission(self, submission: Submission, options: dict) -> dict | None:
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
         zgw = self.get_zgw_config(options)
         zgw.apply_defaults_to(options)
 
-        ztc_client = zgw.ztc_service.build_client()
-        zrc_client = zgw.zrc_service.build_client()
         result = submission.registration_result
+        assert result, "Result should have been set by pre-registration"
         zaak = result["zaak"]
 
-        def get_drc() -> "ZGWClient":
-            return zgw.drc_service.build_client()
-
         submission_report = SubmissionReport.objects.get(submission=submission)
-        document = execute_unless_result_exists(
-            partial(
-                create_report_document,
-                submission.form.admin_name,
-                submission_report,
-                get_drc=get_drc,
-                options=options,
-            ),
-            submission,
-            "intermediate.documents.report.document",
-        )
-        execute_unless_result_exists(
-            partial(relate_document, zaak["url"], document["url"]),
-            submission,
-            "intermediate.documents.report.relation",
-        )
-
         rol_data = apply_data_mapping(
             submission, self.rol_mapping, REGISTRATION_ATTRIBUTE
         )
@@ -272,98 +243,143 @@ class ZGWRegistration(BasePlugin):
         else:
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
 
-        rol = execute_unless_result_exists(
-            partial(create_rol, zrc_client, ztc_client, zaak, rol_data, options),
-            submission,
-            "intermediate.rol",
-        )
-
-        if submission.has_registrator:
-            roltype = retrieve_roltypen(
-                matcher=partial(
-                    match_omschrijving, omschrijving=options["medewerker_roltype"]
-                ),
-                query_params={"zaaktype": options["zaaktype"]},
-                ztc_client=ztc_client,
-            )[0]
-            registrator_rol_data = {
-                "betrokkeneType": "medewerker",
-                "roltype": roltype["url"],
-                "roltoelichting": gettext(
-                    "Employee who registered the case on behalf of the customer."
-                ),
-                "betrokkeneIdentificatie": {
-                    "identificatie": submission.registrator.value,
-                },
-            }
-            medewerker_rol = execute_unless_result_exists(
+        with (
+            get_documents_client(zgw) as documents_client,
+            get_zaken_client(zgw) as zaken_client,
+            get_catalogi_client(zgw) as catalogi_client,
+        ):
+            # Upload the summary PDF
+            summary_pdf_document = execute_unless_result_exists(
                 partial(
-                    create_rol,
-                    zrc_client,
-                    ztc_client,
-                    zaak,
-                    registrator_rol_data,
-                    options,
+                    create_report_document,
+                    client=documents_client,
+                    name=submission.form.admin_name,
+                    submission_report=submission_report,
+                    options=options,
                 ),
                 submission,
-                "intermediate.medewerker_rol",
+                "intermediate.documents.report.document",
             )
 
-        status = execute_unless_result_exists(
-            partial(create_status, zrc_client, ztc_client, zaak),
-            submission,
-            "intermediate.status",
-        )
-
-        for attachment in submission.attachments:
-            # collect attributes of the attachment and add them to the configuration
-            # attribute names conform to the Documenten API specification
-            iot = attachment.informatieobjecttype or options["informatieobjecttype"]
-            bronorganisatie = attachment.bronorganisatie or options["organisatie_rsin"]
-            vertrouwelijkheidaanduiding = (
-                attachment.doc_vertrouwelijkheidaanduiding
-                or options["doc_vertrouwelijkheidaanduiding"]
-            )
-            # `titel` should be a non-empty string
-            # `get_display_name` is used to enforce this
-            titel = attachment.titel or options.get(
-                "titel", attachment.get_display_name()
-            )
-            doc_options = {
-                **options,
-                "informatieobjecttype": iot,
-                "organisatie_rsin": bronorganisatie,
-                "titel": titel,
-            }
-            if vertrouwelijkheidaanduiding:
-                doc_options[
-                    "doc_vertrouwelijkheidaanduiding"
-                ] = vertrouwelijkheidaanduiding
-
-            attachment_document = execute_unless_result_exists(
-                partial(
-                    create_attachment_document,
-                    submission.form.admin_name,
-                    attachment,
-                    doc_options,
-                    get_drc,
-                ),
-                submission,
-                f"intermediate.documents.{attachment.id}.document",
-            )
+            # Relate summary PDF
             execute_unless_result_exists(
-                partial(relate_document, zaak["url"], attachment_document["url"]),
+                partial(
+                    zaken_client.relate_document,
+                    zaak=zaak,
+                    document=summary_pdf_document,
+                ),
                 submission,
-                f"intermediate.documents.{attachment.id}.relation",
+                "intermediate.documents.report.relation",
             )
 
-        result.update(
-            {
-                "document": document,
-                "status": status,
-                "rol": rol,
-            }
-        )
+            rol = execute_unless_result_exists(
+                partial(
+                    zaken_client.create_rol,
+                    catalogi_client=catalogi_client,
+                    zaak=zaak,
+                    betrokkene=rol_data,
+                ),
+                submission,
+                "intermediate.rol",
+            )
+
+            if submission.has_registrator:
+                assert submission.registrator
+
+                roltypen = catalogi_client.list_roltypen(
+                    zaaktype=zaak["zaaktype"],
+                    matcher=omschrijving_matcher(options["medewerker_roltype"]),
+                )
+                roltype = roltypen[0]
+
+                registrator_rol_data = {
+                    "betrokkeneType": "medewerker",
+                    "roltype": roltype["url"],
+                    "roltoelichting": gettext(
+                        "Employee who registered the case on behalf of the customer."
+                    ),
+                    "betrokkeneIdentificatie": {
+                        "identificatie": submission.registrator.value,
+                    },
+                }
+
+                medewerker_rol = execute_unless_result_exists(
+                    partial(
+                        zaken_client.create_rol,
+                        catalogi_client=catalogi_client,
+                        zaak=zaak,
+                        betrokkene=registrator_rol_data,
+                    ),
+                    submission,
+                    "intermediate.medewerker_rol",
+                )
+
+            status = execute_unless_result_exists(
+                partial(
+                    zaken_client.create_status,
+                    catalogi_client=catalogi_client,
+                    zaak=zaak,
+                ),
+                submission,
+                "intermediate.status",
+            )
+
+            # TODO: threading? asyncio?
+            for attachment in submission.attachments:
+                # collect attributes of the attachment and add them to the configuration
+                # attribute names conform to the Documenten API specification
+                iot = attachment.informatieobjecttype or options["informatieobjecttype"]
+                bronorganisatie = (
+                    attachment.bronorganisatie or options["organisatie_rsin"]
+                )
+                vertrouwelijkheidaanduiding = (
+                    attachment.doc_vertrouwelijkheidaanduiding
+                    or options["doc_vertrouwelijkheidaanduiding"]
+                )
+                # `titel` should be a non-empty string
+                # `get_display_name` is used to enforce this
+                titel = attachment.titel or options.get(
+                    "titel", attachment.get_display_name()
+                )
+                doc_options = {
+                    **options,
+                    "informatieobjecttype": iot,
+                    "organisatie_rsin": bronorganisatie,
+                    "titel": titel,
+                }
+                if vertrouwelijkheidaanduiding:
+                    doc_options[
+                        "doc_vertrouwelijkheidaanduiding"
+                    ] = vertrouwelijkheidaanduiding
+
+                attachment_document = execute_unless_result_exists(
+                    partial(
+                        create_attachment_document,
+                        client=documents_client,
+                        name=submission.form.admin_name,
+                        submission_attachment=attachment,
+                        options=doc_options,
+                    ),
+                    submission,
+                    f"intermediate.documents.{attachment.id}.document",
+                )
+                execute_unless_result_exists(
+                    partial(
+                        zaken_client.relate_document,
+                        zaak=zaak,
+                        document=attachment_document,
+                    ),
+                    submission,
+                    f"intermediate.documents.{attachment.id}.relation",
+                )
+
+            result.update(
+                {
+                    "document": summary_pdf_document,
+                    "status": status,
+                    "rol": rol,
+                }
+            )
 
         if submission.has_registrator:
             result["medewerker_rol"] = medewerker_rol
@@ -372,7 +388,7 @@ class ZGWRegistration(BasePlugin):
         submission.save()
         return result
 
-    def get_reference_from_result(self, result: Dict[str, str]) -> str:
+    def get_reference_from_result(self, result: dict[str, Any]) -> str:
         """
         Extract the public submission reference from the result data.
 
@@ -392,17 +408,17 @@ class ZGWRegistration(BasePlugin):
         return zaak["identificatie"]
 
     @wrap_api_errors
-    def update_payment_status(self, submission: "Submission", options: dict):
+    def update_payment_status(self, submission: Submission, options: dict):
         zgw = options["zgw_api_group"]
-        set_zaak_payment(
-            zgw.zrc_service.build_client(),
-            submission.registration_result["zaak"]["url"],
-        )
+        assert submission.registration_result
+        zaak = submission.registration_result["zaak"]
+        with get_zaken_client(zgw) as zaken_client:
+            zaken_client.set_payment_status(zaak)
 
     def check_config(self):
         check_config()
 
-    def get_config_actions(self) -> List[Tuple[str, str]]:
+    def get_config_actions(self) -> list[Action]:
         return [
             (
                 gettext("Configuration"),

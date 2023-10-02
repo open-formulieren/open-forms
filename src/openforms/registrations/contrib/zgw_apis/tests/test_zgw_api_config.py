@@ -5,13 +5,10 @@ from django.test import TestCase
 import requests_mock
 from privates.test import temp_private_root
 from requests.models import HTTPError
-from zds_client.oas import schema_fetcher
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -30,11 +27,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         super().setUpTestData()
         cls.zgw_group1 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-1.nl/api/v1/",
-            zrc_service__oas="https://zaken-1.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten-1.nl/api/v1/",
-            drc_service__oas="https://documenten-1.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus-1.nl/api/v1/",
-            ztc_service__oas="https://catalogus-1.nl/api/v1/schema/openapi.yaml",
             zaaktype="https://catalogi-1.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi-1.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -42,34 +36,17 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         )
         cls.zgw_group2 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-2.nl/api/v1/",
-            zrc_service__oas="https://zaken-2.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten-2.nl/api/v1/",
-            drc_service__oas="https://documenten-2.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus-2.nl/api/v1/",
-            ztc_service__oas="https://catalogus-2.nl/api/v1/schema/openapi.yaml",
             zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi-2.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000001",
             zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.beperkt_openbaar,
         )
 
-    def setUp(self):
-        super().setUp()
-        # reset cache to keep request_history indexes consistent
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)
-
     def install_mocks(self, m):
         # API set 1
-        mock_service_oas_get(m, "https://zaken-1.nl/api/v1/", "zaken")
-        mock_service_oas_get(m, "https://documenten-1.nl/api/v1/", "documenten")
-        mock_service_oas_get(m, "https://catalogus-1.nl/api/v1/", "catalogi")
-
-        m.get(
-            "https://zaken-1.nl/api/v1/zaken",
-            status_code=200,
-            json=[],
-        )
+        m.get("https://zaken-1.nl/api/v1/zaken", status_code=200, json=[])
         m.post(
             "https://zaken-1.nl/api/v1/zaken",
             status_code=201,
@@ -186,15 +163,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         )
 
         # API set 2
-        mock_service_oas_get(m, "https://zaken-2.nl/api/v1/", "zaken")
-        mock_service_oas_get(m, "https://documenten-2.nl/api/v1/", "documenten")
-        mock_service_oas_get(m, "https://catalogus-2.nl/api/v1/", "catalogi")
-
-        m.get(
-            "https://zaken-2.nl/api/v1/zaken",
-            status_code=200,
-            json=[],
-        )
+        m.get("https://zaken-2.nl/api/v1/zaken", status_code=200, json=[])
         m.post(
             "https://zaken-2.nl/api/v1/zaken",
             status_code=201,
@@ -328,25 +297,19 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
 
     def test_the_right_api_is_used(self, m):
         submission = SubmissionFactory.from_components(
-            [
-                {"key": "field1", "type": "file"},
-            ],
+            [{"key": "field1", "type": "file"}],
             submitted_data={
                 "field1": "Foo",
             },
         )
-
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group2,  # Configure to use the second ZGW API
-        )
-
+        # Configure to use the second ZGW API
         SubmissionFileAttachmentFactory.create(
-            submission_step=SubmissionStep.objects.first(),
+            submission_step=submission.steps[0],
             file_name="attachment1.jpg",
             form_key="field1",
             _component_configuration_path="components.0",
         )
-
+        zgw_form_options = {"zgw_api_group": self.zgw_group2}
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -354,23 +317,20 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         plugin.register_submission(submission, zgw_form_options)
 
         history = m.request_history
-
         for request in history:
             self.assertTrue(request.hostname.endswith("-2.nl"))
 
     def test_per_form_overwrites(self, m):
         submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "field1",
-                    "type": "file",
-                },
-            ],
-            submitted_data={
-                "field1": "Foo",
-            },
+            [{"key": "field1", "type": "file"}],
+            submitted_data={"field1": "Foo"},
         )
-
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="attachment1.jpg",
+            form_key="field1",
+            _component_configuration_path="components.0",
+        )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group2,  # Configure to use the second ZGW API
             zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/2",  # Use zaaktype 2 instead of 1
@@ -380,23 +340,28 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             doc_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.geheim,
         )
 
-        SubmissionFileAttachmentFactory.create(
-            submission_step=SubmissionStep.objects.first(),
-            file_name="attachment1.jpg",
-            form_key="field1",
-            _component_configuration_path="components.0",
-        )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        history = m.request_history
-        zaak_body = history[1].json()
-        report_body = history[3].json()
-        attachment_body = history[10].json()
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
+
+        zaak_body = create_zaak.json()
+        report_body = create_pdf_document.json()
+        attachment_body = create_attachment_document.json()
 
         self.assertEqual(
             zaak_body["zaaktype"], "https://catalogi-2.nl/api/v1/zaaktypen/2"
@@ -441,7 +406,12 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                 "field1": "Foo",
             },
         )
-
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="attachment1.jpg",
+            form_key="field1",
+            _component_configuration_path="components.0",
+        )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group2,
             zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/2",
@@ -450,22 +420,25 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.confidentieel,
             doc_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.geheim,
         )
-
-        SubmissionFileAttachmentFactory.create(
-            submission_step=SubmissionStep.objects.first(),
-            file_name="attachment1.jpg",
-            form_key="field1",
-            _component_configuration_path="components.0",
-        )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        history = m.request_history
-        attachment_body = history[10].json()
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
+        attachment_body = create_attachment_document.json()
 
         self.assertEqual(
             attachment_body["informatieobjecttype"],
@@ -490,21 +463,48 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         plugin = ZGWRegistration("zgw")
         plugin.check_config()
 
-        history = m.request_history
+        self.assertEqual(len(m.request_history), 6)
+        (
+            list_zaken_1,
+            list_documenten_1,
+            list_zaaktypen_1,
+            list_zaken_2,
+            list_documenten_2,
+            list_zaaktypen_2,
+        ) = m.request_history
 
-        self.assertEqual(len(history), 12)
-        self.assertEqual(history[1].hostname, "zaken-1.nl")
-        self.assertEqual(history[3].hostname, "documenten-1.nl")
-        self.assertEqual(history[5].hostname, "catalogus-1.nl")
+        self.assertEqual(list_zaken_1.hostname, "zaken-1.nl")
+        self.assertEqual(list_documenten_1.hostname, "documenten-1.nl")
+        self.assertEqual(list_zaaktypen_1.hostname, "catalogus-1.nl")
 
-        self.assertEqual(history[7].hostname, "zaken-2.nl")
-        self.assertEqual(history[9].hostname, "documenten-2.nl")
-        self.assertEqual(history[11].hostname, "catalogus-2.nl")
+        self.assertEqual(list_zaken_2.hostname, "zaken-2.nl")
+        self.assertEqual(list_documenten_2.hostname, "documenten-2.nl")
+        self.assertEqual(list_zaaktypen_2.hostname, "catalogus-2.nl")
 
-    def test_check_config_no_service(self, m):
+    def test_check_config_no_zrc_service(self, m):
         self.install_mocks(m)
+        self.zgw_group1.zrc_service = None
+        self.zgw_group1.save()
 
-        ZGWApiGroupConfigFactory.create(zrc_service=None)
+        plugin = ZGWRegistration("zgw")
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    def test_check_config_no_drc_service(self, m):
+        self.install_mocks(m)
+        self.zgw_group1.drc_service = None
+        self.zgw_group1.save()
+
+        plugin = ZGWRegistration("zgw")
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    def test_check_config_no_ztc_service(self, m):
+        self.install_mocks(m)
+        self.zgw_group1.ztc_service = None
+        self.zgw_group1.save()
 
         plugin = ZGWRegistration("zgw")
 
@@ -513,11 +513,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
 
     def test_check_config_http_error(self, m):
         self.install_mocks(m)
-
-        m.get(
-            "https://zaken-1.nl/api/v1/zaken",
-            exc=HTTPError,
-        )
+        m.get("https://zaken-1.nl/api/v1/zaken", exc=HTTPError)
 
         plugin = ZGWRegistration("zgw")
         with self.assertRaises(InvalidPluginConfiguration):
@@ -525,11 +521,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
 
     def test_check_config_random_error(self, m):
         self.install_mocks(m)
-
-        m.get(
-            "https://zaken-1.nl/api/v1/zaken",
-            exc=Exception,
-        )
+        m.get("https://zaken-1.nl/api/v1/zaken", exc=Exception)
 
         plugin = ZGWRegistration("zgw")
         with self.assertRaises(InvalidPluginConfiguration):
@@ -539,7 +531,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         plugin = ZGWRegistration("zgw")
 
         with patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.ZgwConfig.get_solo",
+            "openforms.registrations.contrib.zgw_apis.models.ZgwConfig.get_solo",
             return_value=ZgwConfig(default_zgw_api_group=self.zgw_group1),
         ):
             api_group = plugin.get_zgw_config({})

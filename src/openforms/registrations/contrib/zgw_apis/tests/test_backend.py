@@ -4,11 +4,10 @@ from django.test import TestCase, override_settings, tag
 
 import requests_mock
 from freezegun import freeze_time
+from furl import furl
 from glom import glom
 from privates.test import temp_private_root
-from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.submissions.constants import RegistrationStatuses
@@ -32,26 +31,14 @@ from .factories import ZGWApiGroupConfigFactory
 class ZGWBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         cls.zgw_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
-            zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
-            drc_service__oas="https://documenten.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
-            ztc_service__oas="https://catalogus.nl/api/v1/schema/openapi.yaml",
         )
 
-    def setUp(self):
-        super().setUp()
-        # reset cache to keep request_history indexes consistent
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)
-
     def install_mocks(self, m):
-        mock_service_oas_get(m, "https://zaken.nl/api/v1/", "zaken")
-        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
-        mock_service_oas_get(m, "https://catalogus.nl/api/v1/", "catalogi")
-
         m.post(
             "https://zaken.nl/api/v1/zaken",
             status_code=201,
@@ -236,11 +223,9 @@ class ZGWBackendTests(TestCase):
             form__payment_backend="demo",
             language_code="en",
         )
-
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
         )
-
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -249,12 +234,13 @@ class ZGWBackendTests(TestCase):
             zaak_vertrouwelijkheidaanduiding="openbaar",
             doc_vertrouwelijkheidaanduiding="openbaar",
         )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
         self.assertEqual(
             result["document"]["url"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
@@ -266,122 +252,147 @@ class ZGWBackendTests(TestCase):
             result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
 
-        create_zaak = m.request_history[1]
-        create_zaak_body = create_zaak.json()
-        self.assertNotIn("kenmerken", create_zaak_body)
-        self.assertEqual(create_zaak.method, "POST")
-        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-        self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
-        self.assertEqual(
-            create_zaak_body["verantwoordelijkeOrganisatie"],
-            "000000000",
-        )
-        self.assertEqual(
-            create_zaak_body["vertrouwelijkheidaanduiding"],
-            "openbaar",
-        )
-        self.assertEqual(
-            create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-        self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
 
-        self.assertEqual(
-            create_zaak_body["zaakgeometrie"],
-            {"type": "Point", "coordinates": [52.36673378967122, 4.893164274470299]},
-        )
+        with self.subTest("Create zaak call"):
+            create_zaak_body = create_zaak.json()
 
-        create_eio = m.request_history[3]
-        create_eio_body = create_eio.json()
-        self.assertEqual(create_eio.method, "POST")
-        self.assertEqual(
-            create_eio.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
-        self.assertEqual(create_eio_body["formaat"], "application/pdf")
-        self.assertEqual(
-            create_eio_body["vertrouwelijkheidaanduiding"],
-            "openbaar",
-        )
-        self.assertEqual(
-            create_eio_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-        )
-        self.assertEqual(create_eio_body["taal"], "eng")
+            self.assertNotIn("kenmerken", create_zaak_body)
+            self.assertEqual(create_zaak.method, "POST")
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
+            self.assertEqual(
+                create_zaak_body["verantwoordelijkeOrganisatie"],
+                "000000000",
+            )
+            self.assertEqual(
+                create_zaak_body["vertrouwelijkheidaanduiding"],
+                "openbaar",
+            )
+            self.assertEqual(
+                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
+            )
+            self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
 
-        create_zio = m.request_history[4]
-        create_zio_body = create_zio.json()
-        self.assertEqual(create_zio.method, "POST")
-        self.assertEqual(
-            create_zio.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
-        )
-        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_zio_body["informatieobject"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
+            self.assertEqual(
+                create_zaak_body["zaakgeometrie"],
+                {
+                    "type": "Point",
+                    "coordinates": [52.36673378967122, 4.893164274470299],
+                },
+            )
 
-        create_rol = m.request_history[7]
-        create_rol_body = create_rol.json()
-        self.assertEqual(create_rol.method, "POST")
-        self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
-        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_rol_body["roltype"],
-            "https://catalogus.nl/api/v1/roltypen/1",
-        )
-        self.assertEqual(
-            create_rol_body["betrokkeneIdentificatie"],
-            {
-                "voornamen": "Foo",
-                "geboortedatum": "2000-12-31",
-                "inpBsn": "111222333",
-                "voorvoegselGeslachtsnaam": "de",
-                "geslachtsnaam": "Bar",
-                "verblijfsadres": {"postcode": "1000 AA"},
-                "voorletters": "J.W.",
-                "geslachtsaanduiding": "m",
-            },
-        )
-        self.assertEqual(
-            create_rol_body["betrokkeneType"],
-            "natuurlijk_persoon",
-        )
+        with self.subTest("Create summary PDF document"):
+            create_eio_body = create_pdf_document.json()
 
-        create_status = m.request_history[9]
-        create_status_body = create_status.json()
-        self.assertEqual(create_status.method, "POST")
-        self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
-        self.assertEqual(create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_status_body["statustype"],
-            "https://catalogus.nl/api/v1/statustypen/1",
-        )
+            self.assertEqual(create_pdf_document.method, "POST")
+            self.assertEqual(
+                create_pdf_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
+            self.assertEqual(create_eio_body["formaat"], "application/pdf")
+            self.assertEqual(
+                create_eio_body["vertrouwelijkheidaanduiding"],
+                "openbaar",
+            )
+            self.assertEqual(
+                create_eio_body["informatieobjecttype"],
+                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            )
+            self.assertEqual(create_eio_body["taal"], "eng")
 
-        create_attachment = m.request_history[10]
-        create_attachment_body = create_attachment.json()
-        self.assertEqual(create_attachment.method, "POST")
-        self.assertEqual(
-            create_attachment.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        self.assertEqual(create_attachment_body["bestandsnaam"], attachment.file_name)
-        self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
-        self.assertEqual(create_attachment_body["taal"], "eng")
+            create_zio_body = relate_pdf_document.json()
+            self.assertEqual(relate_pdf_document.method, "POST")
+            self.assertEqual(
+                relate_pdf_document.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            )
+            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
+            self.assertEqual(
+                create_zio_body["informatieobject"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            )
 
-        relate_attachment = m.request_history[11]
-        relate_attachment_body = relate_attachment.json()
-        self.assertEqual(relate_attachment.method, "POST")
-        self.assertEqual(
-            relate_attachment.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
-        )
-        self.assertEqual(
-            relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-        )
-        self.assertEqual(
-            relate_attachment_body["informatieobject"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-        )
+        with self.subTest("Create rol"):
+            create_rol_body = create_rol.json()
+
+            self.assertEqual(create_rol.method, "POST")
+            self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
+            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
+            self.assertEqual(
+                create_rol_body["roltype"],
+                "https://catalogus.nl/api/v1/roltypen/1",
+            )
+            self.assertEqual(
+                create_rol_body["betrokkeneIdentificatie"],
+                {
+                    "voornamen": "Foo",
+                    "geboortedatum": "2000-12-31",
+                    "inpBsn": "111222333",
+                    "voorvoegselGeslachtsnaam": "de",
+                    "geslachtsnaam": "Bar",
+                    "verblijfsadres": {"postcode": "1000 AA"},
+                    "voorletters": "J.W.",
+                    "geslachtsaanduiding": "m",
+                },
+            )
+            self.assertEqual(
+                create_rol_body["betrokkeneType"],
+                "natuurlijk_persoon",
+            )
+
+        with self.subTest("Create initial status"):
+            create_status_body = create_status.json()
+
+            self.assertEqual(create_status.method, "POST")
+            self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
+            self.assertEqual(
+                create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertEqual(
+                create_status_body["statustype"],
+                "https://catalogus.nl/api/v1/statustypen/1",
+            )
+
+        with self.subTest("Create attachment document"):
+            create_attachment_body = create_attachment_document.json()
+
+            self.assertEqual(create_attachment_document.method, "POST")
+            self.assertEqual(
+                create_attachment_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(
+                create_attachment_body["bestandsnaam"], attachment.file_name
+            )
+            self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
+            self.assertEqual(create_attachment_body["taal"], "eng")
+
+            relate_attachment_body = relate_attachment_document.json()
+            self.assertEqual(relate_attachment_document.method, "POST")
+            self.assertEqual(
+                relate_attachment_document.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            )
+            self.assertEqual(
+                relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertEqual(
+                relate_attachment_body["informatieobject"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+            )
 
     def test_submission_with_zgw_backend_with_vestiging_and_kvk_initiator(self, m):
         submission = SubmissionFactory.from_components(
@@ -425,11 +436,9 @@ class ZGWBackendTests(TestCase):
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
         )
-
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
         )
-
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -438,12 +447,13 @@ class ZGWBackendTests(TestCase):
             zaak_vertrouwelijkheidaanduiding="openbaar",
             doc_vertrouwelijkheidaanduiding="openbaar",
         )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
         self.assertEqual(
             result["document"]["url"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
@@ -455,117 +465,137 @@ class ZGWBackendTests(TestCase):
             result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
 
-        create_zaak = m.request_history[1]
-        create_zaak_body = create_zaak.json()
-        self.assertNotIn("kenmerken", create_zaak_body)
-        self.assertEqual(create_zaak.method, "POST")
-        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-        self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
-        self.assertEqual(
-            create_zaak_body["verantwoordelijkeOrganisatie"],
-            "000000000",
-        )
-        self.assertEqual(
-            create_zaak_body["vertrouwelijkheidaanduiding"],
-            "openbaar",
-        )
-        self.assertEqual(
-            create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-        self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
 
-        self.assertEqual(
-            create_zaak_body["zaakgeometrie"],
-            {"type": "Point", "coordinates": [52.36673378967122, 4.893164274470299]},
-        )
+        with self.subTest("Create zaak call"):
+            create_zaak_body = create_zaak.json()
+            self.assertNotIn("kenmerken", create_zaak_body)
+            self.assertEqual(create_zaak.method, "POST")
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
+            self.assertEqual(
+                create_zaak_body["verantwoordelijkeOrganisatie"],
+                "000000000",
+            )
+            self.assertEqual(
+                create_zaak_body["vertrouwelijkheidaanduiding"],
+                "openbaar",
+            )
+            self.assertEqual(
+                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
+            )
+            self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
 
-        create_eio = m.request_history[3]
-        create_eio_body = create_eio.json()
-        self.assertEqual(create_eio.method, "POST")
-        self.assertEqual(
-            create_eio.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
-        self.assertEqual(create_eio_body["formaat"], "application/pdf")
-        self.assertEqual(
-            create_eio_body["vertrouwelijkheidaanduiding"],
-            "openbaar",
-        )
-        self.assertEqual(
-            create_eio_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-        )
+            self.assertEqual(
+                create_zaak_body["zaakgeometrie"],
+                {
+                    "type": "Point",
+                    "coordinates": [52.36673378967122, 4.893164274470299],
+                },
+            )
 
-        create_zio = m.request_history[4]
-        create_zio_body = create_zio.json()
-        self.assertEqual(create_zio.method, "POST")
-        self.assertEqual(
-            create_zio.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
-        )
-        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_zio_body["informatieobject"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
+        with self.subTest("Create summary PDF document"):
+            create_eio_body = create_pdf_document.json()
+            self.assertEqual(create_pdf_document.method, "POST")
+            self.assertEqual(
+                create_pdf_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
+            self.assertEqual(create_eio_body["formaat"], "application/pdf")
+            self.assertEqual(
+                create_eio_body["vertrouwelijkheidaanduiding"],
+                "openbaar",
+            )
+            self.assertEqual(
+                create_eio_body["informatieobjecttype"],
+                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            )
 
-        create_rol = m.request_history[7]
-        create_rol_body = create_rol.json()
-        self.assertEqual(create_rol.method, "POST")
-        self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
-        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_rol_body["roltype"],
-            "https://catalogus.nl/api/v1/roltypen/1",
-        )
-        self.assertEqual(
-            create_rol_body["betrokkeneType"],
-            "vestiging",
-        )
-        self.assertEqual(
-            create_rol_body["betrokkeneIdentificatie"],
-            {
-                "handelsnaam": "ACME",
-                "vestigingsNummer": "87654321",
-                "innNnpId": "12345678",
-                "statutaireNaam": "ACME",
-                "verblijfsadres": {"postcode": "1000 AA"},
-            },
-        )
+            create_zio_body = relate_pdf_document.json()
+            self.assertEqual(relate_pdf_document.method, "POST")
+            self.assertEqual(
+                relate_pdf_document.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            )
+            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
+            self.assertEqual(
+                create_zio_body["informatieobject"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            )
 
-        create_status = m.request_history[9]
-        create_status_body = create_status.json()
-        self.assertEqual(create_status.method, "POST")
-        self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
-        self.assertEqual(create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_status_body["statustype"],
-            "https://catalogus.nl/api/v1/statustypen/1",
-        )
+        with self.subTest("Create rol"):
+            create_rol_body = create_rol.json()
+            self.assertEqual(create_rol.method, "POST")
+            self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
+            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
+            self.assertEqual(
+                create_rol_body["roltype"],
+                "https://catalogus.nl/api/v1/roltypen/1",
+            )
+            self.assertEqual(
+                create_rol_body["betrokkeneType"],
+                "vestiging",
+            )
+            self.assertEqual(
+                create_rol_body["betrokkeneIdentificatie"],
+                {
+                    "handelsnaam": "ACME",
+                    "vestigingsNummer": "87654321",
+                    "innNnpId": "12345678",
+                    "statutaireNaam": "ACME",
+                    "verblijfsadres": {"postcode": "1000 AA"},
+                },
+            )
 
-        create_attachment = m.request_history[10]
-        create_attachment_body = create_attachment.json()
-        self.assertEqual(create_attachment.method, "POST")
-        self.assertEqual(
-            create_attachment.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        self.assertEqual(create_attachment_body["bestandsnaam"], attachment.file_name)
-        self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
+        with self.subTest("Create initial status"):
+            create_status_body = create_status.json()
+            self.assertEqual(create_status.method, "POST")
+            self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
+            self.assertEqual(
+                create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertEqual(
+                create_status_body["statustype"],
+                "https://catalogus.nl/api/v1/statustypen/1",
+            )
 
-        relate_attachment = m.request_history[11]
-        relate_attachment_body = relate_attachment.json()
-        self.assertEqual(relate_attachment.method, "POST")
-        self.assertEqual(
-            relate_attachment.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
-        )
-        self.assertEqual(
-            relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-        )
-        self.assertEqual(
-            relate_attachment_body["informatieobject"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-        )
+        with self.subTest("Create attachment document"):
+            create_attachment_body = create_attachment_document.json()
+            self.assertEqual(create_attachment_document.method, "POST")
+            self.assertEqual(
+                create_attachment_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(
+                create_attachment_body["bestandsnaam"], attachment.file_name
+            )
+            self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
+
+            relate_attachment_body = relate_attachment_document.json()
+            self.assertEqual(relate_attachment_document.method, "POST")
+            self.assertEqual(
+                relate_attachment_document.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            )
+            self.assertEqual(
+                relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertEqual(
+                relate_attachment_body["informatieobject"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+            )
 
     def test_submission_with_zgw_backend_with_kvk_only_initiator(self, m):
         submission = SubmissionFactory.from_components(
@@ -601,11 +631,7 @@ class ZGWBackendTests(TestCase):
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
         )
-
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-        )
-
+        SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -614,16 +640,26 @@ class ZGWBackendTests(TestCase):
             zaak_vertrouwelijkheidaanduiding="openbaar",
             doc_vertrouwelijkheidaanduiding="openbaar",
         )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        create_rol = m.request_history[7]
-        create_rol_body = create_rol.json()
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
 
+        create_rol_body = create_rol.json()
         self.assertEqual(
             create_rol_body["betrokkeneType"],
             "niet_natuurlijk_persoon",
@@ -671,11 +707,9 @@ class ZGWBackendTests(TestCase):
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
         )
-
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
         )
-
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -684,12 +718,13 @@ class ZGWBackendTests(TestCase):
             zaak_vertrouwelijkheidaanduiding="openbaar",
             doc_vertrouwelijkheidaanduiding="openbaar",
         )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
         self.assertEqual(
             result["document"]["url"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
@@ -701,112 +736,137 @@ class ZGWBackendTests(TestCase):
             result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
         )
 
-        create_zaak = m.request_history[1]
-        create_zaak_body = create_zaak.json()
-        self.assertNotIn("kenmerken", create_zaak_body)
-        self.assertEqual(create_zaak.method, "POST")
-        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
-        self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
-        self.assertEqual(
-            create_zaak_body["verantwoordelijkeOrganisatie"],
-            "000000000",
-        )
-        self.assertEqual(
-            create_zaak_body["vertrouwelijkheidaanduiding"],
-            "openbaar",
-        )
-        self.assertEqual(
-            create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
-        )
-        self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
 
-        self.assertEqual(
-            create_zaak_body["zaakgeometrie"],
-            {"type": "Point", "coordinates": [52.36673378967122, 4.893164274470299]},
-        )
+        with self.subTest("Create zaak call"):
+            create_zaak_body = create_zaak.json()
 
-        create_eio = m.request_history[3]
-        create_eio_body = create_eio.json()
-        self.assertEqual(create_eio.method, "POST")
-        self.assertEqual(
-            create_eio.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
-        self.assertEqual(create_eio_body["formaat"], "application/pdf")
-        self.assertEqual(
-            create_eio_body["vertrouwelijkheidaanduiding"],
-            "openbaar",
-        )
-        self.assertEqual(
-            create_eio_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-        )
+            self.assertNotIn("kenmerken", create_zaak_body)
+            self.assertEqual(create_zaak.method, "POST")
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(create_zaak_body["bronorganisatie"], "000000000")
+            self.assertEqual(
+                create_zaak_body["verantwoordelijkeOrganisatie"],
+                "000000000",
+            )
+            self.assertEqual(
+                create_zaak_body["vertrouwelijkheidaanduiding"],
+                "openbaar",
+            )
+            self.assertEqual(
+                create_zaak_body["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
+            )
+            self.assertEqual(create_zaak_body["betalingsindicatie"], "nvt")
 
-        create_zio = m.request_history[4]
-        create_zio_body = create_zio.json()
-        self.assertEqual(create_zio.method, "POST")
-        self.assertEqual(
-            create_zio.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
-        )
-        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_zio_body["informatieobject"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
+            self.assertEqual(
+                create_zaak_body["zaakgeometrie"],
+                {
+                    "type": "Point",
+                    "coordinates": [52.36673378967122, 4.893164274470299],
+                },
+            )
 
-        create_rol = m.request_history[7]
-        create_rol_body = create_rol.json()
-        self.assertEqual(create_rol.method, "POST")
-        self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
-        self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_rol_body["roltype"],
-            "https://catalogus.nl/api/v1/roltypen/1",
-        )
-        self.assertEqual(
-            create_rol_body["betrokkeneIdentificatie"],
-            {
-                "handelsnaam": "ACME",
-                "innNnpId": "12345678",
-                "statutaireNaam": "ACME",
-                "verblijfsadres": {"postcode": "1000 AA"},
-            },
-        )
+        with self.subTest("Create summary PDF document"):
+            create_eio_body = create_pdf_document.json()
 
-        create_status = m.request_history[9]
-        create_status_body = create_status.json()
-        self.assertEqual(create_status.method, "POST")
-        self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
-        self.assertEqual(create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
-        self.assertEqual(
-            create_status_body["statustype"],
-            "https://catalogus.nl/api/v1/statustypen/1",
-        )
+            self.assertEqual(create_pdf_document.method, "POST")
+            self.assertEqual(
+                create_pdf_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(create_eio_body["bronorganisatie"], "000000000")
+            self.assertEqual(create_eio_body["formaat"], "application/pdf")
+            self.assertEqual(
+                create_eio_body["vertrouwelijkheidaanduiding"],
+                "openbaar",
+            )
+            self.assertEqual(
+                create_eio_body["informatieobjecttype"],
+                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            )
 
-        create_attachment = m.request_history[10]
-        create_attachment_body = create_attachment.json()
-        self.assertEqual(create_attachment.method, "POST")
-        self.assertEqual(
-            create_attachment.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        self.assertEqual(create_attachment_body["bestandsnaam"], attachment.file_name)
-        self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
+            create_zio_body = relate_pdf_document.json()
+            self.assertEqual(relate_pdf_document.method, "POST")
+            self.assertEqual(
+                relate_pdf_document.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            )
+            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
+            self.assertEqual(
+                create_zio_body["informatieobject"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            )
 
-        relate_attachment = m.request_history[11]
-        relate_attachment_body = relate_attachment.json()
-        self.assertEqual(relate_attachment.method, "POST")
-        self.assertEqual(
-            relate_attachment.url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
-        )
-        self.assertEqual(
-            relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
-        )
-        self.assertEqual(
-            relate_attachment_body["informatieobject"],
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-        )
+        with self.subTest("Create rol"):
+            create_rol_body = create_rol.json()
+
+            self.assertEqual(create_rol.method, "POST")
+            self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
+            self.assertEqual(create_zio_body["zaak"], "https://zaken.nl/api/v1/zaken/1")
+            self.assertEqual(
+                create_rol_body["roltype"],
+                "https://catalogus.nl/api/v1/roltypen/1",
+            )
+            self.assertEqual(
+                create_rol_body["betrokkeneIdentificatie"],
+                {
+                    "handelsnaam": "ACME",
+                    "innNnpId": "12345678",
+                    "statutaireNaam": "ACME",
+                    "verblijfsadres": {"postcode": "1000 AA"},
+                },
+            )
+
+        with self.subTest("Create initial status"):
+            create_status_body = create_status.json()
+
+            self.assertEqual(create_status.method, "POST")
+            self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
+            self.assertEqual(
+                create_status_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertEqual(
+                create_status_body["statustype"],
+                "https://catalogus.nl/api/v1/statustypen/1",
+            )
+
+        with self.subTest("Create attachment document"):
+            create_attachment_body = create_attachment_document.json()
+
+            self.assertEqual(create_attachment_document.method, "POST")
+            self.assertEqual(
+                create_attachment_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(
+                create_attachment_body["bestandsnaam"], attachment.file_name
+            )
+            self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
+
+            relate_attachment_body = relate_attachment_document.json()
+            self.assertEqual(relate_attachment_document.method, "POST")
+            self.assertEqual(
+                relate_attachment_document.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            )
+            self.assertEqual(
+                relate_attachment_body["zaak"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertEqual(
+                relate_attachment_body["informatieobject"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+            )
 
     @override_settings(LANGUAGE_CODE="en")
     def test_submission_with_registrator(self, m):
@@ -844,7 +904,6 @@ class ZGWBackendTests(TestCase):
             form__payment_backend="demo",
         )
         RegistratorInfoFactory.create(submission=submission, value="123456782")
-
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -854,7 +913,6 @@ class ZGWBackendTests(TestCase):
             doc_vertrouwelijkheidaanduiding="openbaar",
             medewerker_roltype="Some description",
         )
-
         self.install_mocks(m)
         m.get(
             "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
@@ -877,12 +935,24 @@ class ZGWBackendTests(TestCase):
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
+        assert result
 
         self.assertIn("medewerker_rol", result)
 
-        create_medewerker_rol_call = m.request_history[-3]
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_roltypen2,
+            create_medewerker_rol,
+            get_statustypen,
+            create_status,
+        ) = m.request_history
 
-        post_data = create_medewerker_rol_call.json()
+        post_data = create_medewerker_rol.json()
         self.assertEqual(post_data["betrokkeneType"], "medewerker")
         self.assertEqual(
             post_data["roltoelichting"],
@@ -896,6 +966,38 @@ class ZGWBackendTests(TestCase):
             post_data["betrokkeneIdentificatie"]["identificatie"],
             "123456782",
         )
+
+    def test_submission_roltype_initiator_not_found(self, m):
+        submission = SubmissionFactory.create(
+            completed_not_preregistered=True, with_report=True
+        )
+        zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
+        )
+        self.install_mocks(m)
+        roltypen_url = furl("https://catalogus.nl/api/v1/roltypen").set(
+            {
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "omschrijvingGeneriek": "initiator",
+            }
+        )
+        m.get(
+            str(roltypen_url),
+            status_code=200,
+            json={"count": 0, "next": None, "previous": None, "results": []},
+        )
+
+        plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
+        result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
+        self.assertIsNone(result["rol"])
 
     def test_retried_registration_with_internal_reference(self, m):
         """
@@ -922,9 +1024,8 @@ class ZGWBackendTests(TestCase):
         plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        create_zaak = m.request_history[1]
+        create_zaak = m.request_history[0]
         create_zaak_body = create_zaak.json()
-
         self.assertEqual(
             create_zaak_body["kenmerken"],
             [
@@ -944,7 +1045,6 @@ class ZGWBackendTests(TestCase):
             form__payment_backend="demo",
         )
         self.assertTrue(submission.payment_required)
-
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -953,9 +1053,7 @@ class ZGWBackendTests(TestCase):
             zaak_vertrouwelijkheidaanduiding="openbaar",
             doc_vertrouwelijkheidaanduiding="openbaar",
         )
-
         self.install_mocks(m)
-
         m.patch(
             "https://zaken.nl/api/v1/zaken/1",
             status_code=200,
@@ -970,19 +1068,21 @@ class ZGWBackendTests(TestCase):
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
         self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
         submission.registration_result = result
         submission.save()
 
         # check initial payment status
-        create_zaak_body = m.request_history[1].json()
+        create_zaak_body = m.request_history[0].json()
         self.assertEqual(create_zaak_body["betalingsindicatie"], "nog_niet")
         self.assertNotIn("laatsteBetaaldatum", create_zaak_body)
 
         # run the actual update
         plugin.update_payment_status(submission, {"zgw_api_group": self.zgw_group})
 
-        patch_zaak_body = m.request_history[-1].json()
+        patch_zaak_body = m.last_request.json()
         self.assertEqual(patch_zaak_body["betalingsindicatie"], "geheel")
         self.assertEqual(
             patch_zaak_body["laatsteBetaaldatum"], "2021-01-01T10:00:00+00:00"
@@ -1013,6 +1113,7 @@ class ZGWBackendTests(TestCase):
             [
                 {
                     "key": "field1",
+                    "type": "file",
                     "registration": {
                         "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
                         "bronorganisatie": "100000009",
@@ -1022,6 +1123,7 @@ class ZGWBackendTests(TestCase):
                 },
                 {
                     "key": "field2",
+                    "type": "file",
                     "registration": {
                         "informatieobjecttype": "",
                         "bronorganisatie": "",
@@ -1030,11 +1132,7 @@ class ZGWBackendTests(TestCase):
                     },
                 },
             ],
-            submitted_data={
-                "voornaam": "Foo",
-            },
         )
-
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -1042,7 +1140,6 @@ class ZGWBackendTests(TestCase):
             organisatie_rsin="000000000",
             zaak_vertrouwelijkheidaanduiding="openbaar",
         )
-
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment1.jpg",
@@ -1055,92 +1152,97 @@ class ZGWBackendTests(TestCase):
             form_key="field2",
             _component_configuration_path="components.1",
         )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        document_create_attachment1 = m.request_history[-4]
-        document_create_attachment2 = m.request_history[-2]
+        self.assertEqual(len(m.request_history), 11)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment1_document,
+            relate_attachment1_document,
+            create_attachment2_document,
+            relate_attachment2_document,
+        ) = m.request_history
 
-        # Case 1: override fields
+        with self.subTest("Attachment 1: override fields"):
+            # Verify attachments
+            document_create_attachment1_body = create_attachment1_document.json()
+            self.assertEqual(create_attachment1_document.method, "POST")
+            self.assertEqual(
+                create_attachment1_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
 
-        # Verify attachments
-        document_create_attachment1_body = document_create_attachment1.json()
-        self.assertEqual(document_create_attachment1.method, "POST")
-        self.assertEqual(
-            document_create_attachment1.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
+            # Use override fields
+            self.assertEqual(
+                document_create_attachment1_body["bestandsnaam"], "attachment1.jpg"
+            )
+            self.assertEqual(
+                document_create_attachment1_body["informatieobjecttype"],
+                "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+            )
+            self.assertEqual(
+                document_create_attachment1_body["bronorganisatie"],
+                "100000009",
+            )
+            self.assertEqual(
+                document_create_attachment1_body["vertrouwelijkheidaanduiding"],
+                "zeer_geheim",
+            )
+            self.assertEqual(
+                document_create_attachment1_body["titel"],
+                "TITEL",
+            )
 
-        # Use override fields
-        self.assertEqual(
-            document_create_attachment1_body["bestandsnaam"], "attachment1.jpg"
-        )
-        self.assertEqual(
-            document_create_attachment1_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
-        )
-        self.assertEqual(
-            document_create_attachment1_body["bronorganisatie"],
-            "100000009",
-        )
-        self.assertEqual(
-            document_create_attachment1_body["vertrouwelijkheidaanduiding"],
-            "zeer_geheim",
-        )
-        self.assertEqual(
-            document_create_attachment1_body["titel"],
-            "TITEL",
-        )
-
-        # Case 2: default field values
-
-        # Verify attachments
-        document_create_attachment2_body = document_create_attachment2.json()
-        self.assertEqual(document_create_attachment2.method, "POST")
-        self.assertEqual(
-            document_create_attachment2.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        # Use default IOType
-        self.assertEqual(
-            document_create_attachment2_body["bestandsnaam"], "attachment2.jpg"
-        )
-        self.assertEqual(
-            document_create_attachment2_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-        )
-        self.assertEqual(
-            document_create_attachment2_body["bronorganisatie"],
-            "000000000",
-        )
-        # Sentry 334882 - "" is not a valid choice, validation error from Documenten API.
-        # This is because you either need to *not* specify the key, or provide a valid value.
-        self.assertNotIn(
-            "vertrouwelijkheidaanduiding", document_create_attachment2_body
-        )
-        # if no title is explicitly provided, the file name should be inserted
-        self.assertEqual(document_create_attachment2_body["titel"], "attachment2.jpg")
+        with self.subTest("Attachment 2: defaults values"):
+            # Verify attachments
+            document_create_attachment2_body = create_attachment2_document.json()
+            self.assertEqual(create_attachment2_document.method, "POST")
+            self.assertEqual(
+                create_attachment2_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            # Use default IOType
+            self.assertEqual(
+                document_create_attachment2_body["bestandsnaam"], "attachment2.jpg"
+            )
+            self.assertEqual(
+                document_create_attachment2_body["informatieobjecttype"],
+                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            )
+            self.assertEqual(
+                document_create_attachment2_body["bronorganisatie"],
+                "000000000",
+            )
+            # Sentry 334882 - "" is not a valid choice, validation error from Documenten API.
+            # This is because you either need to *not* specify the key, or provide a valid value.
+            self.assertNotIn(
+                "vertrouwelijkheidaanduiding", document_create_attachment2_body
+            )
+            # if no title is explicitly provided, the file name should be inserted
+            self.assertEqual(
+                document_create_attachment2_body["titel"], "attachment2.jpg"
+            )
 
     def test_zgw_backend_default_author(self, m):
         """Assert that the default values for the ZGW API configuration are inserted
 
         * default author: "Aanvrager"
         """
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                },
-            ],
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step__submission__completed_not_preregistered=True,
+            submission_step__submission__with_report=True,
         )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-        )
+        submission = attachment.submission_step.submission
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
@@ -1151,49 +1253,55 @@ class ZGWBackendTests(TestCase):
         plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        # zaak
-        create_zaak = m.request_history[1]
-        create_zaak_body = create_zaak.json()
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
 
-        # make sure we have the right request
-        self.assertEqual(create_zaak.method, "POST")
-        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+        with self.subTest("Create zaak call"):
+            create_zaak_body = create_zaak.json()
 
-        # check defaults
-        self.assertNotIn("vertrouwelijkheidaanduiding", create_zaak_body)
+            # make sure we have the right request
+            self.assertEqual(create_zaak.method, "POST")
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
 
-        # eio
-        create_eio = m.request_history[3]
-        create_eio_body = create_eio.json()
+            # check defaults
+            self.assertNotIn("vertrouwelijkheidaanduiding", create_zaak_body)
 
-        # make sure we have the right request
-        self.assertEqual(create_zaak.method, "POST")
-        self.assertEqual(
-            create_eio.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
+        with self.subTest("Create summary PDF document"):
+            create_eio_body = create_pdf_document.json()
 
-        # check defaults
-        self.assertNotIn("vertrouwelijkheidaanduiding", create_eio_body)
-        self.assertEqual(create_eio_body["auteur"], "Aanvrager")
+            # make sure we have the right request
+            self.assertEqual(create_zaak.method, "POST")
+            self.assertEqual(
+                create_pdf_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
 
-        # attachment
-        create_attachment = m.request_history[10]
-        create_attachment_body = create_attachment.json()
+            # check defaults
+            self.assertNotIn("vertrouwelijkheidaanduiding", create_eio_body)
+            self.assertEqual(create_eio_body["auteur"], "Aanvrager")
 
-        # make sure we have the right request
-        self.assertEqual(create_attachment.method, "POST")
-        self.assertEqual(
-            create_attachment.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
+        with self.subTest("Create attachment document"):
+            create_attachment_body = create_attachment_document.json()
 
-        # check defaults
-        self.assertEqual(
-            create_attachment.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-        )
-        self.assertEqual(create_attachment_body["auteur"], "Aanvrager")
+            # make sure we have the right request
+            self.assertEqual(create_attachment_document.method, "POST")
+            self.assertEqual(
+                create_attachment_document.url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            # check defaults
+            self.assertNotIn("vertrouwelijkheidaanduiding", create_eio_body)
+            self.assertEqual(create_attachment_body["auteur"], "Aanvrager")
 
     def test_zgw_backend_defaults_empty_string(self, m):
         """Assert that empty strings for new fields are overriden with defaults
@@ -1201,47 +1309,46 @@ class ZGWBackendTests(TestCase):
         This test ensures that old DB entries won't have an empty string as the value
         of newly added fields like `auteur`.
         """
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                },
-            ],
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step__submission__completed_not_preregistered=True,
+            submission_step__submission__with_report=True,
+            file_name="attachment1.jpg",
+            form_key="field1",
         )
+        submission = attachment.submission_step.submission
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             auteur="",
         )
-
-        SubmissionFileAttachmentFactory.create(
-            submission_step=SubmissionStep.objects.first(),
-            file_name="attachment1.jpg",
-            form_key="field1",
-        )
-
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
         plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        document_create_attachment = m.request_history[-2]
-        document_create_attachment_body = document_create_attachment.json()
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
 
+        document_create_attachment_body = create_attachment_document.json()
         self.assertEqual(document_create_attachment_body["auteur"], "Aanvrager")
 
     @tag("sentry-334882")
     def test_zgw_backend_unspecified_zaakvertrouwelijkheidaanduiding(self, m):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "handelsnaam",
-                    "type": "textfield",
-                },
-            ],
+        submission = SubmissionFactory.create(
+            completed_not_preregistered=True,
+            with_report=True,
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -1250,7 +1357,6 @@ class ZGWBackendTests(TestCase):
             auteur="",
             zaak_vertrouwelijkheidaanduiding="",
         )
-
         self.install_mocks(m)
         plugin = ZGWRegistration("zgw")
 
@@ -1263,7 +1369,6 @@ class ZGWBackendTests(TestCase):
         self.assertNotIn("vertrouwelijkheidaanduiding", body)
 
     def test_zgw_backend_has_reference_after_pre_submission(self, m):
-        mock_service_oas_get(m, "https://zaken.nl/api/v1/", "zaken")
         m.post(
             "https://zaken.nl/api/v1/zaken",
             status_code=201,
@@ -1275,20 +1380,16 @@ class ZGWBackendTests(TestCase):
                 identificatie="ZAAK-OF-TEST",
             ),
         )
-
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={
-                "zgw_api_group": self.zgw_group.pk,
-            },
+            form__registration_backend_options={"zgw_api_group": self.zgw_group.pk},
             completed_not_preregistered=True,
         )
-
-        self.assertEqual(submission.public_registration_reference, "")
+        assert submission.public_registration_reference == ""
 
         pre_registration(submission.id)
-        submission.refresh_from_db()
 
+        submission.refresh_from_db()
         self.assertEqual(submission.public_registration_reference, "ZAAK-OF-TEST")
 
 
@@ -1309,11 +1410,8 @@ class PartialRegistrationFailureTests(TestCase):
 
         zgw_api_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
-            zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
-            drc_service__oas="https://documenten.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
-            ztc_service__oas="https://catalogus.nl/api/v1/schema/openapi.yaml",
         )
 
         # set up a simple form to track the partial result storing state
@@ -1347,22 +1445,11 @@ class PartialRegistrationFailureTests(TestCase):
 
     def setUp(self):
         super().setUp()
-        # reset cache to keep request_history indexes consistent
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)
 
         self.requests_mock = requests_mock.Mocker()
         self.requests_mock.start()
         self.addCleanup(self.requests_mock.stop)
         self.addCleanup(self.submission.refresh_from_db)
-
-        mock_service_oas_get(self.requests_mock, "https://zaken.nl/api/v1/", "zaken")
-        mock_service_oas_get(
-            self.requests_mock, "https://documenten.nl/api/v1/", "documenten"
-        )
-        mock_service_oas_get(
-            self.requests_mock, "https://catalogus.nl/api/v1/", "catalogi"
-        )
 
     def test_failure_after_zaak_creation(self):
         self.requests_mock.post(
@@ -1386,6 +1473,7 @@ class PartialRegistrationFailureTests(TestCase):
             register_submission(self.submission.id)
 
             self.submission.refresh_from_db()
+            assert self.submission.registration_result
             self.assertEqual(
                 self.submission.registration_status, RegistrationStatuses.failed
             )
@@ -1410,20 +1498,23 @@ class PartialRegistrationFailureTests(TestCase):
             self.assertIn("traceback", self.submission.registration_result)
 
             history = self.requests_mock.request_history
-            # 1. fetch zaken API schema
-            # 2. create zaak call
-            # 3. fetch documenten API schema
-            # 4. create report document call (fails)
-            # 5. create report document call (fails)
-            self.assertEqual(len(history), 5)
+            # 1. create zaak call
+            # 2. create report document call (fails)
+            # 3. create report document call (fails)
+            self.assertEqual(len(history), 3)
+            (
+                create_zaak,
+                create_pdf_document_attempt1,
+                create_pdf_document_attempt2,
+            ) = history
 
-            self.assertEqual(history[1].url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
             self.assertEqual(
-                history[3].url,
+                create_pdf_document_attempt1.url,
                 "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             )
             self.assertEqual(
-                history[4].url,
+                create_pdf_document_attempt2.url,
                 "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             )
 
@@ -1546,6 +1637,7 @@ class PartialRegistrationFailureTests(TestCase):
             register_submission(self.submission.id)
 
             self.submission.refresh_from_db()
+            assert self.submission.registration_result
             self.assertEqual(
                 self.submission.registration_status, RegistrationStatuses.failed
             )
@@ -1615,38 +1707,50 @@ class PartialRegistrationFailureTests(TestCase):
             self.assertIn("traceback", self.submission.registration_result)
 
             history = self.requests_mock.request_history
-            # 1. fetch zaken API schema
-            # 2. create zaak call
-            # 3. fetch documents API schema
-            # 4. create report document call
-            # 5. relate zaak & report document
-            # 6. fetch catalogi API schema
-            # 7. get roltypen
-            # 8. create rol
-            # 9. get statustypen
-            # 10. create status
-            # 11. create attachment document
-            # 12. relate attachment document (fails)
-            # 13. relate attachment document (still fails)
-            self.assertEqual(len(history), 13)
+            # 1. create zaak call
+            # 2. create report document call
+            # 3. relate zaak & report document
+            # 4. get roltypen
+            # 5. create rol
+            # 6. get statustypen
+            # 7. create status
+            # 8. create attachment document
+            # 9. relate attachment document (fails)
+            # 10. relate attachment document (still fails)
+            self.assertEqual(len(history), 10)
+            (
+                create_zaak,
+                create_pdf_document,
+                relate_pdf_document,
+                get_roltypen,
+                create_rol,
+                get_statustypen,
+                create_status,
+                create_attachment_document,
+                relate_attachment_document_attempt1,
+                relate_attachment_document_attempt2,
+            ) = history
 
-            self.assertEqual(history[1].url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
             self.assertEqual(
-                history[3].url,
+                create_pdf_document.url,
                 "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             )
             self.assertEqual(
-                history[4].url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
+                relate_pdf_document.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
             )
-            self.assertEqual(history[7].url, "https://zaken.nl/api/v1/rollen")
-            self.assertEqual(history[9].url, "https://zaken.nl/api/v1/statussen")
+            self.assertEqual(create_rol.url, "https://zaken.nl/api/v1/rollen")
+            self.assertEqual(create_status.url, "https://zaken.nl/api/v1/statussen")
             self.assertEqual(
-                history[10].url,
+                create_attachment_document.url,
                 "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             )
             self.assertEqual(
-                history[11].url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
+                relate_attachment_document_attempt1.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
             )
             self.assertEqual(
-                history[12].url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
+                relate_attachment_document_attempt2.url,
+                "https://zaken.nl/api/v1/zaakinformatieobjecten",
             )

@@ -1,6 +1,5 @@
 import json
 import sys
-from datetime import date
 from typing import Any, Dict, NoReturn
 
 from django.conf import settings
@@ -9,8 +8,8 @@ from django.template.defaultfilters import filesizeformat
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from zgw_consumers.client import ZGWClient
-
+from openforms.contrib.zgw.clients import DocumentenClient
+from openforms.contrib.zgw.clients.utils import get_today
 from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_csv_document,
@@ -29,13 +28,11 @@ from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .checks import check_config
+from .client import get_documents_client, get_objects_client
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 
-
-def get_drc() -> ZGWClient:
-    config = ObjectsAPIConfig.get_solo()
-    return config.drc_service.build_client()
+PLUGIN_IDENTIFIER = "objects_api"
 
 
 def _point_coordinate(value):
@@ -56,7 +53,7 @@ def build_options(plugin_options: dict, key_mapping: dict) -> dict:
     return options
 
 
-@register("objects_api")
+@register(PLUGIN_IDENTIFIER)
 class ObjectsAPIRegistration(BasePlugin):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
@@ -78,89 +75,71 @@ class ObjectsAPIRegistration(BasePlugin):
         accessible from here. For example, 'vertrouwelijkheidaanduiding' must be named
         'doc_vertrouwelijkheidaanduiding' because this is what the ZGW service functions
         use."""
-
         config = ObjectsAPIConfig.get_solo()
+        assert isinstance(config, ObjectsAPIConfig)
         config.apply_defaults_to(options)
 
-        objects_client = config.objects_service.build_client()
+        # Prepare all documents to relate to the Objects API record
+        with get_documents_client() as documents_client:
 
-        options["auteur"] = options.get("auteur", "Aanvrager")
-
-        language_code_2b = to_iso639_2b(submission.language_code)
-
-        submission_report = SubmissionReport.objects.get(submission=submission)
-        submission_report_options = build_options(
-            options,
-            {
-                "informatieobjecttype": "informatieobjecttype_submission_report",
-                "organisatie_rsin": "organisatie_rsin",
-                "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-            },
-        )
-        document = create_report_document(
-            submission.form.admin_name,
-            submission_report,
-            submission_report_options,
-            get_drc=get_drc,
-        )
-
-        # TODO turn attachments into dictionary when giving users more options then just urls.
-        attachments = []
-        for attachment in submission.attachments:
-            attachment_options = build_options(
+            # Create the document for the PDF summary
+            submission_report = SubmissionReport.objects.get(submission=submission)
+            submission_report_options = build_options(
                 options,
                 {
-                    "informatieobjecttype": "informatieobjecttype_attachment",  # Different IOT than for the report
+                    "informatieobjecttype": "informatieobjecttype_submission_report",
                     "organisatie_rsin": "organisatie_rsin",
                     "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
                 },
             )
 
-            component_overwrites = {
-                "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
-                "titel": attachment.titel,
-                "organisatie_rsin": attachment.bronorganisatie,
-                "informatieobjecttype": attachment.informatieobjecttype,
-            }
-
-            for key, value in component_overwrites.items():
-                if value:
-                    attachment_options[key] = value
-
-            attachment_document = create_attachment_document(
-                submission.form.admin_name,
-                attachment,
-                attachment_options,
-                get_drc=get_drc,
+            document = create_report_document(
+                client=documents_client,
+                name=submission.form.admin_name,
+                submission_report=submission_report,
+                options=submission_report_options,
             )
-            attachments.append(attachment_document["url"])
 
-        csv_url = ""
-        if (
-            options.get("upload_submission_csv", False)
-            and options["informatieobjecttype_submission_csv"]
-        ):
-            submission_csv_options = build_options(
-                options,
-                {
-                    "informatieobjecttype": "informatieobjecttype_submission_csv",
-                    "organisatie_rsin": "organisatie_rsin",
-                    "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-                    "auteur": "auteur",
-                },
-            )
-            submission_csv = create_submission_export(
-                Submission.objects.filter(pk=submission.pk).select_related("auth_info")
-            ).export("csv")
+            # Register the attachments
+            # TODO turn attachments into dictionary when giving users more options then
+            # just urls.
+            attachments = []
+            for attachment in submission.attachments:
+                attachment_options = build_options(
+                    options,
+                    {
+                        "informatieobjecttype": "informatieobjecttype_attachment",  # Different IOT than for the report
+                        "organisatie_rsin": "organisatie_rsin",
+                        "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
+                    },
+                )
 
-            submission_csv_document = create_csv_document(
-                f"{submission.form.admin_name} (csv)",
-                submission_csv,
-                submission_csv_options,
-                get_drc=get_drc,
-                language=language_code_2b,
-            )
-            csv_url = submission_csv_document["url"]
+                component_overwrites = {
+                    "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
+                    "titel": attachment.titel,
+                    "organisatie_rsin": attachment.bronorganisatie,
+                    "informatieobjecttype": attachment.informatieobjecttype,
+                }
+
+                for key, value in component_overwrites.items():
+                    if value:
+                        attachment_options[key] = value
+
+                attachment_document = create_attachment_document(
+                    client=documents_client,
+                    name=submission.form.admin_name,
+                    submission_attachment=attachment,
+                    options=attachment_options,
+                )
+                attachments.append(attachment_document["url"])
+
+            # Create the CSV submission export, if requested.
+            # If no CSV is being uploaded, then `assert csv_url == ""` applies.
+            csv_url = register_submission_csv(submission, options, documents_client)
+
+        # Prepare the submission data for sending it to the Objects API. This requires
+        # rendering the configured JSON template and running some basic checks for
+        # security and validity, before throwing it over the fence to the Objects API.
 
         context = {
             "_submission": submission,
@@ -208,15 +187,19 @@ class ObjectsAPIRegistration(BasePlugin):
             "record": {
                 "typeVersion": options["objecttype_version"],
                 "data": record_data,
-                "startAt": date.today().isoformat(),
+                "startAt": get_today(),
             },
         }
         apply_data_mapping(
             submission, self.object_mapping, REGISTRATION_ATTRIBUTE, object_data
         )
 
-        created_object = objects_client.create("object", object_data)
-        return created_object
+        # Finally, send it over the wire to the Objects API
+        with get_objects_client() as objects_client:
+            response = objects_client.post("objects", json=object_data)
+            response.raise_for_status()
+
+        return response.json()
 
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Object API plugin does not emit a reference")
@@ -243,3 +226,38 @@ class ObjectsAPIRegistration(BasePlugin):
         return [
             f"{prefix}.objects_api.json_tags",
         ]
+
+
+def register_submission_csv(
+    submission: Submission,
+    options: dict,
+    documents_client: DocumentenClient,
+) -> str:
+    if not options.get("upload_submission_csv", False):
+        return ""
+
+    if not options["informatieobjecttype_submission_csv"]:
+        return ""
+
+    submission_csv_options = build_options(
+        options,
+        {
+            "informatieobjecttype": "informatieobjecttype_submission_csv",
+            "organisatie_rsin": "organisatie_rsin",
+            "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
+            "auteur": "auteur",
+        },
+    )
+    qs = Submission.objects.filter(pk=submission.pk).select_related("auth_info")
+    submission_csv = create_submission_export(qs).export("csv")  # type: ignore
+
+    language_code_2b = to_iso639_2b(submission.language_code)
+    submission_csv_document = create_csv_document(
+        client=documents_client,
+        name=f"{submission.form.admin_name} (csv)",
+        csv_data=submission_csv,
+        options=submission_csv_options,
+        language=language_code_2b,
+    )
+
+    return submission_csv_document["url"]

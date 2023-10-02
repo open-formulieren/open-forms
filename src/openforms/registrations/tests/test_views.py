@@ -5,9 +5,7 @@ from furl import furl
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
@@ -25,29 +23,16 @@ class GetInformatieObjecttypesView(APITestCase):
 
         cls.zgw_group1 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-1.nl/api/v1/",
-            zrc_service__oas="https://zaken-1.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten-1.nl/api/v1/",
-            drc_service__oas="https://documenten-1.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus-1.nl/api/v1/",
-            ztc_service__oas="https://catalogus-1.nl/api/v1/schema/openapi.yaml",
         )
         cls.zgw_group2 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-2.nl/api/v1/",
-            zrc_service__oas="https://zaken-2.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten-2.nl/api/v1/",
-            drc_service__oas="https://documenten-2.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus-2.nl/api/v1/",
-            ztc_service__oas="https://catalogus-2.nl/api/v1/schema/openapi.yaml",
         )
 
-    def setUp(self):
-        super().setUp()
-        # reset cache to keep request_history indexes consistent
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)
-
     def install_mocks(self, m):
-        mock_service_oas_get(m, "https://catalogus-1.nl/api/v1/", "catalogi")
         informatieobjecttypen1 = [
             generate_oas_component(
                 "catalogi",
@@ -91,7 +76,6 @@ class GetInformatieObjecttypesView(APITestCase):
             },
         )
 
-        mock_service_oas_get(m, "https://catalogus-2.nl/api/v1/", "catalogi")
         informatieobjecttypen2 = [
             generate_oas_component(
                 "catalogi",

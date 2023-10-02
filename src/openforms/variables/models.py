@@ -1,4 +1,4 @@
-from urllib.parse import quote_plus
+from urllib.parse import quote
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -145,7 +145,7 @@ class ServiceFetchConfiguration(models.Model):
         # this catches faults requests doesn't: https://github.com/psf/requests/issues/6359
         HeaderValidator()(headers)
 
-        escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
+        escaped_for_path = {k: quote(str(v), safe="") for k, v in context.items()}
 
         query_params = {
             param: [
@@ -161,20 +161,19 @@ class ServiceFetchConfiguration(models.Model):
             for param, values in (self.query_params or {}).items()
         }
 
-        request_args = dict(
-            path=render_from_string(
+        # Interface of :meth:`requests.Sesssion.request`
+        request_args = {
+            "method": self.method,
+            # client class automatically adds this to the API root
+            "url": render_from_string(
                 self.path,
                 escaped_for_path,
                 backend=sandbox_backend,
                 disable_autoescape=True,
             ),
-            params=query_params,
-            method=self.method,
-            headers=headers,
-            # XXX operationId is a required parameter to zds-client...
-            # Maybe offer as alternative to path and method?
-            operation="",
-        )
+            "params": query_params,
+            "headers": headers,
+        }
         if self.body is not None:
             request_args["json"] = self.body
         return request_args

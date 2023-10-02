@@ -1,11 +1,13 @@
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-from zgw_consumers.client import ZGWClient
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.registrations.contrib.zgw_apis.client import get_catalogi_client
 from openforms.registrations.contrib.zgw_apis.models import ZGWApiGroupConfig, ZgwConfig
+from zgw_consumers_ext.api_client import build_client
 
 from ..registry import register
 
@@ -35,17 +37,19 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
             fields["registration_backend"].choices = register.get_choices()
         return fields
 
-    def get_ztc_client(self) -> ZGWClient | None:
+    def get_ztc_client(self) -> CatalogiClient | None:
         registration_backend = self.validated_data.get("registration_backend")
-        zgw_api_group = self.validated_data.get("zgw_api_group")
+        zgw_api_group: ZGWApiGroupConfig = self.validated_data.get("zgw_api_group")
 
         if registration_backend == "zgw-create-zaak" and zgw_api_group is not None:
-            return zgw_api_group.ztc_service.build_client()
+            return get_catalogi_client(zgw_api_group)
         elif registration_backend == "objects_api":
             config = ObjectsAPIConfig.get_solo()
-            if config.catalogi_service:
-                return config.catalogi_service.build_client()
+            assert isinstance(config, ObjectsAPIConfig)
+            if service := config.catalogi_service:
+                return build_client(service, client_factory=CatalogiClient)
 
         config = ZgwConfig.get_solo()
-        if config.default_zgw_api_group:
-            return config.default_zgw_api_group.ztc_service.build_client()
+        assert isinstance(config, ZgwConfig)
+        if group := config.default_zgw_api_group:
+            return get_catalogi_client(group)

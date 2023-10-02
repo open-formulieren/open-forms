@@ -3,7 +3,6 @@ from unittest.mock import patch
 from django.test import RequestFactory, TestCase, TransactionTestCase
 
 import requests_mock
-from zgw_consumers.test import mock_service_oas_get
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
@@ -196,20 +195,12 @@ class PrefillVariablesTransactionTests(TransactionTestCase):
     @requests_mock.Mocker()
     @patch("openforms.contrib.haal_centraal.models.HaalCentraalConfig.get_solo")
     def test_no_success_message_on_failure(self, m, m_solo):
-        service = ServiceFactory.build(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        mock_service_oas_get(
-            m, url=service.api_root, oas_url=service.oas, service="personen"
-        )
+        service = ServiceFactory.build(api_root="https://personen/api/")
         m.get(
             "https://personen/api/ingeschrevenpersonen/999990676",
             status_code=404,
         )
-
         m_solo.return_value = HaalCentraalConfig(brp_personen_service=service)
-
         form_step = FormStepFactory.create(
             form_definition__configuration={
                 "components": [

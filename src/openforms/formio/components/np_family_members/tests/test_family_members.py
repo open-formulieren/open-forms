@@ -7,7 +7,6 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 import requests_mock
-from zds_client.oas import schema_fetcher
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
@@ -28,13 +27,6 @@ TEST_FILES = Path(__file__).parent.resolve() / "responses"
 
 
 class FamilyMembersCustomFieldTypeTest(TestCase):
-    def setUp(self):
-        super().setUp()
-
-        # ensure the schema cache is cleared before and after each test
-        schema_fetcher.cache.clear()
-        self.addCleanup(schema_fetcher.cache.clear)
-
     @patch(
         "openforms.formio.components.custom.get_np_children_haal_centraal",
         return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],

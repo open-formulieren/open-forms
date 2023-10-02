@@ -141,3 +141,5 @@ class ObjectsAPIConfig(SingletonModel):
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
         if not options.get("content_json", "").strip():
             options["content_json"] = self.content_json
+
+        options.setdefault("auteur", "Aanvrager")
