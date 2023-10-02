@@ -587,6 +587,16 @@ class GlobalConfiguration(SingletonModel):
         validators=[MaxValueValidator(60)],
     )
 
+    recipients_email_digest = ArrayField(
+        models.EmailField(),
+        verbose_name=_("recipients email digest"),
+        help_text=_(
+            "The email addresses that should receive a daily report of items requiring attention."
+        ),
+        blank=True,
+        default=list,
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 

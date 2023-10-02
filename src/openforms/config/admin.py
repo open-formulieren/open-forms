@@ -49,6 +49,7 @@ class GlobalConfigurationAdmin(
                 ),
             },
         ),
+        (_("General Email settings"), {"fields": ("recipients_email_digest",)}),
         (
             _("Button labels"),
             {
