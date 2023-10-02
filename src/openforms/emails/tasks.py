@@ -23,16 +23,16 @@ def send_email_digest() -> None:
     period_start = timezone.now() - timedelta(days=1)
 
     logs = TimelineLogProxy.objects.filter(
-        template="logging/events/email_status_change.txt",
         timestamp__gt=period_start,
         extra_data__status=Message.STATUS_FAILED,
+        extra_data__include_in_daily_digest=True,
     ).distinct("content_type", "extra_data__status", "extra_data__event")
 
-    if not logs.count():
+    if not logs:
         return
 
     content = render_to_string(
-        "emails/digest.html",
+        "emails/admin_digest.html",
         {
             "logs": [
                 {

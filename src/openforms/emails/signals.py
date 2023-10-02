@@ -46,4 +46,4 @@ def yubin_messages_status_change_handler(signal, sender, instance, created, **kw
         )
         return
 
-    logevent.email_status_change(submission, event, instance.status, status_label)
+    logevent.email_status_change(submission, event, instance.status, status_label, True)

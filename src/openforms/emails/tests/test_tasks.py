@@ -2,6 +2,7 @@ from datetime import datetime
 from textwrap import dedent
 from unittest.mock import patch
 
+from django.core import mail
 from django.test import TestCase
 
 from django_yubin.models import Message
@@ -23,13 +24,20 @@ class EmailDigestTaskTest(TestCase):
             TimelineLogProxyFactory.create(
                 template="logging/events/email_status_change.txt",
                 content_object=submission,
-                extra_data={"status": Message.STATUS_FAILED, "event": "registration"},
+                extra_data={
+                    "status": Message.STATUS_FAILED,
+                    "event": "registration",
+                    "include_in_daily_digest": True,
+                },
             )
             # Successfully sent email
             TimelineLogProxyFactory.create(
                 template="logging/events/email_status_change.txt",
                 content_object=submission,
-                extra_data={"status": Message.STATUS_SENT},
+                extra_data={
+                    "status": Message.STATUS_SENT,
+                    "include_in_daily_digest": True,
+                },
             )
 
         with freeze_time("2023-01-01T12:30:00+01:00"):
@@ -38,7 +46,10 @@ class EmailDigestTaskTest(TestCase):
                 template="logging/events/email_status_change.txt",
                 content_object=submission,
                 timestamp=datetime(2023, 1, 1, 12, 30),
-                extra_data={"status": Message.STATUS_FAILED},
+                extra_data={
+                    "status": Message.STATUS_FAILED,
+                    "include_in_daily_digest": True,
+                },
             )
 
         with (
@@ -82,7 +93,11 @@ class EmailDigestTaskTest(TestCase):
             TimelineLogProxyFactory.create(
                 template="logging/events/email_status_change.txt",
                 content_object=submission,
-                extra_data={"status": Message.STATUS_FAILED, "event": "registration"},
+                extra_data={
+                    "status": Message.STATUS_FAILED,
+                    "event": "registration",
+                    "include_in_daily_digest": True,
+                },
             )
         with freeze_time("2023-01-02T13:30:00+01:00"):
             TimelineLogProxyFactory.create(
@@ -91,6 +106,7 @@ class EmailDigestTaskTest(TestCase):
                 extra_data={
                     "status": Message.STATUS_FAILED,
                     "event": "registration",
+                    "include_in_daily_digest": True,
                 },
             )
 
@@ -138,7 +154,11 @@ class EmailDigestTaskTest(TestCase):
             TimelineLogProxyFactory.create(
                 template="logging/events/email_status_change.txt",
                 content_object=submission,
-                extra_data={"status": Message.STATUS_FAILED, "event": "registration"},
+                extra_data={
+                    "status": Message.STATUS_FAILED,
+                    "event": "registration",
+                    "include_in_daily_digest": True,
+                },
             )
 
         with (
@@ -147,8 +167,7 @@ class EmailDigestTaskTest(TestCase):
                 "openforms.emails.tasks.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(recipients_email_digest=[]),
             ),
-            patch("openforms.emails.tasks.send_mail_html") as patch_email,
         ):
             send_email_digest()
 
-        patch_email.assert_not_called()
+        self.assertEqual(0, len(mail.outbox))

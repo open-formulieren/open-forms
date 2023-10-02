@@ -688,7 +688,11 @@ def form_deactivated(form: "Form"):
 
 # - - -
 def email_status_change(
-    submission: "Submission", event: str, status: int, status_label: str
+    submission: "Submission",
+    event: str,
+    status: int,
+    status_label: str,
+    include_in_daily_digest: bool,
 ):
     _create_log(
         submission,
@@ -697,5 +701,6 @@ def email_status_change(
             "event": event,
             "status": status,
             "status_label": status_label,
+            "include_in_daily_digest": include_in_daily_digest,
         },
     )

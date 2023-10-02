@@ -591,7 +591,7 @@ class GlobalConfiguration(SingletonModel):
         models.EmailField(),
         verbose_name=_("recipients email digest"),
         help_text=_(
-            "The email addresses that should receive a daily report of any email sending failures."
+            "The email addresses that should receive a daily report of items requiring attention."
         ),
         blank=True,
         default=list,

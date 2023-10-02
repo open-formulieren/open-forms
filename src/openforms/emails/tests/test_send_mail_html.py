@@ -159,6 +159,7 @@ class HTMLEmailLoggingTest(TestCase):
                 "status": Message.STATUS_QUEUED,
                 "status_label": "Queued",
                 "log_event": "email_status_change",
+                "include_in_daily_digest": True,
             },
         )
         self.assertEqual(
@@ -168,6 +169,7 @@ class HTMLEmailLoggingTest(TestCase):
                 "status": Message.STATUS_IN_PROCESS,
                 "status_label": "In process",
                 "log_event": "email_status_change",
+                "include_in_daily_digest": True,
             },
         )
         self.assertEqual(
@@ -177,6 +179,7 @@ class HTMLEmailLoggingTest(TestCase):
                 "status": Message.STATUS_FAILED,
                 "status_label": "Failed",
                 "log_event": "email_status_change",
+                "include_in_daily_digest": True,
             },
         )
 

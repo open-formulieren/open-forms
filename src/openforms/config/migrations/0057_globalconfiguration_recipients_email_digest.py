@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 base_field=models.EmailField(max_length=254),
                 blank=True,
                 default=list,
-                help_text="The email addresses that should receive a daily report of any email sending failures.",
+                help_text="The email addresses that should receive a daily report of items requiring attention.",
                 size=None,
                 verbose_name="recipients email digest",
             ),
