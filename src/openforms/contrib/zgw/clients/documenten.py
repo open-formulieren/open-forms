@@ -30,7 +30,7 @@ class DocumentenClient(NLXClient):
         description: str = "",
         vertrouwelijkheidaanduiding: str = "",
     ):
-        assert author, "athor must be a non-empty string"
+        assert author, "author must be a non-empty string"
         today = get_today()
         base64_body = b64encode(content.read()).decode()
         data = {
