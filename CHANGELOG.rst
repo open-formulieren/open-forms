@@ -25,10 +25,38 @@ If you run into any errors, then please check your certificate configuration, AP
 and validate that the API root does *not* include the ``v1/`` suffix. An example of a
 correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/``.
 
-2.4.0-alpha.0 (2023-09-??)
+2.4.0-alpha.0 (2023-10-02)
 ==========================
 
-.. note:: These release notes are in development!
+Upgrade procedure
+-----------------
+
+.. warning::
+
+    Ensure you upgrade to Open Forms 2.3.0 before upgrading to the 2.4 release series.
+
+
+Detailed changes
+----------------
+
+**New features**
+
+* [#3185] Added Haal Centraal: HR prefill plugin to official extensions build.
+* [#3051] You can now schedule activation/deactivation of forms.
+* [#1884] Added more fine-grained custom errors for time field components.
+* More fields irrelevant to appointment forms are now hidden in the form designer.
+* [#3456] Implemented multi-product and multi-customer appointments for QMatic.
+* [#3413] Improved UX by including direct hyperlinks to the form in co-sign emails (
+  admins can disable this behaviour).
+* [#3328] Qmatic appointments plugin now support mTLS.
+* [#3481] JSON-data sent to the Objects API can now optionally be HTML-escaped for when
+  downstream systems fail to do so.
+* [#2688] Service-fetch response data is now cached & timeouts are configurable on the
+  configuration.
+* [#3443] You can now provide custom validation error messages for date fields
+* [#3402] Added tracing information to outgoing emails so we can report on failures.
+* [#3402] Added email digest to report (potential) observed problems, like email
+  delivery failures.
 
 **Bugfixes**
 
@@ -45,6 +73,41 @@ correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/`
 * [#3470] Fixed form names with slashes breaking submission generation.
 * [#3437] Improved robustness of outgoing request logging solution.
 * Included latest SDK bugfix release.
+* [#3393] Fixed duplicated form field label in eHerkenning configuration.
+* [#3375] Fixed translation warnings being shown for optional empty fields.
+* [#3187] Fixed UI displaying re-usable form definitions that are already in the form.
+* [#3422] Fixed logic tab crashes when variables/fields are deleted and added a generic
+  error boundary with troubleshooting information.
+* [#3308] Fixed new installations having all-English default messages for translatable
+  default content.
+* [#3492] Fixed help text referring to old context variable.
+* [#3437] Made request logging solution more robust to prevent weird crashes.
+* [#3279] Added robustness to admin pages making requests to external hosts.
+
+**Project maintenance**
+
+* [#3190] Added end-to-end tests for DigiD and eHerkenning authentication flows with a
+  real broker.
+* Mentioned extension requirements file in docs.
+* [#3416] Refactored rendering of appointment data  in confirmation PDF.
+* [#3389] Stopped building test images, instead use symlinks or git submodules in your
+  (CI) pipeline.
+* Updated appointments documentation.
+* Moved service factory to more general purpose location.
+* [#3421] Updated local infrastructure for form exports and clarified language to manage
+  import expectations.
+* Updated version of internal experimental new formio-builder.
+* Prevent upgrades from < 2.3.0 to 2.4.
+* Squashed *a lot* of migrations.
+* Removed dead/obsolete "default BSN/KVK" configuration - no code used this anymore since
+  a while.
+* [#3328] Initial rework of API clients to generically support mTLS and other
+  connection parameters.
+* Fixed test cleanup for self-signed certs support, causing flaky tests.
+* Moved around a bunch of testing utilities to more appropriate directories.
+* [#3489] Refactored all API-client usage into common interface.
+* Fixed tests failing with dev-settings.
+* Bumped dependencies with security releases.
 
 2.3.2 (2023-09-29)
 ==================
