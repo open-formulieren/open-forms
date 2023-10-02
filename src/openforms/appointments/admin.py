@@ -9,7 +9,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from solo.admin import SingletonModelAdmin
 
-from openforms.utils.decorators import suppress_requests_errors
+from openforms.admin.decorators import suppress_requests_errors
 
 from .base import BasePlugin
 from .constants import AppointmentDetailsStatus

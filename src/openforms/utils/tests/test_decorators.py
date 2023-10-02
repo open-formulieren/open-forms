@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 import requests
 
 from openforms.accounts.models import User
-from openforms.utils.decorators import suppress_requests_errors
+from openforms.admin.decorators import suppress_requests_errors
 
 
 @suppress_requests_errors(User, fields=["first_name"])

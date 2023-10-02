@@ -3,7 +3,7 @@ from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 from zgw_consumers.admin import ListZaaktypenMixin
 
-from openforms.utils.decorators import suppress_requests_errors
+from openforms.admin.decorators import suppress_requests_errors
 
 from .models import ZGWApiGroupConfig, ZgwConfig
 
