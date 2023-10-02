@@ -18,6 +18,7 @@
     "stuf.StufService",
     "stuf_bg.StufBGConfig",
     "stuf_zds.StufZDSConfig",
+    "suwinet.SuwinetConfig",
     "upgrades.VersionInfo",
     "zgw_apis.ZGWApiGroupConfig",
     "zgw_apis.ZgwConfig"

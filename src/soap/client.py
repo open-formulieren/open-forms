@@ -21,9 +21,6 @@ def build_client(
     and configured on the session, which is then used as transport for the zeep client.
 
     Any additional kwargs are passed through to the :class:`zeep.Client` instantiation.
-
-    .. todo:: Incorporate `WS-Security <https://docs.python-zeep.org/en/master/wsse.html>`_
-       concepts (see Chris' PR for Suwinet).
     """
     session_factory = SessionFactory(service)
     session = SOAPSession.configure_from(session_factory)
@@ -31,8 +28,8 @@ def build_client(
         session=session,
         timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
     )
+    kwargs.setdefault("wsdl", service.url)
     client = client_factory(
-        service.url,
         transport=transport,
         wsse=service.get_wsse(),
         **kwargs,

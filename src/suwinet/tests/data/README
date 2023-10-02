@@ -1,0 +1,5 @@
+To (re-)record Suwinet cassettes you need to get a private key that's accepted by the gateway.
+Don't check it into the repo, but set SUWINET_CLIENT_KEY in your .env to its path!
+
+NB! Don't forget to decorate your TestCases with privates.test.temp_private_root(), the key material will get
+copied around.

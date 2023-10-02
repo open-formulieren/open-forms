@@ -30,12 +30,6 @@ def scrub_cookies(response: dict):
 class CreateAppointmentTests(OFVCRMixin, MockConfigMixin, TestCase):
     VCR_TEST_FILES = TEST_FILES
 
-    def _get_vcr_kwargs(self):
-        # Remove this function to decode gzip responses
-        kwargs = super()._get_vcr_kwargs()
-        kwargs["decode_compressed_response"] = False
-        return kwargs
-
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

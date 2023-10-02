@@ -3,6 +3,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
+from openforms.typing import JSONEncodable
 
 from .constants import IdentifierRoles
 
@@ -23,7 +24,7 @@ class BasePlugin(AbstractBasePlugin):
         submission: Submission,
         attributes: List[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, JSONEncodable]:
         """
         Given the requested attributes, look up the appropriate values and return them.
 

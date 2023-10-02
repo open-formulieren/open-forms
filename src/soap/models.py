@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from simple_certmanager.models import Certificate
-from typing_extensions import Never
 from zeep.wsse.signature import Signature
 from zeep.wsse.username import UsernameToken
 
@@ -27,8 +26,9 @@ class UnknownChoiceError(ValueError):
         )
 
 
-def _unreachable(arg: Never) -> None:
-    pass
+class _Signature(Signature):
+    def verify(self, envelope):
+        return envelope
 
 
 class SoapService(models.Model):
@@ -130,7 +130,7 @@ class SoapService(models.Model):
     def get_wsse(
         self,
     ) -> Signature | UsernameToken | tuple[UsernameToken, Signature] | None:
-        sig = lambda: Signature(
+        sig = lambda: _Signature(
             self.client_certificate.private_key.path,
             self.client_certificate.public_certificate.path,
         )
@@ -146,10 +146,5 @@ class SoapService(models.Model):
                 return basic()
             case "":
                 return None
-            case _:
-                raise UnknownChoiceError(
-                    instance=self,
-                    field_name="endpoint_security",
-                )
 
-        _unreachable(self.endpoint_security)
+        raise UnknownChoiceError(instance=self, field_name="endpoint_security")
