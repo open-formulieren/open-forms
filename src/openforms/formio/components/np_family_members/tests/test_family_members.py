@@ -19,7 +19,7 @@ from stuf.tests.factories import StufServiceFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
-from ..haal_centraal import get_np_children_haal_centraal
+from ..haal_centraal import get_np_family_members_haal_centraal
 from ..models import FamilyMembersTypeConfig
 from ..stuf_bg import get_np_children_stuf_bg
 
@@ -28,7 +28,7 @@ TEST_FILES = Path(__file__).parent.resolve() / "responses"
 
 class FamilyMembersCustomFieldTypeTest(TestCase):
     @patch(
-        "openforms.formio.components.custom.get_np_children_haal_centraal",
+        "openforms.formio.components.custom.get_np_family_members_haal_centraal",
         return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],
     )
     def test_get_values_for_custom_field(self, mock_get_np_children):
@@ -93,7 +93,9 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                 json=json_response,
             )
 
-            kids_choices = get_np_children_haal_centraal(bsn="111222333")
+            kids_choices = get_np_family_members_haal_centraal(
+                bsn="111222333", include_children=True, include_partner=False
+            )
 
             self.assertEqual(2, len(kids_choices))
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
