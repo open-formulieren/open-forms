@@ -1863,7 +1863,8 @@ class FormDesignerDuplicateKeyWarningTests(E2ETestCase):
 
             # Check if the warning message shows up as expected
             await expect(page.locator("css=.messagelist")).to_contain_text(
-                'Detected duplicate keys in configuration: "duplicate-key" (in FORM DEFINITION #1 > Duplicate Key, FORM DEFINITION #2 > Duplicate Key)'
+                "A key is duplicated: "
+                'duplicate-key: in "FORM DEFINITION #1" and "FORM DEFINITION #2"'
             )
 
             # Add step and open selectbox
@@ -1880,7 +1881,8 @@ class FormDesignerDuplicateKeyWarningTests(E2ETestCase):
 
             # Check if the warning message shows up as expected
             await expect(page.locator("css=.messagelist")).to_contain_text(
-                'Detected duplicate keys in configuration: "duplicate-key-2" (in FORM DEFINITION #1 > Duplicate Key 2, FORM DEFINITION #3 > Duplicate Key 2)'
+                "A key is duplicated: "
+                'duplicate-key-2: in "FORM DEFINITION #1" and "FORM DEFINITION #3"'
             )
 
             # Go back to the first form definition
@@ -1888,7 +1890,7 @@ class FormDesignerDuplicateKeyWarningTests(E2ETestCase):
 
             # Check if the warning message shows up as expected
             await expect(page.locator("css=.messagelist")).to_contain_text(
-                'Detected duplicate keys in configuration: "duplicate-key" (in FORM DEFINITION #1889 > '
-                'Duplicate Key, FORM DEFINITION #2 > Duplicate Key),  "duplicate-key-2" (in FORM '
-                "DEFINITION #1 > Duplicate Key 2, FORM DEFINITION #3 > Duplicate Key 2)"
+                "2 keys are duplicated: "
+                'duplicate-key: in "FORM DEFINITION #1" and "FORM DEFINITION #2"'
+                'duplicate-key-2: in "FORM DEFINITION #1" and "FORM DEFINITION #3"'
             )

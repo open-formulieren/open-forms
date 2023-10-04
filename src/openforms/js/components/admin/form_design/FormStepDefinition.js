@@ -105,39 +105,56 @@ const FormStepDefinition = ({
     }
   );
 
-  const duplicateKeys = getDuplicatedComponents(componentNamespace)
+  const duplicatedKeys = getDuplicatedComponents(componentNamespace)
     .filter(component =>
       configuration.components.some(configComponent => configComponent.key === component.key)
     )
     .map(component => {
       const componentLocations = getComponentLocations(formSteps, component.key);
-      const locations = componentLocations.map(location => {
-        return intl.formatMessage(
-          {
-            description: 'Duplicate Key warning location path',
-            defaultMessage: `{location} > {component}`,
-          },
-          {location: location.name, component: component.label}
-        );
-      });
+      const stepNames = componentLocations.map(step => `"${step.name}"`);
+      const numSteps = stepNames.length;
+      const tail = stepNames.pop();
+      const lead = stepNames.join(', ');
       return intl.formatMessage(
         {
-          description: 'Duplicate Key warning component to path',
-          defaultMessage: `"{component}" (in {locations})`,
+          description: 'Description of which key is duplicated in which steps.',
+          defaultMessage: `
+            <code>{componentKey}</code>: in
+            {numSteps, plural,
+              =1 {{tail}}
+              other {{lead} and {tail}}
+            }
+          `,
         },
-        {component: component.key, locations: locations.join(', ')}
+        {
+          code: bits => <code>{bits}</code>,
+          componentKey: component.key,
+          numSteps,
+          lead,
+          tail,
+        }
       );
     });
 
-  if (duplicateKeys.length > 0 && errors.length === 0)
+  if (duplicatedKeys.length > 0 && errors.length === 0)
     componentMessages.push({
       level: 'warning',
       message: (
         <FormattedMessage
           description="Warning message for duplicated keys"
-          defaultMessage={`Detected duplicate keys in configuration: {warning}`}
+          defaultMessage={`{numDuplicated, plural,
+            =1 {A key is duplicated:}
+            other {{numDuplicated} keys are duplicated:}
+          } <duplicatedKeys></duplicatedKeys>`}
           values={{
-            warning: duplicateKeys.join(', '),
+            numDuplicated: duplicatedKeys.length,
+            duplicatedKeys: () => (
+              <ul>
+                {duplicatedKeys.map((msg, index) => (
+                  <li key={index}>{msg}</li>
+                ))}
+              </ul>
+            ),
           }}
         />
       ),
