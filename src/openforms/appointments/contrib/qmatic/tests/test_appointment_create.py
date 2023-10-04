@@ -16,9 +16,15 @@ QMATIC_BASE_URL = "http://localhost:8080/qmatic/calendar-backend/public/api/"
 
 # The test date below should return actual results when querying for times. So if you
 # need to re-generate the cassettes, pick a week day in the future!
-TEST_DATE = date(2023, 9, 8)
+TEST_DATE = date(2023, 10, 23)
 
 plugin = QmaticAppointment("qmatic")
+
+
+def scrub_cookies(response: dict):
+    if "Set-Cookie" in response["headers"]:
+        del response["headers"]["Set-Cookie"]
+    return response
 
 
 class CreateAppointmentTests(OFVCRMixin, MockConfigMixin, TestCase):
@@ -40,6 +46,11 @@ class CreateAppointmentTests(OFVCRMixin, MockConfigMixin, TestCase):
             location for location in locations if location.name == "KCC"
         )
 
+    def _get_vcr_kwargs(self, **kwargs):
+        kwargs = super()._get_vcr_kwargs(**kwargs)
+        kwargs["before_record_response"] = scrub_cookies
+        return kwargs
+
     def test_create_appointment_single_product_single_customer(self):
         customer = _CustomerDetails(
             details={
@@ -47,7 +58,10 @@ class CreateAppointmentTests(OFVCRMixin, MockConfigMixin, TestCase):
                 CustomerFields.last_name: "TEST (automated)",
             }
         )
-        product = plugin.get_available_products(location_id=self.location.identifier)[0]
+        products = plugin.get_available_products(location_id=self.location.identifier)
+        product = next(
+            product for product in products if product.identifier == "Identiteitskaart"
+        )
         assert product.amount == 1
         times = plugin.get_times(
             products=[product], location=self.location, day=TEST_DATE
@@ -73,9 +87,10 @@ class CreateAppointmentTests(OFVCRMixin, MockConfigMixin, TestCase):
                 CustomerFields.last_name: "TEST (automated)",
             }
         )
-        product1 = plugin.get_available_products(location_id=self.location.identifier)[
-            0
-        ]
+        products = plugin.get_available_products(location_id=self.location.identifier)
+        product1 = next(
+            product for product in products if product.identifier == "Identiteitskaart"
+        )
         products2 = plugin.get_available_products(
             location_id=self.location.identifier, current_products=[product1]
         )
