@@ -46,6 +46,20 @@
   @at-root form .aligned & ul.messagelist {
     margin-left: 0;
     padding-left: 0;
+
+    ul:not(.messagelist) {
+      margin-left: 0;
+      padding-left: 12px;
+      list-style: auto;
+
+      li {
+        display: list-item;
+        list-style: square;
+        background: none;
+        padding: 0;
+        margin: 0;
+      }
+    }
   }
 
   .checkbox__errors {

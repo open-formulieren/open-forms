@@ -1698,3 +1698,199 @@ class SelectReuseableFormDefinitionsTests(E2ETestCase):
             await expect(selectbox).not_to_contain_text("FORM DEFINITION #1")
             await expect(selectbox).not_to_contain_text("FORM DEFINITION #2")
             await expect(selectbox).not_to_contain_text("FORM DEFINITION #3")
+
+
+class FormDesignerDuplicateKeyWarningTests(E2ETestCase):
+    async def test_adding_reusable_form_without_duplicate_key_shows_no_warnings(
+        self,
+    ):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright duplicate keys test",
+            )
+            form_definition_1 = FormDefinitionFactory.create(
+                name="FORM DEFINITION #1",
+                configuration={
+                    "display": "form",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "duplicate-key",
+                            "label": "Duplicate Key",
+                        },
+                    ],
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #2",
+                configuration={
+                    "display": "form",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "duplicate-key-2",
+                            "label": "Duplicate Key 2",
+                        }
+                    ],
+                },
+                is_reusable=True,
+            )
+            FormStepFactory.create(form=form, form_definition=form_definition_1)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Check if there are no warnings at the start of the test
+            await expect(page.locator("css=.messagelist")).not_to_be_visible()
+
+            # Add step and open selectbox
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Select FORM DEFINITION #2 and add it to the form steps
+            await selectbox.select_option("FORM DEFINITION #2")
+            await page.get_by_role("button", name="Confirm").click()
+
+            # Check if there are no warnings on the FORM DEFINITION #2 form step
+            await expect(page.locator("css=.messagelist")).not_to_be_visible()
+
+            # Go back to the first form definition
+            await page.get_by_role("button", name="FORM DEFINITION #1").click()
+
+            # Check if there still are no warnings on the FORM DEFINITION #1 form step
+            await expect(page.locator("css=.messagelist")).not_to_be_visible()
+
+    async def test_adding_reusable_form_with_duplicate_key_shows_warnings(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright duplicate keys test",
+            )
+            form_definition_1 = FormDefinitionFactory.create(
+                name="FORM DEFINITION #1",
+                configuration={
+                    "display": "form",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "duplicate-key",
+                            "label": "Duplicate Key",
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "duplicate-key-2",
+                            "label": "Duplicate Key 2",
+                        },
+                    ],
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #2",
+                configuration={
+                    "display": "form",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "duplicate-key",
+                            "label": "Duplicate Key",
+                        }
+                    ],
+                },
+                is_reusable=True,
+            )
+            FormDefinitionFactory.create(
+                name="FORM DEFINITION #3",
+                configuration={
+                    "display": "form",
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "duplicate-key-2",
+                            "label": "Duplicate Key 2",
+                        }
+                    ],
+                },
+                is_reusable=True,
+            )
+            FormStepFactory.create(form=form, form_definition=form_definition_1)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Check if there are no warnings at the start of the test
+            await expect(page.locator("css=.messagelist")).not_to_be_visible()
+
+            # Add step and open selectbox
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Select FORM DEFINITION #2 and add it to the form steps
+            await selectbox.select_option("FORM DEFINITION #2")
+            await page.get_by_role("button", name="Confirm").click()
+
+            # Check if the warning message shows up as expected
+            await expect(page.locator("css=.messagelist")).to_contain_text(
+                "A key is duplicated: "
+                'duplicate-key: in "FORM DEFINITION #1" and "FORM DEFINITION #2"'
+            )
+
+            # Add step and open selectbox
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.locator("css=#id_form-definition").click()
+            selectbox = page.locator("css=#id_form-definition")
+
+            # Select FORM DEFINITION #3 and add it to the form steps
+            await selectbox.select_option("FORM DEFINITION #3")
+            await page.get_by_role("button", name="Confirm").click()
+
+            # Check if the warning message shows up as expected
+            await expect(page.locator("css=.messagelist")).to_contain_text(
+                "A key is duplicated: "
+                'duplicate-key-2: in "FORM DEFINITION #1" and "FORM DEFINITION #3"'
+            )
+
+            # Go back to the first form definition
+            await page.get_by_role("button", name="FORM DEFINITION #1").click()
+
+            # Check if the warning message shows up as expected
+            await expect(page.locator("css=.messagelist")).to_contain_text(
+                "2 keys are duplicated: "
+                'duplicate-key: in "FORM DEFINITION #1" and "FORM DEFINITION #2"'
+                'duplicate-key-2: in "FORM DEFINITION #1" and "FORM DEFINITION #3"'
+            )

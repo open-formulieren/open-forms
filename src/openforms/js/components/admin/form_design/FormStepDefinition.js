@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 import Field, {normalizeErrors} from 'components/admin/forms/Field';
@@ -52,6 +52,7 @@ const FormStepDefinition = ({
   errors,
   ...props
 }) => {
+  const intl = useIntl();
   const setSlug = langCode => {
     // do nothing if there's already a slug set
     if (slug) return;
@@ -74,7 +75,7 @@ const FormStepDefinition = ({
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);
-  const componentErrors = getComponentValidationErrors(configuration, errors).map(
+  let componentMessages = getComponentValidationErrors(configuration, errors).map(
     ({component, field, componentLocation, message}) => {
       const location = componentLocation.trim() ? (
         <FormattedMessage
@@ -103,6 +104,61 @@ const FormStepDefinition = ({
       };
     }
   );
+
+  const duplicatedKeys = getDuplicatedComponents(componentNamespace)
+    .filter(component =>
+      configuration.components.some(configComponent => configComponent.key === component.key)
+    )
+    .map(component => {
+      const componentLocations = getComponentLocations(formSteps, component.key);
+      const stepNames = componentLocations.map(step => `"${step.name}"`);
+      const numSteps = stepNames.length;
+      const tail = stepNames.pop();
+      const lead = stepNames.join(', ');
+      return intl.formatMessage(
+        {
+          description: 'Description of which key is duplicated in which steps.',
+          defaultMessage: `
+            <code>{componentKey}</code>: in
+            {numSteps, plural,
+              =1 {{tail}}
+              other {{lead} and {tail}}
+            }
+          `,
+        },
+        {
+          code: bits => <code>{bits}</code>,
+          componentKey: component.key,
+          numSteps,
+          lead,
+          tail,
+        }
+      );
+    });
+
+  if (duplicatedKeys.length > 0 && errors.length === 0)
+    componentMessages.push({
+      level: 'warning',
+      message: (
+        <FormattedMessage
+          description="Warning message for duplicated keys"
+          defaultMessage={`{numDuplicated, plural,
+            =1 {A key is duplicated:}
+            other {{numDuplicated} keys are duplicated:}
+          } <duplicatedKeys></duplicatedKeys>`}
+          values={{
+            numDuplicated: duplicatedKeys.length,
+            duplicatedKeys: () => (
+              <ul>
+                {duplicatedKeys.map((msg, index) => (
+                  <li key={index}>{msg}</li>
+                ))}
+              </ul>
+            ),
+          }}
+        />
+      ),
+    });
 
   const erroredLanguages = new Set();
   for (const [errPath] of errors) {
@@ -321,7 +377,7 @@ const FormStepDefinition = ({
 
       <div className="formio-builder-wrapper">
         <ConfigurationErrors errors={errors} />
-        <MessageList messages={componentErrors} />
+        <MessageList messages={componentMessages} />
         <FormIOBuilder
           configuration={configuration}
           onChange={onChange}
@@ -371,6 +427,29 @@ const ConfigurationErrors = ({errors = []}) => {
 
 ConfigurationErrors.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+};
+
+const getDuplicatedComponents = componentNameSpace => {
+  const allKeys = new Set();
+  const duplicates = [];
+  componentNameSpace.forEach(component => {
+    const {key} = component;
+    const keySeen = allKeys.has(key);
+    allKeys.add(key);
+    if (keySeen && !duplicates.some(duplicate => duplicate.key === component.key))
+      duplicates.push(component);
+  });
+
+  return duplicates;
+};
+
+const getComponentLocations = (formSteps, key) => {
+  return formSteps
+    .filter(step => step.configuration.components)
+    .map(step => {
+      if (step.configuration.components.some(component => key == component.key)) return step;
+    })
+    .filter(Boolean);
 };
 
 const getComponentValidationErrors = (configuration, errors) => {
