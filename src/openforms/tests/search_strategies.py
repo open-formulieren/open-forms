@@ -7,6 +7,8 @@ from hypothesis import strategies as st
 from openforms.forms.models.form_variable import variable_key_validator
 from openforms.typing import JSONPrimitive, JSONValue
 
+language_code = st.sampled_from(["nl", "en", "fy"])
+
 
 def json_primitives(text_strategy=st.text()) -> st.SearchStrategy[JSONPrimitive]:
     return st.one_of(

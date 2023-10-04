@@ -6,12 +6,16 @@ from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase
 
+from hypothesis import given, strategies as st
 from rest_framework.test import APIRequestFactory
 
+from openforms.formio.typing.vanilla import SelectComponent
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.tests.search_strategies import language_code
 
 from ..datastructures import FormioConfigurationWrapper
+from ..registry import register
 from ..service import get_dynamic_configuration
 
 rf = APIRequestFactory()
@@ -95,7 +99,7 @@ TEST_CONFIGURATION = {
 
 
 @disable_prefill_injection()
-class ComponentTranslationTests(SimpleTestCase):
+class ConfigurationTranslationTests(SimpleTestCase):
     """
     Test some sample component types for translations at the component-level.
 
@@ -204,3 +208,126 @@ class ComponentTranslationTests(SimpleTestCase):
 
             self.assertEqual(content["html"], "<p>EN content</p>")
             self.assertNotIn("translations", content["openForms"])
+
+
+class ComponentTranslationTests(SimpleTestCase):
+    """
+    Test translations for a single component.
+    """
+
+    def test_generic_emptyish_translation(self):
+        component = {
+            "type": "textfield",
+            "key": "textfield",
+            "label": "Label",
+            "description": "Description",
+            "openForms": {
+                "translations": {
+                    "nl": {
+                        "label": "",
+                        "description": None,
+                    },
+                }
+            },
+        }
+
+        register.localize_component(component, "nl", enabled=True)
+
+        self.assertEqual(component["label"], "Label")
+        self.assertEqual(component["description"], "Description")
+
+
+class SelectTranslationTests(SimpleTestCase):
+    @given(lang_code=language_code, translation=st.text(min_size=1))
+    def test_options_translated(self, lang_code, translation):
+        component: SelectComponent = {
+            "type": "select",
+            "key": "select",
+            "data": {
+                "values": [
+                    {
+                        "value": "1",
+                        "label": "First option",
+                        "openForms": {
+                            "translations": {
+                                lang_code: {"label": translation},
+                            }
+                        },
+                    }
+                ],
+            },
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        assert "values" in component["data"]
+        opt1 = component["data"]["values"][0]
+        assert "label" in opt1
+        assert "openForms" in opt1
+        self.assertEqual(opt1["label"], translation)
+        self.assertNotIn("translations", opt1["openForms"])
+
+    @given(lang_code=language_code)
+    def test_no_options_present(self, lang_code):
+        # the data source can be set to a variable, for example
+        component: SelectComponent = {
+            "type": "select",
+            "key": "select",
+            "data": {},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component["data"], {})
+
+    @given(lang_code=language_code, translation=st.text(min_size=1))
+    def test_option_not_translated_when_disabled(self, lang_code, translation):
+        component: SelectComponent = {
+            "type": "select",
+            "key": "select",
+            "data": {
+                "values": [
+                    {
+                        "value": "1",
+                        "label": "First option",
+                        "openForms": {
+                            "translations": {
+                                lang_code: {"label": translation},
+                            }
+                        },
+                    }
+                ],
+            },
+        }
+
+        register.localize_component(component, lang_code, enabled=False)
+
+        assert "values" in component["data"]
+        opt1 = component["data"]["values"][0]
+        assert "label" in opt1
+        assert "openForms" in opt1
+        self.assertEqual(opt1["label"], "First option")
+        self.assertNotIn("translations", opt1["openForms"])
+
+    @given(lang_code=language_code)
+    def test_options_without_translations(self, lang_code):
+        component: SelectComponent = {
+            "type": "select",
+            "key": "select",
+            "data": {
+                "values": [
+                    {
+                        "value": "1",
+                        "label": "First option",
+                    }
+                ],
+            },
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        assert "values" in component["data"]
+        opt1 = component["data"]["values"][0]
+        assert "label" in opt1
+        self.assertEqual(opt1["label"], "First option")
+        self.assertNotIn("openForms", opt1)

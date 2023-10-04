@@ -169,8 +169,9 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         # apply the generic translation behaviour even for unregistered components
         if enabled and (translations := generic_translations.get(language_code, {})):
             for prop, translation in translations.items():
-                if translation:
-                    component[prop] = translation
+                if not translation:
+                    continue
+                component[prop] = translation
 
         if (component_type := component["type"]) in self:
             component_plugin = self[component_type]
