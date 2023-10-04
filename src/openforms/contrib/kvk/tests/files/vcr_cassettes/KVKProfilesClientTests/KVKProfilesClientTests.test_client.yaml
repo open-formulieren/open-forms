@@ -18,19 +18,14 @@ interactions:
     uri: https://api.kvk.nl/test/api/v1/basisprofielen/69599084
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALVU70/bMBD9VyJ/YlK3JC1df3zrAAlNK0PbBBLThC71NTVx7Mp2gwbq/76zU0IK
-        FIQGVtXEd8/PZ997uWVFVZysyhING7PPo/5olAz3WYcJxU+0moKQQuWU+goUVAAlvf9C66Kj6UV0
-        CLnO0DhKzbUpUeIPzIV1BpxADm7l0d0kHSSDNCFQCQ6N2Iax8S0L0AmoCsJeYUWaDNm6w5x2APIc
-        TXEDJZ6isVqhYuO0wxagOEqrKE6B37fPlVdpmWvDabdk3blHXiNyjBoiKKN0erEFT1vwQzQvoLst
-        9Jl4Ed5b/+kwm4nJzIlKOKRffRKKHWiPYGmSpiyAvpd2tjDiqqob8lPCbOGv8wpVtJcj/S/lSpQV
-        4scPdQOPtZ5zaLjrLvoKt+i7T9Kfbrhsa5tdrCeIj2l7T9KeSaKs0FxTQykS7SmBLqImRyW12Ykr
-        jmpn9WEfurFL0mRhvXAsyrl/LgzSky2cW9pxHMNSfCJdf1IydiQGP4+rNM7ACrs0eu4lqOJG7SSz
-        imAip4p8A/6TL26TrYn8EssMOUceqP2xGoSPNBOr7oyY0OgN+8mon3gz7vDoc57rJsmwO3yV5/ph
-        BdWL5DKHx/fC3WGquya1TlN/JyhxoH29M7/x2cP0M54GbtDajQvc36UXU4Y3GouQqbkn8xxJVWhK
-        vlFFMJVELvJJgI3ZJMMMoy+iEBIkgIrSQTSNXhpp0ts//xZNSjq/4XRw0jBdGbjNLTxkpfxiJZq+
-        pYN6LtG50KwpAZbautmdLTy9j9FiF8ps7STpwsN5OJrw/g5ajx/I712l32Ft2Nv69PWsj5YS9ZbP
-        1t6rKKh0AON5DdKnz1bkMmI/QlWCsjcABfVqJVyOmUHByVc7UW/dvKa4t79aP/4BFyjCsw0IAAA=
+      string: '{"kvkNummer":"69599084","indNonMailing":"Ja","naam":"Test EMZ Dagobert","formeleRegistratiedatum":"20170710","materieleRegistratie":{"datumAanvang":"20170108"},"totaalWerkzamePersonen":1,"handelsnamen":[{"naam":"Test
+        EMZ Dagobert","volgorde":0},{"naam":"Tweede handelsnaam 1MZ","volgorde":1},{"naam":"Derde
+        handelsnaam 1MZ","volgorde":2},{"naam":"Vierde handelsnaam 1MZ","volgorde":3}],"sbiActiviteiten":[{"sbiCode":"1011","sbiOmschrijving":"Slachterijen
+        (geen pluimvee-)","indHoofdactiviteit":"Ja"},{"sbiCode":"1012","sbiOmschrijving":"Pluimveeslachterijen","indHoofdactiviteit":"Nee"},{"sbiCode":"1013","sbiOmschrijving":"Vleesverwerking
+        (niet tot maaltijden)","indHoofdactiviteit":"Nee"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingen":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"}},"_embedded":{"hoofdvestiging":{"vestigingsnummer":"000038509504","kvkNummer":"69599084","formeleRegistratiedatum":"20200828","materieleRegistratie":{"datumAanvang":"20150828"},"eersteHandelsnaam":"Test
+        EMZ Dagobert","indHoofdvestiging":"Ja","indCommercieleVestiging":"Ja","totaalWerkzamePersonen":1,"adressen":[{"type":"bezoekadres","indAfgeschermd":"Nee","volledigAdres":"Abebe
+        Bikilalaan 17 M                                 1034WL Amsterdam","straatnaam":"Abebe
+        Bikilalaan","huisnummer":17,"huisletter":"M","postcode":"1034WL","plaats":"Amsterdam","land":"Nederland"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/hoofdvestiging"},"vestigingen":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"},"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}}},"eigenaar":{"rechtsvorm":"Eenmanszaak","uitgebreideRechtsvorm":"Eenmanszaak","_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084/eigenaar"},"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"}}}}}'
     headers:
       API-Version:
       - 1.4.1
@@ -43,7 +38,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Thu, 21 Sep 2023 16:14:52 GMT
+      - Wed, 04 Oct 2023 09:57:14 GMT
       Keep-Alive:
       - timeout=60
       Server:
