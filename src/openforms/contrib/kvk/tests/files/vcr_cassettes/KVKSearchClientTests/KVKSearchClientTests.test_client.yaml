@@ -18,13 +18,9 @@ interactions:
     uri: https://api.kvk.nl/test/api/v1/zoeken?kvkNummer=69599084
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAANVRu07DMBT9lchz1LiFoCYbCNSpnTqBELohN4kVx47s20gQ5d+55lFSIYay4cWP
-        87B9zih6qJUBkS9jAWAINC9lLMgShPUqFg79QRMQGpE/jKId2t2h69CJXFxlaZbJ9aWIxYCeFFvV
-        3nyhksfFOpVZKgOjAVOi9gagY3DP/Ohuex/dQm0LdMQMKPmu/UuPjBf4arF9P2HEkwOgT+l1gQVG
-        N6pVGjQ/mvGeZ/IB6zyhK5nHf/hwaqytyuPz+PxJK9MyeRQFeOV7ZyuFOuwbh1VQEPU+TxLo1YK/
-        uzA6IdaHfTIsk7kKTXIMYZqncLbrDylbnyQ4TVP8t/hX8vf4dzigOaqjjR3O6mKDBhUbzzvYAjBH
-        PTf0XYI5ueaflsA5cgmP0xvmcMCPNgMAAA==
+      string: '{"pagina":1,"aantal":10,"totaal":2,"resultaten":[{"kvkNummer":"69599084","vestigingsnummer":"000038509504","handelsnaam":"Test
+        EMZ Dagobert","adresType":"bezoekadres","straatnaam":"Abebe Bikilalaan","plaats":"Amsterdam","type":"hoofdvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}}},{"kvkNummer":"69599084","vestigingsnummer":"000038509520","handelsnaam":"Test
+        EMZ Nevenvestiging Govert","adresType":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht","type":"nevenvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}}}]}'
     headers:
       API-Version:
       - 1.4.1
@@ -37,7 +33,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Thu, 21 Sep 2023 16:13:31 GMT
+      - Wed, 04 Oct 2023 09:57:15 GMT
       Keep-Alive:
       - timeout=60
       Server:

@@ -14,10 +14,10 @@ QMATIC_BASE_URL = "http://localhost:8080/qmatic/calendar-backend/public/api/"
 plugin = QmaticAppointment("qmatic")
 
 
-def _get_location():
+def _get_location(index: int = 0):
     locations = plugin.get_locations()
     assert len(locations) > 1
-    return locations[0]
+    return locations[index]
 
 
 class ListAvailableProductsTests(OFVCRMixin, MockConfigMixin, TestCase):
@@ -36,7 +36,7 @@ class ListAvailableProductsTests(OFVCRMixin, MockConfigMixin, TestCase):
         Test that with/without location filter produces different amounts of products.
         """
         num_unfiltered_products = 0
-        location = _get_location()  # can't pickle this if a subtest fails
+        location = _get_location(-1)  # can't pickle this if a subtest fails
 
         with self.subTest("List of unfiltered products"):
             products = plugin.get_available_products()

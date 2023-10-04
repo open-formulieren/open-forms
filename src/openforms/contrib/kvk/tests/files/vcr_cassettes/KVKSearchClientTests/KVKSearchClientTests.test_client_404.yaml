@@ -18,10 +18,8 @@ interactions:
     uri: https://api.kvk.nl/test/api/v1/zoeken?kvkNummer=12345678
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAC2KsQ6DMBBDf+V0M6oQEgtzO3RjRx0iYkJoyaEEMoD4d64Si/X87IMH2VZuuoN7
-        seCG3+2zrsqSC5Y59WP0U/bB6fCKtPspkAP+4ZARkkKWYNVYD8rys6JsjHaQLPeNdsF3MdHMWBHT
-        g8/PeQHyrtlsegAAAA==
+      string: '{"fout":[{"code":"IPD5200","omschrijving":"Er zijn geen gegevens gevonden
+        die voldoen aan de opgegeven zoekparameters."}]}'
     headers:
       Connection:
       - keep-alive
@@ -32,7 +30,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 21 Sep 2023 16:11:54 GMT
+      - Wed, 04 Oct 2023 09:57:16 GMT
       Keep-Alive:
       - timeout=60
       Server:

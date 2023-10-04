@@ -18,16 +18,11 @@ interactions:
     uri: https://api.kvk.nl/test/api/v1/basisprofielen/90000749
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAALVSUYvbMAz+K8FPG5RL0nS7S966u7ExWA/2MAZjHEqtJFodO9hKjq30v09OSrnB
-        PdzDZgJ2pE/Sp086qsN02I19j15VqszkXG9KtVJk9c7Zz0CGbCuuTyBGC9DL+4NxNZjk1lnvrJgb
-        53s0+AVbCuyBCTXwGJHrLM+ydXYjoB4YPf0NU9VRzdAt2AnmOnlZlnmeFeq0UoHFx0Aed88XDjVt
-        90wTMcpnVfX9GG23TmPsZlOW1wvqvg/7ztPPaWnmfhIqLSY1GqmKtsYOPFMr3uSVx8CvFwU+Otdo
-        uFRYZDj9WKkHUeUQIv2Apol351Fu1TEPoUpTGOhKlL2yJmXJF//TKU9rCBQG75oohE0vep+k2wfs
-        a9QadUyHQk/U9vHtA9nYTrkuNtmbuSWP+47DJLqL4yt6tAt5ETF5fw4NghuJW6w9khbZXxYCWgQI
-        ZzH51xCVrPG3w8PsWYTZNi2Kouh7Yat2iGKenDGoqd3OsEq9MwDj4yO2Sf62SIpiffPtLrlzXs/k
-        41xkCYDPO3VBi6MbKdjzTkrsSg0u8H4Z6pJHQIMEcKzzNKWMcyGk0c/v/zCs9DIbGdpTzL9YAzl/
-        AMVZIkiTAwAA
+      string: '{"kvkNummer":"90000749","indNonMailing":"Ja","naam":"Global Conron","formeleRegistratiedatum":"20100208","materieleRegistratie":{"datumAanvang":"19991103"},"statutaireNaam":"Global
+        Conron","sbiActiviteiten":[{"sbiCode":"94997","sbiOmschrijving":"Overige belangenbehartiging
+        (rest)","indHoofdactiviteit":"Ja"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}},"_embedded":{"eigenaar":{"rsin":"992340597","rechtsvorm":"Vereniging
+        van Eigenaars","uitgebreideRechtsvorm":"Vereniging van Eigenaars","adressen":[{"type":"bezoekadres","indAfgeschermd":"Nee","volledigAdres":"Blaauwweg
+        163 3328XD Dordrecht","straatnaam":"Blaauwweg","huisnummer":163,"postcode":"3328XD","plaats":"Dordrecht","land":"Nederland"}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749/eigenaar"},"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/90000749"}}}}}'
     headers:
       API-Version:
       - 1.4.1
@@ -40,7 +35,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Thu, 21 Sep 2023 16:14:52 GMT
+      - Wed, 04 Oct 2023 09:57:15 GMT
       Keep-Alive:
       - timeout=60
       Server:

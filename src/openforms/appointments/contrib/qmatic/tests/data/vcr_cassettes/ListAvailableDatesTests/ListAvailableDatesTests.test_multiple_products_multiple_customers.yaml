@@ -16,32 +16,10 @@ interactions:
     uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches
   response:
     body:
-      string: !!binary |
-        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
-        tzJKGQAA
+      string: '{"branchList":[{"addressCountry":null,"addressZip":"2264 BM","created":1445417803528,"latitude":52.085235412737326,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":"14
+        070","name":"KCC","addressLine1":"Kon. Wilhelminalaan 2","addressLine2":null,"fullTimeZone":"Europe/Amsterdam","updated":1534410592257,"publicId":"f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58","branchPrefix":null,"email":"info@leidschendam-voorburg.nl","addressCity":"Leidschendam","longitude":4.393964889317601},{"addressCountry":null,"addressZip":null,"created":1477595905244,"latitude":null,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":null,"name":"Receptie","addressLine1":"Receptie","addressLine2":null,"fullTimeZone":"Europe/Amsterdam","updated":1477595905306,"publicId":"3c82d69fa404728006a8386aff26ff05d81e66268e889569cc3749ace37dd1ca","branchPrefix":null,"email":null,"addressCity":"Leidschendam","longitude":null},{"addressCountry":"Leidschendam","addressZip":"2264
+        BM","created":1476260692424,"latitude":null,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":null,"name":"WIJZ","addressLine1":"Werk
+        en Inkomen","addressLine2":"Kon. Wilhelminalaan 2","fullTimeZone":"Europe/Amsterdam","updated":1691155914780,"publicId":"008c70c7bb0ee0154777a09832997e8cc4476d2c8ebeea88701d524a3faf8f77","branchPrefix":null,"email":null,"addressCity":"Leidschendam","longitude":null}],"meta":{"start":"","end":"","totalResults":3,"offset":null,"limit":null,"fields":"","arguments":{}},"notifications":[]}'
     headers:
       Access-Control-Expose-Headers:
       - error_code, error_message
@@ -53,7 +31,7 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '1374'
+      - '614'
       Content-Security-Policy:
       - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
         ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
@@ -61,7 +39,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 07 Sep 2023 10:06:45 GMT
+      - Wed, 04 Oct 2023 09:07:04 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -94,38 +72,20 @@ interactions:
     uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services
   response:
     body:
-      string: !!binary |
-        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
+      string: '{"meta":{"start":"","end":"","totalResults":18,"offset":null,"limit":null,"fields":"","arguments":{}},"serviceList":[{"duration":20,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772835,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Achternaam
+        kind kiezen","active":true,"updated":1688460228939,"publicId":"Achternaam_kind_kiezen"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534403657190,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Bewijs
+        van in leven zijn","active":true,"updated":1534403701634,"publicId":"Bewijs_van_in_leven_zijn"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1534404088188,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Buitenlands
+        rijbewijs omwisselen","active":true,"updated":1560427642027,"publicId":"Buitenlands_rijbewijs_omwisselen"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772077,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Document
+        kwijt of gestolen","active":true,"updated":1566306593359,"publicId":"Document_kwijt_of_gestolen"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772818,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Erkennen
+        kind","active":true,"updated":1534409161819,"publicId":"Erkennen_kind"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772587,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Garantstelling
+        of logiesverstrekking","active":true,"updated":1534412272564,"publicId":"Garantstelling_of_logiesverstrekking"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772872,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Geboorteaangifte","active":true,"updated":1534409161824,"publicId":"Geboorteaangifte"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772418,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Huisvestingsvergunning","active":true,"updated":1534404636656,"publicId":"Huisvestingsvergunning"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772714,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Identiteitskaart","active":true,"updated":1566306566387,"publicId":"Identiteitskaart"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772544,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Legaliseren
+        handtekening","active":true,"updated":1534409161794,"publicId":"Legaliseren_handtekening"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772755,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort","active":true,"updated":1566306540888,"publicId":"Paspoort"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1518430338107,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vluchteling","active":true,"updated":1566306547721,"publicId":"Paspoort_voor_vluchteling"},{"duration":30,"publicEnabled":true,"additionalCustomerDuration":30,"created":1518430338076,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vreemdeling","active":true,"updated":1684307975926,"publicId":"Paspoort_voor_vreemdeling"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772742,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Rijbewijs","active":true,"updated":1534409161809,"publicId":"Rijbewijs"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534233898822,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        Basisregistratie Personen","active":true,"updated":1685447866356,"publicId":"BRP"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534233898788,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        burgerlijke stand aanvragen","active":true,"updated":1685447872945,"publicId":"BS"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772115,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Verklaring
+        omtrent gedrag","active":true,"updated":1540980961328,"publicId":"Verklaring_omtrent_gedrag"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534405511918,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Vertrek
+        naar buitenland","active":true,"updated":1534409161859,"publicId":"Vertrek_naar_buitenland"}],"notifications":[]}'
     headers:
       Access-Control-Expose-Headers:
       - error_code, error_message
@@ -137,7 +97,7 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '1766'
+      - '996'
       Content-Security-Policy:
       - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
         ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
@@ -145,7 +105,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 07 Sep 2023 10:06:45 GMT
+      - Wed, 04 Oct 2023 09:07:04 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -178,38 +138,20 @@ interactions:
     uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services
   response:
     body:
-      string: !!binary |
-        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
+      string: '{"meta":{"start":"","end":"","totalResults":18,"offset":null,"limit":null,"fields":"","arguments":{}},"serviceList":[{"duration":20,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772835,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Achternaam
+        kind kiezen","active":true,"updated":1688460228939,"publicId":"Achternaam_kind_kiezen"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534403657190,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Bewijs
+        van in leven zijn","active":true,"updated":1534403701634,"publicId":"Bewijs_van_in_leven_zijn"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1534404088188,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Buitenlands
+        rijbewijs omwisselen","active":true,"updated":1560427642027,"publicId":"Buitenlands_rijbewijs_omwisselen"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772077,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Document
+        kwijt of gestolen","active":true,"updated":1566306593359,"publicId":"Document_kwijt_of_gestolen"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772818,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Erkennen
+        kind","active":true,"updated":1534409161819,"publicId":"Erkennen_kind"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772587,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Garantstelling
+        of logiesverstrekking","active":true,"updated":1534412272564,"publicId":"Garantstelling_of_logiesverstrekking"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772872,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Geboorteaangifte","active":true,"updated":1534409161824,"publicId":"Geboorteaangifte"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772418,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Huisvestingsvergunning","active":true,"updated":1534404636656,"publicId":"Huisvestingsvergunning"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772714,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Identiteitskaart","active":true,"updated":1566306566387,"publicId":"Identiteitskaart"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772544,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Legaliseren
+        handtekening","active":true,"updated":1534409161794,"publicId":"Legaliseren_handtekening"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772755,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort","active":true,"updated":1566306540888,"publicId":"Paspoort"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1518430338107,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vluchteling","active":true,"updated":1566306547721,"publicId":"Paspoort_voor_vluchteling"},{"duration":30,"publicEnabled":true,"additionalCustomerDuration":30,"created":1518430338076,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vreemdeling","active":true,"updated":1684307975926,"publicId":"Paspoort_voor_vreemdeling"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772742,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Rijbewijs","active":true,"updated":1534409161809,"publicId":"Rijbewijs"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534233898822,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        Basisregistratie Personen","active":true,"updated":1685447866356,"publicId":"BRP"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534233898788,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        burgerlijke stand aanvragen","active":true,"updated":1685447872945,"publicId":"BS"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772115,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Verklaring
+        omtrent gedrag","active":true,"updated":1540980961328,"publicId":"Verklaring_omtrent_gedrag"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534405511918,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Vertrek
+        naar buitenland","active":true,"updated":1534409161859,"publicId":"Vertrek_naar_buitenland"}],"notifications":[]}'
     headers:
       Access-Control-Expose-Headers:
       - error_code, error_message
@@ -221,7 +163,7 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '1766'
+      - '996'
       Content-Security-Policy:
       - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
         ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
@@ -229,7 +171,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 07 Sep 2023 10:06:45 GMT
+      - Wed, 04 Oct 2023 09:07:05 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -259,23 +201,11 @@ interactions:
       User-Agent:
       - python-requests/2.31.0
     method: GET
-    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services/groups;servicePublicId=INT_Achternaam_gebruiken
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services/groups;servicePublicId=Achternaam_kind_kiezen
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAOWYX2/TMBTFv4rl5z7Aw176RtmACQTVKLy0k+XEN6kbx578J5s27btznbVNXMo0
-        JEBsfqps/1LFR+ceX2d5Rx3YTpbg6HR5R69CoWR5LuiUnn9esDfl2oPVnLeshsIG2YCmE6p5C0gM
-        q2S8KoLlXhpNp69fTSgXQsYRV2+D86YFe5qsl/0s/tvdilpw5RpEUHCmeaFArOjU2wCTFS25LkH9
-        NA0tl8rheEVXFMdr6c7FMNTGg3snQYnhyYorFx+VujILuPEDvVUi7s5brp3qXzP++/Lynt5PUnkE
-        aC89SO8azq0fZDmyMkhy8rgiJ89YEPTL7OsgwzfpvYXGgSJFsDVYJTcNEOe5FoRz3VleZ+SXU1OG
-        Fo3Bmmu58cxUWFG4EzUuqB1DeoaYioyYHDx0ITcF4N7doMl4KgcJ5txdGTPOk9HM00vlbysAN+Wa
-        6xrOIvZPhPkOtlHcSl0z02KyYCnVIDBEBqUGhGwRskeeLt0zDpk+gy/mR0N4xp10FmrpfNwpkDlY
-        Z/TvZcsz16YDuw7yFg2SmGY7F0+lGrqMDqVZn6ys45pJzVTcO7uVm9GR9EAQJIjUpCfIlsghjWcB
-        GzmtsGVxzO5OIsyfa+mwpsZn94gke5Ik5MhTL7fMsJxi4jC8FlhW7EVJ6i0CJAIkAfKouZhD3mBf
-        By0WHb43uqVLEmnxsNrGSDogcqi5KND845dxA2QbAGu0X0NVHQrxkr3yIUjXoRlwz/hr66B14pRf
-        rufikxl4juHKOmyQ8YFehW0LOD7Deogch3LofT5BzZXER1AqbNuFhwZSJ40IckDk4KX3HBGPqatU
-        f8GomDK1hOgUF0+rJhErpeM9/Sidg3C7y2lfgayzAK0Alai1Q/r6IymSRUu0C6kaWsA7KRSgeJ/Z
-        Sf+4DanjUA4hdWAlFeLn5UetlCD/z7eRP6rR5f3lD3WWOsGlFwAA
+      string: '[{"services":[{"publicId":"Erkennen_kind","name":"Erkennen kind","duration":15,"additionalCustomerDuration":15,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}"},{"publicId":"Achternaam_kind_kiezen","name":"Achternaam
+        kind kiezen","duration":20,"additionalCustomerDuration":10,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}"},{"publicId":"Geboorteaangifte","name":"Geboorteaangifte","duration":15,"additionalCustomerDuration":15,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}"}]}]'
     headers:
       Access-Control-Expose-Headers:
       - error_code, error_message
@@ -287,7 +217,7 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '723'
+      - '252'
       Content-Security-Policy:
       - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
         ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
@@ -295,7 +225,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 07 Sep 2023 10:06:45 GMT
+      - Wed, 04 Oct 2023 09:07:05 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -328,15 +258,9 @@ interactions:
     uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAH1SyY4TMRD9lcjnTPDaS04MEQfEICFAQhrEobptJ5a8RF4QKMq/U60sw1y4lFxV
-        79XiVycSTAWyPZFSIVeyJWRNTNSXR00V/BdTmq+FbNmaJGuLQVRs3q+Jd8HdHeuM1+XCg7xvwcSF
-        dDqf12TKEOfD0gW0zqaUXWqx5j837jX67I7I57yTq3efsMycDVSDszAplWT9QIXiA/aF6mrThmwV
-        39BBcYFZ3ote8A5ZrdQUbqWrC+Y5RcSS9y2no3nzGEo1WUMg98ZfK/a5MY6HC5zJFe0pgiKExf+4
-        270wnlw0bAmmuFl9d/5gfHARPEBc8dcwfv8htN/+O0476uvCSkjJqBo5Vz2O1Cbv5g+LKpaNFjgV
-        dNKdElrycZa87zmn4wQdnfU8oVWWWWADjGqWuucTVxQYRtVAbmp8zsa637fZTADnsbyLNr31xuky
-        H/AMIDz8SilPLe830b/stXMVxSNP/wAx6VPcX4WRGzGKsZPDMArWd5ThFcRUnXUzipciXsaPn+e/
-        AtGsAX4CAAA=
+      string: '{"meta":{"start":"","end":"","totalResults":1,"offset":null,"limit":null,"fields":"","arguments":{}},"branch":{"addressCountry":null,"addressZip":"2264
+        BM","created":1445417803528,"latitude":52.085235412737326,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":"14
+        070","name":"KCC","addressLine1":"Kon. Wilhelminalaan 2","addressLine2":null,"fullTimeZone":"Europe/Amsterdam","updated":1534410592257,"publicId":"f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58","branchPrefix":null,"email":"info@leidschendam-voorburg.nl","addressCity":"Leidschendam","longitude":4.393964889317601},"notifications":[]}'
     headers:
       Access-Control-Expose-Headers:
       - error_code, error_message
@@ -356,7 +280,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 07 Sep 2023 10:06:45 GMT
+      - Wed, 04 Oct 2023 09:07:05 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -386,17 +310,11 @@ interactions:
       User-Agent:
       - python-requests/2.31.0
     method: GET
-    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/dates;servicePublicId=INT_Achternaam_gebruiken;servicePublicId=Betalen_gemeentebelastingen;numberOfCustomers=1
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/dates;servicePublicId=Achternaam_kind_kiezen;servicePublicId=Erkennen_kind;numberOfCustomers=1
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAG2Uy2rDMBBFf6VobYNGbtI2u7arbNpSsgsmyM44FZVlsORuQv69mgYCRRe8sA96
-        XO5hfFYjJ6s2ZxWTnZPaKFUpDsfrS5qS9Z8cF5+i2qxXlZqGIXJeFhbvK+Xd6G4fg2N/jNeNdj4t
-        IwfZdVZhGTue34fXJaZp5FnW7KnNyyLPP67nj6Xzrt/Kpfvt2+7w3H8lnoO14+HE3by4bw7V3UsO
-        6jlkNHI+mjv2NiYXThxadblU6mgT57P3ymjT1Pqp1g87rTd/T77sRh8RJYLUQNpAeg/pClKc4QlR
-        oyGFeQ3Ma2AGs4YUdmZgXlPmJV3rMoPQsjOhZWdCy7xCy7xCYQYqOxNadiYU5gWOhcIMVHYmtOxM
-        KMwLHAuFGQzsDDgWCvMCx5k2MEMDOqNaYwqaJGieoE1CEysUNEnQPEHzBG0SmlihoEmC5gmaJ2iT
-        0MQKhZ0h8wTNE7RJaGKFws6QeQMdGzixBk6s+ee4rVSYkhtcb5Obgvyn28svxeTDsn4GAAA=
+      string: '{"meta":{"start":"","end":"","totalResults":32,"offset":null,"limit":null,"fields":"","arguments":{"numberOfCustomers":"[1]","servicePublicId":"[Achternaam_kind_kiezen,
+        Erkennen_kind]"}},"dates":["2023-10-31T00:00:00","2023-11-01T00:00:00","2023-11-02T00:00:00","2023-11-06T00:00:00","2023-11-07T00:00:00","2023-11-08T00:00:00","2023-11-09T00:00:00","2023-11-13T00:00:00","2023-11-14T00:00:00","2023-11-15T00:00:00","2023-11-16T00:00:00","2023-11-20T00:00:00","2023-11-21T00:00:00","2023-11-27T00:00:00","2023-11-28T00:00:00","2023-11-29T00:00:00","2023-11-30T00:00:00","2023-12-04T00:00:00","2023-12-05T00:00:00","2023-12-06T00:00:00","2023-12-07T00:00:00","2023-12-11T00:00:00","2023-12-12T00:00:00","2023-12-13T00:00:00","2023-12-14T00:00:00","2023-12-18T00:00:00","2023-12-19T00:00:00","2023-12-20T00:00:00","2023-12-21T00:00:00","2023-12-27T00:00:00","2023-12-28T00:00:00","2024-01-02T00:00:00"],"notifications":[]}'
     headers:
       Access-Control-Expose-Headers:
       - error_code, error_message
@@ -408,7 +326,7 @@ interactions:
       Content-Encoding:
       - gzip
       Content-Length:
-      - '395'
+      - '294'
       Content-Security-Policy:
       - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
         ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
@@ -416,7 +334,358 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 07 Sep 2023 10:06:46 GMT
+      - Wed, 04 Oct 2023 09:07:05 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches
+  response:
+    body:
+      string: '{"branchList":[{"addressCountry":null,"addressZip":"2264 BM","created":1445417803528,"latitude":52.085235412737326,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":"14
+        070","name":"KCC","addressLine1":"Kon. Wilhelminalaan 2","addressLine2":null,"fullTimeZone":"Europe/Amsterdam","updated":1534410592257,"publicId":"f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58","branchPrefix":null,"email":"info@leidschendam-voorburg.nl","addressCity":"Leidschendam","longitude":4.393964889317601},{"addressCountry":null,"addressZip":null,"created":1477595905244,"latitude":null,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":null,"name":"Receptie","addressLine1":"Receptie","addressLine2":null,"fullTimeZone":"Europe/Amsterdam","updated":1477595905306,"publicId":"3c82d69fa404728006a8386aff26ff05d81e66268e889569cc3749ace37dd1ca","branchPrefix":null,"email":null,"addressCity":"Leidschendam","longitude":null},{"addressCountry":"Leidschendam","addressZip":"2264
+        BM","created":1476260692424,"latitude":null,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":null,"name":"WIJZ","addressLine1":"Werk
+        en Inkomen","addressLine2":"Kon. Wilhelminalaan 2","fullTimeZone":"Europe/Amsterdam","updated":1691155914780,"publicId":"008c70c7bb0ee0154777a09832997e8cc4476d2c8ebeea88701d524a3faf8f77","branchPrefix":null,"email":null,"addressCity":"Leidschendam","longitude":null}],"meta":{"start":"","end":"","totalResults":3,"offset":null,"limit":null,"fields":"","arguments":{}},"notifications":[]}'
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '614'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 04 Oct 2023 09:16:29 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services
+  response:
+    body:
+      string: '{"meta":{"start":"","end":"","totalResults":18,"offset":null,"limit":null,"fields":"","arguments":{}},"serviceList":[{"duration":20,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772835,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Achternaam
+        kind kiezen","active":true,"updated":1688460228939,"publicId":"Achternaam_kind_kiezen"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534403657190,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Bewijs
+        van in leven zijn","active":true,"updated":1534403701634,"publicId":"Bewijs_van_in_leven_zijn"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1534404088188,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Buitenlands
+        rijbewijs omwisselen","active":true,"updated":1560427642027,"publicId":"Buitenlands_rijbewijs_omwisselen"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772077,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Document
+        kwijt of gestolen","active":true,"updated":1566306593359,"publicId":"Document_kwijt_of_gestolen"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772818,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Erkennen
+        kind","active":true,"updated":1534409161819,"publicId":"Erkennen_kind"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772587,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Garantstelling
+        of logiesverstrekking","active":true,"updated":1534412272564,"publicId":"Garantstelling_of_logiesverstrekking"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772872,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Geboorteaangifte","active":true,"updated":1534409161824,"publicId":"Geboorteaangifte"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772418,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Huisvestingsvergunning","active":true,"updated":1534404636656,"publicId":"Huisvestingsvergunning"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772714,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Identiteitskaart","active":true,"updated":1566306566387,"publicId":"Identiteitskaart"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772544,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Legaliseren
+        handtekening","active":true,"updated":1534409161794,"publicId":"Legaliseren_handtekening"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772755,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort","active":true,"updated":1566306540888,"publicId":"Paspoort"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1518430338107,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vluchteling","active":true,"updated":1566306547721,"publicId":"Paspoort_voor_vluchteling"},{"duration":30,"publicEnabled":true,"additionalCustomerDuration":30,"created":1518430338076,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vreemdeling","active":true,"updated":1684307975926,"publicId":"Paspoort_voor_vreemdeling"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772742,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Rijbewijs","active":true,"updated":1534409161809,"publicId":"Rijbewijs"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534233898822,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        Basisregistratie Personen","active":true,"updated":1685447866356,"publicId":"BRP"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534233898788,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        burgerlijke stand aanvragen","active":true,"updated":1685447872945,"publicId":"BS"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772115,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Verklaring
+        omtrent gedrag","active":true,"updated":1540980961328,"publicId":"Verklaring_omtrent_gedrag"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534405511918,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Vertrek
+        naar buitenland","active":true,"updated":1534409161859,"publicId":"Vertrek_naar_buitenland"}],"notifications":[]}'
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '996'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 04 Oct 2023 09:16:29 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services
+  response:
+    body:
+      string: '{"meta":{"start":"","end":"","totalResults":18,"offset":null,"limit":null,"fields":"","arguments":{}},"serviceList":[{"duration":20,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772835,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Achternaam
+        kind kiezen","active":true,"updated":1688460228939,"publicId":"Achternaam_kind_kiezen"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534403657190,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Bewijs
+        van in leven zijn","active":true,"updated":1534403701634,"publicId":"Bewijs_van_in_leven_zijn"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1534404088188,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Buitenlands
+        rijbewijs omwisselen","active":true,"updated":1560427642027,"publicId":"Buitenlands_rijbewijs_omwisselen"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772077,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Document
+        kwijt of gestolen","active":true,"updated":1566306593359,"publicId":"Document_kwijt_of_gestolen"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772818,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Erkennen
+        kind","active":true,"updated":1534409161819,"publicId":"Erkennen_kind"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772587,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Garantstelling
+        of logiesverstrekking","active":true,"updated":1534412272564,"publicId":"Garantstelling_of_logiesverstrekking"},{"duration":15,"publicEnabled":true,"additionalCustomerDuration":15,"created":1448449772872,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Geboorteaangifte","active":true,"updated":1534409161824,"publicId":"Geboorteaangifte"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772418,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Huisvestingsvergunning","active":true,"updated":1534404636656,"publicId":"Huisvestingsvergunning"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772714,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Identiteitskaart","active":true,"updated":1566306566387,"publicId":"Identiteitskaart"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772544,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Legaliseren
+        handtekening","active":true,"updated":1534409161794,"publicId":"Legaliseren_handtekening"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772755,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort","active":true,"updated":1566306540888,"publicId":"Paspoort"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":5,"created":1518430338107,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vluchteling","active":true,"updated":1566306547721,"publicId":"Paspoort_voor_vluchteling"},{"duration":30,"publicEnabled":true,"additionalCustomerDuration":30,"created":1518430338076,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Paspoort
+        voor vreemdeling","active":true,"updated":1684307975926,"publicId":"Paspoort_voor_vreemdeling"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1448449772742,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Rijbewijs","active":true,"updated":1534409161809,"publicId":"Rijbewijs"},{"duration":5,"publicEnabled":true,"additionalCustomerDuration":5,"created":1534233898822,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        Basisregistratie Personen","active":true,"updated":1685447866356,"publicId":"BRP"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534233898788,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Uittreksel
+        burgerlijke stand aanvragen","active":true,"updated":1685447872945,"publicId":"BS"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1448449772115,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Verklaring
+        omtrent gedrag","active":true,"updated":1540980961328,"publicId":"Verklaring_omtrent_gedrag"},{"duration":10,"publicEnabled":true,"additionalCustomerDuration":10,"created":1534405511918,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}","name":"Vertrek
+        naar buitenland","active":true,"updated":1534409161859,"publicId":"Vertrek_naar_buitenland"}],"notifications":[]}'
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '996'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 04 Oct 2023 09:16:30 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/services/groups;servicePublicId=Achternaam_kind_kiezen
+  response:
+    body:
+      string: '[{"services":[{"publicId":"Erkennen_kind","name":"Erkennen kind","duration":15,"additionalCustomerDuration":15,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}"},{"publicId":"Achternaam_kind_kiezen","name":"Achternaam
+        kind kiezen","duration":20,"additionalCustomerDuration":10,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}"},{"publicId":"Geboorteaangifte","name":"Geboorteaangifte","duration":15,"additionalCustomerDuration":15,"custom":"{\"rescheduleEnabled\":true,\"cancelEnabled\":true,\"emails\":\"\",\"hisId\":\"\",\"notesFieldEnabled\":false,\"infoText\":\"\",\"servicenametranslations\":[]}"}]}]'
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '252'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 04 Oct 2023 09:16:30 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v1/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58
+  response:
+    body:
+      string: '{"meta":{"start":"","end":"","totalResults":1,"offset":null,"limit":null,"fields":"","arguments":{}},"branch":{"addressCountry":null,"addressZip":"2264
+        BM","created":1445417803528,"latitude":52.085235412737326,"custom":null,"timeZone":"Europe/Amsterdam","addressState":null,"phone":"14
+        070","name":"KCC","addressLine1":"Kon. Wilhelminalaan 2","addressLine2":null,"fullTimeZone":"Europe/Amsterdam","updated":1534410592257,"publicId":"f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58","branchPrefix":null,"email":"info@leidschendam-voorburg.nl","addressCity":"Leidschendam","longitude":4.393964889317601},"notifications":[]}'
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '407'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 04 Oct 2023 09:16:30 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Layer7-API-Gateway
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/qmatic/calendar-backend/public/api/v2/branches/f19fa2030bd653d429c42772209ba60cdcb60c5f1fa18a95c4d72b250a1c5f58/dates;servicePublicId=Achternaam_kind_kiezen;servicePublicId=Erkennen_kind;numberOfCustomers=1
+  response:
+    body:
+      string: '{"meta":{"start":"","end":"","totalResults":32,"offset":null,"limit":null,"fields":"","arguments":{"numberOfCustomers":"[1]","servicePublicId":"[Achternaam_kind_kiezen,
+        Erkennen_kind]"}},"dates":["2023-10-31T00:00:00","2023-11-01T00:00:00","2023-11-02T00:00:00","2023-11-06T00:00:00","2023-11-07T00:00:00","2023-11-08T00:00:00","2023-11-09T00:00:00","2023-11-13T00:00:00","2023-11-14T00:00:00","2023-11-15T00:00:00","2023-11-16T00:00:00","2023-11-20T00:00:00","2023-11-21T00:00:00","2023-11-27T00:00:00","2023-11-28T00:00:00","2023-11-29T00:00:00","2023-11-30T00:00:00","2023-12-04T00:00:00","2023-12-05T00:00:00","2023-12-06T00:00:00","2023-12-07T00:00:00","2023-12-11T00:00:00","2023-12-12T00:00:00","2023-12-13T00:00:00","2023-12-14T00:00:00","2023-12-18T00:00:00","2023-12-19T00:00:00","2023-12-20T00:00:00","2023-12-21T00:00:00","2023-12-27T00:00:00","2023-12-28T00:00:00","2024-01-02T00:00:00"],"notifications":[]}'
+    headers:
+      Access-Control-Expose-Headers:
+      - error_code, error_message
+      Cache-Control:
+      - no-store, no-cache, max-age=0, must-revalidate
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '294'
+      Content-Security-Policy:
+      - 'default-src *; style-src * ''unsafe-inline''; script-src * ''unsafe-inline''
+        ''unsafe-eval''; img-src * data: ''unsafe-inline''; connect-src * ''unsafe-inline'';
+        frame-src *;'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 04 Oct 2023 09:16:32 GMT
       Keep-Alive:
       - timeout=60
       Server:

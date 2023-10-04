@@ -18,9 +18,7 @@ interactions:
     uri: https://api.kvk.nl/test/api/v1/basisprofielen/12345678
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAKtWSssvLVGyiq5WSs5PSVWyUvIMcLEEAiUdpfzc4uSMosysssy8dKCEY056am5q
-        XqpCSWpyRl4mUC5VAaRZT6k2thYAfL7PzUgAAAA=
+      string: '{"fout":[{"code":"IPD9999","omschrijving":"Algemene technische fout."}]}'
     headers:
       Connection:
       - close
@@ -31,7 +29,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 21 Sep 2023 16:14:52 GMT
+      - Wed, 04 Oct 2023 09:57:14 GMT
       Server:
       - unknown
       strict-transport-security:

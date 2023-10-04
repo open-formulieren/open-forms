@@ -14,7 +14,7 @@ QMATIC_BASE_URL = "http://localhost:8080/qmatic/calendar-backend/public/api/"
 
 # The test date below should return actual results when querying for times. So if you
 # need to re-generate the cassettes, pick a week day in the future!
-TEST_DATE = date(2023, 9, 8)
+TEST_DATE = date(2023, 10, 23)
 
 plugin = QmaticAppointment("qmatic")
 
@@ -39,7 +39,10 @@ class ListAvailableTimesTests(OFVCRMixin, MockConfigMixin, TestCase):
         )
 
     def test_listing_times_single_product_single_customer(self):
-        product = plugin.get_available_products(location_id=self.location.identifier)[0]
+        products = plugin.get_available_products(location_id=self.location.identifier)
+        product = next(
+            product for product in products if product.identifier == "Identiteitskaart"
+        )
         assert product.amount == 1
 
         times = plugin.get_times(
@@ -50,7 +53,10 @@ class ListAvailableTimesTests(OFVCRMixin, MockConfigMixin, TestCase):
         self.assertIsInstance(times[0], date)
 
     def test_listing_times_single_product_multiple_customers(self):
-        product = plugin.get_available_products(location_id=self.location.identifier)[0]
+        products = plugin.get_available_products(location_id=self.location.identifier)
+        product = next(
+            product for product in products if product.identifier == "Identiteitskaart"
+        )
         product.amount = 999  # amount that should not return any times
 
         with self.subTest("product.amount set"):
@@ -70,7 +76,9 @@ class ListAvailableTimesTests(OFVCRMixin, MockConfigMixin, TestCase):
 
     def test_multiple_products_multiple_customers(self):
         products = plugin.get_available_products(location_id=self.location.identifier)
-        product1 = products[0]
+        product1 = next(
+            product for product in products if product.identifier == "Identiteitskaart"
+        )
         products2 = plugin.get_available_products(
             location_id=self.location.identifier, current_products=[product1]
         )
