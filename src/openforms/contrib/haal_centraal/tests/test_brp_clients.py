@@ -92,7 +92,9 @@ class HaalCentraalFindPersonTests:
 
     def test_get_kinderen(self):
         with get_brp_client() as client:
-            children = client.get_children(bsn="999990676")
+            children = client.get_family_members(
+                bsn="999990676", include_children=True, include_partner=False
+            )
 
         self.assertEqual(len(children), 1)  # type: ignore
         child = children[0]
@@ -100,6 +102,41 @@ class HaalCentraalFindPersonTests:
         self.assertEqual(child.name.voornamen, "Frieda")  # type: ignore
         self.assertEqual(child.name.voorvoegsel, "")  # type: ignore
         self.assertEqual(child.name.geslachtsnaam, "Kroket")  # type: ignore
+
+    def test_get_partners(self):
+        with get_brp_client() as client:
+            partners = client.get_family_members(
+                bsn="999990676", include_children=False, include_partner=True
+            )
+
+        self.assertEqual(len(partners), 1)  # type: ignore
+        partner = partners[0]
+        self.assertEqual(partner.bsn, "999991863")  # type: ignore
+        self.assertEqual(partner.name.voornamen, "Frieda")  # type: ignore
+        self.assertEqual(partner.name.voorvoegsel, "")  # type: ignore
+        self.assertEqual(partner.name.geslachtsnaam, "Kroket")  # type: ignore
+
+    def test_get_family_members(self):
+        with get_brp_client() as client:
+            family_members = client.get_family_members(
+                bsn="999990676", include_children=True, include_partner=True
+            )
+
+        self.assertEqual(len(family_members), 2)  # type: ignore
+
+        child = family_members[0]
+
+        self.assertEqual(child.bsn, "999991111")  # type: ignore
+        self.assertEqual(child.name.voornamen, "Fredo")  # type: ignore
+        self.assertEqual(child.name.voorvoegsel, "")  # type: ignore
+        self.assertEqual(child.name.geslachtsnaam, "Kroket")  # type: ignore
+
+        partner = family_members[1]
+
+        self.assertEqual(partner.bsn, "999992222")  # type: ignore
+        self.assertEqual(partner.name.voornamen, "Frieda")  # type: ignore
+        self.assertEqual(partner.name.voorvoegsel, "")  # type: ignore
+        self.assertEqual(partner.name.geslachtsnaam, "Kroket")  # type: ignore
 
     def test_default_client_context(self):
         client = get_brp_client()
@@ -159,6 +196,92 @@ class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
             },
         )
         super().test_get_kinderen()
+
+    def test_get_partners(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetPartners
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676/partners",
+            json={
+                "_links": {
+                    "self": {
+                        "href": "https://personen/api/ingeschrevenpersonen/999990676/partners",
+                        "templated": False,
+                        "title": "",
+                    }
+                },
+                "_embedded": {
+                    "partners": [
+                        {
+                            "burgerservicenummer": "999991863",
+                            "naam": {
+                                "geslachtsnaam": "Kroket",
+                                "voorletters": "F.",
+                                "voornamen": "Frieda",
+                                "voorvoegsel": "",
+                            },
+                        }
+                    ],
+                },
+            },
+        )
+        super().test_get_partners()
+
+    def test_get_family_members(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetPartners
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676/partners",
+            json={
+                "_links": {
+                    "self": {
+                        "href": "https://personen/api/ingeschrevenpersonen/999990676/partners",
+                        "templated": False,
+                        "title": "",
+                    }
+                },
+                "_embedded": {
+                    "partners": [
+                        {
+                            "burgerservicenummer": "999992222",
+                            "naam": {
+                                "geslachtsnaam": "Kroket",
+                                "voorletters": "F.",
+                                "voornamen": "Frieda",
+                                "voorvoegsel": "",
+                            },
+                        }
+                    ],
+                },
+            },
+        )
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetKinderen
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676/kinderen",
+            json={
+                "_links": {
+                    "self": {
+                        "href": "https://personen/api/ingeschrevenpersonen/999990676/kinderen",
+                        "templated": False,
+                        "title": "",
+                    }
+                },
+                "_embedded": {
+                    "kinderen": [
+                        {
+                            "burgerservicenummer": "999991111",
+                            "leeftijd": 12,
+                            "naam": {
+                                "geslachtsnaam": "Kroket",
+                                "voorletters": "F.",
+                                "voornamen": "Fredo",
+                                "voorvoegsel": "",
+                            },
+                            "geheimhoudingPersoonsgegevens": True,
+                        }
+                    ],
+                },
+            },
+        )
+        super().test_get_family_members()
 
 
 class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
@@ -225,9 +348,70 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
         )
 
         with get_brp_client() as client:
-            children = client.get_children(bsn="999990676")
+            children = client.get_family_members(
+                bsn="999990676", include_children=True, include_partner=False
+            )
 
         self.assertEqual(children, [])
+
+    def test_get_partners(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/redoc#tag/Personen/operation/Personen
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            json={
+                "type": "RaadpleegMetBurgerservicenummer",
+                "personen": [
+                    {
+                        "partners": [
+                            {
+                                "burgerservicenummer": "999991863",
+                                "naam": {
+                                    "voornamen": "Frieda",  # Not all the names have voorvoegsels
+                                    "geslachtsnaam": "Kroket",
+                                    "voorletters": "F.",
+                                },
+                            }
+                        ],
+                    }
+                ],
+            },
+        )
+        super().test_get_partners()
+
+    def test_get_family_members(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/redoc#tag/Personen/operation/Personen
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            json={
+                "type": "RaadpleegMetBurgerservicenummer",
+                "personen": [
+                    {
+                        "partners": [
+                            {
+                                "burgerservicenummer": "999992222",
+                                "naam": {
+                                    "voornamen": "Frieda",  # Not all the names have voorvoegsels
+                                    "geslachtsnaam": "Kroket",
+                                    "voorletters": "F.",
+                                },
+                            }
+                        ],
+                        "kinderen": [
+                            {
+                                "burgerservicenummer": "999991111",
+                                "naam": {
+                                    "geslachtsnaam": "Kroket",
+                                    "voorletters": "F.",
+                                    "voornamen": "Fredo",
+                                    "voorvoegsel": "",
+                                },
+                            }
+                        ],
+                    }
+                ],
+            },
+        )
+        super().test_get_family_members()
 
 
 class ClientFactoryTests(SimpleTestCase):
