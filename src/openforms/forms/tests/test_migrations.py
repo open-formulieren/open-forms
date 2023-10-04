@@ -158,5 +158,7 @@ class TestChangeFamilyMembersComponent(TestMigrations):
     def test_migration(self):
         self.form_def.refresh_from_db()
 
-        self.assertFalse(self.form_def.configuration["components"][0]["includePartner"])
+        self.assertFalse(
+            self.form_def.configuration["components"][0]["includePartners"]
+        )
         self.assertTrue(self.form_def.configuration["components"][0]["includeChildren"])

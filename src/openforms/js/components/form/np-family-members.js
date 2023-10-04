@@ -26,7 +26,7 @@ class NpFamilyMembers extends SelectBoxes {
         label: 'Select family members',
         key: 'npFamilyMembers',
         type: 'npFamilyMembers',
-        includePartner: true,
+        includePartners: true,
         includeChildren: true,
       },
       ...extend
@@ -66,9 +66,9 @@ class NpFamilyMembers extends SelectBoxes {
         {...IS_SENSITIVE_DATA, defaultValue: true},
         {
           type: 'checkbox',
-          key: 'includePartner',
-          label: 'Include partner',
-          tooltip: 'Whether to add partner information to the component.',
+          key: 'includePartners',
+          label: 'Include partners',
+          tooltip: 'Whether to add partners information to the component.',
           defaultValue: true,
         },
         {

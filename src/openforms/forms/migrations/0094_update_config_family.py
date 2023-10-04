@@ -18,7 +18,7 @@ def add_configuration_to_family_component(apps, schema_editor):
             if comp["type"] != "npFamilyMembers":
                 continue
 
-            comp["includePartner"] = False
+            comp["includePartners"] = False
             comp["includeChildren"] = True
 
             updated_form_definition = True
