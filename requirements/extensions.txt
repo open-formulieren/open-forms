@@ -41,10 +41,6 @@ boltons==21.0.0
     #   -r requirements/base.txt
     #   face
     #   glom
-cached-property==1.5.2
-    # via
-    #   -r requirements/base.txt
-    #   zeep
 cairocffi==1.2.0
     # via
     #   -r requirements/base.txt
@@ -654,7 +650,7 @@ requests-oauthlib==1.3.0
     # via
     #   -r requirements/base.txt
     #   o365
-requests-toolbelt==0.9.1
+requests-toolbelt==1.0.0
     # via
     #   -r requirements/base.txt
     #   zeep
@@ -790,7 +786,7 @@ xmltodict==0.12.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-zeep==4.1.0
+zeep==4.2.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
