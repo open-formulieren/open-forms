@@ -1,6 +1,7 @@
 """
 Test that component translations are respected in the context of a submission.
 """
+from copy import deepcopy
 from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase
@@ -112,7 +113,9 @@ class ComponentTranslationTests(SimpleTestCase):
         form = FormFactory.build(translation_enabled=False)
         submission = SubmissionFactory.build(form=form)
         request = rf.get("/dummy")
-        config_wrapper = FormioConfigurationWrapper(configuration=TEST_CONFIGURATION)
+        config_wrapper = FormioConfigurationWrapper(
+            configuration=deepcopy(TEST_CONFIGURATION)
+        )
 
         configuration = get_dynamic_configuration(config_wrapper, request, submission)
 
@@ -142,7 +145,9 @@ class ComponentTranslationTests(SimpleTestCase):
         form = FormFactory.build(translation_enabled=True)
         submission = SubmissionFactory.build(form=form, language_code="nl")
         request = rf.get("/dummy")
-        config_wrapper = FormioConfigurationWrapper(configuration=TEST_CONFIGURATION)
+        config_wrapper = FormioConfigurationWrapper(
+            configuration=deepcopy(TEST_CONFIGURATION)
+        )
 
         configuration = get_dynamic_configuration(config_wrapper, request, submission)
 
@@ -172,7 +177,9 @@ class ComponentTranslationTests(SimpleTestCase):
         form = FormFactory.build(translation_enabled=True)
         submission = SubmissionFactory.build(form=form, language_code="en")
         request = rf.get("/dummy")
-        config_wrapper = FormioConfigurationWrapper(configuration=TEST_CONFIGURATION)
+        config_wrapper = FormioConfigurationWrapper(
+            configuration=deepcopy(TEST_CONFIGURATION)
+        )
 
         configuration = get_dynamic_configuration(config_wrapper, request, submission)
 

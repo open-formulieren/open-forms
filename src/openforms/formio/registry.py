@@ -11,7 +11,7 @@ This allows us to treat all aspects of every component type together rather than
 smeared out across the codebase in similar but different implementations, while making
 the public API better defined and smaller.
 """
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Generic, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
 
@@ -45,7 +45,10 @@ class RewriterForRequestProtocol(Protocol):  # pragma: nocover
         ...
 
 
-class BasePlugin(AbstractBasePlugin):
+T = TypeVar("T", bound=Component)
+
+
+class BasePlugin(Generic[T], AbstractBasePlugin):
     """
     Base class for Formio component plugins.
     """
@@ -73,9 +76,12 @@ class BasePlugin(AbstractBasePlugin):
         return _("{type} component").format(type=self.identifier.capitalize())
 
     def mutate_config_dynamically(
-        self, component: Component, submission: "Submission", data: DataMapping
+        self, component: T, submission: "Submission", data: DataMapping
     ) -> None:  # pragma: nocover
         ...
+
+    def localize(self, component: T, language_code: str, enabled: bool):
+        pass  # noop by default, specific component types can extend the base behaviour
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):
@@ -85,6 +91,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         """
         Given a value from any source, normalize it according to the component rules.
         """
+        assert "type" in component
         if (component_type := component["type"]) not in self:
             return value
         normalizer = self[component_type].normalizer
@@ -100,6 +107,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         for the given component type, as it makes the best sense for that component
         type.
         """
+        assert "type" in component
         if (component_type := component["type"]) not in self:
             component_type = "default"
 
@@ -120,6 +128,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         for example) to work.
         """
         # if there is no plugin registered for the component, return the input
+        assert "type" in component
         if (component_type := component["type"]) not in self:
             return
 
@@ -132,6 +141,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         Mutate the component in place for the given request context.
         """
         # if there is no plugin registered for the component, return the input
+        assert "type" in component
         if (component_type := component["type"]) not in self:
             return
 
@@ -141,6 +151,34 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
             return
 
         rewriter(component, request)
+
+    def localize_component(
+        self, component: Component, language_code: str, enabled: bool
+    ) -> None:
+        """
+        Apply component translations for the provided language code.
+
+        :arg component: Form.io component definition to localize
+        :arg language_code: the language code of the language to translate to
+        :arg enabled: whether translations are enabled or not. If translations are not
+          enabled, the translation information should still be stripped from the
+          component definition(s).
+        """
+        assert "type" in component
+        generic_translations = component.get("openForms", {}).get("translations", {})
+        # apply the generic translation behaviour even for unregistered components
+        if enabled and (translations := generic_translations.get(language_code, {})):
+            for prop, translation in translations.items():
+                if translation:
+                    component[prop] = translation
+
+        if (component_type := component["type"]) in self:
+            component_plugin = self[component_type]
+            component_plugin.localize(component, language_code, enabled=enabled)
+
+        # always drop translation meta information
+        if generic_translations:
+            del component["openForms"]["translations"]  # type: ignore
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

@@ -34,7 +34,13 @@ from ..formatters.formio import (
     TimeFormatter,
 )
 from ..registry import BasePlugin, register
-from ..typing import Component, ContentComponent, FileComponent, RadioComponent
+from ..typing import (
+    Component,
+    ContentComponent,
+    FileComponent,
+    RadioComponent,
+    SelectComponent,
+)
 
 if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
@@ -125,11 +131,11 @@ class SelectBoxes(BasePlugin):
 
 
 @register("select")
-class Select(BasePlugin):
+class Select(BasePlugin[SelectComponent]):
     formatter = SelectFormatter
 
     def mutate_config_dynamically(
-        self, component: Component, submission: "Submission", data: DataMapping
+        self, component, submission: "Submission", data: DataMapping
     ) -> None:
         add_options_to_config(
             component,
@@ -137,6 +143,21 @@ class Select(BasePlugin):
             submission,
             options_path="data.values",
         )
+
+    def localize(self, component: SelectComponent, language_code: str, enabled: bool):
+        if not (options := component.get("data", {}).get("values", [])):
+            return
+
+        for option in options:
+            if not (translations := option.get("openForms", {}).get("translations")):
+                continue
+
+            translated_label = translations.get(language_code, {}).get("label", "")
+            if enabled and translated_label:
+                option["label"] = translated_label
+
+            # always clean up
+            del option["openForms"]["translations"]  # type: ignore
 
 
 @register("currency")

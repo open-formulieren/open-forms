@@ -27,7 +27,11 @@ class OpenFormsConfig(TypedDict, total=False):
     maxDate: DateConstraintConfiguration | None
 
 
-class OptionDict(TypedDict):
+class OpenFormsOptionExtension(TypedDict, total=False):
+    translations: dict[str, dict[str, str]]
+
+
+class OptionDict(TypedDict, total=False):
     """
     Value as used in a select/radio/... component.
 
@@ -37,6 +41,7 @@ class OptionDict(TypedDict):
 
     value: str
     label: str
+    openForms: OpenFormsOptionExtension
 
 
 class PrefillConfiguration(TypedDict):
