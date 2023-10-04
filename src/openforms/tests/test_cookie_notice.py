@@ -5,126 +5,125 @@ from django.test import override_settings, tag
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from cookie_consent.cache import delete_cache
+from asgiref.sync import sync_to_async
 from cookie_consent.models import CookieGroup
 from django_webtest import WebTest
 from furl import furl
+from playwright.async_api import expect
 
 from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 from openforms.forms.tests.factories import FormFactory
+from openforms.tests.e2e.base import E2ETestCase, browser_page
 from openforms.tests.utils import NOOP_CACHES
 
 
+@sync_to_async()
+def setup_test_data(live_server_url: str):
+    form = FormFactory.create()
+    url = reverse("forms:form-detail", kwargs={"slug": form.slug})
+
+    # load some default cookie groups and cookies
+    call_command("loaddata", "cookie_consent", stdout=StringIO())
+
+    config = AnalyticsToolsConfiguration.get_solo()
+    assert isinstance(config, AnalyticsToolsConfiguration)
+
+    # configure an analytics provider so that the JS snippets are not empty
+    config.matomo_url = f"{live_server_url}/static"
+    config.matomo_site_id = "1234"
+    config.enable_matomo_site_analytics = True
+    config.analytics_cookie_consent_group = CookieGroup.objects.get(
+        varname="analytical"
+    )
+
+    config.save()
+
+    return url
+
+
 @override_settings(CACHES=NOOP_CACHES)
-class CookieNoticeTests(WebTest):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
+class CookieNoticeTests(E2ETestCase):
+    async def test_anon_user_notice_rendered(self):
+        path = await setup_test_data(self.live_server_url)
+        url = f"{self.live_server_url}{path}"
 
-        cls.form = FormFactory.create()
-        cls.url = reverse("forms:form-detail", kwargs={"slug": cls.form.slug})
+        async with browser_page() as page:
+            await page.goto(url)
 
-        # load some default cookie groups and cookies
-        call_command("loaddata", "cookie_consent", stdout=StringIO())
+            cookie_notice = page.get_by_role("region", name="Cookie notice")
+            await expect(cookie_notice).to_be_visible()
 
-        config = AnalyticsToolsConfiguration.get_solo()
-
-        # configure analytics so that the JS snippets are not empty
-        config.gtm_code = "GTM-XXXX"
-        config.ga_code = "UA-XXXXX-Y"
-        config.matomo_url = "https://example.com"
-        config.matomo_site_id = "1234"
-        config.piwik_url = "https://example.com"
-        config.piwik_site_id = "1234"
-        config.siteimprove_id = "1234"
-        config.analytics_cookie_consent_group = CookieGroup.objects.get(
-            varname="analytical"
-        )
-
-        config.save()
-
-        # workaround for https://github.com/bmihelac/django-cookie-consent/issues/41
-        # the cache instance is resolved at import time rather than at runtime.
-        delete_cache()
-
-    def test_anon_user_notice_rendered(self):
-        form_page = self.app.get(self.url)
-
-        cookie_notice = form_page.pyquery(".cookie-notice")
-
-        # check that the notice is present
-        self.assertTrue(bool(cookie_notice))
-
-    def test_accept_reject_cookies(self):
+    async def test_accept_reject_cookies(self):
         """
         Assert that the cookie notice is no longer visible once the user accepted or
         rejected them.
         """
+        path = await setup_test_data(self.live_server_url)
+        url = f"{self.live_server_url}{path}"
+
         with self.subTest(action="accept"):
-            form_page = self.app.get(self.url)
+            async with browser_page() as page:
+                await page.goto(url)
 
-            accept_form = form_page.forms[0]
-            assert "accept" in accept_form.action
+                cookie_notice = page.get_by_role("region", name="Cookie notice")
+                await cookie_notice.get_by_role("button", name="Accept all").click()
+                await expect(cookie_notice).not_to_be_visible()
 
-            refreshed_form_page = accept_form.submit().follow()
-
-            self.assertEqual(refreshed_form_page.request.path, self.url)
-            self.assertFalse(refreshed_form_page.pyquery(".cookie-notice"))
-
-        self.renew_app()
+                # refreshing -> still not visible
+                await page.reload()
+                await expect(cookie_notice).not_to_be_visible()
 
         with self.subTest(action="decline"):
-            form_page = self.app.get(self.url)
+            async with browser_page() as page:
+                await page.goto(url)
 
-            decline_form = form_page.forms[1]
-            assert "decline" in decline_form.action
+                cookie_notice = page.get_by_role("region", name="Cookie notice")
+                await cookie_notice.get_by_role("button", name="Decline all").click()
+                await expect(cookie_notice).not_to_be_visible()
 
-            refreshed_form_page = decline_form.submit().follow()
+                # refreshing -> still not visible
+                await page.reload()
+                await expect(cookie_notice).not_to_be_visible()
 
-            self.assertEqual(refreshed_form_page.request.path, self.url)
-            self.assertFalse(refreshed_form_page.pyquery(".cookie-notice"))
-
-    def test_analytics_snippets_not_rendered(self):
+    async def test_analytics_snippets_not_rendered(self):
         """
         Assert that the analytics snippets are opt-in.
 
         Analytics snippets are only loaded after the user accepts the cookies.
         """
+        path = await setup_test_data(self.live_server_url)
+        url = f"{self.live_server_url}{path}"
+        expected_script_src = f"{self.live_server_url}/static/matomo.js"
+
         with self.subTest(case="no cookies accepted or declined"):
-            form_page = self.app.get(self.url)
-            self.assertTemplateNotUsed(form_page, "analytics_tools/all_head.html")
-            self.assertTemplateNotUsed(form_page, "analytics_tools/all_bottom.html")
+            async with browser_page() as page:
+                await page.goto(url)
+
+                await expect(
+                    page.locator(f'css=script[src="{expected_script_src}"]')
+                ).not_to_be_attached()
 
         with self.subTest(case="cookies rejected"):
-            decline_form = form_page.forms[1]
-            assert "decline" in decline_form.action
+            async with browser_page() as page:
+                await page.goto(url)
+                await page.get_by_role("button", name="Decline all").click()
 
-            refreshed_form_page = decline_form.submit().follow()
-
-            self.assertTemplateNotUsed(
-                refreshed_form_page, "analytics_tools/all_head.html"
-            )
-            self.assertTemplateNotUsed(
-                refreshed_form_page, "analytics_tools/all_bottom.html"
-            )
-
-        self.renew_app()
+                await expect(
+                    page.locator(f'css=script[src="{expected_script_src}"]')
+                ).not_to_be_attached()
 
         with self.subTest(case="cookies accepted"):
-            form_page = self.app.get(self.url)
+            async with browser_page() as page:
+                await page.goto(url)
+                await page.get_by_role("button", name="Accept all").click()
 
-            accept_form = form_page.forms[0]
-            assert "accept" in accept_form.action
+                await expect(
+                    page.locator(f'css=script[src="{expected_script_src}"]')
+                ).to_be_attached()
 
-            refreshed_form_page = accept_form.submit().follow()
 
-            self.assertTemplateUsed(
-                refreshed_form_page, "analytics_tools/all_head.html"
-            )
-            self.assertTemplateUsed(
-                refreshed_form_page, "analytics_tools/all_bottom.html"
-            )
-
+@override_settings(CACHES=NOOP_CACHES)
+class CookieListTests(WebTest):
     @tag("GHSA-c97h-m5qf-j8mf")
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False,
@@ -133,6 +132,8 @@ class CookieNoticeTests(WebTest):
         IS_HTTPS=True,
     )
     def test_accept_reject_does_not_allow_open_redirect(self):
+        # load some default cookie groups and cookies
+        call_command("loaddata", "cookie_consent", stdout=StringIO())
         url = reverse("cookie_consent_cookie_group_list")
         allowed_redirects = (
             "https://example.com/foo/bar",

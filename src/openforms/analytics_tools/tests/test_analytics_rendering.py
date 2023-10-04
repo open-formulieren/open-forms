@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from cookie_consent.models import CookieGroup
@@ -5,9 +6,10 @@ from django_webtest import WebTest
 
 from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 from openforms.forms.tests.factories import FormFactory
-from openforms.utils.tests.cache import clear_caches
+from openforms.tests.utils import NOOP_CACHES
 
 
+@override_settings(CACHES=NOOP_CACHES)
 class AnalyticsToolsRenderingTest(WebTest):
     """Integration tests for rendering of analytics snippets.
 
@@ -19,11 +21,11 @@ class AnalyticsToolsRenderingTest(WebTest):
 
     @classmethod
     def setUpTestData(cls):
-        clear_caches()
         super().setUpTestData()
         form = FormFactory.create()
         cls.url = reverse("forms:form-detail", kwargs={"slug": form.slug})
         config = AnalyticsToolsConfiguration.get_solo()
+        assert isinstance(config, AnalyticsToolsConfiguration)
         config.analytics_cookie_consent_group, _ = CookieGroup.objects.get_or_create(
             varname="analytical"
         )
@@ -39,16 +41,18 @@ class AnalyticsToolsRenderingTest(WebTest):
         self.config.ga_code = "UA-XXXXX-Y"
         self.config.save()
 
-        # Accept cookies
         form_page = self.app.get(self.url)
-        accept_form = form_page.forms[0]
-        refreshed_form_page = accept_form.submit().follow()
 
-        google_tag_manager = refreshed_form_page.pyquery("#google-tag-manager")
-        google_analytics = refreshed_form_page.pyquery("#google-analytics")
-
+        google_tag_manager = form_page.pyquery("#google-tag-manager")
+        google_analytics = form_page.pyquery("#google-analytics")
         self.assertTrue(google_tag_manager.is_("script"))
         self.assertTrue(google_analytics.is_("script"))
+
+        # Regression test for #1587
+        with self.subTest("script CSP nonces"):
+            scripts = form_page.pyquery("script[nonce]")
+            for script in scripts:
+                self.assertTrue(bool(script.attrib["nonce"]))
 
     def test_matomo_rendering(self):
         """Assert that the Matomo script is rendered"""
@@ -61,11 +65,8 @@ class AnalyticsToolsRenderingTest(WebTest):
 
         # Accept cookies
         form_page = self.app.get(self.url)
-        accept_form = form_page.forms[0]
-        refreshed_form_page = accept_form.submit().follow()
 
-        matomo = refreshed_form_page.pyquery("#matomo-analytics")
-
+        matomo = form_page.pyquery("#matomo-analytics")
         self.assertTrue(matomo.is_("script"))
 
     def test_piwik_pro_rendering(self):
@@ -79,11 +80,8 @@ class AnalyticsToolsRenderingTest(WebTest):
 
         # Accept cookies
         form_page = self.app.get(self.url)
-        accept_form = form_page.forms[0]
-        refreshed_form_page = accept_form.submit().follow()
 
-        piwik_pro = refreshed_form_page.pyquery("#piwik-pro-analytics")
-
+        piwik_pro = form_page.pyquery("#piwik-pro-analytics")
         self.assertTrue(piwik_pro.is_("script"))
 
     def test_piwik_rendering(self):
@@ -97,11 +95,8 @@ class AnalyticsToolsRenderingTest(WebTest):
 
         # Accept cookies
         form_page = self.app.get(self.url)
-        accept_form = form_page.forms[0]
-        refreshed_form_page = accept_form.submit().follow()
 
-        piwik = refreshed_form_page.pyquery("#piwik-analytics")
-
+        piwik = form_page.pyquery("#piwik-analytics")
         self.assertTrue(piwik.is_("script"))
 
     def test_site_improve_rendering(self):
@@ -115,9 +110,6 @@ class AnalyticsToolsRenderingTest(WebTest):
 
         # Accept cookies
         form_page = self.app.get(self.url)
-        accept_form = form_page.forms[0]
-        refreshed_form_page = accept_form.submit().follow()
 
-        siteimprove = refreshed_form_page.pyquery("#siteimprove-analytics")
-
+        siteimprove = form_page.pyquery("#siteimprove-analytics")
         self.assertTrue(siteimprove.is_("script"))

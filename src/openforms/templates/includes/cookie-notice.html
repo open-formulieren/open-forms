@@ -9,7 +9,7 @@
     {% all_cookie_groups 'cookie-consent__cookie-groups' %}
 
     <template id="cookie-consent__cookie-bar">
-        <div class="cookie-notice">
+        <section class="cookie-notice" aria-label="{% trans 'Cookie notice' %}">
 
             <span class="cookie-notice__text">
                 {% blocktrans trimmed %}
@@ -34,7 +34,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </section>
     </template>
 
     <script type="module" nonce="{{ request.csp_nonce }}">
