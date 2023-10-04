@@ -21,7 +21,7 @@ from zgw_consumers_ext.tests.factories import ServiceFactory
 from ..constants import FamilyMembersDataAPIChoices
 from ..haal_centraal import get_np_family_members_haal_centraal
 from ..models import FamilyMembersTypeConfig
-from ..stuf_bg import get_np_children_stuf_bg
+from ..stuf_bg import get_np_family_members_stuf_bg
 
 TEST_FILES = Path(__file__).parent.resolve() / "responses"
 
@@ -39,6 +39,8 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                     "type": "npFamilyMembers",
                     "label": "FamilyMembers",
                     "values": [{"label": "", "value": ""}],
+                    "includePartners": False,
+                    "includeChildren": True,
                 },
             ],
             auth_info__attribute=AuthAttribute.bsn,
@@ -94,7 +96,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             )
 
             kids_choices = get_np_family_members_haal_centraal(
-                bsn="111222333", include_children=True, include_partner=False
+                bsn="111222333", include_children=True, include_partners=False
             )
 
             self.assertEqual(2, len(kids_choices))
@@ -116,7 +118,9 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                 content=response_content,
             )
 
-            kids_choices = get_np_children_stuf_bg(bsn="111222333")
+            kids_choices = get_np_family_members_stuf_bg(
+                bsn="111222333", include_children=True, include_partners=False
+            )
 
             self.assertEqual(2, len(kids_choices))
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
@@ -136,6 +140,8 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                     "type": "npFamilyMembers",
                     "label": "FamilyMembers",
                     "values": [{"label": "", "value": ""}],
+                    "includeChildren": True,
+                    "includePartners": False,
                 },
             ],
             auth_info=None,
