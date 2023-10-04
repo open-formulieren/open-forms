@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, TypeVar
 
 from requests.auth import AuthBase
@@ -73,6 +73,7 @@ class APIKeyAuth(AuthBase):
 @dataclass
 class ZGWAuth(AuthBase):
     service: Service
+    auth: ClientAuth = field(init=False)
 
     def __post_init__(self):
         self.auth = ClientAuth(
