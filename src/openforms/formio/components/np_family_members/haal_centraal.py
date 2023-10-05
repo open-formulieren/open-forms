@@ -1,12 +1,10 @@
-from typing import List, Tuple
-
 from openforms.contrib.haal_centraal.clients import get_brp_client
 from openforms.contrib.haal_centraal.clients.brp import Person
 
 
 def get_np_family_members_haal_centraal(
     bsn: str, include_children: bool, include_partners: bool
-) -> List[Tuple[str, str]]:
+) -> list[tuple[str, str]]:
     # TODO: add tests for missing configuration and error handling!
     with get_brp_client() as client:
         family_data = client.get_family_members(bsn, include_children, include_partners)
