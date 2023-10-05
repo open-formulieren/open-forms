@@ -28,6 +28,10 @@ class RadioComponent(Component):
     values: list[OptionDict]
 
 
+class SelectBoxesComponent(Component):
+    values: list[OptionDict]
+
+
 class ContentComponent(Component):
     html: str
 

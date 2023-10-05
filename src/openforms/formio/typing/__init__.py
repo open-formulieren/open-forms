@@ -15,6 +15,7 @@ from .vanilla import (
     DatetimeComponent,
     FileComponent,
     RadioComponent,
+    SelectBoxesComponent,
     SelectComponent,
 )
 
@@ -24,6 +25,7 @@ __all__ = [
     "ContentComponent",
     "FileComponent",
     "SelectComponent",
+    "SelectBoxesComponent",
     "RadioComponent",
     "Column",
     "ColumnsComponent",
