@@ -7,11 +7,13 @@ These are common ancestors for all specific component types.
 # TODO: on python 3.11+ we can use typing.NotRequired to mark keys that may be absent.
 # For now at least, we use total=False.
 
-from typing import TypedDict
+from typing import TypeAlias, TypedDict
 
 from openforms.typing import JSONValue
 
 from .dates import DateConstraintConfiguration
+
+TranslationsDict: TypeAlias = dict[str, dict[str, str]]
 
 
 class Validate(TypedDict, total=False):
@@ -25,10 +27,11 @@ class OpenFormsConfig(TypedDict, total=False):
     widget: str
     minDate: DateConstraintConfiguration | None
     maxDate: DateConstraintConfiguration | None
+    translations: TranslationsDict
 
 
 class OpenFormsOptionExtension(TypedDict, total=False):
-    translations: dict[str, dict[str, str]]
+    translations: TranslationsDict
 
 
 class OptionDict(TypedDict, total=False):

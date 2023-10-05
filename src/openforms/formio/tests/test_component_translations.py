@@ -2,6 +2,7 @@
 Test that component translations are respected in the context of a submission.
 """
 from copy import deepcopy
+from typing import Literal
 from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase
@@ -9,7 +10,6 @@ from django.test import SimpleTestCase
 from hypothesis import given, strategies as st
 from rest_framework.test import APIRequestFactory
 
-from openforms.formio.typing.vanilla import SelectComponent
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.search_strategies import language_code
@@ -17,6 +17,7 @@ from openforms.tests.search_strategies import language_code
 from ..datastructures import FormioConfigurationWrapper
 from ..registry import register
 from ..service import get_dynamic_configuration
+from ..typing import RadioComponent, SelectComponent
 
 rf = APIRequestFactory()
 
@@ -209,6 +210,9 @@ class ConfigurationTranslationTests(SimpleTestCase):
             self.assertEqual(content["html"], "<p>EN content</p>")
             self.assertNotIn("translations", content["openForms"])
 
+    def test_does_not_crash_on_kitchensink(self):
+        raise NotImplementedError("Use kitchensink components JSON file")
+
 
 class ComponentTranslationTests(SimpleTestCase):
     """
@@ -235,6 +239,313 @@ class ComponentTranslationTests(SimpleTestCase):
 
         self.assertEqual(component["label"], "Label")
         self.assertEqual(component["description"], "Description")
+
+
+class TextFieldTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(
+            ["label", "description", "tooltip", "defaultValue", "placeholder"]
+        ),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_textfield(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "textfield",
+            "key": "textfield",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class EmailTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_email(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "email",
+            "key": "email",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class DateTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_date(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "date",
+            "key": "date",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class DateTetimeTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_datetetime(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "datetetime",
+            "key": "datetetime",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class TimeTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_time(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "time",
+            "key": "time",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class PhoneTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_phone(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "phone",
+            "key": "phone",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class PostcodeTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_postcode(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "postcode",
+            "key": "postcode",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class FileTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_file(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "file",
+            "key": "file",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class TextareaTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(
+            ["label", "description", "tooltip", "defaultValue", "placeholder"]
+        ),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_textarea(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "textarea",
+            "key": "textarea",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class NumberTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip", "suffix"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_number(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "number",
+            "key": "number",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class CheckboxTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_checkbox(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "checkbox",
+            "key": "checkbox",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class SelectBoxesTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_selectboxes(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "selectboxes",
+            "key": "selectboxes",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+    @given(lang_code=language_code, translation=st.text(min_size=1))
+    def test_options_translated(self, lang_code, translation):
+        component = {
+            "type": "selectboxes",
+            "key": "selectboxes",
+            "values": [
+                {
+                    "value": "1",
+                    "label": "First option",
+                    "openForms": {
+                        "translations": {
+                            lang_code: {"label": translation},
+                        }
+                    },
+                }
+            ],
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        assert "values" in component
+        opt1 = component["values"][0]
+        assert "label" in opt1
+        assert "openForms" in opt1
+        self.assertEqual(opt1["label"], translation)
+        self.assertNotIn("translations", opt1["openForms"])
 
 
 class SelectTranslationTests(SimpleTestCase):
@@ -331,3 +642,324 @@ class SelectTranslationTests(SimpleTestCase):
         assert "label" in opt1
         self.assertEqual(opt1["label"], "First option")
         self.assertNotIn("openForms", opt1)
+
+
+class CurrencyTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_currency(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "currency",
+            "key": "currency",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class RadioTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_radio(
+        self,
+        lang_code: str,
+        prop: Literal["label", "description", "tooltip"],
+        translation: str,
+    ):
+        component: RadioComponent = {
+            "type": "radio",
+            "key": "radio",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+            "values": [],
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+    @given(lang_code=language_code, translation=st.text(min_size=1))
+    def test_options_translated(self, lang_code, translation):
+        component: RadioComponent = {
+            "type": "radio",
+            "key": "radio",
+            "values": [
+                {
+                    "value": "1",
+                    "label": "First option",
+                    "openForms": {
+                        "translations": {
+                            lang_code: {"label": translation},
+                        }
+                    },
+                }
+            ],
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        assert "values" in component
+        opt1 = component["values"][0]
+        assert "label" in opt1
+        assert "openForms" in opt1
+        self.assertEqual(opt1["label"], translation)
+        self.assertNotIn("translations", opt1["openForms"])
+
+
+class IBANTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_iban(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "iban",
+            "key": "iban",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class LicensePlateTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_licenseplate(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "licenseplate",
+            "key": "licenseplate",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class BSNTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_bsn(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "bsn",
+            "key": "bsn",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class NPFamilyMembersTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_npFamilyMembers(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "npFamilyMembers",
+            "key": "npFamilyMembers",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class SignatureTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_signature(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "signature",
+            "key": "signature",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class CoSignTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_cosign(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "cosign",
+            "key": "cosign",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class MapTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_map(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "map",
+            "key": "map",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class ContentTranslationTests(SimpleTestCase):
+    @given(lang_code=language_code, translation=st.text(min_size=1))
+    def test_translatable_properties_content(self, lang_code: str, translation: str):
+        component = {
+            "type": "content",
+            "key": "content",
+            "label": "Must always have a label",
+            "html": "Default value",
+            "openForms": {"translations": {lang_code: {"html": translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component["html"], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class FieldsetTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "tooltip"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_fieldset(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Textfield",
+                    "openForms": {"translations": {lang_code: "-translated-"}},
+                }
+            ],
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+        nested = component["components"][0]
+        self.assertEqual(nested["label"], "Textfield")
+
+
+class EditGridTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description", "tooltip", "groupLabel"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_editgrid(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Textfield",
+                    "openForms": {"translations": {lang_code: "-translated-"}},
+                }
+            ],
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+        nested = component["components"][0]
+        self.assertEqual(nested["label"], "Textfield")
