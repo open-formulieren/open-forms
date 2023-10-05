@@ -15,6 +15,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.tests.search_strategies import language_code
 
 from ..datastructures import FormioConfigurationWrapper
+from ..formatters.tests.utils import load_json
 from ..registry import register
 from ..service import get_dynamic_configuration
 from ..typing import RadioComponent, SelectComponent
@@ -211,7 +212,27 @@ class ConfigurationTranslationTests(SimpleTestCase):
             self.assertNotIn("translations", content["openForms"])
 
     def test_does_not_crash_on_kitchensink(self):
-        raise NotImplementedError("Use kitchensink components JSON file")
+        configuration = load_json("kitchensink_components.json")
+        config_wrapper = FormioConfigurationWrapper(configuration)
+        request = rf.get("/dummy")
+
+        with self.subTest(translation_enabled=True):
+            form = FormFactory.build(translation_enabled=True)
+            submission = SubmissionFactory.build(form=form, language_code="en")
+
+            try:
+                get_dynamic_configuration(config_wrapper, request, submission)
+            except Exception as exc:
+                raise self.failureException("Unexpected crash") from exc
+
+        with self.subTest(translation_enabled=False):
+            form = FormFactory.build(translation_enabled=False)
+            submission = SubmissionFactory.build(form=form, language_code="en")
+
+            try:
+                get_dynamic_configuration(config_wrapper, request, submission)
+            except Exception as exc:
+                raise self.failureException("Unexpected crash") from exc
 
 
 class ComponentTranslationTests(SimpleTestCase):
