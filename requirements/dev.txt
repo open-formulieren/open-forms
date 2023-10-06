@@ -556,6 +556,7 @@ isodate==0.6.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   maykin-json-logic-py
     #   maykin-python3-saml
     #   zeep
 isort==5.10.1
@@ -634,7 +635,7 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-json-logic-py==0.11.0
+maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
