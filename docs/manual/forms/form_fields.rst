@@ -236,10 +236,10 @@ Gezinsleden
 De *Gezinsledenscomponent* toont de namen van alle gezinsleden (partners en/of kinderen) als selectievakjes.
 De waarden die naar de registratie backend worden gestuurd zijn de BSNs.
 
-De gegevens voor de gezinsleden worden opgehaald van Haal Centraal of StUF-BG. Dit kan in de Admin worden geconfigureerd
-onder **Miscellaneous** > **Familieleden typeconfiguratie**.
+De gegevens voor de gezinsleden worden opgehaald van Haal Centraal BRP Personen Bevragen of StUF-BG. Dit kan in de Admin
+worden geconfigureerd onder **Miscellaneous** > **Familieleden typeconfiguratie**.
 
-In de component zelf, kunt u kiezen of de informatie van de partners, de kinderen of allebei moeten opgehaald worden.
+In de component zelf kunt u kiezen of de informatie van de partners, de kinderen of allebei moeten opgehaald worden.
 
 
 

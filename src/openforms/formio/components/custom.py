@@ -171,8 +171,8 @@ class NPFamilyMembers(BasePlugin):
             # become available in the ``data`` argument instead.
             child_choices = handler(
                 bsn,
-                include_children=component["includeChildren"],
-                include_partners=component["includePartners"],
+                include_children=component.get("includeChildren", True),
+                include_partners=component.get("includePartners", True),
             )
 
             component["values"] = [
