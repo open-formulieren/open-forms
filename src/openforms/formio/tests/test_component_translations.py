@@ -107,8 +107,8 @@ class ConfigurationTranslationTests(SimpleTestCase):
 
     This is not meant to exhaustively test all component types - for that, you should
     write appropriate unit tests for each supported component type. Rather, the
-    mechanism here is tested to configure translations are the comopnent level instead
-    of the entire form definition level and avoid leaking the excessive data to the
+    mechanism here is tested to configure translations at the component level instead
+    of at the form definition level. This avoids leaking excessive data to the
     frontend.
 
     Translations need to be 'injected' by the backend and be ready to use for the
@@ -869,6 +869,29 @@ class CoSignTranslationTests(SimpleTestCase):
         component = {
             "type": "cosign",
             "key": "cosign",
+            "label": "Must always have a label",
+            prop: f"Default {prop} value",
+            "openForms": {"translations": {lang_code: {prop: translation}}},
+        }
+
+        register.localize_component(component, lang_code, enabled=True)
+
+        self.assertEqual(component[prop], translation)
+        self.assertNotIn("translations", component["openForms"])
+
+
+class OldCoSignTranslationTests(SimpleTestCase):
+    @given(
+        lang_code=language_code,
+        prop=st.sampled_from(["label", "description"]),
+        translation=st.text(min_size=1),
+    )
+    def test_translatable_properties_cosign_old(
+        self, lang_code: str, prop: str, translation: str
+    ):
+        component = {
+            "type": "coSign",
+            "key": "coSign",
             "label": "Must always have a label",
             prop: f"Default {prop} value",
             "openForms": {"translations": {lang_code: {prop: translation}}},
