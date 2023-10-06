@@ -62,3 +62,19 @@ def get_translated_custom_error_messages(
         component["errors"] = custom_error_messages[language]
 
     return config_wrapper
+
+
+def localize_components(
+    configuration_wrapper: FormioConfigurationWrapper,
+    language_code: str,
+    enabled: bool = True,
+) -> None:
+    """
+    Apply the configured translations for each component in the configuration.
+
+    .. note:: this function mutates the configuration.
+    """
+    for component in configuration_wrapper:
+        register.localize_component(
+            component, language_code=language_code, enabled=enabled
+        )

@@ -16,7 +16,19 @@ class FileComponent(Component):
     file: FileConfig
 
 
+class SelectData(TypedDict, total=False):
+    values: list[OptionDict]
+
+
+class SelectComponent(Component):
+    data: SelectData
+
+
 class RadioComponent(Component):
+    values: list[OptionDict]
+
+
+class SelectBoxesComponent(Component):
     values: list[OptionDict]
 
 

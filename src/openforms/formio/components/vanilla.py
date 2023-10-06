@@ -34,7 +34,14 @@ from ..formatters.formio import (
     TimeFormatter,
 )
 from ..registry import BasePlugin, register
-from ..typing import Component, ContentComponent, FileComponent, RadioComponent
+from ..typing import (
+    ContentComponent,
+    FileComponent,
+    RadioComponent,
+    SelectBoxesComponent,
+    SelectComponent,
+)
+from .translations import translate_options
 
 if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
@@ -115,21 +122,31 @@ class Checkbox(BasePlugin):
 
 
 @register("selectboxes")
-class SelectBoxes(BasePlugin):
+class SelectBoxes(BasePlugin[SelectBoxesComponent]):
     formatter = SelectBoxesFormatter
 
     def mutate_config_dynamically(
-        self, component: Component, submission: "Submission", data: DataMapping
+        self,
+        component: SelectBoxesComponent,
+        submission: "Submission",
+        data: DataMapping,
     ) -> None:
         add_options_to_config(component, data, submission)
 
+    def localize(
+        self, component: SelectBoxesComponent, language_code: str, enabled: bool
+    ):
+        if not (options := component.get("values", [])):
+            return
+        translate_options(options, language_code, enabled)
+
 
 @register("select")
-class Select(BasePlugin):
+class Select(BasePlugin[SelectComponent]):
     formatter = SelectFormatter
 
     def mutate_config_dynamically(
-        self, component: Component, submission: "Submission", data: DataMapping
+        self, component, submission: "Submission", data: DataMapping
     ) -> None:
         add_options_to_config(
             component,
@@ -138,6 +155,11 @@ class Select(BasePlugin):
             options_path="data.values",
         )
 
+    def localize(self, component: SelectComponent, language_code: str, enabled: bool):
+        if not (options := component.get("data", {}).get("values", [])):
+            return
+        translate_options(options, language_code, enabled)
+
 
 @register("currency")
 class Currency(BasePlugin):
@@ -145,13 +167,18 @@ class Currency(BasePlugin):
 
 
 @register("radio")
-class Radio(BasePlugin):
+class Radio(BasePlugin[RadioComponent]):
     formatter = RadioFormatter
 
     def mutate_config_dynamically(
         self, component: RadioComponent, submission: "Submission", data: DataMapping
     ) -> None:
         add_options_to_config(component, data, submission)
+
+    def localize(self, component: SelectComponent, language_code: str, enabled: bool):
+        if not (options := component.get("values", [])):
+            return
+        translate_options(options, language_code, enabled)
 
 
 @register("signature")
