@@ -126,3 +126,39 @@ class TestAddDateComponentSettings(TestMigrations):
                 "allowInvalidPreload"
             ]
         )
+
+
+class TestChangeFamilyMembersComponent(TestMigrations):
+    app = "forms"
+    migrate_from = "0093_date_component_settings"
+    migrate_to = "0094_update_config_family"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+        Form = apps.get_model("forms", "Form")
+
+        self.form_def = FormDefinition.objects.create(
+            name="Date",
+            slug="date",
+            configuration={
+                "components": [
+                    {
+                        "key": "npFamilyMembers",
+                        "type": "npFamilyMembers",
+                        "label": "Family members",
+                    },
+                ]
+            },
+        )
+        form = Form.objects.create(name="Form with family members")
+
+        FormStep.objects.create(form=form, form_definition=self.form_def, order=0)
+
+    def test_migration(self):
+        self.form_def.refresh_from_db()
+
+        self.assertFalse(
+            self.form_def.configuration["components"][0]["includePartners"]
+        )
+        self.assertTrue(self.form_def.configuration["components"][0]["includeChildren"])

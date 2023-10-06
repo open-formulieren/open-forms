@@ -19,16 +19,16 @@ from stuf.tests.factories import StufServiceFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
-from ..haal_centraal import get_np_children_haal_centraal
+from ..haal_centraal import get_np_family_members_haal_centraal
 from ..models import FamilyMembersTypeConfig
-from ..stuf_bg import get_np_children_stuf_bg
+from ..stuf_bg import get_np_family_members_stuf_bg
 
 TEST_FILES = Path(__file__).parent.resolve() / "responses"
 
 
 class FamilyMembersCustomFieldTypeTest(TestCase):
     @patch(
-        "openforms.formio.components.custom.get_np_children_haal_centraal",
+        "openforms.formio.components.custom.get_np_family_members_haal_centraal",
         return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],
     )
     def test_get_values_for_custom_field(self, mock_get_np_children):
@@ -39,6 +39,8 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                     "type": "npFamilyMembers",
                     "label": "FamilyMembers",
                     "values": [{"label": "", "value": ""}],
+                    "includePartners": False,
+                    "includeChildren": True,
                 },
             ],
             auth_info__attribute=AuthAttribute.bsn,
@@ -93,7 +95,9 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                 json=json_response,
             )
 
-            kids_choices = get_np_children_haal_centraal(bsn="111222333")
+            kids_choices = get_np_family_members_haal_centraal(
+                bsn="111222333", include_children=True, include_partners=False
+            )
 
             self.assertEqual(2, len(kids_choices))
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
@@ -114,11 +118,61 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                 content=response_content,
             )
 
-            kids_choices = get_np_children_stuf_bg(bsn="111222333")
+            kids_choices = get_np_family_members_stuf_bg(
+                bsn="111222333", include_children=True, include_partners=False
+            )
 
             self.assertEqual(2, len(kids_choices))
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
             self.assertEqual(("789123456", "Billy van Doe"), kids_choices[1])
+
+    @patch("stuf.stuf_bg.client.StufBGConfig.get_solo")
+    def test_get_partners_stuf_bg(self, mock_stufbg_config_get_solo):
+        stuf_bg_service = StufServiceFactory.build()
+        mock_stufbg_config_get_solo.return_value = StufBGConfig(service=stuf_bg_service)
+        soap_response_template = (TEST_FILES / "stuf_bg_family_members.xml").read_text()
+        response_content = render_from_string(soap_response_template, {}).encode(
+            "utf-8"
+        )
+
+        with requests_mock.Mocker() as m:
+            m.post(
+                stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
+                content=response_content,
+            )
+
+            partners_choices = get_np_family_members_stuf_bg(
+                bsn="111222333", include_children=False, include_partners=True
+            )
+
+            self.assertEqual(2, len(partners_choices))
+            self.assertEqual(("123123123", "Belly van Doe"), partners_choices[0])
+            self.assertEqual(("456456456", "Bully van Doe"), partners_choices[1])
+
+    @patch("stuf.stuf_bg.client.StufBGConfig.get_solo")
+    def test_get_family_memebers_stuf_bg(self, mock_stufbg_config_get_solo):
+        stuf_bg_service = StufServiceFactory.build()
+        mock_stufbg_config_get_solo.return_value = StufBGConfig(service=stuf_bg_service)
+        soap_response_template = (TEST_FILES / "stuf_bg_family_members.xml").read_text()
+        response_content = render_from_string(soap_response_template, {}).encode(
+            "utf-8"
+        )
+
+        with requests_mock.Mocker() as m:
+            m.post(
+                stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
+                content=response_content,
+            )
+
+            family_choices = get_np_family_members_stuf_bg(
+                bsn="111222333", include_children=True, include_partners=True
+            )
+
+            self.assertEqual(4, len(family_choices))
+            self.assertEqual(("456789123", "Bolly van Doe"), family_choices[0])
+            self.assertEqual(("789123456", "Billy van Doe"), family_choices[1])
+            self.assertEqual(("123123123", "Belly van Doe"), family_choices[2])
+            self.assertEqual(("456456456", "Bully van Doe"), family_choices[3])
 
     @patch(
         "openforms.formio.components.custom.FamilyMembersTypeConfig.get_solo",
@@ -134,6 +188,8 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                     "type": "npFamilyMembers",
                     "label": "FamilyMembers",
                     "values": [{"label": "", "value": ""}],
+                    "includeChildren": True,
+                    "includePartners": False,
                 },
             ],
             auth_info=None,

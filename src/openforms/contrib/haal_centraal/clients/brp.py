@@ -46,9 +46,11 @@ class BRPClient(PreRequestMixin, ABC, APIClient):
         ...
 
     @abstractmethod
-    def get_children(self, bsn: str) -> list[Person]:  # pragma: no cover
+    def get_family_members(
+        self, bsn: str, include_children: bool, include_partner: bool
+    ) -> list[Person]:  # pragma: no cover
         """
-        Look up the children of the person with the given BSN.
+        Look up the partner(s) and/or the children of the person with the given BSN.
         """
         ...
 
@@ -74,7 +76,7 @@ class V1Client(HALMixin, BRPClient):
 
         return response.json()
 
-    def get_children(self, bsn: str) -> list[Person]:
+    def _get_children(self, bsn: str) -> list[Person]:
         response = self.get(f"ingeschrevenpersonen/{bsn}/kinderen")
         response.raise_for_status()
         response_data = response.json()["_embedded"]
@@ -92,6 +94,37 @@ class V1Client(HALMixin, BRPClient):
             )
             persons.append(person)
         return persons
+
+    def _get_partner(self, bsn: str) -> list[Person]:
+        response = self.get(f"ingeschrevenpersonen/{bsn}/partners")
+        response.raise_for_status()
+        response_data = response.json()["_embedded"]
+
+        persons = []
+        for partner in response_data["partners"]:
+            name_data = partner["naam"]
+            person = Person(
+                bsn=partner["burgerservicenummer"],
+                name=Name(
+                    voornamen=name_data["voornamen"],
+                    voorvoegsel=name_data["voorvoegsel"],
+                    geslachtsnaam=name_data["geslachtsnaam"],
+                ),
+            )
+            persons.append(person)
+        return persons
+
+    def get_family_members(
+        self, bsn: str, include_children: bool, include_partner: bool
+    ) -> list[Person]:
+        family_members = []
+        if include_children:
+            family_members += self._get_children(bsn)
+
+        if include_partner:
+            family_members += self._get_partner(bsn)
+
+        return family_members
 
     def make_config_test_request(self):
         # expected to 404
@@ -138,11 +171,19 @@ class V2Client(BRPClient):
 
         return personen[0]
 
-    def get_children(self, bsn: str) -> list[Person]:
+    def get_family_members(
+        self, bsn: str, include_children: bool, include_partner: bool
+    ) -> list[Person]:
+        fields = []
+        if include_children:
+            fields += ["kinderen.burgerservicenummer", "kinderen.naam"]
+        if include_partner:
+            fields += ["partners.burgerservicenummer", "partners.naam"]
+
         body = {
             "type": "RaadpleegMetBurgerservicenummer",
             "burgerservicenummer": [bsn],
-            "fields": ["kinderen.burgerservicenummer", "kinderen.naam"],
+            "fields": fields,
         }
         response = self.post("personen", json=body)
         response.raise_for_status()
@@ -152,19 +193,24 @@ class V2Client(BRPClient):
             logger.debug("Person not found")
             return []
 
-        children_data = personen[0]["kinderen"]
-        children = [
+        family_data = []
+        if include_children:
+            family_data += personen[0]["kinderen"]
+        if include_partner:
+            family_data += personen[0]["partners"]
+
+        family_members = [
             Person(
-                bsn=child["burgerservicenummer"],
+                bsn=family_member["burgerservicenummer"],
                 name=Name(
-                    voornamen=child["naam"]["voornamen"],
-                    voorvoegsel=child["naam"]["voorvoegsel"],
-                    geslachtsnaam=child["naam"]["geslachtsnaam"],
+                    voornamen=family_member["naam"]["voornamen"],
+                    voorvoegsel=family_member["naam"].get("voorvoegsel", ""),
+                    geslachtsnaam=family_member["naam"]["geslachtsnaam"],
                 ),
             )
-            for child in children_data
+            for family_member in family_data
         ]
-        return children
+        return family_members
 
     def make_config_test_request(self):
         try:

@@ -1,5 +1,5 @@
 import logging
-from typing import Callable
+from typing import Protocol
 
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
@@ -19,9 +19,9 @@ from ..registry import BasePlugin, register
 from ..typing import Component, DateComponent, DatetimeComponent
 from ..utils import conform_to_mask
 from .np_family_members.constants import FamilyMembersDataAPIChoices
-from .np_family_members.haal_centraal import get_np_children_haal_centraal
+from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.models import FamilyMembersTypeConfig
-from .np_family_members.stuf_bg import get_np_children_stuf_bg
+from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
 
 logger = logging.getLogger(__name__)
 
@@ -99,16 +99,23 @@ class Postcode(BasePlugin):
             return value
 
 
+class FamilyMembersHandler(Protocol):
+    def __call__(
+        self, bsn: str, include_children: bool, include_partner: bool
+    ) -> list[tuple[str, str]]:
+        ...  # pragma: nocover
+
+
 @register("npFamilyMembers")
 class NPFamilyMembers(BasePlugin):
     # not actually relevant, as we transform the component into a different type
     formatter = DefaultFormatter
 
     @staticmethod
-    def _get_handler() -> Callable[[str], list[tuple[str, str]]]:
+    def _get_handler() -> FamilyMembersHandler:
         handlers = {
-            FamilyMembersDataAPIChoices.haal_centraal: get_np_children_haal_centraal,
-            FamilyMembersDataAPIChoices.stuf_bg: get_np_children_stuf_bg,
+            FamilyMembersDataAPIChoices.haal_centraal: get_np_family_members_haal_centraal,
+            FamilyMembersDataAPIChoices.stuf_bg: get_np_family_members_stuf_bg,
         }
         config = FamilyMembersTypeConfig.get_solo()
         return handlers[config.data_api]
@@ -162,7 +169,11 @@ class NPFamilyMembers(BasePlugin):
             # TODO: this should eventually be replaced with logic rules/variables that
             # retrieve data from an "arbitrary source", which will cause the data to
             # become available in the ``data`` argument instead.
-            child_choices = handler(bsn)
+            child_choices = handler(
+                bsn,
+                include_children=component.get("includeChildren", True),
+                include_partners=component.get("includePartners", True),
+            )
 
             component["values"] = [
                 {

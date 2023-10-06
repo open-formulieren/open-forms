@@ -3,7 +3,18 @@
  */
 import {Formio} from 'formiojs';
 
-import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
+import {
+  CLEAR_ON_HIDE,
+  DESCRIPTION,
+  HIDDEN,
+  IS_SENSITIVE_DATA,
+  KEY,
+  LABEL_REQUIRED,
+  MULTIPLE,
+  PRESENTATION,
+  TOOLTIP,
+} from './edit/options';
+import {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
 const SelectBoxes = Formio.Components.components.selectboxes;
@@ -15,6 +26,8 @@ class NpFamilyMembers extends SelectBoxes {
         label: 'Select family members',
         key: 'npFamilyMembers',
         type: 'npFamilyMembers',
+        includePartners: true,
+        includeChildren: true,
       },
       ...extend
     );
@@ -38,14 +51,40 @@ class NpFamilyMembers extends SelectBoxes {
   static editForm() {
     // The datagrid that would usually be shown to set the values of the checkboxes is not present, since the
     // values will be set by the backend
-    let basicFieldsNoDefault = {...SENSITIVE_BASIC};
-    basicFieldsNoDefault.components = basicFieldsNoDefault.components.filter(
-      component => component.key !== 'defaultValue'
-    );
+    let BASIC_TAB = {
+      key: 'basic',
+      label: 'Basic',
+      components: [
+        LABEL_REQUIRED,
+        KEY,
+        DESCRIPTION,
+        TOOLTIP,
+        PRESENTATION,
+        MULTIPLE,
+        HIDDEN,
+        CLEAR_ON_HIDE,
+        {...IS_SENSITIVE_DATA, defaultValue: true},
+        {
+          type: 'checkbox',
+          key: 'includePartners',
+          label: 'Include partners',
+          tooltip: 'Whether to add partners information to the component.',
+          defaultValue: true,
+        },
+        {
+          type: 'checkbox',
+          key: 'includeChildren',
+          label: 'Include children',
+          tooltip: 'Whether to add children information to the component.',
+          defaultValue: true,
+        },
+      ],
+    };
+
     const sensitiveBasicTabs = {
       type: 'tabs',
       key: 'tabs',
-      components: [basicFieldsNoDefault, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
+      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
     };
     return {components: [sensitiveBasicTabs]};
   }
