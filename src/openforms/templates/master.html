@@ -22,13 +22,12 @@
     {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
     {% if config.theme_stylesheet_file %}<link href="{{ config.theme_stylesheet_file.url }}" media="all" rel="stylesheet" />{% endif %}
 
-    {% if enable_analytics %}
-        {# Load the various supported analytics provider snippets #}
-        {% include "analytics_tools/all_head.html" %}
-    {% endif %}
+    {# Load the various supported analytics provider snippets - they are activated after consent #}
+    {% include "analytics_tools/all_head.html" with analytics_varname=analytics_varname %}
 </head>
 
 <body class="view__body">
+    {# No point in putting this in a <template> tag, since it targets noscript #}
     {% if enable_analytics and analytics_tools_config.enable_google_analytics and analytics_tools_config.gtm_code %}
         {# Load the second part of the Google tag manager snippet #}
         <!-- Google Tag Manager (noscript) -->
@@ -43,15 +42,13 @@
     {% endblock %}
 
     {% block footer %}
-        {% include "includes/cookie-notice.html" %}
+        {% include "includes/cookie-notice.html" with analytics_varname=analytics_varname %}
     {% endblock %}
 
     <script src="{% static 'bundles/public.js' %}"></script>
     {% block extra_js %}{% endblock %}
-    {% if enable_analytics %}
-        {# Load the various supported analytics provider snippets #}
-        {% include "analytics_tools/all_bottom.html" %}
-    {% endif %}
+    {# Load the various supported analytics provider snippets - they are activated after consent #}
+    {% include "analytics_tools/all_bottom.html" with analytics_varname=analytics_varname %}
 </body>
 </html>
 {% endwith %}

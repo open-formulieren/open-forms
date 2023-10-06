@@ -238,7 +238,7 @@ django-colorfield==0.9.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-cookie-consent==0.4.0
+django-cookie-consent==0.5.0b0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -454,7 +454,7 @@ glom==20.11.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
-greenlet==2.0.1
+greenlet==2.0.2
     # via playwright
 html5lib==1.1
     # via
@@ -645,7 +645,7 @@ platformdirs==2.2.0
     #   -r requirements/base.txt
     #   black
     #   zeep
-playwright==1.30.0
+playwright==1.38.0
     # via -r requirements/test-tools.in
 pluggy==0.13.1
     # via pytest

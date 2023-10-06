@@ -1,6 +1,5 @@
 import tempfile
 from io import BytesIO
-from unittest.mock import patch
 
 from django.core.files import File
 from django.test import override_settings
@@ -95,26 +94,6 @@ class FormDetailViewTests(WebTest):
         self.assertEqual(
             style_node.text(), ":root { --of-layout-background: #ffffff; }"
         )
-
-    @patch(
-        "cookie_consent.templatetags.cookie_consent_tags.get_cookie_value_from_request",
-        return_value=True,
-    )
-    def test_analytics_get_csp_nonce(self, mock_cookies_accepted):
-        """
-        Assert that the analytics scripts correctly receive the CSP nonce.
-
-        Regression test for #1587
-        """
-        # enable google analytics
-        self.config.ga_code = "UA-XXXXX-Y"
-        self.config.save()
-
-        form_page = self.app.get(self.url)
-
-        scripts = form_page.pyquery("script[nonce]")
-        for script in scripts:
-            self.assertTrue(bool(script.attrib["nonce"]))
 
     @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
     def test_theme_stylesheets_included(self):

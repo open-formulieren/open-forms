@@ -1,42 +1,61 @@
-{% load i18n cookie_consent_tags %}
+{% load i18n static cookie_consent_tags %}
 
-{% not_accepted_or_declined_cookie_groups request as cookie_groups %}
-
+{% static "cookie_consent/cookiebar.module.js" as cookiebar_src %}
 {% url 'cookie_consent_cookie_group_list' as manage_url %}
+{% url 'cookie_consent_status' as status_url %}
 
-{% if cookie_groups and request.path != manage_url %}
-<div class="cookie-notice">
+{% if request.path != manage_url %}
 
-    <span class="cookie-notice__text">
-        {% blocktrans trimmed %}
-        We use cookies to optimize and improve our website and services.
-        You can <a class="utrecht-link utrecht-link--openforms" href="{{ manage_url }}">manage your preferences</a>.
-        {% endblocktrans %}
-    </span>
+    {% all_cookie_groups 'cookie-consent__cookie-groups' %}
 
-    <div class="openforms-toolbar">
-        <ul class="openforms-toolbar__list">
-            <li class="openforms-toolbar__list-item">
-                <form action="{% url 'cookie_consent_accept_all' %}" method="post" class="cookie-notice__form cookie-notice__form--accept">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
-                    <button
-                        type="submit"
-                        class="utrecht-button utrecht-button--primary-action openforms-button openforms-button--primary"
-                    >{% trans "Accept all" %}</button>
-                </form>
-            </li>
-            <li class="openforms-toolbar__list-item">
-                <form action="{% url 'cookie_consent_decline_all' %}" method="post" class="cookie-notice__form cookie-notice__form--decline">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
-                    <button
-                        type="submit"
-                        class="utrecht-button utrecht-button--primary-action openforms-button openforms-button--primary"
-                    >{% trans "Decline all" %}</button>
-                </form>
-            </li>
-        </ul>
-    </div>
-</div>
+    <template id="cookie-consent__cookie-bar">
+        <section class="cookie-notice" aria-label="{% trans 'Cookie notice' %}">
+
+            <span class="cookie-notice__text">
+                {% blocktrans trimmed %}
+                We use cookies to optimize and improve our website and services.
+                You can <a class="utrecht-link utrecht-link--openforms" href="{{ manage_url }}">manage your preferences</a>.
+                {% endblocktrans %}
+            </span>
+
+            <div class="openforms-toolbar">
+                <ul class="openforms-toolbar__list">
+                    <li class="openforms-toolbar__list-item">
+                        <button
+                            type="submit"
+                            class="utrecht-button utrecht-button--primary-action openforms-button openforms-button--primary cookie-notice__accept"
+                        >{% trans "Accept all" %}</button>
+                    </li>
+                    <li class="openforms-toolbar__list-item">
+                        <button
+                            type="submit"
+                            class="utrecht-button utrecht-button--primary-action openforms-button openforms-button--primary cookie-notice__decline"
+                        >{% trans "Decline all" %}</button>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </template>
+
+    <script type="module" nonce="{{ request.csp_nonce }}">
+        import {showCookieBar} from '{{ cookiebar_src }}';
+        const varName = '{{ analytics_varname|escapejs }}';
+        showCookieBar({
+          statusUrl: '{{ status_url|escapejs }}',
+          templateSelector: '#cookie-consent__cookie-bar',
+          cookieGroupsSelector: '#cookie-consent__cookie-groups',
+          acceptSelector: '.cookie-notice__accept',
+          declineSelector: '.cookie-notice__decline',
+          insertBefore: '#cookie-consent__cookie-bar',
+          onAccept: (groups) => {
+            const isAnalyticsEnabled = groups.find(group => group.varname === varName);
+            if (!isAnalyticsEnabled) return;
+            const analyticsTemplateNodes = document.querySelectorAll('.analytics-scripts');
+            analyticsTemplateNodes.forEach(templateNode => {
+                const clone = templateNode.content.cloneNode(true);
+                templateNode.parentNode.insertBefore(clone, templateNode);
+            })
+          },
+        });
+    </script>
 {% endif %}
