@@ -1,12 +1,11 @@
 import json
 import logging
 
+from ape_pie import APIClient
 from requests import JSONDecodeError
 from requests.models import PreparedRequest, Request, Response
 from requests.utils import guess_json_utf
 from zgw_consumers.nlx import Rewriter
-
-from api_client import APIClient
 
 logger = logging.getLogger(__name__)
 

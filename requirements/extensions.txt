@@ -10,6 +10,10 @@ amqp==5.0.9
     # via
     #   -r requirements/base.txt
     #   kombu
+ape-pie==0.1.0
+    # via
+    #   -c requirements/base.in
+    #   -r requirements/base.txt
 asgiref==3.5.0
     # via
     #   -r requirements/base.txt
@@ -376,6 +380,7 @@ furl==2.1.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
+    #   ape-pie
     #   django-digid-eherkenning
     #   open-forms-ext-token-exchange
 gemma-zds-client==2.0.0
@@ -624,6 +629,7 @@ redis==4.5.4
 requests==2.31.0
     # via
     #   -r requirements/base.txt
+    #   ape-pie
     #   django-camunda
     #   django-log-outgoing-requests
     #   gemma-zds-client

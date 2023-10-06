@@ -1,11 +1,11 @@
 from django.test import TestCase
 
 import requests_mock
+from ape_pie import APIClient
 from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
 from zgw_consumers.constants import AuthTypes
 
-from api_client import APIClient
 from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ..api_client import ServiceClientFactory

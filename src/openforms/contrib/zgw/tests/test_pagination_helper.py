@@ -1,8 +1,7 @@
 from unittest import TestCase
 
 import requests_mock
-
-from api_client import APIClient
+from ape_pie import APIClient
 
 from ..clients.utils import pagination_helper
 

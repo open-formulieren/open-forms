@@ -16,6 +16,10 @@ amqp==5.0.9
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   kombu
+ape-pie==0.1.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 asgiref==3.5.0
     # via
     #   -c requirements/ci.txt
@@ -494,6 +498,7 @@ furl==2.1.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   ape-pie
     #   django-digid-eherkenning
 gemma-zds-client==2.0.0
     # via
@@ -900,6 +905,7 @@ requests==2.31.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   ape-pie
     #   ddt-api-calls
     #   django-camunda
     #   django-log-outgoing-requests

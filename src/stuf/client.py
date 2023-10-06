@@ -17,10 +17,10 @@ from typing import Any, Literal, Protocol
 
 from django.template import loader
 
+from ape_pie import APIClient, InvalidURLError
+from ape_pie.client import is_base_url
 from requests.models import Response
 
-from api_client import APIClient, InvalidURLError
-from api_client.client import is_base_url
 from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 
 from .constants import EndpointType

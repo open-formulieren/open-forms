@@ -1,7 +1,6 @@
+from ape_pie.client import APIClient as SessionBase, is_base_url
 from zeep.client import Client
 from zeep.transports import Transport
-
-from api_client.client import APIClient as SessionBase, is_base_url
 
 from .models import SoapService
 from .session_factory import SessionFactory

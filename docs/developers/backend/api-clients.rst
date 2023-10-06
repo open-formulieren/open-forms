@@ -29,81 +29,13 @@ connect with these services:
 Combinations of these patterns are possible too!
 
 Open Forms uses an abstraction that accounts for these variations while allowing
-developers to focus on the actual consuming of the service.
-
-API client base
-===============
-
-We have opted to implement a base API client class around the :class:`requests.Session`,
-more specifically - a subclass of ``Session``.
-
-Import it from:
-
-.. code-block:: python
-
-    from api_client import APIClient
-
-
-It's a small extension of the requests ``Session``, allowing you to specify some session
-defaults (such as mTLS and auth parameters) while requiring you to set a base URL. The
-base URL prevents accidental sending of credentials to other URLs than the base, while
-allowing you to implement clients using relative paths/URLs.
+developers to focus on the actual consuming of the service, packaged into the library
+`ape-pie <https://ape-pie.readthedocs.io/en/latest/>`_.
 
 Because it extends the core :mod:`requests` API, usage should feel familiar.
 
 You are encouraged to define your own service-specific subclasses to modify behaviour
 where needed.
-
-Recommended usage
------------------
-
-Our extension allows for configuring such an instance from "configuration objects",
-whatever those may be:
-
-.. code-block:: python
-
-    from api_client import APIClient
-
-    from .factories import my_factory
-
-    client = APIClient.configure_from(my_factory)
-
-    with client:
-        # ⚡️ context manager -> uses connection pooling and is recommended!
-        response1 = client.get("some-relative-path", params={"foo": ["bar"]})
-        response2 = client.post("other-path", json={...})
-
-The ``my_factory`` is a "special"
-:ref:`configuration source <developers_backend_api_clients_factories>`, which feeds the
-relevant initialization parameters to the :class:`api_client.client.APIClient` instance.
-
-.. note:: You can (and should) use the client/session in a context manager to benefit
-   from connection pooling and thus better performance when multiple requests are made.
-
-Low level usage
----------------
-
-The low level usage is essentially what is called by the factory usage. The biggest risk
-is forgetting to apply certain connection configuration, like mTLS parameters, therefor
-we recommend setting up a configuration factory instead.
-
-.. code-block::
-
-    from api_client import APIClient
-    from requests.auth import
-
-    # You can pass most attributes available on requests.Session, like auth/verify/cert...
-    client = APIClient(
-        "https://example.com/api/v1/",
-        auth=HTTPBasicAuth("superuser", "letmein"),
-        verify="/path/to/custom/ca-bundle.pem",
-    )
-
-    with client:
-        # ⚡️ context manager -> uses connection pooling and is recommended!
-        response1 = client.get("some-relative-path", params={"foo": ["bar"]})
-        response2 = client.post("other-path", json={...})
-
 
 .. _developers_backend_api_clients_factories:
 
@@ -114,15 +46,11 @@ Configuration factories are a small abstraction that allow you to instantiate cl
 with the appropriate configuration/presets from sources holding the configuration
 details - for example database records.
 
-Such a factory must implemented the ``APIClientFactory`` protocol:
-
-.. autoclass:: api_client.typing.APIClientFactory
-    :members:
-
+Such a factory must implemented the :class:`ape_pie.ConfigAdapter` protocol.
 
 Some examples that can serve as a reference:
 
-* :class:`zgw_consumers_ext.api_client.ServiceClientFactory`
+* :class:`zgw_consumers_ext.ape_pie.ServiceClientFactory`
 * :class:`soap.client.session_factory.SessionFactory`
 * :class:`stuf.service_client_factory.ServiceClientFactory`
 
@@ -150,23 +78,3 @@ StUF (template based SOAP/XML)
 
 .. automodule:: stuf.client
     :members:
-
-
-Design constraints
-------------------
-
-The client implementation was set up with some design constraints:
-
-- Must support the :class:`requests.Session` API
-- Must be compatible with :class:`zgw_consumers.models.Service`,
-  :class:`stuf.models.StUFService` and :class:`soap.models.SOAPService`
-- Should encourage best practices (closing resources after use)
-- Should not create problems when used with other libraries, e.g. ``requests-oauth2client``
-
-Eventually we'd like to explore using ``httpx`` rather than ``requests`` - it has a
-similar API, but it's also ``async`` / ``await`` capable. The abstraction of the
-underlying driver (now requests, later httpx) should not matter and most importantly,
-not be leaky.
-
-.. note:: Not being leaky here means that you can use the requests API (in the future:
-   httpx) like you would normally do without this library getting in the way.

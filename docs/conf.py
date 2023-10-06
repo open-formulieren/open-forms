@@ -38,6 +38,7 @@ release = openforms.__version__
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.todo",
+    "sphinx.ext.intersphinx",
     "sphinx_tabs.tabs",
     "recommonmark",
     # "sphinx_markdown_tables",
@@ -59,6 +60,21 @@ language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".pytest_cache", "_archive"]
 
 source_suffix = [".rst", ".md"]
+
+intersphinx_mapping = {
+    "requests": (
+        "https://docs.python-requests.org/en/latest/",
+        None,
+    ),
+    "ape_pie": (
+        "https://ape-pie.readthedocs.io/en/latest/",
+        None,
+    ),
+    "django": (
+        "http://docs.djangoproject.com/en/3.2/",
+        "http://docs.djangoproject.com/en/3.2/_objects/",
+    ),
+}
 
 # -- Options for HTML output -------------------------------------------------
 

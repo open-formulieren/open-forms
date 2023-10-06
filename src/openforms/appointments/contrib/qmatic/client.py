@@ -2,10 +2,10 @@ from datetime import date, datetime, time
 from typing import TypedDict
 
 import pytz
+from ape_pie.client import APIClient
 from dateutil.parser import isoparse
 from zgw_consumers.models import Service
 
-from api_client.client import APIClient
 from zgw_consumers_ext.api_client import ServiceClientFactory
 
 from .exceptions import QmaticException

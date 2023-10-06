@@ -1,4 +1,4 @@
-from api_client import APIClient
+from ape_pie import APIClient
 
 HAL_CONTENT_TYPE = "application/hal+json"
 

@@ -11,9 +11,9 @@ Aspects tested:
 from django.test import SimpleTestCase
 
 import requests_mock
+from ape_pie import InvalidURLError
 from privates.test import temp_private_root
 
-from api_client import InvalidURLError
 from soap.constants import EndpointSecurity
 
 from ..client import BaseClient
