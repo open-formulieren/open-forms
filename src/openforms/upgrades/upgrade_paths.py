@@ -79,7 +79,11 @@ UPGRADE_PATHS = {
     "2.3": UpgradeConstraint(
         valid_ranges={
             VersionRange(minimum="2.1.3"),
-        }
+        },
+        scripts=(
+            # run detection to prevent crashes, see #3527
+            "check_non_unique_steps",
+        ),
     ),
     "2.2": UpgradeConstraint(
         valid_ranges={
