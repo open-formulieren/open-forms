@@ -16,6 +16,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
 from openforms.formio.migration_converters import CONVERTERS
+from openforms.formio.utils import iter_components
 from openforms.variables.constants import FormVariableSources
 
 from .api.datastructures import FormVariableWrapper
@@ -301,6 +302,12 @@ def import_form_data(
                     deserialized.instance is None or not deserialized.instance.pk
                 )
                 deserialized.is_valid(raise_exception=True)
+
+                if resource == "formDefinitions":
+                    apply_component_conversions(
+                        deserialized.validated_data["configuration"]
+                    )
+
                 instance = deserialized.save()
                 if resource == "forms":
                     created_form = deserialized.instance
@@ -337,6 +344,24 @@ def import_form_data(
 
                 else:
                     raise e
+
+
+def apply_component_conversions(configuration):
+    """
+    Apply the known formio component conversions to the entire form definition.
+    """
+    for component in iter_components(configuration):
+        if not (component_type := component.get("type")):  # pragma: no cover
+            continue
+        if not (converters := CONVERTERS.get(component_type)):
+            continue
+        for identifier, apply_converter in converters.items():
+            logger.debug(
+                "Applying converter '%s' to component type '%s'",
+                identifier,
+                component_type,
+            )
+            apply_converter(component)
 
 
 def remove_key_from_dict(dictionary, key):
