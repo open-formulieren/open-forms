@@ -125,7 +125,7 @@ const READ_ONLY = {
 const MIMINUM_TIME = {
   type: 'time',
   input: true,
-  key: 'minTime',
+  key: 'validate.minTime',
   label: 'Minimum Time',
   weight: 10,
   tooltip: 'The minimum time that can be picked.',
@@ -134,7 +134,7 @@ const MIMINUM_TIME = {
 const MAXIMUM_TIME = {
   type: 'time',
   input: true,
-  key: 'maxTime',
+  key: 'validate.maxTime',
   label: 'Maximum Time',
   weight: 10,
   tooltip: 'The maximum time that can be picked.',
