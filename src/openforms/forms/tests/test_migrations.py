@@ -162,3 +162,76 @@ class TestChangeFamilyMembersComponent(TestMigrations):
             self.form_def.configuration["components"][0]["includePartners"]
         )
         self.assertTrue(self.form_def.configuration["components"][0]["includeChildren"])
+
+
+class TestTimeComponentValidatorMigration(TestMigrations):
+    app = "forms"
+    migrate_from = "0095_formstep_form_form_definition_unique_together"
+    migrate_to = "0096_move_time_component_validators"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        FormDefinition.objects.create(
+            name="Date",
+            slug="date",
+            configuration={
+                "components": [
+                    {
+                        "key": "time1",
+                        "type": "time",
+                        "label": "Time 1",
+                    },
+                    {
+                        "key": "time2",
+                        "type": "time",
+                        "label": "Time 2",
+                        "minTime": "10:00",
+                        "maxTime": "20:00",
+                    },
+                    {
+                        "key": "time3",
+                        "type": "time",
+                        "label": "Time 3",
+                        "minTime": None,
+                        "validate": {
+                            "required": True,
+                        },
+                    },
+                    {
+                        "key": "time4",
+                        "type": "time",
+                        "label": "Time 4",
+                        "maxTime": "20:00",
+                    },
+                ]
+            },
+        )
+
+    def test_migration(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+
+        form_def = FormDefinition.objects.get()
+        time1, time2, time3, time4 = form_def.configuration["components"]
+
+        self.assertNotIn("minTime", time1)
+        self.assertNotIn("maxTime", time1)
+        self.assertNotIn("validate", time1)
+
+        self.assertNotIn("minTime", time2)
+        self.assertNotIn("maxTime", time2)
+        self.assertIn("validate", time2)
+        self.assertEqual(time2["validate"]["minTime"], "10:00")
+        self.assertEqual(time2["validate"]["maxTime"], "20:00")
+
+        self.assertNotIn("minTime", time3)
+        self.assertNotIn("maxTime", time3)
+        self.assertIn("validate", time3)
+        self.assertIsNone(time3["validate"]["minTime"])
+        self.assertNotIn("maxTime", time3["validate"])
+
+        self.assertNotIn("minTime", time4)
+        self.assertNotIn("maxTime", time4)
+        self.assertIn("validate", time4)
+        self.assertNotIn("minTime", time4["validate"])
+        self.assertEqual(time4["validate"]["maxTime"], "20:00")
