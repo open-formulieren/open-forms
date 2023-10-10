@@ -76,6 +76,10 @@ class FormStep(OrderedModel):
         verbose_name_plural = _("form steps")
         constraints = [
             models.UniqueConstraint(
+                fields=["form", "form_definition"],
+                name="form_form_definition_unique_together",
+            ),
+            models.UniqueConstraint(
                 fields=["form", "slug"], name="form_slug_unique_together"
             ),
         ]
