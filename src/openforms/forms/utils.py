@@ -15,6 +15,7 @@ from django.utils.translation import override
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
+from openforms.formio.migration_converters import CONVERTERS
 from openforms.variables.constants import FormVariableSources
 
 from .api.datastructures import FormVariableWrapper
