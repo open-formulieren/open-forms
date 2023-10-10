@@ -410,7 +410,8 @@ bevatten. In de trigger hierboven, wordt een periode van 24 uren toegevoegd aan 
     }
 
 In de trigger hierboven, wordt een periode van 1 maand toegevoegd aan de datum van vandaag (``{"var": "today"}``).
-Als vandaag ``"2023-02-01"`` is, dan ``{"+": [{"var": "today"}, {"duration": "P1M"}]}`` wordt ``"2023-03-01"``.
+Als vandaag ``"2023-02-01"`` is, dan is ``"2023-03-01"`` het resultaat van
+``{"+": [{"var": "today"}, {"duration": "P1M"}]}``.
 
 .. _ISO 8601 'Duration': https://en.wikipedia.org/wiki/ISO_8601#Durations
 
