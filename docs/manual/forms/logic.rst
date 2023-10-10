@@ -368,15 +368,70 @@ Het is mogelijk om de datum / tijd component te vergelijken met de huidige datum
 
 Bijvoorbeeld, deze trigger checkt of de datum / tijd van een evenement meer dan 24u in de toekomst is:
 
+.. tabs::
+
+   .. tab:: "duration" operator
+
+      .. code:: json
+
+          {
+              ">": [
+                  {"datetime": {"var": "datumTijdEvenement"}},
+                  {"datetime": {"+": [{"var": "now"}, {"duration": "PT24H"}]}},
+              ]
+          }
+
+   .. tab:: "rdelta" operator
+
+      Deze operator is verouderd en het is beter om de "duration" operator te gebruiken.
+
+      .. code:: json
+
+         {
+            ">": [
+                {"datetime": {"var": "datumTijdEvenement"}},
+                {"+": [{"var": "now"}, {"rdelta": [0, 0, 0, 24]}]},
+            ]
+         }
+
+Met ``duration`` is het mogelijk om berekeningen met datums te doen. De ``duration`` operator moet een `ISO 8601 'Duration'`_
+bevatten. In de trigger hierboven, wordt een periode van 24 uren toegevoegd aan de datum / tijd van nu (``{"var": "now"}``).
+
+``duration`` mag ook met datums worden gebruikt. Bijvoorbeeld:
+
+
 .. code:: json
 
     {
         ">": [
-            {"datetime": {"var": "datumTijdEvenement"}},
-            {"+": [{"var": "now"}, {"rdelta": [0, 0, 0, 24]}]},
+            {"date": {"var": "datumEvenement"}},
+            {"date": {"+": [{"var": "today"}, {"duration": "P1M"}]}},
         ]
     }
 
-Met ``rdelta`` is het mogelijk om berekeningen met datums te doen. De ``rdelta`` operator mag tot 6 argumenten te hebben.
-Deze zijn dan de waarde van ``[jaren, maanden, dagen, uren, minuten, seconden]``. In de trigger hierboven, worden 0 jaren,
-0 maanden, 0 dagen en 24 uren toegevoegd aan de datum / tijd van nu (``{"var": "now"}``).
+In de trigger hierboven, wordt een periode van 1 maand toegevoegd aan de datum van vandaag (``{"var": "today"}``).
+Als vandaag ``"2023-02-01"`` is, dan is ``"2023-03-01"`` het resultaat van
+``{"+": [{"var": "today"}, {"duration": "P1M"}]}``.
+
+.. _ISO 8601 'Duration': https://en.wikipedia.org/wiki/ISO_8601#Durations
+
+
+Voorbeeld met vergelijking van tijdsperiodes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Het is ook mogelijk om tijdsperiodes te vergelijken.
+
+Bijvoorbeeld, deze trigger checkt of de periode tussen ``geboorteDatum`` en ``evenementDatum`` meer dan 18 jaren is.
+
+.. code:: json
+
+   {
+       "<": [
+           {
+               "duration": {
+                   "-": [{"date": {"var": "geboorteDatum"}}, {"date": {"var": "evenementDatum"}}]
+               }
+           },
+           {"duration": "P18Y"},
+       ]
+   }

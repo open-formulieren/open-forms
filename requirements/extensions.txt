@@ -408,6 +408,7 @@ inflection==0.5.1
 isodate==0.6.1
     # via
     #   -r requirements/base.txt
+    #   maykin-json-logic-py
     #   maykin-python3-saml
     #   zeep
 josepy==1.8.0
@@ -459,7 +460,7 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-maykin-json-logic-py==0.11.0
+maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt

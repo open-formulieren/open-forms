@@ -354,3 +354,50 @@ class VariableModificationTests(TestCase):
         self.assertEqual(2, variables_state.variables["numberOfCars"].value)
         self.assertEqual(5000, variables_state.variables["totalPrice"].value)
         self.assertEqual(0, variables_state.variables["priceOfThirdCar"].value)
+
+    def test_dates_and_timedeltas(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "datum",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="timedelta",
+            data_type=FormVariableDataTypes.string,
+            user_defined=True,
+            form=form,
+            initial_value="",
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "timedelta",
+                    "action": {
+                        "type": "variable",
+                        "value": {
+                            "-": [{"date": {"var": "datum"}}, {"date": "2022-09-09"}]
+                        },
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            data={"datum": "2023-09-12"},
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.data)
+
+        variables_state = submission.load_submission_value_variables_state()
+
+        self.assertEqual("P368D", variables_state.variables["timedelta"].value)
