@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from django.contrib.gis.geos import fromstr
 
 import requests
-
-from api_client import APIClient
+from ape_pie import APIClient
 
 logger = logging.getLogger(__name__)
 

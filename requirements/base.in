@@ -1,4 +1,5 @@
 # Core python libraries
+ape-pie
 bleach[css] >= 5
 celery ~= 5.0
 celery-once

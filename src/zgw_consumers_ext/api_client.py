@@ -19,6 +19,11 @@ T = TypeVar("T", bound=NLXClient)
 def build_client(service: Service, client_factory: type[T] = NLXClient, **kwargs) -> T:
     """
     Build a client for a given :class:`zgw_consumers.models.Service`.
+
+    :arg service: The model instance holding the service configuration.
+    :arg client_factory: Particular client (sub)class for more specialized clients.
+
+    Any additional keyword arguments are forwarded to the client initialization.
     """
     factory = ServiceClientFactory(service)
     return client_factory.configure_from(factory, nlx_base_url=service.nlx, **kwargs)
@@ -26,12 +31,25 @@ def build_client(service: Service, client_factory: type[T] = NLXClient, **kwargs
 
 @dataclass
 class ServiceClientFactory:
+    """
+    Map zgw_consumers.Service model configuration to API client parameters.
+    """
+
     service: Service
 
     def get_client_base_url(self) -> str:
+        """
+        Use the configured API root as client base URL.
+        """
         return self.service.api_root
 
     def get_client_session_kwargs(self) -> dict[str, Any]:
+        """
+        Pass connection parameters from the configured service.
+
+        * mTLS configuration from uploaded/configured certificates
+        * authentication type and credentials from DB configuration
+        """
         kwargs = {}
 
         # mTLS: verify server certificate if configured
@@ -62,6 +80,10 @@ class ServiceClientFactory:
 
 @dataclass
 class APIKeyAuth(AuthBase):
+    """
+    Requests authentication class for API key-based auth (in the request headers).
+    """
+
     header: str
     key: str
 
@@ -72,6 +94,10 @@ class APIKeyAuth(AuthBase):
 
 @dataclass
 class ZGWAuth(AuthBase):
+    """
+    Requests authentication class for JWT-based ZGW auth.
+    """
+
     service: Service
     auth: ClientAuth = field(init=False)
 

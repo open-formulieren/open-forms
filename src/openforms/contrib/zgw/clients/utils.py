@@ -3,8 +3,7 @@ from typing import TypedDict
 from django.utils import timezone
 
 import pytz
-
-from api_client import APIClient
+from ape_pie import APIClient
 
 TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
 

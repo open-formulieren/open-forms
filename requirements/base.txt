@@ -8,6 +8,8 @@
 
 amqp==5.0.9
     # via kombu
+ape-pie==0.1.0
+    # via -r requirements/base.in
 asgiref==3.5.0
     # via django
 async-timeout==4.0.2
@@ -247,6 +249,7 @@ frozendict==2.3.4
 furl==2.1.2
     # via
     #   -r requirements/base.in
+    #   ape-pie
     #   django-digid-eherkenning
 gemma-zds-client==2.0.0
     # via zgw-consumers
@@ -401,6 +404,7 @@ redis==4.5.4
     #   portalocker
 requests==2.31.0
     # via
+    #   ape-pie
     #   django-camunda
     #   django-log-outgoing-requests
     #   gemma-zds-client

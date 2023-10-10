@@ -11,8 +11,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import requests
+from ape_pie import APIClient
 
-from api_client import APIClient
 from openforms.contrib.hal_client import HALMixin
 from openforms.pre_requests.clients import PreRequestMixin
 from openforms.typing import JSONObject

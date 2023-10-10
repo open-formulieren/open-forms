@@ -39,7 +39,8 @@ class KadasterApiConfig(SingletonModel):
 
     search_service = models.OneToOneField(
         "zgw_consumers.Service",
-        verbose_name=_("Kadaster API"),
+        verbose_name=_("Locatieserver API"),
+        help_text=_("Service for geo search queries."),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
