@@ -3466,6 +3466,12 @@ paths:
       operationId: prefill_plugins_list
       description: List all prefill plugins that have been registered.
       summary: List available prefill plugins
+      parameters:
+      - in: query
+        name: componentType
+        schema:
+          type: string
+        description: Only return plugins applicable for the specified component type.
       tags:
       - prefill
       security:

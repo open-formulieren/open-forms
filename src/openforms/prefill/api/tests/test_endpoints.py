@@ -24,6 +24,26 @@ register = Registry()
 register("test")(TestPrefill)
 
 
+@register("onlyvars")
+class OnlyVarsPrefill(BasePlugin):
+    requires_auth = AuthAttribute.bsn
+    verbose_name = "Only Vars"
+    for_components = ()
+
+    def get_available_attributes(self):
+        return [("foo", "Foo"), ("bar", "Bar")]
+
+
+@register("vanityplates")
+class VanityPlatePrefill(BasePlugin):
+    requires_auth = AuthAttribute.bsn
+    verbose_name = "Vanity Plates"
+    for_components = {"licenseplate"}
+
+    def get_available_attributes(self):
+        return [("NOMODES", "Larry Tesler's plates")]
+
+
 class AuthTests(APITestCase):
     endpoints = [
         reverse_lazy("api:prefill-plugin-list"),
@@ -92,7 +112,40 @@ class ResponseTests(APITestCase):
                 "id": "test",
                 "label": "Test",
                 "requiresAuth": AuthAttribute.bsn,
-            }
+            },
+            {
+                "id": "onlyvars",
+                "label": "Only Vars",
+                "requiresAuth": AuthAttribute.bsn,
+            },
+            {
+                "id": "vanityplates",
+                "label": "Vanity Plates",
+                "requiresAuth": AuthAttribute.bsn,
+            },
+        ]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), expected)
+
+    def test_prefill_list_for_component_type(self):
+        endpoint = reverse("api:prefill-plugin-list")
+
+        response = self.client.get(endpoint, {"componentType": "licenseplate"})
+
+        expected = [
+            # unspecified component set
+            {
+                "id": "test",
+                "label": "Test",
+                "requiresAuth": AuthAttribute.bsn,
+            },
+            # spec'd for licenseplate
+            {
+                "id": "vanityplates",
+                "label": "Vanity Plates",
+                "requiresAuth": AuthAttribute.bsn,
+            },
         ]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

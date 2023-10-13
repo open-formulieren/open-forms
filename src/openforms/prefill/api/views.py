@@ -11,12 +11,16 @@ from ..registry import register
 from .serializers import (
     ChoiceWrapper,
     PrefillAttributeSerializer,
+    PrefillPluginPredicateSerializer,
     PrefillPluginSerializer,
 )
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available prefill plugins")),
+    get=extend_schema(
+        summary=_("List available prefill plugins"),
+        parameters=[*PrefillPluginPredicateSerializer.as_openapi_params()],
+    ),
 )
 class PluginListView(ListMixin, APIView):
     """
@@ -28,7 +32,12 @@ class PluginListView(ListMixin, APIView):
     serializer_class = PrefillPluginSerializer
 
     def get_objects(self):
-        return list(register.iter_enabled_plugins())
+        predicate_serializer = PrefillPluginPredicateSerializer(
+            data=self.request.query_params
+        )
+        predicate_serializer.is_valid()
+        predicate = predicate_serializer.save()
+        return filter(predicate, register.iter_enabled_plugins())
 
 
 @extend_schema_view(

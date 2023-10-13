@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Container, Dict, Iterable, List, Optional, Tuple
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -8,8 +8,15 @@ from openforms.typing import JSONEncodable
 from .constants import IdentifierRoles
 
 
+class AllComponentTypes(Container[str]):
+    def __contains__(self, thing):
+        # even the ones that don't exist (yet)
+        return True
+
+
 class BasePlugin(AbstractBasePlugin):
     requires_auth: AuthAttribute | None = None
+    for_components: Container[str] = AllComponentTypes()
 
     def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
         """

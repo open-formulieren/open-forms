@@ -32,6 +32,7 @@ def _get_client() -> SuwinetClient | None:
 class SuwinetPrefill(BasePlugin):
     requires_auth = AuthAttribute.bsn
     verbose_name = _("Suwinet")
+    for_components = ()
 
     @staticmethod
     def get_available_attributes():

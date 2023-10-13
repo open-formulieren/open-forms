@@ -293,6 +293,7 @@ const PREFILL = {
       },
       valueProperty: 'id',
       template: '<span>{{ item.label }}</span>',
+      filter: 'componentType={{ data.type }}',
     },
     {
       type: 'select',
