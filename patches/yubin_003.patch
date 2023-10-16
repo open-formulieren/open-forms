@@ -1,0 +1,24 @@
+From c17ad0ce951e8308a84a018bdcb4151e9afb95b1 Mon Sep 17 00:00:00 2001
+From: Sergei Maertens <sergei@maykinmedia.nl>
+Date: Thu, 12 Oct 2023 10:47:52 +0200
+Subject: [PATCH] :bug: Do not prevent migration rollbacks
+
+Discussed in the context of #68 - the reverse data migration is not
+implemented (deliberately), but that shouldn't prevent people from
+rolling back their migrations in dev-environments and while
+debugging/diagnosing issues, for example.
+---
+ django_yubin/migrations/0007_auto_20200319_1158.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/django_yubin/migrations/0007_auto_20200319_1158.py b/django_yubin/migrations/0007_auto_20200319_1158.py
+index 6c91e0b..2db6fb0 100644
+--- a/django_yubin/migrations/0007_auto_20200319_1158.py
++++ b/django_yubin/migrations/0007_auto_20200319_1158.py
+@@ -47,5 +47,5 @@ class Migration(migrations.Migration):
+     ]
+
+     operations = [
+-        migrations.RunPython(migrate_to_queues),
++        migrations.RunPython(migrate_to_queues, migrations.RunPython.noop),
+     ]
