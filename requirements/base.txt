@@ -24,7 +24,9 @@ beautifulsoup4==4.10.0
 billiard==3.6.4.0
     # via celery
 bleach[css]==5.0.1
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   bleach
 boltons==21.0.0
     # via
     #   face
@@ -456,6 +458,7 @@ six==1.15.0
     #   qrcode
     #   requests-file
     #   requests-mock
+    #   rfc3339-validator
 soupsieve==2.3
     # via beautifulsoup4
 sqlparse==0.4.4
