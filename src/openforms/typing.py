@@ -1,16 +1,13 @@
-from typing import TYPE_CHECKING, Any, Dict, List, NewType, Protocol, Union
+import datetime
+import decimal
+import uuid
+from typing import Any, Dict, List, NewType, Protocol, Union
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
+from django.utils.functional import Promise
 
 from rest_framework.request import Request
-
-if TYPE_CHECKING:
-    import datetime
-    import decimal
-    import uuid
-
-    from django.utils.functional import Promise
 
 JSONPrimitive = Union[str, int, None, float, bool]
 
@@ -33,18 +30,18 @@ class RequestHandler(Protocol):
 # Types that `django.core.serializers.json.DjangoJSONEncoder` can handle
 DjangoJSONEncodable = Union[
     JSONValue,
-    "datetime.datetime",
-    "datetime.date",
-    "datetime.time",
-    "datetime.timedelta",
-    "decimal.Decimal",
-    "uuid.UUID",
-    "Promise",
+    datetime.datetime,
+    datetime.date,
+    datetime.time,
+    datetime.timedelta,
+    decimal.Decimal,
+    uuid.UUID,
+    Promise,
 ]
 
 
 class JSONSerializable(Protocol):
-    def __json__(self) -> DjangoJSONEncodable:
+    def __json__(self) -> DjangoJSONEncodable:  # pragma: no cover
         ...
 
 

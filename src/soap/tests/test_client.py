@@ -1,7 +1,6 @@
 """
 Test the client factory from SOAPService configuration.
 """
-import unittest
 from pathlib import Path
 
 from django.test import TestCase, override_settings
@@ -10,6 +9,7 @@ import requests_mock
 from ape_pie import InvalidURLError
 from requests.exceptions import RequestException
 from simple_certmanager.test.factories import CertificateFactory
+from zeep.exceptions import XMLSyntaxError
 from zeep.wsse import Signature, UsernameToken
 
 from openforms.utils.tests.vcr import OFVCRMixin
@@ -107,7 +107,7 @@ class ClientTransportTests(OFVCRMixin, TestCase):
     def test_incomplete_client_cert_configured(self):
         service = SoapServiceFactory.build(
             url=WSDL_URI,
-            client_certificate=CertificateFactory.build(
+            client_certificate=CertificateFactory.create(
                 public_certificate=None,
                 private_key=None,
             ),
@@ -192,6 +192,12 @@ class ClientTransportTests(OFVCRMixin, TestCase):
         self.assertEqual(usertoken.username, "admin")
         self.assertEqual(usertoken.password, "supersecret")
 
+    def test_wrong_wsse(self):
+        service = SoapServiceFactory.create(endpoint_security="my blue eyes")
+
+        with self.assertRaises(ValueError):
+            service.get_wsse()
+
     @requests_mock.Mocker()
     def test_no_absolute_url_sanitization(self, m):
         m.post("https://other-base.example.com")
@@ -232,36 +238,21 @@ class ClientTransportTests(OFVCRMixin, TestCase):
             "Your input parameters are under the normal run and things",
         )
 
-    @unittest.skip("Hangs GH CI")
+
+class ClientTransportTimeoutTests(TestCase):
     @override_settings(DEFAULT_TIMEOUT_REQUESTS=1)
     def test_the_client_obeys_timeout_requests(self):
         "We don't want an unresponsive service DoS us."
-        # Rig the cassette for failure
-        # import signal
-        # from time import sleep
-        # self.cassette.play_response = lambda request: sleep(2)
-        # self.cassette.can_play_response_for = lambda request: True
-        self.cassette.record_mode = "all"
-
         service = SoapServiceFactory.build(
-            # this service acts like some slow lorris on https
-            url="https://www.soapclient.com/xml/soapresponder.wsdl"
+            # this service acts like some slow lorris, will eventually
+            # respond with something that's not a wsdl
+            url="https://httpstat.us/200?sleep=3000"
         )
 
-        # signals aren't thread save
-        org_handler = signal.getsignal(signal.SIGALRM)
-        self.addCleanup(lambda: signal.signal(signal.SIGALRM, org_handler))
-        signal.signal(
-            signal.SIGALRM,
-            lambda _sig, _frm: self.fail("Client seems to hang")
-            # but there is a chance be that the service started responding, but we couldn't
-            # process the wsdl in time
-        )
         with self.assertRaises(RequestException):
-            signal.alarm(5)
-            # zeep will try to read the wsdl
-            build_client(service)
-
-            # Passed this point, the test has broken, find or create another test service
-            # that opens the socket, but doesn't respond.
-            self.fail("The service unexpectedly responded!")
+            try:
+                # zeep will try to read the "wsdl"
+                build_client(service)
+            except XMLSyntaxError:
+                # DEFAULT_TIMOUT_REQUESTS time has passed and we're trying
+                self.fail("DEFAULT_TIMEOUT_REQUESTS not honoured by SOAP client")

@@ -3,6 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 import lxml.etree
@@ -28,11 +29,9 @@ class SuwinetConfigTests(TestCase):
         with self.assertRaises(NoServiceConfigured):
             get_client(config)
 
-        self.assertTrue(issubclass(NoServiceConfigured, RuntimeError))
-
     def test_config_uses_local_wsdl(self):
         # DH gateway doesn't serve a wsdl... use our local wsdls
-        SuwinetConfigFactory(
+        SuwinetConfigFactory.create(
             service__url="",
             kadasterdossiergsd_binding_address=f"{SUWINET_BASE_URL}/KadasterDossierGSD-v0300/v1",
         )
@@ -42,17 +41,30 @@ class SuwinetConfigTests(TestCase):
 
     def test_setting_a_wsdl_url_will_fail(self):
         config = SuwinetConfigFactory.build(
-            service__url="http://www.soapclient.com/xml/soapresponder.wsdl",
+            service__url="http://www.soapclient.com/xml/soapresponder.wsdl"
         )
+        with self.assertRaisesMessage(
+            ValidationError,
+            "Using a wsdl to describe all of Suwinet is not implemented.",
+        ):
+            config.clean()
 
-        with self.assertRaises(RuntimeError):
-            get_client(config)
+    def test_setting_no_bindings_will_fail(self):
+        config = SuwinetConfigFactory.build(
+            service__url="",
+        )
+        with self.assertRaisesMessage(
+            ValidationError,
+            "Without any binding addresses, no Suwinet service can be used.",
+        ):
+            config.clean()
 
     def test_iterating_client_yields_configured_service_names(self):
         config = SuwinetConfigFactory.build(
             kadasterdossiergsd_binding_address=f"{SUWINET_BASE_URL}/KadasterDossierGSD-v0300/v1",
         )
 
+        config.clean()
         client = get_client(config)
 
         self.assertEqual(len(client), 1)
@@ -141,6 +153,25 @@ class SuwinetKadasterTests(SuwinetTestCase):
             kadasterdossiergsd_binding_address=f"{SUWINET_BASE_URL}/KadasterDossierGSD-v0300/v1",
         )
         cls.suwi_client = get_client()
+
+    def test_client_as_a_mapping(self):
+        with self.assertRaisesMessage(KeyError, "foo"):
+            self.suwi_client["foo"]
+
+        with self.assertRaisesMessage(
+            KeyError, r"RDWDossierDigitaleDiensten not configured"
+        ):
+            self.suwi_client["RDWDossierDigitaleDiensten"]
+
+        self.assertIn("KadasterDossierGSD", self.suwi_client)
+
+    def test_client_dir(self):
+        # tab completion
+        attributes = dir(self.suwi_client)
+
+        self.assertNotIn("RDWDossierDigitaleDiensten", attributes)
+        self.assertIn("KadasterDossierGSD", attributes)
+        self.assertIn("__dir__", attributes)
 
     def test_persoons_info_bsn_444444440(self):
         info = self.suwi_client.KadasterDossierGSD.PersoonsInfo("444444440")

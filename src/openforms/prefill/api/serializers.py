@@ -37,12 +37,7 @@ class PrefillPluginPredicateSerializer(serializers.Serializer[PrefillPluginPredi
     def to_internal_value(self, data):
         return super().to_internal_value(underscoreize(data))
 
-    def save(self, **_kwargs) -> PrefillPluginPredicate:
-        # We don't "save" anything, just create and return a predicate function
-        # save is a weird name in this context, but Serializers weren't designed with deserializing
-        # query string parameters in mind.
-        # https://www.django-rest-framework.org/api-guide/serializers/#overriding-save-directly
-
+    def as_predicate(self) -> PrefillPluginPredicate:
         match self.validated_data:
             case {"component_type": component_type} if component_type:
                 return lambda plugin: component_type in plugin.for_components

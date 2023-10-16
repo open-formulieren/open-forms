@@ -8,24 +8,6 @@ from zeep.wsse.username import UsernameToken
 from .constants import EndpointSecurity, SOAPVersion
 
 
-class UnknownChoiceError(ValueError):
-    def __init__(self, instance: models.Model, field_name: str):
-        self.model = type(instance)
-        self.field: models.Field = getattr(self.model, field_name)
-        self.value = getattr(instance, field_name)
-        # This won't contain the
-        valid_values = self.field.choices
-        super().__init__(
-            _(
-                "Unexpected value %(value) for %(field). Expected one from %(valid_values)r"
-            ).format(
-                value=self.value,
-                field=self.field.verbose_name,
-                valid_values=valid_values,
-            )
-        )
-
-
 class _Signature(Signature):
     def verify(self, envelope):
         return envelope
@@ -147,4 +129,6 @@ class SoapService(models.Model):
             case "":
                 return None
 
-        raise UnknownChoiceError(instance=self, field_name="endpoint_security")
+        raise ValueError(
+            f"invalid SoapService.endpoint_security: {self.endpoint_security}"
+        )

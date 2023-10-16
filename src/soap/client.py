@@ -27,6 +27,9 @@ def build_client(
     transport = transport_factory(
         session=session,
         timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
+        # operation_timeout gets passed as a parameter on all requests, overriding any
+        # monkeypatched requests.Session defaults
+        operation_timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
     )
     kwargs.setdefault("wsdl", service.url)
     client = client_factory(

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -5,7 +6,7 @@ from solo.models import SingletonModel
 
 from soap.models import SoapService
 
-from .constants import Service
+from .constants import SERVICES, Service
 
 
 class SuwinetManager(models.Manager):
@@ -147,11 +148,24 @@ class SuwinetConfig(SingletonModel):
         ),
         blank=True,
     )
-
-    def get_binding_address(self, service: Service) -> str:
-        return getattr(self, f"{service.name.lower()}_binding_address", "")
+    objects = SuwinetManager()
 
     class Meta:
         verbose_name = _("Suwinet configuration")
 
-    objects = SuwinetManager()
+    def clean(self):
+        super().clean()
+        errors = []
+        if self.service and self.service.url:
+            errors.append(
+                _("Using a wsdl to describe all of Suwinet is not implemented.")
+            )
+        if not any(self.get_binding_address(service) for service in SERVICES.values()):
+            errors.append(
+                _("Without any binding addresses, no Suwinet service can be used.")
+            )
+        if errors:
+            raise ValidationError(errors)
+
+    def get_binding_address(self, service: Service) -> str:
+        return getattr(self, f"{service.name.lower()}_binding_address", "")

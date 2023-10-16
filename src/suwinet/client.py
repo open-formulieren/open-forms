@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
 
 from zeep.proxy import ServiceProxy
@@ -9,22 +11,15 @@ from .constants import SERVICES
 from .models import SuwinetConfig
 
 
-class ConfigurationError(RuntimeError):
+class NoServiceConfigured(RuntimeError):
     pass
 
 
-class NoServiceConfigured(ConfigurationError):
-    pass
-
-
-def get_client(config: SuwinetConfig | None = None) -> "SuwinetClient":
+def get_client(config: SuwinetConfig | None = None) -> SuwinetClient:
     config = config or SuwinetConfig.get_solo()
 
     if not config.service:
         raise NoServiceConfigured("You must configure a service!")
-
-    if config.service.url:
-        raise ConfigurationError("Using a wsdl do describe Suwinet is not implemented.")
 
     return SuwinetClient(config)
 
@@ -53,7 +48,7 @@ class SuwinetClient(Mapping[str, ServiceProxy]):
     def __getitem__(self, service_name: str) -> ServiceProxy:
         service = SERVICES[service_name]
         if not (address := self._config.get_binding_address(service)):
-            raise KeyError(service_name)
+            raise KeyError(f"{service_name} not configured")
 
         client = build_client(
             service=self._config.service,

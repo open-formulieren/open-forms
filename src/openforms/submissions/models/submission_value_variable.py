@@ -25,9 +25,8 @@ if TYPE_CHECKING:  # pragma: nocover
 
 class ValueEncoder(DjangoJSONEncoder):
     def default(self, obj: JSONEncodable | JSONSerializable) -> JSONEncodable:
-        if hasattr(obj, "__json__"):
-            return obj.__json__()
-        return super().default(obj)
+        to_json = getattr(obj, "__json__", None)
+        return to_json() if callable(to_json) else super().default(obj)
 
 
 @dataclass

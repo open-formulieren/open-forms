@@ -1,9 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-# from django.db.models import TextChoices
-# from django.utils.translation import gettext_lazy as _
-
 WSDLS = Path(__file__).parent.resolve() / "wsdls"
 
 

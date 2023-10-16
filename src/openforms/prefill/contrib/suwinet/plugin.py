@@ -3,8 +3,6 @@ import logging
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from glom import glom
-
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
@@ -58,32 +56,23 @@ class SuwinetPrefill(BasePlugin):
             return {}
 
         def get_value(attr) -> dict | None:
+            service_name, operation = attr.split(".")
+            service = getattr(client, service_name)
+            perform_soap_call = getattr(service, operation)
             try:
-                return glom(client, attr)(bsn)
+                return perform_soap_call(bsn)
             except Exception:
-                logger.exception("Suwinet raised exception")
+                logger.exception(
+                    "Suwinet operation '%s' on service '%s' failed.",
+                    operation,
+                    service_name,
+                    extra={"service": service_name, "operation": operation},
+                )
                 return None
 
         with client:
+            # these are independent requests and should be performed async
             return {attr: value for attr in attributes if (value := get_value(attr))}
-
-    def get_co_sign_values(
-        self, identifier: str, submission: Submission | None = None
-    ) -> tuple[dict[str, dict], str]:
-        """
-        Given an identifier, fetch the co-sign specific values.
-
-        The return value is a dict keyed by field name as specified in
-        ``self.co_sign_fields``.
-
-        :param identifier: the unique co-signer identifier used to look up the details
-          in the pre-fill backend.
-        :return: a key-value dictionary, where the key is the requested attribute and
-          the value is the prefill value to use for that attribute.
-        """
-        raise NotImplementedError(
-            "You must implement the 'get_co_sign_values' method."
-        )  # pragma: nocover
 
     def check_config(self):
         try:
@@ -95,7 +84,7 @@ class SuwinetPrefill(BasePlugin):
             )
         if not len(client):
             raise InvalidPluginConfiguration(
-                _("No services found. Check the binding addresses or provide a wsdl.")
+                _("No services found. Check the binding addresses.")
             )
 
     def get_config_actions(self):

@@ -36,7 +36,7 @@ class PluginListView(ListMixin, APIView):
             data=self.request.query_params
         )
         predicate_serializer.is_valid()
-        predicate = predicate_serializer.save()
+        predicate = predicate_serializer.as_predicate()
         return filter(predicate, register.iter_enabled_plugins())
 
 
