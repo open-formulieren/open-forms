@@ -1,14 +1,10 @@
 from pathlib import Path
-from unittest import expectedFailure
 from unittest.mock import patch
 
-from openforms.forms.tests.factories import FormVariableDataTypes, FormVariableFactory
-from openforms.prefill import prefill_variables
 from openforms.submissions.tests.factories import SubmissionFactory
 from suwinet.tests.factories import SuwinetConfigFactory
 from suwinet.tests.test_client import SuwinetTestCase
 
-from ....registry import Registry
 from ..plugin import IdentifierRoles, SuwinetPrefill
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -149,56 +145,40 @@ class SuwinetPrefillTests(SuwinetTestCase):
             values
         )  # contents is already asserted in the Suwinet client tests
 
-    def test_binding_to_variable(self):
-        register = Registry()
-        register("suwinet")(SuwinetPrefill)
-        form_var = FormVariableFactory.create(
-            form__generate_minimal_setup=True,
-            data_type=FormVariableDataTypes.object,
-            prefill_plugin="suwinet",
-            prefill_attribute="KadasterDossierGSD.PersoonsInfo",
-        )
-        submission = SubmissionFactory.create(
-            form=form_var.form,
-            auth_info__value="444444440",
-        )
-
-        prefill_variables(submission, register)
-        var = submission.submissionvaluevariable_set.get()
-
-        self.assertTrue(
-            var.value
-        )  # contents is already asserted in the Suwinet client tests
-
-    @expectedFailure
-    def test_collect_gateway_mock_failures(self):
-        # As we speak we only know how to get mock data from the KadasterDossierGSD
-        # this test collects a VHS cassette with (Den Haag) Layer 7 Gateway failures
-        # and empty endpoint responses. These bsns are bsns that have been reported
-        # to return mock data.
-        #
-        # So the cassette does not represent "correct" responses, but just gives
-        # insight into what operations we haven't seen working, either because
-        # we don't get through the gateway, or we don't know a bsn for the operation
-        # that returns mock data.
-        #
-        # this "try what could work and see what sticks" test should be replaced with
-        # a mapping like {"Service.Operation": "bsn"}, and just try one, known good mock
-        # operation and check it returns a dict.
+    def test_unconfigured_service_gets_no_prefill_values(self):
+        self.config.service = None
 
         plugin = SuwinetPrefill(identifier="suwinet")
-        # What can I get for 5 dollars?
-        everything = [a for a, label in plugin.get_available_attributes()]
+        submission = SubmissionFactory.create(auth_info__value="444444440")
 
-        bsns = [
-            "111111110",
-            "444444440",
-            "112233454",
-            "999996769",
-        ]
-        for submission in (
-            SubmissionFactory.create(auth_info__value=bsn) for bsn in bsns
-        ):
-            with self.subTest(f"Get ALL the things for {submission.auth_info}"):
-                values = plugin.get_prefill_values(submission, everything)
-                self.assertTrue(values)
+        values = plugin.get_prefill_values(
+            submission, ["KadasterDossierGSD.PersoonsInfo"]
+        )
+        self.assertEqual(values, {})
+
+    def test_unauthenticated_filler_gets_no_prefill_values(self):
+        plugin = SuwinetPrefill(identifier="suwinet")
+        submission = SubmissionFactory.create()
+
+        values = plugin.get_prefill_values(
+            submission, ["KadasterDossierGSD.PersoonsInfo"]
+        )
+        self.assertEqual(values, {})
+
+    def test_failed_respones(self):
+        # My close friend, good ol' Policy Falsified
+        plugin = SuwinetPrefill(identifier="suwinet")
+        submission = SubmissionFactory.create(auth_info__value="444444440")
+
+        with self.assertLogs("openforms.prefill.contrib.suwinet.plugin") as logged:
+            values = plugin.get_prefill_values(
+                submission, ["UWVWbDossierPersoonGSD.UwvWbPersoonsInfo"]
+            )
+
+        self.assertIn(
+            "Suwinet operation 'UwvWbPersoonsInfo' on service 'UWVWbDossierPersoonGSD' failed.",
+            logged.output[0],
+        )
+
+        # still returns empty values
+        self.assertEqual(values, {})

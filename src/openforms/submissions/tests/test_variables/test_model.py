@@ -251,3 +251,19 @@ class SubmissionValueVariableModelTests(TestCase):
         self.assertEqual(2, len(variables))
         self.assertTrue(variables["testPrefilled"].is_initially_prefilled)
         self.assertFalse(variables["testNotPrefilled"].is_initially_prefilled)
+
+    def test_can_store_any_json_encodable(self):
+        # zeep returns objects with a __json__ method that returns a JSONValue
+        class Natural:
+            def __init__(self, n: int):
+                if n < 1:
+                    raise ValueError(f"{n} ∉ ℕ")
+                self._value = n
+
+            def __json__(self):
+                return self._value
+
+        variable1 = SubmissionValueVariableFactory.create(value=Natural(1337))
+        stored = SubmissionValueVariable.objects.get(key=variable1.key)
+
+        self.assertEquals(stored.value, 1337)

@@ -77,12 +77,16 @@ class SuwinetPrefill(BasePlugin):
     def check_config(self):
         try:
             client = get_client()
-            # TODO: Try all endpoints test bsn
+            # Testing configured endpoints with test bsns might not be allowed in
+            # production. Check "Grondslag" before proceeding.
         except NoServiceConfigured as e:
             raise InvalidPluginConfiguration(
                 _("Configuration error: {exception}").format(exception=e)
             )
-        if not len(client):
+        if not len(client):  # pragma: nocover
+            # enforced by SuwinetConfig.clean, here for completeness sake
+            # of the confugaration overview; it shouldn't show a green
+            # checkmark if of whatever reason the config is corrupt.
             raise InvalidPluginConfiguration(
                 _("No services found. Check the binding addresses.")
             )
