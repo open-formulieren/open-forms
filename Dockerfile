@@ -30,9 +30,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         shared-mime-info \
     && rm -rf /var/lib/apt/lists/*
 
-        # build-essential python3-dev python3-pip python3-setuptools python3-wheel python3-cffi
-
-
 WORKDIR /app
 
 # Ensure we use the latest version of pip
@@ -41,6 +38,13 @@ COPY ./requirements /app/requirements
 
 ARG TARGET_ENVIRONMENT=production
 RUN pip install -r requirements/${TARGET_ENVIRONMENT}.txt
+
+# Apply patches of third party libraries
+COPY ./patches /tmp/patches
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git \
+    && rm -rf /var/lib/apt/lists/* \
+    && /tmp/patches/apply.sh /usr/local/lib/python3.10/site-packages
 
 # Stage 2 - Install frontend deps and build assets
 FROM node:16-bookworm-slim AS frontend-build

@@ -1,0 +1,48 @@
+From 624f5b8103cf02257c5d8d3aa4423bb777a9c36d Mon Sep 17 00:00:00 2001
+From: Sergei Maertens <sergei@maykinmedia.nl>
+Date: Thu, 5 Oct 2023 12:28:05 +0200
+Subject: [PATCH] :zap: Fixes #68 -- improve performance of data migration
+
+Tested against a 13GB SQL dump of the email table (~23K records),
+within a cgroup with 300M memory limit. The migration completed
+in just under 60s.
+
+* Use iterator to avoid loading entire table in memory (for the queryset cache)
+* Defer the message content, as it may contain attachments causing excessive
+  memory usage - it is not used in the migration anyway.
+* Replace loop over log table with 3 separate SQL update queries
+---
+ django_yubin/migrations/0007_auto_20200319_1158.py | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/django_yubin/migrations/0007_auto_20200319_1158.py b/django_yubin/migrations/0007_auto_20200319_1158.py
+index 98690b0..6c91e0b 100644
+--- a/django_yubin/migrations/0007_auto_20200319_1158.py
++++ b/django_yubin/migrations/0007_auto_20200319_1158.py
+@@ -19,7 +19,7 @@ def migrate_to_queues(apps, schema_editor):
+     Log = apps.get_model('django_yubin', 'Log')
+ 
+     # Messages without a QueueMessage ara sent.
+-    for message in Message.objects.all():
++    for message in Message.objects.defer("encoded_message").iterator():
+         queued = QueuedMessage.objects.filter(message=message).only('date_queued').first()
+         if queued:
+             message.status = DBMessage.STATUS_QUEUED
+@@ -35,14 +35,9 @@ def migrate_to_queues(apps, schema_editor):
+             message.save()
+ 
+     # Set Log actions based on its result
+-    for log in Log.objects.all():
+-        if log.result == RESULT_SENT:
+-            log.action = DBMessage.STATUS_SENT
+-        elif log.result == RESULT_FAILED:
+-            log.action = DBMessage.STATUS_FAILED
+-        elif log.result == RESULT_SKIPPED:
+-            log.action = DBMessage.STATUS_DISCARDED
+-        log.save()
++    Log.objects.filter(result=RESULT_SENT).update(action=DBMessage.STATUS_SENT)
++    Log.objects.filter(result=RESULT_FAILED).update(action=DBMessage.STATUS_FAILED)
++    Log.objects.filter(result=RESULT_SKIPPED).update(action=DBMessage.STATUS_DISCARDED)
+ 
+ 
+ class Migration(migrations.Migration):

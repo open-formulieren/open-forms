@@ -1,0 +1,43 @@
+From dc3bfd1fb996a7ab5ffc0d064703b57b47b84d25 Mon Sep 17 00:00:00 2001
+From: SilviaAmAm <silvia@maykinmedia.nl>
+Date: Thu, 12 Oct 2023 15:09:22 +0200
+Subject: [PATCH] :sparkles: [#70] Add the email.policy.EmailPolicy
+
+https://docs.python.org/3/library/email.policy.html#email.policy.EmailPolicy
+This results in the unfolding of headers that have previously been
+folded, so that new lines don't cause errors.
+---
+ django_yubin/models.py | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/django_yubin/models.py b/django_yubin/models.py
+index e9e75be..7a1e9db 100644
+--- a/django_yubin/models.py
++++ b/django_yubin/models.py
+@@ -1,5 +1,7 @@
+ import datetime
+ import logging
++import email
++from email import policy
+ from email import encoders as Encoders
+ from email.mime.base import MIMEBase
+
+@@ -15,7 +17,7 @@
+ from django.utils.text import Truncator
+ from django.utils.timezone import now
+ from django.utils.translation import gettext_lazy as _
+-import mailparser
++from mailparser import MailParser
+
+ from . import mailparser_utils, tasks
+
+@@ -131,7 +133,8 @@ def recipients(self):
+         return self.to() + self.cc() + self.bcc()
+
+     def get_message_parser(self):
+-        return mailparser.parse_from_string(self.message_data)
++        message = email.message_from_string(self.message_data, policy=policy.default)
++        return MailParser(message)
+
+     def get_email_message(self):
+         """
