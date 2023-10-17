@@ -191,6 +191,7 @@ django-axes[ipware]==6.0.5
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
+    #   django-axes
 django-better-admin-arrayfield==1.4.2
     # via
     #   -c requirements/base.in
@@ -481,7 +482,7 @@ mozilla-django-oidc-db==0.12.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-o365==2.0.16
+o365==2.0.18
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt

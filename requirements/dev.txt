@@ -673,7 +673,7 @@ mypy-extensions==0.4.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   black
-o365==2.0.16
+o365==2.0.18
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -742,7 +742,7 @@ pillow==10.0.1
     #   cairosvg
     #   django-colorfield
     #   weasyprint
-pip-tools==6.13.0
+pip-tools==7.3.0
     # via -r requirements/dev.in
 platformdirs==2.2.0
     # via
@@ -1106,13 +1106,16 @@ tinycss2==1.1.0
     #   cssselect2
     #   weasyprint
 toml==0.10.2
-    # via autopep8
+    # via
+    #   autopep8
+    #   pep517
 tomli==1.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   black
     #   build
+    #   pip-tools
     #   pytest
 tornado==6.3.3
     # via

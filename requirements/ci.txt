@@ -584,7 +584,7 @@ multidict==6.0.4
     # via yarl
 mypy-extensions==0.4.3
     # via black
-o365==2.0.16
+o365==2.0.18
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

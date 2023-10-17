@@ -313,7 +313,7 @@ mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
 mozilla-django-oidc-db==0.12.0
     # via -r requirements/base.in
-o365==2.0.16
+o365==2.0.18
     # via -r requirements/base.in
 oauthlib==3.2.2
     # via requests-oauthlib
@@ -456,6 +456,7 @@ six==1.15.0
     #   qrcode
     #   requests-file
     #   requests-mock
+    #   rfc3339-validator
 soupsieve==2.3
     # via beautifulsoup4
 sqlparse==0.4.4
