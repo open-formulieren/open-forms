@@ -12,6 +12,7 @@ from digid_eherkenning.models import DigidConfiguration
 from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
+from simple_certmanager.test.factories import CertificateFactory
 from webtest.forms import Form as WTForm
 
 from openforms.forms.tests.factories import FormStepFactory
@@ -19,7 +20,6 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tokens import submission_resume_token_generator
 from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.vcr import OFVCRMixin
-from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ....constants import FORM_AUTH_SESSION_KEY
 from ..constants import PLUGIN_ID

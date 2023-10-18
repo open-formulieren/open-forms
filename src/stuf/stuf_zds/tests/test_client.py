@@ -6,10 +6,10 @@ from django.test import TestCase, tag
 
 import requests_mock
 from simple_certmanager.constants import CertificateTypes
+from simple_certmanager.test.factories import CertificateFactory
 
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.tests.utils import can_connect
-from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ...constants import EndpointType
 from ...tests.factories import StufServiceFactory

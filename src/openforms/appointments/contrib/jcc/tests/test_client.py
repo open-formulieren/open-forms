@@ -3,9 +3,9 @@ from unittest.mock import patch
 from django.test import TestCase
 
 from privates.test import temp_private_root
+from simple_certmanager.test.factories import CertificateFactory
 from zeep.client import Client as ZeepClient
 
-from simple_certmanager_ext.tests.factories import CertificateFactory
 from soap.tests.factories import SoapServiceFactory
 
 from ..client import get_client

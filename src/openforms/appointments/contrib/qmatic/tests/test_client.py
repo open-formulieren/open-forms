@@ -3,9 +3,9 @@ from django.test import TestCase, tag
 import requests_mock
 from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
+from simple_certmanager.test.factories import CertificateFactory
 
 from openforms.utils.tests.logging import disable_logging
-from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ..client import QmaticClient
 from .utils import MockConfigMixin

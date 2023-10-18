@@ -7,8 +7,7 @@ from django.test import TestCase
 
 import requests_mock
 from ape_pie import InvalidURLError
-
-from simple_certmanager_ext.tests.factories import CertificateFactory
+from simple_certmanager.test.factories import CertificateFactory
 
 from ..client import SOAPSession, build_client
 from ..constants import EndpointSecurity
