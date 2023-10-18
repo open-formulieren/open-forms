@@ -18,7 +18,6 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -32,6 +31,7 @@ from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
+from .pagination import FormDefinitionPagination
 from .parsers import (
     FormCamelCaseJSONParser,
     FormVariableJSONParser,
@@ -169,7 +169,7 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
     renderer_classes = (IgnoreConfigurationFieldCamelCaseJSONRenderer,)
     queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = FormDefinitionPagination
     lookup_field = "uuid"
     # anonymous clients must be able to get the form definitions in the browser
     # The DRF settings apply some default throttling to mitigate abuse

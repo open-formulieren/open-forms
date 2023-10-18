@@ -187,7 +187,7 @@ function reducer(draft, action) {
      * Form-level actions
      */
     case 'BACKEND_DATA_LOADED': {
-      const {formData, supportingData} = action.payload;
+      const {supportingData, formData} = action.payload;
       const {form, selectedAuthPlugins, steps, variables, logicRules, priceRules} = formData;
 
       for (const [stateVar, data] of Object.entries(supportingData)) {
@@ -955,7 +955,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
     {
       endpoint: FORM_DEFINITIONS_ENDPOINT,
-      query: {is_reusable: true, used_in: formUuid || ''},
+      query: {is_reusable: true, used_in: formUuid || '', page_size: 0},
       stateVar: 'formDefinitions',
     },
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},

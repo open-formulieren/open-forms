@@ -39,6 +39,29 @@ class FormDefinitionsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_list_pagination(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        FormDefinitionFactory.create_batch(100)
+
+        url = reverse("api:formdefinition-list")
+
+        with self.subTest("no pagination"):
+            response = self.client.get(url, {"page_size": "0"}, format="json")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.json()["results"]), 100)
+
+        with self.subTest("default pagination"):
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.json()["results"]), 25)
+
+        with self.subTest("explicit pagination"):
+            response = self.client.get(url, {"page_size": "30"}, format="json")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.json()["results"]), 30)
+
     def test_user_without_permission_cant_update(self):
         user = UserFactory.create()
         self.client.force_authenticate(user=user)
