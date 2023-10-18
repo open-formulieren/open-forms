@@ -5,7 +5,7 @@ from openforms.formio.migration_converters import CONVERTERS
 from openforms.formio.utils import iter_components
 
 
-class Converter:
+class ApplyConverter:
     def __init__(self, component_type: str, identifier: str):
         self.component_type = component_type
 
@@ -53,5 +53,5 @@ class ConvertComponentsOperation(migrations.RunPython):
     """
 
     def __init__(self, component_type: str, identifier: str):
-        convert = Converter(component_type, identifier)
-        super().__init__(code=convert, reverse_code=migrations.RunPython.noop)
+        apply_converter = ApplyConverter(component_type, identifier)
+        super().__init__(code=apply_converter, reverse_code=migrations.RunPython.noop)

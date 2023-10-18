@@ -5,16 +5,16 @@ from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 
-from openforms.formio.migration_converters import Converter as ConverterType
+from openforms.formio.migration_converters import ComponentConverter
 from openforms.formio.typing import Component
 
-from ..migration_operations import ConvertComponentsOperation, Converter
+from ..migration_operations import ApplyConverter, ConvertComponentsOperation
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory
 
 
 @contextmanager
-def mock_converters(replacement: dict[str, dict[str, ConverterType]]):
+def mock_component_converters(replacement: dict[str, dict[str, ComponentConverter]]):
     with patch("openforms.forms.migration_operations.CONVERTERS", new=replacement):
         yield
 
@@ -29,17 +29,17 @@ def add_foo_property(component: Component):
 
 
 class ConvertComponentsOperationTests(TestCase):
-    @mock_converters({})
+    @mock_component_converters({})
     def test_unknown_component_type(self):
         with self.assertRaises(ImproperlyConfigured):
             ConvertComponentsOperation("textfield", "dummy")
 
-    @mock_converters({"textfield": {}})
+    @mock_component_converters({"textfield": {}})
     def test_unknown_conversion_identifier(self):
         with self.assertRaises(ImproperlyConfigured):
             ConvertComponentsOperation("textfield", "dummy")
 
-    @mock_converters({"textfield": {"noop": noop}})
+    @mock_component_converters({"textfield": {"noop": noop}})
     def test_no_modifications(self):
         FormDefinitionFactory.create(
             configuration={
@@ -53,13 +53,13 @@ class ConvertComponentsOperationTests(TestCase):
             }
         )
 
-        converter = Converter("textfield", "noop")
+        apply_converter = ApplyConverter("textfield", "noop")
 
         # we only expect the query to loop over all FDs
         with self.assertNumQueries(1):
-            converter(apps, None)
+            apply_converter(apps, None)
 
-    @mock_converters({"textfield": {"add_foo": add_foo_property}})
+    @mock_component_converters({"textfield": {"add_foo": add_foo_property}})
     def test_targets_only_specified_component_type(self):
         FormDefinitionFactory.create(
             configuration={
@@ -78,12 +78,12 @@ class ConvertComponentsOperationTests(TestCase):
             }
         )
 
-        converter = Converter("textfield", "add_foo")
+        apply_converter = ApplyConverter("textfield", "add_foo")
 
         # 1. loop over all form definitions
         # 2. one (bulk) update query
         with self.assertNumQueries(2):
-            converter(apps, None)
+            apply_converter(apps, None)
 
         fd = FormDefinition.objects.get()
         comp1, comp2 = fd.configuration["components"]
