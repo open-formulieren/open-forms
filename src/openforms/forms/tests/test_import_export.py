@@ -949,3 +949,30 @@ class ImportExportTests(TestCase):
             form.confirmation_email_template.content_nl,
             "",
         )
+
+    def test_import_applies_converters(self):
+        def add_foo(component):
+            component["foo"] = "bar"
+            return True
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "textfield"},
+                    {"type": "nottextfield", "key": "nottextfield"},
+                ]
+            },
+        )
+        call_command("export", form.pk, self.filepath)
+
+        converters = {"textfield": {"add_foo": add_foo}}
+        with patch("openforms.forms.utils.CONVERTERS", new=converters):
+            call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.exclude(pk=form.pk).get()
+        fd = imported_form.formstep_set.get().form_definition
+        comp1, comp2 = fd.configuration["components"]
+
+        self.assertIn("foo", comp1)
+        self.assertNotIn("foo", comp2)

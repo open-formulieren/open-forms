@@ -24,9 +24,11 @@ class TimeField extends Time {
       {
         inputType: 'text',
         format: 'HH:mm',
-        minTime: null,
-        maxTime: null,
         validateOn: 'blur',
+        validate: {
+          minTime: null,
+          maxTime: null,
+        },
       },
       ...extend
     );
