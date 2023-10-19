@@ -18,6 +18,7 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -31,7 +32,6 @@ from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
-from .pagination import FormDefinitionPagination
 from .parsers import (
     FormCamelCaseJSONParser,
     FormVariableJSONParser,
@@ -44,6 +44,7 @@ from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
+    FormDefinitionPreviewSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
     FormLogicSerializer,
@@ -169,7 +170,7 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
     renderer_classes = (IgnoreConfigurationFieldCamelCaseJSONRenderer,)
     queryset = FormDefinition.objects.order_by("slug")
     serializer_class = FormDefinitionSerializer
-    pagination_class = FormDefinitionPagination
+    pagination_class = PageNumberPagination
     lookup_field = "uuid"
     # anonymous clients must be able to get the form definitions in the browser
     # The DRF settings apply some default throttling to mitigate abuse
@@ -183,7 +184,7 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary=_("Retrieve form definition JSON schema"),
-        tags=["forms"],
+        tags=["forms", "form-definitions"],
         responses=OpenApiTypes.OBJECT,
     )
     @action(methods=("GET",), detail=True)
@@ -197,6 +198,22 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
         """
         definition = self.get_object()
         return Response(data=definition.configuration, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        summary=_("List form step definitions with a subset of fields"),
+        tags=["forms", "form-definitions"],
+
+    )
+    @action(methods=("GET",), detail=False, serializer_class=FormDefinitionPreviewSerializer)
+    def preview(self, request: Request):
+        """
+        List the form step definitions with the following fields included:
+        - ``name``
+        - ``internalName``
+        - ``url``
+        """
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 FormDefinitionViewSet.__doc__ = inspect.getdoc(FormDefinitionViewSet).format(
