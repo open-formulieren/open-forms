@@ -14,6 +14,7 @@ from furl import furl
 from lxml import etree
 from privates.test import temp_private_root
 from rest_framework import status
+from simple_certmanager.test.factories import CertificateFactory
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -23,7 +24,6 @@ from openforms.forms.tests.factories import (
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.utils.tests.cache import clear_caches
-from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import create_test_artifact, get_artifact_response

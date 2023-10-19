@@ -4,10 +4,10 @@ from typing import Literal
 from unittest.mock import patch
 
 from simple_certmanager.constants import CertificateTypes
+from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.contrib.kvk.models import KVKConfig
-from simple_certmanager_ext.tests.factories import CertificateFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"

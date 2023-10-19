@@ -25,13 +25,13 @@ class ServiceFactory(factory.django.DjangoModelFactory):
     class Params:
         with_server_cert = factory.Trait(
             server_certificate=factory.SubFactory(
-                "simple_certmanager_ext.tests.factories.CertificateFactory",
+                "simple_certmanager.test.factories.CertificateFactory",
                 public_certificate__filename="server.cert",
             ),
         )
         with_client_cert = factory.Trait(
             client_certificate=factory.SubFactory(
-                "simple_certmanager_ext.tests.factories.CertificateFactory",
+                "simple_certmanager.test.factories.CertificateFactory",
                 public_certificate__filename="client.cert",
             ),
         )

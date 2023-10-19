@@ -4,9 +4,8 @@ import requests_mock
 from ape_pie import APIClient
 from privates.test import temp_private_root
 from simple_certmanager.constants import CertificateTypes
+from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.constants import AuthTypes
-
-from simple_certmanager_ext.tests.factories import CertificateFactory
 
 from ..api_client import ServiceClientFactory
 from .factories import ServiceFactory

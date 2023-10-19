@@ -372,7 +372,7 @@ django-sessionprofile==2.0.0
     #   django-digid-eherkenning
 django-silk==5.0.1
     # via -r requirements/dev.in
-django-simple-certmanager==1.3.0
+django-simple-certmanager[testutils]==1.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -472,6 +472,7 @@ factory-boy==3.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-simple-certmanager
 faker==7.0.1
     # via
     #   -c requirements/ci.txt

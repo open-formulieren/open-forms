@@ -195,8 +195,9 @@ django-sendfile2==0.7.0
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
-django-simple-certmanager==1.3.0
+django-simple-certmanager==1.4.1
     # via
+    #   -r requirements/base.in
     #   django-digid-eherkenning
     #   zgw-consumers
 django-solo==2.1.0
