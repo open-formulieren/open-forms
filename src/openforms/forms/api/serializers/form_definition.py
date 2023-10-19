@@ -147,17 +147,3 @@ class FormDefinitionDetailSerializer(FormDefinitionSerializer):
     class Meta(FormDefinitionSerializer.Meta):
         fields = FormDefinitionSerializer.Meta.fields + ("used_in",)
         public_fields = FormDefinitionSerializer.Meta.public_fields + ("used_in",)
-
-
-class FormDefinitionPreviewSerializer(serializers.HyperlinkedModelSerializer):
-    """A serializer used for the ``preview`` action, where only a specific set of fields is returned."""
-
-    class Meta:
-        model = FormDefinition
-        fields = ("url", "name", "internal_name")
-        extra_kwargs = {
-            "url": {
-                "view_name": "api:formdefinition-detail",
-                "lookup_field": "uuid",
-            },
-        }

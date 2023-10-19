@@ -199,22 +199,6 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
         definition = self.get_object()
         return Response(data=definition.configuration, status=status.HTTP_200_OK)
 
-    @extend_schema(
-        summary=_("List form step definitions with a subset of fields"),
-        tags=["forms", "form-definitions"],
-
-    )
-    @action(methods=("GET",), detail=False, serializer_class=FormDefinitionPreviewSerializer)
-    def preview(self, request: Request):
-        """
-        List the form step definitions with the following fields included:
-        - ``name``
-        - ``internalName``
-        - ``url``
-        """
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 FormDefinitionViewSet.__doc__ = inspect.getdoc(FormDefinitionViewSet).format(
     admin_fields=_FORMDEFINITION_ADMIN_FIELDS_MARKDOWN

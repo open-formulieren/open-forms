@@ -246,6 +246,15 @@ function reducer(draft, action) {
       );
       break;
     }
+    case 'REUSABLE_FORM_DEFINITIONS_LOADED': {
+      const reusableFormDefinitions = action.payload;
+      const formDefinitionsIds = draft.formDefinitions.map(fd => fd.uuid);
+      draft.formDefinitions = [
+        ...draft.formDefinitions,
+        ...reusableFormDefinitions.filter(fd => !formDefinitionsIds.includes(fd.uuid)),
+      ];
+      break;
+    }
     case 'ADD_REGISTRATION': {
       const {key} = action.payload;
       draft.form.registrationBackends.push({
@@ -953,17 +962,23 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   const backendDataToLoad = [
     {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
-    {
-      endpoint: FORM_DEFINITIONS_ENDPOINT,
-      query: {is_reusable: true, used_in: formUuid || '', page_size: 0},
-      stateVar: 'formDefinitions',
-    },
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
+
+  if (formUuid) {
+    // We only fetch FDs used in this form if it already exists, otherwise
+    // it will fetch all the FDs because the `used_in` query param will have no effect.
+    // Reusable FDs are fetched in the background afterwards to avoid long loading time.
+    backendDataToLoad.push({
+      endpoint: FORM_DEFINITIONS_ENDPOINT,
+      query: {used_in: formUuid},
+      stateVar: 'formDefinitions',
+    })
+  }
 
   const {loading} = useAsync(async () => {
     const promises = [loadFromBackend(backendDataToLoad), loadForm(formUuid)];
@@ -979,6 +994,16 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
       payload: {supportingData, formData},
     });
   }, []);
+
+  useAsync(async () => {
+    const reusableFormDefinitions = await loadFromBackend([
+      {endpoint: FORM_DEFINITIONS_ENDPOINT, query: {is_reusable: true}},
+    ]);
+    dispatch({
+      type: 'REUSABLE_FORM_DEFINITIONS_LOADED',
+      payload: reusableFormDefinitions[0],
+    })
+  })
 
   /**
    * Functions for handling events
