@@ -1,3 +1,5 @@
+import warnings
+
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -56,5 +58,9 @@ class FormDefinitionFilter(filters.FilterSet):
             _or |= q_expr
 
         if _or:
+            warnings.warn(
+                "Using OR filters is deprecated and will be removed starting with Open Forms 3.0",
+                DeprecationWarning,
+            )
             queryset = queryset.filter(_or)
         return super().filter_queryset(queryset)

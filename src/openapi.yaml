@@ -1133,6 +1133,7 @@ paths:
         required: true
       tags:
       - forms
+      - form-definitions
       security:
       - tokenAuth: []
       - cookieAuth: []

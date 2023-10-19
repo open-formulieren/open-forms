@@ -44,7 +44,6 @@ from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
-    FormDefinitionPreviewSerializer,
     FormDefinitionSerializer,
     FormImportSerializer,
     FormLogicSerializer,

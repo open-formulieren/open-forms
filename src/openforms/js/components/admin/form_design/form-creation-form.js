@@ -115,6 +115,7 @@ const initialFormState = {
   formSteps: [],
   errors: {},
   formDefinitions: [],
+  reusableFormDefinitionsLoaded: false,
   availableRegistrationBackends: [],
   availableAuthPlugins: [],
   availablePrefillPlugins: [],
@@ -253,6 +254,7 @@ function reducer(draft, action) {
         ...draft.formDefinitions,
         ...reusableFormDefinitions.filter(fd => !formDefinitionsIds.includes(fd.uuid)),
       ];
+      draft.reusableFormDefinitionsLoaded = true;
       break;
     }
     case 'ADD_REGISTRATION': {
@@ -977,7 +979,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
       endpoint: FORM_DEFINITIONS_ENDPOINT,
       query: {used_in: formUuid},
       stateVar: 'formDefinitions',
-    })
+    });
   }
 
   const {loading} = useAsync(async () => {
@@ -996,14 +998,18 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   }, []);
 
   useAsync(async () => {
-    const reusableFormDefinitions = await loadFromBackend([
-      {endpoint: FORM_DEFINITIONS_ENDPOINT, query: {is_reusable: true}},
-    ]);
-    dispatch({
-      type: 'REUSABLE_FORM_DEFINITIONS_LOADED',
-      payload: reusableFormDefinitions[0],
-    })
-  })
+    // Waiting for the last dispatch to be done to avoid state race conditions.
+    if (!loading) {
+      const responses = await loadFromBackend([
+        {endpoint: FORM_DEFINITIONS_ENDPOINT, query: {is_reusable: true}},
+      ]);
+      const [reusableFormDefinitions] = responses;
+      dispatch({
+        type: 'REUSABLE_FORM_DEFINITIONS_LOADED',
+        payload: reusableFormDefinitions,
+      });
+    }
+  }, [loading]);
 
   /**
    * Functions for handling events
@@ -1206,6 +1212,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           components: availableComponents,
           formSteps: state.formSteps,
           formDefinitions: state.formDefinitions,
+          reusableFormDefinitionsLoaded: state.reusableFormDefinitionsLoaded,
           formVariables: state.formVariables,
           staticVariables: state.staticVariables,
           plugins: {

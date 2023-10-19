@@ -3,6 +3,7 @@ import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import FAIcon from 'components/admin/FAIcon';
+import Loader from 'components/admin/Loader';
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
@@ -109,37 +110,43 @@ const NewStepFormDefinitionPicker = ({onReplace}) => {
           />
         }
       >
-        <FormRow>
-          <Field
-            name="form-definition"
-            label={
-              <FormattedMessage
-                description="Form definition select label"
-                defaultMessage="Select form definition"
-              />
-            }
-            errors={validationErrors}
-            required
-          >
-            <Select
-              name="form-definition"
-              choices={formDefinitionChoices}
-              value={selectedFormDefinition}
-              onChange={onSelectChange}
-              allowBlank
-            />
-          </Field>
-        </FormRow>
+        {formContext.reusableFormDefinitionsLoaded ? (
+          <>
+            <FormRow>
+              <Field
+                name="form-definition"
+                label={
+                  <FormattedMessage
+                    description="Form definition select label"
+                    defaultMessage="Select form definition"
+                  />
+                }
+                errors={validationErrors}
+                required
+              >
+                <Select
+                  name="form-definition"
+                  choices={formDefinitionChoices}
+                  value={selectedFormDefinition}
+                  onChange={onSelectChange}
+                  allowBlank
+                />
+              </Field>
+            </FormRow>
 
-        <SubmitRow isDefault>
-          <SubmitAction
-            text={intl.formatMessage({
-              description: 'Form definition select confirm button',
-              defaultMessage: 'Confirm',
-            })}
-            onClick={onFormDefinitionConfirmed}
-          />
-        </SubmitRow>
+            <SubmitRow isDefault>
+              <SubmitAction
+                text={intl.formatMessage({
+                  description: 'Form definition select confirm button',
+                  defaultMessage: 'Confirm',
+                })}
+                onClick={onFormDefinitionConfirmed}
+              />
+            </SubmitRow>
+          </>
+        ) : (
+          <Loader />
+        )}
       </FormModal>
     </div>
   );
