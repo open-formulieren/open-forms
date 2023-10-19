@@ -24,9 +24,7 @@ beautifulsoup4==4.10.0
 billiard==3.6.4.0
     # via celery
 bleach[css]==5.0.1
-    # via
-    #   -r requirements/base.in
-    #   bleach
+    # via -r requirements/base.in
 boltons==21.0.0
     # via
     #   face
@@ -199,6 +197,7 @@ django-sessionprofile==2.0.0
     # via django-digid-eherkenning
 django-simple-certmanager==1.4.1
     # via
+    #   -r requirements/base.in
     #   django-digid-eherkenning
     #   zgw-consumers
 django-solo==2.1.0

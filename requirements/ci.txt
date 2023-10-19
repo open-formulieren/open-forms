@@ -54,7 +54,6 @@ bleach[css]==5.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   bleach
 boltons==21.0.0
     # via
     #   -c requirements/base.txt
@@ -226,7 +225,6 @@ django-axes[ipware]==6.0.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   django-axes
 django-better-admin-arrayfield==1.4.2
     # via
     #   -c requirements/base.txt
@@ -562,7 +560,6 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   maykin-django-two-factor-auth
 maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/base.txt
@@ -662,7 +659,6 @@ portalocker[redis]==2.3.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   portalocker
 prance==23.6.21.0
     # via
     #   -c requirements/base.txt
@@ -848,7 +844,6 @@ sentry-sdk[django]==1.27.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   sentry-sdk
 simplejson==3.17.6
     # via
     #   -c requirements/base.txt
@@ -921,7 +916,6 @@ tablib[xlsx]==3.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   tablib
 tabulate==0.8.9
     # via
     #   -c requirements/base.txt
