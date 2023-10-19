@@ -63,6 +63,10 @@ class BranchDetailDict(TypedDict):
     updated: int
 
 
+class NoServiceConfigured(RuntimeError):
+    pass
+
+
 # API CLIENT IMPLEMENTATIONS, per major version of the API
 
 
@@ -73,7 +77,7 @@ def QmaticClient() -> "Client":
     config = QmaticConfig.get_solo()
     assert isinstance(config, QmaticConfig)
     if (service := config.service) is None:
-        raise RuntimeError("No Qmatic service defined, aborting!")
+        raise NoServiceConfigured("No Qmatic service defined, aborting!")
     assert isinstance(service, Service)
     service_client_factory = ServiceClientFactory(service)
     return Client.configure_from(service_client_factory)
