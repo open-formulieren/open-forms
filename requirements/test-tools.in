@@ -3,6 +3,7 @@
 # Dependencies only relevant for (unit) testing
 coverage
 django-jenkins
+django-simple-certmanager[testutils]
 django-webtest
 factory-boy
 freezegun

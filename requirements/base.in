@@ -55,7 +55,7 @@ django-modeltranslation
 django-ordered-model
 django-privates
 django-redis
-django-simple-certmanager>=1.4.1
+django-simple-certmanager
 django-solo
 django-tinymce
 django-treebeard
