@@ -20,6 +20,7 @@ Voorbeelden
    dynamic_options
    dynamic_options_2
    service_fetch
+   suwinet
 
 ======================
 Verouderde voorbeelden

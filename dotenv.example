@@ -28,3 +28,7 @@ TWO_FACTOR_FORCE_OTP_ADMIN=no
 # ELASTIC_APM_SECRET_TOKEN=
 # ELASTIC_APM_SERVER_URL=
 # DISABLE_APM_IN_DEV=no
+#
+# Recording Suwinet VCR cassettes
+# SUWINET_CLIENT_KEY=/path/to/privatekey.pem
+# SUWINET_BASE_URL=https://url/of/gateway/suwiml

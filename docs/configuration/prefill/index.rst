@@ -8,6 +8,7 @@ Prefill plugins
    :maxdepth: 1
 
    bag
+   haal_centraal
    kvk
    stuf_bg
-   haal_centraal
+   suwinet
