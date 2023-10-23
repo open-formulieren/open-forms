@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from ape_pie.client import APIClient as SessionBase, is_base_url
 from zeep.client import Client
 from zeep.transports import Transport
@@ -25,7 +27,10 @@ def build_client(
     """
     session_factory = SessionFactory(service)
     session = SOAPSession.configure_from(session_factory)
-    transport = transport_factory(session=session)
+    transport = transport_factory(
+        session=session,
+        timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
+    )
     client = client_factory(service.url, transport=transport, **kwargs)
     return client
 

@@ -1,39 +1,46 @@
 """
 Test the client factory from SOAPService configuration.
 """
+import signal
 from pathlib import Path
 
-from django.test import TestCase
+from django.test import SimpleTestCase, override_settings
 
 import requests_mock
 from ape_pie import InvalidURLError
+from requests.exceptions import RequestException
 from simple_certmanager.test.factories import CertificateFactory
+
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import SOAPSession, build_client
 from ..constants import EndpointSecurity
 from ..session_factory import SessionFactory
 from .factories import SoapServiceFactory
 
-WSDL = Path(__file__).parent.resolve() / "data" / "sample.wsdl"
+DATA_DIR = Path(__file__).parent / "data"
+WSDL = DATA_DIR / "sample.wsdl"
 WSDL_URI = str(WSDL)
 
 
-class ClientTransportTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
+class ClientTransportTests(OFVCRMixin, SimpleTestCase):
+    VCR_TEST_FILES = DATA_DIR
 
-        cls.client_cert_only = CertificateFactory.create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.client_cert_only = CertificateFactory.build(
             label="Gateway client certificate",
             public_certificate__filename="client_cert.pem",
         )
-        cls.client_cert_and_privkey = CertificateFactory.create(
+        cls.client_cert_and_privkey = CertificateFactory.build(
             label="Gateway client certificate",
             with_private_key=True,
             public_certificate__filename="client_cert.pem",
             private_key__filename="client_key.pem",
         )
-        cls.server_cert = CertificateFactory.create(
+        cls.server_cert = CertificateFactory.build(
             label="Gateway server certificate",
             public_certificate__filename="server.pem",
         )
@@ -94,7 +101,7 @@ class ClientTransportTests(TestCase):
     def test_incomplete_client_cert_configured(self):
         service = SoapServiceFactory.build(
             url=WSDL_URI,
-            client_certificate=CertificateFactory.create(
+            client_certificate=CertificateFactory.build(
                 public_certificate=None,
                 private_key=None,
             ),
@@ -158,3 +165,42 @@ class ClientTransportTests(TestCase):
             session.post("api/relative")
 
         self.assertEqual(m.last_request.url, "https://example.com/api/relative")
+
+    def test_it_can_build_a_functional_client(self):
+        service = SoapServiceFactory.build(
+            url="http://www.soapclient.com/xml/soapresponder.wsdl"
+        )
+        client = build_client(service)
+
+        self.assertEqual(
+            client.service.Method1("under the normal run", "things"),
+            "Your input parameters are under the normal run and things",
+        )
+
+    @override_settings(DEFAULT_TIMEOUT_REQUESTS=1)
+    def test_the_client_obeys_timeout_requests(self):
+        "We don't want an unresponsive service DoS us."
+        self.assertFalse(self.cassette.responses)
+
+        service = SoapServiceFactory.build(
+            # this service acts like some slow lorris on https
+            url="https://www.soapclient.com/xml/soapresponder.wsdl"
+        )
+
+        # signals aren't thread save
+        org_handler = signal.getsignal(signal.SIGALRM)
+        self.addCleanup(lambda: signal.signal(signal.SIGALRM, org_handler))
+        signal.signal(
+            signal.SIGALRM,
+            lambda _sig, _frm: self.fail("Client seems to hang")
+            # but there is a chance be that the service started responding, but we couldn't
+            # process the wsdl in time
+        )
+        with self.assertRaises(RequestException):
+            signal.alarm(5)
+            # zeep will try to read the wsdl
+            build_client(service)
+
+            # Passed this point, the test has broken, find or create another test service
+            # that opens the socket, but doesn't respond.
+            self.fail("The service unexpectedly responded!")

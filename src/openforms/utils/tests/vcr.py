@@ -71,4 +71,5 @@ class OFVCRMixin(VCRMixin):
     def _get_vcr_kwargs(self):
         kwargs = super()._get_vcr_kwargs()
         kwargs.setdefault("record_mode", RECORD_MODE)
+        kwargs.setdefault("decode_compressed_response", True)
         return kwargs

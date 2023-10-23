@@ -1,0 +1,103 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: GET
+    uri: http://www.soapclient.com/xml/soapresponder.wsdl
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8' ?> \r\n<definitions  name ='SoapResponder'
+        \  targetNamespace = 'http://www.SoapClient.com/xml/SoapResponder.wsdl'\r\n\t
+        xmlns:tns='http://www.SoapClient.com/xml/SoapResponder.wsdl' \r\n\t xmlns:xsd1='http://www.SoapClient.com/xml/SoapResponder.xsd'
+        \r\n\t xmlns:xsd='http://www.w3.org/2001/XMLSchema' \r\n\t xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/'
+        \r\n\t xmlns='http://schemas.xmlsoap.org/wsdl/'> \r\n  <types>\r\n    <schema
+        targetNamespace='http://www.SoapClient.com/xml/SoapResponder.xsd'\r\n      xmlns='http://www.w3.org/1999/XMLSchema'>\r\n
+        \   </schema>\r\n  </types>\r\n  <message name='Method1'>\r\n    <part name='bstrParam1'
+        type='xsd:string'/>\r\n    <part name='bstrParam2' type='xsd:string'/>\r\n
+        \ </message>\r\n  <message name='Method1Response'>\r\n    <part name='bstrReturn'
+        type='xsd:string'/>\r\n  </message>\r\n\r\n  <portType name='SoapResponderPortType'>\r\n
+        \   <operation name='Method1' parameterOrder='bstrparam1 bstrparam2 return'>\r\n
+        \     <input message='tns:Method1' />\r\n      <output message='tns:Method1Response'
+        />\r\n    </operation>\r\n  </portType>\r\n  <binding name='SoapResponderBinding'
+        type='tns:SoapResponderPortType' >\r\n    <soap:binding style='rpc' transport='http://schemas.xmlsoap.org/soap/http'
+        />\r\n    <operation name='Method1' >\r\n      <soap:operation soapAction='http://www.SoapClient.com/SoapObject'
+        />\r\n      <input>\r\n        <soap:body use='encoded' namespace='http://www.SoapClient.com/xml/SoapResponder.xsd'
+        \ encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' />\r\n      </input>\r\n
+        \     <output>\r\n        <soap:body use='encoded' namespace='http://www.SoapClient.com/xml/SoapResponder.xsd'
+        \ encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' />\r\n      </output>\r\n
+        \   </operation>\r\n  </binding>\r\n  <service name='SoapResponder' >\r\n
+        \ \t<documentation>A SOAP service that echoes input parameters in the response</documentation>\r\n
+        \   <port name='SoapResponderPortType' binding='tns:SoapResponderBinding'
+        >\r\n      <soap:address location='http://www.soapclient.com/xml/soapresponder.wsdl'
+        />\r\n    </port>\r\n  </service>\r\n</definitions>\r\n"
+    headers:
+      Content-Length:
+      - '2087'
+      Content-Type:
+      - text/xml
+      Date:
+      - Mon, 02 Oct 2023 10:18:03 GMT
+      Server:
+      - SQLData-Server/3.01 Microsoft-HTTPAPI/2.0
+      Set-Cookie:
+      - SessionId=SHARE013819017865022267018880001490015920004680;path=/;expires=Mon,  2-Oct-2023
+        10:34:43 GMT;Version=1; secure; HttpOnly
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Body><ns0:Method1
+      xmlns:ns0="http://www.SoapClient.com/xml/SoapResponder.xsd"><bstrParam1>under
+      the normal run</bstrParam1><bstrParam2>things</bstrParam2></ns0:Method1></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '331'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '"http://www.SoapClient.com/SoapObject"'
+      User-Agent:
+      - Zeep/4.1.0 (www.python-zeep.org)
+    method: POST
+    uri: http://www.soapclient.com/xml/soapresponder.wsdl
+  response:
+    body:
+      string: <?xml version="1.0" encoding="UTF-8" standalone="no"?><SOAP-ENV:Envelope
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://www.SoapClient.com/xml/SoapResponder.wsdl"
+        xmlns:xsd1="http://www.SoapClient.com/xml/SoapResponder.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><mns:Method1Response
+        xmlns:mns="http://www.SoapClient.com/xml/SoapResponder.xsd" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><bstrReturn
+        xsi:type="xsd:string">Your input parameters are under the normal run and things</bstrReturn></mns:Method1Response></SOAP-ENV:Body></SOAP-ENV:Envelope>
+    headers:
+      Content-Length:
+      - '788'
+      Content-Type:
+      - text/xml; charset="utf-8"
+      Date:
+      - Mon, 02 Oct 2023 10:18:03 GMT
+      Server:
+      - SQLData-Server/3.01 Microsoft-HTTPAPI/2.0
+      Set-Cookie:
+      - SessionId=SHARE013822028614007364010175011804019847007792;path=/;expires=Mon,  2-Oct-2023
+        10:34:43 GMT;Version=1; secure; HttpOnly
+    status:
+      code: 200
+      message: OK
+version: 1
