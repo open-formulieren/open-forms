@@ -7,6 +7,7 @@ const FormStep = PropTypes.shape({
   name: PropTypes.string,
   internalName: PropTypes.string,
   slug: PropTypes.string,
+  isApplicable: PropTypes.bool,
   loginRequired: PropTypes.bool,
   isReusable: PropTypes.bool,
   url: PropTypes.string,

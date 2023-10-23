@@ -16,6 +16,7 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
     slug,
     loginRequired,
     translations,
+    isApplicable,
     isReusable,
     isNew,
     validationErrors = [],
@@ -45,6 +46,7 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
       translations={translations}
       componentTranslations={componentTranslations}
       configuration={configuration}
+      isApplicable={isApplicable}
       loginRequired={loginRequired}
       isReusable={isReusable}
       onFieldChange={onFieldChange}

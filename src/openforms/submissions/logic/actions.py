@@ -167,13 +167,13 @@ class StepNotApplicableAction(ActionOperation):
         submission_step_to_modify = execution_state.resolve_step(
             self.form_step_identifier
         )
-        submission_step_to_modify._is_applicable = False
+        submission_step_to_modify.is_applicable = False
 
         # This clears data in the database to make sure that saved steps which later become
         # not-applicable don't have old data
         submission_step_to_modify.data = {}
         if submission_step_to_modify == step:
-            step._is_applicable = False
+            step.is_applicable = False
             step.data = DirtyData({})
 
     def get_action_log_data(
@@ -186,6 +186,42 @@ class StepNotApplicableAction(ActionOperation):
         return {
             "type_display": LogicActionTypes.get_label(
                 LogicActionTypes.step_not_applicable
+            ),
+            "step_name": self.form_step_identifier,
+        }
+
+
+@dataclass
+class StepApplicableAction(ActionOperation):
+    form_step_identifier: str
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> "StepApplicableAction":
+        return cls(
+            form_step_identifier=action["form_step_uuid"],
+        )
+
+    def apply(
+        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+    ) -> None:
+        execution_state = (
+            step.submission.load_execution_state()
+        )  # typically cached already
+        submission_step_to_modify = execution_state.resolve_step(
+            self.form_step_identifier
+        )
+        submission_step_to_modify.is_applicable = True
+
+    def get_action_log_data(
+        self,
+        component_map: Dict[str, ComponentMeta],
+        all_variables: Dict[str, FormVariable],
+        initial_data: dict,
+        log_data: dict[str, JSONValue],
+    ) -> JSONObject:
+        return {
+            "type_display": LogicActionTypes.get_label(
+                LogicActionTypes.step_applicable
             ),
             "step_name": self.form_step_identifier,
         }
@@ -299,6 +335,7 @@ ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, Type[ActionOperation]] = {
     LogicActionTypes.property: PropertyAction,
     LogicActionTypes.disable_next: DisableNextAction,
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
+    LogicActionTypes.step_applicable: StepApplicableAction,
     LogicActionTypes.variable: VariableAction,
     LogicActionTypes.fetch_from_service: ServiceFetchAction,
     LogicActionTypes.set_registration_backend: SetRegistrationBackendAction,

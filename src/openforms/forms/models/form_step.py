@@ -61,6 +61,11 @@ class FormStep(OrderedModel):
             "Leave blank to get value from global configuration."
         ),
     )
+    is_applicable = models.BooleanField(
+        _("is applicable"),
+        default=True,
+        help_text=_("Whether the step is applicable by default."),
+    )
 
     order_with_respect_to = "form"
 

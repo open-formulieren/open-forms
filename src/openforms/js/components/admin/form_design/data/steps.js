@@ -82,6 +82,7 @@ const updateOrCreateSingleFormStep = async (
   const stepData = {
     index: index,
     slug: step.slug,
+    isApplicable: step.isApplicable,
     formDefinition: definitionResponse.data.url,
     translations: formStepTranslations,
   };

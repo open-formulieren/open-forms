@@ -91,6 +91,7 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         str(LogicActionTypes.disable_next): DummySerializer,
         str(LogicActionTypes.property): LogicPropertyActionSerializer,
         str(LogicActionTypes.step_not_applicable): DummySerializer,
+        str(LogicActionTypes.step_applicable): DummySerializer,
         str(LogicActionTypes.variable): LogicValueActionSerializer,
         str(LogicActionTypes.fetch_from_service): LogicFetchActionSerializer,
         str(

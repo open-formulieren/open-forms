@@ -118,7 +118,7 @@ class SubmissionStep(models.Model):
 
     # can be modified by logic evaluations/checks
     _can_submit = True
-    _is_applicable = True
+    _is_applicable: bool | None = None
 
     _unsaved_data = None
 
@@ -196,7 +196,15 @@ class SubmissionStep(models.Model):
 
     @property
     def is_applicable(self) -> bool:
-        return self._is_applicable
+        if self._is_applicable is not None:
+            return self._is_applicable
+        return self.form_step.is_applicable
+
+    @is_applicable.setter
+    def is_applicable(self, value: bool) -> None:
+        if not isinstance(value, bool):
+            raise ValueError(f"'is_applicable' expects a boolean value, got {value}")
+        self._is_applicable = value
 
     def reset(self):
         self.data = {}
