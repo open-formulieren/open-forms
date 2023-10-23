@@ -40,6 +40,7 @@ const FormStepDefinition = ({
   url = '',
   generatedId = '',
   internalName = '',
+  index = null,
   slug = '',
   isApplicable = true,
   loginRequired = false,
@@ -336,7 +337,7 @@ const FormStepDefinition = ({
                     onChange={e =>
                       onFieldChange({target: {name: 'isApplicable', value: !isApplicable}})
                     }
-                    disabled={langCode !== defaultLang}
+                    disabled={index === 0 || langCode !== defaultLang} // First step can't be n/a by default
                   />
                 </Field>
               </FormRow>

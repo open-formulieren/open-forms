@@ -9,6 +9,7 @@ import TYPES from './types';
 const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) => {
   const {
     _generatedId,
+    index,
     configuration,
     formDefinition,
     name,
@@ -22,6 +23,7 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
     validationErrors = [],
     componentTranslations,
   } = data;
+  console.log(_generatedId);
   const previousFormDefinition = usePrevious(formDefinition);
   let forceBuilderUpdate = false;
   if (previousFormDefinition && previousFormDefinition != formDefinition) {
@@ -40,6 +42,7 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
   return (
     <FormStepDefinition
       internalName={internalName}
+      index={index}
       slug={slug}
       url={formDefinition}
       generatedId={_generatedId}
