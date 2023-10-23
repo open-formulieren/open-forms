@@ -1,3 +1,4 @@
+import uniqueId from 'lodash/uniqueId';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import {FormattedMessage} from 'react-intl';
@@ -32,6 +33,13 @@ CheckboxChoices.propTypes = {
 const WrapperArrayInput = ({name, value, onChange}) => {
   const [useRawJSON, setUseRawJSON] = useState(false);
 
+  // if the value is not an array of strings, the text inputs break the existing data
+  // structures. In that case, pin the input to use raw JSON.
+  const anyItemNotString = value && value.some(item => typeof item !== 'string');
+  if (anyItemNotString && !useRawJSON) {
+    setUseRawJSON(true);
+  }
+
   const actualInput = useRawJSON ? (
     <WrappedJsonWidget name={name} value={value} onChange={onChange} />
   ) : (
@@ -49,7 +57,7 @@ const WrapperArrayInput = ({name, value, onChange}) => {
   return (
     <>
       <Checkbox
-        name="useRawJSON"
+        name={uniqueId()}
         label={
           <FormattedMessage
             description="Toggle array input raw JSON input mode"
@@ -58,6 +66,7 @@ const WrapperArrayInput = ({name, value, onChange}) => {
         }
         checked={useRawJSON}
         onChange={() => setUseRawJSON(!useRawJSON)}
+        disabled={anyItemNotString}
       />
       {actualInput}
     </>
@@ -66,7 +75,15 @@ const WrapperArrayInput = ({name, value, onChange}) => {
 
 WrapperArrayInput.propTypes = {
   name: PropTypes.string,
-  value: PropTypes.arrayOf(PropTypes.string),
+  /**
+   * Value is an array of items.
+   *
+   * The most common use-case is an array of strings, for which a friendly user
+   * interface is rendered to manage individual items. However, any nested (JSON) data
+   * type is supported. As soon as any item is not a string, the UI locks into "raw JSON"
+   * edit mode.
+   */
+  value: PropTypes.array,
   onChange: PropTypes.func,
 };
 
@@ -76,7 +93,7 @@ const WrappedJsonWidget = ({name, value, onChange}) => {
 
 WrappedJsonWidget.propTypes = {
   name: PropTypes.string,
-  value: PropTypes.object,
+  value: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   onChange: PropTypes.func,
 };
 

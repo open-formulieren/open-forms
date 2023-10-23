@@ -41,6 +41,8 @@ export default {
   },
   argTypes: {
     onChange: {action: true},
+    onAdd: {action: true},
+    onDelete: {action: true},
   },
 };
 

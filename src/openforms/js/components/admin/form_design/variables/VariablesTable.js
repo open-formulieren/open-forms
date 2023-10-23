@@ -231,6 +231,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
       <td>
         <Field name="initialValue" errors={variable.errors?.initialValue}>
           <LiteralValueInput
+            key={`initialValue-${index}`}
             name="initialValue"
             type={variable.dataType}
             value={initialValue}
