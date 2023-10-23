@@ -134,7 +134,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         # every variable in the bulk update call, leading to O(n) queries with ``n``
         # the amount of variables.
         # The (bulk) API endpoint(s) and this ListSerializer are responsible for
-        # applying # this validation on the whole collection.
+        # applying this validation on the whole collection.
         validators = []
 
     def validate_service_fetch_configuration(self, value):
@@ -160,9 +160,6 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         )
         config.is_valid(raise_exception=True)
         return config
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     def validate(self, attrs):
         if (form_definition := attrs.get("form_definition")) and attrs.get(
