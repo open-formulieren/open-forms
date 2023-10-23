@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
+import {FormattedMessage} from 'react-intl';
 
 import ArrayInput from 'components/admin/forms/ArrayInput';
 import {DateInput, DateTimeInput, NumberInput, TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox} from 'components/admin/forms/Inputs';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
 
@@ -28,7 +30,11 @@ CheckboxChoices.propTypes = {
 };
 
 const WrapperArrayInput = ({name, value, onChange}) => {
-  return (
+  const [useRawJSON, setUseRawJSON] = useState(false);
+
+  const actualInput = useRawJSON ? (
+    <WrappedJsonWidget name={name} value={value} onChange={onChange} />
+  ) : (
     <ArrayInput
       name={name}
       values={value}
@@ -38,6 +44,23 @@ const WrapperArrayInput = ({name, value, onChange}) => {
       }}
       inputType="text"
     />
+  );
+
+  return (
+    <>
+      <Checkbox
+        name="useRawJSON"
+        label={
+          <FormattedMessage
+            description="Toggle array input raw JSON input mode"
+            defaultMessage="Use raw JSON input"
+          />
+        }
+        checked={useRawJSON}
+        onChange={() => setUseRawJSON(!useRawJSON)}
+      />
+      {actualInput}
+    </>
   );
 };
 

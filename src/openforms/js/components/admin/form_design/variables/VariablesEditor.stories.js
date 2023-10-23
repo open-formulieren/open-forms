@@ -39,6 +39,9 @@ export default {
       },
     ],
   },
+  argTypes: {
+    onChange: {action: true},
+  },
 };
 
 export const Default = {};
