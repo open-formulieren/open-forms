@@ -11,6 +11,7 @@ const FormContext = React.createContext({
   components: {},
   formSteps: [],
   formDefinitions: [],
+  reusableFormDefinitionsLoaded: false,
   formVariables: {},
   registrationBackends: [],
   plugins: {},

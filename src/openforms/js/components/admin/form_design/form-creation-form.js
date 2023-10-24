@@ -115,6 +115,7 @@ const initialFormState = {
   formSteps: [],
   errors: {},
   formDefinitions: [],
+  reusableFormDefinitionsLoaded: false,
   availableRegistrationBackends: [],
   availableAuthPlugins: [],
   availablePrefillPlugins: [],
@@ -187,7 +188,7 @@ function reducer(draft, action) {
      * Form-level actions
      */
     case 'BACKEND_DATA_LOADED': {
-      const {formData, supportingData} = action.payload;
+      const {supportingData, formData} = action.payload;
       const {form, selectedAuthPlugins, steps, variables, logicRules, priceRules} = formData;
 
       for (const [stateVar, data] of Object.entries(supportingData)) {
@@ -244,6 +245,16 @@ function reducer(draft, action) {
         draft.staticVariables,
         draft.validationErrors
       );
+      break;
+    }
+    case 'REUSABLE_FORM_DEFINITIONS_LOADED': {
+      const reusableFormDefinitions = action.payload;
+      const formDefinitionsIds = draft.formDefinitions.map(fd => fd.uuid);
+      draft.formDefinitions = [
+        ...draft.formDefinitions,
+        ...reusableFormDefinitions.filter(fd => !formDefinitionsIds.includes(fd.uuid)),
+      ];
+      draft.reusableFormDefinitionsLoaded = true;
       break;
     }
     case 'ADD_REGISTRATION': {
@@ -953,17 +964,23 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   const backendDataToLoad = [
     {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
-    {
-      endpoint: FORM_DEFINITIONS_ENDPOINT,
-      query: {is_reusable: true, used_in: formUuid || ''},
-      stateVar: 'formDefinitions',
-    },
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
+
+  if (formUuid) {
+    // We only fetch FDs used in this form if it already exists, otherwise
+    // it will fetch all the FDs because the `used_in` query param will have no effect.
+    // Reusable FDs are fetched in the background afterwards to avoid long loading time.
+    backendDataToLoad.push({
+      endpoint: FORM_DEFINITIONS_ENDPOINT,
+      query: {used_in: formUuid},
+      stateVar: 'formDefinitions',
+    });
+  }
 
   const {loading} = useAsync(async () => {
     const promises = [loadFromBackend(backendDataToLoad), loadForm(formUuid)];
@@ -979,6 +996,20 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
       payload: {supportingData, formData},
     });
   }, []);
+
+  useAsync(async () => {
+    // Waiting for the last dispatch to be done to avoid state race conditions.
+    if (!loading) {
+      const responses = await loadFromBackend([
+        {endpoint: FORM_DEFINITIONS_ENDPOINT, query: {is_reusable: true}},
+      ]);
+      const [reusableFormDefinitions] = responses;
+      dispatch({
+        type: 'REUSABLE_FORM_DEFINITIONS_LOADED',
+        payload: reusableFormDefinitions,
+      });
+    }
+  }, [loading]);
 
   /**
    * Functions for handling events
@@ -1181,6 +1212,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           components: availableComponents,
           formSteps: state.formSteps,
           formDefinitions: state.formDefinitions,
+          reusableFormDefinitionsLoaded: state.reusableFormDefinitionsLoaded,
           formVariables: state.formVariables,
           staticVariables: state.staticVariables,
           plugins: {

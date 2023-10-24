@@ -183,7 +183,7 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary=_("Retrieve form definition JSON schema"),
-        tags=["forms"],
+        tags=["forms", "form-definitions"],
         responses=OpenApiTypes.OBJECT,
     )
     @action(methods=("GET",), detail=True)
