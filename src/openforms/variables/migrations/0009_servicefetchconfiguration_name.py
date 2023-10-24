@@ -3,19 +3,11 @@
 from django.db import migrations
 
 
-def populate_names(apps, _):
-    ServiceFetchConfiguration = apps.get_model("variables", "ServiceFetchConfiguration")
-
-    for config in ServiceFetchConfiguration.objects.all():
-        if not config.name:
-            config.name = f"{config.method} - {config.service.api_root}"
-            config.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ("variables", "0008_alter_servicefetchconfiguration_query_params"),
     ]
 
-    operations = [migrations.RunPython(populate_names, migrations.RunPython.noop)]
+    # data migration removed, as these have been executed on Open Forms 2.3.0+
+    operations = []
