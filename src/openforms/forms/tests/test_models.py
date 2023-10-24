@@ -418,11 +418,18 @@ class FormStepTestCase(TestCase):
         self.assertEqual(str(step), "FormStep object (None)")
 
     def test_clean(self):
-        step = FormStepFactory.create(
+        step_raises = FormStepFactory.create(
             order=0,
             is_applicable=False,
         )
-        self.assertRaises(ValidationError, step.clean)
+        step_ok = FormStepFactory.create(
+            order=0,
+            is_applicable=True,
+        )
+        with self.subTest("clean raises"):
+            self.assertRaises(ValidationError, step_raises.clean)
+        with self.subTest("clean does not raises"):
+            step_ok.clean()
 
 
 class FormLogicTests(TestCase):
