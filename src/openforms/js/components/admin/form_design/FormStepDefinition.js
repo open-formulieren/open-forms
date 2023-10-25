@@ -324,7 +324,6 @@ const FormStepDefinition = ({
                   name="isApplicable"
                   errorClassPrefix={'checkbox'}
                   errorClassModifier={'no-padding'}
-                  title={index === 0 ? 'First step must be applicable' : null}
                 >
                   <Checkbox
                     label={

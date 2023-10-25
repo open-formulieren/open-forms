@@ -29,7 +29,6 @@ const Field = ({
   name,
   label = '',
   helpText = '',
-  title = '',
   required = false,
   disabled = false,
   errors = [],
@@ -64,7 +63,7 @@ const Field = ({
           {formattedErrors}
         </ErrorList>
       ) : null}
-      <div className={className} title={title}>
+      <div className={className}>
         {fieldBox && hasErrors ? (
           <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
             {formattedErrors}
@@ -87,7 +86,6 @@ Field.propTypes = {
   label: PropTypes.node,
   children: PropTypes.element.isRequired,
   helpText: PropTypes.node,
-  title: PropTypes.string,
   required: PropTypes.bool,
   errors: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.array])),
