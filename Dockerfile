@@ -53,7 +53,7 @@ WORKDIR /app
 
 # copy configuration/build files
 COPY ./build /app/build/
-COPY ./*.json ./*.js ./.babelrc /app/
+COPY ./*.json ./*.js /app/
 
 # install WITH dev tooling
 RUN npm ci --legacy-peer-deps

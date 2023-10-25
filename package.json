@@ -66,6 +66,10 @@
     ],
     "modulePaths": [
       "<rootDir>/src/openforms/js"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@open-formulieren/formio-builder)/",
+      "\\.pnp\\.[^\\\/]+$"
     ]
   },
   "browserslist": [
