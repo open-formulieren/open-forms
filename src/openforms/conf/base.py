@@ -1099,6 +1099,8 @@ CSP_DEFAULT_SRC = [
     "'self'",
 ] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
 
+CSP_FORM_ACTION = ("'self'",)
+
 # * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted
 # * the data: URIs are used by Leaflet (invisible pixel for memory management/image unloading)
 #   and the signature component which saves the image drawn on the canvas as data: URI

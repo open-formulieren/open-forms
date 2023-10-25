@@ -1,6 +1,8 @@
 from collections import defaultdict
 from functools import partial
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import (
     FileExtensionValidator,
@@ -658,9 +660,23 @@ class CSPSetting(models.Model):
     )
     value = models.CharField(
         _("value"),
-        max_length=128,
+        max_length=255,
         help_text=_("CSP header value"),
     )
+    content_type = models.ForeignKey(
+        ContentType,
+        verbose_name=_("content type"),
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    object_id = models.TextField(
+        verbose_name=_("object id"),
+        blank=True,
+        null=True,
+        db_index=True,
+    )
+    content_object = GenericForeignKey("content_type", "object_id")
 
     objects = CSPSettingQuerySet.as_manager()
 
