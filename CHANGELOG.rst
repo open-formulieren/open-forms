@@ -7,6 +7,16 @@ Changelog
 
 .. note:: These release notes are in development!
 
+**DigiD - Eherkenning Configuration**
+
+The configuration concerning the digid and eherkenning has been updated according to the
+new version (0.9) of the django-digid-eherkenning library. The XML metadata file is now
+automatically retrieved so you have to edit the configuration via:
+**Admin** > **Configuratie** > **DigiD-configuratie**
+**Admin** > **Configuratie** > **EHerkenning/eIDAS-configuratie**
+and add the XML metadata url. The identity provider and the metadata file fields will be
+automatically populated if the url is valid.
+
 Upgrade procedure
 -----------------
 
