@@ -664,7 +664,7 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
         instances = []
         for setting in settings:
             directive, value = setting
-            if not directive in CSPDirective.values:
+            if directive not in CSPDirective.values:
                 logger.error(
                     "Could not create csp setting for model '%s'. '%s' is not a valid directive.",
                     obj,
