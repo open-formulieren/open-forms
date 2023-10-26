@@ -210,6 +210,7 @@ INSTALLED_APPS = [
     "openforms.logging.apps.LoggingAppConfig",
     "openforms.contrib.bag.apps.BAGConfig",  # TODO: remove once 2.4.0 is released
     "openforms.contrib.brp",
+    "openforms.contrib.digid_eherkenning",
     "openforms.contrib.haal_centraal",
     "openforms.contrib.kadaster",
     "openforms.contrib.kvk",
@@ -1098,6 +1099,8 @@ PAYMENT_CONFIRMATION_EMAIL_TIMEOUT = 60 * 15
 CSP_DEFAULT_SRC = [
     "'self'",
 ] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
+
+CSP_FORM_ACTION = ("'self'",)
 
 # * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted
 # * the data: URIs are used by Leaflet (invisible pixel for memory management/image unloading)

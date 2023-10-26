@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
@@ -182,9 +184,11 @@ class RichTextColorAdmin(admin.ModelAdmin):
 
 @admin.register(CSPSetting)
 class CSPSettingAdmin(admin.ModelAdmin):
+    readonly_fields = ("content_type_link",)
     fields = [
         "directive",
         "value",
+        "content_type_link",
     ]
     list_display = [
         "directive",
@@ -197,3 +201,11 @@ class CSPSettingAdmin(admin.ModelAdmin):
         "directive",
         "value",
     ]
+
+    def content_type_link(self, obj):
+        ct = obj.content_type
+        url = reverse(f"admin:{ct.app_label}_{ct.model}_change", args=(obj.object_id,))
+        link = format_html('<a href="{u}">{t}</a>', u=url, t=str(obj.content_object))
+        return link
+
+    content_type_link.short_description = _("Content type")
