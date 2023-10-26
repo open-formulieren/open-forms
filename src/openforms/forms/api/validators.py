@@ -190,6 +190,19 @@ class FormLogicTriggerFromStepFormValidator:
             )
 
 
+class FormStepIsApplicableIfFirstValidator:
+    def __call__(self, attrs: dict):
+        if not attrs.get("is_applicable", True) and attrs.get("order") == 0:
+            raise serializers.ValidationError(
+                {
+                    "is_applicable": serializers.ErrorDetail(
+                        _("First form step must be applicable."),
+                        code="invalid",
+                    ),
+                }
+            )
+
+
 def validate_template_expressions(configuration: JSONObject) -> None:
     """
     Validate that any template expressions in supported properties are correct.

@@ -1092,3 +1092,42 @@ class FormStepsAPITranslationTests(APITestCase):
         for error in expected:
             with self.subTest(field=error["name"], code=error["code"]):
                 self.assertIn(error, invalid_params)
+
+
+class FormStepsAPIApplicabilityTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.user = UserFactory.create()
+        self.form = FormFactory.create()
+        self.form_definition = FormDefinitionFactory.create()
+        self.client.force_authenticate(user=self.user)
+
+    def test_create_form_step_not_applicable_as_first_unsucessful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.form.uuid}
+        )
+
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "isApplicable": False,
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json()["invalidParams"][0],
+            {
+                "name": "isApplicable",
+                "code": "invalid",
+                "reason": "First form step must be applicable.",
+            },
+        )

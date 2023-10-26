@@ -426,10 +426,15 @@ class FormStepTestCase(TestCase):
             order=0,
             is_applicable=True,
         )
+        step_ok_order_1 = FormStepFactory.create(
+            order=1,
+            is_applicable=False,
+        )
         with self.subTest("clean raises"):
             self.assertRaises(ValidationError, step_raises.clean)
-        with self.subTest("clean does not raises"):
+        with self.subTest("clean does not raise"):
             step_ok.clean()
+            step_ok_order_1.clean()
 
 
 class FormLogicTests(TestCase):

@@ -12,6 +12,7 @@ from openforms.translations.api.serializers import (
 from ...models import FormDefinition, FormStep
 from ...validators import validate_no_duplicate_keys_across_steps
 from .button_text import ButtonTextSerializer
+from ..validators import FormStepIsApplicableIfFirstValidator
 
 
 class FormStepLiteralsSerializer(serializers.Serializer):
@@ -54,6 +55,7 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
             "index",
             "literals",
             "url",
+            "is_applicable",
         )
         extra_kwargs = {
             "uuid": {
@@ -140,6 +142,7 @@ class FormStepSerializer(
                 "read_only": True,
             },
         }
+        validators = [FormStepIsApplicableIfFirstValidator()]
 
     def create(self, validated_data):
         validated_data["form"] = self.context["form"]

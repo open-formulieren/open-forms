@@ -23,7 +23,6 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
     validationErrors = [],
     componentTranslations,
   } = data;
-  console.log(_generatedId);
   const previousFormDefinition = usePrevious(formDefinition);
   let forceBuilderUpdate = false;
   if (previousFormDefinition && previousFormDefinition != formDefinition) {
