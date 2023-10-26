@@ -56,7 +56,7 @@ const REGISTRATION = {
             // no need for label if we have one backend
             if (backends.length == 1 && labeledData.length) labeledData[0].backendLabel = '';
             const labeledItems = labeledData
-              .map(({backendLabel, data}) => data.map(item => ({backendLabel, item})))
+              .map(({backendLabel, data}) => data.map(item => ({backendLabel, ...item})))
               .reduce((joinedArray, items) => joinedArray.concat(items), []);
             instance.setItems(labeledItems);
           });
