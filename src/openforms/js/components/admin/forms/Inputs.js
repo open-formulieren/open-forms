@@ -102,7 +102,7 @@ const Checkbox = ({name, label, helpText, ...extraProps}) => {
   const idFor = disabled ? undefined : `id_${name}`;
   return (
     <div className={classNames('checkbox-row', {'checkbox-row--disabled': disabled})}>
-      <input type="checkbox" name={name} id={idFor} {...extraProps} />
+      <input type="checkbox" name={name} id={idFor} {...extraProps} />{' '}
       <label className="vCheckboxLabel inline" htmlFor={idFor}>
         {label}
       </label>

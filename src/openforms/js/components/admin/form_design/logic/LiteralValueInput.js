@@ -1,8 +1,11 @@
+import uniqueId from 'lodash/uniqueId';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
+import {FormattedMessage} from 'react-intl';
 
 import ArrayInput from 'components/admin/forms/ArrayInput';
 import {DateInput, DateTimeInput, NumberInput, TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox} from 'components/admin/forms/Inputs';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
 
@@ -28,7 +31,18 @@ CheckboxChoices.propTypes = {
 };
 
 const WrapperArrayInput = ({name, value, onChange}) => {
-  return (
+  const [useRawJSON, setUseRawJSON] = useState(false);
+
+  // if the value is not an array of strings, the text inputs break the existing data
+  // structures. In that case, pin the input to use raw JSON.
+  const anyItemNotString = value && value.some(item => typeof item !== 'string');
+  if (anyItemNotString && !useRawJSON) {
+    setUseRawJSON(true);
+  }
+
+  const actualInput = useRawJSON ? (
+    <WrappedJsonWidget name={name} value={value} onChange={onChange} />
+  ) : (
     <ArrayInput
       name={name}
       values={value}
@@ -39,11 +53,37 @@ const WrapperArrayInput = ({name, value, onChange}) => {
       inputType="text"
     />
   );
+
+  return (
+    <>
+      <Checkbox
+        name={uniqueId()}
+        label={
+          <FormattedMessage
+            description="Toggle array input raw JSON input mode"
+            defaultMessage="Use raw JSON input"
+          />
+        }
+        checked={useRawJSON}
+        onChange={() => setUseRawJSON(!useRawJSON)}
+        disabled={anyItemNotString}
+      />
+      {actualInput}
+    </>
+  );
 };
 
 WrapperArrayInput.propTypes = {
   name: PropTypes.string,
-  value: PropTypes.arrayOf(PropTypes.string),
+  /**
+   * Value is an array of items.
+   *
+   * The most common use-case is an array of strings, for which a friendly user
+   * interface is rendered to manage individual items. However, any nested (JSON) data
+   * type is supported. As soon as any item is not a string, the UI locks into "raw JSON"
+   * edit mode.
+   */
+  value: PropTypes.array,
   onChange: PropTypes.func,
 };
 
@@ -53,7 +93,7 @@ const WrappedJsonWidget = ({name, value, onChange}) => {
 
 WrappedJsonWidget.propTypes = {
   name: PropTypes.string,
-  value: PropTypes.object,
+  value: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   onChange: PropTypes.func,
 };
 

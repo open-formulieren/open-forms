@@ -19,6 +19,7 @@ Voorbeelden
    decision_tree
    dynamic_options
    dynamic_options_2
+   dynamic_options_3
    service_fetch
 
 ======================

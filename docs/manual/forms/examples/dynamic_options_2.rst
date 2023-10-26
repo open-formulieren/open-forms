@@ -1,5 +1,6 @@
 .. _example_logic_dynamic_options_2:
 
+=============================================================
 Formulier met dynamische opties op basis van het huidige jaar
 =============================================================
 
