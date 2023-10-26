@@ -12,7 +12,7 @@ from django.core.validators import (
     MinValueValidator,
     RegexValidator,
 )
-from django.db import models
+from django.db import models, transaction
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
@@ -656,24 +656,17 @@ class CSPSettingQuerySet(models.QuerySet):
 
 
 class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
-    def set_for(self, obj: models.Model, settings: list[tuple[str, str]]) -> None:
+    @transaction.atomic
+    def set_for(
+        self, obj: models.Model, settings: list[tuple[CSPDirective, str]]
+    ) -> None:
         """
         Deletes all the connected csp settings and creates new ones based on the new provided data.
         """
-        instances = []
-        for setting in settings:
-            directive, value = setting
-            if directive not in CSPDirective.values:
-                logger.error(
-                    "Could not create csp setting for model '%s'. '%s' is not a valid directive.",
-                    obj,
-                    directive,
-                )
-                return
-
-            instances.append(
-                CSPSetting(content_object=obj, directive=directive, value=value)
-            )
+        instances = [
+            CSPSetting(content_object=obj, directive=directive, value=value)
+            for directive, value in settings
+        ]
 
         CSPSetting.objects.filter(
             content_type=get_content_type_for_model(obj), object_id=str(obj.id)
@@ -704,7 +697,6 @@ class CSPSetting(models.Model):
     object_id = models.TextField(
         verbose_name=_("object id"),
         blank=True,
-        null=True,
         db_index=True,
     )
     content_object = GenericForeignKey("content_type", "object_id")

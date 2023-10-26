@@ -4,8 +4,7 @@ from unittest.mock import patch
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from digid_eherkenning.models.digid import DigidConfiguration
-from digid_eherkenning.models.eherkenning import EherkenningConfiguration
+from digid_eherkenning.models import DigidConfiguration, EherkenningConfiguration
 from privates.test import temp_private_root
 from simple_certmanager.test.factories import CertificateFactory
 
@@ -69,10 +68,10 @@ class DigidCSPUpdateTests(TestCase):
         self.assertEqual(csp_added.directive, CSPDirective.FORM_ACTION)
         self.assertEqual(
             csp_added.value,
-            "https://digid.nl "
-            "https://*.digid.nl "
             "https://test-digid.nl/saml/idp/request_authentication "
-            "https://test-digid.nl/saml/idp/request_logout",
+            "https://test-digid.nl/saml/idp/request_logout "
+            "https://digid.nl "
+            "https://*.digid.nl",
         )
 
         # assert new csp entry is added and the old one is deleted after url update
@@ -87,10 +86,10 @@ class DigidCSPUpdateTests(TestCase):
         self.assertEqual(csp_updated.directive, CSPDirective.FORM_ACTION)
         self.assertEqual(
             csp_updated.value,
-            "https://digid.nl "
-            "https://*.digid.nl "
             "https://test-digid.nl/saml/idp/request_authentication "
-            "https://test-digid.nl/saml/idp/request_logout",
+            "https://test-digid.nl/saml/idp/request_logout "
+            "https://digid.nl "
+            "https://*.digid.nl",
         )
 
     @patch(
@@ -119,10 +118,10 @@ class DigidCSPUpdateTests(TestCase):
         self.assertIn(
             "form-action "
             "'self' "
-            "https://digid.nl "
-            "https://*.digid.nl "
             "https://test-digid.nl/saml/idp/request_authentication "
-            "https://test-digid.nl/saml/idp/request_logout;",
+            "https://test-digid.nl/saml/idp/request_logout "
+            "https://digid.nl "
+            "https://*.digid.nl;",
             response.headers["Content-Security-Policy"],
         )
 
