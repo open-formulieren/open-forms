@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
 from functools import partial
-from typing import Tuple
 
 from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -657,7 +656,7 @@ class CSPSettingQuerySet(models.QuerySet):
 
 
 class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
-    def set_for(self, obj: models.Model, settings: list[Tuple[str, str]]) -> None:
+    def set_for(self, obj: models.Model, settings: list[tuple[str, str]]) -> None:
         """
         Deletes all the connected csp settings and creates new ones based on the new provided data.
         """
