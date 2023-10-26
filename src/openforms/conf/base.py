@@ -210,6 +210,7 @@ INSTALLED_APPS = [
     "openforms.logging.apps.LoggingAppConfig",
     "openforms.contrib.bag.apps.BAGConfig",  # TODO: remove once 2.4.0 is released
     "openforms.contrib.brp",
+    "openforms.contrib.digid_eherkenning",
     "openforms.contrib.haal_centraal",
     "openforms.contrib.kadaster",
     "openforms.contrib.kvk",

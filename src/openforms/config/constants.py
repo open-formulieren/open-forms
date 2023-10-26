@@ -1,11 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-ADDITIONAL_CSP_VALUES = {
-    "digid": "https://digid.nl https://*.digid.nl",
-    "eherkenning": "",
-}
-
 
 class CSPDirective(models.TextChoices):
     # via https://django-csp.readthedocs.io/en/latest/configuration.html

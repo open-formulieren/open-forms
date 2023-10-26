@@ -1,6 +1,9 @@
+import logging
 from collections import defaultdict
 from functools import partial
+from typing import Tuple
 
+from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -33,6 +36,8 @@ from openforms.utils.translations import runtime_gettext
 
 from .constants import CSPDirective, UploadFileType
 from .utils import verify_clamav_connection
+
+logger = logging.getLogger(__name__)
 
 
 @ensure_default_language()
@@ -651,6 +656,33 @@ class CSPSettingQuerySet(models.QuerySet):
         return {k: list(v) for k, v in ret.items()}
 
 
+class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
+    def set_for(self, obj: models.Model, settings: list[Tuple[str, str]]) -> None:
+        """
+        Deletes all the connected csp settings and creates new ones based on the new provided data.
+        """
+        instances = []
+        for setting in settings:
+            directive, value = setting
+            if not directive in CSPDirective.values:
+                logger.error(
+                    "Could not create csp setting for model '%s'. '%s' is not a valid directive.",
+                    obj,
+                    directive,
+                )
+                return
+
+            instances.append(
+                CSPSetting(content_object=obj, directive=directive, value=value)
+            )
+
+        CSPSetting.objects.filter(
+            content_type=get_content_type_for_model(obj), object_id=str(obj.id)
+        ).delete()
+
+        self.bulk_create(instances)
+
+
 class CSPSetting(models.Model):
     directive = models.CharField(
         _("directive"),
@@ -678,7 +710,7 @@ class CSPSetting(models.Model):
     )
     content_object = GenericForeignKey("content_type", "object_id")
 
-    objects = CSPSettingQuerySet.as_manager()
+    objects = CSPSettingManager()
 
     class Meta:
         ordering = ("directive", "value")

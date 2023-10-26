@@ -10,6 +10,3 @@ class EHerkenningApp(AppConfig):
     def ready(self):
         # register the plugin
         from . import plugin  # noqa
-
-        # register the signals
-        from .signals import trigger_csp_update  # noqa

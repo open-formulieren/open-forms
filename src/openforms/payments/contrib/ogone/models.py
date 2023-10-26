@@ -67,6 +67,6 @@ class OgoneMerchant(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        from openforms.config.utils import create_ogone_csp_settings
+        from openforms.config.models import CSPSetting
 
-        create_ogone_csp_settings(self, CSPDirective.FORM_ACTION, self.endpoint)
+        CSPSetting.objects.set_for(self, [(CSPDirective.FORM_ACTION, self.endpoint)])
