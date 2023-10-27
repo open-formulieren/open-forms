@@ -7,6 +7,7 @@ import ReactDOM from 'react-dom';
 import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import {
   clearObsoleteLiterals,
+  isNewBuilderComponent,
   persistComponentTranslations,
 } from 'components/formio_builder/translation';
 import {onLoaded} from 'utils/dom';
@@ -23,6 +24,7 @@ export const ELEMENT_CONTAINER = 'container';
 onLoaded(() => {
   const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
   const featureFlags = FORM_BUILDERS.length ? jsonScriptToVar('feature-flags') : {};
+  const {react_formio_builder_enabled = false} = featureFlags;
 
   [...FORM_BUILDERS].forEach(node => {
     const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, 'configuration-input');
@@ -59,9 +61,11 @@ onLoaded(() => {
           throw new Error(`Unknown mutation type '${mutationType}'`);
       }
 
-      persistComponentTranslations(componentTranslations, schema);
-      componentTranslations = clearObsoleteLiterals(componentTranslations, configuration);
-      componentTranslationsInput.value = JSON.stringify(componentTranslations);
+      if (!react_formio_builder_enabled || !isNewBuilderComponent(schema)) {
+        persistComponentTranslations(componentTranslations, schema);
+        componentTranslations = clearObsoleteLiterals(componentTranslations, configuration);
+        componentTranslationsInput.value = JSON.stringify(componentTranslations);
+      }
     };
 
     ReactDOM.render(

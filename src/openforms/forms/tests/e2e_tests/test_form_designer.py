@@ -133,24 +133,19 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                     locale="nl"
                 )
                 # check the values of the translation inputs
-                literal1 = page.locator(
-                    f'css=[name="{_translations_data_path}[0]{self.translations_literal_suffix}"]'
-                )
+                literal1 = page.locator(f'css=[name="{_translations_data_path}[0]"]')
                 translation1 = page.locator(
-                    f'css=[name="{_translations_data_path}[0]{self.translations_translation_suffix}"]'
+                    f'css=[name="{_translations_data_path}[0][translation]"]'
                 )
-                literal2 = page.locator(
-                    f'css=[name="{_translations_data_path}[1]{self.translations_literal_suffix}"]'
-                )
+                literal2 = page.locator(f'css=[name="{_translations_data_path}[1]"]')
                 translation2 = page.locator(
-                    f'css=[name="{_translations_data_path}[1]{self.translations_translation_suffix}"]'
+                    f'css=[name="{_translations_data_path}[1][translation]"]'
                 )
-                literal3 = page.locator(
-                    f'css=[name="{_translations_data_path}[2]{self.translations_literal_suffix}"]'
-                )
+                literal3 = page.locator(f'css=[name="{_translations_data_path}[2]"]')
                 translation3 = page.locator(
-                    f'css=[name="{_translations_data_path}[2]{self.translations_translation_suffix}"]'
+                    f'css=[name="{_translations_data_path}[2][translation]"]'
                 )
+
                 await expect(literal1).to_have_value("Field 1")
                 await expect(translation1).to_have_value("")
                 await expect(literal2).to_have_value("Description 1")
@@ -168,21 +163,12 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                     "link", name=self._translate("Vertalingen")
                 ).click()
 
-                # React-based form builder keeps translations order consistent/fixed
-                if self.is_translations_order_fixed:
-                    label_literal = literal1
-                    label_translation = translation1
-                    description_literal = literal2
-                    description_translation = translation2
-                    tooltip_literal = literal3
-                    tooltip_translation = translation3
-                else:
-                    label_literal = literal3
-                    label_translation = translation3
-                    description_literal = literal1
-                    description_translation = translation1
-                    tooltip_literal = literal2
-                    tooltip_translation = translation2
+                label_literal = literal3
+                label_translation = translation3
+                description_literal = literal1
+                description_translation = translation1
+                tooltip_literal = literal2
+                tooltip_translation = translation2
 
                 await expect(label_literal).to_have_value("Field label")
                 await expect(label_translation).to_have_value("")
@@ -581,6 +567,202 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
         config = GlobalConfiguration.get_solo()
         config.enable_react_formio_builder = True
         config.save()
+
+    @staticmethod
+    async def _check_translation(
+        page: Page,
+        prop: str,
+        label: str,
+        expected_literal: str,
+        expected_translation: str,
+    ):
+        # there's no built in get_by_description :(
+        label_id = await page.get_by_text(label, exact=True).get_attribute("id")
+        literal_ = page.locator(f'css=[aria-describedby="{label_id}"]')
+        await expect(literal_).to_have_text(expected_literal)
+        translation_field = page.get_by_label(f'Translation for "{prop}"', exact=True)
+        await expect(translation_field).to_have_value(expected_translation)
+        return translation_field
+
+    async def test_editing_translatable_properties(self):
+        # completely overridden instead of sharing the test with the old builder - the
+        # test code became unmaintainable
+
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "field1",
+                            "label": "Field 1",
+                            "description": "Description 1",
+                            "tooltip": "Tooltip 1",
+                        },
+                        {
+                            "type": "select",
+                            "key": "field2",
+                            "label": "Field 2",
+                            "description": "Description 2",
+                            "tooltip": "Tooltip 2",
+                            "data": {
+                                "values": [
+                                    {"value": "option1", "label": "Option 1"},
+                                    {"value": "option2", "label": "Option 2"},
+                                ]
+                            },
+                        },
+                    ],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            with phase("Textfield component checks"):
+                await open_component_options_modal(page, "Field 1")
+
+                # find and click translations tab
+                await page.get_by_role(
+                    "link", name=self._translate("Vertalingen")
+                ).click()
+
+                # check the values of the translation inputs
+                await self._check_translation(page, "label", "Label", "Field 1", "")
+                await self._check_translation(
+                    page, "description", "Description", "Description 1", ""
+                )
+                await self._check_translation(
+                    page, "tooltip", "Tooltip", "Tooltip 1", ""
+                )
+
+                # edit textfield label literal
+                await page.get_by_role("link", name=self._translate("Basis")).click()
+                await page.get_by_label("Label").fill("Field label")
+
+                # translations tab needs to be updated - note that the react-base builder
+                # preserves the order of literals/translations
+                await page.get_by_role(
+                    "link", name=self._translate("Vertalingen")
+                ).click()
+
+                # React-based form builder has a more accessible translations table
+                label_translation = await self._check_translation(
+                    page, "label", "Label", "Field label", ""
+                )
+                await self._check_translation(
+                    page, "description", "Description", "Description 1", ""
+                )
+                await self._check_translation(
+                    page, "tooltip", "Tooltip", "Tooltip 1", ""
+                )
+
+                # enter translations and save
+                await label_translation.fill("Veldlabel")
+                modal = page.locator("css=.formio-dialog-content")
+                await modal.get_by_role(
+                    "button", name=self._translate("Opslaan"), exact=True
+                ).click()
+
+            # TODO: this still uses the old translation mechanism, will follow in a later
+            # version of @open-formulieren/formio-builder npm package.
+            with phase("Select component checks"):
+                await open_component_options_modal(page, "Field 2")
+                # find and click translations tab
+                await page.get_by_role("link", name="Vertalingen").click()
+
+                expected_literals = [
+                    "Field 2",
+                    "Description 2",
+                    "Tooltip 2",
+                    "Option 1",
+                    "Option 2",
+                ]
+                for index, literal in enumerate(expected_literals):
+                    with self.subTest(literal=literal, index=index):
+                        literal_loc = page.locator(
+                            f'css=[name="data[openForms.translations.nl][{index}]"]'
+                        )
+                        await expect(literal_loc).to_have_value(literal)
+
+                await page.get_by_role("button", name="Annuleren").click()
+                await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
+
+            with phase("save form changes to backend"):
+                await page.get_by_role("button", name="Save", exact=True).click()
+                changelist_url = str(
+                    furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+                )
+                await expect(page).to_have_url(changelist_url)
+
+        @sync_to_async
+        def assertState():
+            fd = form.formstep_set.get().form_definition
+            textfield = fd.configuration["components"][0]
+
+            self.assertEqual(
+                textfield["openForms"]["translations"]["nl"]["label"],
+                "Veldlabel",
+            )
+            self.assertEqual(fd.component_translations, {})
+
+        await assertState()
+
+    @tag("gh-2800")
+    async def test_editing_translatable_properties_remembers_translations(self):
+        """
+        Assert that entering translations and then changing the source string keeps the translation.
+        """
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await add_new_step(page)
+            await drag_and_drop_component(page, "Tekstveld")
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+            label_locator = page.get_by_label("Label", exact=True)
+            await label_locator.clear()
+            await label_locator.fill("Test")
+
+            # Set an initial translation
+            await page.get_by_role("link", name=self._translate("Vertalingen")).click()
+
+            translation = await self._check_translation(
+                page, "label", "Label", expected_literal="Test", expected_translation=""
+            )
+            await translation.click()
+            await translation.fill("Vertaald label")
+
+            # Now change the source string & check the translations are still in place
+            await page.get_by_role("link", name=self._translate("Basis")).click()
+            await page.get_by_label("Label", exact=True).fill("Test 2")
+
+            await page.get_by_role("link", name=self._translate("Vertalingen")).click()
+            await self._check_translation(
+                page,
+                "label",
+                "Label",
+                expected_literal="Test 2",
+                expected_translation="Vertaald label",
+            )
 
 
 class FormDesignerRegressionTests(E2ETestCase):

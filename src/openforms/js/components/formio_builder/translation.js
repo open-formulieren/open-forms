@@ -1,6 +1,7 @@
 /**
  * Utilities to manage the translations/localisation of components in the form builder.
  */
+import BUILDER_REGISTRY from '@open-formulieren/formio-builder/esm/registry';
 import Utils from 'formiojs/utils';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
@@ -263,4 +264,8 @@ export const handleComponentValueLiterals = (
     set(previousLiterals, [_propertyPath], label);
   });
   return translations;
+};
+
+export const isNewBuilderComponent = component => {
+  return BUILDER_REGISTRY.hasOwnProperty(component.type);
 };
