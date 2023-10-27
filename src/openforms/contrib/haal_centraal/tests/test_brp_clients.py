@@ -116,6 +116,14 @@ class HaalCentraalFindPersonTests:
         self.assertEqual(partner.name.voorvoegsel, "")  # type: ignore
         self.assertEqual(partner.name.geslachtsnaam, "Kroket")  # type: ignore
 
+    def test_partner_without_bsn(self):
+        with get_brp_client() as client:
+            partners = client.get_family_members(
+                bsn="999990676", include_children=False, include_partner=True
+            )
+
+        self.assertEqual(len(partners), 0)  # type: ignore
+
     def test_get_family_members(self):
         with get_brp_client() as client:
             family_members = client.get_family_members(
@@ -225,6 +233,34 @@ class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
             },
         )
         super().test_get_partners()
+
+    def test_partner_without_bsn(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetPartners
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676/partners",
+            json={
+                "_links": {
+                    "self": {
+                        "href": "https://personen/api/ingeschrevenpersonen/999990676/partners",
+                        "templated": False,
+                        "title": "",
+                    }
+                },
+                "_embedded": {
+                    "partners": [
+                        {
+                            "naam": {
+                                "geslachtsnaam": "Kroket",
+                                "voorletters": "F.",
+                                "voornamen": "Frieda",
+                                "voorvoegsel": "",
+                            },
+                        }
+                    ],
+                },
+            },
+        )
+        super().test_partner_without_bsn()
 
     def test_get_family_members(self):
         # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v1/redoc#tag/Ingeschreven-Personen/operation/GetPartners
@@ -377,6 +413,29 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
             },
         )
         super().test_get_partners()
+
+    def test_partner_without_bsn(self):
+        # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/redoc#tag/Personen/operation/Personen
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            json={
+                "type": "RaadpleegMetBurgerservicenummer",
+                "personen": [
+                    {
+                        "partners": [
+                            {
+                                "naam": {
+                                    "voornamen": "Jean Marie",
+                                    "geslachtsnaam": "Beaudelaire",
+                                    "voorletters": "J.M.",
+                                }
+                            }
+                        ],
+                    }
+                ],
+            },
+        )
+        super().test_partner_without_bsn()
 
     def test_get_family_members(self):
         # https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/redoc#tag/Personen/operation/Personen
