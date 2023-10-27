@@ -7422,6 +7422,9 @@ components:
           type: string
           format: uri
           readOnly: true
+        isApplicable:
+          type: boolean
+          description: Whether the step is applicable by default.
         loginRequired:
           type: boolean
           readOnly: true
@@ -7763,6 +7766,7 @@ components:
           disable-next: '#/components/schemas/LogicActionPolymorphicGenericObject'
           property: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
           step-not-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
+          step-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
           variable: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
           fetch-from-service: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
           set-registration-backend: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
@@ -7816,6 +7820,7 @@ components:
     LogicActionPolymorphicSharedTypeEnum:
       enum:
       - step-not-applicable
+      - step-applicable
       - disable-next
       - property
       - variable
@@ -8003,6 +8008,9 @@ components:
         url:
           type: string
           format: uri
+        isApplicable:
+          type: boolean
+          description: Whether the step is applicable by default.
       required:
       - formDefinition
       - index
@@ -8421,6 +8429,9 @@ components:
           type: string
           format: uri
           readOnly: true
+        isApplicable:
+          type: boolean
+          description: Whether the step is applicable by default.
         loginRequired:
           type: boolean
           readOnly: true

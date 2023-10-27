@@ -11,8 +11,8 @@ from openforms.translations.api.serializers import (
 
 from ...models import FormDefinition, FormStep
 from ...validators import validate_no_duplicate_keys_across_steps
-from .button_text import ButtonTextSerializer
 from ..validators import FormStepIsApplicableIfFirstValidator
+from .button_text import ButtonTextSerializer
 
 
 class FormStepLiteralsSerializer(serializers.Serializer):
