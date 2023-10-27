@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!--SuwiML Basisschema v0801-b01 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<xs:simpleType name="Datum">
+		<xs:restriction base="xs:string">
+			<xs:length value="8"/>
+			<xs:pattern value="(([0]{8})|([0]{4}((0[1-9])|(1[0-2]))((0[1-9])|([1-2][0-9])|(3[0-1])))|(([1-9][0-9]{3})|(0[1-9][0-9]{2})|(00[1-9][0-9])|(000[1-9]))((0[0-9])|(1[0-2]))((0[0-9])|([1-2][0-9])|(3[0-1])))"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

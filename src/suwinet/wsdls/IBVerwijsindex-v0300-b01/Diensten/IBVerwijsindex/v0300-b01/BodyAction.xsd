@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300" targetNamespace="http://bkwi.nl/SuwiML/Diensten/IBVerwijsindex/v0300" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="IBVerwijsindex">
+		<complexType>
+			<sequence>
+				<sequence>
+					<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+					<element name="ClusteringIb" maxOccurs="unbounded">
+						<complexType>
+							<sequence>
+								<element name="CdClusteringIb" type="smls:CdClusteringIb"/>
+								<element name="IndDkd" type="sml:StdIndJN"/>
+							</sequence>
+						</complexType>
+					</element>
+				</sequence>
+				<element name="Bron">
+					<complexType>
+						<sequence>
+							<element name="CdKolomSuwi" type="sml:CdKolomSuwi"/>
+							<element name="CdPartijSuwi" type="sml:CdPartijSuwi"/>
+							<element name="CdVestigingSuwi" type="sml:CdVestigingSuwi" minOccurs="0"/>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<simpleType name="CdClusteringIb">
+		<restriction base="string">
+			<maxLength value="2"/>
+		</restriction>
+	</simpleType>
+</schema>

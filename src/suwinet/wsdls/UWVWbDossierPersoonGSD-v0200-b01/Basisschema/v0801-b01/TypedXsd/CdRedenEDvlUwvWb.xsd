@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!-- SuwiML Basisschema tabellen coded v0801-b01  -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!--CdRedenEDvlUwvWb v0801-b01 tabeldefinitie met type-aanduiding-->
+	<simpleType name="CdRedenEDvlUwvWb">
+		<restriction base="nonNegativeInteger">
+			<totalDigits value="5"/>
+			<minInclusive value="0"/>
+			<maxInclusive value="99999"/>
+		</restriction>
+	</simpleType>
+</schema>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!--Importeer de benodigde onderdelen uit het SuwiML basisschema.-->
+	<include schemaLocation="../../../Basisschema/v0801-b01/ComplexTypes/StandaardBedr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/AantalN3.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Burgerservicenr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Datum.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamPersoonA200.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamAdresNederlandAN24.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamAdresNederlandAN40.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamAdresNederlandAN70.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamAdresBuitenlandAN24.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamAdresBuitenlandAN40.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamAdresBuitenlandAN70.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NummerAdresNederlandN5.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NummerAdresNederlandAN6.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NummerAdresBuitenlandAN9.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NummerAdresBuitenlandAN7.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/VolgnrIkv.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Loonheffingennr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NaamAN200.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/SofiNr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdRechtsvorm.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdSectorRisicogroep.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdSectorOsv.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdSrtInkomstenverhouding.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdTypeArbeidscontract.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdAardIkv.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdIncidInkomstenvermindering.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/AanduidingIkvWerkgever.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/Voorvoegsels.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/LandenCdIsoA2.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/StdIndJN.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/StdInd.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Postcd.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/Woonwagenverwijzing.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/Woonbootverwijzing.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdInvloedVerzekeringsplicht.xsd"/>
+</schema>

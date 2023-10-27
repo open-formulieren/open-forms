@@ -1,0 +1,167 @@
+interactions:
+  - request:
+      body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+        <soap-env:Envelope
+        xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Header
+        xmlns:wsa="http://www.w3.org/2005/08/addressing"><wsa:Action>http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD-v0200/UwvWbPersoonsInfo</wsa:Action><wsa:MessageID>urn:uuid:42ee7fca-1dfd-4479-b26f-831249462373</wsa:MessageID><wsa:To>https://mygateway.example.com/SuwiML/UWVWbDossierPersoonGSD-v0300/v1</wsa:To><wsse:Security
+        xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><Signature
+        xmlns="http://www.w3.org/2000/09/xmldsig#">
+
+        <SignedInfo>
+
+        <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+
+        <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+
+        <Reference URI="#id-213717aa-637f-46e1-9523-971a3df04e19">
+
+        <Transforms>
+
+        <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+
+        </Transforms>
+
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+
+        <DigestValue>wteSCGOhWon0DtkC6zFiAaSBtAs=</DigestValue>
+
+        </Reference>
+
+        </SignedInfo>
+
+        <SignatureValue>DLfhvkBkdLZL3ZQevrBghwdEC8xRR2S8FUHY2pOqsbuuMxytQECP9sEbjL05ebTa
+
+        HUngw9eQ9RyS26Rw8yUF1oomexZAWQe09cowMehCu2pA91znuEPQjKInB+cVV0eQ
+
+        hYb72W9L4TFT8S9i6mDqLZTagTXJ5w/ndvWHUgg4EW/EwU9xxpnSYft7x4J7Ng5R
+
+        NNZOPAZYcpvhFf15KN4wMri+1wJqiL6wkJ8bLcz2kg9IuBDV1JWzJgtoCOJdTRO4
+
+        TR3eajG8S8dtgkKD2QlyrjSjj2Kdf/tLmwEvUAmKxd3bZoOEPUnTP2oniS7Teqt5
+
+        Dam6M/q/5iTfZH4mzgXLVg==</SignatureValue>
+
+        <KeyInfo>
+
+        <wsse:SecurityTokenReference><X509Data>
+
+        <X509IssuerSerial>
+
+        <X509IssuerName>CN=Kenniscentrum ROOT CA,OU=TAI,O=Gemeente Den Haag,L=Den Haag,ST=Zuid
+        Holland,C=NL,emailAddress=kenniscentrum@denhaag.nl</X509IssuerName>
+
+        <X509SerialNumber>12775116220277751059</X509SerialNumber>
+
+        </X509IssuerSerial>
+
+        <X509Certificate>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</X509Certificate>
+
+        </X509Data>
+
+        </wsse:SecurityTokenReference></KeyInfo>
+
+        </Signature></wsse:Security></soap-env:Header><soap-env:Body
+        xmlns:ns1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+        ns1:Id="id-213717aa-637f-46e1-9523-971a3df04e19"><ns0:UwvWbPersoonsInfo
+        xmlns:ns0="http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/v0200"><Burgerservicenr>444444440</Burgerservicenr></ns0:UwvWbPersoonsInfo></soap-env:Body></soap-env:Envelope>'
+      headers:
+        Accept:
+          - '*/*'
+        Accept-Encoding:
+          - gzip, deflate
+        Connection:
+          - keep-alive
+        Content-Length:
+          - '4161'
+        Content-Type:
+          - text/xml; charset=utf-8
+        SOAPAction:
+          - '""'
+        User-Agent:
+          - Zeep/4.2.1 (www.python-zeep.org)
+      method: POST
+      uri: https://mygateway.example.com/SuwiML/UWVWbDossierPersoonGSD-v0300/v1
+    response:
+      body:
+        string:
+          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope
+          xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n
+          \   <soapenv:Body>\n        <soapenv:Fault>\n            <faultcode>soapenv:Server</faultcode>\n
+          \           <faultstring>Policy
+          Falsified</faultstring>\n            <faultactor>https://mygateway.example.com/SuwiML/UWVWbDossierPersoonGSD-v0300/v1</faultactor>\n
+          \           <detail>\n                <l7:policyResult\n                    status=\"Service
+          Not Found.  The request may have been sent to an invalid URL, or intended for an
+          unsupported operation.\" xmlns:l7=\"http://www.layer7tech.com/ws/policy/fault\"/>\n
+          \           </detail>\n        </soapenv:Fault>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
+      headers:
+        Connection:
+          - close
+        Content-Length:
+          - '730'
+        Content-Type:
+          - text/xml;charset=utf-8
+        Date:
+          - Fri, 20 Oct 2023 20:08:34 GMT
+        Server:
+          - Layer7-API-Gateway
+      status:
+        code: 500
+        message: ''
+version: 1

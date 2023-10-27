@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!-- SuwiML Basisschema tabellen coded v0801-b01  -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!-- CdPositiefNegatief v0801-b01 tabeldefinitie met codelijst -->
+	<simpleType name="CdPositiefNegatief">
+		<restriction base="string">
+			<enumeration value="+">
+				<annotation>
+					<documentation>Positief</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="-">
+				<annotation>
+					<documentation>Negatief</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+</schema>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--11/07/13 Element "VestigingsvolgnrKvK" wordt verwijderd en element "VestigingsnrHandelsregister" wordt toegevoegd.-->
+	<!--18/06/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--18/06/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="VoertuigbezitInfoPersoon">
+		<complexType>
+			<sequence>
+				<choice>
+					<sequence>
+						<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+					</sequence>
+					<sequence>
+						<element name="Geboortedat" type="sml:Datum"/>
+						<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200"/>
+						<element name="Voorletters" type="sml:Voorletters"/>
+					</sequence>
+					<sequence>
+						<element name="Postcd" type="sml:Postcd"/>
+						<element name="Huisnr" type="sml:NummerAdresNederlandN5"/>
+					</sequence>
+				</choice>
+				<sequence>
+					<element name="DatBPeilperiodeAansprakelijkheid" type="sml:Datum"/>
+					<element name="DatEPeilperiodeAansprakelijkheid" type="sml:Datum" minOccurs="0"/>
+				</sequence>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="VoertuigbezitInfoOrg">
+		<complexType>
+			<sequence>
+				<sequence>
+					<element name="InschrijvingsnrKvK" type="sml:InschrijvingsnrKvK"/>
+					<element name="VestigingsnrHandelsregister" type="smls:VestigingsnrHandelsregister" minOccurs="0"/>
+				</sequence>
+				<sequence>
+					<element name="DatBPeilperiodeAansprakelijkheid" type="sml:Datum"/>
+					<element name="DatEPeilperiodeAansprakelijkheid" type="sml:Datum" minOccurs="0"/>
+				</sequence>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="KentekenInfo">
+		<complexType>
+			<sequence>
+				<element name="KentekenVoertuig" type="sml:NummerAN6"/>
+				<sequence minOccurs="0">
+					<element name="PeildatAansprakelijkheid" type="sml:Datum"/>
+					<element name="PeiltijdAansprakelijkheid" type="sml:Tijdstip"/>
+				</sequence>
+			</sequence>
+		</complexType>
+	</element>
+	<simpleType name="VestigingsnrHandelsregister">
+		<restriction base="string">
+			<length value="12"/>
+			<pattern value="\d*"/>
+		</restriction>
+	</simpleType>
+</schema>

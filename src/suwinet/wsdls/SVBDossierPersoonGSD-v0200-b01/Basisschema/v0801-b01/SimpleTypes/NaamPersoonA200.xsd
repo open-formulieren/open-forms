@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!--SuwiML Basisschema v0801-b01 2009-12-14T17:15:14.437+02:00-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<xs:simpleType name="NaamPersoonA200">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="200"/>
+			<xs:pattern value="\D*"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/UWVDossierWerknemersverzekeringenGSD/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/UWVDossierWerknemersverzekeringenGSD/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--23/07/2014 UWVDossierPersoonGSD is opgeknipt in 2 koppelvlakken: UWVDossierInkomstenGSD en UWVDossierWerknemersverzekeringenGSD-->
+	<!--19/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--19/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="UWVPersoonsWvInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="ArbeidsgeschiktheidClient" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="CdArbeidsongeschiktheidsklasse" type="sml:CdAoKlasse" minOccurs="0"/>
+											<element name="DatBAoKlasse" type="sml:Datum" minOccurs="0"/>
+											<element name="DatEersteAoDag" type="sml:Datum" minOccurs="0"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="WerkloosheidClient" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="DatEersteWerkloosheidsdag" type="sml:Datum" minOccurs="0"/>
+											<element name="OmsRedenWerkloosheid" type="sml:OmschrijvingAN100" minOccurs="0"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="AanvraagUitkering" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="DatAanvraagUitkering" type="sml:Datum" minOccurs="0"/>
+											<element name="SzWet">
+												<complexType>
+													<sequence>
+														<element name="CdSzWet" type="sml:CdSzWet" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="AanvraagWw" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="DatAanvraagUitkering" type="sml:Datum" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="BeslissingOpAanvraagUitkering" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="CdBeslissingOpAanvraagUitkering" type="sml:CdBeslissingOpAanvraagUitkering"/>
+														<element name="DatDagtekeningBeslisOpAanvrUitk" type="sml:Datum" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Uitkeringsverhouding" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="DatBUitkeringsverhouding" type="sml:Datum" minOccurs="0"/>
+											<element name="DatEUitkeringsverhouding" type="sml:Datum" minOccurs="0"/>
+											<element name="OmsRedenEindeUitkeringsverh" type="sml:OmschrijvingAN100" minOccurs="0"/>
+											<element name="DatEMaximaleUitkeringsduur" type="sml:Datum" minOccurs="0"/>
+											<element name="AantWerkurenPerWeekGrondslagUitk" type="sml:Tijdsduur" minOccurs="0"/>
+											<element name="SzWet">
+												<complexType>
+													<sequence>
+														<element name="CdSzWet" type="sml:CdSzWet"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="SectorBeroepsEnBedrijfsleven" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="CdSector" type="sml:CdSectorOsv" minOccurs="0"/>
+														<element name="NaamSector" type="sml:NaamAN200" minOccurs="0"/>
+														<element name="PartijSuwi">
+															<complexType>
+																<sequence>
+																	<element name="CdPartijSuwi" type="sml:CdPartijSuwi" minOccurs="0"/>
+																	<element name="NaamPartijSuwi" type="sml:NaamAN70" minOccurs="0"/>
+																	<element name="KolomSuwi">
+																		<complexType>
+																			<sequence>
+																				<element name="CdKolomSuwi" type="sml:CdKolomSuwi" minOccurs="0"/>
+																				<element name="NaamKolomSuwi" type="sml:NaamAN35" minOccurs="0"/>
+																				<element name="NaamKolomSuwiVerkort" type="sml:NaamAN35" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="SpecifiekeGegevensWwUitkering" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="DatELoongerelateerdeUitkeringWw" type="sml:Datum" minOccurs="0"/>
+														<element name="DatEVervolguitkeringWw" type="sml:Datum" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="Uitkeringsperiode" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="DatBUitkeringsperiode" type="sml:Datum" minOccurs="0"/>
+														<element name="DatEUitkeringsperiode" type="sml:Datum" minOccurs="0"/>
+														<element name="RedenMaatregelMbtUitkeringUwv" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="DatBMaatregelMbtUitkering" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEMaatregelMbtUitkering" type="sml:Datum" minOccurs="0"/>
+																	<element name="PercKortingUitkering" type="sml:StandaardPerc" minOccurs="0"/>
+																	<element name="CdRedenMaatregelMbtUitkeringUwv" type="sml:CdRedenMaatregelMbtUitkeringUwv" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="BrutoUitkeringsbedrag" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="CdMunteenheid" type="sml:CdMunteenheid" minOccurs="0"/>
+																	<element name="WaardeBedr" type="sml:WaardeBedr" minOccurs="0"/>
+																	<element name="CdUitkeringsperiode" type="sml:CdUitkeringsperiode" minOccurs="0"/>
+																	<element name="DatBBrutoUitkeringsbedr" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEBrutoUitkeringsbedr" type="sml:Datum" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+</schema>

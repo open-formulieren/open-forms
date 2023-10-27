@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300" targetNamespace="http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<complexType name="Beroepspraktijkovereenkomst">
+		<sequence>
+			<element name="DatBBeroepspraktijkvorming" type="sml:Datum"/>
+			<element name="DatEBeroepspraktijkvormWerkelijk" type="sml:Datum" minOccurs="0"/>
+			<element name="DatAfslBeroepspraktijkovereenk" type="sml:Datum"/>
+		</sequence>
+	</complexType>
+</schema>

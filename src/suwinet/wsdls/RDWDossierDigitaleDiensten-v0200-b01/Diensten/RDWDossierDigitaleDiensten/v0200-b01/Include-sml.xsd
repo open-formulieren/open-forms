@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Burgerservicenr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Datum.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/KleurVoertuig.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/NummerAN6.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/OmschrijvingAN35.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/OmschrijvingAN50.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdSrtVoertuig.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/CdStatusVoertuig.xsd"/>
+</schema>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801" elementFormDefault="unqualified">
+	<include schemaLocation="../CodedXsd/CdPositiefNegatief.xsd"/>
+	<include schemaLocation="../SimpleTypes/Percentage.xsd"/>
+	<complexType name="StandaardPerc">
+		<sequence>
+			<element name="CdPositiefNegatief" type="sml:CdPositiefNegatief" minOccurs="0"/>
+			<element name="Percentage" type="sml:Percentage" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>

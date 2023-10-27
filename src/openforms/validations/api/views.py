@@ -43,15 +43,9 @@ class ValidatorsListView(ListMixin, APIView):
         plugins: Iterable[RegisteredValidator] = register.iter_enabled_plugins()
         for_component = filter_serializer.validated_data.get("component_type") or ""
 
-        def _iter_plugins():
-            for plugin in plugins:
-                # filter value provided but plugin does not apply for this component
-                # -> do not return it in the results
-                if for_component and for_component not in plugin.for_components:
-                    continue
-                yield plugin
-
-        return list(_iter_plugins())
+        if not for_component:
+            return plugins
+        return [plugin for plugin in plugins if for_component in plugin.for_components]
 
 
 class ValidationView(APIView):

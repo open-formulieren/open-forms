@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--23/03/2010 Dit koppelvlak wordt "Bijstandsregelingen" genoemd, zodat de GSD-en later deze specs ook kunnen gebruiken.-->
+	<!--23/03/2010 Element "Voornamen" zit niet in de specs GSDDossierPersoon, wel het element "Voorletters". Element "Voorletters" is een afgeleid gegeven, daarom is het besloten dit gegeven niet meer in SGR 7.0 op te nemen. Het element "Voornamen" wordt in deze specs wel opgenomen als een optioneel element.-->
+	<!--23/03/2010 Gegevensgroep "Specifieke gegevens Bijzonder Bijstand" wordt in deze specs opgenomen, omdat het bij de Bijstandsregelingen valt.-->
+	<!--23/04/2010 Het element "fwi:NietsGevonden" is toegevoegd om te gebruiken indien het BSN niet gevonden wordt.-->
+	<!--16/01/2013 De elementen worden gevalideerd op basis van en gerelateerd aan Typed.-->
+	<!--16/01/2013 Uniformeren de FWI in BodyReaction.-->
+	<!--16/01/2013 Het formaat van "Woonplaatsnaam" en "Gemeentenaam" in entiteit Straatadres is aangepast conform de huidige standaard.-->
+	<!--16/01/2013 Het formaat van "IndVrijstellingArbeidsplicht" is aangepast conform SGR.-->
+	<!--16/01/2013 De wijzigingen in versie v0300 hebben betrekking op: het optioneel maken van "DatAanvraagUitkering"; het toevoegen van fraude-/recidive-gegevens: "IndRecidive"; "IndRobuusteIncassoToegepast"; "CdHoogteBestuurlijkeBoete"; "CdSrtSanctie" en "ParketnrJustitie" aan de entiteit "Vordering".-->
+	<!--16/01/2013 De wijzigingen in het kader van WWB-2012 worden op verzoek van SVB vooralsnog NIET doorgevoerd.-->
+	<!--26/06/2013 De structuur in BodyReaction wordt gelijkgetrokken aan de structuur van GSDDossierPersoon-v0500-->
+	<!--02/07/2013 Wijzigingen in de tag-namen: SpecifiekeGegevensBijstandUitk, CdAanleidingBijstandUitkering, CdAanleidingEindeBijstandUitk, InkomstenInvloedOpBijstandUitk, CdVrijstellingArbeidsplichtWwb, RedenMaatregelMbtBijstandUitk, CdRedenMaatregelMbtBijstandUitk, GevolgenMaatregelMbtBijstandUitk, InkomstenBijstandUitkering.-->
+	<!--02/07/2013 Fraude-gegevens worden "losgekoppeld" t.o.v. de Vordering-gegevens-->
+	<!--02/07/2013 De uitbreiding van gegevens t.b.v. de uitvoering van processen in het kader van Fraude-wet: DatOnherroepelijkVordering, CdRecidivetermijn, DatWaarschSchendInlichtingplicht.-->
+	<!--18/07/2014 Bericht GSDDossierPersoon is opgeknipt in 2 koppelvlakken: Bijstandsregelingen-v0500 en GSDDossierReintegratie-v0100-->
+	<!--18/07/2014 Bijstandsregelingen-v0500 bevat de wijzigingen: het opnieuw opnemen van element "CdLeefvorm" als onderdeel van ClientSuwi, het verwijderen van element "CdAanleidingBijstandUitkering" en element "CdNormGrondslag", het toevoegen van een nieuw element "AantKostendelers" in entiteit "SpecifiekeGegevensBijstandUitk", het wijzigen van tagelement "CdVrijstellingArbeidsplichtWwb" in "CdVrijstellingArbeidsplichtBijst", het toevoegen van een nieuw element "DatEVrijstellingArbeidsplicht" en element "CdRedenEVrijstArbeidsplichtBijst" in entiteit "VrijstellingArbeidsplicht", het vervangen van "Gezinslid" in "Partner" bij "AanvraagUitkering", "BijzondereBijstand" en "Uitkeringsverhouding", het wijzigen van formaat "ParketnrJustitie" en het opnemen van de nieuwe versie FWI-v0203.-->
+	<!--10/07/2018 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--23/10/2018 Het schema "Bijstandsregelingen-Include.xsd" is aangepast in "Include-sml.xsd" t.b.v. de uniformiteit.-->
+	<!--23/10/2018 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<include schemaLocation="ComplexTypes/Bron.xsd"/>
+	<include schemaLocation="ComplexTypes/Straatadres.xsd"/>
+	<include schemaLocation="ComplexTypes/Partner.xsd"/>
+	<include schemaLocation="ComplexTypes/PartnerBijstand.xsd"/>
+	<include schemaLocation="TypedXsd/CdAanleidingEindeBijstandUitk.xsd"/>
+	<include schemaLocation="TypedXsd/CdClusterBijzBijstand.xsd"/>
+	<include schemaLocation="TypedXsd/CdHoogteBestuurlijkeBoete.xsd"/>
+	<include schemaLocation="TypedXsd/CdRecidivetermijn.xsd"/>
+	<include schemaLocation="TypedXsd/CdRedenEVrijstArbeidsplichtBijst.xsd"/>
+	<include schemaLocation="TypedXsd/CdRedenMaatregelMbtBijstandUitk.xsd"/>
+	<include schemaLocation="TypedXsd/CdSrtSanctie.xsd"/>
+	<include schemaLocation="TypedXsd/CdVrijstellingArbeidsplichtBijst.xsd"/>
+	<include schemaLocation="SimpleTypes/ParketnrJustitie.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="BijstandsregelingenInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+								<element name="Voorletters" type="sml:Voorletters" minOccurs="0"/>
+								<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+								<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+								<element name="Geslacht" type="sml:Geslacht" minOccurs="0"/>
+								<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+								<element name="CdLeefvorm" type="sml:CdLeefvorm" minOccurs="0"/>
+								<element name="DomicilieAdres" type="smls:Straatadres" minOccurs="0"/>
+								<element name="Huisvesting" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="CdRelatieBewonerHuisvesting" type="sml:CdRelatieBewonerHuisvesting"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="SchendingInlichtingenplicht" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="DatWaarschSchendInlichtingplicht" type="sml:Datum"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="DossierGsd" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="Dossiercd" type="sml:OmschrijvingAN40" minOccurs="0"/>
+											<element name="DatOpnameGegevensInIbSysteem" type="sml:Datum" minOccurs="0"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Bron" type="smls:Bron" minOccurs="0"/>
+								<element name="AanvraagUitkering" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="DatAanvraagUitkering" type="sml:Datum" minOccurs="0"/>
+											<element name="SzWet">
+												<complexType>
+													<sequence>
+														<element name="CdSzWet" type="sml:CdSzWet"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="BeslissingOpAanvraagUitkering" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="CdBeslissingOpAanvraagUitkering" type="sml:CdBeslissingOpAanvraagUitkering"/>
+														<element name="DatDagtekeningBeslisOpAanvrUitk" type="sml:Datum" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="PartnerAanvraagUitkering" minOccurs="0">
+												<complexType>
+													<complexContent>
+														<extension base="smls:PartnerBijstand"/>
+													</complexContent>
+												</complexType>
+											</element>
+											<element name="Bron" type="smls:Bron"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Vordering" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="IdentificatienrVordering" type="sml:NummerN15" minOccurs="0"/>
+											<element name="DatBesluitVordering" type="sml:Datum" minOccurs="0"/>
+											<element name="CdRedenVordering" type="sml:CdRedenVordering" minOccurs="0"/>
+											<element name="BedrAanvangVordering" type="sml:StandaardBedr" minOccurs="0"/>
+											<element name="CdStatusVordering" type="sml:CdStatusVordering" minOccurs="0"/>
+											<element name="BedrSaldoVordering" type="sml:StandaardBedr" minOccurs="0"/>
+											<element name="DatOnherroepelijkVordering" type="sml:Datum" minOccurs="0"/>
+											<element name="SzWet">
+												<complexType>
+													<sequence>
+														<element name="CdSzWet" type="sml:CdSzWet"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="PartnerVordering" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<complexContent>
+														<extension base="smls:Partner"/>
+													</complexContent>
+												</complexType>
+											</element>
+											<element name="Fraude" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="IndRecidive" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="IndRobuusteIncassoToegepast" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="CdHoogteBestuurlijkeBoete" type="smls:CdHoogteBestuurlijkeBoete" minOccurs="0"/>
+														<element name="CdSrtSanctie" type="smls:CdSrtSanctie" minOccurs="0"/>
+														<element name="ParketnrJustitie" type="smls:ParketnrJustitie" minOccurs="0"/>
+														<element name="CdRecidivetermijn" type="smls:CdRecidivetermijn" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="Bron" type="smls:Bron"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="SpecifiekeGegevensBijzBijstand" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="CdClusterBijzBijstand" type="smls:CdClusterBijzBijstand" minOccurs="0"/>
+											<element name="OmsSrtKostenBijzBijstand" type="sml:OmschrijvingAN100" minOccurs="0"/>
+											<element name="DatBetaalbaarBijzBijstand" type="sml:Datum" minOccurs="0"/>
+											<element name="SzWet">
+												<complexType>
+													<sequence>
+														<element name="CdSzWet" type="sml:CdSzWet"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="PartnerBijzBijstand" minOccurs="0">
+												<complexType>
+													<complexContent>
+														<extension base="smls:PartnerBijstand"/>
+													</complexContent>
+												</complexType>
+											</element>
+											<element name="Bron" type="smls:Bron"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Uitkeringsverhouding" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="DatBUitkeringsverhouding" type="sml:Datum"/>
+											<element name="DatEUitkeringsverhouding" type="sml:Datum" minOccurs="0"/>
+											<element name="SzWet">
+												<complexType>
+													<sequence>
+														<element name="CdSzWet" type="sml:CdSzWet"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="SpecifiekeGegevensBijstandUitk" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="CdAanleidingEindeBijstandUitk" type="smls:CdAanleidingEindeBijstandUitk" minOccurs="0"/>
+														<element name="CdClassificatieBbz" type="sml:CdClassificatieBbz" minOccurs="0"/>
+														<element name="AantKostendelers" type="sml:AantalN2" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="InkomstenInvloedOpBijstandUitk" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="CdSrtOverigeInkomsten" type="sml:CdSrtOverigeInkomsten" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="VrijstellingArbeidsplicht" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="CdVrijstellingArbeidsplichtBijst" type="smls:CdVrijstellingArbeidsplichtBijst"/>
+														<element name="DatEVrijstellingArbeidsplicht" type="sml:Datum" minOccurs="0"/>
+														<element name="CdRedenEVrijstArbeidsplichtBijst" type="smls:CdRedenEVrijstArbeidsplichtBijst" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="PartnerUitkeringsverhouding" minOccurs="0">
+												<complexType>
+													<complexContent>
+														<extension base="smls:PartnerBijstand"/>
+													</complexContent>
+												</complexType>
+											</element>
+											<element name="Uitkeringsperiode" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="DatBUitkeringsperiode" type="sml:Datum"/>
+														<element name="DatEUitkeringsperiode" type="sml:Datum" minOccurs="0"/>
+														<element name="MaatregelMbtUitkering" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="DatBMaatregelMbtUitkering" type="sml:Datum"/>
+																	<element name="DatEMaatregelMbtUitkering" type="sml:Datum" minOccurs="0"/>
+																	<element name="RedenMaatregelMbtBijstandUitk" minOccurs="0">
+																		<complexType>
+																			<sequence>
+																				<element name="CdRedenMaatregelMbtBijstandUitk" type="smls:CdRedenMaatregelMbtBijstandUitk" minOccurs="0"/>
+																				<element name="GevolgenMaatregelMbtBijstandUitk" minOccurs="0">
+																					<complexType>
+																						<sequence>
+																							<element name="BedrVerminderingUitkMbtMaatregel" type="sml:StandaardBedr"/>
+																						</sequence>
+																					</complexType>
+																				</element>
+																			</sequence>
+																		</complexType>
+																	</element>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="InkomstenBijstandUitkering" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="BedrTotaalInkomstenUitkering" type="sml:StandaardBedr" minOccurs="0"/>
+																	<element name="BedrBetaalbaarGesteldeUitkering" type="sml:StandaardBedr" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="Normbedrag" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="CdSrtNormbedrag" type="sml:CdSrtNormbedrag"/>
+																	<element name="CdMunteenheid" type="sml:CdMunteenheid" minOccurs="0"/>
+																	<element name="WaardeBedr" type="sml:WaardeBedr"/>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="Bron" type="smls:Bron"/>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+</schema>

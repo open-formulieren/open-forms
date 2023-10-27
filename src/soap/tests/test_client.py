@@ -3,22 +3,30 @@ Test the client factory from SOAPService configuration.
 """
 from pathlib import Path
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 import requests_mock
 from ape_pie import InvalidURLError
+from requests.exceptions import RequestException
 from simple_certmanager.test.factories import CertificateFactory
+from zeep.exceptions import XMLSyntaxError
+from zeep.wsse import Signature, UsernameToken
+
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import SOAPSession, build_client
 from ..constants import EndpointSecurity
 from ..session_factory import SessionFactory
 from .factories import SoapServiceFactory
 
-WSDL = Path(__file__).parent.resolve() / "data" / "sample.wsdl"
+DATA_DIR = Path(__file__).parent / "data"
+WSDL = DATA_DIR / "sample.wsdl"
 WSDL_URI = str(WSDL)
 
 
-class ClientTransportTests(TestCase):
+class ClientTransportTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = DATA_DIR
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -36,6 +44,11 @@ class ClientTransportTests(TestCase):
         cls.server_cert = CertificateFactory.create(
             label="Gateway server certificate",
             public_certificate__filename="server.pem",
+        )
+        cls.server_cert_and_privkey = CertificateFactory.create(
+            label="Gateway server certificate",
+            public_certificate__filename="server.pem",
+            with_private_key=True,
         )
 
     def test_no_server_cert_specified(self):
@@ -114,21 +127,76 @@ class ClientTransportTests(TestCase):
 
     def test_basic_auth(self):
         username_password = (
-            EndpointSecurity.basicauth,
-            EndpointSecurity.wss_basicauth,
+            (EndpointSecurity.basicauth, None),
+            (EndpointSecurity.wss_basicauth, self.client_cert_and_privkey),
         )
-        for security in username_password:
+        for security, cert in username_password:
             with self.subTest(security=security):
                 service = SoapServiceFactory.build(
                     url=WSDL_URI,
                     endpoint_security=security,
                     user="admin",
                     password="supersecret",
+                    client_certificate=cert,
                 )
 
                 client = build_client(service)
 
                 self.assertIsNotNone(client.transport.session.auth)
+
+    def test_wsse(self):
+        # wss endpoint security options should add a zeep.wsse.Signature
+        # to the Client, so it can be used when the wsdl specifies it for a message
+        # in an operation
+
+        service = SoapServiceFactory.build(
+            url=WSDL_URI,
+            endpoint_security=EndpointSecurity.wss,
+            client_certificate=self.client_cert_and_privkey,
+        )
+
+        client = build_client(service)
+
+        self.assertIsInstance(client.wsse, Signature)
+        self.assertIsNotNone(client.wsse.key_data)
+        self.assertIsNotNone(client.wsse.cert_data)
+
+    def test_wsse_basicauth(self):
+        # wss endpoint security options should add a zeep.wsse.Signature
+        # to the Client, so it can be used when the wsdl specifies it for a message
+        # in an operation
+
+        service = SoapServiceFactory.build(
+            url=WSDL_URI,
+            endpoint_security=EndpointSecurity.wss_basicauth,
+            user="admin",
+            password="supersecret",
+            client_certificate=self.client_cert_and_privkey,
+        )
+
+        client = build_client(service)
+
+        sig: Signature = next(
+            extension for extension in client.wsse if isinstance(extension, Signature)
+        )
+
+        self.assertIsNotNone(sig.key_data)
+        self.assertIsNotNone(sig.cert_data)
+
+        usertoken: UsernameToken = next(
+            extension
+            for extension in client.wsse
+            if isinstance(extension, UsernameToken)
+        )
+
+        self.assertEqual(usertoken.username, "admin")
+        self.assertEqual(usertoken.password, "supersecret")
+
+    def test_wrong_wsse(self):
+        service = SoapServiceFactory.create(endpoint_security="my blue eyes")
+
+        with self.assertRaises(ValueError):
+            service.get_wsse()
 
     @requests_mock.Mocker()
     def test_no_absolute_url_sanitization(self, m):
@@ -158,3 +226,33 @@ class ClientTransportTests(TestCase):
             session.post("api/relative")
 
         self.assertEqual(m.last_request.url, "https://example.com/api/relative")
+
+    def test_it_can_build_a_functional_client(self):
+        service = SoapServiceFactory.build(
+            url="http://www.soapclient.com/xml/soapresponder.wsdl"
+        )
+        client = build_client(service)
+
+        self.assertEqual(
+            client.service.Method1("under the normal run", "things"),
+            "Your input parameters are under the normal run and things",
+        )
+
+
+class ClientTransportTimeoutTests(TestCase):
+    @override_settings(DEFAULT_TIMEOUT_REQUESTS=1)
+    def test_the_client_obeys_timeout_requests(self):
+        "We don't want an unresponsive service DoS us."
+        service = SoapServiceFactory.build(
+            # this service acts like some slow lorris, will eventually
+            # respond with something that's not a wsdl
+            url="https://httpstat.us/200?sleep=3000"
+        )
+
+        with self.assertRaises(RequestException):
+            try:
+                # zeep will try to read the "wsdl"
+                build_client(service)
+            except XMLSyntaxError:
+                # DEFAULT_TIMOUT_REQUESTS time has passed and we're trying
+                self.fail("DEFAULT_TIMEOUT_REQUESTS not honoured by SOAP client")

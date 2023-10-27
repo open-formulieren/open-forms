@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Diensten/Bijstandsregelingen/v0500">
+	<simpleType name="CdRedenEVrijstArbeidsplichtBijst">
+		<restriction base="string">
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+</schema>

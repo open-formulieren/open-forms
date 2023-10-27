@@ -1,0 +1,161 @@
+interactions:
+- request:
+    body: '<?xml version=''1.0'' encoding=''utf-8''?>
+
+      <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Header
+      xmlns:wsa="http://www.w3.org/2005/08/addressing"><wsa:Action>http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten-v0200/VoertuigbezitInfoPersoon</wsa:Action><wsa:MessageID>urn:uuid:8d34bad3-4a87-48f5-b70c-6987ae7fb69e</wsa:MessageID><wsa:To>https://mygateway.example.com/SuwiML/RDWDossierDigitaleDiensten-v0200/v1</wsa:To><wsse:Security
+      xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><Signature
+      xmlns="http://www.w3.org/2000/09/xmldsig#">
+
+      <SignedInfo>
+
+      <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+
+      <Reference URI="#id-42a8eff3-8698-4595-b85b-a1d5a0172a18">
+
+      <Transforms>
+
+      <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+
+      </Transforms>
+
+      <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+
+      <DigestValue>R5ExvEman2NIxBYJaC0nxQBztHc=</DigestValue>
+
+      </Reference>
+
+      </SignedInfo>
+
+      <SignatureValue>ZzNmKzRdbuYpS8igvQCv8aDuTXh24CRk73Qh7L58Pwzq831fzREzuMZ+GFovIJDY
+
+      e5oqV8vNkvtxjYEfagkZSlNyPbhLWsQizbMf6NeCVh1vqpDZFALJ0UW71BLoxIeB
+
+      yNu5Nc7B1eXODxRknpWKDTRQDqwKyxm++O1y2lP4fv6vci/neH9caet42W/mS/YS
+
+      3Z7vUGGFU91YcWMlhgXdoL+zK8q87Y+moWhTEgeaYW7zfL3xZXaIJR0OU0TyD4E5
+
+      mBAFmH6P6/ZWnzJs8BPct2uyog7joKLqMDvvGW/W5mT+azanUFr5G4s6ftXvT7uN
+
+      /wSBZmCaxEpe1SZ6j67mng==</SignatureValue>
+
+      <KeyInfo>
+
+      <wsse:SecurityTokenReference><X509Data>
+
+      <X509IssuerSerial>
+
+      <X509IssuerName>CN=Kenniscentrum ROOT CA,OU=TAI,O=Gemeente Den Haag,L=Den Haag,ST=Zuid
+      Holland,C=NL,emailAddress=kenniscentrum@denhaag.nl</X509IssuerName>
+
+      <X509SerialNumber>12775116220277751059</X509SerialNumber>
+
+      </X509IssuerSerial>
+
+      <X509Certificate>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</X509Certificate>
+
+      </X509Data>
+
+      </wsse:SecurityTokenReference></KeyInfo>
+
+      </Signature></wsse:Security></soap-env:Header><soap-env:Body xmlns:ns1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+      ns1:Id="id-42a8eff3-8698-4595-b85b-a1d5a0172a18"><ns0:VoertuigbezitInfoPersoon
+      xmlns:ns0="http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200"><Burgerservicenr>111111110</Burgerservicenr></ns0:VoertuigbezitInfoPersoon></soap-env:Body></soap-env:Envelope>'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '4194'
+      Content-Type:
+      - text/xml; charset=utf-8
+      SOAPAction:
+      - '""'
+      User-Agent:
+      - Zeep/4.2.1 (www.python-zeep.org)
+    method: POST
+    uri: https://mygateway.example.com/SuwiML/RDWDossierDigitaleDiensten-v0200/v1
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n
+        \   <soapenv:Body>\n        <soapenv:Fault>\n            <faultcode>soapenv:Server</faultcode>\n
+        \           <faultstring>Policy Falsified</faultstring>\n            <faultactor>https://mygateway.example.com/SuwiML/RDWDossierDigitaleDiensten-v0200/v1</faultactor>\n
+        \           <detail>\n                <l7:policyResult status=\"Assertion
+        Falsified\" xmlns:l7=\"http://www.layer7tech.com/ws/policy/fault\"/>\n            </detail>\n
+        \       </soapenv:Fault>\n    </soapenv:Body>\n</soapenv:Envelope>\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '622'
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Fri, 20 Oct 2023 20:06:51 GMT
+      Server:
+      - Layer7-API-Gateway
+    status:
+      code: 500
+      message: ''
+version: 1

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/GSDDossierReintegratie/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/GSDDossierReintegratie/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--18/07/2014 Bericht GSDDossierPersoon is opgeknipt in 2 koppelvlakken: Bijstandsregelingen-v0400 en GSDDossierReintegratie-v0101-->
+	<!--10/07/2018 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--21/09/2018 Bericht GSDDossierReintegratie wordt aangepast conform SRG 1 januari 2019-->
+	<!--21/09/2018 Entiteit Participatieladder en de bijbehorende gegevenselementen worden verwijderd.-->
+	<!--21/09/2018 Adresgegevens van Client Suwi worden verwijderd.-->
+	<!--23/10/2018 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<include schemaLocation="ComplexTypes/Bron.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="GSDReintegratieInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+								<element name="Voorletters" type="sml:Voorletters" minOccurs="0"/>
+								<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+								<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+								<element name="Geslacht" type="sml:Geslacht" minOccurs="0"/>
+								<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+								<element name="Bron" type="smls:Bron" minOccurs="0"/>
+								<element name="AtlRelatie" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="Arbeidsvermogen" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="CdArbeidsvermogen" type="smls:CdArbeidsvermogen"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="DoelReintegratievoorziening" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="CdDoelRv" type="smls:CdDoelRv"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="ReIntegratievoorziening" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="RegistratienrRvGsd" type="smls:RegistratienrRvGsd" minOccurs="0"/>
+														<element name="DatBRv" type="sml:Datum"/>
+														<element name="DatERv" type="sml:Datum" minOccurs="0"/>
+														<element name="CdTypeRvGsd" type="smls:CdTypeRvGsd" minOccurs="0"/>
+														<element name="OmsRv" type="sml:OmschrijvingAN100" minOccurs="0"/>
+														<element name="Loonkostensubsidie" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="PercLoonwaardeTovWml" type="sml:StandaardPerc"/>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="Bron" type="smls:Bron"/>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<simpleType name="CdArbeidsvermogen">
+		<restriction base="string">
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdDoelRv">
+		<restriction base="string">
+			<length value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="RegistratienrRvGsd">
+		<restriction base="string">
+			<maxLength value="15"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdTypeRvGsd">
+		<restriction base="string">
+			<length value="2"/>
+		</restriction>
+	</simpleType>
+</schema>

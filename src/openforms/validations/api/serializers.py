@@ -2,6 +2,7 @@ from typing import cast
 
 from django.utils.translation import ugettext_lazy as _
 
+from djangorestframework_camel_case.util import underscoreize
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter
 from rest_framework import serializers
@@ -23,6 +24,9 @@ class ValidatorsFilterSerializer(serializers.Serializer):
             "Only return validators applicable for the specified component type."
         ),
     )
+
+    def to_internal_value(self, data):
+        return super().to_internal_value(underscoreize(data))
 
     @classmethod
     def as_openapi_params(cls) -> list[OpenApiParameter]:

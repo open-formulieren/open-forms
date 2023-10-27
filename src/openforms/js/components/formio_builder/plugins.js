@@ -1,7 +1,10 @@
 import {get} from 'utils/fetch';
 
 export const getValidatorPlugins = async componentType => {
-  const resp = await get('/api/v2/validation/plugins');
+  const resp = await get(
+    '/api/v2/validation/plugins',
+    componentType ? {componentType: componentType} : {}
+  );
   return resp.data;
 };
 

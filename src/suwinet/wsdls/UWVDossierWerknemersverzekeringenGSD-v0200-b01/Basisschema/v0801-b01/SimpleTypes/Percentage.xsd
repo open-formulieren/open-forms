@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!--SuwiML Basisschema v0801-b01 2009-12-14T17:15:14.437+02:00-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<xs:simpleType name="Percentage">
+		<xs:restriction base="xs:string">
+			<xs:length value="5"/>
+			<xs:pattern value="[0-9]{5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

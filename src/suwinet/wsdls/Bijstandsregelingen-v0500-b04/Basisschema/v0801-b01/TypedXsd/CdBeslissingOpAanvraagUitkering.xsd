@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 rel. 2 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!-- SuwiML Basisschema tabellen typed v0801-b01 -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!-- CdBeslissingOpAanvraagUitkering v0801-b01 tabeldefinitie met type-aanduiding -->
+	<simpleType name="CdBeslissingOpAanvraagUitkering">
+		<restriction base="string">
+			<length value="2"/>
+			<pattern value="\d*"/>
+		</restriction>
+	</simpleType>
+</schema>

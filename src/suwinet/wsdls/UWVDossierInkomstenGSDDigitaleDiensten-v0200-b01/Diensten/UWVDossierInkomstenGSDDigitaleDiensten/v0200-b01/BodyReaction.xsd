@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSDDigitaleDiensten/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/UWVDossierInkomstenGSDDigitaleDiensten/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--23/07/2014 UWVDossierPersoonGSDDigitaleDiensten is opgeknipt in 2 koppelvlakken: UWVDossierInkomstenGSDDigitaleDiensten en UWVDossierWerknemersverzekeringenGSDDigitaleDiensten-->
+	<!--23/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--23/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Include de definities-->
+	<include schemaLocation="SimpleTypes/AantVerloondeUrenIko.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="UWVPersoonsIkvInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Inkomstenverhouding" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="VolgnrIkv" type="sml:VolgnrIkv" minOccurs="0"/>
+											<element name="AanduidingIkvWerkgever" type="sml:AanduidingIkvWerkgever" minOccurs="0"/>
+											<element name="DatBIkv" type="sml:Datum" minOccurs="0"/>
+											<element name="DatEIkv" type="sml:Datum" minOccurs="0"/>
+											<element name="Inkomstenperiode" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="DatBIkp" type="sml:Datum"/>
+														<element name="DatEIkp" type="sml:Datum" minOccurs="0"/>
+														<element name="CdSrtIkv" type="sml:CdSrtInkomstenverhouding" minOccurs="0"/>
+														<element name="IndVerzekerdWaoIvaWga" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="IndVerzekerdWw" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="IndVerzekerdZw" type="sml:StdIndJN" minOccurs="0"/>
+														<element name="CdAardIkv" type="sml:CdAardIkv" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="Inkomstenopgave" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="DatBIko" type="sml:Datum"/>
+														<element name="DatEIko" type="sml:Datum" minOccurs="0"/>
+														<element name="AantSvDagenIko" type="sml:AantalN3" minOccurs="0"/>
+														<element name="AantVerloondeUrenIko" type="smls:AantVerloondeUrenIko" minOccurs="0"/>
+														<element name="BedrBrutoloonSv" type="sml:StandaardBedr" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="PeriodeGegevensleveringIko" minOccurs="0">
+						<complexType>
+							<sequence>
+								<element name="DatBPeriode" type="sml:Datum" minOccurs="0"/>
+								<element name="DatEPeriode" type="sml:Datum" minOccurs="0"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+</schema>

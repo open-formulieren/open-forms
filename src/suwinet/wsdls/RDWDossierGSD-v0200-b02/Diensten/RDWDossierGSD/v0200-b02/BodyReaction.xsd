@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/RDWDossierGSD/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--12/06/19 Element "BedrCatalogusVoertuig", entiteit "TellerstandVoertuig" met de bijbehorende attributen en entiteit "VerstrekkingsvoorbehoudVoertuig"met de bijbehorende attributen worden toegevoegd.-->
+	<!--12/06/19 Structuur in BodyReaction-schema: VoertuigbezitInfoPersoonResponse is aangepast.-->
+	<!--18/06/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--18/06/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--07/11/19 Structuur in BodyReaction-schema: VoertuigbezitInfoPersoonResponse is aangepast, conform het bronbericht RDWDossier-v0400-b01-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Include definities-->
+	<include schemaLocation="SimpleTypes/VolgnrN5.xsd"/>
+	<include schemaLocation="SimpleTypes/FiNr.xsd"/>
+	<include schemaLocation="SimpleTypes/TellerstandVoertuig.xsd"/>
+	<include schemaLocation="TypedXsd/CdVerzekeringsmaatschappijRdw.xsd"/>
+	<include schemaLocation="TypedXsd/CdTellerstandeenheidVoertuig.xsd"/>
+	<include schemaLocation="ComplexTypes/Straatadres.xsd"/>
+	<include schemaLocation="ComplexTypes/Straatadres_verkort.xsd"/>
+	<include schemaLocation="ComplexTypes/Aansprakelijke_verkort.xsd"/>
+	<include schemaLocation="ComplexTypes/Voertuigverplichtingen.xsd"/>
+	<include schemaLocation="ComplexTypes/Voertuigverplichtingennemer.xsd"/>
+	<include schemaLocation="ComplexTypes/Verzekering.xsd"/>
+	<include schemaLocation="ComplexTypes/VerstrekkingsvoorbehoudVoertuig.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="VoertuigbezitInfoPersoonResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi" minOccurs="0" maxOccurs="unbounded">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Voorletters" type="sml:Voorletters" minOccurs="0"/>
+								<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+								<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+								<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+								<element name="RdwAdres" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="FeitelijkAdres" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="Straatadres" type="smls:Straatadres" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Aansprakelijke" type="smls:Aansprakelijke_verkort" minOccurs="0" maxOccurs="unbounded"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element name="OndernemingInst" minOccurs="0" maxOccurs="unbounded">
+						<complexType>
+							<sequence>
+								<element name="Rechtspersoon">
+									<complexType>
+										<sequence>
+											<element name="NaamRechtspersoon" type="sml:NaamAN200"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="VestigingOndernemingInst" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="BezoekadresVestiging" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="CorrespondentieadresVestiging" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Aansprakelijke" type="smls:Aansprakelijke_verkort" minOccurs="0" maxOccurs="unbounded"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<element name="VoertuigbezitInfoOrgResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="OndernemingInst" maxOccurs="unbounded">
+						<complexType>
+							<sequence>
+								<element name="Rechtspersoon" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="NaamRechtspersoon" type="sml:NaamAN200"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="VestigingOndernemingInst" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="BezoekadresVestiging" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+											<element name="CorrespondentieadresVestiging" minOccurs="0">
+												<complexType>
+													<sequence>
+														<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Aansprakelijke" type="smls:Aansprakelijke_verkort" minOccurs="0" maxOccurs="unbounded"/>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<element name="KentekenInfoResponse">
+		<complexType>
+			<choice>
+				<choice>
+					<sequence>
+						<element name="ClientSuwi" maxOccurs="unbounded">
+							<complexType>
+								<sequence>
+									<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+									<element name="Voorletters" type="sml:Voorletters" minOccurs="0"/>
+									<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+									<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+									<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+									<element name="RdwAdres" minOccurs="0" maxOccurs="unbounded">
+										<complexType>
+											<sequence>
+												<element name="FeitelijkAdres" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="Straatadres" type="smls:Straatadres" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+												<element name="Correspondentieadres" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="Straatadres" type="smls:Straatadres" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+											</sequence>
+										</complexType>
+									</element>
+									<element name="Aansprakelijke" minOccurs="0" maxOccurs="unbounded">
+										<complexType>
+											<sequence>
+												<element name="DatRegistratieAansprakelijkheid" type="sml:Datum" minOccurs="0"/>
+												<element name="TijdBAansprakelijkheid" type="sml:Tijdstip" minOccurs="0"/>
+												<element name="DatEAansprakelijkheid" type="sml:Datum" minOccurs="0"/>
+												<element name="Voertuig" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="CdSrtVoertuig" type="sml:CdSrtVoertuig" minOccurs="0"/>
+															<element name="KentekenVoertuig" type="sml:NummerAN6" minOccurs="0"/>
+															<element name="StatusVoertuig" minOccurs="0" maxOccurs="unbounded">
+																<complexType>
+																	<sequence>
+																		<element name="CdStatusVoertuig" type="sml:CdStatusVoertuig" minOccurs="0"/>
+																		<element name="DatBStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																		<element name="DatEStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="MerkVoertuig" type="sml:OmschrijvingAN35" minOccurs="0"/>
+															<element name="TypeVoertuig" type="sml:OmschrijvingAN50" minOccurs="0"/>
+															<element name="HoofdkleurVoertuig" type="sml:KleurVoertuig" minOccurs="0"/>
+															<element name="NevenkleurVoertuig" type="sml:KleurVoertuig" minOccurs="0"/>
+															<element name="DatEersteInschrijvingVoertuigNat" type="sml:Datum" minOccurs="0"/>
+															<element name="DatEersteInschrijvingVoertuigInt" type="sml:Datum" minOccurs="0"/>
+															<element name="BedrBpm" type="sml:StandaardBedr" minOccurs="0"/>
+															<element name="BedrCatalogusVoertuig" type="sml:StandaardBedr" minOccurs="0"/>
+															<element name="TellerstandVoertuig" minOccurs="0">
+																<complexType>
+																	<sequence>
+																		<element name="TellerstandVoertuig" type="smls:TellerstandVoertuig" minOccurs="0"/>
+																		<element name="CdTellerstandeenheidVoertuig" type="smls:CdTellerstandeenheidVoertuig" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="Keuring" minOccurs="0" maxOccurs="unbounded">
+																<complexType>
+																	<sequence>
+																		<element name="DatEGeldigheidApk" type="sml:Datum" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="VerstrekkingsvoorbehoudVoertuig" type="smls:VerstrekkingsvoorbehoudVoertuig" minOccurs="0"/>
+															<element name="Voertuigverplichtingen" type="smls:Voertuigverplichtingen" minOccurs="0"/>
+															<element name="Voertuigverplichtingennemer" type="smls:Voertuigverplichtingennemer" minOccurs="0"/>
+															<element name="Verzekering" type="smls:Verzekering" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+											</sequence>
+										</complexType>
+									</element>
+								</sequence>
+							</complexType>
+						</element>
+						<element ref="fwi:FWI" minOccurs="0"/>
+					</sequence>
+					<sequence>
+						<element name="OndernemingInst" maxOccurs="unbounded">
+							<complexType>
+								<sequence>
+									<element name="Rechtspersoon" minOccurs="0">
+										<complexType>
+											<sequence>
+												<element name="FiNr" type="smls:FiNr" minOccurs="0"/>
+												<element name="NaamRechtspersoon" type="sml:NaamAN200"/>
+											</sequence>
+										</complexType>
+									</element>
+									<element name="VestigingOndernemingInst" minOccurs="0">
+										<complexType>
+											<sequence>
+												<element name="BezoekadresVestiging" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+												<element name="CorrespondentieadresVestiging" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+											</sequence>
+										</complexType>
+									</element>
+									<element name="Aansprakelijke" minOccurs="0" maxOccurs="unbounded">
+										<complexType>
+											<sequence>
+												<element name="DatRegistratieAansprakelijkheid" type="sml:Datum" minOccurs="0"/>
+												<element name="DatEAansprakelijkheid" type="sml:Datum" minOccurs="0"/>
+												<element name="Voertuig" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="CdSrtVoertuig" type="sml:CdSrtVoertuig" minOccurs="0"/>
+															<element name="KentekenVoertuig" type="sml:NummerAN6" minOccurs="0"/>
+															<element name="StatusVoertuig" minOccurs="0" maxOccurs="unbounded">
+																<complexType>
+																	<sequence>
+																		<element name="CdStatusVoertuig" type="sml:CdStatusVoertuig" minOccurs="0"/>
+																		<element name="DatBStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																		<element name="DatEStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="MerkVoertuig" type="sml:OmschrijvingAN35" minOccurs="0"/>
+															<element name="TypeVoertuig" type="sml:OmschrijvingAN50" minOccurs="0"/>
+															<element name="HoofdkleurVoertuig" type="sml:KleurVoertuig" minOccurs="0"/>
+															<element name="NevenkleurVoertuig" type="sml:KleurVoertuig" minOccurs="0"/>
+															<element name="DatEersteInschrijvingVoertuigNat" type="sml:Datum" minOccurs="0"/>
+															<element name="DatEersteInschrijvingVoertuigInt" type="sml:Datum" minOccurs="0"/>
+															<element name="BedrBpm" type="sml:StandaardBedr" minOccurs="0"/>
+															<element name="BedrCatalogusVoertuig" type="sml:StandaardBedr" minOccurs="0"/>
+															<element name="TellerstandVoertuig" minOccurs="0">
+																<complexType>
+																	<sequence>
+																		<element name="TellerstandVoertuig" type="smls:TellerstandVoertuig" minOccurs="0"/>
+																		<element name="CdTellerstandeenheidVoertuig" type="smls:CdTellerstandeenheidVoertuig" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="Keuring" minOccurs="0" maxOccurs="unbounded">
+																<complexType>
+																	<sequence>
+																		<element name="DatEGeldigheidApk" type="sml:Datum" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="VerstrekkingsvoorbehoudVoertuig" type="smls:VerstrekkingsvoorbehoudVoertuig" minOccurs="0"/>
+															<element name="Voertuigverplichtingen" type="smls:Voertuigverplichtingen" minOccurs="0"/>
+															<element name="Voertuigverplichtingennemer" type="smls:Voertuigverplichtingennemer" minOccurs="0"/>
+															<element name="Verzekering" type="smls:Verzekering" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+												<element name="Handelaarskenteken" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="KentekenVoertuig" type="sml:NummerAN6" minOccurs="0"/>
+															<element name="StatusHandelaarskenteken" minOccurs="0">
+																<complexType>
+																	<sequence>
+																		<element name="CdStatusHandelaarskenteken" type="sml:CdStatusHandelaarskenteken" minOccurs="0"/>
+																		<element name="DatRegStatusHandelaarskenteken" type="sml:Datum" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+														</sequence>
+													</complexType>
+												</element>
+											</sequence>
+										</complexType>
+									</element>
+								</sequence>
+							</complexType>
+						</element>
+						<element ref="fwi:FWI" minOccurs="0"/>
+					</sequence>
+					<sequence>
+						<element name="HandelaarOndernemingInst" maxOccurs="unbounded">
+							<complexType>
+								<sequence>
+									<element name="Rechtspersoon" minOccurs="0">
+										<complexType>
+											<sequence>
+												<element name="NaamRechtspersoon" type="sml:NaamAN200"/>
+											</sequence>
+										</complexType>
+									</element>
+									<element name="VestigingOndernemingInst" minOccurs="0">
+										<complexType>
+											<sequence>
+												<element name="RdwBedrijfsnr" type="smls:VolgnrN5" minOccurs="0"/>
+												<element name="NaamOndernemingInst" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="HandelsnaamOrganisatie" type="sml:NaamAN70" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+												<element name="ContactpersoonAfdVestiging" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+												<element name="BezoekadresVestiging" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+												<element name="CorrespondentieadresVestiging" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="Straatadres" type="smls:Straatadres_verkort" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+											</sequence>
+										</complexType>
+									</element>
+									<element name="Aansprakelijke" minOccurs="0" maxOccurs="unbounded">
+										<complexType>
+											<sequence>
+												<element name="DatRegistratieAansprakelijkheid" type="sml:Datum"/>
+												<element name="TijdBAansprakelijkheid" type="sml:Tijdstip" minOccurs="0"/>
+												<element name="DatEAansprakelijkheid" type="sml:Datum" minOccurs="0"/>
+												<element name="Voertuig" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="CdSrtVoertuig" type="sml:CdSrtVoertuig" minOccurs="0"/>
+															<element name="KentekenVoertuig" type="sml:NummerAN6"/>
+															<element name="StatusVoertuig" minOccurs="0" maxOccurs="unbounded">
+																<complexType>
+																	<sequence>
+																		<element name="CdStatusVoertuig" type="sml:CdStatusVoertuig"/>
+																		<element name="DatBStatusVoertuig" type="sml:Datum"/>
+																		<element name="DatEStatusVoertuig" type="sml:Datum" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="MerkVoertuig" type="sml:OmschrijvingAN35" minOccurs="0"/>
+															<element name="TypeVoertuig" type="sml:OmschrijvingAN50" minOccurs="0"/>
+															<element name="HoofdkleurVoertuig" type="sml:KleurVoertuig" minOccurs="0"/>
+															<element name="NevenkleurVoertuig" type="sml:KleurVoertuig" minOccurs="0"/>
+															<element name="DatEersteInschrijvingVoertuigNat" type="sml:Datum" minOccurs="0"/>
+															<element name="DatEersteInschrijvingVoertuigInt" type="sml:Datum" minOccurs="0"/>
+															<element name="BedrBpm" type="sml:StandaardBedr" minOccurs="0"/>
+															<element name="BedrCatalogusVoertuig" type="sml:StandaardBedr" minOccurs="0"/>
+															<element name="TellerstandVoertuig" minOccurs="0">
+																<complexType>
+																	<sequence>
+																		<element name="TellerstandVoertuig" type="smls:TellerstandVoertuig" minOccurs="0"/>
+																		<element name="CdTellerstandeenheidVoertuig" type="smls:CdTellerstandeenheidVoertuig" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="Keuring" minOccurs="0" maxOccurs="unbounded">
+																<complexType>
+																	<sequence>
+																		<element name="DatEGeldigheidApk" type="sml:Datum"/>
+																	</sequence>
+																</complexType>
+															</element>
+															<element name="VerstrekkingsvoorbehoudVoertuig" type="smls:VerstrekkingsvoorbehoudVoertuig" minOccurs="0"/>
+															<element name="Voertuigverplichtingen" type="smls:Voertuigverplichtingen" minOccurs="0"/>
+															<element name="Voertuigverplichtingennemer" type="smls:Voertuigverplichtingennemer" minOccurs="0"/>
+															<element name="Verzekering" type="smls:Verzekering" minOccurs="0"/>
+														</sequence>
+													</complexType>
+												</element>
+												<element name="Handelaarskenteken" minOccurs="0">
+													<complexType>
+														<sequence>
+															<element name="KentekenVoertuig" type="sml:NummerAN6" minOccurs="0"/>
+															<element name="StatusHandelaarskenteken" minOccurs="0">
+																<complexType>
+																	<sequence>
+																		<element name="CdStatusHandelaarskenteken" type="sml:CdStatusHandelaarskenteken" minOccurs="0"/>
+																		<element name="DatRegStatusHandelaarskenteken" type="sml:Datum" minOccurs="0"/>
+																	</sequence>
+																</complexType>
+															</element>
+														</sequence>
+													</complexType>
+												</element>
+											</sequence>
+										</complexType>
+									</element>
+								</sequence>
+							</complexType>
+						</element>
+						<element ref="fwi:FWI" minOccurs="0"/>
+					</sequence>
+				</choice>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+</schema>

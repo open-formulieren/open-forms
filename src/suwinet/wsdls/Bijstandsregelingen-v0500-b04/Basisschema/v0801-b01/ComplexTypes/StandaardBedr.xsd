@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2018 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801" elementFormDefault="unqualified">
+	<include schemaLocation="../CodedXsd/CdPeriode.xsd"/>
+	<include schemaLocation="../CodedXsd/CdPositiefNegatief.xsd"/>
+	<include schemaLocation="../SimpleTypes/WaardeBedr.xsd"/>
+	<include schemaLocation="../TypedXsd/CdMunteenheid.xsd"/>
+	<complexType name="StandaardBedr">
+		<sequence>
+			<element name="CdMunteenheid" type="sml:CdMunteenheid" minOccurs="0"/>
+			<element name="CdPositiefNegatief" type="sml:CdPositiefNegatief" minOccurs="0"/>
+			<element name="WaardeBedr" type="sml:WaardeBedr" minOccurs="0"/>
+			<element name="CdPeriodeEenheidGeldigheidBedr" type="sml:CdPeriode" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>

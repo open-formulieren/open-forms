@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!--Importeer de benodigde onderdelen uit het SuwiML basisschema.-->
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Burgerservicenr.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/JaartalN4.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/Datum.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/OmschrijvingAN40.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/SimpleTypes/OmschrijvingAN160.xsd"/>
+	<include schemaLocation="../../../Basisschema/v0801-b01/TypedXsd/StdIndJN.xsd"/>
+</schema>

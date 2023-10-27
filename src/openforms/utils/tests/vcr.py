@@ -32,6 +32,11 @@ exposed, as these are internal domains. You can use `mitmproxy`_ to hide this, e
 
     mitmdump --mode reverse:https://example.com --ssl-insecure
 
+If it is a SOAP service that requires client certificates for in-band messages,
+the ``--set client_certs=DIRECTORY|FILE`` flag of `mitmproxy`_ to setup mTLS can't help.
+E.g. the Suwinet client (and prefill plugin) tests rewrite urls in requests and responses
+with a url from an environment variable (see dotenv-example).
+
 **Specifying the record mode**
 
 You can set the environment variable ``VCR_RECORD_MODE`` to any of the supported

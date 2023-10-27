@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 rel. 2 (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<simpleType name="DatumTijdstip">
+		<restriction base="string">
+			<length value="16"/>
+			<pattern value="(([0]{8})|([0]{4}((0[1-9])|(1[0-2]))((0[1-9])|([1-2][0-9])|(3[0-1])))|(([1-9][0-9]{3})|(0[1-9][0-9]{2})|(00[1-9][0-9])|(000[1-9]))((0[0-9])|(1[0-2]))((0[0-9])|([1-2][0-9])|(3[0-1]))(([0-1][0-9])|(2[0-3]))([0-5][0-9]){2}[0-9]{2})"/>
+		</restriction>
+	</simpleType>
+</schema>

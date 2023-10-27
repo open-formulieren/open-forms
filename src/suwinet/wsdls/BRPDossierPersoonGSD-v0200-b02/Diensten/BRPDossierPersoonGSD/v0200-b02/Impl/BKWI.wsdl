@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200">
+	<!--08/11/2019 De naam van de service van BKWI in de wsdl wordt aangepast.-->
+	<wsdl:import namespace="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200" location="../BRPDossierPersoonGSD.wsdl"/>
+	<wsdl:service name="BRPDossierPersoonGSD-v0200">
+		<wsdl:port name="BrokerProductie" binding="smls:BRPBinding">
+			<soap:address location="https://broker.prd.suwi.net/suwibroker/soap/BRPDossierPersoonGSD-v0200"/>
+		</wsdl:port>
+		<wsdl:port name="BrokerIntegratieTest" binding="smls:BRPBinding">
+			<soap:address location="https://broker.tst.suwi.net/suwibroker/soap/BRPDossierPersoonGSD-v0200"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

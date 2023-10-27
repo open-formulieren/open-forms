@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Diensten/DUODossierStudiefinancieringGSD/v0200">
+	<simpleType name="CdToekenningBasisbeursStufi">
+		<restriction base="string">
+			<length value="1"/>
+		</restriction>
+	</simpleType>
+</schema>

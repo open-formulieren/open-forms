@@ -2,8 +2,15 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from simple_certmanager.models import Certificate
+from zeep.wsse.signature import Signature
+from zeep.wsse.username import UsernameToken
 
 from .constants import EndpointSecurity, SOAPVersion
+
+
+class _Signature(Signature):
+    def verify(self, envelope):
+        return envelope
 
 
 class SoapService(models.Model):
@@ -84,6 +91,8 @@ class SoapService(models.Model):
         if certificate.public_certificate:
             return certificate.public_certificate.path
 
+        return None
+
     def get_verify(self) -> bool | str:
         certificate = self.server_certificate
         if certificate:
@@ -99,3 +108,27 @@ class SoapService(models.Model):
         ):
             return (self.user, self.password)
         return None
+
+    def get_wsse(
+        self,
+    ) -> Signature | UsernameToken | tuple[UsernameToken, Signature] | None:
+        sig = lambda: _Signature(
+            self.client_certificate.private_key.path,
+            self.client_certificate.public_certificate.path,
+        )
+
+        basic = lambda: UsernameToken(self.user, self.password)
+
+        match self.endpoint_security:
+            case EndpointSecurity.wss:
+                return sig()
+            case EndpointSecurity.wss_basicauth:
+                return (basic(), sig())
+            case EndpointSecurity.basicauth:
+                return basic()
+            case "":
+                return None
+
+        raise ValueError(
+            f"invalid SoapService.endpoint_security: {self.endpoint_security}"
+        )

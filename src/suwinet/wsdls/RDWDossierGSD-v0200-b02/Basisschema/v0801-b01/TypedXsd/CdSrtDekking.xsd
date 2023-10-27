@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!-- SuwiML Basisschema tabellen typed v0801-b01 -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<simpleType name="CdSrtDekking">
+		<restriction base="string">
+			<length value="3"/>
+			<pattern value="\D*"/>
+		</restriction>
+	</simpleType>
+</schema>

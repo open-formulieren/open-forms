@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200" targetNamespace="http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--23/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--23/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="VoertuigbezitInfoPersoon">
+		<complexType>
+			<sequence>
+				<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="KentekenInfo">
+		<complexType>
+			<sequence>
+				<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+				<element name="KentekenVoertuig" type="sml:NummerAN6" minOccurs="0"/>
+			</sequence>
+		</complexType>
+	</element>
+</schema>

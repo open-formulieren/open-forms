@@ -1,0 +1,638 @@
+<?xml version="1.0"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/BRPDossierPersoonGSD/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--22/05/2014: Wijzigingen in de naam van het koppelvlak, namespaces en versienummer-->
+	<!--07/05/2014: Wijzigingen zijn doorgevoerd ivm de komst van BRP, incl. RNI. Nieuwe RNI administratieve gegevens zijn toegevoegd: VerificatieRni met elementen: DatVerificatieRni en OmsVerificatieRni en RniDeelnemer met elementen: CdRniDeelnemer en OmsVerdragRniDeelnemer.-->
+	<!--07/05/2014: Wijzigingen zijn doorgevoerd ivm de komst van BRP, incl. RNI. Wijzigingen van de bestaande elementen: InschrijvingsgegevensGba wordt InschrijvingsgegevensBrp; DatEersteInschrijvingGba wordt DatEersteInschrijvingBrp; DatBAdreshoudingGba wordt DatBAdreshoudingBrp; CdAangifteAdreshoudingGba wordt CdAangifteAdreshoudingBrp; AangifteAdreshouding wordt AangifteAdreshoudingBrp; AangifteAdreshoudingHistorisch wordt AangifteAdreshoudingBrpHistorisch; CdGbaGegevensGeheim wordt CdBrpGegevensGeheim; AfnemersindicatieGba wordt AfnemersindicatieBrp; AdministrGegGba[cat] wordt AdministrGegBrp[cat]; OpnameGegevensGba[cat] wordt OpnameGegevensBrp[cat], DatOpnameGegevensGba wordt DatOpnameGegevensBrp.-->
+	<!--22/05/2014: Element "Emigratie" komt te vervallen. Element "FeitelijkAdresBuitenland" komt op 1 niveau hoger.en de attributen worden uitgebreid met "DatBAdresBuitenland" (vervanger van DatVertrekUitNederland) en "LandAdresBuitenland".-->
+	<!--22/05/2014: Element "DatOpschortingBijhoudingPl"en element "CdRedenOpschortingBijhoudingPl" worden in "InschrijvingsgegevensBrp" toegevoegd.-->
+	<!--23/05/2014: De versie van het Basisschema is opgehoogd..-->
+	<!--02/06/2014: Element "Onjuist" met het attribuut "CdOnjuistStrijdigMetOpenbareOrde" worden toegevoegd in iedere historische gegevensgroep.-->
+	<!--10/05/2017 :Element "LandVanwaarIngeschreven" (historie) wordt in 'VerblijfplaatsHistorisch - Immigratie'  toegevoegd.-->
+	<!--17/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--17/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--17/07/2019 De structuur wordt aangepast conform Berichtstandaard-->
+	<!--08/11/2019 De naam van de service van BKWI in de wsdl wordt aangepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="AanvraagPersoonResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi" type="smls:ClientSuwi" maxOccurs="unbounded"/>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<complexType name="ClientSuwi">
+		<sequence>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="CdBrpGegevensGeheim" type="smls:CdBrpGegevensGeheim" minOccurs="0"/>
+			<element name="ANr" type="sml:ANr" minOccurs="0"/>
+			<element name="AanduidingNaamgebruik" type="sml:AanduidingNaamgebruik" minOccurs="0"/>
+			<element name="Geslacht" type="sml:Geslacht" minOccurs="0"/>
+			<element name="CdGeboortegemeente" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="Geboorteplaats" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+			<element name="Geboorteland" type="sml:CdLandGba" minOccurs="0"/>
+			<element name="Titulatuur" type="smls:TitulatuurPersoon" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpPersoon-->
+			<element name="OnderzoekGegPersoon" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<element name="GeldigheidGegevensPersoon" type="smls:Geldigheid" minOccurs="0"/>
+			<!--No rights for definition OpnameGegevensBrpPersoon-->
+			<element name="ClientSuwiHistorisch" type="smls:ClientSuwiHistorisch" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Nationaliteit" type="smls:Nationaliteit" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="NationaliteitHistorisch" type="smls:NationaliteitHistorisch" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Verblijfstitel" type="smls:Verblijfstitel" minOccurs="0"/>
+			<element name="VerblijfstitelHistorisch" type="smls:VerblijfstitelHistorisch" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="DomicilieAdres" type="smls:Straatadres" minOccurs="0"/>
+			<element name="Correspondentieadres" type="smls:Straatadres" minOccurs="0"/>
+			<element name="FeitelijkAdresBuitenland" type="smls:FeitelijkAdresBuitenland" minOccurs="0"/>
+			<element name="Immigratie" type="smls:Immigratie" minOccurs="0"/>
+			<element name="AangifteAdreshoudingBrp" type="smls:AangifteAdreshoudingBrp" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpVerblijfplaats-->
+			<element name="OnderzoekGegVerblijfplaats" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element GeldigheidGegevensVerblijfplaats 08.85.10-->
+			<!--No rights for definition OpnameGegevensBrpVerblijfplaats-->
+			<element name="VerblijfplaatsHistorisch" type="smls:VerblijfplaatsHistorisch" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Overlijden" type="smls:Overlijden" minOccurs="0"/>
+			<!--No rights for definition OverlijdenHistorisch-->
+			<element name="Ouder1" type="smls:Ouder1" minOccurs="0"/>
+			<!--No rights for definition Ouder1Historisch-->
+			<element name="Ouder2" type="smls:Ouder2" minOccurs="0"/>
+			<!--No rights for definition Ouder2Historisch-->
+			<element name="Huwelijk" type="smls:Huwelijk" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="HuwelijkHistorisch" type="smls:HuwelijkHistorisch" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Kind" type="smls:Kind" minOccurs="0" maxOccurs="unbounded"/>
+			<!--No rights for definition KindHistorisch-->
+			<!--No rights for definition Reisdocument-->
+			<element name="Gezagsverhouding" type="smls:Gezagsverhouding" minOccurs="0"/>
+			<!--No rights for definition GezagsverhoudingHistorisch-->
+			<element name="InschrijvingsgegevensBrp" type="smls:InschrijvingsgegevensBrp" minOccurs="0"/>
+			<!--No rights for element AfnemersindicatieBrp 14.40.10-->
+		</sequence>
+	</complexType>
+	<complexType name="ClientSuwiHistorisch">
+		<sequence>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="ANr" type="sml:ANr" minOccurs="0"/>
+			<!--No rights for element AanduidingNaamgebruik 51.61.10-->
+			<!--No rights for element Geslacht 51.04.10-->
+			<!--No rights for element CdGeboortegemeente 51.03.20-->
+			<!--No rights for element Geboorteplaats 51.03.20-->
+			<!--No rights for element Geboorteland 51.03.30-->
+			<!--No rights for definition TitulatuurPersoonHistorisch-->
+			<!--No rights for definition AdministrGegBrpPersoonHistorisch-->
+			<element name="OnderzoekGegPersoon" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<element name="OnjuistGegPersoon" type="smls:OnjuistGeg" minOccurs="0"/>
+			<element name="GeldigheidGegevensPersoon" type="smls:Geldigheid" minOccurs="0"/>
+			<!--No rights for definition OpnameGegevensBrpPersoonHistorisch-->
+		</sequence>
+	</complexType>
+	<complexType name="AangifteAdreshoudingBrp">
+		<sequence>
+			<element name="CdGemeenteVanInschrijving" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="DatVanInschrijvingBijGemeente" type="sml:Datum" minOccurs="0"/>
+			<element name="DatBAdreshoudingBrp" type="sml:Datum" minOccurs="0"/>
+			<!--No rights for element CdAangifteAdreshoudingBrp 08.72.10-->
+		</sequence>
+	</complexType>
+	<complexType name="AangifteAdreshoudingBrpHistorisch">
+		<sequence>
+			<element name="CdGemeenteVanInschrijving" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="DatVanInschrijvingBijGemeente" type="sml:Datum" minOccurs="0"/>
+			<element name="DatBAdreshoudingBrp" type="sml:Datum" minOccurs="0"/>
+			<!--No rights for element CdAangifteAdreshoudingBrp 58.72.10-->
+		</sequence>
+	</complexType>
+	<complexType name="Immigratie">
+		<sequence>
+			<element name="DatVestigingNederland" type="sml:Datum" minOccurs="0"/>
+			<element name="LandVanwaarIngeschreven" type="sml:CdLandGba" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="ImmigratieHistorisch">
+		<sequence>
+			<element name="DatVestigingNederland" type="sml:Datum" minOccurs="0"/>
+			<element name="LandVanwaarIngeschreven" type="sml:CdLandGba" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="InschrijvingsgegevensBrp">
+		<sequence>
+			<element name="DatOpschortingBijhoudingPl" type="sml:Datum" minOccurs="0"/>
+			<element name="CdRedenOpschortingBijhoudingPl" type="smls:CdRedenOpschortingBijhoudingPl" minOccurs="0"/>
+			<!--No rights for element DatEersteInschrijvingBrp 07.68.10-->
+			<element name="CdGemeenteWaarPkZichBevindt" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="VerificatieRni" type="smls:VerificatieRni" minOccurs="0"/>
+			<element name="CdPkVolledigGeconverteerd" type="sml:CdPkVolledigGeconverteerd" minOccurs="0"/>
+			<element name="RniDeelnemer" type="smls:RniDeelnemer" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="RniDeelnemer">
+		<sequence>
+			<element name="CdRniDeelnemer" type="smls:CdRniDeelnemer" minOccurs="0"/>
+			<element name="OmsVerdragRniDeelnemer" type="sml:OmschrijvingAN50" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="VerificatieRni">
+		<sequence>
+			<element name="DatVerificatieRni" type="sml:Datum" minOccurs="0"/>
+			<element name="OmsVerificatieRni" type="sml:OmschrijvingAN50" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="FeitelijkAdresBuitenland">
+		<sequence>
+			<element name="DatBAdresBuitenland" type="sml:Datum" minOccurs="0"/>
+			<element name="LandAdresBuitenland" type="sml:CdLandGba" minOccurs="0"/>
+			<element name="Adresregel1Buitenland" type="sml:OmschrijvingAN100" minOccurs="0"/>
+			<element name="Adresregel2Buitenland" type="sml:OmschrijvingAN100" minOccurs="0"/>
+			<element name="Adresregel3Buitenland" type="sml:OmschrijvingAN100" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="FeitelijkAdresBuitenlandHistorisch">
+		<sequence>
+			<element name="DatBAdresBuitenland" type="sml:Datum" minOccurs="0"/>
+			<element name="LandAdresBuitenland" type="sml:CdLandGba" minOccurs="0"/>
+			<!--No rights for element Adresregel1Buitenland 58.13.30-->
+			<!--No rights for element Adresregel2Buitenland 58.13.40-->
+			<!--No rights for element Adresregel3Buitenland 58.13.50-->
+		</sequence>
+	</complexType>
+	<complexType name="Gezagsverhouding">
+		<sequence>
+			<element name="CdGezagMinderjarige" type="sml:CdGezagMinderjarige" minOccurs="0"/>
+			<element name="IndCuratelestelling" type="sml:StdIndJN" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpGezag-->
+			<element name="OnderzoekGegGezag" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegGezag 11.84.10-->
+			<!--No rights for element GeldigheidGegevensGezag 11.85.10-->
+			<!--No rights for definition OpnameGegevensBrpGezag-->
+		</sequence>
+	</complexType>
+	<!--No rights for definition GezagsverhoudingHistorisch-->
+	<complexType name="Huwelijk">
+		<sequence>
+			<element name="DatHuwelijkssluiting" type="sml:Datum" minOccurs="0"/>
+			<element name="OnderzoekGegHuwelijk" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegHuwelijk 05.84.10-->
+			<element name="Partner" type="smls:Partner" minOccurs="0"/>
+			<!--No rights for element CdSrtVerbintenis 05.15.10-->
+			<element name="CdGemeenteHuwelijkssluiting" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="PlaatsHuwelijkssluiting" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+			<element name="LandHuwelijkssluiting" type="sml:CdLandGba" minOccurs="0"/>
+			<element name="DatOntbindingHuwelijk" type="sml:Datum" minOccurs="0"/>
+			<element name="CdGemeenteOntbindingHuwelijk" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="PlaatsOntbindingHuwelijk" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+			<element name="LandOntbindingHuwelijk" type="sml:CdLandGba" minOccurs="0"/>
+			<element name="CdRedenOntbindingHuwelijk" type="sml:CdRedenOntbindingHuwelijk" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpHuwelijk-->
+			<!--No rights for element GeldigheidGegevensHuwelijk 05.85.10-->
+			<!--No rights for definition OpnameGegevensBrpHuwelijk-->
+		</sequence>
+	</complexType>
+	<complexType name="HuwelijkHistorisch">
+		<sequence>
+			<element name="DatHuwelijkssluiting" type="sml:Datum" minOccurs="0"/>
+			<element name="OnderzoekGegHuwelijk" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<element name="OnjuistGegHuwelijk" type="smls:OnjuistGeg" minOccurs="0"/>
+			<element name="Partner" type="smls:PartnerHistorisch" minOccurs="0"/>
+			<!--No rights for element CdSrtVerbintenis 55.15.10-->
+			<!--No rights for element CdGemeenteHuwelijkssluiting 55.06.20-->
+			<!--No rights for element PlaatsHuwelijkssluiting 55.06.20-->
+			<!--No rights for element LandHuwelijkssluiting 55.06.30-->
+			<!--No rights for element DatOntbindingHuwelijk 55.07.10-->
+			<!--No rights for element CdGemeenteOntbindingHuwelijk 55.07.20-->
+			<!--No rights for element PlaatsOntbindingHuwelijk 55.07.20-->
+			<!--No rights for element LandOntbindingHuwelijk 55.07.30-->
+			<!--No rights for element CdRedenOntbindingHuwelijk 55.07.40-->
+			<!--No rights for definition AdministrGegBrpHuwelijkHistorisch-->
+			<!--No rights for element GeldigheidGegevensHuwelijk 55.85.10-->
+			<!--No rights for definition OpnameGegevensBrpHuwelijkHistorisch-->
+		</sequence>
+	</complexType>
+	<complexType name="Kind">
+		<sequence>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="ANr" type="sml:ANr" minOccurs="0"/>
+			<!--No rights for element CdGeboortegemeente 09.03.20-->
+			<!--No rights for element Geboorteplaats 09.03.20-->
+			<!--No rights for element Geboorteland 09.03.30-->
+			<element name="Titulatuur" type="smls:TitulatuurKind" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpKind-->
+			<element name="OnderzoekGegKind" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegKind 09.84.10-->
+			<element name="GeldigheidGegevensKind" type="smls:Geldigheid" minOccurs="0"/>
+			<!--No rights for definition OpnameGegevensBrpKind-->
+		</sequence>
+	</complexType>
+	<!--No rights for definition KindHistorisch-->
+	<complexType name="Nationaliteit">
+		<sequence>
+			<element name="CdNationaliteit" type="sml:CdNationaliteit" minOccurs="0"/>
+			<element name="OnderzoekGegNationaliteit" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegNationaliteit 04.84.10-->
+			<!--No rights for element CdRedenVerkrijgNedNationaliteit 04.63.10-->
+			<!--No rights for element CdRedenVerliesNedNationaliteit 04.64.10-->
+			<element name="CdBijzonderNederlanderschap" type="sml:CdBijzonderNederlanderschap" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpNationaliteit-->
+			<element name="GeldigheidGegevensNationaliteit" type="smls:Geldigheid" minOccurs="0"/>
+			<!--No rights for definition OpnameGegevensBrpNationaliteit-->
+		</sequence>
+	</complexType>
+	<complexType name="NationaliteitHistorisch">
+		<sequence>
+			<element name="CdNationaliteit" type="sml:CdNationaliteit" minOccurs="0"/>
+			<element name="OnderzoekGegNationaliteit" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<element name="OnjuistGegNationaliteit" type="smls:OnjuistGeg" minOccurs="0"/>
+			<!--No rights for element CdRedenVerkrijgNedNationaliteit 54.63.10-->
+			<!--No rights for element CdRedenVerliesNedNationaliteit 54.64.10-->
+			<element name="CdBijzonderNederlanderschap" type="sml:CdBijzonderNederlanderschap" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpNationaliteitHistorisch-->
+			<element name="GeldigheidGegevensNationaliteit" type="smls:Geldigheid" minOccurs="0"/>
+			<!--No rights for definition OpnameGegevensBrpNationaliteitHistorisch-->
+		</sequence>
+	</complexType>
+	<complexType name="Ouder1">
+		<sequence>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="ANr" type="sml:ANr" minOccurs="0"/>
+			<!--No rights for element Geslacht 02.04.10-->
+			<!--No rights for element CdGeboortegemeente 02.03.20-->
+			<!--No rights for element Geboorteplaats 02.03.20-->
+			<!--No rights for element Geboorteland 02.03.30-->
+			<element name="Titulatuur" type="smls:TitulatuurOuder1" minOccurs="0"/>
+			<element name="DatBFamilierechtelijkeBetrekking" type="sml:Datum" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpOuder1-->
+			<element name="OnderzoekGegOuder1" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegOuder1 02.84.10-->
+			<!--No rights for element GeldigheidGegevensOuder1 02.85.10-->
+			<!--No rights for definition OpnameGegevensBrpOuder1-->
+		</sequence>
+	</complexType>
+	<!--No rights for definition Ouder1Historisch-->
+	<complexType name="Ouder2">
+		<sequence>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="ANr" type="sml:ANr" minOccurs="0"/>
+			<!--No rights for element Geslacht 03.04.10-->
+			<!--No rights for element CdGeboortegemeente 03.03.20-->
+			<!--No rights for element Geboorteplaats 03.03.20-->
+			<!--No rights for element Geboorteland 03.03.30-->
+			<element name="Titulatuur" type="smls:TitulatuurOuder2" minOccurs="0"/>
+			<element name="DatBFamilierechtelijkeBetrekking" type="sml:Datum" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpOuder2-->
+			<element name="OnderzoekGegOuder2" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegOuder2 03.84.10-->
+			<!--No rights for element GeldigheidGegevensOuder2 03.85.10-->
+			<!--No rights for definition OpnameGegevensBrpOuder2-->
+		</sequence>
+	</complexType>
+	<!--No rights for definition Ouder2Historisch-->
+	<complexType name="Overlijden">
+		<sequence>
+			<element name="DatOverlijden" type="sml:Datum" minOccurs="0"/>
+			<element name="OnderzoekGegOverlijden" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegOverlijden 06.84.10-->
+			<element name="CdGemeenteOverlijden" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="PlaatsOverlijden" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+			<element name="LandOverlijden" type="sml:CdLandGba" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpOverlijden-->
+			<!--No rights for element GeldigheidGegevensOverlijden 06.85.10-->
+			<!--No rights for definition OpnameGegevensBrpOverlijden-->
+		</sequence>
+	</complexType>
+	<!--No rights for definition OverlijdenHistorisch-->
+	<complexType name="Partner">
+		<sequence>
+			<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+			<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+			<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="ANr" type="sml:ANr" minOccurs="0"/>
+			<!--No rights for element Geslacht 05.04.10-->
+			<element name="CdGeboortegemeente" type="sml:CdGemeenteGba" minOccurs="0"/>
+			<element name="Geboorteplaats" type="sml:NaamAdresNederlandAN40" minOccurs="0"/>
+			<element name="Geboorteland" type="sml:CdLandGba" minOccurs="0"/>
+			<element name="Titulatuur" type="smls:TitulatuurHuwelijk" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="PartnerHistorisch">
+		<sequence>
+			<!--No rights for element Voornamen 55.02.10-->
+			<!--No rights for element Voorvoegsel 55.02.30-->
+			<!--No rights for element SignificantDeelVanDeAchternaam 55.02.40-->
+			<!--No rights for element Geboortedat 55.03.10-->
+			<element name="Burgerservicenr" type="sml:Burgerservicenr" minOccurs="0"/>
+			<element name="ANr" type="sml:ANr" minOccurs="0"/>
+			<!--No rights for element Geslacht 55.04.10-->
+			<!--No rights for element CdGeboortegemeente 55.03.20-->
+			<!--No rights for element Geboorteplaats 55.03.20-->
+			<!--No rights for element Geboorteland 55.03.30-->
+			<!--No rights for definition TitulatuurHuwelijkHistorisch-->
+		</sequence>
+	</complexType>
+	<!--No rights for definition Reisdocument-->
+	<complexType name="Straatadres">
+		<sequence>
+			<element name="Locatieoms" type="sml:NaamAdresNederlandAN70" minOccurs="0"/>
+			<element name="Postcd" type="sml:Postcd" minOccurs="0"/>
+			<element name="Woonplaatsnaam" type="smls:NaamAdresNederlandAN80" minOccurs="0"/>
+			<element name="Gemeentedeel" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+			<element name="Straatnaam" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+			<element name="NaamOpenbareRuimte" type="smls:NaamAdresNederlandAN80" minOccurs="0"/>
+			<element name="Huisnr" type="sml:NummerAdresNederlandN5" minOccurs="0"/>
+			<element name="Huisletter" type="sml:NummerAdresNederlandAN1" minOccurs="0"/>
+			<element name="Huisnrtoevoeging" type="sml:NummerAdresNederlandAN6" minOccurs="0"/>
+			<element name="AanduidingBijHuisnr" type="sml:NummerAdresNederlandAN2" minOccurs="0"/>
+			<element name="IdentificatiecdVerblijfplaats" type="smls:IdentificatiecdBag" minOccurs="0"/>
+			<element name="IdentificatiecdNraanduiding" type="smls:IdentificatiecdBag" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="StraatadresHistorisch">
+		<sequence>
+			<element name="Locatieoms" type="sml:NaamAdresNederlandAN70" minOccurs="0"/>
+			<element name="Postcd" type="sml:Postcd" minOccurs="0"/>
+			<element name="Woonplaatsnaam" type="smls:NaamAdresNederlandAN80" minOccurs="0"/>
+			<element name="Gemeentedeel" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+			<element name="Straatnaam" type="sml:NaamAdresNederlandAN24" minOccurs="0"/>
+			<element name="NaamOpenbareRuimte" type="smls:NaamAdresNederlandAN80" minOccurs="0"/>
+			<element name="Huisnr" type="sml:NummerAdresNederlandN5" minOccurs="0"/>
+			<element name="Huisletter" type="sml:NummerAdresNederlandAN1" minOccurs="0"/>
+			<element name="Huisnrtoevoeging" type="sml:NummerAdresNederlandAN6" minOccurs="0"/>
+			<element name="AanduidingBijHuisnr" type="sml:NummerAdresNederlandAN2" minOccurs="0"/>
+			<element name="IdentificatiecdVerblijfplaats" type="smls:IdentificatiecdBag" minOccurs="0"/>
+			<element name="IdentificatiecdNraanduiding" type="smls:IdentificatiecdBag" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<complexType name="VerblijfplaatsHistorisch">
+		<sequence>
+			<element name="DomicilieAdres" type="smls:StraatadresHistorisch" minOccurs="0"/>
+			<element name="Correspondentieadres" type="smls:StraatadresHistorisch" minOccurs="0"/>
+			<element name="FeitelijkAdresBuitenland" type="smls:FeitelijkAdresBuitenlandHistorisch" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Immigratie" type="smls:ImmigratieHistorisch" minOccurs="0"/>
+			<element name="AangifteAdreshoudingBrp" type="smls:AangifteAdreshoudingBrpHistorisch" minOccurs="0"/>
+			<!--No rights for definition AdministrGegBrpVerblijfplaatsHistorisch-->
+			<element name="OnderzoekGegVerblijfplaats" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<element name="OnjuistGegVerblijfplaats" type="smls:OnjuistGeg" minOccurs="0"/>
+			<!--No rights for element GeldigheidGegevensVerblijfplaats 58.85.10-->
+			<!--No rights for definition OpnameGegevensBrpVerblijfplaatsHistorisch-->
+		</sequence>
+	</complexType>
+	<complexType name="Verblijfstitel">
+		<sequence>
+			<element name="CdVerblijfstitel" type="sml:CdVerblijfstitel" minOccurs="0"/>
+			<element name="DatBVerblijfstitel" type="sml:Datum" minOccurs="0"/>
+			<element name="DatEVerblijfstitel" type="sml:Datum" minOccurs="0"/>
+			<element name="OnderzoekGegVerblijfstitel" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<!--No rights for element OnjuistGegVerblijfstitel 10.84.10-->
+			<element name="GeldigheidGegevensVerblijfstitel" type="smls:Geldigheid" minOccurs="0"/>
+			<!--No rights for definition OpnameGegevensBrpVerblijfstitel-->
+		</sequence>
+	</complexType>
+	<complexType name="VerblijfstitelHistorisch">
+		<sequence>
+			<element name="CdVerblijfstitel" type="sml:CdVerblijfstitel" minOccurs="0"/>
+			<element name="DatBVerblijfstitel" type="sml:Datum" minOccurs="0"/>
+			<element name="DatEVerblijfstitel" type="sml:Datum" minOccurs="0"/>
+			<element name="OnderzoekGegVerblijfstitel" type="smls:OnderzoekGeg" minOccurs="0"/>
+			<element name="OnjuistGegVerblijfstitel" type="smls:OnjuistGeg" minOccurs="0"/>
+			<element name="GeldigheidGegevensVerblijfstitel" type="smls:Geldigheid" minOccurs="0"/>
+			<!--No rights for definition OpnameGegevensBrpVerblijfstitelHistorisch-->
+		</sequence>
+	</complexType>
+	<complexType name="TitulatuurPersoon">
+		<sequence>
+			<element name="CdAdellijkeTitelPredikaat" type="sml:CdAdellijkeTitelPredikaatNed"/>
+		</sequence>
+	</complexType>
+	<!--No rights for definition TitulatuurPersoonHistorisch-->
+	<complexType name="TitulatuurOuder1">
+		<sequence>
+			<element name="CdAdellijkeTitelPredikaat" type="sml:CdAdellijkeTitelPredikaatNed"/>
+		</sequence>
+	</complexType>
+	<!--No rights for definition TitulatuurOuder1Historisch-->
+	<complexType name="TitulatuurOuder2">
+		<sequence>
+			<element name="CdAdellijkeTitelPredikaat" type="sml:CdAdellijkeTitelPredikaatNed"/>
+		</sequence>
+	</complexType>
+	<!--No rights for definition TitulatuurOuder2Historisch-->
+	<complexType name="TitulatuurHuwelijk">
+		<sequence>
+			<element name="CdAdellijkeTitelPredikaat" type="sml:CdAdellijkeTitelPredikaatNed"/>
+		</sequence>
+	</complexType>
+	<!--No rights for definition TitulatuurHuwelijkHistorisch-->
+	<complexType name="TitulatuurKind">
+		<sequence>
+			<element name="CdAdellijkeTitelPredikaat" type="sml:CdAdellijkeTitelPredikaatNed"/>
+		</sequence>
+	</complexType>
+	<!--No rights for definition TitulatuurKindHistorisch-->
+	<!--Always rights for element OnderzoekGeg-->
+	<complexType name="OnderzoekGeg">
+		<sequence>
+			<element name="AanduidingOnderzoek" type="smls:AanduidingOnderzoek" minOccurs="0"/>
+			<element name="DatBOnderzoek" type="sml:Datum" minOccurs="0"/>
+			<element name="DatEOnderzoek" type="sml:Datum" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!--Always rights for element OnjuistGeg-->
+	<complexType name="OnjuistGeg">
+		<sequence>
+			<element name="CdOnjuistStrijdigMetOpenbareOrde" type="smls:CdOnjuistStrijdigMetOpenbareOrde" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!--No rights for definition OpnameGegevensBrpPersoon-->
+	<!--No rights for definition OpnameGegevensBrpPersoonHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpOuder1-->
+	<!--No rights for definition OpnameGegevensBrpOuder1Historisch-->
+	<!--No rights for definition OpnameGegevensBrpOuder2-->
+	<!--No rights for definition OpnameGegevensBrpOuder2Historisch-->
+	<!--No rights for definition OpnameGegevensBrpNationaliteit-->
+	<!--No rights for definition OpnameGegevensBrpNationaliteitHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpHuwelijk-->
+	<!--No rights for definition OpnameGegevensBrpHuwelijkHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpOverlijden-->
+	<!--No rights for definition OpnameGegevensBrpOverlijdenHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpVerblijfplaats-->
+	<!--No rights for definition OpnameGegevensBrpVerblijfplaatsHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpKind-->
+	<!--No rights for definition OpnameGegevensBrpKindHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpVerblijfstitel-->
+	<!--No rights for definition OpnameGegevensBrpVerblijfstitelHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpGezag-->
+	<!--No rights for definition OpnameGegevensBrpGezagHistorisch-->
+	<!--No rights for definition OpnameGegevensBrpReisdoc-->
+	<!--No rights for definition AdministrGegBrpPersoon-->
+	<!--No rights for definition AdministrGegBrpPersoonHistorisch-->
+	<!--No rights for definition AdministrGegBrpVerblijfplaats-->
+	<!--No rights for definition AdministrGegBrpVerblijfplaatsHistorisch-->
+	<!--No rights for definition AdministrGegBrpKind-->
+	<!--No rights for definition AdministrGegBrpKindHistorisch-->
+	<!--No rights for definition AdministrGegBrpHuwelijk-->
+	<!--No rights for definition AdministrGegBrpHuwelijkHistorisch-->
+	<!--No rights for definition AdministrGegBrpNationaliteit-->
+	<!--No rights for definition AdministrGegBrpNationaliteitHistorisch-->
+	<!--No rights for definition AdministrGegBrpReisdoc-->
+	<!--No rights for definition AdministrGegBrpOuder1-->
+	<!--No rights for definition AdministrGegBrpOuder1Historisch-->
+	<!--No rights for definition AdministrGegBrpOuder2-->
+	<!--No rights for definition AdministrGegBrpOuder2Historisch-->
+	<!--No rights for definition AdministrGegBrpOverlijden-->
+	<!--No rights for definition AdministrGegBrpOverlijdenHistorisch-->
+	<!--No rights for definition AdministrGegBrpGezag-->
+	<!--No rights for definition AdministrGegBrpGezagHistorisch-->
+	<!--No rights for definition AktePersoon-->
+	<!--No rights for definition AktePersoonHistorisch-->
+	<!--No rights for definition AkteOuder1-->
+	<!--No rights for definition AkteOuder1Historisch-->
+	<!--No rights for definition AkteOuder2-->
+	<!--No rights for definition AkteOuder2Historisch-->
+	<!--No rights for definition AkteNationaliteit-->
+	<!--No rights for definition AkteNationaliteitHistorisch-->
+	<!--No rights for definition AkteHuwelijk-->
+	<!--No rights for definition AkteHuwelijkHistorisch-->
+	<!--No rights for definition AkteOverlijden-->
+	<!--No rights for definition AkteOverlijdenHistorisch-->
+	<!--No rights for definition AkteVerblijfplaats-->
+	<!--No rights for definition AkteVerblijfplaatsHistorisch-->
+	<!--No rights for definition AkteKind-->
+	<!--No rights for definition AkteKindHistorisch-->
+	<!--No rights for definition AkteVerblijfstitel-->
+	<!--No rights for definition AkteVerblijfstitelHistorisch-->
+	<!--No rights for definition AkteGezag-->
+	<!--No rights for definition AkteGezagHistorisch-->
+	<!--No rights for definition AkteReisdoc-->
+	<!--No rights for definition AkteReisdocHistorisch-->
+	<!--No rights for definition BrondocumentPersoon-->
+	<!--No rights for definition BrondocumentPersoonHistorisch-->
+	<!--No rights for definition BrondocumentOuder1-->
+	<!--No rights for definition BrondocumentOuder1Historisch-->
+	<!--No rights for definition BrondocumentOuder2-->
+	<!--No rights for definition BrondocumentOuder2Historisch-->
+	<!--No rights for definition BrondocumentNationaliteit-->
+	<!--No rights for definition BrondocumentNationaliteitHistorisch-->
+	<!--No rights for definition BrondocumentHuwelijk-->
+	<!--No rights for definition BrondocumentHuwelijkHistorisch-->
+	<!--No rights for definition BrondocumentOverlijden-->
+	<!--No rights for definition BrondocumentOverlijdenHistorisch-->
+	<!--No rights for definition BrondocumentVerblijfplaats-->
+	<!--No rights for definition BrondocumentVerblijfplaatsHistorisch-->
+	<!--No rights for definition BrondocumentKind-->
+	<!--No rights for definition BrondocumentKindHistorisch-->
+	<!--No rights for definition BrondocumentVerblijfstitel-->
+	<!--No rights for definition BrondocumentVerblijfstitelHistorisch-->
+	<!--No rights for definition BrondocumentGezag-->
+	<!--No rights for definition BrondocumentGezagHistorisch-->
+	<!--No rights for definition BrondocumentReisdoc-->
+	<!--No rights for definition BrondocumentReisdocHistorisch-->
+	<!--No rights for definition DocumentindicatiePersoon-->
+	<!--No rights for definition DocumentindicatiePersoonHistorisch-->
+	<!--No rights for definition DocumentindicatieOuder1-->
+	<!--No rights for definition DocumentindicatieOuder1Historisch-->
+	<!--No rights for definition DocumentindicatieOuder2-->
+	<!--No rights for definition DocumentindicatieOuder2Historisch-->
+	<!--No rights for definition DocumentindicatieNationaliteit-->
+	<!--No rights for definition DocumentindicatieNationaliteitHistorisch-->
+	<!--No rights for definition DocumentindicatieHuwelijk-->
+	<!--No rights for definition DocumentindicatieHuwelijkHistorisch-->
+	<!--No rights for definition DocumentindicatieOverlijden-->
+	<!--No rights for definition DocumentindicatieOverlijdenHistorisch-->
+	<!--No rights for definition DocumentindicatieVerblijfplaats-->
+	<!--No rights for definition DocumentindicatieVerblijfplaatsHistorisch-->
+	<!--No rights for definition DocumentindicatieKind-->
+	<!--No rights for definition DocumentindicatieKindHistorisch-->
+	<!--No rights for definition DocumentindicatieVerblijfstitel-->
+	<!--No rights for definition DocumentindicatieVerblijfstitelHistorisch-->
+	<!--No rights for definition DocumentindicatieGezag-->
+	<!--No rights for definition DocumentindicatieGezagHistorisch-->
+	<!--No rights for definition DocumentindicatieReisdoc-->
+	<!--No rights for definition DocumentindicatieReisdocHistorisch-->
+	<!--Hardcoded complexTypes-->
+	<complexType name="Geldigheid">
+		<sequence>
+			<element name="DatGeldigheidGegevens" type="sml:Datum"/>
+		</sequence>
+	</complexType>
+	<complexType name="Documentindicatie">
+		<sequence>
+			<element name="CdAanvullendDocument" type="sml:CdAanvullendDocument" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	<!--Hardcoded simpleTypes-->
+	<simpleType name="AanduidingOnderzoek">
+		<restriction base="string">
+			<maxLength value="6"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="AfnemersindicatieBrp">
+		<restriction base="string">
+			<maxLength value="6"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdRniDeelnemer">
+		<restriction base="string">
+			<length value="4"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdBrpGegevensGeheim">
+		<restriction base="string">
+			<length value="1"/>
+			<pattern value="\d*"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdAangifteAdreshoudingBrp">
+		<restriction base="string">
+			<length value="1"/>
+			<pattern value="\D*"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdOnjuistStrijdigMetOpenbareOrde">
+		<restriction base="string">
+			<maxLength value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="CdRedenOpschortingBijhoudingPl">
+		<restriction base="string">
+			<length value="1"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="IdentificatiecdBag">
+		<restriction base="string">
+			<length value="16"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="NaamAdresNederlandAN80">
+		<restriction base="string">
+			<maxLength value="80"/>
+		</restriction>
+	</simpleType>
+</schema>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<xs:simpleType name="KleurVoertuig">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="8"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

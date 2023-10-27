@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
@@ -10,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONEncodable, JSONSerializable
 from openforms.utils.date import format_date_value
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
@@ -20,6 +21,12 @@ from .submission import Submission
 
 if TYPE_CHECKING:  # pragma: nocover
     from .submission_step import SubmissionStep
+
+
+class ValueEncoder(DjangoJSONEncoder):
+    def default(self, obj: JSONEncodable | JSONSerializable) -> JSONEncodable:
+        to_json = getattr(obj, "__json__", None)
+        return to_json() if callable(to_json) else super().default(obj)
 
 
 @dataclass
@@ -204,7 +211,6 @@ class SubmissionValueVariableManager(models.Manager):
         submission_step: Optional["SubmissionStep"] = None,
         update_missing_variables: bool = False,
     ) -> None:
-
         submission_value_variables_state = (
             submission.load_submission_value_variables_state()
         )
@@ -273,6 +279,7 @@ class SubmissionValueVariable(models.Model):
         help_text=_("The value of the variable"),
         null=True,
         blank=True,
+        encoder=ValueEncoder,
     )
     source = models.CharField(
         verbose_name=_("source"),

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!--SuwiML Basisschema v0801-b01 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<xs:simpleType name="Burgerservicenr">
+		<xs:restriction base="xs:string">
+			<xs:length value="9"/>
+			<xs:pattern value="\d*"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

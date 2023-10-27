@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300" targetNamespace="http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300" elementFormDefault="unqualified">
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="../Include-sml.xsd"/>
+	<include schemaLocation="../TypedXsd/CdResultaatExamen.xsd"/>
+	<complexType name="ResultaatExamen">
+		<sequence>
+			<element name="CdResultaatExamen" type="smls:CdResultaatExamen"/>
+			<element name="DatResultaatExamen" type="sml:Datum" minOccurs="0"/>
+			<element name="JaarAfgelegdExamen" type="sml:JaartalN4"/>
+		</sequence>
+	</complexType>
+</schema>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2016 rel. 2 (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<!-- SuwiML Basisschema tabellen typed v0801-b01 -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<!-- CdIncidInkomstenvermindering v0801-b01 tabeldefinitie met type-aanduiding -->
+	<simpleType name="CdIncidInkomstenvermindering">
+		<restriction base="string">
+			<length value="1"/>
+			<pattern value="\D*"/>
+		</restriction>
+	</simpleType>
+</schema>

@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/v0200" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/UWVWbDossierPersoonGSD/v0200" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--24/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--24/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Include de definities-->
+	<include schemaLocation="ComplexTypes/Bron.xsd"/>
+	<include schemaLocation="ComplexTypes/Straatadres.xsd"/>
+	<include schemaLocation="ComplexTypes/StraatadresBuitenland.xsd"/>
+	<include schemaLocation="ComplexTypes/StandaardTelefoonnr.xsd"/>
+	<include schemaLocation="ComplexTypes/AtlRelatie.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="UwvWbPersoonsInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="Voornamen" type="sml:NaamPersoonA200" minOccurs="0"/>
+								<element name="Voorvoegsel" type="sml:Voorvoegsels" minOccurs="0"/>
+								<element name="SignificantDeelVanDeAchternaam" type="sml:NaamPersoonA200" minOccurs="0"/>
+								<element name="Geslacht" type="sml:Geslacht" minOccurs="0"/>
+								<element name="Geboortedat" type="sml:Datum" minOccurs="0"/>
+								<element name="Nationaliteit" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="CdNationaliteit" type="sml:CdNationaliteit"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Legitimatiebewijs" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="CdSrtLegitimatiebewijs" type="sml:CdSrtLegitimatiebewijs" minOccurs="0"/>
+											<element name="NrLegitimatiebewijs" type="sml:NummerAN30" minOccurs="0"/>
+											<element name="DatEGeldigLegitimatiebewijs" type="sml:Datum" minOccurs="0"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="Vreemdelingendocument" minOccurs="0">
+									<complexType>
+										<sequence>
+											<element name="CdSrtVreemdelingendocument" type="sml:CdSrtVreemdelingendocument" minOccurs="0"/>
+											<element name="NrVreemdelingendocument" type="sml:NummerAN30" minOccurs="0"/>
+											<element name="DatEGeldigVreemdelingendocument" type="sml:Datum" minOccurs="0"/>
+											<element name="IndArbeidToegestaan" type="sml:StdIndJN" minOccurs="0"/>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="TelefoonnrClient" type="smls:StandaardTelefoonnr" minOccurs="0" maxOccurs="unbounded"/>
+								<element name="FeitelijkAdres" type="smls:Straatadres" minOccurs="0"/>
+								<element name="Correspondentieadres" type="smls:Straatadres" minOccurs="0"/>
+								<element name="FeitelijkAdresBuitenland" type="smls:StraatadresBuitenland" minOccurs="0"/>
+								<element name="CorrespondentieadresBuitenland" type="smls:StraatadresBuitenland" minOccurs="0"/>
+								<element name="Bron" type="smls:Bron"/>
+								<element name="AtlRelatie" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<complexContent>
+											<extension base="smls:AtlRelatie">
+												<sequence>
+													<element name="Arbeidsmarktkwalificaties" minOccurs="0">
+														<complexType>
+															<sequence>
+																<choice minOccurs="0" maxOccurs="unbounded">
+																	<element name="OpleidingsnaamOngecodeerd">
+																		<complexType>
+																			<sequence>
+																				<element name="DatBVolgenOpleiding" type="sml:Datum" minOccurs="0"/>
+																				<element name="DatEVolgenOpleiding" type="sml:Datum" minOccurs="0"/>
+																				<element name="CdStatusOpleiding" type="sml:CdStatusOpleiding" minOccurs="0"/>
+																				<element name="IndDiploma" type="sml:StdInd" minOccurs="0"/>
+																				<element name="DatDiploma" type="sml:Datum" minOccurs="0"/>
+																				<element name="CdNiveauOpleiding" type="sml:CdOpleidingsniveauOpleiding" minOccurs="0"/>
+																				<element name="AantJarenSuccesvolAfgerond" type="sml:AantalN2" minOccurs="0"/>
+																				<element name="AantUrenOpleiding" type="sml:Tijdsduur" minOccurs="0"/>
+																				<element name="CdTijdsbeslagOpleiding" type="sml:CdTijdsbeslagOpleiding" minOccurs="0"/>
+																				<element name="ToelOpleiding" type="sml:ToelichtingAN180" minOccurs="0"/>
+																				<element name="NaamOpleidingOngecodeerd" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																	<element name="OpleidingsnaamGecodeerd">
+																		<complexType>
+																			<sequence>
+																				<element name="DatBVolgenOpleiding" type="sml:Datum" minOccurs="0"/>
+																				<element name="DatEVolgenOpleiding" type="sml:Datum" minOccurs="0"/>
+																				<element name="CdStatusOpleiding" type="sml:CdStatusOpleiding" minOccurs="0"/>
+																				<element name="IndDiploma" type="sml:StdInd" minOccurs="0"/>
+																				<element name="DatDiploma" type="sml:Datum" minOccurs="0"/>
+																				<element name="CdNiveauOpleiding" type="sml:CdOpleidingsniveauOpleiding" minOccurs="0"/>
+																				<element name="AantJarenSuccesvolAfgerond" type="sml:AantalN2" minOccurs="0"/>
+																				<element name="AantUrenOpleiding" type="sml:Tijdsduur" minOccurs="0"/>
+																				<element name="CdTijdsbeslagOpleiding" type="sml:CdTijdsbeslagOpleiding" minOccurs="0"/>
+																				<element name="ToelOpleiding" type="sml:ToelichtingAN180" minOccurs="0"/>
+																				<element name="CdOpleidingsnaam" type="sml:CdOpleidingsnaam" minOccurs="0"/>
+																				<element name="OmsOpleidingsnaam" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																</choice>
+																<element name="Werkervaring" minOccurs="0" maxOccurs="unbounded">
+																	<complexType>
+																		<sequence>
+																			<element name="AantJarenWerkzaamInBeroep" type="sml:AantalN2" minOccurs="0"/>
+																			<choice>
+																				<element name="BeroepsnaamOngecodeerd">
+																					<complexType>
+																						<sequence>
+																							<element name="NaamBeroepOngecodeerd" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																						</sequence>
+																					</complexType>
+																				</element>
+																				<element name="BeroepsnaamGecodeerd">
+																					<complexType>
+																						<sequence>
+																							<element name="CdBeroepsnaam" type="sml:CdBeroepsnamen" minOccurs="0"/>
+																							<element name="OmsBeroepsnaam" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																						</sequence>
+																					</complexType>
+																				</element>
+																			</choice>
+																		</sequence>
+																	</complexType>
+																</element>
+																<element name="Rijbewijs" minOccurs="0" maxOccurs="unbounded">
+																	<complexType>
+																		<sequence>
+																			<element name="CdSrtRijbewijs" type="sml:CdSrtRijbewijs" minOccurs="0"/>
+																		</sequence>
+																	</complexType>
+																</element>
+																<element name="Gedragscompetentie" minOccurs="0" maxOccurs="unbounded">
+																	<complexType>
+																		<sequence>
+																			<element name="CdGedragscompetentie" type="sml:CdGedragscompetentie" minOccurs="0"/>
+																			<element name="OmsGedragscompetentie" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																			<element name="DatEVastgestldGedragscompetentie" type="sml:Datum" minOccurs="0"/>
+																		</sequence>
+																	</complexType>
+																</element>
+															</sequence>
+														</complexType>
+													</element>
+													<sequence>
+														<element name="InschrijvingsgegevensUwvWb" type="smls:InschrijvingsgegevensUwvWb" minOccurs="0" maxOccurs="unbounded"/>
+														<element name="Gebouwontzegging" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="DatBGebouwontzegging" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEGebouwontzegging" type="sml:Datum" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="Bemiddelingsberoep" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<choice>
+																	<element name="BeroepsnaamOngecodeerd">
+																		<complexType>
+																			<sequence>
+																				<element name="NaamBeroepOngecodeerd" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																	<element name="BeroepsnaamGecodeerd">
+																		<complexType>
+																			<sequence>
+																				<element name="CdBeroepsnaam" type="sml:CdBeroepsnamen" minOccurs="0"/>
+																				<element name="OmsBeroepsnaam" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																</choice>
+															</complexType>
+														</element>
+														<element name="BeschikbaarheidClientVoorArbeid" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="DatBBeschikbaarVoorArbeid" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEBeschikbaarVoorArbeid" type="sml:Datum" minOccurs="0"/>
+																	<element name="AantUrenWeekBeschikbVoorArbeid" type="sml:Tijdsduur" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="Mobiliteit" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="IndBereidheidTeVerhuizen" type="sml:StdIndOnb" minOccurs="0"/>
+																	<element name="Reistijd" type="sml:TijdN3" minOccurs="0"/>
+																	<element name="CdVervoermiddel" type="sml:CdVervoermiddel" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="Flexibiliteit" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="IndIngeschrevenBijUitzendbureaus" type="sml:StdIndOnb" minOccurs="0"/>
+																	<element name="IndBereidZoekenBuitenBeroepswens" type="sml:StdIndOnb" minOccurs="0"/>
+																	<element name="IndBereidBeroepOnderEigenNiveau" type="sml:StdIndOnb" minOccurs="0"/>
+																	<element name="IndBereidZwaarVuilWerk" type="sml:StdIndOnb" minOccurs="0"/>
+																	<element name="IndBereidOnregelmatigWerk" type="sml:StdIndOnb" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="VerwijzingNaarVacature" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="DatVerwijzingNaarVacature" type="sml:Datum" minOccurs="0"/>
+																	<element name="IndPlaatsing" type="sml:StdIndOnb" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="DienstverleningUwvWb" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="ReferentienrDvlUwvWb" type="sml:ReferentienrDvlUwvWb"/>
+																	<element name="DatBDvlUwvWb" type="sml:Datum" minOccurs="0"/>
+																	<element name="DatEDvlUwvWb" type="sml:Datum" minOccurs="0"/>
+																	<element name="CdRedenEDvlUwvWb" type="sml:CdRedenEDvlUwvWb" minOccurs="0"/>
+																	<element name="ContactpersoonAfd" minOccurs="0">
+																		<complexType>
+																			<sequence>
+																				<element name="NaamContactpersoonAfd" type="sml:NaamAN35" minOccurs="0"/>
+																				<element name="VestigingSuwi">
+																					<complexType>
+																						<sequence>
+																							<element name="CdVestigingSuwi" type="sml:CdVestigingSuwi" minOccurs="0"/>
+																							<element name="PartijSuwi">
+																								<complexType>
+																									<sequence>
+																										<element name="CdPartijSuwi" type="sml:CdPartijSuwi" minOccurs="0"/>
+																										<element name="KolomSuwi">
+																											<complexType>
+																												<sequence>
+																													<element name="CdKolomSuwi" type="sml:CdKolomSuwi" minOccurs="0"/>
+																												</sequence>
+																											</complexType>
+																										</element>
+																									</sequence>
+																								</complexType>
+																							</element>
+																						</sequence>
+																					</complexType>
+																				</element>
+																			</sequence>
+																		</complexType>
+																	</element>
+																	<element name="WerkinstrumentUwvWb" minOccurs="0" maxOccurs="unbounded">
+																		<complexType>
+																			<sequence>
+																				<element name="OmsRedenInzetWerkinstrumentUwvWb" type="sml:OmschrijvingAN1500" minOccurs="0"/>
+																				<element name="OmsWerkinstrumentUwvWb" type="sml:OmschrijvingAN200" minOccurs="0"/>
+																				<element name="DatBWerkinstrumentUwvWb" type="sml:Datum" minOccurs="0"/>
+																				<element name="DatEWerkinstrumentUwvWb" type="sml:Datum" minOccurs="0"/>
+																				<element name="CdRedenEWerkinstrumentUwvWb" type="sml:CdRedenEWerkinstrumentUwvWb" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																	<element name="VisieDienstverleningUwvWb" minOccurs="0" maxOccurs="unbounded">
+																		<complexType>
+																			<sequence>
+																				<element name="OmsVoorgeschiedenis" type="sml:OmschrijvingAN1500" minOccurs="0"/>
+																				<element name="OmsVisieKlant" type="sml:OmschrijvingAN1000" minOccurs="0"/>
+																				<element name="OmsVisieUwvWb" type="sml:OmschrijvingAN1500" minOccurs="0"/>
+																				<element name="OmsMotiveringAanpakDvlUwvWb" type="sml:OmschrijvingAN1000" minOccurs="0"/>
+																				<element name="OmsInformatieVoorRib" type="sml:OmschrijvingAN1000" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																	<element name="OvereenkomstDienstverleningUwvWb" minOccurs="0" maxOccurs="unbounded">
+																		<complexType>
+																			<sequence>
+																				<element name="OmsRedenOvereenkomstDvlUwvWb" type="sml:OmschrijvingAN160" minOccurs="0"/>
+																				<element name="DatOvereenkomstDvlUwvWb" type="sml:Datum" minOccurs="0"/>
+																				<element name="OmsOvereenkomstDvlUwvWb" type="sml:OmschrijvingAN1000" minOccurs="0"/>
+																				<element name="ToelOvereenkomstDvlUwvWb" type="sml:ToelichtingAN180" minOccurs="0"/>
+																				<element name="CdStatusOvereenkomstDvlUwvWb" type="sml:CdStatusOvereenkomstDvlUwvWb" minOccurs="0"/>
+																				<element name="CdConclOvereenkomstDvlUwvWb" type="sml:CdConclOvereenkomstDvlUwvWb" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																	<element name="KnelpuntKlantsituatie" minOccurs="0" maxOccurs="unbounded">
+																		<complexType>
+																			<sequence>
+																				<element name="CdTypeKnelpuntKlant" type="sml:CdTypeKnelpuntKlant" minOccurs="0"/>
+																				<element name="DatBKnelpuntKlant" type="sml:Datum" minOccurs="0"/>
+																				<element name="DatEKnelpuntKlant" type="sml:Datum" minOccurs="0"/>
+																				<element name="OmsKnelpuntKlant" type="sml:OmschrijvingAN1500" minOccurs="0"/>
+																				<element name="CdRedenEKnelpuntKlant" type="sml:CdRedenEKnelpuntKlant" minOccurs="0"/>
+																				<element name="OmsRedenAfmeldenKnelpuntKlant" type="sml:OmschrijvingAN160" minOccurs="0"/>
+																				<element name="OplossingKnelpuntKlantsituatie" minOccurs="0" maxOccurs="unbounded">
+																					<complexType>
+																						<sequence>
+																							<element name="CdActorOplossingKnelpuntKlant" type="sml:CdActorOplossingKnelpuntKlant" minOccurs="0"/>
+																							<element name="CdStatusOplossingKnelpuntKlant" type="sml:CdStatusOplossingKnelpuntKlant" minOccurs="0"/>
+																							<element name="DatOplossingKnelpuntKlant" type="sml:Datum" minOccurs="0"/>
+																							<element name="OmsOplossingKnelpuntKlant" type="sml:OmschrijvingAN160" minOccurs="0"/>
+																							<element name="CdRedenEOplossingKnelpuntKlant" type="sml:CdRedenEOplossingKnelpuntKlant" minOccurs="0"/>
+																							<element name="ToelOplossingKnelpuntKlant" type="sml:OmschrijvingAN1500" minOccurs="0"/>
+																						</sequence>
+																					</complexType>
+																				</element>
+																			</sequence>
+																		</complexType>
+																	</element>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="BeschikbaarClientVoorBemiddeling" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="IndDirectBemiddelbaar" type="sml:StdIndOnb" minOccurs="0"/>
+																	<element name="DatEPeriodeNietBemiddelbaar" type="sml:Datum" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="AfspraakKlantMetUwvWb" minOccurs="0" maxOccurs="unbounded">
+															<complexType>
+																<sequence>
+																	<element name="CdTypeAfspraakKlantUwvWb" type="sml:CdTypeAfspraakKlantUwvWb" minOccurs="0"/>
+																	<element name="OmsOnderwerpAfspraakKlantUwvWb" type="sml:OmschrijvingAN200" minOccurs="0"/>
+																	<element name="DatTijdBAfspraakKlantUwvWb" type="sml:DatumTijdstip" minOccurs="0"/>
+																	<element name="DatTijdEAfspraakKlantUwvWb" type="sml:DatumTijdstip" minOccurs="0"/>
+																	<element name="ContactpersoonAfd" minOccurs="0">
+																		<complexType>
+																			<sequence>
+																				<element name="NaamContactpersoonAfd" type="sml:NaamAN35" minOccurs="0"/>
+																			</sequence>
+																		</complexType>
+																	</element>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="VrijstellingArbeidsplicht" minOccurs="0">
+															<complexType>
+																<sequence>
+																	<element name="DatBVrijstellingArbeidsplicht" type="sml:Datum" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+													</sequence>
+												</sequence>
+											</extension>
+										</complexContent>
+									</complexType>
+								</element>
+								<element name="Arbeidsverhouding" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="DatBArbeidsverhouding" type="sml:Datum" minOccurs="0"/>
+											<element name="DatEArbeidsverhouding" type="sml:Datum" minOccurs="0"/>
+											<element name="Arbeidsperiode" maxOccurs="unbounded">
+												<complexType>
+													<choice>
+														<element name="BeroepsnaamOngecodeerd">
+															<complexType>
+																<sequence>
+																	<element name="NaamBeroepOngecodeerd" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+														<element name="BeroepsnaamGecodeerd">
+															<complexType>
+																<sequence>
+																	<element name="CdBeroepsnaam" type="sml:CdBeroepsnamen" minOccurs="0"/>
+																	<element name="OmsBeroepsnaam" type="sml:OmschrijvingAN120" minOccurs="0"/>
+																</sequence>
+															</complexType>
+														</element>
+													</choice>
+												</complexType>
+											</element>
+											<element name="Werkgever">
+												<complexType>
+													<sequence>
+														<element name="HandelsnaamOrganisatie" type="sml:NaamAN70" minOccurs="0"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+	<complexType name="InschrijvingsgegevensUwvWb">
+		<sequence>
+			<element name="DatInschrijvingUwvWb" type="sml:Datum" minOccurs="0"/>
+			<element name="CdInschrijfredenUwvWb" type="sml:CdInschrijfredenUwvWb" minOccurs="0"/>
+			<element name="DatEInschrijvingUwvWb" type="sml:Datum" minOccurs="0"/>
+			<element name="DatEGeldigheidInschrijvingUwvWb" type="sml:Datum" minOccurs="0"/>
+			<element name="CdRedenEindeInschrijvingUwvWb" type="sml:CdRedenEindeInschrijvingUwvWb" minOccurs="0"/>
+		</sequence>
+	</complexType>
+</schema>

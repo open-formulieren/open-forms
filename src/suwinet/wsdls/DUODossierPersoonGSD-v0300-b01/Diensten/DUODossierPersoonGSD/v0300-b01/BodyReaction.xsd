@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2019 rel. 3 (x64) (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sml="http://bkwi.nl/SuwiML/Basisschema/v0801" xmlns:smls="http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300" xmlns:fwi="http://bkwi.nl/SuwiML/FWI/v0205" targetNamespace="http://bkwi.nl/SuwiML/Diensten/DUODossierPersoonGSD/v0300" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<!--27/06/2013 De wijzigingen m.b.t. het vervangen van code-elementen door omschrijving-elementen zijn teruggedraaid. DUO kan op dit moment geen omschrijvingen leveren.-->
+	<!--14/06/2016 Het element "IndStartkwalificatieDuo" is toegevoegd.-->
+	<!--14/06/2016 De nieuwe versie van FWI is toegepast.-->
+	<!--17/07/2019 Specificatie wordt geconformeerd aan SuwiML Transactiestandaard versie 4.0-->
+	<!--17/07/2019 Bron binnen FWI maakt geen gebruik meer van KPV; daarom worden de Codelijsten voor KPV, die onderdeel zijn van de specs, verwijderd. Een nieuwe versie van FWI-v0205 wordt toegepast.-->
+	<!--Importeer het SuwiML basisschema.-->
+	<import namespace="http://bkwi.nl/SuwiML/Basisschema/v0801" schemaLocation="Include-sml.xsd"/>
+	<!--Importeer de FWI.-->
+	<import namespace="http://bkwi.nl/SuwiML/FWI/v0205" schemaLocation="../../../FWI/v0205/FWI.xsd"/>
+	<!--Include de definities-->
+	<include schemaLocation="ComplexTypes/Beroepspraktijkovereenkomst.xsd"/>
+	<include schemaLocation="ComplexTypes/InhoudOpleidingDuo.xsd"/>
+	<include schemaLocation="ComplexTypes/InhoudVak.xsd"/>
+	<include schemaLocation="ComplexTypes/Brin.xsd"/>
+	<include schemaLocation="ComplexTypes/ResultaatExamen.xsd"/>
+	<include schemaLocation="TypedXsd/CdInschrijvingsvorm.xsd"/>
+	<include schemaLocation="TypedXsd/CdOnderwijsvorm.xsd"/>
+	<include schemaLocation="TypedXsd/CdLeerwegMbo.xsd"/>
+	<include schemaLocation="TypedXsd/CdFaseOpleidingDuo.xsd"/>
+	<include schemaLocation="TypedXsd/CdSrtWaardedocument.xsd"/>
+	<include schemaLocation="SimpleTypes/AanduidingLeerjaar.xsd"/>
+	<!--Definities voor de body structuur.-->
+	<element name="DUOPersoonsInfoResponse">
+		<complexType>
+			<choice>
+				<sequence>
+					<element name="ClientSuwi">
+						<complexType>
+							<sequence>
+								<element name="Burgerservicenr" type="sml:Burgerservicenr"/>
+								<element name="IndStartkwalificatieDuo" type="sml:StdIndJN" minOccurs="0"/>
+								<element name="Onderwijsovereenkomst" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="Brin" type="smls:Brin" maxOccurs="unbounded"/>
+											<element name="DatInschrijvingOpleiding" type="sml:Datum"/>
+											<element name="DatUitschrijvingOpleiding" type="sml:Datum" minOccurs="0"/>
+											<element name="DeelnameOpleidingGeregistrDuo" minOccurs="0" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="DatBDeelnameOpleiding" type="sml:Datum"/>
+														<element name="DatEDeelnameOpleiding" type="sml:Datum" minOccurs="0"/>
+														<element name="AanduidingLeerjaar" type="smls:AanduidingLeerjaar" minOccurs="0"/>
+														<element name="CdInschrijvingsvorm" type="smls:CdInschrijvingsvorm" minOccurs="0"/>
+														<element name="CdOnderwijsvorm" type="smls:CdOnderwijsvorm" minOccurs="0"/>
+														<element name="CdLeerwegMbo" type="smls:CdLeerwegMbo" minOccurs="0"/>
+														<element name="InhoudDeelnameOpleidingDuo" type="smls:InhoudOpleidingDuo"/>
+														<element name="InhoudVak" type="smls:InhoudVak" minOccurs="0" maxOccurs="unbounded"/>
+														<element name="Beroepspraktijkovereenkomst" type="smls:Beroepspraktijkovereenkomst" minOccurs="0" maxOccurs="unbounded"/>
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+								<element name="ResultaatOpleidingGeregistrDuo" minOccurs="0" maxOccurs="unbounded">
+									<complexType>
+										<sequence>
+											<element name="Brin" type="smls:Brin" minOccurs="0" maxOccurs="unbounded"/>
+											<element name="CdFaseOpleidingDuo" type="smls:CdFaseOpleidingDuo" minOccurs="0"/>
+											<element name="CdSrtWaardedocument" type="smls:CdSrtWaardedocument" minOccurs="0"/>
+											<element name="InhoudResultaatOpleidingDuo" type="smls:InhoudOpleidingDuo"/>
+											<element name="ResultaatExamen" type="smls:ResultaatExamen"/>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+					<element ref="fwi:FWI" minOccurs="0"/>
+				</sequence>
+				<element ref="fwi:FWI"/>
+				<element ref="fwi:NietsGevonden"/>
+			</choice>
+		</complexType>
+	</element>
+</schema>

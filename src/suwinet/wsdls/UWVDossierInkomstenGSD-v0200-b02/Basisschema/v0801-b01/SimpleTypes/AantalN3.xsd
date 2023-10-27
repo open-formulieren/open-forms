@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2016 rel. 2 (http://www.altova.com) by Shinta Hadiutomo (BKWI) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bkwi.nl/SuwiML/Basisschema/v0801">
+	<xs:simpleType name="AantalN3">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="999"/>
+			<xs:totalDigits value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

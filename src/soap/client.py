@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from ape_pie.client import APIClient as SessionBase, is_base_url
 from zeep.client import Client
 from zeep.transports import Transport
@@ -19,14 +21,22 @@ def build_client(
     and configured on the session, which is then used as transport for the zeep client.
 
     Any additional kwargs are passed through to the :class:`zeep.Client` instantiation.
-
-    .. todo:: Incorporate `WS-Security <https://docs.python-zeep.org/en/master/wsse.html>`_
-       concepts (see Chris' PR for Suwinet).
     """
     session_factory = SessionFactory(service)
     session = SOAPSession.configure_from(session_factory)
-    transport = transport_factory(session=session)
-    client = client_factory(service.url, transport=transport, **kwargs)
+    transport = transport_factory(
+        session=session,
+        timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
+        # operation_timeout gets passed as a parameter on all requests, overriding any
+        # monkeypatched requests.Session defaults
+        operation_timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
+    )
+    kwargs.setdefault("wsdl", service.url)
+    client = client_factory(
+        transport=transport,
+        wsse=service.get_wsse(),
+        **kwargs,
+    )
     return client
 
 
