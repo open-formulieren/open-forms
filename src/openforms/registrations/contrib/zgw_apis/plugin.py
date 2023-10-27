@@ -7,7 +7,6 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -30,23 +29,9 @@ from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig, ZgwConfig
-from .validators import RoltypeOmschrijvingValidator
+from .validators import RoltypeOmschrijvingValidator, ValidateDefaultZgwApiGroup
 
 logger = logging.getLogger(__name__)
-
-
-def get_default_zgw_api_group() -> ZGWApiGroupConfig:
-    config = ZgwConfig.get_solo()
-    assert isinstance(config, ZgwConfig)
-    if config.default_zgw_api_group is None:
-        raise ValidationError(
-            {
-                "zgw_api_group": _(
-                    "No ZGW API set was configured on the form and no default was specified globally."
-                )
-            }
-        )
-    return config.default_zgw_api_group
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -55,7 +40,6 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_("Which ZGW API set to use."),  # type: ignore
         label=_("ZGW API set"),  # type: ignore
         required=False,
-        default=get_default_zgw_api_group,
     )
     zaaktype = serializers.URLField(
         required=False, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
@@ -86,6 +70,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
     class Meta:
         validators = [
+            ValidateDefaultZgwApiGroup(),  # This one must come first
             RoltypeOmschrijvingValidator(),
         ]
 
