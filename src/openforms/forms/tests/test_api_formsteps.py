@@ -1095,25 +1095,19 @@ class FormStepsAPITranslationTests(APITestCase):
 
 
 class FormStepsAPIApplicabilityTests(APITestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.user = UserFactory.create()
-        self.form = FormFactory.create()
-        self.form_definition = FormDefinitionFactory.create()
-        self.client.force_authenticate(user=self.user)
-
     def test_create_form_step_not_applicable_as_first_unsucessful(self):
-        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
-        self.user.is_staff = True
-        self.user.save()
-        url = reverse(
-            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.form.uuid}
-        )
+        user = UserFactory.create()
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create()
+        self.client.force_authenticate(user=user)
+        user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        user.is_staff = True
+        user.save()
+        url = reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid})
 
         form_detail_url = reverse(
             "api:formdefinition-detail",
-            kwargs={"uuid": self.form_definition.uuid},
+            kwargs={"uuid": form_definition.uuid},
         )
         data = {
             "formDefinition": f"http://testserver{form_detail_url}",
@@ -1131,3 +1125,12 @@ class FormStepsAPIApplicabilityTests(APITestCase):
                 "reason": "First form step must be applicable.",
             },
         )
+
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "isApplicable": True,
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
