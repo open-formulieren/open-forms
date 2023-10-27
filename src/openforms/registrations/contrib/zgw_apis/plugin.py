@@ -35,12 +35,27 @@ from .validators import RoltypeOmschrijvingValidator
 logger = logging.getLogger(__name__)
 
 
+def get_default_zgw_api_group() -> ZGWApiGroupConfig:
+    config = ZgwConfig.get_solo()
+    assert isinstance(config, ZgwConfig)
+    if config.default_zgw_api_group is None:
+        raise ValidationError(
+            {
+                "zgw_api_group": _(
+                    "No ZGW API set was configured on the form and no default was specified globally."
+                )
+            }
+        )
+    return config.default_zgw_api_group
+
+
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.all(),
         help_text=_("Which ZGW API set to use."),  # type: ignore
         label=_("ZGW API set"),  # type: ignore
         required=False,
+        default=get_default_zgw_api_group,
     )
     zaaktype = serializers.URLField(
         required=False, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
@@ -73,21 +88,6 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         validators = [
             RoltypeOmschrijvingValidator(),
         ]
-
-    def validate(self, attrs):
-        if attrs.get("zgw_api_group") is None:
-            config = ZgwConfig.get_solo()
-            assert isinstance(config, ZgwConfig)
-            if config.default_zgw_api_group is None:
-                raise ValidationError(
-                    {
-                        "zgw_api_group": _(
-                            "No ZGW API set was configured on the form and no default was specified globally."
-                        )
-                    }
-                )
-
-        return attrs
 
 
 def _point_coordinate(value):
