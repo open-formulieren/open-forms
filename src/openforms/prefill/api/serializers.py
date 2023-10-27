@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Callable
 
 from django.utils.translation import gettext_lazy as _
 
@@ -10,8 +9,6 @@ from rest_framework import serializers
 
 from openforms.api.utils import underscore_to_camel
 from openforms.plugins.api.serializers import PluginBaseSerializer
-
-from ..base import BasePlugin
 
 
 class PrefillPluginSerializer(PluginBaseSerializer):
@@ -24,10 +21,7 @@ class PrefillPluginSerializer(PluginBaseSerializer):
     )
 
 
-PrefillPluginPredicate = Callable[[BasePlugin], bool]
-
-
-class PrefillPluginPredicateSerializer(serializers.Serializer[PrefillPluginPredicate]):
+class PrefillPluginQueryParameterSerializer(serializers.Serializer):
     component_type = serializers.CharField(
         required=False,
         label=_("Form.io component type"),
@@ -36,14 +30,6 @@ class PrefillPluginPredicateSerializer(serializers.Serializer[PrefillPluginPredi
 
     def to_internal_value(self, data):
         return super().to_internal_value(underscoreize(data))
-
-    def as_predicate(self) -> PrefillPluginPredicate:
-        match self.validated_data:
-            case {"component_type": component_type} if component_type:
-                return lambda plugin: component_type in plugin.for_components
-            case _:
-                # all plugins
-                return lambda _: True
 
     @classmethod
     def as_openapi_params(cls) -> list[OpenApiParameter]:

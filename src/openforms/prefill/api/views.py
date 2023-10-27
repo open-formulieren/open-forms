@@ -11,7 +11,7 @@ from ..registry import register
 from .serializers import (
     ChoiceWrapper,
     PrefillAttributeSerializer,
-    PrefillPluginPredicateSerializer,
+    PrefillPluginQueryParameterSerializer,
     PrefillPluginSerializer,
 )
 
@@ -19,7 +19,7 @@ from .serializers import (
 @extend_schema_view(
     get=extend_schema(
         summary=_("List available prefill plugins"),
-        parameters=[*PrefillPluginPredicateSerializer.as_openapi_params()],
+        parameters=[*PrefillPluginQueryParameterSerializer.as_openapi_params()],
     ),
 )
 class PluginListView(ListMixin, APIView):
@@ -32,12 +32,17 @@ class PluginListView(ListMixin, APIView):
     serializer_class = PrefillPluginSerializer
 
     def get_objects(self):
-        predicate_serializer = PrefillPluginPredicateSerializer(
+        query_param_serializer = PrefillPluginQueryParameterSerializer(
             data=self.request.query_params
         )
-        predicate_serializer.is_valid()
-        predicate = predicate_serializer.as_predicate()
-        return filter(predicate, register.iter_enabled_plugins())
+        if not query_param_serializer.is_valid(raise_exception=False):
+            return []
+
+        plugins = register.iter_enabled_plugins()
+        for_component = query_param_serializer.validated_data.get("component_type")
+        if not for_component:
+            return plugins
+        return [plugin for plugin in plugins if for_component in plugin.for_components]
 
 
 @extend_schema_view(
