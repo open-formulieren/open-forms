@@ -55,6 +55,11 @@ class NpFamilyMembers extends SelectBoxes {
       key: 'basic',
       label: 'Basic',
       components: [
+        {
+          type: 'htmlelement',
+          tag: 'div',
+          content: 'Note that any family member without a BSN will not be displayed.',
+        },
         LABEL_REQUIRED,
         KEY,
         DESCRIPTION,
