@@ -86,5 +86,3 @@ class SubmissionStepsStateTests(TestCase):
         self.assertTrue(submission_step.is_applicable)
         submission_step.is_applicable = False
         self.assertFalse(submission_step.is_applicable)
-        with self.assertRaises(ValueError):
-            submission_step.is_applicable = None

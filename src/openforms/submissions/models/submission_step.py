@@ -202,8 +202,6 @@ class SubmissionStep(models.Model):
 
     @is_applicable.setter
     def is_applicable(self, value: bool) -> None:
-        if not isinstance(value, bool):
-            raise ValueError(f"'is_applicable' expects a boolean value, got {value}")
         self._is_applicable = value
 
     def reset(self):
