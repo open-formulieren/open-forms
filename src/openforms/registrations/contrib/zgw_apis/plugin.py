@@ -30,7 +30,6 @@ from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig, ZgwConfig
-from .validators import RoltypeOmschrijvingValidator
 
 logger = logging.getLogger(__name__)
 
@@ -69,12 +68,8 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
     )
 
-    class Meta:
-        validators = [
-            RoltypeOmschrijvingValidator(),
-        ]
-
-    def validate(self, attrs):
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        # First checking that a ZGWApiGroupConfig is available:
         if attrs.get("zgw_api_group") is None:
             config = ZgwConfig.get_solo()
             assert isinstance(config, ZgwConfig)
@@ -86,6 +81,26 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                         )
                     }
                 )
+
+        if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
+            return attrs
+
+        # We know it exists thanks to the previous check
+        group_config = ZGWRegistration.get_zgw_config(attrs)
+
+        with get_catalogi_client(group_config) as client:
+            roltypen = client.list_roltypen(
+                zaaktype=attrs["zaaktype"],
+                matcher=omschrijving_matcher(attrs["medewerker_roltype"]),
+            )
+
+        if not roltypen:
+            raise serializers.ValidationError(
+                detail=_(
+                    "Could not find a roltype with this description related to the zaaktype"
+                ),
+                code="invalid",
+            )
 
         return attrs
 
