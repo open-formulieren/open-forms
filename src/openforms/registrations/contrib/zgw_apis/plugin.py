@@ -83,7 +83,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 )
 
         if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
-            return
+            return attrs
 
         # We know it exists thanks to the previous check
         group_config = ZGWRegistration.get_zgw_config(attrs)
