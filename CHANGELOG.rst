@@ -2,6 +2,12 @@
 Changelog
 =========
 
+2.2.5 (2023-10-30)
+==================
+
+* [#3279] Added robustness to the admin that retrieves data from external APIs.
+* Bumped dependencies to their latest security fixes.
+
 2.2.4 (2023-09-29)
 ==================
 
