@@ -190,7 +190,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.21
+django==3.2.22
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1126,7 +1126,7 @@ uritemplate==3.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
-urllib3==1.26.15
+urllib3==1.26.18
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
