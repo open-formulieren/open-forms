@@ -7,6 +7,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -29,7 +30,6 @@ from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig, ZgwConfig
-from .validators import RoltypeOmschrijvingValidator, ValidateDefaultZgwApiGroup
 
 logger = logging.getLogger(__name__)
 
@@ -68,11 +68,41 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
     )
 
-    class Meta:
-        validators = [
-            ValidateDefaultZgwApiGroup(),  # This one must come first
-            RoltypeOmschrijvingValidator(),
-        ]
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        # First checking that a ZGWApiGroupConfig is available:
+        if attrs.get("zgw_api_group") is None:
+            config = ZgwConfig.get_solo()
+            assert isinstance(config, ZgwConfig)
+            if config.default_zgw_api_group is None:
+                raise ValidationError(
+                    {
+                        "zgw_api_group": _(
+                            "No ZGW API set was configured on the form and no default was specified globally."
+                        )
+                    }
+                )
+
+        if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
+            return
+
+        # We know it exists thanks to the previous check
+        group_config = ZGWRegistration.get_zgw_config(attrs)
+
+        with get_catalogi_client(group_config) as client:
+            roltypen = client.list_roltypen(
+                zaaktype=attrs["zaaktype"],
+                matcher=omschrijving_matcher(attrs["medewerker_roltype"]),
+            )
+
+        if not roltypen:
+            raise serializers.ValidationError(
+                detail=_(
+                    "Could not find a roltype with this description related to the zaaktype"
+                ),
+                code="invalid",
+            )
+
+        return attrs
 
 
 def _point_coordinate(value):
