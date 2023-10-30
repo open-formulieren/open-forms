@@ -61,6 +61,9 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
         self._add_submission_to_session(self.submission)
 
     def test_appointment_data_is_recorded(self):
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         data = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
@@ -73,7 +76,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             ],
             "location": "1",
             "date": TODAY.isoformat(),
-            "datetime": f"{TODAY.isoformat()}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -87,10 +90,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
         self.assertEqual(appointment.submission, self.submission)
         self.assertEqual(appointment.plugin, "demo")
         self.assertEqual(appointment.location, "1")
-        self.assertEqual(
-            appointment.datetime,
-            datetime.combine(TODAY, time(13, 15, 0)).replace(tzinfo=timezone.utc),
-        )
+        self.assertEqual(appointment.datetime, appointment_datetime)
         self.assertEqual(
             appointment.contact_details_meta,
             [
@@ -116,6 +116,9 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
 
     @patch("openforms.submissions.api.mixins.on_completion")
     def test_submission_is_completed(self, mock_on_completion):
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         data = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
@@ -128,7 +131,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             ],
             "location": "1",
             "date": TODAY,
-            "datetime": f"{TODAY}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -150,6 +153,9 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
         # When there are on_completion processing errors, the client will re-post the
         # same state. This must update the existing appointment rather than trying to
         # create a new one.
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         data = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
@@ -157,7 +163,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             "products": [{"productId": "2", "amount": 1}],
             "location": "1",
             "date": TODAY,
-            "datetime": f"{TODAY}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -193,6 +199,9 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
 
     def test_privacy_policy_not_required(self):
         self.global_configuration.ask_privacy_consent = False
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         data = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
@@ -205,7 +214,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             ],
             "location": "1",
             "date": TODAY.isoformat(),
-            "datetime": f"{TODAY.isoformat()}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -331,13 +340,16 @@ class AppointmentCreateValidationErrorTests(
                 self.assertEqual(invalid_params[0]["name"], "privacyPolicyAccepted")
 
     def test_invalid_products(self):
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         base = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
             ),
             "location": "1",
             "date": TODAY.isoformat(),
-            "datetime": f"{TODAY.isoformat()}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -407,6 +419,9 @@ class AppointmentCreateValidationErrorTests(
     def test_invalid_location_with_fixed_location_in_config(self):
         # made up, but you can assume this is valid via the admin validation
         self.config.limit_to_location = "2"
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         data = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
@@ -414,7 +429,7 @@ class AppointmentCreateValidationErrorTests(
             "products": [{"productId": "1", "amount": 1}],
             "location": "1",
             "date": TODAY.isoformat(),
-            "datetime": f"{TODAY.isoformat()}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -431,6 +446,9 @@ class AppointmentCreateValidationErrorTests(
     def test_invalid_location_from_plugins_available_locations(self):
         # made up, but you can assume this is valid via the admin validation
         self.config.limit_to_location = ""
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         data = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
@@ -438,7 +456,7 @@ class AppointmentCreateValidationErrorTests(
             "products": [{"productId": "1", "amount": 1}],
             "location": "123",
             "date": TODAY.isoformat(),
-            "datetime": f"{TODAY.isoformat()}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -453,13 +471,16 @@ class AppointmentCreateValidationErrorTests(
         self.assertEqual(invalid_params[0]["name"], "location")
 
     def test_invalid_date(self):
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         base = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
             ),
             "products": [{"productId": "1", "amount": 1}],
             "location": "1",
-            "datetime": f"{TODAY.isoformat()}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
             },
@@ -544,6 +565,9 @@ class AppointmentCreateValidationErrorTests(
             self.assertEqual(invalid_params[0]["name"], "datetime")
 
     def test_invalid_contact_details(self):
+        appointment_datetime = timezone.make_aware(
+            datetime.combine(TODAY, time(15, 15))
+        )
         base = {
             "submission": reverse(
                 "api:submission-detail", kwargs={"uuid": self.submission.uuid}
@@ -551,7 +575,7 @@ class AppointmentCreateValidationErrorTests(
             "products": [{"productId": "1", "amount": 1}],
             "location": "1",
             "date": TODAY.isoformat(),
-            "datetime": f"{TODAY.isoformat()}T13:15:00Z",
+            "datetime": appointment_datetime.isoformat(),
             "privacyPolicyAccepted": True,
         }
 
