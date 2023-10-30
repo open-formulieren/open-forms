@@ -92,6 +92,13 @@ const ACTION_TYPES = [
     }),
   ],
   [
+    'step-applicable',
+    defineMessage({
+      description: 'action type "step-applicable" label',
+      defaultMessage: 'Mark the form step as applicable',
+    }),
+  ],
+  [
     'set-registration-backend',
     defineMessage({
       description: 'action type "set-registration-backend" label',

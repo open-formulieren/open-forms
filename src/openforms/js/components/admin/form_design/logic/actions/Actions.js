@@ -205,6 +205,14 @@ const ActionStepNotApplicable = ({action, errors, onChange}) => {
   );
 };
 
+const ActionStepApplicable = ({action, errors, onChange}) => {
+  return (
+    <DSLEditorNode errors={errors.formStepUuid}>
+      <StepSelection name="formStepUuid" value={action.formStepUuid} onChange={onChange} />
+    </DSLEditorNode>
+  );
+};
+
 const ActionSetRegistrationBackend = ({action, errors, onChange}) => {
   return (
     <DSLEditorNode errors={errors.value}>
@@ -238,6 +246,10 @@ const ActionComponent = ({action, errors, onChange}) => {
     }
     case 'step-not-applicable': {
       Component = ActionStepNotApplicable;
+      break;
+    }
+    case 'step-applicable': {
+      Component = ActionStepApplicable;
       break;
     }
     case 'set-registration-backend': {

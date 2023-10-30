@@ -73,3 +73,16 @@ class SubmissionStepsStateTests(TestCase):
 
             self.assertTrue(steps[0].completed)
             self.assertTrue(steps[1].completed)
+
+    def test_step_set_applicable(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            form_step=step, submission=submission, data={}
+        )
+
+        self.assertIsNone(submission_step._is_applicable)
+        self.assertTrue(submission_step.is_applicable)
+        submission_step.is_applicable = False
+        self.assertFalse(submission_step.is_applicable)

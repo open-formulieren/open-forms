@@ -1,5 +1,6 @@
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -61,6 +62,11 @@ class FormStep(OrderedModel):
             "Leave blank to get value from global configuration."
         ),
     )
+    is_applicable = models.BooleanField(
+        _("is applicable"),
+        default=True,
+        help_text=_("Whether the step is applicable by default."),
+    )
 
     order_with_respect_to = "form"
 
@@ -102,3 +108,11 @@ class FormStep(OrderedModel):
 
     def iter_components(self, recursive=True, **kwargs):
         yield from self.form_definition.iter_components(recursive=recursive, **kwargs)
+
+    def clean(self) -> None:
+        if not self.is_applicable and self.order == 0:
+            raise ValidationError(
+                {"is_applicable": _("First form step must be applicable.")},
+                code="invalid",
+            )
+        return super().clean()

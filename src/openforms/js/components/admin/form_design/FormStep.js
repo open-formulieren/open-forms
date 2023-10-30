@@ -9,6 +9,7 @@ import TYPES from './types';
 const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) => {
   const {
     _generatedId,
+    index,
     configuration,
     formDefinition,
     name,
@@ -16,6 +17,7 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
     slug,
     loginRequired,
     translations,
+    isApplicable,
     isReusable,
     isNew,
     validationErrors = [],
@@ -39,12 +41,14 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
   return (
     <FormStepDefinition
       internalName={internalName}
+      index={index}
       slug={slug}
       url={formDefinition}
       generatedId={_generatedId}
       translations={translations}
       componentTranslations={componentTranslations}
       configuration={configuration}
+      isApplicable={isApplicable}
       loginRequired={loginRequired}
       isReusable={isReusable}
       onFieldChange={onFieldChange}

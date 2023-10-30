@@ -138,6 +138,74 @@ class StepModificationTests(TestCase):
 
         self.assertFalse(updated_step_2.is_applicable)
 
+    def test_step_applicable(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "driverId",
+                    }
+                ]
+            },
+            is_applicable=False,
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "<": [
+                    {"var": "age"},
+                    18,
+                ]
+            },
+            actions=[
+                {
+                    "form_step_uuid": f"{step2.uuid}",
+                    "action": {
+                        "name": "Step is applicable",
+                        "type": "step-applicable",
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step_1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"age": 16},
+        )
+        # not saved in DB!
+        submission_step_2 = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step2,
+        )
+
+        self.assertTrue(submission_step_1.is_applicable)
+        # _is_applicable = None by default -> should look at form_step.is_applicable:
+        self.assertFalse(submission_step_2.is_applicable)
+
+        evaluate_form_logic(submission, submission_step_1, submission.data)
+        submission_state = submission.load_execution_state()
+        updated_step_2 = submission_state.get_submission_step(
+            form_step_uuid=str(step2.uuid)
+        )
+
+        self.assertTrue(updated_step_2.is_applicable)
+
     def test_date_trigger(self):
         form = FormFactory.create()
         step = FormStepFactory.create(

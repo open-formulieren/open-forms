@@ -40,7 +40,9 @@ const FormStepDefinition = ({
   url = '',
   generatedId = '',
   internalName = '',
+  index = null,
   slug = '',
+  isApplicable = true,
   loginRequired = false,
   isReusable = false,
   translations = {},
@@ -314,6 +316,28 @@ const FormStepDefinition = ({
                     value={translations[langCode].nextText}
                     onChange={onFieldChange}
                     maxLength="50"
+                  />
+                </Field>
+              </FormRow>
+              <FormRow>
+                <Field
+                  name="isApplicable"
+                  errorClassPrefix={'checkbox'}
+                  errorClassModifier={'no-padding'}
+                >
+                  <Checkbox
+                    label={
+                      <FormattedMessage
+                        defaultMessage="Is applicable?"
+                        description="Form step is applicable label"
+                      />
+                    }
+                    name="isApplicable"
+                    checked={isApplicable}
+                    onChange={e =>
+                      onFieldChange({target: {name: 'isApplicable', value: !isApplicable}})
+                    }
+                    disabled={index === 0 || langCode !== defaultLang} // First step can't be n/a by default
                   />
                 </Field>
               </FormRow>
