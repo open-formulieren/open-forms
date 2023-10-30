@@ -85,7 +85,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.21
+django==3.2.22
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -438,7 +438,7 @@ tzlocal==2.1
     # via o365
 uritemplate==3.0.1
     # via drf-spectacular
-urllib3==1.26.6
+urllib3==1.26.18
     # via
     #   elastic-apm
     #   requests
