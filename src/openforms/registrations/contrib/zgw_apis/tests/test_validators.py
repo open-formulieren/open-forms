@@ -77,10 +77,10 @@ class OmschrijvingValidatorTests(TestCase):
         is_valid = serializer.is_valid()
 
         self.assertFalse(is_valid)
-        self.assertIn("non_field_errors", serializer.errors)
+        self.assertIn("medewerker_roltype", serializer.errors)
         self.assertEqual(
-            "Could not find a roltype with this description related to the zaaktype",
-            serializer.errors["non_field_errors"][0],
+            "Could not find a roltype with this description related to the zaaktype.",
+            serializer.errors["medewerker_roltype"][0],
         )
 
 
