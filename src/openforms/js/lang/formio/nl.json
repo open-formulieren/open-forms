@@ -395,5 +395,6 @@
   "Translation": "Vertaling",
   "The uploaded file is not of an allowed type. It must be: {{ pattern }}.": "Het geuploaded bestand is niet van een toegestaan type. Het moet {{ pattern }} zijn.",
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} of {{ lastLabel }}",
+  "Note that any family member without a BSN will not be displayed.": "Let op, gezinsleden zonder BSN worden niet getoond.",
   "": ""
 }

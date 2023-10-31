@@ -83,6 +83,9 @@ class V1Client(HALMixin, BRPClient):
 
         persons = []
         for kind in response_data["kinderen"]:
+            if "burgerservicenummer" not in kind:
+                continue
+
             name_data = kind["naam"]
             person = Person(
                 bsn=kind["burgerservicenummer"],
@@ -102,6 +105,9 @@ class V1Client(HALMixin, BRPClient):
 
         persons = []
         for partner in response_data["partners"]:
+            if "burgerservicenummer" not in partner:
+                continue
+
             name_data = partner["naam"]
             person = Person(
                 bsn=partner["burgerservicenummer"],
@@ -209,6 +215,7 @@ class V2Client(BRPClient):
                 ),
             )
             for family_member in family_data
+            if "burgerservicenummer" in family_member
         ]
         return family_members
 

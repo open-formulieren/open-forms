@@ -234,6 +234,7 @@ Gezinsleden
 ===========
 
 De *Gezinsledenscomponent* toont de namen van alle gezinsleden (partners en/of kinderen) als selectievakjes.
+Gezinsleden zonder BSN **worden niet getoond**.
 De waarden die naar de registratie backend worden gestuurd zijn de BSNs.
 
 De gegevens voor de gezinsleden worden opgehaald van Haal Centraal BRP Personen Bevragen of StUF-BG. Dit kan in de Admin
