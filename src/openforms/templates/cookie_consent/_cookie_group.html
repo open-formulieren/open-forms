@@ -19,7 +19,7 @@
             <form class="cookie-consent-accept" action="{% url 'cookie_consent_accept' cookie_group.varname %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}?referer={{ referer }}" />
-                <button type="submit" class="openforms-button openforms-button--primary">{% trans "Accept" %}</button>
+                <button type="submit" class="utrecht-button utrecht-button--primary-action">{% trans "Accept" %}</button>
             </form>
         {% endif %}
 
@@ -29,7 +29,7 @@
             <form class="cookie-consent-decline" action="{% url 'cookie_consent_decline' cookie_group.varname %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}?referer={{ referer }}" />
-                <button type="submit" class="openforms-button openforms-button--primary">{% trans "Decline" %}</button>
+                <button type="submit" class="utrecht-button utrecht-button--primary-action">{% trans "Decline" %}</button>
             </form>
         {% endif %}
 
