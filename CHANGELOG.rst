@@ -2,6 +2,19 @@
 Changelog
 =========
 
+2.3.3 (2023-10-30)
+==================
+
+Periodic bugfix release
+
+* [#3279] Added robustness to the admin that retrieves data from external APIs.
+* [#3527] Added duplicated form steps detection script and added it to the upgrade check
+  configuration.
+* [#3448] Applied mail-queue library patches ahead of their patch release.
+* [#3557] Fixed a bug that would not display the available document types when
+  configuring the file upload component.
+* Bumped dependencies to their latest security fixes.
+
 2.3.2 (2023-09-29)
 ==================
 
