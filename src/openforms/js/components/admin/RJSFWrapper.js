@@ -1,6 +1,7 @@
 import Form from '@rjsf/core';
 import Widgets from '@rjsf/core/lib/components/widgets';
 import {isSelect, optionsList} from '@rjsf/core/lib/utils';
+import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -167,6 +168,7 @@ const FormRjsfWrapper = ({name, label, schema, uiSchema, formData, onChange, err
 
     */
   for (const [key, msg] of errors) {
+    if (key.includes('nonFieldErrors')) continue;
     const bits = key.split('.');
     // create the nested structure. we can't use lodash, since it creates arrays for
     // indices rather than nested objects.
@@ -179,10 +181,12 @@ const FormRjsfWrapper = ({name, label, schema, uiSchema, formData, onChange, err
     }
     if (!errObj.__errors) errObj.__errors = [];
     errObj.__errors.push(msg);
+    console.log(errObj);
   }
+  console.log(name, label, errors);
 
   return (
-    <Field name={name} label={label} errors={extraErrors ? [] : errors}>
+    <Field name={name} label={label} errors={!isEmpty(extraErrors) ? [] : errors}>
       <Form
         schema={schema}
         uiSchema={uiSchema}

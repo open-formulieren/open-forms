@@ -7,7 +7,6 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
@@ -74,7 +73,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             config = ZgwConfig.get_solo()
             assert isinstance(config, ZgwConfig)
             if config.default_zgw_api_group is None:
-                raise ValidationError(
+                raise serializers.ValidationError(
                     {
                         "zgw_api_group": _(
                             "No ZGW API set was configured on the form and no default was specified globally."
@@ -98,7 +97,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         if not roltypen:
             raise serializers.ValidationError(
                 {
-                    "zaaktype": _(
+                    "medewerker_roltype": _(
                         "Could not find a roltype with this description related to the zaaktype."
                     )
                 },

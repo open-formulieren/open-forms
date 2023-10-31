@@ -50,6 +50,7 @@ const Field = ({
   }
   const modifiedChildren = React.cloneElement(children, childProps);
   const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
+  console.log('formattedErrors :', formattedErrors, errors);
   const className = classNames({
     fieldBox: fieldBox,
     errors: hasErrors,
