@@ -7,7 +7,7 @@ These are common ancestors for all specific component types.
 # TODO: on python 3.11+ we can use typing.NotRequired to mark keys that may be absent.
 # For now at least, we use total=False.
 
-from typing import TypeAlias, TypedDict
+from typing import Literal, TypeAlias, TypedDict
 
 from openforms.typing import JSONValue
 
@@ -50,6 +50,7 @@ class OptionDict(TypedDict, total=False):
 class PrefillConfiguration(TypedDict):
     plugin: str
     attribute: str
+    identifierRole: Literal["main", "authorised_person"]
 
 
 class Component(TypedDict, total=False):
