@@ -35,6 +35,34 @@ If you run into any errors, then please check your certificate configuration, AP
 and validate that the API root does *not* include the ``v1/`` suffix. An example of a
 correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/``.
 
+2.3.3 (2023-10-30)
+==================
+
+Periodic bugfix release
+
+* [#3279] Added robustness to the admin that retrieves data from external APIs.
+* [#3527] Added duplicated form steps detection script and added it to the upgrade check
+  configuration.
+* [#3448] Applied mail-queue library patches ahead of their patch release.
+* [#3557] Fixed a bug that would not display the available document types when
+  configuring the file upload component.
+* Bumped dependencies to their latest security fixes.
+
+2.2.5 (2023-10-30)
+==================
+
+Periodic bugfix release
+
+* [#3279] Added robustness to the admin that retrieves data from external APIs.
+* Bumped dependencies to their latest security fixes.
+
+2.1.8 (2023-10-30)
+==================
+
+Periodic bugfix release
+
+* Bumped dependencies to their latest security fixes.
+
 2.4.0-alpha.0 (2023-10-02)
 ==========================
 
