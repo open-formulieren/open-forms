@@ -8373,7 +8373,7 @@ msgid "Employee who registered the case on behalf of the customer."
 msgstr "Medewerker die de zaak registreerde voor de klant."
 
 #: openforms/registrations/contrib/zgw_apis/validators.py:26
-msgid "Could not find a roltype with this description related to the zaaktype"
+msgid "Could not find a roltype with this description related to the zaaktype."
 msgstr ""
 "Kon geen roltype vinden met deze omschrijving binnen het opgegeven zaaktype."
 

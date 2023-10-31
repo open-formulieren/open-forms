@@ -79,7 +79,8 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                         "zgw_api_group": _(
                             "No ZGW API set was configured on the form and no default was specified globally."
                         )
-                    }
+                    },
+                    code="invalid",
                 )
 
         if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
@@ -96,9 +97,11 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
         if not roltypen:
             raise serializers.ValidationError(
-                detail=_(
-                    "Could not find a roltype with this description related to the zaaktype"
-                ),
+                {
+                    "zaaktype": _(
+                        "Could not find a roltype with this description related to the zaaktype."
+                    )
+                },
                 code="invalid",
             )
 
