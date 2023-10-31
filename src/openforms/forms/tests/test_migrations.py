@@ -235,3 +235,115 @@ class TestTimeComponentValidatorMigration(TestMigrations):
         self.assertIn("validate", time4)
         self.assertNotIn("minTime", time4["validate"])
         self.assertEqual(time4["validate"]["maxTime"], "20:00")
+
+
+class TestPrefillUpdateDefaultValuesMigration(TestMigrations):
+    app = "forms"
+    migrate_from = "0097_formstep_is_applicable"
+    migrate_to = "0098_update_default_value_components_prefill"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        FormDefinition.objects.create(
+            name="Date",
+            slug="date",
+            configuration={
+                "components": [
+                    {
+                        # No prefill:
+                        "key": "textfield",
+                        "type": "textfield",
+                        "label": "Textfield 1",
+                    },
+                    {
+                        # Prefill with values:
+                        "key": "date",
+                        "type": "date",
+                        "label": "Date 1",
+                        "prefill": {
+                            "plugin": "my_plugin",
+                            "attribute": "my_attr",
+                            "identifierRole": "main",
+                        },
+                    },
+                    {
+                        # Prefill with OK default values:
+                        "key": "datetime",
+                        "type": "datetime",
+                        "label": "Datetime 1",
+                        "prefill": {
+                            "plugin": "",
+                            "attribute": "",
+                            "identifierRole": "main",
+                        },
+                    },
+                    {
+                        # Prefill with not OK default values:
+                        "key": "postcode",
+                        "type": "postcode",
+                        "label": "Postcode 1",
+                        "prefill": {
+                            "plugin": None,
+                            "attribute": None,
+                            "identifierRole": "main",
+                        },
+                    },
+                    {
+                        # Prefill with mixed OK/not OK default values:
+                        "key": "bsn",
+                        "type": "bsn",
+                        "label": "BSN 1",
+                        "prefill": {
+                            "plugin": None,
+                            "attribute": "my_attr",
+                            "identifierRole": "main",
+                        },
+                    },
+                ]
+            },
+        )
+
+    def test_migration(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+
+        form_def = FormDefinition.objects.get()
+        textfield, date, datetime, postcode, bsn = form_def.configuration["components"]
+
+        self.assertNotIn("prefill", textfield)
+
+        self.assertEqual(
+            date["prefill"],
+            {
+                "plugin": "my_plugin",
+                "attribute": "my_attr",
+                "identifierRole": "main",
+            },
+        )
+
+        self.assertEqual(
+            datetime["prefill"],
+            {
+                "plugin": "",
+                "attribute": "",
+                "identifierRole": "main",
+            },
+        )
+
+        self.assertEqual(
+            postcode["prefill"],
+            {
+                "plugin": "",
+                "attribute": "",
+                "identifierRole": "main",
+            },
+        )
+
+        self.assertEqual(
+            bsn["prefill"],
+            {
+                "plugin": "",
+                "attribute": "my_attr",
+                "identifierRole": "main",
+            },
+        )
