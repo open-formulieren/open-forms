@@ -28,12 +28,22 @@ has been merged into a single service. Normally this configuration update should
 been performed correctly automatically, but we can't rule out possible mistakes with
 more exotic configurations via API gateways.
 
-Please check and update your configuration if necessary - you can check this via:
+⚠️ Please check and update your configuration if necessary - you can check this via:
 **Admin** > **Configuratie** > **Configuratie overzicht** and look for the KVK entries.
 
 If you run into any errors, then please check your certificate configuration, API key
 and validate that the API root does *not* include the ``v1/`` suffix. An example of a
 correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/``.
+
+**Button refactor to NL DS**
+
+We are committed to NL Design System and have overhauled our custom button
+implementation and styles. While we have done our best to provide an automatic
+migration of button styling configuration, there may be some changes that we cannot
+detect or handle automatically.
+
+⚠️ Please review the instructions in the documentation under **Installation** >
+**Upgrade details to Open Forms 2.4.0** > **Button styling**.
 
 2.3.3 (2023-10-30)
 ==================
