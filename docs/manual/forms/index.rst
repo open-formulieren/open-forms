@@ -14,4 +14,5 @@ De kern van Open Formulieren is uiteraard het beheren van formulieren.
    registrator
    examples/index
    export_import
+   cosign_flow
    faq
