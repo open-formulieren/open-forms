@@ -2,6 +2,13 @@
 Changelog
 =========
 
+2.1.8 (2023-10-30)
+==================
+
+Periodic bugfix release
+
+* Bumped dependencies to their latest security fixes.
+
 2.1.7 (2023-09-25)
 ==================
 
