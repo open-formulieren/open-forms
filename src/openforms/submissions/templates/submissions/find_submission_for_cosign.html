@@ -23,15 +23,15 @@
                         {% include "includes/forms/field_wrapper.html" with field=form.code type='text' only %}
 
                         <div class="openforms-toolbar openforms-toolbar--reverse openforms-toolbar--bottom">
-                            <button class="openforms-button openforms-button--primary" type="submit">
-                                <span class="openforms-button__label">{% trans "Submit" %}</span>
+                            <button class="utrecht-button utrecht-button--primary-action" type="submit">
+                                {% trans "Submit" %}
                             </button>
                         </div>
                     </form>
                     <form method="post" action="{% url "authentication:logout" %}">{% csrf_token %}
                         <div class="openforms-toolbar openforms-toolbar--reverse openforms-toolbar--bottom">
-                            <button class="openforms-button openforms-button--danger" type="submit">
-                                <span class="openforms-button__label">{% trans "Log out" %}</span>
+                            <button class="utrecht-button utrecht-button--primary-action utrecht-button--danger" type="submit">
+                                {% trans "Log out" %}
                             </button>
                         </div>
                     </form>

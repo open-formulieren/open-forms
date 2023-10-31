@@ -37,8 +37,8 @@
                 {% include "includes/forms/field_wrapper.html" with field=form.bsn type='bsn' only %}
 
                 <div class="openforms-toolbar openforms-toolbar--reverse">
-                    <button class="openforms-button openforms-button--primary" type="submit">
-                        <span class="openforms-button__label">{% trans "Continue" %}</span>
+                    <button class="utrecht-button utrecht-button--primary-action" type="submit">
+                        {% trans "Continue" %}
                     </button>
                 </div>
             </div>
@@ -47,16 +47,16 @@
                 {% include "includes/forms/field_wrapper.html" with field=form.kvk only %}
 
                 <div class="openforms-toolbar openforms-toolbar--reverse">
-                    <button class="openforms-button openforms-button--primary" type="submit">
-                        <span class="openforms-button__label">{% trans "Continue" %}</span>
+                    <button class="utrecht-button utrecht-button--primary-action" type="submit">
+                        {% trans "Continue" %}
                     </button>
                 </div>
             </div>
 
             <div class="auth-mode auth-mode--employee">
                 <div class="openforms-toolbar openforms-toolbar--reverse">
-                    <button class="openforms-button openforms-button--primary" type="submit" name="skip_subject" value="on">
-                        <span class="openforms-button__label">{{ form.skip_subject.label }}</span>
+                    <button class="utrecht-button utrecht-button--primary-action" type="submit" name="skip_subject" value="on">
+                        {{ form.skip_subject.label }}
                     </button>
                 </div>
             </div>
