@@ -33,7 +33,7 @@ class OrganizationConfigurationTests(E2ETestCase):
             token_to_edit = page.get_by_text("of.utrecht-link.font-family")
             token_row = token_to_edit.locator("../..")
             await token_row.get_by_role("button").click()
-            await token_row.get_by_placeholder('"Fira Sans", Calibri, sans-serif').fill(
+            await token_row.get_by_placeholder("Fira Sans, Calibri, sans-serif").fill(
                 "Roboto"
             )
 
