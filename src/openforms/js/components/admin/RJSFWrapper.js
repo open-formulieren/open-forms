@@ -181,9 +181,7 @@ const FormRjsfWrapper = ({name, label, schema, uiSchema, formData, onChange, err
     }
     if (!errObj.__errors) errObj.__errors = [];
     errObj.__errors.push(msg);
-    console.log(errObj);
   }
-  console.log(name, label, errors);
 
   return (
     <Field name={name} label={label} errors={!isEmpty(extraErrors) ? [] : errors}>
