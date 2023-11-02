@@ -19,12 +19,12 @@ if (argv.production) {
 module.exports = {
   // Entry points locations.
   entry: {
-    [`${paths.package.name}-css`]: `${__dirname}/${paths.scssEntry}`,
+    [`public-styles`]: `${__dirname}/${paths.scssEntry}`,
     [`admin_overrides`]: `${__dirname}/${paths.sourcesRoot}scss/admin/admin_overrides.scss`,
     [`core-css`]: `${__dirname}/${paths.sourcesRoot}scss/screen.scss`,
     [`core-js`]: `${__dirname}/${paths.sourcesRoot}js/index.js`,
     'pdf-css': `${__dirname}/${paths.pdfScssEntry}`,
-    'public': `${__dirname}/${paths.sourcesRoot}js/public.js`
+    public: `${__dirname}/${paths.sourcesRoot}js/public.js`,
   },
 
   // (Output) bundle locations.

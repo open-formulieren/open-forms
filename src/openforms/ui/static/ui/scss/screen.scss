@@ -4,3 +4,9 @@
 @import 'components';
 
 @import 'views';
+
+.openforms-theme {
+  --utrecht-document-font-size: 1rem;
+
+  --utrecht-page-max-inline-size: 100%;
+}

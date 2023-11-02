@@ -5,7 +5,7 @@
 {% firstof analytics_tools_config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
 {% with request|cookie_group_accepted:analytics_varname as enable_analytics %}
 
-<html lang="nl" class="view {% firstof config.theme_classname 'openforms-theme' %} {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
+<html lang="nl" class="utrecht-document {% firstof config.theme_classname 'openforms-theme' %}">
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{% if config.organization_name %}{{ config.organization_name }} {% else %}Openforms{% endif %}{% endblock %}</title>
@@ -14,8 +14,7 @@
     <meta name="robots" content="{{ request.indexing_options.content }}">
     {% endif %}
     <link href="{% if config.favicon %}{{ config.favicon.url }}{% else %}{% static 'ico/favicon.png' %}{% endif %}" rel="shortcut icon">
-    <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet"/>
-    <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
+    <link href="{% static 'bundles/public-styles.css' %}" media="all" rel="stylesheet"/>
     {% block extra_css %}{% endblock %}
 
     {# Note that the custom stylesheets are deliberately kept outside of extra_css to ensure it is the last stylesheet loaded! #}
@@ -26,7 +25,7 @@
     {% include "analytics_tools/all_head.html" with analytics_varname=analytics_varname %}
 </head>
 
-<body class="view__body">
+<body class="utrecht-page">
     {# No point in putting this in a <template> tag, since it targets noscript #}
     {% if enable_analytics and analytics_tools_config.enable_google_analytics and analytics_tools_config.gtm_code %}
         {# Load the second part of the Google tag manager snippet #}
