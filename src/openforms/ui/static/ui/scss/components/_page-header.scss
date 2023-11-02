@@ -1,0 +1,83 @@
+@use 'microscope-sass/lib/bem';
+
+@import '~microscope-sass/lib/responsive';
+
+@mixin map-paddings-for-viewport($viewport) {
+  // the fallback - this can potentially be a shorthand, in which case the styles break.
+  $old-fallback: var(--of-page-header-#{$viewport}-padding);
+
+  // specific tokens are preferred, but we fall back for backwards compatibility reasons
+  --utrecht-page-header-padding-block-end: var(
+    --of-utrecht-page-header-#{$viewport}-padding-block-end,
+    #{$old-fallback}
+  );
+  --utrecht-page-header-padding-block-start: var(
+    --of-utrecht-page-header-#{$viewport}-padding-block-start,
+    #{$old-fallback}
+  );
+  --utrecht-page-padding-inline-end: var(
+    --of-utrecht-page-header-#{$viewport}-padding-inline-end,
+    #{$old-fallback}
+  );
+  --utrecht-page-padding-inline-start: var(
+    --of-utrecht-page-header-#{$viewport}-padding-inline-start,
+    #{$old-fallback}
+  );
+}
+
+.openforms-theme {
+  // backwards compatibility
+  // TODO: remove in Open Forms 3.0
+  --utrecht-page-header-background-color: var(--of-page-header-bg);
+  --utrecht-page-header-color: var(--of-page-header-fg);
+
+  .utrecht-page-header {
+    @include mobile-only {
+      @include map-paddings-for-viewport('mobile');
+    }
+
+    @include tablet {
+      @include map-paddings-for-viewport('tablet');
+    }
+
+    @include laptop {
+      @include map-paddings-for-viewport('laptop');
+    }
+
+    @include desktop {
+      @include map-paddings-for-viewport('desktop');
+    }
+
+    // Custom styles on top of utrecht-page-header.
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+// Extensions on top of utrecht-page-header.
+.utrecht-page-header {
+  @include bem.modifier('openforms-with-logo') {
+    @include bem.element('openforms-return-url') {
+      font-size: 0;
+
+      background-image: var(--of-header-logo-url);
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      min-inline-size: var(--of-page-header-logo-return-url-min-width, 100px);
+      min-block-size: var(--of-page-header-logo-return-url-min-height, 50px);
+      inline-size: var(--of-header-logo-width);
+      block-size: var(--of-header-logo-height);
+
+      @include mobile-only {
+        min-inline-size: var(--of-page-header-logo-return-url-mobile-min-width, 50px);
+        min-block-size: var(--of-page-header-logo-return-url-mobile-min-height, 25px);
+      }
+    }
+  }
+
+  @include bem.element('openforms-return-url') {
+    display: block;
+  }
+}

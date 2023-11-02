@@ -3,6 +3,14 @@
  */
 .openforms-theme {
   .utrecht-page {
+    // backwards compatibility
+    // TODO: remove in Open Forms 3.0
+    --utrecht-page-max-inline-size: 100%;
+    --utrecht-page-background-color: var(
+      --of-view-background,
+      var(--of-layout-background, #e6e6e6)
+    );
+
     margin-block-end: var(--of-utrecht-page-margin-block-end, 0);
     margin-block-start: var(--of-utrecht-page-margin-block-start, 0);
 
@@ -16,7 +24,7 @@
       flex-grow: 1;
     }
 
-    > .page-header,
+    > .utrecht-page-header,
     > .page-footer {
       flex-shrink: 0;
     }

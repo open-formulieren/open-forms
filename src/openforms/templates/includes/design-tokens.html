@@ -5,8 +5,12 @@
 {% if config.design_token_values %}
     {% style_dictionary config.design_token_values as design_tokens %}
     <style nonce="{{ request.csp_nonce }}">
-    :root {{% for token, value in design_tokens.items %}
+
+    .{{ config.get_theme_classname }} {{% for token, value in design_tokens.items %}
       {{ token }}: {{ value }};{% endfor %}
+
+      {% if config.logo %}{# if there's a logo, output a design token that the CSS can pick up to set as background #}
+      --of-header-logo-url: url('{{ config.logo.url }}');{% endif %}
     }
     </style>
 {% endif %}

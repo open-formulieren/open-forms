@@ -7,20 +7,13 @@ include the SDK snippet directly.
 
 {% get_solo 'config.GlobalConfiguration' as config %}
 
-{% if config.logo %}
-<style nonce="{{ request.csp_nonce }}">
-.page-header {
-    --of-header-logo-url: url('{{ config.logo.url }}');
-}
-</style>
-{% endif %}
+{% blocktranslate with name=config.organization_name asvar logo_alt trimmed %}
+Back to website of {{ name }}
+{% endblocktranslate %}
 
-{% blocktranslate with name=config.organization_name asvar logo_alt %}Back to website of {{ name }}{% endblocktranslate %}
-
-<header class="page-header {% if config.logo %}page-header--has-logo{% endif %}">
-    {# if there's a logo, output a design token that the CSS can pick up to set as background #}
+<header class="utrecht-page-header {% if config.logo %}utrecht-page-header--openforms-with-logo{% endif %}">
     <a
-        class="utrecht-link utrecht-link--openforms page-header__return-url"
+        class="utrecht-link utrecht-link--openforms utrecht-page-header__openforms-return-url"
         href="{% firstof config.main_website '#' %}"
         title="{{ logo_alt }}"
         aria-label="{{ logo_alt }}"

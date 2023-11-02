@@ -5,7 +5,7 @@
 {% firstof analytics_tools_config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
 {% with request|cookie_group_accepted:analytics_varname as enable_analytics %}
 
-<html lang="nl" class="utrecht-document {% firstof config.theme_classname 'openforms-theme' %}">
+<html lang="nl" class="utrecht-document {{ config.get_theme_classname }}">
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{% if config.organization_name %}{{ config.organization_name }} {% else %}Openforms{% endif %}{% endblock %}</title>
