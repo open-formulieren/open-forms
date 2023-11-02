@@ -1,12 +1,13 @@
 // NL DS based
 @import 'page';
+@import 'page-footer';
+@import 'page-header';
 
 // Custom
 @import 'a11y-toolbar';
 @import 'anchor';
 @import 'card';
 @import 'fa-icon';
-@import 'footer';
 @import 'layout';
 @import 'list';
 @import 'nav';
@@ -16,4 +17,3 @@
 @import 'info-bar';
 @import 'cookie-notice';
 @import 'cookie-group';
-@import 'page-header';

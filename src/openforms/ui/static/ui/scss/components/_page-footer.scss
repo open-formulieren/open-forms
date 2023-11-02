@@ -1,0 +1,72 @@
+@import '~microscope-sass/lib/responsive';
+
+@mixin map-paddings-for-viewport($viewport) {
+  // the fallback - this can potentially be a shorthand, in which case the styles break.
+  $old-fallback: var(--of-page-footer-#{$viewport}-padding);
+
+  // specific tokens are preferred, but we fall back for backwards compatibility reasons
+  --utrecht-page-footer-padding-block-end: #{$old-fallback};
+  --utrecht-page-footer-padding-block-start: #{$old-fallback};
+  --utrecht-page-footer-padding-inline-end: #{$old-fallback};
+  --utrecht-page-footer-padding-inline-start: #{$old-fallback};
+}
+
+// Style overrides specific for our own theme
+.openforms-theme {
+  // backwards compatibility
+  // TODO: remove in Open Forms 3.0
+  --utrecht-page-footer-background-color: var(--of-page-footer-bg);
+  --utrecht-page-footer-color: var(--of-page-footer-fg);
+
+  --of-page-footer-mobile-padding: 10px;
+  --of-page-footer-tablet-padding: 10px;
+  --of-page-footer-laptop-padding: 20px;
+  --of-page-footer-desktop-padding: 20px;
+
+  .utrecht-page-footer {
+    @include mobile-only {
+      @include map-paddings-for-viewport('mobile');
+      --of-page-footer-max-inline-size: 100%;
+    }
+
+    @include tablet {
+      @include map-paddings-for-viewport('tablet');
+      --of-page-footer-max-inline-size: 100%;
+    }
+
+    @include laptop {
+      @include map-paddings-for-viewport('laptop');
+      --of-page-footer-max-inline-size: 100%;
+    }
+
+    @include desktop {
+      @include map-paddings-for-viewport('desktop');
+      --of-page-footer-max-inline-size: #{$breakpoint-desktop};
+    }
+
+    box-sizing: border-box;
+    min-block-size: var(--of-page-footer-min-height, 40px);
+
+    &__navigation {
+      max-inline-size: var(--of-page-footer-max-inline-size);
+      margin-inline-end: auto;
+      margin-inline-start: auto;
+
+      .utrecht-link-list {
+        --utrecht-link-text-decoration: underline;
+        --utrecht-link-hover-text-decoration: none;
+
+        font-size: 1.125rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 20px;
+
+        @include mobile-only {
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+      }
+    }
+  }
+}
