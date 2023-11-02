@@ -1,22 +1,6 @@
 {% extends "master.html" %}
 {% load i18n solo_tags style_dictionary %}
 
-{% block content %}
-    {% block header %}
-        {% include "ui/includes/header.html" %}
-        <a class="skiplink" href="#main-content">{% translate "Show content." %}</a>
-    {% endblock %}
-
-    {% block layout %}
-        <main class="layout layout--container">
-            <span class="skiplink-target" id="main-content"></span>
-            {% block layout_inner %}
-            {% endblock %}
-        </main>
-    {% endblock %}
-{% endblock %}
-
-
 {% block footer %}
     {{ block.super }}
     {% include "ui/components/footer/footer.html" %}

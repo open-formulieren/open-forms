@@ -5,5 +5,20 @@
   .utrecht-page {
     margin-block-end: var(--of-utrecht-page-margin-block-end, 0);
     margin-block-start: var(--of-utrecht-page-margin-block-start, 0);
+
+    // ensure the page content spans the entire height of the viewport
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100vh;
+
+    // can't use the bem modules because of the nested parent selector(s)
+    > .utrecht-page__content {
+      flex-grow: 1;
+    }
+
+    > .page-header,
+    > .page-footer {
+      flex-shrink: 0;
+    }
   }
 }
