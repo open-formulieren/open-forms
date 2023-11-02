@@ -349,7 +349,9 @@ class Submission(models.Model):
         # if the url path ends with 'startpagina', strip it off
         if furl_instance.path.segments[-1:] == ["startpagina"]:
             furl_instance.path.segments.remove("startpagina")
-        return furl_instance
+        return furl_instance.remove(
+            fragment=True
+        )  # Fragments are present in hash based routing
 
     @property
     def total_configuration_wrapper(self) -> FormioConfigurationWrapper:

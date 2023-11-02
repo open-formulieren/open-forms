@@ -50,11 +50,14 @@ class SubmissionResumeViewTests(TestCase):
         response = self.client.get(endpoint)
 
         f = furl(submission.form_url)
-        # furl adds paths with the /= operator
-        f /= "stap"
-        f /= submission.get_last_completed_step().form_step.slug
-        # Add the submission uuid to the query param
-        f.add({"submission_uuid": submission.uuid})
+        # Add the redirect path and submission uuid to the query param
+        f.add(
+            {
+                "_action": "stap",
+                "_action_args": submission.get_last_completed_step().form_step.slug,
+                "submission_uuid": submission.uuid,
+            }
+        )
 
         expected_redirect_url = f.url
         self.assertRedirects(
@@ -210,9 +213,13 @@ class SubmissionResumeViewTests(TestCase):
             },
         )
         expected_redirect_url = furl(submission.form_url)
-        expected_redirect_url /= "stap"
-        expected_redirect_url /= form_step.slug
-        expected_redirect_url.args["submission_uuid"] = submission.uuid
+        expected_redirect_url.add(
+            {
+                "_action": "stap",
+                "_action_args": form_step.slug,
+                "submission_uuid": submission.uuid,
+            }
+        )
 
         # Add form_auth to session, as the authentication plugin would do it
         session = self.client.session
@@ -405,12 +412,15 @@ class SubmissionResumeViewTests(TestCase):
 
         response = self.client.get(endpoint)
 
-        f = furl("http://maykinmedia.nl/some-form/")
-        # furl adds paths with the /= operator
-        f /= "stap"
-        f /= submission.get_last_completed_step().form_step.slug
-        # Add the submission uuid to the query param
-        f.add({"submission_uuid": submission.uuid})
+        f = furl("http://maykinmedia.nl/some-form")
+        # Add the redirect path and submission uuid to the query param
+        f.add(
+            {
+                "_action": "stap",
+                "_action_args": submission.get_last_completed_step().form_step.slug,
+                "submission_uuid": submission.uuid,
+            }
+        )
 
         expected_redirect_url = f.url
         self.assertRedirects(

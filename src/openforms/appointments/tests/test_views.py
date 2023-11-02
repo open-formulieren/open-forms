@@ -50,9 +50,10 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         expected_redirect_url = (
-            furl("http://maykinmedia.nl/myform/afspraak-annuleren")
+            furl("http://maykinmedia.nl/myform")
             .add(
                 {
+                    "_action": "afspraak-annuleren",
                     "time": "2021-07-21T12:00:00+00:00",
                     "submission_uuid": str(submission.uuid),
                 }
@@ -198,9 +199,9 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             },
         )
         expected_redirect_url = furl(submission.form_url)
-        expected_redirect_url /= "afspraak-annuleren"
         expected_redirect_url.add(
             {
+                "_action": "afspraak-annuleren",
                 "time": start_time.isoformat(),
                 "submission_uuid": str(submission.uuid),
             }
@@ -398,8 +399,8 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         # after initiating change, we expect the bsn to be stored in plain text (again)
         self.assertEqual(new_submission.auth_info.value, "000000000")
         expected_redirect_url = (
-            f"http://maykinmedia.nl/myform/stap/{form_definition.slug}"
-            f"?submission_uuid={new_submission.uuid}"
+            f"http://maykinmedia.nl/myform/?_action=stap&_action_args={form_definition.slug}"
+            f"&submission_uuid={new_submission.uuid}"
         )
 
         self.assertRedirects(
@@ -580,7 +581,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         new_submission = Submission.objects.exclude(id=submission.id).get()
-        expected_redirect_url = f"http://maykinmedia.nl/myform/stap/step-1?submission_uuid={new_submission.uuid}"
+        expected_redirect_url = f"http://maykinmedia.nl/myform/?_action=stap&_action_args=step-1&submission_uuid={new_submission.uuid}"
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
         )
@@ -659,9 +660,13 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         self.assertIsNotNone(new_submission)
 
         expected_redirect_url = furl(submission.form_url)
-        expected_redirect_url /= "stap"
-        expected_redirect_url /= "test-step"
-        expected_redirect_url.args["submission_uuid"] = str(new_submission.uuid)
+        expected_redirect_url.add(
+            {
+                "_action": "stap",
+                "_action_args": "test-step",
+                "submission_uuid": new_submission.uuid,
+            }
+        )
 
         self.assertRedirects(
             response, expected_redirect_url.url, fetch_redirect_response=False
