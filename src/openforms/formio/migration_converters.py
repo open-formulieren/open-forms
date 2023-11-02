@@ -45,10 +45,51 @@ def move_time_validators(component: Component) -> bool:
     return True
 
 
-# Keys are component["type"] values, values are dicts keyed by unique converter
-# identifier and the function to do the actual conversion.
+def alter_prefill_default_values(component: Component) -> bool:
+    """A converter that replaces ``prefill`` dict values from ``None`` to an empty string."""
+    if not (prefill := component.get("prefill") or {}):
+        return False
+
+    altered = False
+    unset = object()
+
+    prefill_plugin = prefill.get("plugin", unset)
+    if prefill_plugin is None:
+        component["prefill"]["plugin"] = ""
+        altered = True
+
+    prefill_attribute = prefill.get("attribute", unset)
+    if prefill_attribute is None:
+        component["prefill"]["attribute"] = ""
+        altered = True
+
+    return altered
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
+    # Input components
+    "textfield": {
+        "alter_prefill_default_values": alter_prefill_default_values,
+    },
+    "date": {
+        "alter_prefill_default_values": alter_prefill_default_values,
+    },
+    "datetime": {
+        "alter_prefill_default_values": alter_prefill_default_values,
+    },
     "time": {
         "move_time_validators": move_time_validators,
     },
+    "postcode": {
+        "alter_prefill_default_values": alter_prefill_default_values,
+    },
+    # Special components
+    "bsn": {
+        "alter_prefill_default_values": alter_prefill_default_values,
+    },
 }
+"""A mapping of the component types to their converter functions.
+
+Keys are ``component["type"]`` values, and values are dictionaries keyed by a
+unique converter identifier and the function to do the actual conversion.
+"""
