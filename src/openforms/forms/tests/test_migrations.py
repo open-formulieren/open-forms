@@ -290,15 +290,20 @@ class TestPrefillUpdateDefaultValuesMigration(TestMigrations):
                         },
                     },
                     {
-                        # Prefill with mixed OK/not OK default values:
+                        # Prefill without the keys:
                         "key": "bsn",
                         "type": "bsn",
                         "label": "BSN 1",
                         "prefill": {
-                            "plugin": None,
-                            "attribute": "my_attr",
                             "identifierRole": "main",
                         },
+                    },
+                    {
+                        # Prefill as None:
+                        "key": "bsn2",
+                        "type": "bsn",
+                        "label": "BSN 2",
+                        "prefill": None,
                     },
                 ]
             },
@@ -308,7 +313,9 @@ class TestPrefillUpdateDefaultValuesMigration(TestMigrations):
         FormDefinition = self.apps.get_model("forms", "FormDefinition")
 
         form_def = FormDefinition.objects.get()
-        textfield, date, datetime, postcode, bsn = form_def.configuration["components"]
+        textfield, date, datetime, postcode, bsn1, bsn2 = form_def.configuration[
+            "components"
+        ]
 
         self.assertNotIn("prefill", textfield)
 
@@ -340,10 +347,10 @@ class TestPrefillUpdateDefaultValuesMigration(TestMigrations):
         )
 
         self.assertEqual(
-            bsn["prefill"],
+            bsn1["prefill"],
             {
-                "plugin": "",
-                "attribute": "my_attr",
                 "identifierRole": "main",
             },
         )
+
+        self.assertIsNone(bsn2["prefill"])

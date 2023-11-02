@@ -47,17 +47,18 @@ def move_time_validators(component: Component) -> bool:
 
 def alter_prefill_default_values(component: Component) -> bool:
     """A converter that replaces ``prefill`` dict values from ``None`` to an empty string."""
-    if "prefill" not in component:
+    if not (prefill := component.get("prefill") or {}):
         return False
 
     altered = False
+    unset = object()
 
-    prefill_plugin = component["prefill"]["plugin"]
-    prefill_attribute = component["prefill"]["attribute"]
-
+    prefill_plugin = prefill.get("plugin", unset)
     if prefill_plugin is None:
         component["prefill"]["plugin"] = ""
         altered = True
+
+    prefill_attribute = prefill.get("attribute", unset)
     if prefill_attribute is None:
         component["prefill"]["attribute"] = ""
         altered = True
