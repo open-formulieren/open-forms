@@ -1,14 +1,6 @@
-{% extends "master.html" %}
 {% load i18n solo_tags style_dictionary %}
-
-{% block footer %}
-    {{ block.super }}
-    {% include "ui/components/footer/footer.html" %}
-{% endblock %}
-
-
-{% block extra_css %}
 {% get_solo 'config.GlobalConfiguration' as config %}
+
 {# Template out the configured design tokens JSON, if provided #}
 {% if config.design_token_values %}
     {% style_dictionary config.design_token_values as design_tokens %}
@@ -18,5 +10,3 @@
     }
     </style>
 {% endif %}
-
-{% endblock %}

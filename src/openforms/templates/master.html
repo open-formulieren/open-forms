@@ -15,7 +15,9 @@
     {% endif %}
     <link href="{% if config.favicon %}{{ config.favicon.url }}{% else %}{% static 'ico/favicon.png' %}{% endif %}" rel="shortcut icon">
     <link href="{% static 'bundles/public-styles.css' %}" media="all" rel="stylesheet"/>
-    {% block extra_css %}{% endblock %}
+    {% block extra_css %}
+        {% include 'includes/design-tokens.html' %}
+    {% endblock %}
 
     {# Note that the custom stylesheets are deliberately kept outside of extra_css to ensure it is the last stylesheet loaded! #}
     {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
@@ -50,11 +52,11 @@
                 {% endblock %}
             </main>
         </div>
-
     {% endblock %}
 
     {% block footer %}
         {% include "includes/cookie-notice.html" with analytics_varname=analytics_varname %}
+        {% include "includes/page-footer.html" %}
     {% endblock %}
 
     <script src="{% static 'bundles/public.js' %}"></script>
