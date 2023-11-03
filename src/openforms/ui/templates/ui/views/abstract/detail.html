@@ -1,23 +1,19 @@
 {% extends "master.html" %}
 
 {% block inner-content %}
-    <section class="layout__container">
-        {% block card %}
-            <div class="card">
-                <header class="card__header">
-                    <h1 class="title">{{ object }}</h1>
-                </header>
+    {% block card %}
+        <div class="card">
+            <header class="card__header">
+                <h1 class="title">{{ object }}</h1>
+            </header>
 
-                <div class="card__body">
-                    {% block card_body %}
-                        <p class="body">
-                            {{ object }}
-                        </p>
-                    {% endblock %}
-                </div>
+            <div class="card__body">
+                {% block card_body %}
+                    <p class="body">
+                        {{ object }}
+                    </p>
+                {% endblock %}
             </div>
-        {% endblock %}
-
-        {% include "includes/a11y_toolbar.html" only %}
-    </section>
+        </div>
+    {% endblock %}
 {% endblock %}

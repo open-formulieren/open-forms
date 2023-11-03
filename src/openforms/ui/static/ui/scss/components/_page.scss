@@ -1,8 +1,8 @@
+@import '~microscope-sass/lib/responsive';
+
 /**
  * Style overrides for the utrecht-page component.
  */
-@import '~microscope-sass/lib/responsive';
-
 .openforms-theme {
   .utrecht-page {
     // backwards compatibility
@@ -20,7 +20,14 @@
 
     margin-block-end: var(--of-utrecht-page-margin-block-end, 0);
     margin-block-start: var(--of-utrecht-page-margin-block-start, 0);
-    background-color: var(--utrecht-page-background-color);
+    // Backwards compatible design token
+    // TODO: remove of-layout support in Open Forms 3.0
+    background-color: var(--of-layout-background-color, var(--utrecht-page-background-color));
+
+    &,
+    & * {
+      box-sizing: border-box;
+    }
 
     // ensure the page content spans the entire height & width of the viewport
     display: flex;

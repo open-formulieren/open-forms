@@ -45,13 +45,16 @@
         {% endblock %}
 
         <div class="utrecht-page__content utrecht-page-content">
-            <main class="utrecht-page-content__main layout layout--container">
+            <main class="utrecht-page-content__main">
                 <span class="skiplink-target" id="main-content"></span>
                 {% block inner-content %}
                     Override <code>{% verbatim %}{% block inner-content %}{% endverbatim %}</code>
                     to get some actual content.
                 {% endblock %}
             </main>
+            {% block a11y-toolbar %}
+                {% include "includes/a11y_toolbar.html" only %}
+            {% endblock a11y-toolbar %}
         </div>
     {% endblock %}
 
