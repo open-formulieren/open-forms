@@ -12,7 +12,6 @@
  * itself (with design token = custom css property here).
  */
 @mixin add-responsive-styles($viewport) {
-  // specific tokens are preferred, but we fall back for backwards compatibility reasons
   $prefix: --of-utrecht-page-footer-#{$viewport};
 
   --_of-utrecht-page-footer-max-inline-size: var(
@@ -20,44 +19,47 @@
     var(--of-utrecht-page-footer-max-inline-size)
   );
 
-  padding-block-end: var(
+  // TODO: Open Forms 3.0 - set the property directly instead of using custom property.
+  --_padding-block-end: var(
     #{$prefix}-padding-block-end,
     var(--utrecht-page-footer-padding-block-end)
   );
-  padding-block-start: var(
+  --_padding-block-start: var(
     #{$prefix}-padding-block-start,
     var(--utrecht-page-footer-padding-block-start)
   );
-  padding-inline-end: var(
+  --_padding-inline-end: var(
     #{$prefix}-padding-inline-end,
     var(--utrecht-page-footer-padding-inline-end)
   );
-  padding-inline-start: var(
+  --_padding-inline-start: var(
     #{$prefix}-padding-inline-start,
     var(--utrecht-page-footer-padding-inline-start)
   );
+
+  // backwards compatibility - remove this in Open Forms 3.0
+  --_padding-shorthand: var(--_padding-block-start) var(--_padding-inline-end)
+    var(--_padding-block-end) var(--_padding-inline-start);
+
+  padding: var(--of-page-footer-#{$viewport}-padding, var(--_padding-shorthand));
 }
 
 // Open Forms extensions - add opt-in support for responsive spacing.
 .utrecht-page-footer {
   @include mobile-only {
     @include add-responsive-styles('mobile');
-    --_of-utrecht-page-footer-max-inline-size: var();
   }
 
   @include tablet {
     @include add-responsive-styles('tablet');
-    --_of-utrecht-page-footer-max-inline-size: var();
   }
 
   @include laptop {
     @include add-responsive-styles('laptop');
-    --_of-utrecht-page-footer-max-inline-size: var();
   }
 
   @include desktop {
     @include add-responsive-styles('desktop');
-    --_of-utrecht-page-footer-max-inline-size: var();
   }
 
   // Support setting a maximum width/inline-size for content in the footer. Note that
@@ -68,6 +70,10 @@
     margin-inline-end: auto;
     margin-inline-start: auto;
   }
+
+  // backwards compatibility - remove this in Open Forms 3.0
+  background-color: var(--of-page-footer-bg, var(--utrecht-page-footer-background-color));
+  color: var(--of-page-footer-fg, var(--utrecht-page-footer-color));
 }
 
 // Style overrides specific for our own theme
