@@ -1,57 +1,79 @@
 @import '~microscope-sass/lib/responsive';
 
-@mixin map-paddings-for-viewport($viewport) {
-  // the fallback - this can potentially be a shorthand, in which case the styles break.
-  $old-fallback: var(--of-page-footer-#{$viewport}-padding);
-
+/**
+ * Override CSS to add responsive styles for a particular viewport.
+ *
+ * This uses custom Open Forms design tokens as an extension on existing utrecht-page-footer
+ * design tokens for responsive viewport support. If the token is unset, we fall back to
+ * the canonical, non-responsive design token.
+ *
+ * A CSS override is required since there doesn't appear to be a way to capture the
+ * value of a design token to later use as fallback when overriding the design token
+ * itself (with design token = custom css property here).
+ */
+@mixin add-responsive-styles($viewport) {
   // specific tokens are preferred, but we fall back for backwards compatibility reasons
-  --utrecht-page-footer-padding-block-end: #{$old-fallback};
-  --utrecht-page-footer-padding-block-start: #{$old-fallback};
-  --utrecht-page-footer-padding-inline-end: #{$old-fallback};
-  --utrecht-page-footer-padding-inline-start: #{$old-fallback};
+  $prefix: --of-utrecht-page-footer-#{$viewport};
+
+  --_of-utrecht-page-footer-max-inline-size: var(
+    #{$prefix}-max-inline-size,
+    var(--of-utrecht-page-footer-max-inline-size)
+  );
+
+  padding-block-end: var(
+    #{$prefix}-padding-block-end,
+    var(--utrecht-page-footer-padding-block-end)
+  );
+  padding-block-start: var(
+    #{$prefix}-padding-block-start,
+    var(--utrecht-page-footer-padding-block-start)
+  );
+  padding-inline-end: var(
+    #{$prefix}-padding-inline-end,
+    var(--utrecht-page-footer-padding-inline-end)
+  );
+  padding-inline-start: var(
+    #{$prefix}-padding-inline-start,
+    var(--utrecht-page-footer-padding-inline-start)
+  );
+}
+
+// Open Forms extensions - add opt-in support for responsive spacing.
+.utrecht-page-footer {
+  @include mobile-only {
+    @include add-responsive-styles('mobile');
+    --_of-utrecht-page-footer-max-inline-size: var();
+  }
+
+  @include tablet {
+    @include add-responsive-styles('tablet');
+    --_of-utrecht-page-footer-max-inline-size: var();
+  }
+
+  @include laptop {
+    @include add-responsive-styles('laptop');
+    --_of-utrecht-page-footer-max-inline-size: var();
+  }
+
+  @include desktop {
+    @include add-responsive-styles('desktop');
+    --_of-utrecht-page-footer-max-inline-size: var();
+  }
+
+  // Support setting a maximum width/inline-size for content in the footer. Note that
+  // we target direct children here to be flexible enough in the future if we need to
+  // flexbox-row more content (we can then add a wrapper div).
+  > * {
+    max-inline-size: var(--_of-utrecht-page-footer-max-inline-size);
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+  }
 }
 
 // Style overrides specific for our own theme
 .openforms-theme {
-  // backwards compatibility
-  // TODO: remove in Open Forms 3.0
-  --utrecht-page-footer-background-color: var(--of-page-footer-bg);
-  --utrecht-page-footer-color: var(--of-page-footer-fg);
-
-  --of-page-footer-mobile-padding: 10px;
-  --of-page-footer-tablet-padding: 10px;
-  --of-page-footer-laptop-padding: 20px;
-  --of-page-footer-desktop-padding: 20px;
-
   .utrecht-page-footer {
-    @include mobile-only {
-      @include map-paddings-for-viewport('mobile');
-      --of-page-footer-max-inline-size: 100%;
-    }
-
-    @include tablet {
-      @include map-paddings-for-viewport('tablet');
-      --of-page-footer-max-inline-size: 100%;
-    }
-
-    @include laptop {
-      @include map-paddings-for-viewport('laptop');
-      --of-page-footer-max-inline-size: 100%;
-    }
-
-    @include desktop {
-      @include map-paddings-for-viewport('desktop');
-      --of-page-footer-max-inline-size: #{$breakpoint-desktop};
-    }
-
-    box-sizing: border-box;
-    min-block-size: var(--of-page-footer-min-height, 40px);
-
     &__navigation {
-      max-inline-size: var(--of-page-footer-max-inline-size);
-      margin-inline-end: auto;
-      margin-inline-start: auto;
-
       .utrecht-link-list {
         --utrecht-link-text-decoration: underline;
         --utrecht-link-hover-text-decoration: none;
