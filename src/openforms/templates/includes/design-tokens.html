@@ -2,7 +2,7 @@
 {% get_solo 'config.GlobalConfiguration' as config %}
 
 {# Template out the configured design tokens JSON, if provided #}
-{% if config.design_token_values %}
+{% if config.design_token_values or config.logo %}
     {% style_dictionary config.design_token_values as design_tokens %}
     <style nonce="{{ request.csp_nonce }}">
 
