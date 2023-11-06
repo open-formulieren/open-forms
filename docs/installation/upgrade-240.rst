@@ -13,6 +13,22 @@ the manual interventions with context are documented here.
    :local:
 
 
+Check forms with duplicated steps
+=================================
+
+We now block duplicated form steps at the database level - if you have forms in your
+environment with non-unique steps, the upgrade will refuse to execute (or crash if
+you disable checks).
+
+The check script is available since Open Forms 2.3.3, you can run it using:
+
+.. code-block:: bash
+
+    python /app/bin/check_non_unique_steps.py
+
+and it will report any problematic forms. These forms need to be updated manually to
+remove the duplicated steps.
+
 DigiD/eHerkenning configuration
 ===============================
 
@@ -31,7 +47,18 @@ The field can be found under the "Identity provider" section.
 Once these URLs are configured, the metadata file field and the identity provider ID
 will be automatically populated.
 
+Additionally, because the CSP directives are generated from this configuration, we
+recommend saving the configuration once (even if you made no changes) to create the
+necessary CSP configuration records.
+
 .. note:: Any previously uploaded metadata files continue to work as expected.
+
+Ogone configuration
+===================
+
+After upgrading, you should go to the Ogone merchants configuration and save every
+merchant (even if you made no changes) to populate the related CSP configuration
+records.
 
 KVK Configuration
 =================
