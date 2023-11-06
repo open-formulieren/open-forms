@@ -29,6 +29,11 @@
     "description": "\"==\" operator description",
     "originalDefault": "is equal to"
   },
+  "+rILvF": {
+    "defaultMessage": "Mark the form step as applicable",
+    "description": "action type \"step-applicable\" label",
+    "originalDefault": "Mark the form step as applicable"
+  },
   "/c2LWu": {
     "defaultMessage": "Locations Component",
     "description": "Locations Component field label",
@@ -488,6 +493,11 @@
     "defaultMessage": "Field",
     "description": "Manage process vars component column title",
     "originalDefault": "Field"
+  },
+  "EDwCbX": {
+    "defaultMessage": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }",
+    "description": "Description of which key is duplicated in which steps.",
+    "originalDefault": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }"
   },
   "ENyg8G": {
     "defaultMessage": "There are multiple co-sign components specified in this form. At most one should be present.",
@@ -1049,6 +1059,11 @@
     "description": "Form slug field label",
     "originalDefault": "Slug"
   },
+  "TbFGCG": {
+    "defaultMessage": "Is applicable?",
+    "description": "Form step is applicable label",
+    "originalDefault": "Is applicable?"
+  },
   "Tfpxsi": {
     "defaultMessage": "Something went wrong while rendering this logic rule! For debugging, here is the JSON of the logic rule:",
     "description": "Unexpected error message in logic rule",
@@ -1308,6 +1323,11 @@
     "defaultMessage": "Content that will be shown on the start page of the form, below the title and above the log in text.",
     "description": "Start page explanation text",
     "originalDefault": "Content that will be shown on the start page of the form, below the title and above the log in text."
+  },
+  "cakbDK": {
+    "defaultMessage": "{numDuplicated, plural, =1 {A key is duplicated:} other {{numDuplicated} keys are duplicated:} } <duplicatedKeys></duplicatedKeys>",
+    "description": "Warning message for duplicated keys",
+    "originalDefault": "{numDuplicated, plural, =1 {A key is duplicated:} other {{numDuplicated} keys are duplicated:} } <duplicatedKeys></duplicatedKeys>"
   },
   "cpJErE": {
     "defaultMessage": "Integer",
@@ -1908,6 +1928,11 @@
     "defaultMessage": "Source",
     "description": "JSON editor: value source selector label",
     "originalDefault": "Source"
+  },
+  "wUdgIT": {
+    "defaultMessage": "Use raw JSON input",
+    "description": "Toggle array input raw JSON input mode",
+    "originalDefault": "Use raw JSON input"
   },
   "wjwFwT": {
     "defaultMessage": "Component where times for an appointment will be shown",
