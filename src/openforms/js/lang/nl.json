@@ -29,6 +29,11 @@
     "description": "\"==\" operator description",
     "originalDefault": "is equal to"
   },
+  "+rILvF": {
+    "defaultMessage": "markeer de formulierstap als van toepassing",
+    "description": "action type \"step-applicable\" label",
+    "originalDefault": "Mark the form step as applicable"
+  },
   "/c2LWu": {
     "defaultMessage": "Locatie veld",
     "description": "Locations Component field label",
@@ -493,6 +498,11 @@
     "defaultMessage": "Veld",
     "description": "Manage process vars component column title",
     "originalDefault": "Field"
+  },
+  "EDwCbX": {
+    "defaultMessage": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} en {tail}} }",
+    "description": "Description of which key is duplicated in which steps.",
+    "originalDefault": "<code>{componentKey}</code>: in {numSteps, plural, =1 {{tail}} other {{lead} and {tail}} }"
   },
   "ENyg8G": {
     "defaultMessage": "Het formulier heeft meerdere mede-ondertekencomponenten. Zorg ervoor dat dit er maximaal één is.",
@@ -1059,6 +1069,11 @@
     "description": "Form slug field label",
     "originalDefault": "Slug"
   },
+  "TbFGCG": {
+    "defaultMessage": "Is van toepassing?",
+    "description": "Form step is applicable label",
+    "originalDefault": "Is applicable?"
+  },
   "Tfpxsi": {
     "defaultMessage": "Er ging iets fout bij het weergeven van deze logicaregel. Om het probleem te debuggen tonen we de JSON-definitie:",
     "description": "Unexpected error message in logic rule",
@@ -1322,6 +1337,11 @@
     "defaultMessage": "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven de startknop(pen).",
     "description": "Start page explanation text",
     "originalDefault": "Content that will be shown on the start page of the form, below the title and above the log in text."
+  },
+  "cakbDK": {
+    "defaultMessage": "{numDuplicated, plural, =1 {Een sleutel is niet uniek:} other {{numDuplicated} sleutels zijn niet uniek:} } <duplicatedKeys></duplicatedKeys>",
+    "description": "Warning message for duplicated keys",
+    "originalDefault": "{numDuplicated, plural, =1 {A key is duplicated:} other {{numDuplicated} keys are duplicated:} } <duplicatedKeys></duplicatedKeys>"
   },
   "cpJErE": {
     "defaultMessage": "Geheel getal (integer)",
@@ -1922,6 +1942,11 @@
     "defaultMessage": "Bron",
     "description": "JSON editor: value source selector label",
     "originalDefault": "Source"
+  },
+  "wUdgIT": {
+    "defaultMessage": "JSON-waarde invoeren",
+    "description": "Toggle array input raw JSON input mode",
+    "originalDefault": "Use raw JSON input"
   },
   "wjwFwT": {
     "defaultMessage": "Veld waar beschikbare tijden voor een afspraak komen te staan",
