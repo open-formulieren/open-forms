@@ -24,7 +24,9 @@ beautifulsoup4==4.10.0
 billiard==3.6.4.0
     # via celery
 bleach[css]==5.0.1
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   bleach
 boltons==21.0.0
     # via
     #   face
@@ -90,7 +92,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.21
+django==3.2.23
     # via
     #   -r requirements/base.in
     #   django-admin-index
