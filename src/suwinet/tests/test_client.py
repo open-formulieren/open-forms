@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 import lxml.etree
 from bs4 import BeautifulSoup
@@ -39,6 +39,7 @@ class SuwinetConfigTests(TestCase):
         with get_client() as client:
             self.assertTrue(client.KadasterDossierGSD)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_setting_a_wsdl_url_will_fail(self):
         config = SuwinetConfigFactory.build(
             service__url="http://www.soapclient.com/xml/soapresponder.wsdl"
@@ -49,6 +50,7 @@ class SuwinetConfigTests(TestCase):
         ):
             config.clean()
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_setting_no_bindings_will_fail(self):
         config = SuwinetConfigFactory.build(
             service__url="",
