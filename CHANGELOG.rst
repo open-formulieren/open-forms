@@ -2,10 +2,17 @@
 Changelog
 =========
 
-2.4.0 "..." (2023-11-??)
-========================
+2.4.0 "Miffy" (2023-11-09)
+==========================
 
 Open Forms 2.4.0 is a feature release.
+
+.. epigraph::
+
+   **Miffy** (or "Nijntje" in Dutch) is a fictional rabbit appearing in a series of
+   picture books authored by Dick Bruna. Both are famous Utrecht citizens. You can find
+   Miffy in a number of places, such as the "Nijntje Pleintje" (Miffy Square) and a set
+   of pedestrian traffic lights in the shape of the rabbit in the city center.
 
 Upgrade procedure
 -----------------
