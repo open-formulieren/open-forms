@@ -239,3 +239,30 @@ The mapping below shows the NL Design System tokens populated from our custom to
 
 The commented out tokens are values that used to be hardcoded in our CSS, but should now
 be specified via design tokens and reflect the (default) values set in the Open Forms theme.
+
+Alert styling
+=============
+
+We've refactored our alert styling to make use of the ``utrecht-alert`` component. This
+effectively replaces the ``--of`` design tokens with the ``--utrecht`` ones. A backwards
+compatibility layer is set up which will be dropped in Open Forms 3.0, so we recommend
+updating your stylesheets.
+
+There is no automatic data migration set up (yet).
+
+Reference
+---------
+
+The mapping below shows the NL Design System tokens populated from our custom tokens:
+
+.. code-block:: scss
+
+    :root {
+        --utrecht-alert-warning-background-color: var(--of-alert-warning-bg);
+        --utrecht-alert-info-background-color: var(--of-alert-info-bg);
+        --utrecht-alert-error-background-color: var(--of-alert-error-bg);
+        --utrecht-alert-icon-error-color: var(--of-color-danger);
+        --utrecht-alert-icon-info-color: var(--of-color-info);
+        --utrecht-alert-icon-warning-color: var(--of-color-warning);
+        --utrecht-alert-icon-ok-color: var(--of-color-success);
+    }
