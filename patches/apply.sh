@@ -13,7 +13,7 @@ fi
 cd $sitepackagesdir
 echo "Patching packages in: $(pwd)"
 
-for patch_file in $SCRIPT_DIR/yubin_00{1..3}.patch
+for patch_file in $SCRIPT_DIR/yubin_00{1..4}.patch
 do
     echo "Applying patch file: $patch_file"
     git apply $patch_file
