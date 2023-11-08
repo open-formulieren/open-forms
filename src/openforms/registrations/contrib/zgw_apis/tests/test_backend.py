@@ -338,7 +338,7 @@ class ZGWBackendTests(TestCase):
                 "inpBsn": "111222333",
                 "voorvoegselGeslachtsnaam": "de",
                 "geslachtsnaam": "Bar",
-                "verblijfsadres": {"postcode": "1000 AA"},
+                "verblijfsadres": {"aoaPostcode": "1000 AA"},
                 "voorletters": "J.W.",
                 "geslachtsaanduiding": "m",
             },
@@ -529,7 +529,7 @@ class ZGWBackendTests(TestCase):
                 "vestigingsNummer": "87654321",
                 "innNnpId": "12345678",
                 "statutaireNaam": "ACME",
-                "verblijfsadres": {"postcode": "1000 AA"},
+                "verblijfsadres": {"aoaPostcode": "1000 AA"},
             },
         )
 
@@ -770,7 +770,7 @@ class ZGWBackendTests(TestCase):
                 "handelsnaam": "ACME",
                 "innNnpId": "12345678",
                 "statutaireNaam": "ACME",
-                "verblijfsadres": {"postcode": "1000 AA"},
+                "verblijfsadres": {"aoaPostcode": "1000 AA"},
             },
         )
 

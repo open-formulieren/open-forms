@@ -147,12 +147,12 @@ class ZGWRegistration(BasePlugin):
         ),
         # "betrokkeneIdentificatie.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
         # Verblijfsadres for both Natuurlijk Persoon and Vestiging
-        "betrokkeneIdentificatie.verblijfsadres.woonplaatsNaam": RegistrationAttribute.initiator_woonplaats,
-        "betrokkeneIdentificatie.verblijfsadres.postcode": RegistrationAttribute.initiator_postcode,
-        "betrokkeneIdentificatie.verblijfsadres.straatnaam": RegistrationAttribute.initiator_straat,
-        "betrokkeneIdentificatie.verblijfsadres.huisnummer": RegistrationAttribute.initiator_huisnummer,
-        "betrokkeneIdentificatie.verblijfsadres.huisletter": RegistrationAttribute.initiator_huisletter,
-        "betrokkeneIdentificatie.verblijfsadres.huisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
+        "betrokkeneIdentificatie.verblijfsadres.wplWoonplaatsNaam": RegistrationAttribute.initiator_woonplaats,
+        "betrokkeneIdentificatie.verblijfsadres.aoaPostcode": RegistrationAttribute.initiator_postcode,
+        "betrokkeneIdentificatie.verblijfsadres.gorOpenbareRuimteNaam": RegistrationAttribute.initiator_straat,
+        "betrokkeneIdentificatie.verblijfsadres.aoaHuisnummer": RegistrationAttribute.initiator_huisnummer,
+        "betrokkeneIdentificatie.verblijfsadres.aoaHuisletter": RegistrationAttribute.initiator_huisletter,
+        "betrokkeneIdentificatie.verblijfsadres.aoaHuisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
         # Contactpersoon (NOT SUPPORTED BY ZGW APIs)
         # "betrokkeneIdentificatie.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
         # "betrokkeneIdentificatie.emailadres": RegistrationAttribute.initiator_emailadres,
