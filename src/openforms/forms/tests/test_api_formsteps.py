@@ -1095,6 +1095,7 @@ class FormStepsAPITranslationTests(APITestCase):
 
 
 class FormStepsAPIApplicabilityTests(APITestCase):
+    @override_settings(LANGUAGE_CODE="en")
     def test_create_form_step_not_applicable_as_first_unsucessful(self):
         user = UserFactory.create()
         form = FormFactory.create()
