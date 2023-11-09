@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.3.4 (2023-11-09)
+==================
+
+Hotfix release
+
+* Upgraded bundled SDK version
+* [#3585] Fixed a race condition when trying to send emails that haven't been saved to
+  the DB yet.
+* [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
+  creating the rol/betrokkene.
+
 2.3.3 (2023-10-30)
 ==================
 
