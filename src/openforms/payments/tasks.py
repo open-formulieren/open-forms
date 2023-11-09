@@ -30,7 +30,7 @@ def update_submission_payment_status(
     submission = Submission.objects.select_related("auth_info").get(id=submission_id)
     config = GlobalConfiguration.get_solo()
 
-    should_skip = any(
+    should_skip = config.wait_for_payment_to_register or any(
         (
             submission.registration_status != RegistrationStatuses.success,
             not submission.payment_required,
