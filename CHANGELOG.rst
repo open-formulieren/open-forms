@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.1.9 (2023-11-09)
+==================
+
+Hotfix release
+
+* Upgraded bundled SDK version
+* [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
+  creating the rol/betrokkene.
+
 2.1.8 (2023-10-30)
 ==================
 
