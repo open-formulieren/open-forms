@@ -44,6 +44,14 @@ class CSPUpdateTests(TestCase):
 
 
 class CreateCSPFormActionFromConfigTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # looks like there may be left over (migration) data from non-transaction testcases
+        DigidConfiguration.objects.all().delete()
+        EherkenningConfiguration.objects.all().delete()
+
     def setUp(self):
         super().setUp()
 
@@ -62,7 +70,7 @@ class CreateCSPFormActionFromConfigTests(TestCase):
 
         self.assertFalse(CSPSetting.objects.exists())
 
-    def test_config_records_exists_but_are_incomplete(self):
+    def test_config_records_exist_but_are_incomplete(self):
         OgoneMerchant.objects.create(
             endpoint_preset="",  # not realistic, but the DB allows it
             endpoint_custom="",

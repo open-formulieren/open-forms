@@ -15,7 +15,9 @@ from .factories import OgoneMerchantFactory
 
 
 @override_settings(
-    CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
+    CORS_ALLOW_ALL_ORIGINS=False,
+    CORS_ALLOWED_ORIGINS=["http://foo.bar"],
+    CSP_FORM_ACTION=["'self'"],
 )
 class OgoneTests(TestCase):
     maxDiff = None

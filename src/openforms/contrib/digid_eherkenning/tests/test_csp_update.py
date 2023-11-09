@@ -80,7 +80,7 @@ class DigidCSPUpdateTests(TestCase):
 
         csp_updated = CSPSetting.objects.get()
 
-        self.assertEqual(get_metadata.call_count, 4)
+        self.assertEqual(get_metadata.call_count, 2)
         self.assertFalse(CSPSetting.objects.filter(id=csp_added.id))
         self.assertEqual(csp_updated.content_object, self.config)
         self.assertEqual(csp_updated.directive, CSPDirective.FORM_ACTION)
@@ -95,6 +95,7 @@ class DigidCSPUpdateTests(TestCase):
     @patch(
         "onelogin.saml2.idp_metadata_parser.OneLogin_Saml2_IdPMetadataParser.get_metadata"
     )
+    @override_settings(CSP_FORM_ACTION=["'self'"])
     def test_response_headers_contain_form_action_values_in_digid(self, get_metadata):
         form = FormFactory.create(authentication_backends=["digid"])
         form_definition = FormDefinitionFactory.create(login_required=True)
@@ -114,7 +115,7 @@ class DigidCSPUpdateTests(TestCase):
         # redirect_to_digid_login
         response = self.client.get(login_url, {"next": form_url}, follow=True)
 
-        self.assertEqual(get_metadata.call_count, 2)
+        self.assertEqual(get_metadata.call_count, 1)
         self.assertIn(
             "form-action "
             "'self' "
@@ -188,7 +189,7 @@ class EherkenningCSPUpdateTests(TestCase):
 
         csp_updated = CSPSetting.objects.get()
 
-        self.assertEqual(get_metadata.call_count, 4)
+        self.assertEqual(get_metadata.call_count, 2)
         self.assertFalse(CSPSetting.objects.filter(id=csp_added.id))
         self.assertEqual(csp_added.directive, CSPDirective.FORM_ACTION)
         self.assertEqual(
@@ -200,6 +201,7 @@ class EherkenningCSPUpdateTests(TestCase):
     @patch(
         "onelogin.saml2.idp_metadata_parser.OneLogin_Saml2_IdPMetadataParser.get_metadata"
     )
+    @override_settings(CSP_FORM_ACTION=["'self'"])
     def test_response_headers_contain_form_action_values_in_eherkenning(
         self, get_metadata
     ):
@@ -225,7 +227,7 @@ class EherkenningCSPUpdateTests(TestCase):
         # redirect_to_eherkenning_login
         response = self.client.get(login_url, {"next": form_url}, follow=True)
 
-        self.assertEqual(get_metadata.call_count, 2)
+        self.assertEqual(get_metadata.call_count, 1)
         self.assertIn(
             "form-action "
             "'self' "
