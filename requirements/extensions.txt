@@ -495,7 +495,7 @@ oauthlib==3.2.2
     #   requests-oauthlib
 open-forms-ext-haalcentraal-hr==0.2.0
     # via -r requirements/extensions.in
-open-forms-ext-token-exchange==0.2.0
+open-forms-ext-token-exchange==0.4.0
     # via -r requirements/extensions.in
 openapi-schema-validator==0.4.4
     # via
