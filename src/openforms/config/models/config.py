@@ -528,6 +528,13 @@ class GlobalConfiguration(SingletonModel):
         blank=True,
         default=list,
     )
+    wait_for_payment_to_register = models.BooleanField(
+        verbose_name=_("wait for payment to register"),
+        help_text=_(
+            "Should a submission be processed (sent to the registration backend) only after payment has been received?"
+        ),
+        default=False,
+    )
 
     objects = GlobalConfigurationManager()
 
