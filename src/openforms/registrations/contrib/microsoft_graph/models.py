@@ -19,6 +19,7 @@ class MSGraphRegistrationConfig(SingletonModel):
         verbose_name=_("Microsoft Graph service"),
         on_delete=models.PROTECT,
         related_name="registration_config",
+        blank=True,
         null=True,
     )
 
