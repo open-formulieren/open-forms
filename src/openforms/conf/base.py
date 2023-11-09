@@ -749,6 +749,7 @@ CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 # NOTE these are also used by the authentication plugins to verify redirects
 CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=False)
 CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", split=True, default=[])
+assert isinstance(CORS_ALLOWED_ORIGINS, list)
 CORS_ALLOWED_ORIGIN_REGEXES = config(
     "CORS_ALLOWED_ORIGIN_REGEXES", split=True, default=[]
 )
@@ -896,7 +897,7 @@ Open Forms fits in the [Common Ground](https://commonground.nl) vision and archi
 and it plays nice with other available components.
 """
 
-API_VERSION = "2.4.0-alpha.0"
+API_VERSION = "2.4.0"
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/v2",
@@ -1102,7 +1103,14 @@ CSP_DEFAULT_SRC = [
     "'self'",
 ] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
 
-CSP_FORM_ACTION = ("'self'",)
+# CORS_ALLOWED_ORIGINS is included because we (likely) need to redirect back to those
+# third party domains that are embedding the SDK after login. Chrome in particular
+# validates the entire redirect chain, see: https://stackoverflow.com/a/69439102
+CSP_FORM_ACTION = (
+    ["'self'"]
+    + CORS_ALLOWED_ORIGINS
+    + config("CSP_EXTRA_FORM_ACTION", default=[], split=True)
+)
 
 # * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted
 # * the data: URIs are used by Leaflet (invisible pixel for memory management/image unloading)

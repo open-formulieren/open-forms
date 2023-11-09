@@ -51,6 +51,7 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    1.3.0       2.1.0               n/a
    1.4.0       2.2.0               n/a
    1.5.0       2.3.0               n/a
+   2.0.0       2.4.0               n/a
    =========== =================== ===================
 
 .. _developers_versioning_api:
@@ -98,6 +99,7 @@ backend version.
    =============== ===========
    Backend version API version
    =============== ===========
+   2.4.x           2.4.y
    2.3.x           2.3.y
    2.2.x           2.2.y
    2.1.x           2.1.y

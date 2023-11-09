@@ -8,8 +8,79 @@ We do our best to avoid breaking changes, but at times we cannot guarantee that 
 configuration will keep working flawlessly. Open Forms 2.4.0 is such a release - and
 the manual interventions with context are documented here.
 
+.. contents:: Jump to
+   :depth: 1
+   :local:
+
+
+Check forms with duplicated steps
+=================================
+
+We now block duplicated form steps at the database level - if you have forms in your
+environment with non-unique steps, the upgrade will refuse to execute (or crash if
+you disable checks).
+
+The check script is available since Open Forms 2.3.4, you can run it using:
+
+.. code-block:: bash
+
+    python /app/bin/check_non_unique_steps.py
+
+and it will report any problematic forms. These forms need to be updated manually to
+remove the duplicated steps.
+
+DigiD/eHerkenning configuration
+===============================
+
+DigiD and/or eHerkenning configuration before Open Forms 2.4.0 required manually
+uploading the XML metadata file.
+
+This file is now automatically retrieved, provided you configure the "(XML) metadata
+URL". We cannot populate this URL on existing instances, so you need to configure this
+manually by navigating to:
+
+* **Admin** > **Configuratie** > **DigiD-configuratie** and
+* **Admin** > **Configuratie** > **EHerkenning/eIDAS-configuratie**
+
+The field can be found under the "Identity provider" section.
+
+Once these URLs are configured, the metadata file field and the identity provider ID
+will be automatically populated.
+
+Additionally, because the CSP directives are generated from this configuration, we
+recommend saving the configuration once (even if you made no changes) to create the
+necessary CSP configuration records.
+
+.. note:: Any previously uploaded metadata files continue to work as expected.
+
+Ogone configuration
+===================
+
+After upgrading, you should go to the Ogone merchants configuration and save every
+merchant (even if you made no changes) to populate the related CSP configuration
+records.
+
+KVK Configuration
+=================
+
+We've done some extensive code and configuration cleanups, and the KVK configuration may
+be affected by this. The service configuration for the "zoeken" and "basisprofiel" API's
+has been merged into a single service. Normally this configuration update should have
+been performed correctly automatically, but we can't rule out possible mistakes with
+more exotic configurations (e.g. when using API gateways).
+
+⚠️ Please check and update your configuration if necessary - you can check this via:
+**Admin** > **Configuratie** > **Configuratie overzicht** and look for the KVK entries.
+
+If you run into any errors, then please check your certificate configuration, API key
+and validate that the API root does *not* include the ``v1/`` suffix. An example of a
+correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/``.
+
 Button styling
 ==============
+
+We are committed to NL Design System and have overhauled our custom button
+implementation and styles.
 
 Our buttons used custom design tokens since they were implemented before the `NL Design
 System buttons`_ were much of a thing. *Most* of the tokens map cleanly, and if you
@@ -19,7 +90,7 @@ test/acceptance environment and prepare the necessary changes.
 
 However, if you have made custom CSS changes, we cannot incorporate those and you will
 have to check your customizations. You will have to manually check if those changes
-are still relevant or not. Our advice is also to take a critical look - the transition
+are still relevant or not. Our advice is to also take a critical look - the transition
 to community components should make it much easier to change the appearance and behaviour
 using design tokens rather than CSS overrides.
 
@@ -168,3 +239,30 @@ The mapping below shows the NL Design System tokens populated from our custom to
 
 The commented out tokens are values that used to be hardcoded in our CSS, but should now
 be specified via design tokens and reflect the (default) values set in the Open Forms theme.
+
+Alert styling
+=============
+
+We've refactored our alert styling to make use of the ``utrecht-alert`` component. This
+effectively replaces the ``--of`` design tokens with the ``--utrecht`` ones. A backwards
+compatibility layer is set up which will be dropped in Open Forms 3.0, so we recommend
+updating your stylesheets.
+
+There is no automatic data migration set up (yet).
+
+Reference
+---------
+
+The mapping below shows the NL Design System tokens populated from our custom tokens:
+
+.. code-block:: scss
+
+    :root {
+        --utrecht-alert-warning-background-color: var(--of-alert-warning-bg);
+        --utrecht-alert-info-background-color: var(--of-alert-info-bg);
+        --utrecht-alert-error-background-color: var(--of-alert-error-bg);
+        --utrecht-alert-icon-error-color: var(--of-color-danger);
+        --utrecht-alert-icon-info-color: var(--of-color-info);
+        --utrecht-alert-icon-warning-color: var(--of-color-warning);
+        --utrecht-alert-icon-ok-color: var(--of-color-success);
+    }

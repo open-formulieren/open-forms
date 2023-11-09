@@ -53,6 +53,12 @@
       "value": "Regular Expression Pattern"
     }
   ],
+  "+rILvF": [
+    {
+      "type": 0,
+      "value": "Mark the form step as applicable"
+    }
+  ],
   "/XbK4W": [
     {
       "type": 0,
@@ -87,6 +93,12 @@
     {
       "type": 0,
       "value": "Whether to show this value in the confirmation PDF"
+    }
+  ],
+  "0OP7ho": [
+    {
+      "type": 0,
+      "value": "Receives confirmation email"
     }
   ],
   "0RXE97": [
@@ -907,10 +919,64 @@
       "value": "Translations"
     }
   ],
+  "E5rUfM": [
+    {
+      "type": 0,
+      "value": "Identifier role"
+    }
+  ],
   "EBsxTk": [
     {
       "type": 0,
       "value": "Field"
+    }
+  ],
+  "EDwCbX": [
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "componentKey"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ": in "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "=1": {
+          "value": [
+            {
+              "type": 1,
+              "value": "tail"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "lead"
+            },
+            {
+              "type": 0,
+              "value": " and "
+            },
+            {
+              "type": 1,
+              "value": "tail"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numSteps"
     }
   ],
   "ENyg8G": [
@@ -1339,6 +1405,12 @@
       "value": "Add variable"
     }
   ],
+  "LiXrER": [
+    {
+      "type": 0,
+      "value": "The selected trigger step could not be found in this form! Please change it!"
+    }
+  ],
   "LrlAVD": [
     {
       "type": 0,
@@ -1455,6 +1527,12 @@
       "value": "Error code"
     }
   ],
+  "OmQdqG": [
+    {
+      "type": 0,
+      "value": "Cache timeout"
+    }
+  ],
   "OobRu3": [
     {
       "type": 0,
@@ -1541,6 +1619,16 @@
       "value": ")"
     }
   ],
+  "Q0SS8P": [
+    {
+      "type": 1,
+      "value": "field"
+    },
+    {
+      "type": 0,
+      "value": " must be a valid email."
+    }
+  ],
   "Q7oBP/": [
     {
       "type": 0,
@@ -1587,6 +1675,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "RPzjrJ": [
+    {
+      "type": 0,
+      "value": "Main"
     }
   ],
   "RcVlPF": [
@@ -1717,6 +1811,18 @@
     {
       "type": 0,
       "value": "Slug"
+    }
+  ],
+  "TbFGCG": [
+    {
+      "type": 0,
+      "value": "Is applicable?"
+    }
+  ],
+  "Tfpxsi": [
+    {
+      "type": 0,
+      "value": "Something went wrong while rendering this logic rule! For debugging, here is the JSON of the logic rule:"
     }
   ],
   "TjjvQL": [
@@ -1883,6 +1989,12 @@
     {
       "type": 0,
       "value": "Prefill plugin"
+    }
+  ],
+  "WkBjB5": [
+    {
+      "type": 0,
+      "value": "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
     }
   ],
   "Wz5QZo": [
@@ -2191,6 +2303,12 @@
       "value": "(complex value)"
     }
   ],
+  "cJnAgZ": [
+    {
+      "type": 0,
+      "value": "Authorised person"
+    }
+  ],
   "cUVVbl": [
     {
       "type": 0,
@@ -2207,6 +2325,46 @@
     {
       "type": 0,
       "value": "Content that will be shown on the start page of the form, below the title and above the log in text."
+    }
+  ],
+  "cakbDK": [
+    {
+      "offset": 0,
+      "options": {
+        "=1": {
+          "value": [
+            {
+              "type": 0,
+              "value": "A key is duplicated:"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "numDuplicated"
+            },
+            {
+              "type": 0,
+              "value": " keys are duplicated:"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numDuplicated"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "duplicatedKeys"
     }
   ],
   "ce1N0I": [
@@ -2327,6 +2485,12 @@
     {
       "type": 0,
       "value": "Variable definition"
+    }
+  ],
+  "ewzHfR": [
+    {
+      "type": 0,
+      "value": "Email-address in this field will receive the confirmation email."
     }
   ],
   "f590Rb": [
@@ -2783,6 +2947,12 @@
       "value": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
     }
   ],
+  "nqJbi9": [
+    {
+      "type": 0,
+      "value": "Tooltip"
+    }
+  ],
   "o8CfuS": [
     {
       "type": 0,
@@ -2943,6 +3113,12 @@
     {
       "type": 0,
       "value": "Registration"
+    }
+  ],
+  "r4OkBj": [
+    {
+      "type": 0,
+      "value": "Oh no! Something went wrong."
     }
   ],
   "r5Olb9": [
@@ -3131,6 +3307,12 @@
       "value": "Specify the attribute holding the pre-fill data."
     }
   ],
+  "w4e4jx": [
+    {
+      "type": 0,
+      "value": "After how many seconds should the cached response expire."
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -3141,6 +3323,12 @@
     {
       "type": 0,
       "value": "Source"
+    }
+  ],
+  "wUdgIT": [
+    {
+      "type": 0,
+      "value": "Use raw JSON input"
     }
   ],
   "wZ99FU": [

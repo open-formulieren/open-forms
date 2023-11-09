@@ -2,48 +2,116 @@
 Changelog
 =========
 
-2.4.0 "..." (2023-??-??)
-========================
+2.4.0 "Miffy" (2023-11-09)
+==========================
 
-.. note:: These release notes are in development!
+Open Forms 2.4.0 is a feature release.
 
-**DigiD - Eherkenning Configuration**
+.. epigraph::
 
-The configuration concerning the digid and eherkenning has been updated according to the
-new version (0.9) of the django-digid-eherkenning library. The XML metadata file is now
-automatically retrieved so you have to edit the configuration via:
-**Admin** > **Configuratie** > **DigiD-configuratie**
-**Admin** > **Configuratie** > **EHerkenning/eIDAS-configuratie**
-and add the XML metadata url. The identity provider and the metadata file fields will be
-automatically populated if the url is valid.
+   **Miffy** (or "Nijntje" in Dutch) is a fictional rabbit appearing in a series of
+   picture books authored by Dick Bruna. Both are famous Utrecht citizens. You can find
+   Miffy in a number of places, such as the "Nijntje Pleintje" (Miffy Square) and a set
+   of pedestrian traffic lights in the shape of the rabbit in the city center.
 
 Upgrade procedure
 -----------------
 
-**KVK configuration**
+⚠️ Ensure you upgrade to Open Forms 2.3.0 before upgrading to the 2.4 release series.
 
-We've done some extensive code and configuration cleanups, and the KVK configuration may
-be affected by this. The service configuration for the "zoeken" and "basisprofiel" API's
-has been merged into a single service. Normally this configuration update should have
-been performed correctly automatically, but we can't rule out possible mistakes with
-more exotic configurations via API gateways.
-
-⚠️ Please check and update your configuration if necessary - you can check this via:
-**Admin** > **Configuratie** > **Configuratie overzicht** and look for the KVK entries.
-
-If you run into any errors, then please check your certificate configuration, API key
-and validate that the API root does *not* include the ``v1/`` suffix. An example of a
-correct API root: ``https://api.kvk.nl/api/`` or ``https://api.kvk.nl/test/api/``.
-
-**Button refactor to NL DS**
-
-We are committed to NL Design System and have overhauled our custom button
-implementation and styles. While we have done our best to provide an automatic
-migration of button styling configuration, there may be some changes that we cannot
-detect or handle automatically.
+To keep the codebase maintainable and follow best pratices, we've done some considerable
+cleanups in the code that may require some special attention. We've collected the
+details for this release in a separate documentation page.
 
 ⚠️ Please review the instructions in the documentation under **Installation** >
-**Upgrade details to Open Forms 2.4.0** > **Button styling**.
+**Upgrade details to Open Forms 2.4.0** before and during upgrading.
+
+Major features
+--------------
+
+***️ (Experimental) Suwinet plugin**
+
+We now support retrieving data for a logged in user (with BSN) through Suwinet. This
+feature is in experimental/preview mode, so we rely on your feedback on how to further
+develop and improve this.
+
+**📅 Appointments**
+
+Our Qmatic appointments plugin now also supports multiple customer/multiple products
+flows, matching the JCC feature set.
+
+**🧩 More NL Design System components**
+
+We continue bridging the gap between our custom UI-components and available NL DS
+components. Our buttons and links now no longer require OF-specific tokens and we've
+removed a whole bunch of styling code that got in the way when building your own theme.
+
+More will come in the future!
+
+Detailed changes
+----------------
+
+The 2.4.0-alpha.0 changes are included as well, see the earlier changelog entry.
+
+**New features**
+
+* Form designer
+
+    * [#586] Added support for Suwinet as a prefill plugin.
+    * [#3188] Added better error feedback when adding form steps to a form with
+      duplicate keys.
+    * [#3351] The family members component can now be used to retrieve partner
+      information instead of only the children (you can select children, partners or
+      both).
+    * [#2953] Added support for durations between dates in JSON-logic.
+    * [#2952] Form steps can now initially be non-applicable and dynamically be made
+      applicable.
+
+* [#3499] Accepting/declining cookies in the notice now no longer refreshes the page.
+* [#3477] Added CSP ``form-action`` directives, generated via the DigiD/eHerkenning
+  and Ogone configuration.
+* [#3524] The behaviour when retrieving family members who don't have a BSN is now
+  consistent and well-defined.
+* [#3566] Replaced custom buttons with utrecht-button components.
+
+**Bugfixes**
+
+* [#3527] Duplicated form steps in a form are now blocked at the database level.
+* [#3448] Fixed emails not being sent with a subject line > 70 characters.
+* [#3448] Fixed a performance issue when upgrading the underlying email sending library
+  if you have many (queued) emails.
+* [#2629] Fixed array variable inputs in the form designer.
+* [#3491] Fixed slowdown in the form designer when created a new or loading an existing
+  form when many reusable form definitions exist.
+* [#3557] Fixed a bug that would not display the available document types when
+  configuring the file upload component.
+* [#3553] Fixed a crash when validating a ZWG registration backend when no default
+  ZGW API group is set.
+* [#3537] Fixed validator plugin list endpoint to properly converting camelCase params
+  into snake_case.
+* [#3467] Fixed crashes when importing/copying forms with ``null`` in the prefill
+  configuration.
+* [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
+  creating the rol/betrokkene.
+
+**Project maintenance**
+
+* Upgraded various dependencies with the most recent (security) releases.
+* [#2958] Started the rework for form field-level translations, the backend can now
+  handle present and future formats.
+* [#3489] All API client usage is updated to a new library, which should lead to a
+  better developer experience and make it easier to get better performance when making
+  (multiple) API calls.
+* Bumped pip-tools for latest pip compatibility.
+* [#3531] Added a custom migration operation class for formio component transformations.
+* [#3531] The time component now stores ``minTime``/``maxTime`` in the ``validate``
+  namespace.
+* Contributed a number of library extensions back to the library itself.
+* Squashed the variables app migrations.
+* [#2958] Upgraded (experimental) new form builder to 0.8.0, which uses the new
+  translations format.
+* Fixed test suite which didn't take DST into account.
+* [#3449] Documented the (new) co-sign flow.
 
 2.3.3 (2023-10-30)
 ==================
@@ -93,7 +161,7 @@ Detailed changes
 * [#3051] You can now schedule activation/deactivation of forms.
 * [#1884] Added more fine-grained custom errors for time field components.
 * More fields irrelevant to appointment forms are now hidden in the form designer.
-* [#3456] Implemented multi-product and multi-customer appointments for QMatic.
+* [#3456] Implemented multi-product and multi-customer appointments for Qmatic.
 * [#3413] Improved UX by including direct hyperlinks to the form in co-sign emails (
   admins can disable this behaviour).
 * [#3328] Qmatic appointments plugin now support mTLS.

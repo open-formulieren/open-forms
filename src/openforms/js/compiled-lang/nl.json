@@ -32,7 +32,7 @@
   "+dcsE0": [
     {
       "type": 0,
-      "value": "Remove value"
+      "value": "Reset waarde"
     }
   ],
   "+hAGg7": [
@@ -51,6 +51,12 @@
     {
       "type": 0,
       "value": "Reguliere expressie"
+    }
+  ],
+  "+rILvF": [
+    {
+      "type": 0,
+      "value": "markeer de formulierstap als van toepassing"
     }
   ],
   "/XbK4W": [
@@ -87,6 +93,12 @@
     {
       "type": 0,
       "value": "Geef aan of deze waarde in de (bevestigings-)PDF moet getoond worden. Deze PDF wordt vaak ook als bijlage meegestuurd tijdens de registratie."
+    }
+  ],
+  "0OP7ho": [
+    {
+      "type": 0,
+      "value": "Ontvangt bevestigingsmail"
     }
   ],
   "0RXE97": [
@@ -911,10 +923,64 @@
       "value": "Vertalingen"
     }
   ],
+  "E5rUfM": [
+    {
+      "type": 0,
+      "value": "Identifier role"
+    }
+  ],
   "EBsxTk": [
     {
       "type": 0,
       "value": "Veld"
+    }
+  ],
+  "EDwCbX": [
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "componentKey"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": ": in "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "=1": {
+          "value": [
+            {
+              "type": 1,
+              "value": "tail"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "lead"
+            },
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "type": 1,
+              "value": "tail"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numSteps"
     }
   ],
   "ENyg8G": [
@@ -1040,7 +1106,7 @@
   "GO9yud": [
     {
       "type": 0,
-      "value": "When the form should be activated."
+      "value": "Datum en tijdstip waarop het formulier geactiveerd moet worden."
     }
   ],
   "GV8HnZ": [
@@ -1343,6 +1409,12 @@
       "value": "Variabele toevoegen"
     }
   ],
+  "LiXrER": [
+    {
+      "type": 0,
+      "value": "De gekozen trigger-stap bestaat niet (meer) in het formulier. Gelieve deze te wijzigen."
+    }
+  ],
   "LrlAVD": [
     {
       "type": 0,
@@ -1459,6 +1531,12 @@
       "value": "Foutcode"
     }
   ],
+  "OmQdqG": [
+    {
+      "type": 0,
+      "value": "Cache timeout"
+    }
+  ],
   "OobRu3": [
     {
       "type": 0,
@@ -1545,6 +1623,12 @@
       "value": " aan)"
     }
   ],
+  "Q0SS8P": [
+    {
+      "type": 0,
+      "value": "Ongeldig e-mailadres."
+    }
+  ],
   "Q7oBP/": [
     {
       "type": 0,
@@ -1591,6 +1675,12 @@
     {
       "type": 0,
       "value": "Betaalprovider backendopties"
+    }
+  ],
+  "RPzjrJ": [
+    {
+      "type": 0,
+      "value": "Main"
     }
   ],
   "RcVlPF": [
@@ -1721,6 +1811,18 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "TbFGCG": [
+    {
+      "type": 0,
+      "value": "Is van toepassing?"
+    }
+  ],
+  "Tfpxsi": [
+    {
+      "type": 0,
+      "value": "Er ging iets fout bij het weergeven van deze logicaregel. Om het probleem te debuggen tonen we de JSON-definitie:"
     }
   ],
   "TjjvQL": [
@@ -1887,6 +1989,12 @@
     {
       "type": 0,
       "value": "Prefill-plugin"
+    }
+  ],
+  "WkBjB5": [
+    {
+      "type": 0,
+      "value": "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
     }
   ],
   "Wz5QZo": [
@@ -2157,7 +2265,7 @@
   "brvKtm": [
     {
       "type": 0,
-      "value": "Activate on"
+      "value": "Activeren op"
     }
   ],
   "bzVhb6": [
@@ -2196,6 +2304,12 @@
       "value": "(complexe waarde)"
     }
   ],
+  "cJnAgZ": [
+    {
+      "type": 0,
+      "value": "Authorised person"
+    }
+  ],
   "cUVVbl": [
     {
       "type": 0,
@@ -2212,6 +2326,46 @@
     {
       "type": 0,
       "value": "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven de startknop(pen)."
+    }
+  ],
+  "cakbDK": [
+    {
+      "offset": 0,
+      "options": {
+        "=1": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Een sleutel is niet uniek:"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "numDuplicated"
+            },
+            {
+              "type": 0,
+              "value": " sleutels zijn niet uniek:"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numDuplicated"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "duplicatedKeys"
     }
   ],
   "ce1N0I": [
@@ -2332,6 +2486,12 @@
     {
       "type": 0,
       "value": "Variabeledefinitie"
+    }
+  ],
+  "ewzHfR": [
+    {
+      "type": 0,
+      "value": "Het e-mailadres in dit veld ontvangt de bevestigingsmail."
     }
   ],
   "f590Rb": [
@@ -2767,7 +2927,7 @@
   "nFXYHB": [
     {
       "type": 0,
-      "value": "When the form should be deactivated."
+      "value": "Datum en tijdstip waarop het formulier gedeactiveerd moet worden."
     }
   ],
   "nHFMXn": [
@@ -2786,6 +2946,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een inzending bewaard blijft voordat deze definitief verwijderd wordt. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "nqJbi9": [
+    {
+      "type": 0,
+      "value": "Tooltip"
     }
   ],
   "o8CfuS": [
@@ -2949,6 +3115,12 @@
     {
       "type": 0,
       "value": "Registratie"
+    }
+  ],
+  "r4OkBj": [
+    {
+      "type": 0,
+      "value": "😬 Er ging iets fout."
     }
   ],
   "r5Olb9": [
@@ -3137,6 +3309,12 @@
       "value": "Geef het attribuut op wat de prefill-gegevens bevat."
     }
   ],
+  "w4e4jx": [
+    {
+      "type": 0,
+      "value": "Na hoeveel seconden moeten gecachete resultaten vervallen."
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -3147,6 +3325,12 @@
     {
       "type": 0,
       "value": "Bron"
+    }
+  ],
+  "wUdgIT": [
+    {
+      "type": 0,
+      "value": "JSON-waarde invoeren"
     }
   ],
   "wZ99FU": [
@@ -3170,7 +3354,7 @@
   "x+ORaW": [
     {
       "type": 0,
-      "value": "Deactivate on"
+      "value": "Deactiveren op"
     }
   ],
   "x4gaYf": [

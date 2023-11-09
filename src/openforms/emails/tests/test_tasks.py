@@ -3,7 +3,7 @@ from textwrap import dedent
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from django_yubin.models import Message
 from freezegun import freeze_time
@@ -15,6 +15,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..tasks import send_email_digest
 
 
+@override_settings(LANGUAGE_CODE="en")
 class EmailDigestTaskTest(TestCase):
     def test_create_digest_email(self):
         submission = SubmissionFactory.create()
