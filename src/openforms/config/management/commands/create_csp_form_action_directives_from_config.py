@@ -27,5 +27,3 @@ class Command(BaseCommand):
                 continue
 
             configured_instance.save()  # triggers CSPSetting record creation
-
-        self.stdout.write("Nothing to do.")
