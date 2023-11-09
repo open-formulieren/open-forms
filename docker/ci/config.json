@@ -6,6 +6,11 @@
             "hasExtensionsVariant": true
         },
         {
+            "gitRef": "stable/2.4.x",
+            "tag": null,
+            "hasExtensionsVariant": true
+        },
+        {
             "gitRef": "stable/2.3.x",
             "tag": null,
             "hasExtensionsVariant": true
