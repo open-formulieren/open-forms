@@ -1,31 +1,26 @@
 {% extends "master.html" %}
 
 {% block inner-content %}
-    <div class="openforms-layout">
-        <div class="openforms-layout__row">
+    <div class="openforms-card">
+        {% block card %}
+            <header class="openforms- card__header">
+                <h1 class="title">{{ title }}</h1>
+            </header>
 
-            <div class="openforms-card">
-                {% block card %}
-                    <header class="openforms- card__header">
-                        <h1 class="title">{{ title }}</h1>
-                    </header>
-
-                    <div class="openforms-card__body">
-                        {% block card_body %}
-                            <ul class="list">
-                                {% for object in object_list %}
-                                    <li class="list__item">
-                                        <a
-                                            href="{{ object.get_absolute_url }}"
-                                            class="utrecht-link utrecht-link--openforms"
-                                        >{{ object }}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endblock %}
-                    </div>
+            <div class="openforms-card__body">
+                {% block card_body %}
+                    <ul class="list">
+                        {% for object in object_list %}
+                            <li class="list__item">
+                                <a
+                                    href="{{ object.get_absolute_url }}"
+                                    class="utrecht-link utrecht-link--openforms"
+                                >{{ object }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 {% endblock %}
             </div>
-        </div>
+        {% endblock %}
     </div>
 {% endblock %}
