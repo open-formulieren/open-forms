@@ -1,17 +1,19 @@
+// NL DS based
+@import 'page';
+@import 'page-content';
+@import 'page-footer';
+@import 'page-header';
+
+// Custom
 @import 'a11y-toolbar';
 @import 'anchor';
 @import 'card';
 @import 'fa-icon';
-@import 'footer';
-@import 'layout';
 @import 'list';
 @import 'nav';
 @import 'skiplink';
-@import 'table';
 @import 'toolbar';
 @import 'typography';
-@import 'view';
 @import 'info-bar';
 @import 'cookie-notice';
 @import 'cookie-group';
-@import 'page-header';

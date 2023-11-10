@@ -1,32 +1,26 @@
-{% extends './base.html' %}
+{% extends "master.html" %}
 
-{% block layout_inner %}
-    {{ block.super }}
+{% block inner-content %}
+    <div class="openforms-card">
+        {% block card %}
+            <header class="openforms- card__header">
+                <h1 class="title">{{ title }}</h1>
+            </header>
 
-    <section class="layout__container">
-        <div class="openforms-card">
-            {% block card %}
-                <header class="openforms- card__header">
-                    <h1 class="title">{{ title }}</h1>
-                </header>
-
-                <div class="openforms-card__body">
-                    {% block card_body %}
-                        <ul class="list">
-                            {% for object in object_list %}
-                                <li class="list__item">
-                                    <a
-                                        href="{{ object.get_absolute_url }}"
-                                        class="utrecht-link utrecht-link--openforms"
-                                    >{{ object }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endblock %}
-                </div>
-            {% endblock %}
-        </div>
-
-        {% include "includes/a11y_toolbar.html" only %}
-    </section>
+            <div class="openforms-card__body">
+                {% block card_body %}
+                    <ul class="list">
+                        {% for object in object_list %}
+                            <li class="list__item">
+                                <a
+                                    href="{{ object.get_absolute_url }}"
+                                    class="utrecht-link utrecht-link--openforms"
+                                >{{ object }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
 {% endblock %}

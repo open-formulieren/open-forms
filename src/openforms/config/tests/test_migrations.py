@@ -3,21 +3,24 @@ from django.utils.module_loading import import_string
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
-apply_mapping = import_string(
+apply_button_mapping = import_string(
     "openforms.config.migrations.0059_convert_button_design_tokens.apply_mapping"
+)
+apply_layout_mapping = import_string(
+    "openforms.config.migrations.0061_convert_container_layout_design_tokens.apply_mapping"
 )
 
 
-class MapperTests(SimpleTestCase):
+class ButtonMapperTests(SimpleTestCase):
     def test_empty_tokens(self):
-        updated = apply_mapping({})
+        updated = apply_button_mapping({})
 
         self.assertEqual(updated, {})
 
     def test_unrelated_tokens(self):
         source = {"utrecht": {"form-field": {"font-size": {"value": "18px"}}}}
 
-        updated = apply_mapping(source)
+        updated = apply_button_mapping(source)
 
         self.assertIsNot(updated, source)
         self.assertEqual(updated, source)
@@ -25,7 +28,7 @@ class MapperTests(SimpleTestCase):
     def test_map_old_token_to_new(self):
         source = {"of": {"button": {"bg": {"value": "blue"}}}}
 
-        updated = apply_mapping(source)
+        updated = apply_button_mapping(source)
 
         self.assertEqual(
             updated, {"utrecht": {"button": {"background-color": {"value": "blue"}}}}
@@ -37,7 +40,7 @@ class MapperTests(SimpleTestCase):
             "utrecht": {"button": {"color": {"value": "pink"}}},
         }
 
-        updated = apply_mapping(source)
+        updated = apply_button_mapping(source)
 
         self.assertEqual(
             updated,
@@ -57,10 +60,68 @@ class MapperTests(SimpleTestCase):
             "utrecht": {"button": {"background-color": {"value": "blue"}}},
         }
 
-        updated = apply_mapping(source)
+        updated = apply_button_mapping(source)
 
         self.assertEqual(
             updated, {"utrecht": {"button": {"background-color": {"value": "blue"}}}}
+        )
+
+
+class LayoutMapperTests(SimpleTestCase):
+    def test_empty_tokens(self):
+        updated = apply_layout_mapping({})
+
+        self.assertEqual(updated, {})
+
+    def test_unrelated_tokens(self):
+        source = {"utrecht": {"form-field": {"font-size": {"value": "18px"}}}}
+
+        updated = apply_layout_mapping(source)
+
+        self.assertIsNot(updated, source)
+        self.assertEqual(updated, source)
+
+    def test_map_old_token_to_new(self):
+        source = {"of": {"page-footer": {"bg": {"value": "blue"}}}}
+
+        updated = apply_layout_mapping(source)
+
+        self.assertEqual(
+            updated,
+            {"utrecht": {"page-footer": {"background-color": {"value": "blue"}}}},
+        )
+
+    def test_map_and_merge_old_token_to_new(self):
+        source = {
+            "of": {"page-header": {"bg": {"value": "blue"}}},
+            "utrecht": {"page-header": {"color": {"value": "pink"}}},
+        }
+
+        updated = apply_layout_mapping(source)
+
+        self.assertEqual(
+            updated,
+            {
+                "utrecht": {
+                    "page-header": {
+                        "background-color": {"value": "blue"},
+                        "color": {"value": "pink"},
+                    }
+                }
+            },
+        )
+
+    def test_do_not_overwrite_existing_token(self):
+        source = {
+            "of": {"page-header": {"bg": {"value": "red"}}},
+            "utrecht": {"page-header": {"background-color": {"value": "blue"}}},
+        }
+
+        updated = apply_layout_mapping(source)
+
+        self.assertEqual(
+            updated,
+            {"utrecht": {"page-header": {"background-color": {"value": "blue"}}}},
         )
 
 
@@ -157,6 +218,55 @@ class ButtonDesignTokensMigrationTests(TestMigrations):
                             },
                         },
                     },
+                },
+            },
+        }
+        self.assertEqual(config.design_token_values, expected)
+
+
+class LayoutDesignTokensMigrationTests(TestMigrations):
+
+    app = "config"
+    migrate_from = "0060_create_csp_form_action_configs"
+    migrate_to = "0061_convert_container_layout_design_tokens"
+
+    def setUpBeforeMigration(self, apps):
+        GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+        # (Partial) tokens configuration taken from a test instance
+        GlobalConfiguration.objects.create(
+            design_token_values={
+                "of": {
+                    "text": {"font-size": {"value": "1rem"}},
+                    "page-header": {
+                        "bg": {"value": "#07838f"},
+                        "fg": {"value": "#FFFFFF"},
+                    },
+                },
+                "utrecht": {
+                    "page-footer": {
+                        "background-color": {"value": "green"},
+                    },
+                },
+            }
+        )
+
+    def test_design_tokens_updated_correctly(self):
+        self.maxDiff = None
+
+        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
+        config = GlobalConfiguration.objects.get()
+
+        expected = {
+            "of": {
+                "text": {"font-size": {"value": "1rem"}},
+            },
+            "utrecht": {
+                "page-footer": {
+                    "background-color": {"value": "green"},
+                },
+                "page-header": {
+                    "background-color": {"value": "#07838f"},
+                    "color": {"value": "#FFFFFF"},
                 },
             },
         }

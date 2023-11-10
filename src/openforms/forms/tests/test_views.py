@@ -92,7 +92,7 @@ class FormDetailViewTests(WebTest):
         style_node = form_page.pyquery("head > style")
         self.assertTrue(style_node)
         self.assertEqual(
-            style_node.text(), ":root { --of-layout-background: #ffffff; }"
+            style_node.text(), ".openforms-theme { --of-layout-background: #ffffff; }"
         )
 
     @override_settings(MEDIA_ROOT=tempfile.mkdtemp())

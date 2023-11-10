@@ -1,0 +1,16 @@
+{% load i18n solo_tags style_dictionary %}
+{% get_solo 'config.GlobalConfiguration' as config %}
+
+{# Template out the configured design tokens JSON, if provided #}
+{% if config.design_token_values or config.logo %}
+    {% style_dictionary config.design_token_values as design_tokens %}
+    <style nonce="{{ request.csp_nonce }}">
+
+    .{{ config.get_theme_classname }} {{% for token, value in design_tokens.items %}
+      {{ token }}: {{ value }};{% endfor %}
+
+      {% if config.logo %}{# if there's a logo, output a design token that the CSS can pick up to set as background #}
+      --of-header-logo-url: url('{{ config.logo.url }}');{% endif %}
+    }
+    </style>
+{% endif %}

@@ -1,0 +1,23 @@
+@import '~microscope-sass/lib/responsive';
+
+// Extensions of the utrecht-page-content component
+.utrecht-page-content {
+  @include mobile-only {
+    padding-block-end: var(
+      --of-utrecht-page-content-mobile-padding-block-end,
+      var(--utrecht-page-content-padding-block-end)
+    );
+    padding-block-start: var(
+      --of-utrecht-page-content-mobile-padding-block-start,
+      var(--utrecht-page-content-padding-block-start)
+    );
+    padding-inline-end: var(
+      --of-utrecht-page-mobile-padding-inline-end,
+      var(--utrecht-page-padding-inline-end)
+    );
+    padding-inline-start: var(
+      --of-utrecht-page-mobile-padding-inline-start,
+      var(--utrecht-page-padding-inline-start)
+    );
+  }
+}

@@ -1,11 +1,11 @@
-{% load static cookie_consent_tags solo_tags openforms %}<!DOCTYPE html>
+{% load i18n static cookie_consent_tags solo_tags openforms %}<!DOCTYPE html>
 
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
 {% firstof analytics_tools_config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
 {% with request|cookie_group_accepted:analytics_varname as enable_analytics %}
 
-<html lang="nl" class="view {% firstof config.theme_classname 'openforms-theme' %} {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
+<html lang="nl" class="utrecht-document {{ config.get_theme_classname }}">
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{% if config.organization_name %}{{ config.organization_name }} {% else %}Openforms{% endif %}{% endblock %}</title>
@@ -14,9 +14,11 @@
     <meta name="robots" content="{{ request.indexing_options.content }}">
     {% endif %}
     <link href="{% if config.favicon %}{{ config.favicon.url }}{% else %}{% static 'ico/favicon.png' %}{% endif %}" rel="shortcut icon">
-    <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet"/>
-    <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
-    {% block extra_css %}{% endblock %}
+    <link href="{% static 'bundles/public-styles.css' %}" media="all" rel="stylesheet"/>
+    {% include "forms/sdk_css_snippet.html" %}
+    {% block extra_css %}
+        {% include 'includes/design-tokens.html' %}
+    {% endblock %}
 
     {# Note that the custom stylesheets are deliberately kept outside of extra_css to ensure it is the last stylesheet loaded! #}
     {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
@@ -26,7 +28,7 @@
     {% include "analytics_tools/all_head.html" with analytics_varname=analytics_varname %}
 </head>
 
-<body class="view__body">
+<body class="utrecht-page">
     {# No point in putting this in a <template> tag, since it targets noscript #}
     {% if enable_analytics and analytics_tools_config.enable_google_analytics and analytics_tools_config.gtm_code %}
         {# Load the second part of the Google tag manager snippet #}
@@ -37,12 +39,28 @@
     {% endif %}
 
     {% block content %}
-        Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
-        to get some actual content.
+        {% block header %}
+            {% include "includes/page-header.html" %}
+            <a class="skiplink" href="#main-content">{% translate "Show content." %}</a>
+        {% endblock %}
+
+        <div class="utrecht-page__content utrecht-page-content">
+            <main class="utrecht-page-content__main">
+                <span class="skiplink-target" id="main-content"></span>
+                {% block inner-content %}
+                    Override <code>{% verbatim %}{% block inner-content %}{% endverbatim %}</code>
+                    to get some actual content.
+                {% endblock %}
+            </main>
+            {% block a11y-toolbar %}
+                {% include "includes/a11y_toolbar.html" only %}
+            {% endblock a11y-toolbar %}
+        </div>
     {% endblock %}
 
     {% block footer %}
         {% include "includes/cookie-notice.html" with analytics_varname=analytics_varname %}
+        {% include "includes/page-footer.html" %}
     {% endblock %}
 
     <script src="{% static 'bundles/public.js' %}"></script>

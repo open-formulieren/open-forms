@@ -646,6 +646,9 @@ class GlobalConfiguration(SingletonModel):
 
         return super().clean()
 
+    def get_theme_classname(self) -> str:
+        return self.theme_classname or "openforms-theme"
+
 
 class CSPSettingQuerySet(models.QuerySet):
     def as_dict(self):

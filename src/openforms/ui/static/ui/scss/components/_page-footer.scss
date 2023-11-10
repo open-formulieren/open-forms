@@ -1,0 +1,100 @@
+@import '~microscope-sass/lib/responsive';
+
+/**
+ * Override CSS to add responsive styles for a particular viewport.
+ *
+ * This uses custom Open Forms design tokens as an extension on existing utrecht-page-footer
+ * design tokens for responsive viewport support. If the token is unset, we fall back to
+ * the canonical, non-responsive design token.
+ *
+ * A CSS override is required since there doesn't appear to be a way to capture the
+ * value of a design token to later use as fallback when overriding the design token
+ * itself (with design token = custom css property here).
+ */
+@mixin add-responsive-styles($viewport) {
+  $prefix: --of-utrecht-page-footer-#{$viewport};
+
+  --_of-utrecht-page-footer-max-inline-size: var(
+    #{$prefix}-max-inline-size,
+    var(--of-utrecht-page-footer-max-inline-size)
+  );
+
+  // TODO: Open Forms 3.0 - set the property directly instead of using custom property.
+  --_padding-block-end: var(
+    #{$prefix}-padding-block-end,
+    var(--utrecht-page-footer-padding-block-end)
+  );
+  --_padding-block-start: var(
+    #{$prefix}-padding-block-start,
+    var(--utrecht-page-footer-padding-block-start)
+  );
+  --_padding-inline-end: var(
+    #{$prefix}-padding-inline-end,
+    var(--utrecht-page-footer-padding-inline-end)
+  );
+  --_padding-inline-start: var(
+    #{$prefix}-padding-inline-start,
+    var(--utrecht-page-footer-padding-inline-start)
+  );
+
+  // backwards compatibility - remove this in Open Forms 3.0
+  --_padding-shorthand: var(--_padding-block-start) var(--_padding-inline-end)
+    var(--_padding-block-end) var(--_padding-inline-start);
+
+  padding: var(--of-page-footer-#{$viewport}-padding, var(--_padding-shorthand));
+}
+
+// Open Forms extensions - add opt-in support for responsive spacing.
+.utrecht-page-footer {
+  @include mobile-only {
+    @include add-responsive-styles('mobile');
+  }
+
+  @include tablet {
+    @include add-responsive-styles('tablet');
+  }
+
+  @include laptop {
+    @include add-responsive-styles('laptop');
+  }
+
+  @include desktop {
+    @include add-responsive-styles('desktop');
+  }
+
+  // Support setting a maximum width/inline-size for content in the footer. Note that
+  // we target direct children here to be flexible enough in the future if we need to
+  // flexbox-row more content (we can then add a wrapper div).
+  > * {
+    max-inline-size: var(--_of-utrecht-page-footer-max-inline-size);
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+  }
+
+  // backwards compatibility - remove this in Open Forms 3.0
+  background-color: var(--of-page-footer-bg, var(--utrecht-page-footer-background-color));
+  color: var(--of-page-footer-fg, var(--utrecht-page-footer-color));
+}
+
+// Style overrides specific for our own theme
+.openforms-theme {
+  .utrecht-page-footer {
+    &__navigation {
+      .utrecht-link-list {
+        --utrecht-link-text-decoration: underline;
+        --utrecht-link-hover-text-decoration: none;
+
+        font-size: 1.125rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 20px;
+
+        @include mobile-only {
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+      }
+    }
+  }
+}

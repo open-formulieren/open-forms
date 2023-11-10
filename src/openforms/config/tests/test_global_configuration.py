@@ -71,9 +71,11 @@ class AdminTests(WebTest):
 
             form_page = self.app.get(url)
 
-            header = form_page.pyquery(".page-header")
+            header = form_page.pyquery(".utrecht-page-header")
             self.assertTrue(header)
-            self.assertIn("page-header--has-logo", header.attr("class"))
+            self.assertIn(
+                "utrecht-page-header--openforms-with-logo", header.attr("class")
+            )
 
             style_tag = form_page.pyquery("style")
             self.assertIn(

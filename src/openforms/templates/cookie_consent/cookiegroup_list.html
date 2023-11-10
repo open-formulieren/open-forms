@@ -1,11 +1,6 @@
 {% extends 'ui/views/abstract/list.html' %}
 {% load i18n openforms %}
 
-{% block extra_css %}
-    {% include "forms/sdk_css_snippet.html" %}
-    {{ block.super }} {# Called after SDK CSS for custom design overrides #}
-{% endblock %}
-
 {% block card %}
     {% get_allowed_redirect_url request.GET.referer request.headers.referer as referer %}
     <header class="openforms-card__header">
