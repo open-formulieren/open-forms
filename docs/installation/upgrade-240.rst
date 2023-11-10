@@ -47,18 +47,10 @@ The field can be found under the "Identity provider" section.
 Once these URLs are configured, the metadata file field and the identity provider ID
 will be automatically populated.
 
-Additionally, because the CSP directives are generated from this configuration, we
-recommend saving the configuration once (even if you made no changes) to create the
-necessary CSP configuration records.
+Our upgrade mechanism automatically generates the relevant CSP directives from your
+existing DigiD/eHerkenning configuration.
 
 .. note:: Any previously uploaded metadata files continue to work as expected.
-
-Ogone configuration
-===================
-
-After upgrading, you should go to the Ogone merchants configuration and save every
-merchant (even if you made no changes) to populate the related CSP configuration
-records.
 
 KVK Configuration
 =================
