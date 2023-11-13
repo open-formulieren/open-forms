@@ -1,28 +1,28 @@
-from typing import Iterable, Literal, TypeAlias
+import json
+from typing import Literal, TypeAlias
 
 from openforms.submissions.models import Submission
 
-SDKAction: TypeAlias = Literal["stap", "afspraak-annuleren", "cosign"]
+SDKAction: TypeAlias = Literal["resume", "afspraak-annuleren", "cosign"]
 
 
 def get_frontend_redirect_url(
     submission: Submission,
     action: SDKAction,
-    action_args: Iterable[str] | None = None,
-    query: dict[str, str] | None = None,
+    action_params: dict[str, str] | None = None,
 ) -> str:
     """Get the frontend redirect URL depending on the action.
 
     Some actions require arguments to be specified. The frontend will take care of building the right redirection
-    based on the action and action arguments. Extra query parameters can be specified with ``query``.
+    based on the action and action arguments.
     """
     f = submission.cleaned_form_url
+    f.query.remove("_of_action")
+    f.query.remove("_of_action_params")
     _query = {
-        "_action": action,
+        "_of_action": action,
     }
-    if action_args:
-        _query["_action_args"] = ",".join(action_args)
-    if query:
-        _query.update(query)
+    if action_params:
+        _query["_of_action_params"] = json.dumps(action_params)
 
     return f.add(_query).url

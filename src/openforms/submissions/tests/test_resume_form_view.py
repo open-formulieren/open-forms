@@ -10,13 +10,14 @@ from furl import furl
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models import GlobalConfiguration
+from openforms.tests.mixins import FrontendRedirectMixin
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
-class SubmissionResumeViewTests(TestCase):
+class SubmissionResumeViewTests(TestCase, FrontendRedirectMixin):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,
@@ -49,20 +50,17 @@ class SubmissionResumeViewTests(TestCase):
 
         response = self.client.get(endpoint)
 
-        f = furl(submission.form_url)
-        # Add the redirect path and submission uuid to the query param
-        f.add(
-            {
-                "_action": "stap",
-                "_action_args": submission.get_last_completed_step().form_step.slug,
-                "submission_uuid": submission.uuid,
-            }
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url=submission.form_url,
+            action="resume",
+            action_params={
+                "step_slug": submission.get_last_completed_step().form_step.slug,
+                "submission_uuid": str(submission.uuid),
+            },
+            fetch_redirect_response=False,
         )
 
-        expected_redirect_url = f.url
-        self.assertRedirects(
-            response, expected_redirect_url, fetch_redirect_response=False
-        )
         # Assert submission is stored in session
         self.assertIn(
             str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
@@ -212,14 +210,6 @@ class SubmissionResumeViewTests(TestCase):
                 "submission_uuid": submission.uuid,
             },
         )
-        expected_redirect_url = furl(submission.form_url)
-        expected_redirect_url.add(
-            {
-                "_action": "stap",
-                "_action_args": form_step.slug,
-                "submission_uuid": submission.uuid,
-            }
-        )
 
         # Add form_auth to session, as the authentication plugin would do it
         session = self.client.session
@@ -233,9 +223,17 @@ class SubmissionResumeViewTests(TestCase):
 
         response = self.client.get(endpoint)
 
-        self.assertRedirects(
-            response, expected_redirect_url.url, fetch_redirect_response=False
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url=submission.form_url,
+            action="resume",
+            action_params={
+                "step_slug": form_step.slug,
+                "submission_uuid": str(submission.uuid),
+            },
+            fetch_redirect_response=False,
         )
+
         self.assertIn(SUBMISSIONS_SESSION_KEY, self.client.session)
         self.assertIn(
             str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
@@ -412,17 +410,13 @@ class SubmissionResumeViewTests(TestCase):
 
         response = self.client.get(endpoint)
 
-        f = furl("http://maykinmedia.nl/some-form")
-        # Add the redirect path and submission uuid to the query param
-        f.add(
-            {
-                "_action": "stap",
-                "_action_args": submission.get_last_completed_step().form_step.slug,
-                "submission_uuid": submission.uuid,
-            }
-        )
-
-        expected_redirect_url = f.url
-        self.assertRedirects(
-            response, expected_redirect_url, fetch_redirect_response=False
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url="http://maykinmedia.nl/some-form",
+            action="resume",
+            action_params={
+                "step_slug": submission.get_last_completed_step().form_step.slug,
+                "submission_uuid": str(submission.uuid),
+            },
+            fetch_redirect_response=False,
         )

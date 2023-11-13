@@ -182,10 +182,10 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
 
         return get_frontend_redirect_url(
             submission,
-            action="stap",
-            action_args=[target_step.form_step.slug],
-            query={
-                "submission_uuid": submission.uuid,
+            action="resume",
+            action_params={
+                "step_slug": target_step.form_step.slug,
+                "submission_uuid": str(submission.uuid),
             },
         )
 
@@ -283,8 +283,7 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         return get_frontend_redirect_url(
             self.submission,
             action="cosign",
-            action_args=["check"],
-            query={
+            action_params={
                 "submission_uuid": str(self.submission.uuid),
             },
         )

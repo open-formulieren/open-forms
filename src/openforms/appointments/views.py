@@ -20,7 +20,7 @@ class VerifyCancelAppointmentLinkView(ResumeFormMixin, RedirectView):
         return get_frontend_redirect_url(
             submission,
             action="afspraak-annuleren",
-            query={
+            action_params={
                 "time": submission.appointment_info.start_time.isoformat(),
                 "submission_uuid": str(submission.uuid),
             },
@@ -60,9 +60,9 @@ class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
 
         return get_frontend_redirect_url(
             submission,
-            action="stap",
-            action_args=[next_step.slug],
-            query={
+            action="resume",
+            action_params={
+                "step_slug": next_step.slug,
                 "submission_uuid": str(submission.uuid),
             },
         )
