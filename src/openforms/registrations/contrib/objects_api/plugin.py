@@ -196,7 +196,9 @@ class ObjectsAPIRegistration(BasePlugin):
 
         # Finally, send it over the wire to the Objects API
         with get_objects_client() as objects_client:
-            response = objects_client.post("objects", json=object_data)
+            response = objects_client.post(
+                "objects", json=object_data, headers={"Content-Crs": "EPSG:4326"}
+            )
             response.raise_for_status()
 
         return response.json()

@@ -9,6 +9,8 @@ from .utils import get_today
 
 logger = logging.getLogger(__name__)
 
+CRS_HEADERS = {"Content-Crs": "EPSG:4326", "Accept-Crs": "EPSG:4326"}
+
 
 class ZakenClient(NLXClient):
     def create_zaak(
@@ -46,7 +48,7 @@ class ZakenClient(NLXClient):
 
         zaak_data.update(**overrides)
 
-        response = self.post("zaken", json=zaak_data)
+        response = self.post("zaken", json=zaak_data, headers=CRS_HEADERS)
         response.raise_for_status()
 
         return response.json()
@@ -56,7 +58,7 @@ class ZakenClient(NLXClient):
             "betalingsindicatie": "gedeeltelijk" if partial else "geheel",
             "laatsteBetaaldatum": timezone.now().isoformat(),
         }
-        response = self.patch(url=zaak["url"], json=data)
+        response = self.patch(url=zaak["url"], json=data, headers=CRS_HEADERS)
         response.raise_for_status()
         return response.json()
 
