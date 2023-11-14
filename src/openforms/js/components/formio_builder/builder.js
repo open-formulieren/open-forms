@@ -1,3 +1,4 @@
+import {infer} from '@open-formulieren/infernologic';
 import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/set';
 import PropTypes from 'prop-types';
@@ -16,6 +17,21 @@ Templates.current = customTemplates;
 const getBuilderOptions = () => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
   const formFieldsRequiredDefault = jsonScriptToVar('config-REQUIRED_DEFAULT');
+
+  /**
+   * For use in a FormIO custom validator.
+   *
+   *
+   * @param {object | array | number | string} logic - JsonLogic expression
+   * @param {object | array | number | string} expected - example expected result value [["label", "value"]]
+   * @returns {boolean | string} - OK or an error message
+   */
+  const validateLogic = (logic, expected) => {
+    // We don't evaluate logic, we just look at types.
+    // "===" forces the logic expression align with the expectancy
+    const result = infer({'===': [logic, expected]}, {});
+    return result.startsWith('result type:') || result;
+  };
 
   return {
     builder: {
@@ -251,6 +267,7 @@ const getBuilderOptions = () => {
     evalContext: {
       serverUploadLimit: maxFileUploadSize,
       requiredDefault: formFieldsRequiredDefault,
+      validateLogic,
     },
     editors: {
       ckeditor: {

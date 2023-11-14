@@ -251,6 +251,7 @@ const OPTIONS_CHOICES = [
     },
     validate: {
       required: true,
+      custom: 'valid = (typeof input == "object") && validateLogic(input, [["", ""]])',
     },
   },
 ];
