@@ -47,6 +47,7 @@ local.py
 /celerybeat
 /tmp/*
 !/tmp/.gitkeep
+!/tmp/nlds/.gitkeep
 /bin/ssh_tunnel*
 
 # Static files

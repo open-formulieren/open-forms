@@ -67,9 +67,21 @@ RUN npm run build
 # Stage 3 - Build docker image suitable for production
 FROM python:3.10-slim-bookworm
 
+# Install NodeJS 16 - we have some functionality that uses subprocess module to run a
+# NodeJS script. Note that the version here should be in sync with the "Stage 2" build
+# step, i.e. it must match .nvmrc.
+# Script/solution taken and adapted from:
+# https://github.com/nodesource/distributions/issues/1579#issuecomment-1612294499
+COPY ./bin/configure_node_repos.sh /configure_node_repos.sh
+
 # Stage 3.1 - Set up the needed production dependencies
 # install all the dependencies for GeoDjango
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo "Package: nodejs" >> /etc/apt/preferences.d/preferences && \
+    echo "Pin: origin deb.nodesource.com" >> /etc/apt/preferences.d/preferences && \
+    echo "Pin-Priority: 1001" >> /etc/apt/preferences.d/preferences && \
+    bash /configure_node_repos.sh && \
+    rm /configure_node_repos.sh && \
+    apt-get update && apt-get install -y --no-install-recommends \
         procps \
         vim \
         mime-support \
@@ -79,6 +91,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxmlsec1-openssl \
         gdal-bin \
         gettext \
+        nodejs \
         # lxml deps
         # libxslt \
         # weasyprint deps
