@@ -99,6 +99,15 @@ stylesheets, you should update these:
 * ``--of-page-header-logo-return-url-mobile-min-width`` becomes
   ``--of-page-header-logo-return-url-mobile-min-inline-size``
 
+2.4.1 (2023-11-14)
+==================
+
+Hotfix release
+
+* [#3604] Fixed a regression in the Objects API and ZGW API's registration backends. The
+  required ``Content-Crs`` request header was no longer sent in outgoing requests after
+  the API client refactoring.
+
 2.3.4 (2023-11-09)
 ==================
 
