@@ -30,6 +30,7 @@
     "@fortawesome/fontawesome-free": "^6.1.1",
     "@open-formulieren/design-tokens": "^0.48.0",
     "@open-formulieren/formio-builder": "^0.8.0",
+    "@open-formulieren/infernologic": "^0.1.0",
     "@rjsf/core": "^4.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
