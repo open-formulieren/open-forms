@@ -57,7 +57,19 @@ Available options
 
 ``basePath``:
     Optional, but highly recommended. The SDK considers this as the base URL and builds all
-    URLs relatively to this URL. If not provided, ``window.location.pathname`` is used.
+    URLs relatively to this URL.
+
+    If not provided, ``window.location.pathname`` is used.
+
+    .. note::
+        ``basePath`` only applies when using the default browser routing. If hash based routing
+        is used (see ``useHashRouting`` below), the option will be silently ignored.
+
+``useHashRouting``:
+    Whether hash based routing should be used. Defaults to ``false``. This option is useful when embedding
+    Open Forms with a CMS. If the SDK is hosted at ``https://example.com/basepath?cms_query=1``, the resulting URL
+    would be ``https://example.com/basepath?cms_query=1#/startpagina`` (SDK specific query parameters would come
+    at the end of the URL).
 
 ``CSPNonce``:
     Recommended. The page's CSP Nonce value if inline styles are blocked by your
