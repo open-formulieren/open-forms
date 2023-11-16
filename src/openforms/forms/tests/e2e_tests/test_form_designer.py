@@ -14,6 +14,7 @@ from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.utils.tests.cache import clear_caches
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ...models import Form
 from ..factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -2076,3 +2077,71 @@ class FormDesignerDuplicateKeyWarningTests(E2ETestCase):
                 'duplicate-key: in "FORM DEFINITION #1" and "FORM DEFINITION #2"'
                 'duplicate-key-2: in "FORM DEFINITION #1" and "FORM DEFINITION #3"'
             )
+
+
+class FormDesignerJsonLogicTests(E2ETestCase):
+    async def test_variable_options(self) -> None:
+        @sync_to_async
+        def setUpTestData() -> Form:
+            return FormStepFactory.create(
+                form__name="Inferring type of variable options",
+                form_definition__name="Pick your poison",
+                form_definition__configuration={
+                    "components": [
+                        {"label": "Single choice", "type": "radio", "key": "single"},
+                        {
+                            "label": "Multiple choice",
+                            "type": "selectboxes",
+                            "key": "multi",
+                        },
+                        {"label": "Dropdown", "type": "select", "key": "dropdown"},
+                    ],
+                },
+            ).form
+
+        await create_superuser()
+        form = await setUpTestData()
+
+        edit_form_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async def make_assertions():
+            await page.get_by_text("Keuzeopties", exact=True).click()
+            await page.get_by_text("Variabele", exact=True).click()
+            # clicking the "Items expression" label doesn't focus the editor :(
+            component = page.locator(
+                'css=[ref="component"]', has_text="Opties-expressie"
+            )
+            editor = component.locator("css=.ace_content")
+            await editor.click()
+            await editor.press("Control+a")
+            await editor.press("Backspace")
+            await editor.type('{"map": [{"var": "somevar"}]}')
+            await page.get_by_role("button", name="Opslaan").click()
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+            await expect(
+                page.locator('css=[data-component-key="openForms.itemsExpression"]')
+            ).to_contain_text("Error")
+            await editor.click()
+            await editor.press("Control+a")
+            await editor.press("Backspace")
+            await editor.type(
+                '{"map": [{"var": "somevar"}, [{"var": ""}, {"cat": ["Optie ", {"var": ""}]}]]}'
+            )
+            await page.get_by_role("button", name="Opslaan").click()
+            await expect(page.locator("css=.formio-dialog-content")).not_to_be_visible()
+
+        page: Page
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(edit_form_url)
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await page.get_by_role("button", name="Pick your poison").click()
+            await open_component_options_modal(page, "Single choice")
+            await make_assertions()
+            await open_component_options_modal(page, "Multiple choice")
+            await make_assertions()
+            await open_component_options_modal(page, "Dropdown")
+            await make_assertions()
