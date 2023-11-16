@@ -56,11 +56,12 @@ def apply_mapping(design_tokens: TokenContainer) -> TokenContainer:
         assign(result, new, old_value, missing=dict)
         tokens_to_unset.add(old)
 
-    for token in tokens_to_unset:
-        # don't delete utility tokens!
-        if not any(token.startswith(prefix) for prefix in OBSOLETE_PREFIXES):
-            continue
-        delete(result, token)
+    # TODO: re-enable this when #3593 is properly resolved.
+    # for token in tokens_to_unset:
+    #     # don't delete utility tokens!
+    #     if not any(token.startswith(prefix) for prefix in OBSOLETE_PREFIXES):
+    #         continue
+    #     delete(result, token)
 
     return remove_empty_design_tokens(result)
 

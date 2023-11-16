@@ -88,7 +88,10 @@ class LayoutMapperTests(SimpleTestCase):
 
         self.assertEqual(
             updated,
-            {"utrecht": {"page-footer": {"background-color": {"value": "blue"}}}},
+            {
+                "of": {"page-footer": {"bg": {"value": "blue"}}},
+                "utrecht": {"page-footer": {"background-color": {"value": "blue"}}},
+            },
         )
 
     def test_map_and_merge_old_token_to_new(self):
@@ -102,12 +105,13 @@ class LayoutMapperTests(SimpleTestCase):
         self.assertEqual(
             updated,
             {
+                "of": {"page-header": {"bg": {"value": "blue"}}},
                 "utrecht": {
                     "page-header": {
                         "background-color": {"value": "blue"},
                         "color": {"value": "pink"},
                     }
-                }
+                },
             },
         )
 
@@ -121,7 +125,10 @@ class LayoutMapperTests(SimpleTestCase):
 
         self.assertEqual(
             updated,
-            {"utrecht": {"page-header": {"background-color": {"value": "blue"}}}},
+            {
+                "of": {"page-header": {"bg": {"value": "red"}}},
+                "utrecht": {"page-header": {"background-color": {"value": "blue"}}},
+            },
         )
 
 
@@ -259,6 +266,10 @@ class LayoutDesignTokensMigrationTests(TestMigrations):
         expected = {
             "of": {
                 "text": {"font-size": {"value": "1rem"}},
+                "page-header": {
+                    "bg": {"value": "#07838f"},
+                    "fg": {"value": "#FFFFFF"},
+                },
             },
             "utrecht": {
                 "page-footer": {
