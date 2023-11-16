@@ -20,12 +20,10 @@ def uploaded_attachment_urls(context: template.Context) -> SafeString:
 
 
 @register.simple_tag(takes_context=True)
-def json_summary(context: template.Context) -> SafeString | dict:
+def json_summary(context: template.Context) -> SafeString:
     submission = context.get("_submission")
-    if not submission:
-        return {}
 
-    json_data = render_json(submission)
+    json_data = render_json(submission) if submission else {}
 
     if settings.ESCAPE_REGISTRATION_OUTPUT:
         json_data = html_escape_json(json_data)
@@ -34,14 +32,19 @@ def json_summary(context: template.Context) -> SafeString | dict:
 
 
 @register.simple_tag
-def as_geo_json(value: list[float] | str) -> SafeString | dict:
+def as_geo_json(value: list[float] | str) -> SafeString:
     """Output the ``value`` as a safe GeoJSON dumped string.
 
     As of today, this only supports coordinates. This essentially does the same thing as
     :func:`_transform_coordinates`, but for any map component.
     """
-    if not value:
-        return {}
-    data = {"type": "Point", "coordinates": [value[0], value[1]]}
+    data = (
+        {
+            "type": "Point",
+            "coordinates": [value[0], value[1]],
+        }
+        if value
+        else {}
+    )
 
     return SafeString(json.dumps(data))
