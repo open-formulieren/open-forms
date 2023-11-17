@@ -69,4 +69,4 @@ class OgoneMerchant(models.Model):
 
         from openforms.config.models import CSPSetting
 
-        CSPSetting.objects.set_for(self, [(CSPDirective.FORM_ACTION, self.endpoint)])
+        CSPSetting.objects.set_for(self, (CSPDirective.FORM_ACTION, self.endpoint))

@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 from functools import partial
+from itertools import zip_longest
 
 from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -661,14 +662,25 @@ class CSPSettingQuerySet(models.QuerySet):
 class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
     @transaction.atomic
     def set_for(
-        self, obj: models.Model, settings: list[tuple[CSPDirective, str]]
+        self,
+        obj: models.Model,
+        *settings: tuple[CSPDirective, str] | tuple[CSPDirective, str, str],
     ) -> None:
         """
-        Deletes all the connected csp settings and creates new ones based on the new provided data.
+        Deletes all the connected CSP settings and creates new ones based on the new provided data.
+
+        :param obj: The configuration model providing this CSP entry.
+        :param `*settings`: Either a two-tuple or a three-tuple containing values used to create
+          the underlying ``CSPSetting`` model.
         """
         instances = [
-            CSPSetting(content_object=obj, directive=directive, value=value)
-            for directive, value in settings
+            CSPSetting(
+                content_object=obj,
+                directive=directive,
+                value=value,
+                identifier=identifier or "",
+            )
+            for directive, value, identifier in zip(*zip_longest(*settings))
         ]
 
         CSPSetting.objects.filter(
@@ -682,14 +694,23 @@ class CSPSetting(models.Model):
     directive = models.CharField(
         _("directive"),
         max_length=64,
-        help_text=_("CSP header directive"),
         choices=CSPDirective.choices,
+        help_text=_("CSP header directive"),
     )
     value = models.CharField(
         _("value"),
         max_length=255,
         help_text=_("CSP header value"),
     )
+
+    identifier = models.CharField(
+        _("identifier"),
+        max_length=64,
+        blank=True,
+        help_text=_("An extra tag for this CSP entry, to identify the exact source"),
+    )
+
+    # Generic relation fields (see https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#generic-relations):
     content_type = models.ForeignKey(
         ContentType,
         verbose_name=_("content type"),

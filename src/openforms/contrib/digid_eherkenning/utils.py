@@ -74,4 +74,4 @@ def create_digid_eherkenning_csp_settings(
         urls.append(additional_csp_values)
 
     form_action_urls = " ".join(urls)
-    CSPSetting.objects.set_for(config, [(CSPDirective.FORM_ACTION, form_action_urls)])
+    CSPSetting.objects.set_for(config, (CSPDirective.FORM_ACTION, form_action_urls))
