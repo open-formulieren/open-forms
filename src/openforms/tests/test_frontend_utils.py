@@ -26,7 +26,7 @@ class FrontendRedirectTests(TestCase):
         excpected_redirect_url.add(
             {
                 "_of_action": "resume",
-                "_of_action_params": (json.dumps(action_params)),
+                "_of_action_params": json.dumps(action_params),
             }
         )
 
@@ -52,7 +52,7 @@ class FrontendRedirectTests(TestCase):
         excpected_redirect_url.add(
             {
                 "_of_action": "resume",
-                "_of_action_params": (json.dumps(action_params)),
+                "_of_action_params": json.dumps(action_params),
             }
         )
 
@@ -78,7 +78,7 @@ class FrontendRedirectTests(TestCase):
         excpected_redirect_url.add(
             {
                 "_of_action": "resume",
-                "_of_action_params": (json.dumps(action_params)),
+                "_of_action_params": json.dumps(action_params),
             }
         )
 
@@ -104,7 +104,7 @@ class FrontendRedirectTests(TestCase):
         excpected_redirect_url.add(
             {
                 "_of_action": "resume",
-                "_of_action_params": (json.dumps(action_params)),
+                "_of_action_params": json.dumps(action_params),
                 "unrelated_query": "1",
             }
         )

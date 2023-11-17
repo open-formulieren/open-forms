@@ -6,11 +6,11 @@ from django_webtest import WebTest
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
+from openforms.frontend.tests import FrontendRedirectMixin
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.tests.mixins import FrontendRedirectMixin
 
 
-class SearchSubmissionForCosignView(WebTest, FrontendRedirectMixin):
+class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
     def setUp(self) -> None:
         super().setUp()
 

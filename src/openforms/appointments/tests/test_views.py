@@ -11,6 +11,7 @@ from furl import furl
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.forms.tests.factories import FormFactory
+from openforms.frontend.tests import FrontendRedirectMixin
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -20,14 +21,13 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
-from openforms.tests.mixins import FrontendRedirectMixin
 
 from ..tokens import submission_appointment_token_generator
 from .factories import AppointmentFactory, AppointmentInfoFactory
 
 
 @freeze_time("2021-07-15T21:15:00Z")
-class VerifyCancelAppointmentLinkViewTests(TestCase, FrontendRedirectMixin):
+class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.create(
             completed=True, form_url="http://maykinmedia.nl/myform"
@@ -341,7 +341,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase, FrontendRedirectMixin):
 
 
 @freeze_time("2021-07-15T21:15:00Z")
-class VerifyChangeAppointmentLinkViewTests(TestCase, FrontendRedirectMixin):
+class VerifyChangeAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,

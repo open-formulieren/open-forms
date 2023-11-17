@@ -71,6 +71,10 @@ Available options
     would be ``https://example.com/basepath?cms_query=1#/startpagina`` (SDK specific query parameters would come
     at the end of the URL).
 
+    .. warning::
+        This is a last resort solution - preferably the backend where you embed the form would set up "wildcard" routes to
+        ensure that refreshing the page works, e.g. ``/some-path/<form-id>/*`` should just load the CMS page for a specific form.
+
 ``CSPNonce``:
     Recommended. The page's CSP Nonce value if inline styles are blocked by your
     `Content Security Policy <https://content-security-policy.com/nonce/>`_. The Open

@@ -6,7 +6,7 @@ from django.test import SimpleTestCase
 
 from furl import furl
 
-from openforms.frontend import SDKAction
+from .frontend import SDKAction
 
 
 class FrontendRedirectMixin:
@@ -26,7 +26,7 @@ class FrontendRedirectMixin:
         :param frontend_base_url: The base URL of the frontend.
         :param action: The SDK action performed.
         :param action_params: Optional parameters for the action.
-        :param **kwargs: Additional kwargs to be passed to ``assertRedirects``.
+        :param `**kwargs`: Additional kwargs to be passed to :meth:`django.test.SimpleTestCase.assertRedirects`.
         """
 
         expected_redirect_url = furl(frontend_base_url)

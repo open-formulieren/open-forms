@@ -10,14 +10,14 @@ from furl import furl
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models import GlobalConfiguration
-from openforms.tests.mixins import FrontendRedirectMixin
+from openforms.frontend.tests import FrontendRedirectMixin
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
-class SubmissionResumeViewTests(TestCase, FrontendRedirectMixin):
+class SubmissionResumeViewTests(FrontendRedirectMixin, TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,
