@@ -119,3 +119,29 @@ class JsonSummaryTests(TestCase):
         )
 
         self.assertEqual(rendered, "{}")
+
+
+class AsGeoJsonTests(TestCase):
+    def test_render_as_geo_json(self):
+        rendered = render_from_string(
+            "{% as_geo_json variables.0.value %}",
+            context={"variables": [{"value": [1.0, 2.0]}]},
+            backend=openforms_backend,
+            disable_autoescape=True,
+        )
+
+        expected = '{"type": "Point", "coordinates": [1.0, 2.0]}'
+
+        self.assertEqual(rendered, expected)
+
+    def test_render_as_geo_json_no_value(self):
+        rendered = render_from_string(
+            "{% as_geo_json variables.0.value %}",
+            context={"variables": [{"value": ""}]},
+            backend=openforms_backend,
+            disable_autoescape=True,
+        )
+
+        expected = "{}"
+
+        self.assertEqual(rendered, expected)

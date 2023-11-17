@@ -445,6 +445,7 @@ Voorbeeld
 
          Mede-ondertekend door: N. Doe (BSN: 123456789)
 
+.. _objecten_api_registratie:
 
 Objecten API registratie
 ========================
@@ -471,6 +472,9 @@ alle gegevens uit het formulier en de waarden ingevuld door de gebruiker.
    ``{{ voornaam }}``. Echter, in de sjablonen voor de Objecten API dient u deze als ``variables.<variabele>`` te refereren,
    bijvoorbeeld ``{{ variables.voornaam }}``. Dit zal in de toekomst voor alle sjablonen gelden.
 
+.. seealso ::
+
+   See :ref:`example_form_with_geometry` for a more detailed example.
 
 **Speciale instructies**
 
@@ -489,6 +493,7 @@ Variabele                              Beschrijving
 ``{{ submission.csv_url }}``           De URL van het inzendingsrapport (in CSV formaat) in de documenten API. Dit document is mogelijk niet aangemaakt
 ``{% json_summary %}``                 JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
 ``{% uploaded_attachment_urls %}``     Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs verwijzen naar het geregistreerde document in de Documenten API.
+``{% as_geo_json variables.map %}``    Sluit de gerefereerde variabele (`variables.map`) in als JSON.
 =====================================  ===========================================================================
 
 

@@ -22,6 +22,7 @@ Voorbeelden
    dynamic_options_3
    service_fetch
    suwinet
+   form_with_geometry
 
 ======================
 Verouderde voorbeelden
