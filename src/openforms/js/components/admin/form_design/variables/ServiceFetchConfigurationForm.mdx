@@ -1,0 +1,31 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
+import * as ServiceFetchConfigurationFormStories from './ServiceFetchConfigurationForm.stories';
+
+<Meta of={ServiceFetchConfigurationFormStories} />
+
+# ServiceFetchConfigurationForm
+
+Form to edit or create a `ServiceFetchConfiguration`.
+
+**Warning**: this component requires the following contexts: `FormLogicContext`.
+
+- Relevant fields are displayed dynamically depending on the earlier filled out fields.
+- Available services that can be queried are taken out of the `FormLogicContext`.
+- Values (query, headers) and the request path support Python `.format` interpolation (future:
+  Django template language syntax) and can use existing form variables.
+
+<Canvas>
+  <Story of={ServiceFetchConfigurationFormStories.Blank} />
+</Canvas>
+
+## Interpolation
+
+<Canvas>
+  <Story of={ServiceFetchConfigurationFormStories.Interpolation} />
+</Canvas>
+
+## Props
+
+<ArgsTable of={ServiceFetchConfigurationForm} />

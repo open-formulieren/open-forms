@@ -1,0 +1,20 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import SubmitRow from './SubmitRow';
+import * as SubmitRowStories from './SubmitRow.stories';
+
+<Meta of={SubmitRowStories} />
+
+# Field
+
+Wrapper for multiple submit/action buttons
+
+## Presentation
+
+<Canvas>
+  <Story of={SubmitRowStories.Default} />
+</Canvas>
+
+### Props
+
+<ArgsTable of={SubmitRow} />

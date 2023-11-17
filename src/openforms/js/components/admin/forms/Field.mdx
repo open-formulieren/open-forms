@@ -1,0 +1,39 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import Field from './Field';
+import * as FieldStories from './Field.stories';
+
+<Meta of={FieldStories} />
+
+# Field
+
+Wrapper for admin form fields. Note that the `name` prop is forwarded to the child (like
+`TextInput`).
+
+## Default usage
+
+<Canvas>
+  <Story of={FieldStories.Default} />
+</Canvas>
+
+<ArgsTable of={Field} />
+
+## Variants
+
+### With validation errors
+
+<Canvas>
+  <Story of={FieldStories.HasErrors} />
+</Canvas>
+
+### Disabled
+
+<Canvas>
+  <Story of={FieldStories.Disabled} />
+</Canvas>
+
+### Required field
+
+<Canvas>
+  <Story of={FieldStories.Required} />
+</Canvas>

@@ -1,0 +1,22 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import ComponentSelection from './ComponentSelection';
+import * as ComponentSelectionStories from './ComponentSelection.stories';
+
+<Meta of={ComponentSelectionStories} />
+
+## Usage
+
+Given a context of available (Formio) fields/components, display them in a dropdown.
+
+Note that this component relies on the `FormContext` provider.
+
+## Presentation
+
+<Canvas>
+  <Story of={ComponentSelectionStories.Default} />
+</Canvas>
+
+### Props
+
+<ArgsTable of={ComponentSelection} />

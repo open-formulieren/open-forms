@@ -1,0 +1,34 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import ErrorList from './ErrorList';
+import * as ErrorListStories from './ErrorList.stories';
+
+<Meta of={ErrorListStories} />
+
+# Field
+
+Wrapper for errors in the admin
+
+## Usage
+
+### List of error-strings
+
+<Canvas>
+  <Story of={ErrorListStories.ListOfErrorStrings} />
+</Canvas>
+
+### Empty errorlist
+
+<Canvas>
+  <Story of={ErrorListStories.NoErrors} />
+</Canvas>
+
+### Single error
+
+<Canvas>
+  <Story of={ErrorListStories.SingleError} />
+</Canvas>
+
+### Props
+
+<ArgsTable of={ErrorList} />

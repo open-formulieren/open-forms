@@ -11,7 +11,7 @@ initialize({
 });
 
 export default {
-  decorators = [mswDecorator],
+  decorators: [mswDecorator],
   globals: {
     locale: reactIntl.defaultLocale,
     locales: {

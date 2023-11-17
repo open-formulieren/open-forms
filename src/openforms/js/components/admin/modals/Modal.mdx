@@ -1,0 +1,27 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import Modal from './Modal';
+import * as ModalStories from './Modal.stories';
+
+<Meta of={ModalStories} />
+
+# Modals
+
+Modals are used to overlay content on top of the normal page content.
+
+**Warning**
+
+In the code preview, you see that the props `parentSelector` and `ariaHideApp` are used - these
+should NOT be used in real application code but exist solely for Storybook purposes.
+
+## Props
+
+<ArgsTable of={Modal} />
+
+<Canvas>
+  <Story of={ModalStories.Open} />
+</Canvas>
+
+<Canvas>
+  <Story of={ModalStories.WithoutTitle} />
+</Canvas>

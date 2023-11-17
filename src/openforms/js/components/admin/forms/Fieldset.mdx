@@ -1,0 +1,30 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import Fieldset from './Fieldset';
+import * as FieldsetStories from './Fieldset.stories';
+
+<Meta of={FieldsetStories} />
+
+# Fieldset
+
+The Fieldset component is typically used to wrap one or more form rows, or even content paragraphs.
+
+If a title is provided, it will be styled with the primary color background.
+
+Any additional props provided are forwarded to the underlying `fieldset` HTML element.
+
+## Usage
+
+<Canvas>
+  <Story of={FieldsetStories.Default} />
+</Canvas>
+
+### Props
+
+<ArgsTable of={Fieldset} />
+
+### Without title
+
+<Canvas>
+  <Story of={FieldsetStories.WithoutTitle} />
+</Canvas>

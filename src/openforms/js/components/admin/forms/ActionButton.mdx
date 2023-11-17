@@ -1,0 +1,44 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {ActionButton, AddAnotherAction, ContinueEditingAction, SubmitAction} from './ActionButton';
+import * as ActionButtonStories from './ActionButton.stories';
+
+<Meta of={ActionButtonStories} />
+
+# Base and variants of action button
+
+The default Django admin action buttons
+
+## Generic button
+
+<Canvas>
+  <Story of={ActionButtonStories.ActionButtonDefault} />
+</Canvas>
+
+<ArgsTable of={ActionButton} />
+
+## Pre-built variants
+
+### Submit
+
+<Canvas>
+  <Story of={ActionButtonStories.SubmitActionStory} />
+</Canvas>
+
+<ArgsTable of={SubmitAction} />
+
+### Save and add another
+
+<Canvas>
+  <Story of={ActionButtonStories.AddAnotherActionStory} />
+</Canvas>
+
+<ArgsTable of={AddAnotherAction} />
+
+### Save and edit
+
+<Canvas>
+  <Story of={ActionButtonStories.ContinueEditingActionStory} />
+</Canvas>
+
+<ArgsTable of={ContinueEditingAction} />
