@@ -9,9 +9,11 @@ from django.conf import settings
 from cookie_consent.models import Cookie, CookieGroup
 
 from openforms.config.models import CSPSetting
+from openforms.config.utils import CSPEntry
 from openforms.typing import JSONObject
 
 if TYPE_CHECKING:  # pragma: no cover
+    from .constants import AnalyticsTools
     from .models import AnalyticsToolsConfiguration, ToolConfiguration
 
 
@@ -23,17 +25,12 @@ class CookieDict(TypedDict):
     path: str
 
 
-class CSPDict(TypedDict):
-    directive: str
-    value: str
-
-
 def update_analytics_tool(
     config: "AnalyticsToolsConfiguration",
-    analytics_tool: str,
+    analytics_tool: "AnalyticsTools",
     is_activated: bool,
     tool_config: "ToolConfiguration",
-):
+) -> None:
     from openforms.logging import logevent
 
     if is_activated:
@@ -42,15 +39,14 @@ def update_analytics_tool(
         logevent.disabling_analytics_tool(config, analytics_tool)
 
     # process the CSP headers
-    csps = cast(list[CSPDict], load_asset("csp_headers.json", analytics_tool))
+    csps = [CSPEntry(**data) for data in load_asset("csp_headers.json", analytics_tool)]
     for csp in csps:
         for replacement in tool_config.replacements:
             if not (field_name := replacement.field_name):
                 continue  # we do not support callables for CSP
             replacement_value = getattr(config, field_name)
-            csp["value"] = csp["value"].replace(
-                replacement.needle, str(replacement_value)
-            )
+            csp.value = csp.value.replace(replacement.needle, str(replacement_value))
+            csp.identifier = analytics_tool
 
     # process the cookies
     cookies = cast(list[CookieDict], load_asset("cookies.json", analytics_tool))
@@ -130,11 +126,10 @@ def update_analytical_cookies(
         Cookie.objects.filter(name__in=[cookie["name"] for cookie in cookies]).delete()
 
 
-def update_csp(csps: list[CSPDict], create: bool):
+def update_csp(
+    config_model: "AnalyticsToolsConfiguration", csps: list[CSPEntry], create: bool
+):
     if create:
-        instances = [
-            CSPSetting(directive=csp["directive"], value=csp["value"]) for csp in csps
-        ]
-        CSPSetting.objects.bulk_create(instances)
+        CSPSetting.objects.set_for(config_model, csps)
     else:
         CSPSetting.objects.filter(value__in=[csp["value"] for csp in csps]).delete()

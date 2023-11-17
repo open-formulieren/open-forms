@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from openforms.config.constants import CSPDirective
+from openforms.config.utils import CSPEntry
 
 from .constants import HashAlgorithm, OgoneEndpoints
 
@@ -69,4 +70,6 @@ class OgoneMerchant(models.Model):
 
         from openforms.config.models import CSPSetting
 
-        CSPSetting.objects.set_for(self, (CSPDirective.FORM_ACTION, self.endpoint))
+        CSPSetting.objects.set_for(
+            self, [CSPEntry(directive=CSPDirective.FORM_ACTION, value=self.endpoint)]
+        )

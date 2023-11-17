@@ -1,7 +1,6 @@
 import logging
 from collections import defaultdict
 from functools import partial
-from itertools import zip_longest
 
 from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -35,7 +34,7 @@ from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
 from .constants import CSPDirective, UploadFileType
-from .utils import verify_clamav_connection
+from .utils import CSPEntry, verify_clamav_connection
 
 logger = logging.getLogger(__name__)
 
@@ -664,7 +663,7 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
     def set_for(
         self,
         obj: models.Model,
-        *settings: tuple[CSPDirective, str] | tuple[CSPDirective, str, str],
+        settings: list[CSPEntry],
     ) -> None:
         """
         Deletes all the connected CSP settings and creates new ones based on the new provided data.
@@ -676,11 +675,11 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
         instances = [
             CSPSetting(
                 content_object=obj,
-                directive=directive,
-                value=value,
-                identifier=identifier or "",
+                directive=setting.directive,
+                value=setting.value,
+                identifier=setting.identifier,
             )
-            for directive, value, identifier in zip(*zip_longest(*settings))
+            for setting in settings
         ]
 
         CSPSetting.objects.filter(

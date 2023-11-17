@@ -9,6 +9,7 @@ from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 from openforms.authentication.constants import LogoAppearance
 from openforms.config.constants import CSPDirective
 from openforms.config.models import CSPSetting
+from openforms.config.utils import CSPEntry
 
 from .constants import ADDITIONAL_CSP_VALUES
 
@@ -74,4 +75,6 @@ def create_digid_eherkenning_csp_settings(
         urls.append(additional_csp_values)
 
     form_action_urls = " ".join(urls)
-    CSPSetting.objects.set_for(config, (CSPDirective.FORM_ACTION, form_action_urls))
+    CSPSetting.objects.set_for(
+        config, [CSPEntry(directive=CSPDirective.FORM_ACTION, value=form_action_urls)]
+    )
