@@ -6,10 +6,11 @@ from django_webtest import WebTest
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
+from openforms.frontend.tests import FrontendRedirectMixin
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
-class SearchSubmissionForCosignView(WebTest):
+class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
     def setUp(self) -> None:
         super().setUp()
 
@@ -54,9 +55,13 @@ class SearchSubmissionForCosignView(WebTest):
         form["code"] = submission.public_registration_reference
         submission_response = form.submit()
 
-        self.assertRedirects(
+        self.assertRedirectsToFrontend(
             submission_response,
-            f"http://url-to-form.nl/cosign/check?submission_uuid={submission.uuid}",
+            frontend_base_url="http://url-to-form.nl/",
+            action="cosign",
+            action_params={
+                "submission_uuid": str(submission.uuid),
+            },
             fetch_redirect_response=False,
         )
 

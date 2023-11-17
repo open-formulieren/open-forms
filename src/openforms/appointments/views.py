@@ -3,6 +3,7 @@ import logging
 from django.views.generic import RedirectView
 
 from openforms.authentication.service import FORM_AUTH_SESSION_KEY, store_auth_details
+from openforms.frontend import get_frontend_redirect_url
 from openforms.submissions.models import Submission
 from openforms.submissions.views import ResumeFormMixin
 
@@ -16,15 +17,14 @@ class VerifyCancelAppointmentLinkView(ResumeFormMixin, RedirectView):
     token_generator = submission_appointment_token_generator
 
     def get_form_resume_url(self, submission: Submission) -> str:
-        f = submission.cleaned_form_url
-        f /= "afspraak-annuleren"
-        f.add(
-            {
+        return get_frontend_redirect_url(
+            submission,
+            action="afspraak-annuleren",
+            action_params={
                 "time": submission.appointment_info.start_time.isoformat(),
                 "submission_uuid": str(submission.uuid),
-            }
+            },
         )
-        return f.url
 
 
 class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
@@ -58,9 +58,11 @@ class VerifyChangeAppointmentLinkView(ResumeFormMixin, RedirectView):
 
         assert next_step is not None, "Form has no steps to redirect to!"
 
-        f = submission.cleaned_form_url
-        f /= "stap"
-        f /= next_step.slug
-        f.add({"submission_uuid": submission.uuid})
-
-        return f.url
+        return get_frontend_redirect_url(
+            submission,
+            action="resume",
+            action_params={
+                "step_slug": next_step.slug,
+                "submission_uuid": str(submission.uuid),
+            },
+        )

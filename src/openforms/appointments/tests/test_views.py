@@ -11,6 +11,7 @@ from furl import furl
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.forms.tests.factories import FormFactory
+from openforms.frontend.tests import FrontendRedirectMixin
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -26,7 +27,7 @@ from .factories import AppointmentFactory, AppointmentInfoFactory
 
 
 @freeze_time("2021-07-15T21:15:00Z")
-class VerifyCancelAppointmentLinkViewTests(TestCase):
+class VerifyCancelAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.create(
             completed=True, form_url="http://maykinmedia.nl/myform"
@@ -49,18 +50,15 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         with freeze_time("2021-07-16T21:15:00Z"):
             response = self.client.get(endpoint)
 
-        expected_redirect_url = (
-            furl("http://maykinmedia.nl/myform/afspraak-annuleren")
-            .add(
-                {
-                    "time": "2021-07-21T12:00:00+00:00",
-                    "submission_uuid": str(submission.uuid),
-                }
-            )
-            .url
-        )
-        self.assertRedirects(
-            response, expected_redirect_url, fetch_redirect_response=False
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url="http://maykinmedia.nl/myform",
+            action="afspraak-annuleren",
+            action_params={
+                "time": "2021-07-21T12:00:00+00:00",
+                "submission_uuid": str(submission.uuid),
+            },
+            fetch_redirect_response=False,
         )
         # Assert submission is stored in session
         self.assertIn(
@@ -197,14 +195,6 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
                 "submission_uuid": submission.uuid,
             },
         )
-        expected_redirect_url = furl(submission.form_url)
-        expected_redirect_url /= "afspraak-annuleren"
-        expected_redirect_url.add(
-            {
-                "time": start_time.isoformat(),
-                "submission_uuid": str(submission.uuid),
-            }
-        )
 
         # Add form_auth to session, as the authentication plugin would do it
         session = self.client.session
@@ -218,9 +208,17 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
 
         response = self.client.get(endpoint)
 
-        self.assertRedirects(
-            response, expected_redirect_url.url, fetch_redirect_response=False
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url=submission.form_url,
+            action="afspraak-annuleren",
+            action_params={
+                "time": start_time.isoformat(),
+                "submission_uuid": str(submission.uuid),
+            },
+            fetch_redirect_response=False,
         )
+
         self.assertIn(SUBMISSIONS_SESSION_KEY, self.client.session)
         self.assertIn(
             str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
@@ -343,7 +341,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
 
 
 @freeze_time("2021-07-15T21:15:00Z")
-class VerifyChangeAppointmentLinkViewTests(TestCase):
+class VerifyChangeAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,
@@ -397,14 +395,18 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         new_submission = Submission.objects.exclude(id=submission.id).get()
         # after initiating change, we expect the bsn to be stored in plain text (again)
         self.assertEqual(new_submission.auth_info.value, "000000000")
-        expected_redirect_url = (
-            f"http://maykinmedia.nl/myform/stap/{form_definition.slug}"
-            f"?submission_uuid={new_submission.uuid}"
+
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url=submission.form_url,
+            action="resume",
+            action_params={
+                "step_slug": form_definition.slug,
+                "submission_uuid": str(new_submission.uuid),
+            },
+            fetch_redirect_response=False,
         )
 
-        self.assertRedirects(
-            response, expected_redirect_url, fetch_redirect_response=False
-        )
         # Assert new submission was created
         self.assertEqual(Submission.objects.count(), 2)
         # Assert old submission not stored in session
@@ -580,9 +582,16 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             response = self.client.get(endpoint)
 
         new_submission = Submission.objects.exclude(id=submission.id).get()
-        expected_redirect_url = f"http://maykinmedia.nl/myform/stap/step-1?submission_uuid={new_submission.uuid}"
-        self.assertRedirects(
-            response, expected_redirect_url, fetch_redirect_response=False
+
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url=submission.form_url,
+            action="resume",
+            action_params={
+                "step_slug": "step-1",
+                "submission_uuid": str(new_submission.uuid),
+            },
+            fetch_redirect_response=False,
         )
 
     def test_redirects_to_auth_if_form_requires_login(self):
@@ -658,14 +667,17 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
 
         self.assertIsNotNone(new_submission)
 
-        expected_redirect_url = furl(submission.form_url)
-        expected_redirect_url /= "stap"
-        expected_redirect_url /= "test-step"
-        expected_redirect_url.args["submission_uuid"] = str(new_submission.uuid)
-
-        self.assertRedirects(
-            response, expected_redirect_url.url, fetch_redirect_response=False
+        self.assertRedirectsToFrontend(
+            response,
+            frontend_base_url=submission.form_url,
+            action="resume",
+            action_params={
+                "step_slug": "test-step",
+                "submission_uuid": str(new_submission.uuid),
+            },
+            fetch_redirect_response=False,
         )
+
         self.assertIn(SUBMISSIONS_SESSION_KEY, self.client.session)
         self.assertIn(
             str(new_submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]

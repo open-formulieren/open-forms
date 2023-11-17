@@ -13,6 +13,12 @@ HTML assertions
 .. automodule:: openforms.utils.tests.webtest_base
    :members:
 
+Frontend redirects
+==================
+
+.. automodule:: openforms.frontend.tests
+   :members:
+
 Migrations
 ==========
 

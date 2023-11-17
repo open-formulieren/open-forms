@@ -21,6 +21,7 @@ from openforms.authentication.utils import (
     meets_plugin_requirements,
 )
 from openforms.forms.models import Form
+from openforms.frontend import get_frontend_redirect_url
 from openforms.tokens import BaseTokenGenerator
 
 from .constants import RegistrationStatuses
@@ -175,18 +176,18 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
     token_generator = submission_resume_token_generator
 
     def get_form_resume_url(self, submission: Submission) -> str:
-        form_resume_url = submission.cleaned_form_url
-
         state = submission.load_execution_state()
         last_completed_step = state.get_last_completed_step()
         target_step = last_completed_step or state.submission_steps[0]
 
-        # furl adds paths with the /= operator
-        form_resume_url /= "stap"
-        form_resume_url /= target_step.form_step.slug
-        # Add the submission uuid to the query param
-        form_resume_url.add({"submission_uuid": submission.uuid})
-        return form_resume_url.url
+        return get_frontend_redirect_url(
+            submission,
+            action="resume",
+            action_params={
+                "step_slug": target_step.form_step.slug,
+                "submission_uuid": str(submission.uuid),
+            },
+        )
 
 
 class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
@@ -279,6 +280,10 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        cosign_page = self.submission.cleaned_form_url / "cosign" / "check"
-        cosign_page.args["submission_uuid"] = self.submission.uuid
-        return cosign_page.url
+        return get_frontend_redirect_url(
+            self.submission,
+            action="cosign",
+            action_params={
+                "submission_uuid": str(self.submission.uuid),
+            },
+        )
