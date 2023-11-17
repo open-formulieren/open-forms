@@ -1,6 +1,6 @@
 import '../src/openforms/scss/screen.scss';
 import '../src/openforms/scss/admin/admin_overrides.scss';
-import {initialize, mswDecorator} from 'msw-storybook-addon';
+import {initialize, mswDecorator, mswLoader} from 'msw-storybook-addon';
 import {reactIntl} from './reactIntl.js';
 
 initialize({
@@ -10,25 +10,24 @@ initialize({
   },
 });
 
-export const parameters = {
-  reactIntl,
-  locale: reactIntl.defaultLocale,
-  locales: {
-    nl: 'Nederlands',
-    en: 'English',
-  },
-  actions: {argTypesRegex: '^on[A-Z].*'},
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
+export default {
+  decorators = [mswDecorator],
+  globals: {
+    locale: reactIntl.defaultLocale,
+    locales: {
+      nl: 'Nederlands',
+      en: 'English',
     },
   },
-  docs: {
-    source: {
-      type: 'dynamic',
-      excludeDecorators: true,
+  parameters: {
+    actions: {argTypesRegex: '^on[A-Z].*'},
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/,
+      },
     },
+    reactIntl,
   },
+  loaders: [mswLoader],
 };
-export const decorators = [mswDecorator];

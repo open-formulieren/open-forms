@@ -2,6 +2,9 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
+  core: {
+    disableTelemetry: true,
+  },
   stories: [
     '../src/openforms/js/**/*.stories.mdx',
     '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)',
@@ -23,6 +26,11 @@ module.exports = {
     '@storybook/addon-interactions',
     'storybook-react-intl',
   ],
+  features: {
+    interactionsDebugger: true,
+    storyStoreV7: true,
+    buildStoriesJson: true,
+  },
 
   framework: {
     name: '@storybook/react-webpack5',
@@ -74,5 +82,9 @@ module.exports = {
       }
     );
     return config;
+  },
+
+  docs: {
+    autodocs: 'tag',
   },
 };
