@@ -5,10 +5,7 @@ module.exports = {
   core: {
     disableTelemetry: true,
   },
-  stories: [
-    '../src/openforms/js/**/*.stories.mdx',
-    '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)',
-  ],
+  stories: ['../src/openforms/js/**/*.mdx', '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)'],
 
   staticDirs: [
     {from: '../static/admin', to: 'static/admin'},
