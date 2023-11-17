@@ -6,6 +6,7 @@ module.exports = {
     '../src/openforms/js/**/*.stories.mdx',
     '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)',
   ],
+
   staticDirs: [
     {from: '../static/admin', to: 'static/admin'},
     {from: '../static/fonts', to: 'static/fonts'},
@@ -15,16 +16,19 @@ module.exports = {
     {from: '../static/img', to: 'img'},
     {from: '../public', to: ''},
   ],
+
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     'storybook-react-intl',
   ],
-  framework: '@storybook/react',
-  core: {
-    builder: '@storybook/builder-webpack5',
+
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {},
   },
+
   webpackFinal: async (config, {configType}) => {
     const isEnvProduction = configType === 'PRODUCTION';
 

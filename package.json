@@ -16,8 +16,8 @@
     "compilemessages": "formatjs compile",
     "format": "prettier --write 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
     "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "repository": {
     "type": "git",
@@ -69,7 +69,7 @@
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!@open-formulieren/formio-builder)/",
-      "\\.pnp\\.[^\\\/]+$"
+      "\\.pnp\\.[^\\/]+$"
     ]
   },
   "browserslist": [
@@ -83,15 +83,14 @@
     "@babel/preset-env": "^7.12.16",
     "@babel/preset-react": "^7.13.13",
     "@formatjs/cli": "^6.1.1",
-    "@storybook/addon-actions": "^6.5.16",
-    "@storybook/addon-essentials": "^6.5.16",
-    "@storybook/addon-interactions": "^6.5.16",
-    "@storybook/addon-links": "^6.5.16",
-    "@storybook/builder-webpack5": "^6.5.16",
-    "@storybook/client-api": "^6.5.16",
-    "@storybook/manager-webpack5": "^6.5.16",
-    "@storybook/react": "^6.5.16",
-    "@storybook/testing-library": "^0.0.13",
+    "@storybook/addon-actions": "^7.5.3",
+    "@storybook/addon-essentials": "^7.5.3",
+    "@storybook/addon-interactions": "^7.5.3",
+    "@storybook/addon-links": "^7.5.3",
+    "@storybook/client-api": "^7.5.3",
+    "@storybook/react": "^7.5.3",
+    "@storybook/react-webpack5": "^7.5.3",
+    "@storybook/testing-library": "^0.2.2",
     "@utrecht/components": "^1.0.0-alpha.378",
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
@@ -105,15 +104,15 @@
     "jest-environment-jsdom": "^29.3.1",
     "mini-css-extract-plugin": "^0.11.1",
     "msw": "^1.0.1",
-    "msw-storybook-addon": "^1.7.0",
+    "msw-storybook-addon": "^1.10.0",
     "postcss": "^8.0.8",
     "postcss-loader": "^4.0.1",
     "prettier": "2.6.2",
     "sass": "^1.32.12",
     "sass-loader": "^12.3.0",
     "semver": "^7.3.7",
-    "storybook": "^6.5.16",
-    "storybook-react-intl": "^1.1.1",
+    "storybook": "^7.5.3",
+    "storybook-react-intl": "^2.0.3",
     "typescript": "^4.3.5",
     "url-loader": "^4.1.1",
     "webpack": "^5.70.0",
