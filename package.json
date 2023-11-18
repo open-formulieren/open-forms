@@ -114,6 +114,7 @@
     "semver": "^7.3.7",
     "storybook": "^7.5.3",
     "storybook-react-intl": "^2.0.3",
+    "style-loader": "^3.3.3",
     "typescript": "^4.3.5",
     "url-loader": "^4.1.1",
     "webpack": "^5.70.0",
