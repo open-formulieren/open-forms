@@ -6,7 +6,6 @@ export default {
   title: 'Form design/FormWarnings',
   component: FormWarnings,
   decorators: [FormDecorator],
-  render: Template.bind({}),
 };
 
 export const FormWarningsWithoutTranslations = {

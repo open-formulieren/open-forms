@@ -18,7 +18,7 @@ export default {
 
 export const CheckboxStory = {
   name: 'Checkbox',
-  component: Checkbox,
+  render: args => <Checkbox {...args} />,
 
   args: {
     name: 'Checkbox',
@@ -30,7 +30,7 @@ export const CheckboxStory = {
 
 export const DateInputStory = {
   name: 'DateInput',
-  component: DateInput,
+  render: args => <DateInput {...args} />,
 
   args: {
     name: 'DateInput',
@@ -39,7 +39,7 @@ export const DateInputStory = {
 
 export const DateTimeInputStory = {
   name: 'DateTimeInput',
-  component: DateTimeInput,
+  render: args => <DateTimeInput {...args} />,
 
   args: {
     name: 'DateTimeInput',
@@ -49,7 +49,7 @@ export const DateTimeInputStory = {
 
 export const InputStory = {
   name: 'Input',
-  component: Input,
+  render: args => <Input {...args} />,
 
   args: {
     name: 'Input',
@@ -59,7 +59,7 @@ export const InputStory = {
 
 export const NumberInputStory = {
   name: 'NumberInput',
-  component: NumberInput,
+  render: args => <NumberInput {...args} />,
 
   args: {
     name: 'NumberInput',
@@ -68,7 +68,7 @@ export const NumberInputStory = {
 
 export const RadioStory = {
   name: 'Radio',
-  component: Radio,
+  render: args => <Radio {...args} />,
 
   args: {
     name: 'Radio',
@@ -80,7 +80,7 @@ export const RadioStory = {
 
 export const TextAreaStory = {
   name: 'TextArea',
-  component: TextArea,
+  render: args => <TextArea {...args} />,
 
   args: {
     name: 'TextArea',
@@ -91,7 +91,7 @@ export const TextAreaStory = {
 
 export const TextInputStory = {
   name: 'TextInput',
-  component: TextInput,
+  render: args => <TextInput {...args} />,
 
   args: {
     name: 'TextInput',

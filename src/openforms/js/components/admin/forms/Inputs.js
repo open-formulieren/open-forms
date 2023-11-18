@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import flatpickr from 'flatpickr';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef} from 'react';
 import {defineMessage, useIntl} from 'react-intl';

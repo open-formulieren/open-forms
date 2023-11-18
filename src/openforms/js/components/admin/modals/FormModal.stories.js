@@ -24,7 +24,7 @@ const render = (args, {viewMode}) => (
       closeModal={args.closeModal}
       extraModifiers={args.extraModifiers}
       children={null}
-      parentSelector={() => document.getElementById('root')}
+      parentSelector={() => document.getElementById('storybook-root')}
       ariaHideApp={false}
     >
       <p>Content before the submit row</p>

@@ -7,7 +7,6 @@ export default {
 
 export const ActionButtonDefault = {
   name: 'ActionButton default',
-  component: ActionButton,
 
   args: {
     name: '',
@@ -17,15 +16,15 @@ export const ActionButtonDefault = {
 
 export const SubmitActionStory = {
   name: 'SubmitAction',
-  component: SubmitAction,
+  render: () => <SubmitAction />,
 };
 
 export const AddAnotherActionStory = {
   name: 'AddAnotherAction',
-  component: AddAnotherAction,
+  render: () => <AddAnotherAction />,
 };
 
 export const ContinueEditingActionStory = {
   name: 'ContinueEditingAction',
-  component: ContinueEditingAction,
+  render: () => <ContinueEditingAction />,
 };

@@ -24,7 +24,7 @@ const render = (args, {viewMode}) => (
       closeModal={args.closeModal}
       contentModifiers={args.contentModifiers}
       children={null}
-      parentSelector={() => document.getElementById('root')}
+      parentSelector={() => document.getElementById('storybook-root')}
       ariaHideApp={false}
     >
       <UnsafeHTML content={args.content} />
