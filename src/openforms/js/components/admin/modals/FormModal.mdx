@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import FormModal from './FormModal';
 import * as FormModalStories from './FormModal.stories';
@@ -15,6 +15,4 @@ modal is pushed to the bottom.
 In the code preview, you see that the props `parentSelector` and `ariaHideApp` are used - these
 should NOT be used in real application code but exist solely for Storybook purposes.
 
-<Canvas>
-  <Story of={FormModalStories.Default} />
-</Canvas>
+<Canvas of={FormModalStories.Default} />

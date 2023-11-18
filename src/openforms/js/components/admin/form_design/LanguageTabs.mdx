@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/blocks';
+import {ArgTypes, Canvas, Meta} from '@storybook/blocks';
 
 import LanguageTabs from './LanguageTabs';
 import * as LanguageTabsStories from './LanguageTabs.stories';
@@ -13,16 +13,12 @@ templates and submission templates.
 
 ## Default
 
-<Canvas>
-  <Story of={LanguageTabsStories.Default} />
-</Canvas>
+<Canvas of={LanguageTabsStories.Default} />
 
 ### Error state
 
-<Canvas>
-  <Story of={LanguageTabsStories.WithErrors} />
-</Canvas>
+<Canvas of={LanguageTabsStories.WithErrors} />
 
 ### Props
 
-<ArgsTable of={LanguageTabs} />
+<ArgTypes of={LanguageTabs} />

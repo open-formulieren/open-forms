@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import {ChangelistTable} from '.';
 import * as TablesStories from './Tables.stories';
@@ -14,22 +14,18 @@ page for a given model/resource.
 
 The preferred usage is by defining the available components explicitly.
 
-<Canvas>
-  <Story of={TablesStories.FixedColumns} />
-</Canvas>
+<Canvas of={TablesStories.FixedColumns} />
 
 ## Without links
 
 By default, the first column is a clickable link. This can be disabled by setting the `linkColumn`
 prop to `null`.
 
-<Canvas>
-  <Story of={TablesStories.NoLinkColumn} />
-</Canvas>
+<Canvas of={TablesStories.NoLinkColumn} />
 
 ## Props
 
-<ArgsTable of={ChangelistTable} />
+<ArgTypes of={ChangelistTable} />
 
 ## Low-level components
 

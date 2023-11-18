@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import ButtonContainer from './ButtonContainer';
 import * as ButtonContainerStories from './ButtonContainer.stories';
@@ -9,10 +9,8 @@ import * as ButtonContainerStories from './ButtonContainer.stories';
 
 The button container is typically used in lists to add another item to the list.
 
-<Canvas>
-  <Story of={ButtonContainerStories.Default} />
-</Canvas>
+<Canvas of={ButtonContainerStories.Default} />
 
 ## Props
 
-<ArgsTable of={ButtonContainer} />
+<ArgTypes of={ButtonContainer} />

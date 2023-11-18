@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 import * as ServiceFetchConfigurationFormStories from './ServiceFetchConfigurationForm.stories';
@@ -16,16 +16,12 @@ Form to edit or create a `ServiceFetchConfiguration`.
 - Values (query, headers) and the request path support Python `.format` interpolation (future:
   Django template language syntax) and can use existing form variables.
 
-<Canvas>
-  <Story of={ServiceFetchConfigurationFormStories.Blank} />
-</Canvas>
+<Canvas of={ServiceFetchConfigurationFormStories.Blank} />
 
 ## Interpolation
 
-<Canvas>
-  <Story of={ServiceFetchConfigurationFormStories.Interpolation} />
-</Canvas>
+<Canvas of={ServiceFetchConfigurationFormStories.Interpolation} />
 
 ## Props
 
-<ArgsTable of={ServiceFetchConfigurationForm} />
+<ArgTypes of={ServiceFetchConfigurationForm} />

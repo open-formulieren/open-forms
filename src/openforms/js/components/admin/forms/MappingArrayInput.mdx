@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import MappingArrayInput from './MappingArrayInput';
 import * as MappingArrayInputStories from './MappingArrayInput.stories';
@@ -12,16 +12,12 @@ mappings, or key -> list-of-values mappings.
 
 ## Flat mapping
 
-<Canvas>
-  <Story of={MappingArrayInputStories.FlatMapping} />
-</Canvas>
+<Canvas of={MappingArrayInputStories.FlatMapping} />
 
 ### Mapping to arrays (using `valueArrayInput` argument)
 
-<Canvas>
-  <Story of={MappingArrayInputStories.NestedListsMapping} />
-</Canvas>
+<Canvas of={MappingArrayInputStories.NestedListsMapping} />
 
 ### Props
 
-<ArgsTable of={MappingArrayInput} />
+<ArgTypes of={MappingArrayInput} />

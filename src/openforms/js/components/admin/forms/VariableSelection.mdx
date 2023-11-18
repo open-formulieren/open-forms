@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import VariableSelection from './VariableSelection';
 import * as VariableSelectionStories from './VariableSelection.stories';
@@ -9,10 +9,8 @@ import * as VariableSelectionStories from './VariableSelection.stories';
 
 Select widget for form and static variables
 
-<Canvas>
-  <Story of={VariableSelectionStories.Default} />
-</Canvas>
+<Canvas of={VariableSelectionStories.Default} />
 
 ### Props
 
-<ArgsTable of={VariableSelection} />
+<ArgTypes of={VariableSelection} />

@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import ComponentSelection from './ComponentSelection';
 import * as ComponentSelectionStories from './ComponentSelection.stories';
@@ -13,10 +13,8 @@ Note that this component relies on the `FormContext` provider.
 
 ## Presentation
 
-<Canvas>
-  <Story of={ComponentSelectionStories.Default} />
-</Canvas>
+<Canvas of={ComponentSelectionStories.Default} />
 
 ### Props
 
-<ArgsTable of={ComponentSelection} />
+<ArgTypes of={ComponentSelection} />

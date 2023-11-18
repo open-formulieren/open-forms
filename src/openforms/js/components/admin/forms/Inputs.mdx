@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import {
   Checkbox,
@@ -19,62 +19,46 @@ for proper Django admin look-and-feel.
 
 ## Checkbox
 
-<Canvas>
-  <Story of={InputsStories.CheckboxStory} />
-</Canvas>
+<Canvas of={InputsStories.CheckboxStory} />
 
-<ArgsTable of={Checkbox} />
+<ArgTypes of={Checkbox} />
 
 ## Date input
 
-<Canvas>
-  <Story of={InputsStories.DateInputStory} />
-</Canvas>
+<Canvas of={InputsStories.DateInputStory} />
 
 ## Date/time input
 
 TODO: this is not the standard django input!
 
-<Canvas>
-  <Story of={InputsStories.DateTimeInputStory} />
-</Canvas>
+<Canvas of={InputsStories.DateTimeInputStory} />
 
-<ArgsTable of={DateTimeInput} />
+<ArgTypes of={DateTimeInput} />
 
 ## Generic input
 
-<Canvas>
-  <Story of={InputsStories.InputStory} />
-</Canvas>
+<Canvas of={InputsStories.InputStory} />
 
-<ArgsTable of={Input} />
+<ArgTypes of={Input} />
 
 ## Number input
 
-<Canvas>
-  <Story of={InputsStories.NumberInputStory} />
-</Canvas>
+<Canvas of={InputsStories.NumberInputStory} />
 
 ## Radio choices
 
-<Canvas>
-  <Story of={InputsStories.RadioStory} />
-</Canvas>
+<Canvas of={InputsStories.RadioStory} />
 
-<ArgsTable of={Radio} />
+<ArgTypes of={Radio} />
 
 ## Textarea
 
-<Canvas>
-  <Story of={InputsStories.TextAreaStory} />
-</Canvas>
+<Canvas of={InputsStories.TextAreaStory} />
 
-<ArgsTable of={TextArea} />
+<ArgTypes of={TextArea} />
 
 ## Text input
 
-<Canvas>
-  <Story of={InputsStories.TextInputStory} />
-</Canvas>
+<Canvas of={InputsStories.TextInputStory} />
 
-<ArgsTable of={TextInput} />
+<ArgTypes of={TextInput} />

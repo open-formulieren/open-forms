@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/blocks';
+import {ArgTypes, Canvas, Meta} from '@storybook/blocks';
 
 import Action from './Action';
 import * as ActionStories from './Action.stories';
@@ -12,13 +12,11 @@ One or more actions can be executed when a rule triggers.
 Actions are polymorphic in nature - the type of the action determines the remaining configuration
 parameters.
 
-<Canvas>
-  <Story of={ActionStories.ServiceFetch} />
-</Canvas>
+<Canvas of={ActionStories.ServiceFetch} />
 
 ## Props
 
-<ArgsTable of={Action} />
+<ArgTypes of={Action} />
 
 ## Required contexts
 

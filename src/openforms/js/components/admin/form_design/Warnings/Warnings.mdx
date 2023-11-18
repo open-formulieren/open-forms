@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import {MissingAuthCosignWarning} from '.';
 import * as WarningsStories from './Warnings.stories';
@@ -19,19 +19,15 @@ about:
 - Co-sign component in repeating groups: since only one co-sign component is allowed per form, it
   makes no sense to add them inside a repeating group.
 
-<Canvas>
-  <Story of={WarningsStories.FormWarningsWithoutTranslations} />
-</Canvas>
+<Canvas of={WarningsStories.FormWarningsWithoutTranslations} />
 
 ## Warning for missing authentication plugin for co-sign component
 
 This component catches situations in which the co-sign component specifies that the co-signer should
 authenticate with a particular authentication plugin, but that plugin is not enabled on the form.
 
-<Canvas>
-  <Story of={WarningsStories.MissingAuthCosignWarning} />
-</Canvas>
+<Canvas of={WarningsStories.MissingAuthCosignWarning} />
 
 ## Props
 
-<ArgsTable of={MissingAuthCosignWarning} />
+<ArgTypes of={MissingAuthCosignWarning} />

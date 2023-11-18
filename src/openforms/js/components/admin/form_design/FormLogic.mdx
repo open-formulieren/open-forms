@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import {FormLogic} from './FormLogic';
 import * as FormLogicStories from './FormLogic.stories';
@@ -16,13 +16,11 @@ simple and advanced, which determines the UI to build the trigger.
 Both variants use JsonLogic expressions under the hood. One or more actions will be taken when the
 rule executes (e.g. changing the value of a variable/component).
 
-<Canvas>
-  <Story of={FormLogicStories.FullFunctionality} />
-</Canvas>
+<Canvas of={FormLogicStories.FullFunctionality} />
 
 ## Props
 
-<ArgsTable of={FormLogic} />
+<ArgTypes of={FormLogic} />
 
 ## Required contexts
 

@@ -2,6 +2,7 @@ import '../src/openforms/scss/screen.scss';
 import '../src/openforms/scss/admin/admin_overrides.scss';
 import {initialize, mswDecorator, mswLoader} from 'msw-storybook-addon';
 import {reactIntl} from './reactIntl.js';
+import ReactModal from 'react-modal';
 
 initialize({
   onUnhandledRequest: 'bypass',
@@ -9,6 +10,8 @@ initialize({
     url: './mockServiceWorker.js',
   },
 });
+
+ReactModal.setAppElement(document.getElementById('storybook-root'));
 
 export default {
   decorators: [mswDecorator],

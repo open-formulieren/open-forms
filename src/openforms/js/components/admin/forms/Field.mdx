@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import Field from './Field';
 import * as FieldStories from './Field.stories';
@@ -12,28 +12,20 @@ Wrapper for admin form fields. Note that the `name` prop is forwarded to the chi
 
 ## Default usage
 
-<Canvas>
-  <Story of={FieldStories.Default} />
-</Canvas>
+<Canvas of={FieldStories.Default} />
 
-<ArgsTable of={Field} />
+<ArgTypes of={Field} />
 
 ## Variants
 
 ### With validation errors
 
-<Canvas>
-  <Story of={FieldStories.HasErrors} />
-</Canvas>
+<Canvas of={FieldStories.HasErrors} />
 
 ### Disabled
 
-<Canvas>
-  <Story of={FieldStories.Disabled} />
-</Canvas>
+<Canvas of={FieldStories.Disabled} />
 
 ### Required field
 
-<Canvas>
-  <Story of={FieldStories.Required} />
-</Canvas>
+<Canvas of={FieldStories.Required} />

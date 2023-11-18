@@ -1,4 +1,4 @@
-import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
 
 import Fieldset from './Fieldset';
 import * as FieldsetStories from './Fieldset.stories';
@@ -15,16 +15,12 @@ Any additional props provided are forwarded to the underlying `fieldset` HTML el
 
 ## Usage
 
-<Canvas>
-  <Story of={FieldsetStories.Default} />
-</Canvas>
+<Canvas of={FieldsetStories.Default} />
 
 ### Props
 
-<ArgsTable of={Fieldset} />
+<ArgTypes of={Fieldset} />
 
 ### Without title
 
-<Canvas>
-  <Story of={FieldsetStories.WithoutTitle} />
-</Canvas>
+<Canvas of={FieldsetStories.WithoutTitle} />
