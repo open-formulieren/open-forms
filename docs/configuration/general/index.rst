@@ -12,3 +12,4 @@ General configuration
    oidc
    cms_integration
    virus_scan
+   payment_flow
