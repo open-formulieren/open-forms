@@ -1121,6 +1121,10 @@ CSP_IMG_SRC = (
     + config("CSP_EXTRA_IMG_SRC", default=[], split=True)
 )
 
+# affects <object> and <embed> tags, block everything by default but allow deploy-time
+# overrides.
+CSP_OBJECT_SRC = config("CSP_OBJECT_SRC", default=["'none'"], split=True)
+
 # we must include this explicitly, otherwise the style-src only includes the nonce because
 # of CSP_INCLUDE_NONCE_IN
 CSP_STYLE_SRC = CSP_DEFAULT_SRC
