@@ -2,8 +2,8 @@
 {% load i18n static %}
 
 {% block card %}
-<div class="card">
-    <header class="card__header">
+<div class="openforms-card">
+    <header class="openforms-card__header">
         <h1 class="title">
             {% blocktranslate with name=user.get_employee_name trimmed %}
                Logged in as employee {{ name }}
@@ -11,7 +11,7 @@
         </h1>
     </header>
 
-    <div class="card__body">
+    <div class="openforms-card__body">
         <p class="body">
             {% blocktranslate trimmed %}
                When filling out a form for a client or company please enter additional information.
