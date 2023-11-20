@@ -10,7 +10,6 @@ export default {
 export const Blank = {
   name: 'Blank',
 
-  // No name supplied, should fall back to "method path (service)"
   args: {
     availableServices: [
       {
@@ -46,7 +45,7 @@ export const Blank = {
         mappingExpression: '.field.nested',
       },
       {
-        name: '',
+        name: '', // No name supplied, should fall back to "method path (service)"
         id: 2,
         service: 'http://foo.com/services/2',
         path: '/some-other-path',

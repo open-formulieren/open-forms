@@ -69,7 +69,7 @@
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!@open-formulieren/formio-builder)/",
-      "\\.pnp\\.[^\\/]+$"
+      "\\.pnp\\.[^\\\/]+$"
     ]
   },
   "browserslist": [

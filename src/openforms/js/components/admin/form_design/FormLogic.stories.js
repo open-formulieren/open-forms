@@ -56,7 +56,6 @@ export default {
   component: FormLogic,
   decorators: [FeatureFlagsDecorator, FormDecorator, FormLogicDecorator],
 
-  // No name supplied, should fall back to "method path (service)"
   parameters: {
     msw: {
       handlers: [
@@ -93,7 +92,7 @@ export default {
             mappingExpression: '.field.nested',
           },
           {
-            name: '',
+            name: '', // No name supplied, should fall back to "method path (service)"
             id: 2,
             service: 'http://foo.com/services/2',
             path: '/some-other-path',
@@ -124,12 +123,11 @@ export default {
 export const FullFunctionality = {
   name: 'Full functionality',
 
-  // consumers should generate this, as it's used for the React key prop if no uuid exists
   args: {
     logicRules: [
       {
         uuid: 'foo',
-        _generatedId: 'foo',
+        _generatedId: 'foo', // consumers should generate this, as it's used for the React key prop if no uuid exists
         _logicType: 'simple',
         form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
         description: 'Sample rule',
