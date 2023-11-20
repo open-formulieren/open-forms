@@ -682,11 +682,13 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
             for setting in settings
         ]
 
+        self.delete_for(obj)
+        self.bulk_create(instances)
+
+    def delete_for(self, obj: models.Model) -> None:
         CSPSetting.objects.filter(
             content_type=get_content_type_for_model(obj), object_id=str(obj.id)
         ).delete()
-
-        self.bulk_create(instances)
 
 
 class CSPSetting(models.Model):

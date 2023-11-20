@@ -65,7 +65,7 @@ def update_analytics_tool(
         create=is_activated,
         cookie_consent_group_id=config.analytics_cookie_consent_group.id,
     )
-    update_csp(csps, create=is_activated)
+    update_csp(config, csps, create=is_activated)
 
 
 def load_asset(
@@ -132,4 +132,4 @@ def update_csp(
     if create:
         CSPSetting.objects.set_for(config_model, csps)
     else:
-        CSPSetting.objects.filter(value__in=[csp["value"] for csp in csps]).delete()
+        CSPSetting.objects.delete_for(config_model)
