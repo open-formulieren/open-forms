@@ -8,6 +8,7 @@ assignees: sergei-maertens
 
 - [ ] Resolve release blockers
   - [ ] ...
+- [ ] Re-generate VCR cassettes for API tests (see instructions on Taiga)
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
