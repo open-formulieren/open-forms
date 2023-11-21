@@ -2,8 +2,8 @@
 {% load i18n static openforms admin_urls %}
 
 {% block extrahead %}
-    {{ block.super }}
     {% include "admin/forms/includes/formio_config.html" %}
+    {{ block.super }}
 {% endblock extrahead %}
 
 {% block extrastyle %}

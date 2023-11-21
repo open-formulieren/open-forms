@@ -14,7 +14,9 @@ import ReactDOM from 'react-dom';
 import {IntlProvider} from 'react-intl';
 
 import {getIntlProviderProps} from 'components/admin/i18n';
+import {getAvailableDocumentTypes} from 'components/form/file';
 import {getComponentEmptyValue} from 'components/utils';
+import jsonScriptToVar from 'utils/json-script';
 
 import {
   getPrefillAttributes,
@@ -28,6 +30,10 @@ import {
   handleComponentValueLiterals,
   isTranslatableProperty,
 } from './translation';
+
+const CONFIDENTIALITY_LEVELS = jsonScriptToVar('CONFIDENTIALITY_LEVELS', {default: []});
+const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
+const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -379,6 +385,10 @@ class WebformBuilder extends WebformBuilderFormio {
             getRegistrationAttributes={getRegistrationAttributes}
             getPrefillPlugins={getPrefillPlugins}
             getPrefillAttributes={getPrefillAttributes}
+            getFileTypes={async () => FILE_TYPES}
+            serverUploadLimit={MAX_FILE_UPLOAD_SIZE}
+            getDocumentTypes={async () => await getAvailableDocumentTypes(this)}
+            getConfidentialityLevels={async () => CONFIDENTIALITY_LEVELS}
             // Component/builder state
             isNew={isNew}
             component={componentCopy}
