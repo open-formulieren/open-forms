@@ -5,6 +5,7 @@ from cookie_consent.models import Cookie
 
 from openforms.config.models import CSPSetting
 
+from ..constants import AnalyticsTools
 from .mixin import AnalyticsMixin
 
 
@@ -42,7 +43,9 @@ class MatomoTests(AnalyticsMixin, TestCase):
             with self.subTest("Test creation of CSP"):
                 try:
                     CSPSetting.objects.get(
-                        value=csp["value"], directive=csp["directive"]
+                        value=csp["value"],
+                        directive=csp["directive"],
+                        identifier=AnalyticsTools.matomo,
                     )
                 except CSPSetting.DoesNotExist as e:
                     self.fail(f"Unexpected exception : {e}")
@@ -69,7 +72,9 @@ class MatomoTests(AnalyticsMixin, TestCase):
             with self.subTest("Test deletion of CSP"):
                 self.assertFalse(
                     CSPSetting.objects.filter(
-                        value=csp["value"], directive=csp["directive"]
+                        value=csp["value"],
+                        directive=csp["directive"],
+                        identifier=AnalyticsTools.matomo,
                     ).exists()
                 )
 

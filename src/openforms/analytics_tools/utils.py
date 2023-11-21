@@ -39,14 +39,16 @@ def update_analytics_tool(
         logevent.disabling_analytics_tool(config, analytics_tool)
 
     # process the CSP headers
-    csps = [CSPEntry(**data) for data in load_asset("csp_headers.json", analytics_tool)]
+    csps = [
+        CSPEntry(identifier=analytics_tool, **data)
+        for data in load_asset("csp_headers.json", analytics_tool)
+    ]
     for csp in csps:
         for replacement in tool_config.replacements:
             if not (field_name := replacement.field_name):
                 continue  # we do not support callables for CSP
             replacement_value = getattr(config, field_name)
             csp.value = csp.value.replace(replacement.needle, str(replacement_value))
-            csp.identifier = analytics_tool
 
     # process the cookies
     cookies = cast(list[CookieDict], load_asset("cookies.json", analytics_tool))

@@ -10,6 +10,7 @@ from openforms.config.models import CSPSetting
 from openforms.forms.tests.factories import FormFactory
 from openforms.tests.test_csp import CSPMixin
 
+from ..constants import AnalyticsTools
 from .mixin import AnalyticsMixin
 
 
@@ -47,7 +48,9 @@ class PiwikProTests(AnalyticsMixin, TestCase):
             with self.subTest("Test creation of CSP"):
                 try:
                     CSPSetting.objects.get(
-                        value=csp["value"], directive=csp["directive"]
+                        value=csp["value"],
+                        directive=csp["directive"],
+                        identifier=AnalyticsTools.piwik_pro,
                     )
                 except CSPSetting.DoesNotExist as e:
                     self.fail(f"Unexpected exception : {e}")
@@ -74,7 +77,9 @@ class PiwikProTests(AnalyticsMixin, TestCase):
             with self.subTest("Test deletion of CSP"):
                 self.assertFalse(
                     CSPSetting.objects.filter(
-                        value=csp["value"], directive=csp["directive"]
+                        value=csp["value"],
+                        directive=csp["directive"],
+                        identifier=AnalyticsTools.piwik_pro,
                     ).exists()
                 )
 
