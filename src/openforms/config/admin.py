@@ -188,18 +188,22 @@ class CSPSettingAdmin(admin.ModelAdmin):
     fields = [
         "directive",
         "value",
+        "identifier",
         "content_type_link",
     ]
     list_display = [
         "directive",
         "value",
+        "identifier",
     ]
     list_filter = [
         "directive",
+        "identifier",
     ]
     search_fields = [
         "directive",
         "value",
+        "identifier",
     ]
 
     def content_type_link(self, obj):

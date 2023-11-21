@@ -39,10 +39,7 @@ def update_analytics_tool(
         logevent.disabling_analytics_tool(config, analytics_tool)
 
     # process the CSP headers
-    csps = [
-        CSPEntry(identifier=analytics_tool, **data)
-        for data in load_asset("csp_headers.json", analytics_tool)
-    ]
+    csps = [CSPEntry(**data) for data in load_asset("csp_headers.json", analytics_tool)]
     for csp in csps:
         for replacement in tool_config.replacements:
             if not (field_name := replacement.field_name):
@@ -67,7 +64,7 @@ def update_analytics_tool(
         create=is_activated,
         cookie_consent_group_id=config.analytics_cookie_consent_group.id,
     )
-    update_csp(config, csps, create=is_activated)
+    update_csp(config, csps, identifier=analytics_tool, create=is_activated)
 
 
 def load_asset(
@@ -129,9 +126,12 @@ def update_analytical_cookies(
 
 
 def update_csp(
-    config_model: "AnalyticsToolsConfiguration", csps: list[CSPEntry], create: bool
+    config_model: "AnalyticsToolsConfiguration",
+    csps: list[CSPEntry],
+    identifier: "AnalyticsTools",
+    create: bool,
 ):
     if create:
-        CSPSetting.objects.set_for(config_model, csps)
+        CSPSetting.objects.set_for(config_model, settings=csps, identifier=identifier)
     else:
-        CSPSetting.objects.delete_for(config_model)
+        CSPSetting.objects.delete_for(config_model, identifier=identifier)

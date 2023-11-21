@@ -661,9 +661,7 @@ class CSPSettingQuerySet(models.QuerySet):
 class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
     @transaction.atomic
     def set_for(
-        self,
-        obj: models.Model,
-        settings: list[CSPEntry],
+        self, obj: models.Model, settings: list[CSPEntry], identifier: str | None = None
     ) -> None:
         """
         Deletes all the connected CSP settings and creates new ones based on the new provided data.
@@ -677,18 +675,22 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
                 content_object=obj,
                 directive=setting.directive,
                 value=setting.value,
-                identifier=setting.identifier,
+                identifier=identifier or "",
             )
             for setting in settings
         ]
 
-        self.delete_for(obj)
+        self.delete_for(obj, identifier)
         self.bulk_create(instances)
 
-    def delete_for(self, obj: models.Model) -> None:
-        CSPSetting.objects.filter(
-            content_type=get_content_type_for_model(obj), object_id=str(obj.id)
-        ).delete()
+    def delete_for(self, obj: models.Model, identifier: str | None = None) -> None:
+        filter = {
+            "content_type": get_content_type_for_model(obj),
+            "object_id": str(obj.id),
+        }
+        if identifier is not None:
+            filter["identifier"] = identifier
+        CSPSetting.objects.filter(**filter).delete()
 
 
 class CSPSetting(models.Model):
@@ -726,7 +728,7 @@ class CSPSetting(models.Model):
     )
     content_object = GenericForeignKey("content_type", "object_id")
 
-    objects = CSPSettingManager()
+    objects: CSPSettingManager = CSPSettingManager()
 
     class Meta:
         ordering = ("directive", "value")
