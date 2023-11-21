@@ -11,6 +11,12 @@
       "value": "Are you sure you want to delete this action?"
     }
   ],
+  "+9x9sg": [
+    {
+      "type": 0,
+      "value": "From variable"
+    }
+  ],
   "+BicbW": [
     {
       "type": 0,
@@ -33,6 +39,12 @@
     {
       "type": 0,
       "value": "Remove value"
+    }
+  ],
+  "+e1pgl": [
+    {
+      "type": 0,
+      "value": "Resize image"
     }
   ],
   "+hAGg7": [
@@ -83,6 +95,12 @@
       "value": "Dates Component"
     }
   ],
+  "/iusiS": [
+    {
+      "type": 0,
+      "value": "The maximum value this field can have before the form can be submitted."
+    }
+  ],
   "/rF8P0": [
     {
       "type": 0,
@@ -127,10 +145,28 @@
       "value": "Form configuration"
     }
   ],
+  "0gbtNe": [
+    {
+      "type": 0,
+      "value": "Months"
+    }
+  ],
+  "0gmZ4c": [
+    {
+      "type": 0,
+      "value": "Edit component JSON"
+    }
+  ],
   "1ArmQ5": [
     {
       "type": 0,
       "value": "Confirm"
+    }
+  ],
+  "1Vvryq": [
+    {
+      "type": 0,
+      "value": "File name template"
     }
   ],
   "1WxO/D": [
@@ -143,6 +179,32 @@
     {
       "type": 0,
       "value": "Incomplete Submissions Removal Method"
+    }
+  ],
+  "1pC7IP": [
+    {
+      "type": 0,
+      "value": "Specify template for name of uploaded file(s). "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "{{ fileName }}"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " contains the original filename."
+    }
+  ],
+  "2/2h2C": [
+    {
+      "type": 0,
+      "value": "The minimum value this field can have before the form can be submitted."
     }
   ],
   "20K9To": [
@@ -167,6 +229,20 @@
     {
       "type": 0,
       "value": "Type"
+    }
+  ],
+  "2ajYIp": [
+    {
+      "type": 0,
+      "value": "Note that the server upload limit is "
+    },
+    {
+      "type": 1,
+      "value": "serverUploadLimit"
+    },
+    {
+      "type": 0,
+      "value": "."
     }
   ],
   "2boL55": [
@@ -199,6 +275,12 @@
       "value": "The process definition for which to start a process instance."
     }
   ],
+  "3+WIVB": [
+    {
+      "type": 0,
+      "value": "Maximum value"
+    }
+  ],
   "3FxzLm": [
     {
       "type": 0,
@@ -209,10 +291,22 @@
       "value": "desc"
     }
   ],
+  "3LEg1l": [
+    {
+      "type": 0,
+      "value": "Allow negative values."
+    }
+  ],
   "3LdlNv": [
     {
       "type": 0,
       "value": "This component should display"
+    }
+  ],
+  "3RUomu": [
+    {
+      "type": 0,
+      "value": "Maximum value"
     }
   ],
   "3W3Px9": [
@@ -233,10 +327,52 @@
       "value": "Location"
     }
   ],
+  "45IQhq": [
+    {
+      "type": 0,
+      "value": "Fixed value"
+    }
+  ],
+  "4CuHYk": [
+    {
+      "type": 1,
+      "value": "field"
+    },
+    {
+      "type": 0,
+      "value": " must be a valid postcode."
+    }
+  ],
+  "4DkoO5": [
+    {
+      "type": 0,
+      "value": "Days"
+    }
+  ],
   "4FQxD/": [
     {
       "type": 0,
       "value": "Configure"
+    }
+  ],
+  "4HBnrF": [
+    {
+      "type": 0,
+      "value": "Drag or "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "select"
+        }
+      ],
+      "type": 8,
+      "value": "browse"
+    },
+    {
+      "type": 0,
+      "value": " files to upload."
     }
   ],
   "4iGsG1": [
@@ -253,6 +389,12 @@
     {
       "type": 1,
       "value": "plugin"
+    }
+  ],
+  "5/jkH9": [
+    {
+      "type": 0,
+      "value": "Specify a file size less than or equal to the server upload limit."
     }
   ],
   "5/xPX6": [
@@ -295,6 +437,12 @@
     {
       "type": 0,
       "value": "Add another value"
+    }
+  ],
+  "5XOrxo": [
+    {
+      "type": 0,
+      "value": "Number of months. Empty values are ignored."
     }
   ],
   "5ZI59Y": [
@@ -343,6 +491,24 @@
       "value": "minus"
     }
   ],
+  "5xNPpS": [
+    {
+      "type": 0,
+      "value": "Option label"
+    }
+  ],
+  "5y8Yt4": [
+    {
+      "type": 0,
+      "value": "Save the attachment in the Documents API with this InformatieObjectType. If unspecified, the registration plugin defaults are used."
+    }
+  ],
+  "5yP7G/": [
+    {
+      "type": 0,
+      "value": "Maximum time"
+    }
+  ],
   "5zieWh": [
     {
       "type": 0,
@@ -371,6 +537,12 @@
     {
       "type": 0,
       "value": "A required field must be filled in before the form can be submitted."
+    }
+  ],
+  "6XG2pL": [
+    {
+      "type": 0,
+      "value": "Confidentiality level"
     }
   ],
   "6ZW12a": [
@@ -421,6 +593,12 @@
       "value": "The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
     }
   ],
+  "7Ldfn+": [
+    {
+      "type": 0,
+      "value": "Relative to variable"
+    }
+  ],
   "7RVZYq": [
     {
       "type": 0,
@@ -431,6 +609,12 @@
     {
       "type": 0,
       "value": "Required"
+    }
+  ],
+  "7Uh91A": [
+    {
+      "type": 0,
+      "value": "Maximum date"
     }
   ],
   "7X6yT4": [
@@ -485,6 +669,12 @@
     {
       "type": 0,
       "value": "Next text"
+    }
+  ],
+  "7b9pD8": [
+    {
+      "type": 0,
+      "value": "Years"
     }
   ],
   "7di6Fm": [
@@ -631,6 +821,12 @@
       "value": "and"
     }
   ],
+  "9lk1eS": [
+    {
+      "type": 0,
+      "value": "Subtract"
+    }
+  ],
   "9y3/ek": [
     {
       "type": 0,
@@ -653,6 +849,12 @@
     {
       "type": 0,
       "value": "Display main website link"
+    }
+  ],
+  "AClYLf": [
+    {
+      "type": 0,
+      "value": "If checked, the current day is an allowed value."
     }
   ],
   "ADAp0E": [
@@ -697,10 +899,28 @@
       "value": "Confirm"
     }
   ],
+  "Ax7r1y": [
+    {
+      "type": 0,
+      "value": "File types"
+    }
+  ],
+  "B1ONuu": [
+    {
+      "type": 0,
+      "value": "Location"
+    }
+  ],
   "BCjZNo": [
     {
       "type": 0,
       "value": "Component where the phone number should be entered"
+    }
+  ],
+  "BGZD6J": [
+    {
+      "type": 0,
+      "value": "Minimum value"
     }
   ],
   "BKTOtD": [
@@ -739,6 +959,12 @@
       "pluralType": "cardinal",
       "type": 6,
       "value": "varCount"
+    }
+  ],
+  "BKe/DT": [
+    {
+      "type": 0,
+      "value": "The option value is a required field."
     }
   ],
   "BR6rKB": [
@@ -789,10 +1015,22 @@
       "value": "Then the price is"
     }
   ],
+  "BvRBef": [
+    {
+      "type": 0,
+      "value": "Decimal places"
+    }
+  ],
   "C+91tl": [
     {
       "type": 0,
       "value": "Data extraction"
+    }
+  ],
+  "C48xJT": [
+    {
+      "type": 0,
+      "value": "Items expression"
     }
   ],
   "C4Zn+R": [
@@ -811,6 +1049,12 @@
     {
       "type": 0,
       "value": "Global setting"
+    }
+  ],
+  "CG/va1": [
+    {
+      "type": 0,
+      "value": "Maximum file size"
     }
   ],
   "CN9j+L": [
@@ -883,6 +1127,12 @@
       "value": "Move down"
     }
   ],
+  "DJWATl": [
+    {
+      "type": 0,
+      "value": "The values that can be picked for this field. Values are the text that is submitted with the form data. Labels are the text next to radio buttons, checkboxes and options in dropdowns."
+    }
+  ],
   "DcI1VF": [
     {
       "type": 0,
@@ -923,6 +1173,12 @@
     {
       "type": 0,
       "value": "Identifier role"
+    }
+  ],
+  "E8Tuiq": [
+    {
+      "type": 0,
+      "value": "Allow negative values"
     }
   ],
   "EBsxTk": [
@@ -991,6 +1247,26 @@
       "value": "Registration attribute"
     }
   ],
+  "EgAnxH": [
+    {
+      "type": 0,
+      "value": "Translation for \""
+    },
+    {
+      "type": 1,
+      "value": "field"
+    },
+    {
+      "type": 0,
+      "value": "\""
+    }
+  ],
+  "EkVNqG": [
+    {
+      "type": 0,
+      "value": "Variable"
+    }
+  ],
   "Ekld1h": [
     {
       "type": 0,
@@ -1025,6 +1301,12 @@
     {
       "type": 0,
       "value": "This form version was created in an application version different from the current version. There may be missing configuration after restoring."
+    }
+  ],
+  "FOlQaP": [
+    {
+      "type": 0,
+      "value": "Label"
     }
   ],
   "FQswyM": [
@@ -1241,6 +1523,12 @@
       "value": "Select form definition"
     }
   ],
+  "IOko1U": [
+    {
+      "type": 0,
+      "value": "Remove"
+    }
+  ],
   "Ika4IH": [
     {
       "type": 0,
@@ -1313,6 +1601,12 @@
       "value": "There are co-sign components inside repeating groups. This is not supported."
     }
   ],
+  "JnAJoU": [
+    {
+      "type": 0,
+      "value": "Use globally configured filetypes"
+    }
+  ],
   "JneaQM": [
     {
       "type": 0,
@@ -1357,10 +1651,22 @@
       "value": "(checked for every step)"
     }
   ],
+  "Kj8P8I": [
+    {
+      "type": 0,
+      "value": "Option value"
+    }
+  ],
   "KjDolH": [
     {
       "type": 0,
       "value": "Manually defined"
+    }
+  ],
+  "KrJ+rN": [
+    {
+      "type": 0,
+      "value": "The maximum number of files that can be uploaded."
     }
   ],
   "KzlSYi": [
@@ -1469,6 +1775,12 @@
     {
       "type": 0,
       "value": "Your session has expired."
+    }
+  ],
+  "Nsifca": [
+    {
+      "type": 0,
+      "value": "The maximum date that can be picked."
     }
   ],
   "NwTdLM": [
@@ -1593,6 +1905,12 @@
       "value": "Add rule"
     }
   ],
+  "PhXIai": [
+    {
+      "type": 0,
+      "value": "Number of years. Empty values are ignored."
+    }
+  ],
   "PiB6Y1": [
     {
       "type": 0,
@@ -1653,6 +1971,12 @@
       "value": "Save text"
     }
   ],
+  "QW32Dd": [
+    {
+      "type": 0,
+      "value": "Specify a positive, non-zero file size without decimals, e.g. 10MB."
+    }
+  ],
   "QXfH7G": [
     {
       "type": 0,
@@ -1675,6 +1999,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "RN628y": [
+    {
+      "type": 0,
+      "value": "Translations for literals used in this component."
     }
   ],
   "RPzjrJ": [
@@ -1701,10 +2031,22 @@
       "value": "Initial value"
     }
   ],
+  "RuAQwk": [
+    {
+      "type": 0,
+      "value": "Add/remove"
+    }
+  ],
   "RvJXSo": [
     {
       "type": 0,
       "value": "change the value of a variable/component"
+    }
+  ],
+  "RxmRzd": [
+    {
+      "type": 0,
+      "value": "When this is checked, the filetypes configured in the global settings will be used."
     }
   ],
   "S6eF5o": [
@@ -1753,6 +2095,24 @@
       "value": "expiresToday"
     }
   ],
+  "SEXqhC": [
+    {
+      "type": 0,
+      "value": "Mode preset"
+    }
+  ],
+  "SEu4I2": [
+    {
+      "type": 0,
+      "value": "Title"
+    }
+  ],
+  "SH67gH": [
+    {
+      "type": 0,
+      "value": "In the future"
+    }
+  ],
   "SX2HTA": [
     {
       "type": 0,
@@ -1775,6 +2135,12 @@
     {
       "type": 0,
       "value": "Add variable"
+    }
+  ],
+  "TCNvqa": [
+    {
+      "type": 0,
+      "value": "Minimum date"
     }
   ],
   "TCQic2": [
@@ -1861,10 +2227,34 @@
       "value": "All Submissions Removal Limit"
     }
   ],
+  "UlVtQd": [
+    {
+      "type": 0,
+      "value": "Move up"
+    }
+  ],
+  "UmLruQ": [
+    {
+      "type": 0,
+      "value": "Data source"
+    }
+  ],
+  "Un5b5T": [
+    {
+      "type": 0,
+      "value": "Minimum time"
+    }
+  ],
   "Uv58uI": [
     {
       "type": 0,
       "value": "Postcode component"
+    }
+  ],
+  "UxTJsK": [
+    {
+      "type": 0,
+      "value": "File"
     }
   ],
   "V21YkS": [
@@ -1925,6 +2315,30 @@
       "value": "required"
     }
   ],
+  "VX9nvG": [
+    {
+      "type": 0,
+      "value": "Maximum date "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(not set)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "configured"
+    }
+  ],
   "VekFY+": [
     {
       "type": 0,
@@ -1947,6 +2361,12 @@
     {
       "type": 0,
       "value": "Show in email"
+    }
+  ],
+  "W0AAhq": [
+    {
+      "type": 0,
+      "value": "Add"
     }
   ],
   "W4PizY": [
@@ -1977,6 +2397,12 @@
     {
       "type": 0,
       "value": "Service"
+    }
+  ],
+  "WZJG0y": [
+    {
+      "type": 0,
+      "value": "In the past"
     }
   ],
   "WdVKZw": [
@@ -2027,10 +2453,28 @@
       "value": "Ask privacy consent"
     }
   ],
+  "XXRiTx": [
+    {
+      "type": 0,
+      "value": "File name"
+    }
+  ],
   "Xe+CCn": [
     {
       "type": 0,
       "value": "Basic"
+    }
+  ],
+  "Y4oNhH": [
+    {
+      "type": 0,
+      "value": "Maximum width"
+    }
+  ],
+  "Y8cmP1": [
+    {
+      "type": 0,
+      "value": "Size"
     }
   ],
   "YBY95E": [
@@ -2195,6 +2639,12 @@
       "value": "Slug of the form definition used in this form step"
     }
   ],
+  "aBADYT": [
+    {
+      "type": 0,
+      "value": "Maximum number of files"
+    }
+  ],
   "aUChz/": [
     {
       "type": 0,
@@ -2211,6 +2661,12 @@
     {
       "type": 0,
       "value": "Login required?"
+    }
+  ],
+  "arAMAF": [
+    {
+      "type": 0,
+      "value": "The option label is a required field."
     }
   ],
   "asZV7t": [
@@ -2267,6 +2723,12 @@
       "value": "Activate on"
     }
   ],
+  "bvY9oJ": [
+    {
+      "type": 0,
+      "value": "Provide the key of a static, component, or user defined variable."
+    }
+  ],
   "bzVhb6": [
     {
       "type": 0,
@@ -2291,6 +2753,22 @@
       "value": "Remove the value of this field from the submission if it is hidden. Note: the value of this field is then also not used in logic rules!"
     }
   ],
+  "cAio/J": [
+    {
+      "type": 0,
+      "value": "A short indicator to discribe the field value, e.g. "
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "example"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "cDbGU2": [
     {
       "type": 0,
@@ -2307,6 +2785,12 @@
     {
       "type": 0,
       "value": "Authorised person"
+    }
+  ],
+  "cQvPLh": [
+    {
+      "type": 0,
+      "value": "Number of days. Empty values are ignored."
     }
   ],
   "cUVVbl": [
@@ -2377,6 +2861,18 @@
     {
       "type": 0,
       "value": "Integer"
+    }
+  ],
+  "ctoEdl": [
+    {
+      "type": 0,
+      "value": "The name under which the INFORMATIEOBJECT is formally known."
+    }
+  ],
+  "czUDSQ": [
+    {
+      "type": 0,
+      "value": "A short indicator that can provide more context for the expected field value. The <sup> and <sub> HTML tags are supported."
     }
   ],
   "d1W41c": [
@@ -2457,6 +2953,30 @@
       "value": "Date"
     }
   ],
+  "dvlFuk": [
+    {
+      "type": 0,
+      "value": "Minimum date "
+    },
+    {
+      "options": {
+        "false": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(not set)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "configured"
+    }
+  ],
   "eBk+W0": [
     {
       "type": 0,
@@ -2473,6 +2993,12 @@
     {
       "type": 0,
       "value": "Advanced options"
+    }
+  ],
+  "eg8uKC": [
+    {
+      "type": 0,
+      "value": "The latest possible value that can be entered."
     }
   ],
   "etny39": [
@@ -2533,6 +3059,24 @@
     {
       "type": 0,
       "value": "Object"
+    }
+  ],
+  "fX5VwA": [
+    {
+      "type": 0,
+      "value": "The maximum size of a single file to upload."
+    }
+  ],
+  "fY/8xt": [
+    {
+      "type": 0,
+      "value": "Information object type"
+    }
+  ],
+  "fe3wyn": [
+    {
+      "type": 0,
+      "value": "A JSON logic expression returning a variable (of array type) whose items should be used as the options for this component."
     }
   ],
   "fpX4ei": [
@@ -2643,6 +3187,12 @@
       "value": "Enabled"
     }
   ],
+  "hduHvs": [
+    {
+      "type": 0,
+      "value": "(optional)"
+    }
+  ],
   "hefA1X": [
     {
       "type": 0,
@@ -2731,6 +3281,12 @@
       "value": " [new]"
     }
   ],
+  "j2vQH3": [
+    {
+      "type": 0,
+      "value": "Values"
+    }
+  ],
   "jARYB7": [
     {
       "type": 0,
@@ -2771,6 +3327,12 @@
     {
       "type": 0,
       "value": "Session will expire"
+    }
+  ],
+  "k1+ljn": [
+    {
+      "type": 0,
+      "value": "Move down"
     }
   ],
   "k34Vke": [
@@ -2815,10 +3377,22 @@
       "value": "disabled"
     }
   ],
+  "kg/eh1": [
+    {
+      "type": 0,
+      "value": "Choice/option translations"
+    }
+  ],
   "kkTfpu": [
     {
       "type": 0,
       "value": "Description"
+    }
+  ],
+  "klYCow": [
+    {
+      "type": 0,
+      "value": "The time must a valid time in the HH:mm format."
     }
   ],
   "koVh3m": [
@@ -2851,6 +3425,18 @@
       "value": "Value"
     }
   ],
+  "lKijv2": [
+    {
+      "type": 0,
+      "value": "Including today"
+    }
+  ],
+  "lVEpR9": [
+    {
+      "type": 0,
+      "value": "The minimum date that can be picked."
+    }
+  ],
   "lcR5L6": [
     {
       "type": 0,
@@ -2861,6 +3447,12 @@
     {
       "type": 0,
       "value": "Component label"
+    }
+  ],
+  "m20av3": [
+    {
+      "type": 0,
+      "value": "The maximum number of decimal places."
     }
   ],
   "m2oZCk": [
@@ -2879,6 +3471,12 @@
     {
       "type": 0,
       "value": "Component key"
+    }
+  ],
+  "mMn7K3": [
+    {
+      "type": 0,
+      "value": "Specify whether to add or subtract a time delta to/from the variable."
     }
   ],
   "mOgTIH": [
@@ -2923,6 +3521,12 @@
       "value": "Version"
     }
   ],
+  "n9T2Oy": [
+    {
+      "type": 0,
+      "value": "When this is checked, any uploaded image(s) will be resized."
+    }
+  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -2933,6 +3537,12 @@
     {
       "type": 0,
       "value": "Trigger condition"
+    }
+  ],
+  "nW5g1S": [
+    {
+      "type": 0,
+      "value": "Bronorganisatie"
     }
   ],
   "naInSZ": [
@@ -2963,6 +3573,12 @@
     {
       "type": 0,
       "value": "Save"
+    }
+  ],
+  "oWJX5K": [
+    {
+      "type": 0,
+      "value": "Suffix (e.g. m²)"
     }
   ],
   "oYmpN5": [
@@ -3031,10 +3647,22 @@
       "value": "Complex process variables"
     }
   ],
+  "p7g2h+": [
+    {
+      "type": 0,
+      "value": "Add another"
+    }
+  ],
   "p8LSwF": [
     {
       "type": 0,
       "value": "Add action"
+    }
+  ],
+  "pDJBaK": [
+    {
+      "type": 0,
+      "value": "Minimum value"
     }
   ],
   "pGmjYH": [
@@ -3047,6 +3675,22 @@
     {
       "type": 0,
       "value": "Value"
+    }
+  ],
+  "paY2Oa": [
+    {
+      "type": 0,
+      "value": "Options from expression: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
     }
   ],
   "piUWzT": [
@@ -3167,6 +3811,12 @@
       "value": "Whether to send a confirmation email to the end-user who submitted the form."
     }
   ],
+  "sU/n0S": [
+    {
+      "type": 0,
+      "value": "Manually fill in"
+    }
+  ],
   "sgmcmf": [
     {
       "type": 0,
@@ -3189,6 +3839,12 @@
     {
       "type": 0,
       "value": "Select components and conditions using drop-downs to build a JsonLogic expression."
+    }
+  ],
+  "tU1UVF": [
+    {
+      "type": 0,
+      "value": "The earliest possible value that can be entered."
     }
   ],
   "tjRtQk": [
@@ -3271,6 +3927,12 @@
       "value": "Create a new form definition"
     }
   ],
+  "vRVMpe": [
+    {
+      "type": 0,
+      "value": "Value"
+    }
+  ],
   "ve3rsH": [
     {
       "type": 0,
@@ -3287,6 +3949,12 @@
     {
       "type": 0,
       "value": "Literal"
+    }
+  ],
+  "vlY36U": [
+    {
+      "type": 0,
+      "value": "Indication of the level to which extent the INFORMATIEOBJECT is meant to be public."
     }
   ],
   "vng/5K": [
@@ -3325,6 +3993,26 @@
       "value": "Source"
     }
   ],
+  "wOq8Pb": [
+    {
+      "type": 0,
+      "value": "Translation for option with value \""
+    },
+    {
+      "type": 1,
+      "value": "value"
+    },
+    {
+      "type": 0,
+      "value": "\""
+    }
+  ],
+  "wRNK2B": [
+    {
+      "type": 0,
+      "value": "Value"
+    }
+  ],
   "wUdgIT": [
     {
       "type": 0,
@@ -3361,6 +4049,12 @@
       "value": "Cancel"
     }
   ],
+  "xI6md8": [
+    {
+      "type": 0,
+      "value": "Add/subtract duration"
+    }
+  ],
   "xJBMaf": [
     {
       "type": 0,
@@ -3385,6 +4079,12 @@
       "value": "Create definition"
     }
   ],
+  "xnRkUj": [
+    {
+      "type": 0,
+      "value": "Edit JSON"
+    }
+  ],
   "yCogwi": [
     {
       "type": 0,
@@ -3397,10 +4097,28 @@
       "value": "Maximum length"
     }
   ],
+  "yL9Ql7": [
+    {
+      "type": 0,
+      "value": "Translations"
+    }
+  ],
+  "yQUV3M": [
+    {
+      "type": 0,
+      "value": "RSIN of the organization which creates the ENKELVOUDIGINFORMATIEOBJECT."
+    }
+  ],
   "yQtFln": [
     {
       "type": 0,
       "value": "Hide a field from the form."
+    }
+  ],
+  "ySkT14": [
+    {
+      "type": 0,
+      "value": "How to specify the available options."
     }
   ],
   "yTpHh0": [
@@ -3413,6 +4131,12 @@
     {
       "type": 0,
       "value": "Phone Number Component"
+    }
+  ],
+  "yujuQr": [
+    {
+      "type": 0,
+      "value": "Maximum height"
     }
   ],
   "z+kWUh": [

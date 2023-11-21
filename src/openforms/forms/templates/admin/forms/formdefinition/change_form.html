@@ -2,8 +2,8 @@
 {% load i18n %}
 
 {% block extrahead %}
-    {{ block.super }}
     {% include "admin/forms/includes/formio_config.html" %}
+    {{ block.super }}
 {% endblock extrahead %}
 
 {% block extrastyle %}

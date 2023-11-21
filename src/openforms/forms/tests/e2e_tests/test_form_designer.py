@@ -354,8 +354,8 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
             # Check the key before modifying the label
-            key_input = page.get_by_label("Eigenschapnaam")
-            await expect(key_input).to_have_value("file")
+            key_input = page.get_by_label(self._translate("Eigenschapnaam"))
+            await expect(key_input).to_have_value(self._translate("file"))
 
             # Modify the component label
             label_input = page.get_by_label("Label")
@@ -366,9 +366,11 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await expect(key_input).to_have_value("test")
 
             # Check file name mentions templating
-            await page.get_by_role("link", name="Bestand").click()
+            await page.get_by_role("link", name=self._translate("Bestand")).click()
             await expect(
-                page.locator("label").filter(has_text="Bestandsnaamsjabloon")
+                page.locator("label").filter(
+                    has_text=self._translate("Bestandsnaamsjabloon")
+                )
             ).to_be_visible()
 
     async def test_key_unique_across_steps(self):
@@ -554,6 +556,9 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
             "The property name must only contain alphanumeric characters, underscores, "
             "dots and dashes and should not be ended by dash or dot."
         ),
+        "file": "fileUpload",  # label is File Upload -> derived key is fileUpload
+        "Bestand": "File",
+        "Bestandsnaamsjabloon": "File name template",
     }
     translations_data_path = "openForms.translations.{locale}"
     translations_literal_suffix = ".literal"
