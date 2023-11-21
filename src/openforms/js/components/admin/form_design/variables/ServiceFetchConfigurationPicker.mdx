@@ -1,0 +1,22 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import ServiceFetchConfigurationPicker from './ServiceFetchConfigurationPicker';
+import * as ServiceFetchConfigurationPickerStories from './ServiceFetchConfigurationPicker.stories';
+
+<Meta of={ServiceFetchConfigurationPickerStories} />
+
+# Service fetch configuration picker
+
+The configuration picker allows selecting an existing or creating a new configuration. It uses the
+`ServiceFetchConfigurationForm` under the hood.
+
+Existing configurations can either be saved as a new configuration or updated, affecting any other
+variable using the same configuration.
+
+**Warning**: this component requires the following contexts: `FormLogicContext`.
+
+<Canvas of={ServiceFetchConfigurationPickerStories.Blank} />
+
+### Props
+
+<ArgTypes of={ServiceFetchConfigurationPicker} />

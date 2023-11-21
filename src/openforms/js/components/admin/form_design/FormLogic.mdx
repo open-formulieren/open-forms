@@ -1,0 +1,31 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import {FormLogic} from './FormLogic';
+import * as FormLogicStories from './FormLogic.stories';
+
+<Meta of={FormLogicStories} />
+
+# Form Logic
+
+The component to manage all server-side logic rules for a given form.
+
+Logic is configured by adding rules. Rules consist of a trigger expression and a collection of
+actions to be executed when the trigger evaluates to be truthy. The logic rule has two flavours -
+simple and advanced, which determines the UI to build the trigger.
+
+Both variants use JsonLogic expressions under the hood. One or more actions will be taken when the
+rule executes (e.g. changing the value of a variable/component).
+
+<Canvas of={FormLogicStories.FullFunctionality} />
+
+## Props
+
+<ArgTypes of={FormLogic} />
+
+## Required contexts
+
+**Warning**: this component requires the following contexts:
+
+- `FormLogicContext`, for available services/service fetch configurations
+- `FormContext`, for available form steps and variables
+- `FeatureFlagsDecorator`, to enable service fetch in the UI

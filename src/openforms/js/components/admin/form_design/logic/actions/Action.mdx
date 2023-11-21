@@ -1,0 +1,26 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/blocks';
+
+import Action from './Action';
+import * as ActionStories from './Action.stories';
+
+<Meta of={ActionStories} />
+
+# Logic rule action
+
+One or more actions can be executed when a rule triggers.
+
+Actions are polymorphic in nature - the type of the action determines the remaining configuration
+parameters.
+
+<Canvas of={ActionStories.ServiceFetch} />
+
+## Props
+
+<ArgTypes of={Action} />
+
+## Required contexts
+
+**Warning**: this component requires the following contexts:
+
+- `FormLogicContext`, for available services/service fetch configurations
+- `FormContext`, for available form steps and variables

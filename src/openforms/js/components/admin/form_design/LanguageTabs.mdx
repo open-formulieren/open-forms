@@ -1,0 +1,24 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/blocks';
+
+import LanguageTabs from './LanguageTabs';
+import * as LanguageTabsStories from './LanguageTabs.stories';
+
+<Meta of={LanguageTabsStories} />
+
+# LanguageTabs
+
+The language tabs can be used to differentiate between values for literals in different languages.
+They are used in the Form Designer to enter translated values, e.g.: Form names, explanation
+templates and submission templates.
+
+## Default
+
+<Canvas of={LanguageTabsStories.Default} />
+
+### Error state
+
+<Canvas of={LanguageTabsStories.WithErrors} />
+
+### Props
+
+<ArgTypes of={LanguageTabs} />

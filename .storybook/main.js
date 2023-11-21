@@ -2,10 +2,12 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  stories: [
-    '../src/openforms/js/**/*.stories.mdx',
-    '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)',
-  ],
+  core: {
+    disableTelemetry: true,
+    disableWhatsNewNotifications: true,
+  },
+  stories: ['../src/openforms/js/**/*.mdx', '../src/openforms/js/**/*.stories.@(js|jsx|ts|tsx)'],
+
   staticDirs: [
     {from: '../static/admin', to: 'static/admin'},
     {from: '../static/fonts', to: 'static/fonts'},
@@ -15,16 +17,24 @@ module.exports = {
     {from: '../static/img', to: 'img'},
     {from: '../public', to: ''},
   ],
+
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     'storybook-react-intl',
   ],
-  framework: '@storybook/react',
-  core: {
-    builder: '@storybook/builder-webpack5',
+  features: {
+    interactionsDebugger: true,
+    storyStoreV7: true,
+    buildStoriesJson: true,
   },
+
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {},
+  },
+
   webpackFinal: async (config, {configType}) => {
     const isEnvProduction = configType === 'PRODUCTION';
 
@@ -70,5 +80,9 @@ module.exports = {
       }
     );
     return config;
+  },
+
+  docs: {
+    autodocs: 'tag',
   },
 };

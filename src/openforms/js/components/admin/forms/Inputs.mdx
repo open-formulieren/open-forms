@@ -1,0 +1,64 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import {
+  Checkbox,
+  DateInput,
+  DateTimeInput,
+  Input,
+  NumberInput,
+  Radio,
+  TextArea,
+  TextInput,
+} from './Inputs';
+import * as InputsStories from './Inputs.stories';
+
+<Meta of={InputsStories} />
+
+React components for several input types. Note that these should be wrapped in the `Field` component
+for proper Django admin look-and-feel.
+
+## Checkbox
+
+<Canvas of={InputsStories.CheckboxStory} />
+
+<ArgTypes of={Checkbox} />
+
+## Date input
+
+<Canvas of={InputsStories.DateInputStory} />
+
+## Date/time input
+
+TODO: this is not the standard django input!
+
+<Canvas of={InputsStories.DateTimeInputStory} />
+
+<ArgTypes of={DateTimeInput} />
+
+## Generic input
+
+<Canvas of={InputsStories.InputStory} />
+
+<ArgTypes of={Input} />
+
+## Number input
+
+<Canvas of={InputsStories.NumberInputStory} />
+
+## Radio choices
+
+<Canvas of={InputsStories.RadioStory} />
+
+<ArgTypes of={Radio} />
+
+## Textarea
+
+<Canvas of={InputsStories.TextAreaStory} />
+
+<ArgTypes of={TextArea} />
+
+## Text input
+
+<Canvas of={InputsStories.TextInputStory} />
+
+<ArgTypes of={TextInput} />

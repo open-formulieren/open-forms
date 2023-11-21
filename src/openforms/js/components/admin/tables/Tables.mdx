@@ -1,0 +1,38 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import {ChangelistTable} from '.';
+import * as TablesStories from './Tables.stories';
+
+<Meta of={TablesStories} />
+
+# Django admin (changelist) table
+
+The `ChangelistTable` component uses the markup and styles of the standard Django admin overview
+page for a given model/resource.
+
+## Declarative columns
+
+The preferred usage is by defining the available components explicitly.
+
+<Canvas of={TablesStories.FixedColumns} />
+
+## Without links
+
+By default, the first column is a clickable link. This can be disabled by setting the `linkColumn`
+prop to `null`.
+
+<Canvas of={TablesStories.NoLinkColumn} />
+
+## Props
+
+<ArgTypes of={ChangelistTable} />
+
+## Low-level components
+
+If more control is needed, the following components are available:
+
+- `ChangelistTableWrapper`
+- `HeadColumn`
+- `TableRow`
+
+The `ChangelistTable` component uses these internally.

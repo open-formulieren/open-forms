@@ -1,0 +1,33 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import {MissingAuthCosignWarning} from '.';
+import * as WarningsStories from './Warnings.stories';
+
+<Meta of={WarningsStories} />
+
+# Form Warnings
+
+This component collects the components that display warnings in the form designer. It warns the user
+about:
+
+- Missing translations: if translations are enabled on the form but not all literals in the form
+  have been translated.
+- Multiple co-sign components: currently Open Forms supports only one co-sign component per form. If
+  there are multiple, any extra component will be ignored.
+- Missing authentication plugin: if the co-sign component requires an authentication plugin that is
+  not enabled on the form.
+- Co-sign component in repeating groups: since only one co-sign component is allowed per form, it
+  makes no sense to add them inside a repeating group.
+
+<Canvas of={WarningsStories.FormWarningsWithoutTranslations} />
+
+## Warning for missing authentication plugin for co-sign component
+
+This component catches situations in which the co-sign component specifies that the co-signer should
+authenticate with a particular authentication plugin, but that plugin is not enabled on the form.
+
+<Canvas of={WarningsStories.MissingAuthCosignWarning} />
+
+## Props
+
+<ArgTypes of={MissingAuthCosignWarning} />

@@ -1,0 +1,23 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import MappingArrayInput from './MappingArrayInput';
+import * as MappingArrayInputStories from './MappingArrayInput.stories';
+
+<Meta of={MappingArrayInputStories} />
+
+# Mapping array
+
+The mapping array input is suitable for key-value mappings. These can be simple key -> scalar value
+mappings, or key -> list-of-values mappings.
+
+## Flat mapping
+
+<Canvas of={MappingArrayInputStories.FlatMapping} />
+
+### Mapping to arrays (using `valueArrayInput` argument)
+
+<Canvas of={MappingArrayInputStories.NestedListsMapping} />
+
+### Props
+
+<ArgTypes of={MappingArrayInput} />

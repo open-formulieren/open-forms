@@ -1,0 +1,24 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import FormRow from './FormRow';
+import * as FormRowStories from './FormRow.stories';
+
+<Meta of={FormRowStories} />
+
+# Form row
+
+The form row acts as a container for one or more nested fields. This component cannot really be used
+by itself, but is intended to be composed with the `Fieldset` component for proper alignment of form
+field error lists.
+
+## Single field
+
+<Canvas of={FormRowStories.SingleField} />
+
+## Multiple fields
+
+<Canvas of={FormRowStories.MultipleFields} />
+
+### Props
+
+<ArgTypes of={FormRow} />
