@@ -7,7 +7,15 @@ const SelectBoxes = Formio.Components.components.selectboxes;
 
 class SelectBoxesField extends SelectBoxes {
   static schema(...extend) {
-    return localiseSchema(SelectBoxes.schema(...extend));
+    const schema = SelectBoxes.schema(
+      {
+        openForms: {dataSrc: 'manual'},
+        values: [{value: '', label: ''}],
+        defaultValue: {},
+      },
+      ...extend
+    );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

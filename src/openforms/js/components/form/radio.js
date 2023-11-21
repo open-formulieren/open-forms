@@ -20,6 +20,10 @@ class RadioField extends RadioFormio {
         // Issue #2538 - If the dataType is not specified, Formio will try to parse the values. This means that if the
         // keys of the values are 1, true they will be added to the submission data as float/bool instead of string.
         dataType: 'string',
+        // types expect values set and not null/undefined
+        openForms: {dataSrc: 'manual'},
+        values: [{value: '', label: ''}],
+        defaultValue: '',
       },
       ...extend
     );
