@@ -12,8 +12,9 @@ from openforms.config.models import CSPSetting
 from openforms.config.utils import CSPEntry
 from openforms.typing import JSONObject
 
+from .constants import AnalyticsTools
+
 if TYPE_CHECKING:  # pragma: no cover
-    from .constants import AnalyticsTools
     from .models import AnalyticsToolsConfiguration, ToolConfiguration
 
 
@@ -27,7 +28,7 @@ class CookieDict(TypedDict):
 
 def update_analytics_tool(
     config: "AnalyticsToolsConfiguration",
-    analytics_tool: "AnalyticsTools",
+    analytics_tool: AnalyticsTools,
     is_activated: bool,
     tool_config: "ToolConfiguration",
 ) -> None:
@@ -39,7 +40,13 @@ def update_analytics_tool(
         logevent.disabling_analytics_tool(config, analytics_tool)
 
     # process the CSP headers
-    csps = [CSPEntry(**data) for data in load_asset("csp_headers.json", analytics_tool)]
+    csps = (
+        []
+        if not is_activated
+        else [
+            CSPEntry(**data) for data in load_asset("csp_headers.json", analytics_tool)
+        ]
+    )
     for csp in csps:
         for replacement in tool_config.replacements:
             if not (field_name := replacement.field_name):
@@ -64,7 +71,8 @@ def update_analytics_tool(
         create=is_activated,
         cookie_consent_group_id=config.analytics_cookie_consent_group.id,
     )
-    update_csp(config, csps, identifier=analytics_tool, create=is_activated)
+
+    CSPSetting.objects.set_for(config, csps, identifier=analytics_tool)
 
 
 def load_asset(
@@ -123,15 +131,3 @@ def update_analytical_cookies(
         Cookie.objects.bulk_create(instances)
     else:
         Cookie.objects.filter(name__in=[cookie["name"] for cookie in cookies]).delete()
-
-
-def update_csp(
-    config_model: "AnalyticsToolsConfiguration",
-    csps: list[CSPEntry],
-    identifier: "AnalyticsTools",
-    create: bool,
-):
-    if create:
-        CSPSetting.objects.set_for(config_model, settings=csps, identifier=identifier)
-    else:
-        CSPSetting.objects.delete_for(config_model, identifier=identifier)

@@ -680,17 +680,15 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
             for setting in settings
         ]
 
-        self.delete_for(obj, identifier)
-        self.bulk_create(instances)
-
-    def delete_for(self, obj: models.Model, identifier: str | None = None) -> None:
-        filter = {
+        predicate = {
             "content_type": get_content_type_for_model(obj),
             "object_id": str(obj.id),
         }
         if identifier is not None:
-            filter["identifier"] = identifier
-        CSPSetting.objects.filter(**filter).delete()
+            predicate["identifier"] = identifier
+        CSPSetting.objects.filter(**predicate).delete()
+
+        self.bulk_create(instances)
 
 
 class CSPSetting(models.Model):
@@ -698,19 +696,19 @@ class CSPSetting(models.Model):
         _("directive"),
         max_length=64,
         choices=CSPDirective.choices,
-        help_text=_("CSP header directive"),
+        help_text=_("CSP header directive."),
     )
     value = models.CharField(
         _("value"),
         max_length=255,
-        help_text=_("CSP header value"),
+        help_text=_("CSP header value."),
     )
 
     identifier = models.CharField(
         _("identifier"),
         max_length=64,
         blank=True,
-        help_text=_("An extra tag for this CSP entry, to identify the exact source"),
+        help_text=_("An extra tag for this CSP entry, to identify the exact source."),
     )
 
     # Generic relation fields (see https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#generic-relations):
