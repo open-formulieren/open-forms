@@ -1,3 +1,4 @@
+from django.contrib.admin.options import get_content_type_for_model
 from django.test import TestCase, override_settings
 
 from openforms.config.models import CSPSetting
@@ -8,7 +9,7 @@ from .mixin import AnalyticsMixin
 
 @override_settings(SOLO_CACHE=None)
 class CSPIdentifierTests(AnalyticsMixin, TestCase):
-    def disabling_analytics_does_not_delete_unrelated_csp_settings(self):
+    def test_disabling_analytics_does_not_delete_unrelated_csp_settings(self):
         self.config.gtm_code = "GTM-XXXX"
         self.config.ga_code = "UA-XXXXX-Y"
         self.config.enable_google_analytics = True
@@ -19,9 +20,13 @@ class CSPIdentifierTests(AnalyticsMixin, TestCase):
         self.config.clean()
         self.config.save()
 
-        csp_settings = CSPSetting.objects.filter(content_object=self.config)
+        csp_settings = CSPSetting.objects.filter(
+            content_type=get_content_type_for_model(self.config),
+            object_id=str(self.config.pk),
+        )
 
-        assert csp_settings.count() == 2
+        # GA sets two CSPSettings
+        assert csp_settings.count() == 3
 
         self.config.enable_google_analytics = False
         self.config.save()
@@ -32,6 +37,8 @@ class CSPIdentifierTests(AnalyticsMixin, TestCase):
             self.fail("CSPSetting instance should exist")
 
         other_settings = CSPSetting.objects.filter(
-            content_object=self.config, identifier=AnalyticsTools.google_analytics
+            content_type=get_content_type_for_model(self.config),
+            object_id=str(self.config.pk),
+            identifier=AnalyticsTools.google_analytics,
         )
         self.assertFalse(other_settings.exists())

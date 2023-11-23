@@ -47,12 +47,15 @@ def update_analytics_tool(
             CSPEntry(**data) for data in load_asset("csp_headers.json", analytics_tool)
         ]
     )
+
     for csp in csps:
         for replacement in tool_config.replacements:
             if not (field_name := replacement.field_name):
                 continue  # we do not support callables for CSP
             replacement_value = getattr(config, field_name)
             csp.value = csp.value.replace(replacement.needle, str(replacement_value))
+
+    CSPSetting.objects.set_for(config, csps, identifier=analytics_tool)
 
     # process the cookies
     cookies = cast(list[CookieDict], load_asset("cookies.json", analytics_tool))
@@ -71,8 +74,6 @@ def update_analytics_tool(
         create=is_activated,
         cookie_consent_group_id=config.analytics_cookie_consent_group.id,
     )
-
-    CSPSetting.objects.set_for(config, csps, identifier=analytics_tool)
 
 
 def load_asset(

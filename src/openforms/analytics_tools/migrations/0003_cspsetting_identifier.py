@@ -31,18 +31,37 @@ def set_identifier(apps: StateApps, schema_editor: BaseDatabaseSchemaEditor) -> 
     AnalyticsToolsConfiguration = apps.get_model(
         "analytics_tools", "AnalyticsToolsConfiguration"
     )
-    analytics_conf = AnalyticsToolsConfiguration.get_solo()
+    try:
+        analytics_conf = AnalyticsToolsConfiguration.objects.get()
+    except AnalyticsToolsConfiguration.DoesNotExist:
+        return
+
+    ContentType = apps.get_model("contenttypes", "ContentType")
+    analytics_content_type = ContentType.objects.get_for_model(
+        AnalyticsToolsConfiguration
+    )
+
     CSPSetting = apps.get_model("config", "CSPSetting")
 
+    set_content_type = False
     for csp_setting in CSPSetting.objects.filter(identifier="").iterator():
         if csp_setting.value in SITEIMPROVE_VALUES:
             csp_setting.identifier = AnalyticsTools.siteimprove
+            set_content_type = True
         elif csp_setting.value in GA_VALUES:
             csp_setting.identifier = AnalyticsTools.google_analytics
+            set_content_type = True
         else:
             for field, identifier in FIELD_TO_IDENTIFIER.items():
-                if getattr(analytics_conf, field) == csp_setting.value:
+                if getattr(analytics_conf, field, None) == csp_setting.value:
                     csp_setting.identifier = identifier
+                    set_content_type = True
+
+        if set_content_type:
+            # `content_object` is not available in migrations,
+            # so we set `content_type` and `object_id` instead:
+            csp_setting.content_type = analytics_content_type
+            csp_setting.object_id = analytics_conf.id
 
         csp_setting.save()
 
@@ -51,6 +70,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("analytics_tools", "0002_auto_20230119_1500"),
+        ("config", "0063_auto_20231122_1816"),
     ]
 
     operations = [
