@@ -2,15 +2,6 @@ from dataclasses import dataclass
 
 import clamd
 
-from .constants import CSPDirective
-
-
-@dataclass
-class CSPEntry:
-    directive: CSPDirective
-    value: str
-    identifier: str = ""
-
 
 @dataclass
 class ClamAVStatus:

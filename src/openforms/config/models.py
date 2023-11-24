@@ -34,7 +34,7 @@ from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
 from .constants import CSPDirective, UploadFileType
-from .utils import CSPEntry, verify_clamav_connection
+from .utils import verify_clamav_connection
 
 logger = logging.getLogger(__name__)
 
@@ -661,23 +661,26 @@ class CSPSettingQuerySet(models.QuerySet):
 class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
     @transaction.atomic
     def set_for(
-        self, obj: models.Model, settings: list[CSPEntry], identifier: str | None = None
+        self,
+        obj: models.Model,
+        settings: list[tuple[CSPDirective, str]],
+        identifier: str | None = None,
     ) -> None:
         """
         Deletes all the connected CSP settings and creates new ones based on the new provided data.
 
         :param obj: The configuration model providing this CSP entry.
-        :param `*settings`: Either a two-tuple or a three-tuple containing values used to create
-          the underlying ``CSPSetting`` model.
+        :param settings: A two-tuple containing values used to create the underlying ``CSPSetting`` model.
+        :param identifier: An optional string to further identify the source of this CSP entry.
         """
         instances = [
             CSPSetting(
                 content_object=obj,
-                directive=setting.directive,
-                value=setting.value,
+                directive=directive,
+                value=value,
                 identifier=identifier or "",
             )
-            for setting in settings
+            for directive, value in settings
         ]
 
         predicate = {

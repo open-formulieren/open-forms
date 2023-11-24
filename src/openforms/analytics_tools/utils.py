@@ -8,8 +8,8 @@ from django.conf import settings
 
 from cookie_consent.models import Cookie, CookieGroup
 
+from openforms.config.constants import CSPDirective
 from openforms.config.models import CSPSetting
-from openforms.config.utils import CSPEntry
 from openforms.typing import JSONObject
 
 from .constants import AnalyticsTools
@@ -24,6 +24,11 @@ CONTRIB_DIR = (Path(__file__).parent / "contrib").resolve()
 class CookieDict(TypedDict):
     name: str
     path: str
+
+
+class CSPDict(TypedDict):
+    directive: CSPDirective
+    value: str
 
 
 def update_analytics_tool(
@@ -43,9 +48,7 @@ def update_analytics_tool(
     csps = (
         []
         if not is_activated
-        else [
-            CSPEntry(**data) for data in load_asset("csp_headers.json", analytics_tool)
-        ]
+        else cast(list[CSPDict], load_asset("csp_headers.json", analytics_tool))
     )
 
     for csp in csps:
@@ -53,9 +56,15 @@ def update_analytics_tool(
             if not (field_name := replacement.field_name):
                 continue  # we do not support callables for CSP
             replacement_value = getattr(config, field_name)
-            csp.value = csp.value.replace(replacement.needle, str(replacement_value))
+            csp["value"] = csp["value"].replace(
+                replacement.needle, str(replacement_value)
+            )
 
-    CSPSetting.objects.set_for(config, csps, identifier=analytics_tool)
+    CSPSetting.objects.set_for(
+        config,
+        [(csp["directive"], csp["value"]) for csp in csps],
+        identifier=analytics_tool,
+    )
 
     # process the cookies
     cookies = cast(list[CookieDict], load_asset("cookies.json", analytics_tool))
