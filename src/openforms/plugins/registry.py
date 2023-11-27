@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Callable, Generic, TypeVar
 
 from django.db import OperationalError
 
@@ -10,7 +10,6 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 PluginType_co = TypeVar("PluginType_co", bound="AbstractBasePlugin", covariant=True)
-PluginCls: TypeAlias = type[PluginType_co]
 
 
 class BaseRegistry(Generic[PluginType_co]):
@@ -32,8 +31,8 @@ class BaseRegistry(Generic[PluginType_co]):
 
     def __call__(
         self, unique_identifier: str, *args, **kwargs
-    ) -> Callable[[PluginCls], PluginCls]:
-        def decorator(plugin_cls: PluginCls) -> PluginCls:
+    ) -> Callable[[type[PluginType_co]], type[PluginType_co]]:
+        def decorator(plugin_cls: type[PluginType_co]) -> type[PluginType_co]:
             if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
                 raise ValueError(
                     f"The unique identifier '{unique_identifier}' is longer then {UNIQUE_ID_MAX_LENGTH} characters."
