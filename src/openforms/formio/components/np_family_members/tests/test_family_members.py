@@ -122,9 +122,10 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                 bsn="111222333", include_children=True, include_partners=False
             )
 
-            self.assertEqual(2, len(kids_choices))
+            self.assertEqual(3, len(kids_choices))
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
             self.assertEqual(("789123456", "Billy van Doe"), kids_choices[1])
+            self.assertEqual(("123456789", "Billy van Doe"), kids_choices[2])
 
     @patch("stuf.stuf_bg.client.StufBGConfig.get_solo")
     def test_get_partners_stuf_bg(self, mock_stufbg_config_get_solo):
