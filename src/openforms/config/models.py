@@ -664,7 +664,7 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
         self,
         obj: models.Model,
         settings: list[tuple[CSPDirective, str]],
-        identifier: str | None = None,
+        identifier: str = "",
     ) -> None:
         """
         Deletes all the connected CSP settings and creates new ones based on the new provided data.
