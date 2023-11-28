@@ -132,9 +132,10 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
 
             kids_choices = get_np_children_stuf_bg(bsn="111222333")
 
-            self.assertEqual(2, len(kids_choices))
+            self.assertEqual(3, len(kids_choices))
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
             self.assertEqual(("789123456", "Billy van Doe"), kids_choices[1])
+            self.assertEqual(("123456789", "Billy van Doe"), kids_choices[2])
 
     @patch(
         "openforms.formio.components.custom.FamilyMembersTypeConfig.get_solo",
