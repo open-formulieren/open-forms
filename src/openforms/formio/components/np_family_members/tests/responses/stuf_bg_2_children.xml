@@ -87,6 +87,26 @@
                             <ns:inp.geboorteLand>6030</ns:inp.geboorteLand>
                         </ns:gerelateerde>
                     </ns:inp.heeftAlsKinderen>
+                    <ns:inp.heeftAlsKinderen StUF:entiteittype="NPSNPSKND">
+                        <ns:gerelateerde StUF:entiteittype="NPS">
+                            <!--Optional:-->
+                            <ns:inp.bsn>123456789</ns:inp.bsn>
+                            <!--Optional:-->
+                            <ns:geslachtsnaam>Doe</ns:geslachtsnaam>
+                            <!--Optional:-->
+                            <ns:voorvoegselGeslachtsnaam>van</ns:voorvoegselGeslachtsnaam>
+                            <!--Optional:-->
+                            <ns:voorletters>K</ns:voorletters>
+                            <!--Optional:-->
+                            <ns:voornamen>Billy</ns:voornamen>
+                            <!--Optional:-->
+                            <ns:geboortedatum xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+                            <!--Optional:-->
+                            <ns:inp.geboorteplaats>Amsterdam</ns:inp.geboorteplaats>
+                            <!--Optional:-->
+                            <ns:inp.geboorteLand>6030</ns:inp.geboorteLand>
+                        </ns:gerelateerde>
+                    </ns:inp.heeftAlsKinderen>
                 </ns:object>
             </ns:antwoord>
         </ns:npsLa01>
