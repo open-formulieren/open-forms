@@ -56,8 +56,7 @@ class CSPSettingIdentifierMigrationTests(TestMigrations):
         }
 
         self.assertFalse(CSPSetting.objects.filter(identifier="").exists())
-        print(type(get_content_type_for_model(analytics_conf)))
-
+        
         # We avoid using django.contrib.admin.options.get_content_type_for_model
         # as it uses the "real" `ContentType` model. See:
         # https://stackoverflow.com/q/51670468/#comment110467392_54357872
