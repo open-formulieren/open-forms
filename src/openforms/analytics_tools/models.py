@@ -240,6 +240,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     def save(self, *args, **kwargs):
         # If instance is being created, we can't find original values
+        # (we use the _state API and not self.pk because `SingletonModel` hardcodes the PK).
         if self._state.adding:
             return super().save(*args, **kwargs)
 

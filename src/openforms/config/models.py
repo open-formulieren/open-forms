@@ -661,18 +661,32 @@ class CSPSettingQuerySet(models.QuerySet):
 class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
     @transaction.atomic
     def set_for(
-        self, obj: models.Model, settings: list[tuple[CSPDirective, str]]
+        self,
+        obj: models.Model,
+        settings: list[tuple[CSPDirective, str]],
+        identifier: str = "",
     ) -> None:
         """
-        Deletes all the connected csp settings and creates new ones based on the new provided data.
+        Deletes all the connected CSP settings and creates new ones based on the new provided data.
+
+        :param obj: The configuration model providing this CSP entry.
+        :param settings: A two-tuple containing values used to create the underlying ``CSPSetting`` model.
+        :param identifier: An optional string to further identify the source of this CSP entry.
         """
         instances = [
-            CSPSetting(content_object=obj, directive=directive, value=value)
+            CSPSetting(
+                content_object=obj,
+                directive=directive,
+                value=value,
+                identifier=identifier,
+            )
             for directive, value in settings
         ]
 
         CSPSetting.objects.filter(
-            content_type=get_content_type_for_model(obj), object_id=str(obj.id)
+            content_type=get_content_type_for_model(obj),
+            object_id=str(obj.id),
+            identifier=identifier,
         ).delete()
 
         self.bulk_create(instances)
@@ -682,14 +696,23 @@ class CSPSetting(models.Model):
     directive = models.CharField(
         _("directive"),
         max_length=64,
-        help_text=_("CSP header directive"),
         choices=CSPDirective.choices,
+        help_text=_("CSP header directive."),
     )
     value = models.CharField(
         _("value"),
         max_length=255,
-        help_text=_("CSP header value"),
+        help_text=_("CSP header value."),
     )
+
+    identifier = models.CharField(
+        _("identifier"),
+        max_length=64,
+        blank=True,
+        help_text=_("An extra tag for this CSP entry, to identify the exact source."),
+    )
+
+    # Generic relation fields (see https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#generic-relations):
     content_type = models.ForeignKey(
         ContentType,
         verbose_name=_("content type"),
@@ -704,7 +727,7 @@ class CSPSetting(models.Model):
     )
     content_object = GenericForeignKey("content_type", "object_id")
 
-    objects = CSPSettingManager()
+    objects: CSPSettingManager = CSPSettingManager()
 
     class Meta:
         ordering = ("directive", "value")
