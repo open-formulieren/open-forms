@@ -1134,7 +1134,7 @@ CSP_INCLUDE_NONCE_IN = ["style-src", "script-src"]
 CSP_BASE_URI = ["'self'"]
 
 # Frame directives do not fall back to default-src
-CSP_FRAME_ANCESTORS = ["'self'"]
+CSP_FRAME_ANCESTORS = ["'none'"]  # equivalent to X-Frame-Options: deny
 CSP_FRAME_SRC = ["'self'"]
 # CSP_NAVIGATE_TO = ["'self'"]  # this will break all outgoing links etc  # too much & tricky, see note on MDN
 # CSP_FORM_ACTION = ["'self'"]  # forms, possibly problematic with payments
