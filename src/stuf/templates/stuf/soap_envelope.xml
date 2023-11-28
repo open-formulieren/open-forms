@@ -1,4 +1,4 @@
-{% load stuf %}<?xml version="1.0" encoding="UTF-8"?>
+{% load stuf l10n %}<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope
     xmlns:soapenv="{% if soap_version == '1.1' %}http://schemas.xmlsoap.org/soap/envelope/{% else %}http://www.w3.org/2003/05/soap-envelope{% endif %}"
     xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
@@ -8,6 +8,6 @@
         {% render_security wss_security security_expires_minutes %}
     </soapenv:Header>
     <soapenv:Body>
-        {% block body %}{% endblock %}
+        {% localize off %}{% block body %}{% endblock %}{% endlocalize %}
     </soapenv:Body>
 </soapenv:Envelope>
