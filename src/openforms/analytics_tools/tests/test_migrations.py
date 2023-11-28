@@ -1,4 +1,3 @@
-from django.contrib.admin.options import get_content_type_for_model
 from django.db.migrations.state import StateApps
 
 from openforms.analytics_tools.constants import AnalyticsTools
@@ -56,7 +55,7 @@ class CSPSettingIdentifierMigrationTests(TestMigrations):
         }
 
         self.assertFalse(CSPSetting.objects.filter(identifier="").exists())
-        
+
         # We avoid using django.contrib.admin.options.get_content_type_for_model
         # as it uses the "real" `ContentType` model. See:
         # https://stackoverflow.com/q/51670468/#comment110467392_54357872
