@@ -678,18 +678,16 @@ class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
                 content_object=obj,
                 directive=directive,
                 value=value,
-                identifier=identifier or "",
+                identifier=identifier,
             )
             for directive, value in settings
         ]
 
-        predicate = {
-            "content_type": get_content_type_for_model(obj),
-            "object_id": str(obj.id),
-        }
-        if identifier is not None:
-            predicate["identifier"] = identifier
-        CSPSetting.objects.filter(**predicate).delete()
+        CSPSetting.objects.filter(
+            content_type=get_content_type_for_model(obj),
+            object_id=str(obj.id),
+            identifier=identifier,
+        ).delete()
 
         self.bulk_create(instances)
 
