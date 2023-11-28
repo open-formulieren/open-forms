@@ -1,5 +1,6 @@
 import logging
-from typing import List, Mapping, TypeVar
+from collections.abc import Mapping
+from typing import TypeVar
 
 import xmltodict
 from glom import glom
@@ -39,7 +40,7 @@ class StufBGClient(BaseClient):
         )
         return response.content
 
-    def get_values(self, bsn: str, attributes: List[str]) -> dict:
+    def get_values(self, bsn: str, attributes: list[str]) -> dict:
         response_data = self.get_values_for_attributes(bsn, attributes)
 
         dict_response = _remove_nils(
@@ -73,23 +74,32 @@ class StufBGClient(BaseClient):
         raise ValueError("Problem processing StUF-BG response")
 
 
-M = TypeVar("M", bound=Mapping)
+# `Sequence` isn't used here at it would match str (and possibly others)
+C = TypeVar("C", bound=Mapping | list)
 
 
-def _remove_nils(d: M) -> M:
+def _remove_nils(container: C) -> C:
     """Return a copy of d with nils removed"""
-    mapping = type(d)  # use the same dict type
+    Container = type(container)  # use the same container type
 
     def is_nil(value):
-        return isinstance(value, mapping) and (
+        return isinstance(value, Mapping) and (
             value.get("@http://www.w3.org/2001/XMLSchema-instance:nil") == "true"
             or value.get("@noValue") == "geenWaarde"
         )
 
-    return mapping(
-        **{
-            k: (_remove_nils(v) if isinstance(v, mapping) else v)
-            for k, v in d.items()
+    return (
+        Container(
+            **{
+                k: (_remove_nils(v) if isinstance(v, (Mapping, list)) else v)
+                for k, v in container.items()
+                if not is_nil(v)
+            }
+        )
+        if issubclass(Container, Mapping)
+        else [
+            _remove_nils(v) if isinstance(v, (Mapping, list)) else v
+            for v in container
             if not is_nil(v)
-        }
+        ]
     )
