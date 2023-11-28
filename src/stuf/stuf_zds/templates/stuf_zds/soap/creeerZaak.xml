@@ -1,4 +1,4 @@
-{% extends "stuf/soap_envelope.xml" %}{% load stuf l10n %}
+{% extends "stuf/soap_envelope.xml" %}{% load stuf %}
 {% block body %}
 {# Parent template already defines some common namespaces #}
 <ZKN:zakLk01
@@ -31,7 +31,7 @@
                <ZKN:omschrijving>{{ locatie.key }}</ZKN:omschrijving>
                <ZKN:lokatie>
                     <GML:Point srsName="http://www.opengis.net/def/crs/EPSG/0/4326">
-                        <GML:pos>{{ locatie.lat|unlocalize }} {{ locatie.lng|unlocalize }}</GML:pos>
+                        <GML:pos>{{ locatie.lat }} {{ locatie.lng }}</GML:pos>
                     </GML:Point>
                </ZKN:lokatie>
         </ZKN:anderZaakObject>
