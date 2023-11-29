@@ -111,7 +111,7 @@ click-repl==0.2.0
     # via
     #   -r requirements/base.txt
     #   celery
-cryptography==41.0.4
+cryptography==41.0.7
     # via
     #   -r requirements/base.txt
     #   django-simple-certmanager
