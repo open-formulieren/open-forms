@@ -23,7 +23,7 @@ class PhoneNumberBaseValidator:
     error_message = _("Not a valid %(country)s phone number")
     _parse_phonenumber: ParsePhoneNumber
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         z = self._parse_phonenumber(value)
 
         if not phonenumbers.is_possible_number(z) or not phonenumbers.is_valid_number(

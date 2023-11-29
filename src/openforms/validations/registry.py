@@ -10,6 +10,7 @@ from rest_framework.exceptions import ValidationError as DRF_ValidationError
 from rest_framework.serializers import as_serializer_error
 
 from openforms.plugins.registry import BaseRegistry
+from openforms.submissions.models import Submission
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +97,9 @@ class Registry(BaseRegistry):
         return decorator
 
     @elasticapm.capture_span("app.validations.validate")
-    def validate(self, plugin_id: str, value: str) -> ValidationResult:
+    def validate(
+        self, plugin_id: str, value: str, submission: Submission
+    ) -> ValidationResult:
         try:
             validator = self._registry[plugin_id]
         except KeyError:
@@ -119,7 +122,7 @@ class Registry(BaseRegistry):
             )
 
         try:
-            validator(value)
+            validator(value, submission)
         except (DJ_ValidationError, DRF_ValidationError) as e:
             errors = as_serializer_error(e)
             messages = flatten(errors.values())

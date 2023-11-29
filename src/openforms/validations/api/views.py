@@ -5,11 +5,14 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.views import ListMixin
+from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
+from openforms.submissions.models import Submission
 from openforms.validations.api.serializers import (
     ValidationInputSerializer,
     ValidationPluginSerializer,
@@ -77,5 +80,13 @@ class ValidationView(APIView):
         serializer = ValidationInputSerializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
 
-        result = register.validate(self.kwargs["validator"], serializer.data["value"])
+        if serializer.data["submission_uuid"] not in request.session.get(
+            SUBMISSIONS_SESSION_KEY, []
+        ):
+            raise PermissionDenied()
+
+        submission = Submission.objects.get(uuid=serializer.data["submission_uuid"])
+        result = register.validate(
+            self.kwargs["validator"], serializer.data["value"], submission
+        )
         return Response(ValidationResultSerializer(result).data)

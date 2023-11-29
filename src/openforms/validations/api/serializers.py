@@ -14,6 +14,10 @@ class ValidationInputSerializer(serializers.Serializer):
     value = serializers.CharField(
         label=_("value"), help_text=_("Value to be validated")
     )
+    submission_uuid = serializers.UUIDField(
+        label=_("Submission UUID"),
+        help_text=_("UUID of the submission."),
+    )
 
 
 class ValidatorsFilterSerializer(serializers.Serializer):

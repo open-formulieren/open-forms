@@ -88,7 +88,7 @@ class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "kvkNummer"
     value_label = _("KvK number")
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         validate_kvk(value)
         super().__call__(value)
 
@@ -99,7 +99,7 @@ class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
     query_param = "rsin"
     value_label = _("RSIN")
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         validate_rsin(value)
         super().__call__(value)
 
@@ -114,6 +114,6 @@ class KVKBranchNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "vestigingsnummer"
     value_label = _("Branch number")
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         validate_branchNumber(value)
         super().__call__(value)

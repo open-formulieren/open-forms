@@ -62,7 +62,8 @@ class FormAuthenticationPermission(permissions.BasePermission):
 
 class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
     """
-    Verify that there is at least one active submission for the user session.
+    Check that the submission matches one of the active submission set on the user session.
+    Additionally, filter the queryset against the active submissions.
     """
 
     def has_object_permission(self, request: Request, view: APIView, obj) -> bool:
