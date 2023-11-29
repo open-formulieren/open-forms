@@ -134,8 +134,9 @@ class ResumeFormMixin(TemplateResponseMixin):
 
         # TODO: remove code duplication
 
-        # No login required, skip authentication
-        if not submission.form.login_required:
+        # No login required. If the user did NOT log in when initially starting the submission (that they are now
+        # resuming) skip authentication.
+        if not submission.form.login_required and not submission.is_authenticated:
             submission = self.custom_submission_modifications(submission)
             add_submmission_to_session(submission, self.request.session)
             submission_resumed.send(
@@ -143,7 +144,7 @@ class ResumeFormMixin(TemplateResponseMixin):
             )
             return self.get_form_resume_url(submission)
 
-        # Login IS required. Check if the user has already logged in.
+        # Check if the user has already logged in.
         # This is done by checking if the authentication details are in the session and
         # if they match those in the saved submission.
         if FORM_AUTH_SESSION_KEY in self.request.session:
