@@ -95,7 +95,7 @@ class Registry(BaseRegistry):
 
         return decorator
 
-    @elasticapm.capture_span("app.valdiations.validate")
+    @elasticapm.capture_span("app.validations.validate")
     def validate(self, plugin_id: str, value: str) -> ValidationResult:
         try:
             validator = self._registry[plugin_id]
