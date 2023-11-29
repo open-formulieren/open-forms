@@ -46,15 +46,10 @@ boltons==21.0.0
     #   -r requirements/base.txt
     #   face
     #   glom
-cairocffi==1.2.0
+brotli==1.1.0
     # via
     #   -r requirements/base.txt
-    #   cairosvg
-    #   weasyprint
-cairosvg==2.7.0
-    # via
-    #   -r requirements/base.txt
-    #   weasyprint
+    #   fonttools
 celery==5.2.7
     # via
     #   -c requirements/base.in
@@ -74,10 +69,9 @@ certifi==2023.7.22
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.14.3
+cffi==1.16.0
     # via
     #   -r requirements/base.txt
-    #   cairocffi
     #   cryptography
     #   weasyprint
 chardet==5.1.0
@@ -121,13 +115,11 @@ cryptography==41.0.4
 cssselect2==0.4.1
     # via
     #   -r requirements/base.txt
-    #   cairosvg
     #   weasyprint
 defusedxml==0.7.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-    #   cairosvg
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
@@ -375,6 +367,11 @@ flower==1.2.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
+fonttools[woff]==4.45.1
+    # via
+    #   -r requirements/base.txt
+    #   fonttools
+    #   weasyprint
 frozendict==2.3.4
     # via
     #   -c requirements/base.in
@@ -534,7 +531,6 @@ pillow==10.0.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-    #   cairosvg
     #   django-colorfield
     #   weasyprint
 platformdirs==2.2.0
@@ -566,6 +562,10 @@ pycparser==2.20
     # via
     #   -r requirements/base.txt
     #   cffi
+pydyf==0.8.0
+    # via
+    #   -r requirements/base.txt
+    #   weasyprint
 pyjwt==2.6.0
     # via
     #   -r requirements/base.txt
@@ -742,7 +742,6 @@ tinycss2==1.1.0
     #   -c requirements/base.in
     #   -r requirements/base.txt
     #   bleach
-    #   cairosvg
     #   cssselect2
     #   weasyprint
 tornado==6.3.3
@@ -777,7 +776,7 @@ wcwidth==0.2.5
     # via
     #   -r requirements/base.txt
     #   prompt-toolkit
-weasyprint==52.5
+weasyprint==60.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -810,6 +809,10 @@ zgw-consumers==0.26.2
     #   -r requirements/base.txt
     #   open-forms-ext-haalcentraal-hr
     #   open-forms-ext-token-exchange
+zopfli==0.2.3
+    # via
+    #   -r requirements/base.txt
+    #   fonttools
 
 # The following packages are considered to be unsafe in a requirements file:
 setuptools==65.6.3
@@ -818,4 +821,3 @@ setuptools==65.6.3
     #   -r requirements/base.txt
     #   django-axes
     #   josepy
-    #   weasyprint
