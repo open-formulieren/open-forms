@@ -71,7 +71,7 @@ class DigiDAssertionConsumerServiceView(
                     DIGID_MESSAGE_PARAMETER, LOGIN_CANCELLED
                 )
             else:
-                logger.error(exc)
+                logger.error(exc, exc_info=exc)
                 failure_url = self.get_failure_url(
                     DIGID_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
                 )
@@ -80,7 +80,7 @@ class DigiDAssertionConsumerServiceView(
         try:
             name_id = response.get_nameid()
         except OneLogin_Saml2_ValidationError as exc:
-            logger.error(exc)
+            logger.error(exc, exc_info=exc)
             failure_url = self.get_failure_url(
                 DIGID_MESSAGE_PARAMETER, GENERIC_LOGIN_ERROR
             )
