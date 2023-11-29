@@ -61,17 +61,11 @@ boltons==21.0.0
     #   -r requirements/base.txt
     #   face
     #   glom
-cairocffi==1.2.0
+brotli==1.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   cairosvg
-    #   weasyprint
-cairosvg==2.7.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   weasyprint
+    #   fonttools
 celery==5.2.7
     # via
     #   -c requirements/base.txt
@@ -92,11 +86,10 @@ certifi==2023.7.22
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.14.3
+cffi==1.16.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   cairocffi
     #   cryptography
     #   weasyprint
 chardet==5.1.0
@@ -155,13 +148,11 @@ cssselect2==0.4.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   cairosvg
     #   weasyprint
 defusedxml==0.7.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   cairosvg
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
@@ -442,6 +433,12 @@ flower==1.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+fonttools[woff]==4.45.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   fonttools
+    #   weasyprint
 freezegun==0.3.15
     # via -r requirements/test-tools.in
 frozendict==2.3.4
@@ -648,7 +645,6 @@ pillow==10.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   cairosvg
     #   django-colorfield
     #   weasyprint
 platformdirs==2.2.0
@@ -692,6 +688,11 @@ pycparser==2.20
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   cffi
+pydyf==0.8.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   weasyprint
 pyee==9.0.4
     # via playwright
 pyflakes==3.0.1
@@ -943,7 +944,6 @@ tinycss2==1.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   bleach
-    #   cairosvg
     #   cssselect2
     #   weasyprint
 tomli==1.2.1
@@ -994,7 +994,7 @@ wcwidth==0.2.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   prompt-toolkit
-weasyprint==52.5
+weasyprint==60.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1037,6 +1037,11 @@ zgw-consumers==0.26.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+zopfli==0.2.3
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   fonttools
 
 # The following packages are considered to be unsafe in a requirements file:
 setuptools==65.6.3
@@ -1045,4 +1050,3 @@ setuptools==65.6.3
     #   -r requirements/base.txt
     #   django-axes
     #   josepy
-    #   weasyprint

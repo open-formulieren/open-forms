@@ -31,12 +31,8 @@ boltons==21.0.0
     # via
     #   face
     #   glom
-cairocffi==1.2.0
-    # via
-    #   cairosvg
-    #   weasyprint
-cairosvg==2.7.0
-    # via weasyprint
+brotli==1.1.0
+    # via fonttools
 celery==5.2.7
     # via
     #   -r requirements/base.in
@@ -52,9 +48,8 @@ certifi==2023.7.22
     #   requests
     #   self-certifi
     #   sentry-sdk
-cffi==1.14.3
+cffi==1.16.0
     # via
-    #   cairocffi
     #   cryptography
     #   weasyprint
 chardet==5.1.0
@@ -82,13 +77,10 @@ cryptography==41.0.7
     #   mozilla-django-oidc
     #   pyopenssl
 cssselect2==0.4.1
-    # via
-    #   cairosvg
-    #   weasyprint
+    # via weasyprint
 defusedxml==0.7.1
     # via
     #   -r requirements/base.in
-    #   cairosvg
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
@@ -247,6 +239,10 @@ faker==7.0.1
     # via zgw-consumers
 flower==1.2.0
     # via -r requirements/base.in
+fonttools[woff]==4.45.1
+    # via
+    #   fonttools
+    #   weasyprint
 frozendict==2.3.4
     # via -r requirements/base.in
 furl==2.1.2
@@ -341,7 +337,6 @@ phonenumbers==8.12.29
 pillow==10.0.1
     # via
     #   -r requirements/base.in
-    #   cairosvg
     #   django-colorfield
     #   weasyprint
 platformdirs==2.2.0
@@ -358,6 +353,8 @@ psycopg2==2.8.6
     # via -r requirements/base.in
 pycparser==2.20
     # via cffi
+pydyf==0.8.0
+    # via weasyprint
 pyjwt==2.6.0
     # via gemma-zds-client
 pyopenssl==23.2.0
@@ -476,7 +473,6 @@ tinycss2==1.1.0
     # via
     #   -r requirements/base.in
     #   bleach
-    #   cairosvg
     #   cssselect2
     #   weasyprint
 tornado==6.3.3
@@ -499,7 +495,7 @@ vine==5.0.0
     #   kombu
 wcwidth==0.2.5
     # via prompt-toolkit
-weasyprint==52.5
+weasyprint==60.1
     # via -r requirements/base.in
 webencodings==0.5.1
     # via
@@ -517,6 +513,8 @@ zeep==4.2.1
     # via -r requirements/base.in
 zgw-consumers==0.26.2
     # via -r requirements/base.in
+zopfli==0.2.3
+    # via fonttools
 
 # The following packages are considered to be unsafe in a requirements file:
 setuptools==65.6.3
@@ -524,4 +522,3 @@ setuptools==65.6.3
     #   -r requirements/base.in
     #   django-axes
     #   josepy
-    #   weasyprint

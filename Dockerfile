@@ -16,18 +16,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         build-essential \
         python3-dev \
         libpq-dev \
+        shared-mime-info \
+        # lxml deps
         libxml2-dev \
         libxslt-dev \
         libxmlsec1-dev \
         zlib1g-dev \
         libxmlsec1-openssl \
-        # weasyprint deps
-        libcairo2 \
+        # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
         libpango-1.0-0 \
-        libpangocairo-1.0-0 \
-        libgdk-pixbuf2.0-0 \
-        libffi-dev \
-        shared-mime-info \
+        libpangoft2-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -79,14 +77,10 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         libxmlsec1-openssl \
         gdal-bin \
         gettext \
-        # lxml deps
-        # libxslt \
-        # weasyprint deps
-        libcairo2 \
-        libpango-1.0-0 \
-        libpangocairo-1.0-0 \
-        libgdk-pixbuf2.0-0 \
         shared-mime-info \
+        # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
+        libpango-1.0-0 \
+        libpangoft2-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
