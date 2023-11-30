@@ -182,3 +182,8 @@ class NPFamilyMembers(BasePlugin):
                 }
                 for value, label in child_choices
             ]
+
+@register("address")
+class Default(BasePlugin):
+
+    formatter = DefaultFormatter

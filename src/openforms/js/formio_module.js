@@ -1,3 +1,4 @@
+import Address from './components/form/address';
 import BsnField from './components/form/bsn';
 import CheckboxField from './components/form/checkbox';
 import CoSignFieldOld from './components/form/coSignOld';
@@ -64,6 +65,7 @@ const FormIOModule = {
     currency: CurrencyField,
     editgrid: EditGrid,
     datamap: Datamap,
+    address: Address,
   },
   builders: {
     webform: WebformBuilder,
