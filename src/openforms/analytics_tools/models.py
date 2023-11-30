@@ -100,6 +100,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Google Analytics"),
     )
+
     matomo_url = models.URLField(
         _("Matomo server URL"),
         max_length=255,
@@ -120,6 +121,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Matomo"),
     )
+
     piwik_url = models.URLField(
         _("Piwik server URL"),
         max_length=255,
@@ -140,6 +142,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Piwik"),
     )
+
     piwik_pro_url = models.URLField(
         _("Piwik PRO server URL"),
         max_length=255,
@@ -163,6 +166,14 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Piwik Pro"),
     )
+    enable_piwik_pro_tag_manager = models.BooleanField(
+        _("enable piwik pro tag manager"),
+        default=False,
+        help_text=_(
+            "Enabling this installs Piwik Pro Tag Manager, on top of Piwik Pro (meaning it will use the same URL and site ID)."
+        ),
+    )
+
     siteimprove_id = models.CharField(
         _("SiteImprove ID"),
         max_length=10,
@@ -173,7 +184,6 @@ class AnalyticsToolsConfiguration(SingletonModel):
             "The XXXXX is your ID."
         ),
     )
-
     enable_siteimprove_analytics = models.BooleanField(
         _("enable siteImprove analytics"),
         default=False,
@@ -220,6 +230,10 @@ class AnalyticsToolsConfiguration(SingletonModel):
             and self.enable_piwik_pro_site_analytics
             and self.analytics_cookie_consent_group
         )
+
+    @property
+    def is_piwik_pro_tag_manager_enabled(self) -> bool:
+        return self.is_piwik_pro_enabled and self.enable_piwik_pro_tag_manager
 
     @property
     def is_siteimprove_enabled(self) -> bool:

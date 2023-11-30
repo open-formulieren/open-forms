@@ -1,7 +1,7 @@
 {% load solo_tags %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
 {% if analytics_tools_config.is_piwik_pro_enabled %}
-<!-- End Piwik PRO head tag -->
+<!-- Start Piwik PRO head tag -->
 <script id="piwik-pro-analytics" type="text/javascript" nonce="{{ request.csp_nonce }}">
   var _paq = _paq || [];
   _paq.push(["trackPageView"]);
