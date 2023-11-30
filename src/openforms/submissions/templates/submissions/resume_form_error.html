@@ -2,8 +2,8 @@
 {% load i18n %}
 
 {% block card %}
-<div class="card">
-    <header class="card__header">
+<div class="openforms-card">
+    <header class="openforms-card__header">
         <h1 class="title">
             {% if error.detail.code == 'form-inactive' %}
                 {% trans "Sorry - this form is no longer available" %}
@@ -13,7 +13,7 @@
         </h1>
     </header>
 
-    <div class="card__body">
+    <div class="openforms-card__body">
         {% if error.detail.code == 'form-inactive' %}
             {% blocktrans trimmed %}
                 Unfortunately, this form is no longer in use. We apologise for any

@@ -2,14 +2,14 @@
 {% load i18n %}
 
 {% block card %}
-    <div class="card">
-        <header class="card__header">
+    <div class="openforms-card">
+        <header class="openforms-card__header">
             <h1 class="title">
                 {% trans "Sorry, you don't have access to this page (403)" %}
             </h1>
         </header>
 
-        <div class="card__body">
+        <div class="openforms-card__body">
             {% block card_body %}
                 <p class="body">
                     {% blocktrans trimmed %}
