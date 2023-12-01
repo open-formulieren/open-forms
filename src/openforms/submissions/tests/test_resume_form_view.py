@@ -18,6 +18,7 @@ from .factories import SubmissionFactory, SubmissionStepFactory
 class SubmissionResumeViewTests(TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
+            form__formstep__form_definition__login_required=False,
             completed=True,
             components_list=[
                 {
@@ -410,3 +411,38 @@ class SubmissionResumeViewTests(TestCase):
         self.assertRedirects(
             response, expected_redirect_url, fetch_redirect_response=False
         )
+
+    @tag("gh-3613")
+    def test_redirects_to_auth_if_form_does_not_require_login_but_user_logged_in_the_first_time(
+        self,
+    ):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=False,
+            auth_info__plugin="digid",
+            auth_info__value="some-hashed-value",
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.first(),
+            data={"foo": "bar"},
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+        expected_redirect_url = furl(
+            f"http://testserver/auth/{submission.form.slug}/digid/start"
+        )
+        expected_redirect_url.args["next"] = f"http://testserver{endpoint}"
+
+        response = self.client.get(endpoint)
+
+        self.assertRedirects(
+            response, expected_redirect_url.url, fetch_redirect_response=False
+        )
+        self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
