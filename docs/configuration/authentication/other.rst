@@ -11,7 +11,7 @@ Other authentications
 
 To test various aspects of authentication for a form, we include several 
 plugins to simulate or test authentication. No configuration is required for
-the plugins but the need to be enabled in the development settings.
+the plugins but they need to be enabled in the development settings.
 
 * **Demo BSN**: Allows an admin to login using any BSN number. The form behaves
   as if an actual BSN was returned, as if the user logged in with DigiD.
