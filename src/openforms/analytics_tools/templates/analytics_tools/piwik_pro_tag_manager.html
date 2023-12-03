@@ -10,7 +10,7 @@
   function stgCreateCookie(a,b,c){var d="";if(c){var e=new Date;e.setTime(e.getTime()+24*c*60*60*1e3),d=";expires="+e.toUTCString()}document.cookie=a+"="+b+d+"; path=/"}
   var isStgDebug=(window.location.href.match("stg_debug")||document.cookie.match("stg_debug"))&&!window.location.href.match("stg_disable_debug");
   stgCreateCookie("stg_debug",isStgDebug?1:"",isStgDebug?14:-1);
-  var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName),tags.nonce="{{ request.csp_nonce }}",isStgDebug&&qP.push("stg_debug");
+  var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName),tags.nonce="{{ request.csp_nonce|escapejs }}",isStgDebug&&qP.push("stg_debug");
   var qPString=qP.length>0?("?"+qP.join("&")):"";
   tags.async=!0,tags.src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/"+id+".js"+qPString,
   scripts.parentNode.insertBefore(tags,scripts);
@@ -26,7 +26,7 @@
   stgCreateCookie("stg_debug",isStgDebug?1:"",isStgDebug?14:-1);
   var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName),isStgDebug&&qP.push("stg_debug");
   var qPString=qP.length>0?("?"+qP.join("&")):"";
-  document.write('<script src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/'+id+'.sync.js' + qPString + '" nonce="{{ request.csp_nonce }}"></' + 'script>');
+  document.write('<script src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/'+id+'.sync.js' + qPString + '" nonce="{{ request.csp_nonce|escapejs }}"></' + 'script>');
   })(window, document, 'dataLayer', '{{ analytics_tools_config.piwik_pro_site_id|escapejs }}');
 </script>
 <!-- End Piwik PRO tag manager head tag -->
