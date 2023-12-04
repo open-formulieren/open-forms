@@ -8,6 +8,8 @@ import requests_mock
 from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
 
+from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -78,7 +80,12 @@ class ObjectsAPIBackendTests(TestCase):
                     ],
                     "pdf": "{{ submission.pdf_url }}",
                     "csv": "{{ submission.csv_url }}",
-                    "bijlagen": {% uploaded_attachment_urls %}
+                    "bijlagen": {% uploaded_attachment_urls %},
+                    "payment": {
+                        "completed": {% if payment.completed %}true{% else %}false{% endif %},
+                        "amount": "{{ payment.amount }}",
+                        "public_order_ids": "{{ payment.public_order_ids }}"
+                    }
                 }"""
             ),
         )
@@ -218,6 +225,11 @@ class ObjectsAPIBackendTests(TestCase):
                         "pdf": expected_document_result["url"],
                         "csv": expected_csv_document_result["url"],
                         "bijlagen": [],
+                        "payment": {
+                            "completed": False,
+                            "amount": "0",
+                            "public_order_ids": "",
+                        },
                     },
                     "startAt": date.today().isoformat(),
                     "geometry": {
@@ -634,6 +646,11 @@ class ObjectsAPIBackendTests(TestCase):
                     "pdf": expected_document_result["url"],
                     "taal": "en",
                     "type": "terugbelnotitie",
+                    "payment": {
+                        "completed": False,
+                        "amount": "0",
+                        "public_order_ids": "",
+                    },
                 },
                 "startAt": date.today().isoformat(),
             }
@@ -1191,3 +1208,60 @@ class ObjectsAPIBackendTests(TestCase):
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
         self.assertEqual(posted_record_data, expected_record_data)
+
+    def test_submission_with_payment(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "test",
+                    "type": "textfield",
+                },
+            ],
+            registration_success=True,
+            submitted_data={"test": "some test data"},
+            language_code="en",
+            registration_result={
+                "url": "https://objecten.nl/api/v1/objects/111-222-333"
+            },
+        )
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            status=PaymentStatus.started,
+            amount=10,
+            public_order_id="",
+        )
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=get_create_json,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=generate_oas_component(
+                "documenten",
+                "schemas/EnkelvoudigInformatieObject",
+                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            ),
+        )
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        plugin.register_submission(
+            submission,
+            {},
+        )
+
+        self.assertEqual(len(m.request_history), 2)
+
+        object_create = m.last_request
+        body = object_create.json()
+
+        self.assertEqual(
+            body["record"]["data"]["payment"],
+            {
+                "completed": False,
+                "amount": "10,00",
+                "public_order_ids": "",
+            },
+        )
