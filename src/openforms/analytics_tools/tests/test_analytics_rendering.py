@@ -87,8 +87,7 @@ class AnalyticsToolsRenderingTest(WebTest):
     def test_piwik_pro_tag_manager_rendering(self):
         """Assert that the Piwik Pro Tag Manager scripts are rendered"""
 
-        # Enable and configure Piwik Pro
-        self.config.enable_piwik_pro_site_analytics = True
+        # Configure Piwik Pro site ID and URL
         self.config.piwik_pro_site_id = 1234
         self.config.piwik_pro_url = self.url
         # Enable Tag manager
@@ -102,21 +101,6 @@ class AnalyticsToolsRenderingTest(WebTest):
         tag_manager_sync = form_page.pyquery("#piwik-pro-tag-manager-sync")
         self.assertTrue(tag_manager_async.is_("script"))
         self.assertTrue(tag_manager_sync.is_("script"))
-
-        self.config.enable_piwik_pro_site_analytics = False
-        self.config.save()
-
-        form_page_disabled = self.app.get(self.url)
-
-        tag_manager_async_disabled = form_page_disabled.pyquery(
-            "#piwik-pro-tag-manager-async"
-        )
-        tag_manager_sync_disabled = form_page_disabled.pyquery(
-            "#piwik-pro-tag-manager-sync"
-        )
-
-        self.assertFalse(tag_manager_async_disabled)
-        self.assertFalse(tag_manager_sync_disabled)
 
     def test_piwik_rendering(self):
         """Assert that the Piwik script is rendered"""

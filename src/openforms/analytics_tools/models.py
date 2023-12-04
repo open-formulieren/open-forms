@@ -61,6 +61,15 @@ DYNAMIC_TOOL_CONFIGURATION = {
             StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
         ],
     ),
+    AnalyticsTools.piwik_pro_tag_manager: ToolConfiguration(
+        enable_field_name="enable_piwik_pro_tag_manager",
+        is_enabled_property="is_piwik_pro_tag_manager_enabled",
+        replacements=[
+            StringReplacement(needle="SITE_ID", field_name="piwik_pro_site_id"),
+            StringReplacement(needle="SITE_URL", field_name="piwik_pro_url"),
+            StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
+        ],
+    ),
     AnalyticsTools.piwik: ToolConfiguration(
         enable_field_name="enable_piwik_site_analytics",
         is_enabled_property="is_piwik_enabled",
@@ -233,7 +242,12 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_piwik_pro_tag_manager_enabled(self) -> bool:
-        return self.is_piwik_pro_enabled and self.enable_piwik_pro_tag_manager
+        return (
+            self.piwik_pro_url
+            and self.piwik_pro_site_id
+            and self.enable_piwik_pro_tag_manager
+            and self.analytics_cookie_consent_group
+        )
 
     @property
     def is_siteimprove_enabled(self) -> bool:
@@ -293,6 +307,15 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 _(
                     "If you enable {analytics_tool}, you must fill out all the required fields"
                 ).format(analytics_tool="Piwik Pro")
+            )
+        if (
+            self.enable_piwik_pro_tag_manager
+            and not self.is_piwik_pro_tag_manager_enabled
+        ):
+            raise ValidationError(
+                _(
+                    "If you enable {analytics_tool}, you must fill out all the required fields"
+                ).format(analytics_tool="Tag Manager")
             )
         if self.enable_piwik_site_analytics and not self.is_piwik_enabled:
             raise ValidationError(
