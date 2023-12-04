@@ -338,6 +338,42 @@ Periodic bugfix release
   unfortunately resulted in hashed BSNs being sent to registration backends, which we
   can not recover/translate back to the plain-text values.
 
+**Update payment status for Object API**
+
+If you would like information about the payment to be sent to the Object API registration backend when the user submits
+a form, you can add a ``payment`` field to the ``JSON content template`` field in the settings for the Object API
+registration backend. For example, if the ``JSON content template`` was:
+
+.. code-block::
+
+   {
+     "data": {% json_summary %},
+     "type": "{{ productaanvraag_type }}",
+     "bsn": "{{ variables.auth_bsn }}",
+     "pdf_url": "{{ submission.pdf_url }}",
+     "submission_id": "{{ submission.kenmerk }}",
+     "language_code": "{{ submission.language_code }}"
+   }
+
+It could become:
+
+.. code-block::
+
+  {
+     "data": {% json_summary %},
+     "type": "{{ productaanvraag_type }}",
+     "bsn": "{{ variables.auth_bsn }}",
+     "pdf_url": "{{ submission.pdf_url }}",
+     "submission_id": "{{ submission.kenmerk }}",
+     "language_code": "{{ submission.language_code }}"
+     "payment": {
+         "completed": {% if payment.completed %}true{% else %}false{% endif %},
+         "amount": "{{ payment.amount }}",
+         "public_order_ids":  "{{ payment.public_order_ids }}"
+     }
+  }
+
+
 2.4.2 (2023-12-08)
 ==================
 
