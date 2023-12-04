@@ -4,7 +4,7 @@ from typing import Any, Dict
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import resolve
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from digid_eherkenning.backends import BaseSaml2Backend
 from digid_eherkenning.saml2.eherkenning import eHerkenningClient

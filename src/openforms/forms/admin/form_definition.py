@@ -3,7 +3,7 @@ from django.contrib.admin.actions import delete_selected as _delete_selected
 from django.db.models import Prefetch
 from django.urls import reverse
 from django.utils.html import format_html, format_html_join
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from modeltranslation.admin import TranslationAdmin
 

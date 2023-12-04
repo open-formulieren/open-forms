@@ -3,7 +3,7 @@ from datetime import date, datetime
 
 from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import requests_mock
 from hypothesis import given, strategies as st

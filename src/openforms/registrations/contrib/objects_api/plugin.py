@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.template.defaultfilters import filesizeformat
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.zgw.clients import DocumentenClient
 from openforms.contrib.zgw.clients.utils import get_today

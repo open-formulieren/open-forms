@@ -1,6 +1,6 @@
 from typing import cast
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from djangorestframework_camel_case.util import underscoreize
 from drf_spectacular.types import OpenApiTypes

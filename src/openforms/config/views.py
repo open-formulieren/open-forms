@@ -3,7 +3,7 @@ from typing import Any, Dict, Generator, Optional, Protocol, TypeGuard
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
 from django.utils.encoding import force_str
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
 from openforms.appointments.registry import register as appointments_register

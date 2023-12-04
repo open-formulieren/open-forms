@@ -5,7 +5,7 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.utils.html import format_html_join
-from django.utils.translation import ngettext, ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from modeltranslation.manager import get_translatable_fields_for_model
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
