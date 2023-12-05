@@ -7,6 +7,7 @@ from django.db import migrations
 import tinymce.models
 
 import openforms.config.models
+import openforms.config.models.config
 import openforms.emails.validators
 import openforms.template.validators
 
@@ -23,7 +24,7 @@ class Migration(migrations.Migration):
             name="confirmation_email_content",
             field=tinymce.models.HTMLField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/confirmation/content.html",),
                     **{}
                 ),
@@ -46,7 +47,7 @@ class Migration(migrations.Migration):
             name="confirmation_email_content_en",
             field=tinymce.models.HTMLField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/confirmation/content.html",),
                     **{}
                 ),
@@ -70,7 +71,7 @@ class Migration(migrations.Migration):
             name="confirmation_email_content_nl",
             field=tinymce.models.HTMLField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/confirmation/content.html",),
                     **{}
                 ),
@@ -94,7 +95,7 @@ class Migration(migrations.Migration):
             name="save_form_email_content",
             field=tinymce.models.HTMLField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/save_form/content.html",),
                     **{}
                 ),
@@ -113,7 +114,7 @@ class Migration(migrations.Migration):
             name="save_form_email_content_en",
             field=tinymce.models.HTMLField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/save_form/content.html",),
                     **{}
                 ),
@@ -133,7 +134,7 @@ class Migration(migrations.Migration):
             name="save_form_email_content_nl",
             field=tinymce.models.HTMLField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/save_form/content.html",),
                     **{}
                 ),

@@ -10,6 +10,7 @@ import django_better_admin_arrayfield.models.fields
 import tinymce.models
 
 import openforms.config.models
+import openforms.config.models.config
 import openforms.emails.validators
 import openforms.template.validators
 
@@ -90,7 +91,7 @@ class Migration(migrations.Migration):
             name="save_form_email_content",
             field=tinymce.models.HTMLField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/save_form/content.html",),
                     **{}
                 ),
@@ -107,7 +108,7 @@ class Migration(migrations.Migration):
             name="save_form_email_subject",
             field=models.CharField(
                 default=functools.partial(
-                    openforms.config.models._render,
+                    openforms.config.models.config._render,
                     *("emails/save_form/subject.txt",),
                     **{}
                 ),
