@@ -312,7 +312,7 @@ mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
 mozilla-django-oidc-db==0.12.0
     # via -r requirements/base.in
-o365==2.0.18
+o365==2.0.31
     # via -r requirements/base.in
 oauthlib==3.2.2
     # via requests-oauthlib
@@ -387,9 +387,9 @@ pytz==2022.2.1
     #   django-yubin
     #   djangorestframework
     #   flower
-    #   o365
-    #   tzlocal
     #   zeep
+pytz-deprecation-shim==0.1.0.post0
+    # via tzlocal
 pyyaml==6.0.1
     # via
     #   drf-spectacular
@@ -477,7 +477,9 @@ tinycss2==1.1.0
     #   weasyprint
 tornado==6.3.3
     # via flower
-tzlocal==2.1
+tzdata==2023.3
+    # via pytz-deprecation-shim
+tzlocal==4.3.1
     # via o365
 uritemplate==3.0.1
     # via drf-spectacular
