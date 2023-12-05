@@ -5,7 +5,7 @@ from typing import Any, List, NoReturn, Optional, Tuple, TypedDict
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import get_language_info, ugettext_lazy as _
+from django.utils.translation import get_language_info, gettext_lazy as _
 
 from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,

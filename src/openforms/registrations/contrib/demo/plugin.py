@@ -1,6 +1,6 @@
 from typing import NoReturn
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from openforms.submissions.models import Submission
 from openforms.submissions.public_references import set_submission_reference

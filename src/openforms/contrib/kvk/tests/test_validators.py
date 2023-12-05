@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 import requests_mock
 from privates.test import temp_private_root

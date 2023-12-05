@@ -4,7 +4,7 @@ from typing import Callable, Iterator, Union
 from django.urls import reverse
 from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from furl import furl
 from glom import Path

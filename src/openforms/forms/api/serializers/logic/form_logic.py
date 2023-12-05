@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
