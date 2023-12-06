@@ -29,6 +29,7 @@ from openforms.utils.translations import runtime_gettext
 
 from ..constants import UploadFileType
 from ..utils import verify_clamav_connection
+from .theme import Theme
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,11 @@ def _render(filename):
 
 get_confirmation_email_subject = partial(_render, "emails/confirmation/subject.txt")
 get_confirmation_email_content = partial(_render, "emails/confirmation/content.html")
+
+
+class GlobalConfigurationManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("default_theme")
 
 
 class GlobalConfiguration(SingletonModel):
@@ -247,6 +253,18 @@ class GlobalConfiguration(SingletonModel):
         default=5.291266,
     )
     # 'subdomain' styling & content configuration
+    default_theme = models.OneToOneField(
+        Theme,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name=_("default theme"),
+        help_text=_(
+            "If no explicit theme is configured, the configured default theme "
+            "will be used as a fallback."
+        ),
+    )
+
     # FIXME: do not expose this field via the API to non-admin users! There is not
     # sufficient input validation to protect against the SVG attack surface. The SVG
     # is rendered by the browser of end-users.
@@ -597,6 +615,8 @@ class GlobalConfiguration(SingletonModel):
         default=list,
     )
 
+    objects = GlobalConfigurationManager()
+
     class Meta:
         verbose_name = _("General configuration")
 
@@ -639,6 +659,13 @@ class GlobalConfiguration(SingletonModel):
                 )
 
         return super().clean()
+
+    def get_default_theme(self) -> Theme:
+        """
+        Use the configured default theme or create an in-memory instane on the fly
+        if none is configured.
+        """
+        return self.default_theme or Theme()
 
     def get_theme_classname(self) -> str:
         return self.theme_classname or "openforms-theme"

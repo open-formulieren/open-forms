@@ -8,7 +8,7 @@ from modeltranslation.admin import TranslationAdmin
 from solo.admin import SingletonModelAdmin
 
 from .forms import GlobalConfigurationAdminForm
-from .models import CSPSetting, GlobalConfiguration, RichTextColor
+from .models import CSPSetting, GlobalConfiguration, RichTextColor, Theme
 
 
 @admin.register(GlobalConfiguration)
@@ -87,13 +87,9 @@ class GlobalConfigurationAdmin(
             {
                 "fields": (
                     "organization_name",
-                    "logo",
                     "main_website",
                     "favicon",
-                    "theme_classname",
-                    "theme_stylesheet",
-                    "theme_stylesheet_file",
-                    "design_token_values",
+                    "default_theme",
                 ),
             },
         ),
@@ -213,3 +209,25 @@ class CSPSettingAdmin(admin.ModelAdmin):
         return link
 
     content_type_link.short_description = _("Content type")
+
+
+@admin.register(Theme)
+class ThemeAdmin(admin.ModelAdmin):
+    list_display = ("name", "logo", "classname")
+    search_fields = ("name", "classname")
+
+    fieldsets = (
+        (None, {"fields": ("name",)}),
+        (_("Logo"), {"fields": ("logo",)}),
+        (
+            _("Appearance"),
+            {
+                "fields": (
+                    "classname",
+                    "stylesheet",
+                    "stylesheet_file",
+                    "design_token_values",
+                )
+            },
+        ),
+    )
