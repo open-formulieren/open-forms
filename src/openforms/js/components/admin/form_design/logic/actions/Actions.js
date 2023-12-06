@@ -1,3 +1,4 @@
+import {createTypeCheck} from '@open-formulieren/formio-builder';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
@@ -89,16 +90,27 @@ const ActionProperty = ({action, errors, onChange}) => {
   );
 };
 
-const ActionVariableValue = ({action, errors, onChange}) => (
-  <>
-    <DSLEditorNode errors={errors.variable}>
-      <VariableSelection name="variable" onChange={onChange} value={action.variable} />
-    </DSLEditorNode>
-    <DSLEditorNode errors={errors.action?.value}>
-      <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
-    </DSLEditorNode>
-  </>
-);
+const ActionVariableValue = ({action, errors, onChange}) => {
+  const formContext = useContext(FormContext);
+  const infer = createTypeCheck(formContext);
+  // check the expression and the picked variable are of the same type
+  const validateJsonLogic = expression => infer({'===': [{var: action.variable}, expression]});
+  return (
+    <>
+      <DSLEditorNode errors={errors.variable}>
+        <VariableSelection name="variable" onChange={onChange} value={action.variable} />
+      </DSLEditorNode>
+      <DSLEditorNode errors={errors.action?.value}>
+        <JsonWidget
+          name="action.value"
+          logic={action.action.value}
+          onChange={onChange}
+          validateJsonLogic={validateJsonLogic}
+        />
+      </DSLEditorNode>
+    </>
+  );
+};
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
   const intl = useIntl();

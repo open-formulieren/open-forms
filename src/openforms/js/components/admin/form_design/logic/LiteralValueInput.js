@@ -88,7 +88,15 @@ WrapperArrayInput.propTypes = {
 };
 
 const WrappedJsonWidget = ({name, value, onChange}) => {
-  return <JsonWidget name={name} logic={value} onChange={onChange} cols={25} />;
+  return (
+    <JsonWidget
+      name={name}
+      logic={value}
+      onChange={onChange}
+      cols={25}
+      validateJsonLogic={() => ''} // not passing in logic, but any JSON
+    />
+  );
 };
 
 WrappedJsonWidget.propTypes = {

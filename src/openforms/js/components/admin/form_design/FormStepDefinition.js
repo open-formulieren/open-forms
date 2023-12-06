@@ -1,3 +1,4 @@
+import {createTypeCheck} from '@open-formulieren/formio-builder';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
@@ -69,7 +70,16 @@ const FormStepDefinition = ({
     });
   };
 
-  const {translationEnabled, formSteps, registrationBackends} = useContext(FormContext);
+  const {
+    translationEnabled,
+    formSteps,
+    registrationBackends,
+    formVariables,
+    staticVariables,
+    components,
+  } = useContext(FormContext);
+
+  const validateLogic = createTypeCheck({formVariables, staticVariables, components});
 
   // A 'total configuration': merging all the configurations from the different steps, so that we can figure out if
   // a key is unique across steps
@@ -408,6 +418,7 @@ const FormStepDefinition = ({
           onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
           componentTranslations={componentTranslations}
           componentNamespace={componentNamespace}
+          validateLogic={validateLogic}
           registrationBackendInfo={registrationBackends}
           {...props}
         />

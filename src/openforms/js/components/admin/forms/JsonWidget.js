@@ -1,5 +1,5 @@
+import {createTypeCheck} from '@open-formulieren/formio-builder';
 import classNames from 'classnames';
-import jsonLogic from 'json-logic-js';
 import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
 import {useIntl} from 'react-intl';
@@ -13,29 +13,14 @@ const jsonFormat = value => {
   return JSON.stringify(value, null, 2);
 };
 
-const isJsonLogic = jsonExpression => {
-  // jsonLogic accepts primitives
-  if (
-    jsonExpression == null || // typeof null -> 'object'
-    typeof jsonExpression === 'string' ||
-    typeof jsonExpression === 'boolean' ||
-    typeof jsonExpression === 'number'
-  ) {
-    return true;
-  }
-
-  if (Array.isArray(jsonExpression)) {
-    for (const item of jsonExpression) {
-      const isValid = isJsonLogic(item);
-      if (!isValid) return false;
-    }
-    return true;
-  }
-
-  return jsonLogic.is_logic(jsonExpression);
-};
-
-const JsonWidget = ({name, logic, onChange, cols = 60, isExpanded = true}) => {
+const JsonWidget = ({
+  name,
+  logic,
+  onChange,
+  cols = 60,
+  isExpanded = true,
+  validateJsonLogic = createTypeCheck(),
+}) => {
   const intl = useIntl();
   const [jsonError, setJsonError] = useState('');
   const [editorValue, setEditorValue] = useState(jsonFormat(logic));
@@ -47,10 +32,6 @@ const JsonWidget = ({name, logic, onChange, cols = 60, isExpanded = true}) => {
   const invalidSyntaxMessage = intl.formatMessage({
     description: 'Advanced logic rule invalid json message',
     defaultMessage: 'Invalid JSON syntax',
-  });
-  const invalidLogicMessage = intl.formatMessage({
-    description: 'Advanced logic rule invalid JSON-logic message',
-    defaultMessage: 'Invalid JSON logic expression',
   });
 
   const onJsonChange = event => {
@@ -71,10 +52,8 @@ const JsonWidget = ({name, logic, onChange, cols = 60, isExpanded = true}) => {
       }
     }
 
-    if (!isJsonLogic(updatedJson)) {
-      setJsonError(invalidLogicMessage);
-      return;
-    }
+    setJsonError(validateJsonLogic(updatedJson));
+    if (jsonError) return;
 
     const fakeEvent = {target: {name: name, value: updatedJson}};
     onChange(fakeEvent);
@@ -103,6 +82,7 @@ JsonWidget.propTypes = {
   onChange: PropTypes.func.isRequired,
   cols: PropTypes.number,
   isExpanded: PropTypes.bool,
+  validateJsonLogic: PropTypes.func,
 };
 
 export default JsonWidget;
