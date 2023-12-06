@@ -184,7 +184,7 @@ class NPFamilyMembers(BasePlugin):
             ]
 
 
-@register("address")
+@register("addressNL")
 class Default(BasePlugin):
 
     formatter = DefaultFormatter

@@ -5,9 +5,9 @@ import {localiseSchema} from './i18n';
 const FieldComponent = Formio.Components.components.field;
 
 /**
- * An address component.
+ * An address (NL) component.
  */
-class Address extends FieldComponent {
+class AddressNL extends FieldComponent {
   constructor(component, options, data) {
     super(component, options, data);
     this.checks = [];
@@ -16,8 +16,8 @@ class Address extends FieldComponent {
   static schema(...extend) {
     const schema = FieldComponent.schema(
       {
-        label: 'Address',
-        type: 'address',
+        label: 'AddressNL',
+        type: 'addressNL',
         input: false,
       },
       ...extend
@@ -27,24 +27,24 @@ class Address extends FieldComponent {
 
   static get builderInfo() {
     return {
-      title: 'Address',
+      title: 'AddressNL',
       icon: 'home',
       group: 'basic',
       weight: 300,
-      schema: Address.schema(),
+      schema: AddressNL.schema(),
     };
   }
 
-  render(content) {
-    const btnContent = this.t('Address', {
-      authPlugin: this.component.authPlugin,
-    });
-    const context = {
-      content: content,
-      btnContent: btnContent,
-    };
-    return super.render(this.renderTemplate('address', context));
-  }
+  // render(content) {
+  //   const btnContent = this.t('AddressNL', {
+  //     authPlugin: this.component.authPlugin,
+  //   });
+  //   const context = {
+  //     content: content,
+  //     btnContent: btnContent,
+  //   };
+  //   return super.render(this.renderTemplate('addressNL', context));
+  // }
 }
 
-export default Address;
+export default AddressNL;
