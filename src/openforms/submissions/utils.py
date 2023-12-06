@@ -151,6 +151,7 @@ def send_confirmation_email(submission: Submission):
             to_emails,
             cc=cc_emails,
             text_message=text_content,
+            theme=submission.form.theme,
         )
     except Exception as e:
         logevent.confirmation_email_failure(submission, e)

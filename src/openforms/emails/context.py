@@ -2,20 +2,23 @@ from django.utils.safestring import mark_safe
 
 from glom import glom
 
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, Theme
 from openforms.utils.urls import build_absolute_uri
 
 
-def get_wrapper_context(html_content=""):
+def get_wrapper_context(html_content="", theme: Theme | None = None):
     config = GlobalConfiguration.get_solo()
-    design_tokens = config.design_token_values or {}
+    assert isinstance(config, GlobalConfiguration)
+    theme = theme or config.get_default_theme()
+
+    design_tokens = theme.design_token_values or {}
     ctx = {
         "content": mark_safe(html_content),
         "main_website_url": config.main_website,
         "style": _get_design_token_values(design_tokens),
     }
-    if config.logo:
-        ctx["logo_url"] = build_absolute_uri(config.logo.url)
+    if theme.logo:
+        ctx["logo_url"] = build_absolute_uri(theme.logo.url)
 
     return ctx
 

@@ -10,7 +10,7 @@ from mail_cleaner.mail import send_mail_plus
 from mail_cleaner.sanitizer import sanitize_content as _sanitize_content
 from mail_cleaner.text import strip_tags_plus
 
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, Theme
 from openforms.template import openforms_backend, render_from_string
 
 from .context import get_wrapper_context
@@ -57,6 +57,7 @@ def send_mail_html(
     fail_silently: bool = False,
     text_message: str | None = None,
     extra_headers: dict[str, str] | None = None,
+    theme: Theme | None = None,
 ) -> None:
     """
     Send outoing email with HTML content, wrapped in our scaffolding.
@@ -73,7 +74,7 @@ def send_mail_html(
     text_message = sanitize_content(text_message)
 
     template = get_template("emails/wrapper.html")
-    wrapper_context = get_wrapper_context(html_body)
+    wrapper_context = get_wrapper_context(html_body, theme=theme)
     html_message = template.render(wrapper_context)
 
     send_mail_plus(
