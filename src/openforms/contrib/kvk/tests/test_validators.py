@@ -1,3 +1,5 @@
+from functools import partial
+
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 from django.utils.translation import gettext as _
@@ -63,7 +65,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=500,
         )
 
-        validator = KVKNumberRemoteValidator()
+        validator = partial(KVKNumberRemoteValidator(), submission="unused")
         validator("69599084")
 
         with self.assertRaisesMessage(
@@ -92,7 +94,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             {"resultaten": []},
             {},
         )
-        validate = KVKNumberRemoteValidator()
+        validate = partial(KVKNumberRemoteValidator(), submission="unused")
 
         for response_json in bad_responses:
             with self.subTest(response_json=response_json):
@@ -116,7 +118,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=404,
         )
 
-        validator = KVKRSINRemoteValidator()
+        validator = partial(KVKRSINRemoteValidator(), submission="unused")
         validator("111222333")
 
         with self.assertRaisesMessage(
@@ -147,7 +149,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=404,
         )
 
-        validator = KVKBranchNumberRemoteValidator()
+        validator = partial(KVKBranchNumberRemoteValidator(), submission="unused")
         validator("112233445566")
 
         with self.assertRaisesMessage(
