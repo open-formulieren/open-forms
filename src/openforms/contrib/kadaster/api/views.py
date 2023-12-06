@@ -49,9 +49,7 @@ class AddressAutocompleteView(APIView):
     @extend_schema(
         summary=_("Get a street name and city"),  # type: ignore
         description=_(
-            "Get the street name and city for a given postal code and house number.\n\n"
-            "**NOTE** the `/api/v2/location/get-street-name-and-city/` endpoint will "
-            "be removed in v3. Use `/api/v2/geo/address-autocomplete/` instead."
+            "Get the street name and city for a given postal code and house number."
         ),  # type: ignore
         responses=GetStreetNameAndCityViewResultSerializer,
         parameters=[
@@ -70,7 +68,6 @@ class AddressAutocompleteView(APIView):
                 required=True,
             ),
         ],
-        deprecated=True,
     )
     def get(self, request, *args, **kwargs):
         serializer = GetStreetNameAndCityViewInputSerializer(data=request.query_params)
