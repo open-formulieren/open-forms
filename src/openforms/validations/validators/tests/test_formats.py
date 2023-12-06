@@ -1,3 +1,5 @@
+from functools import partial
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 
@@ -22,7 +24,9 @@ class ValidatorTestBase(TestCase):
 @override_settings(LANGUAGE_CODE="en")
 class PhoneNumberTestCase(ValidatorTestBase):
     def test_phone_number_international(self):
-        validator = InternationalPhoneNumberValidator()
+        validator = partial(
+            InternationalPhoneNumberValidator(), submission="not_relevant"
+        )
         valid = [
             "+31612345678",
             "+441134960000",  # US test number
@@ -41,7 +45,7 @@ class PhoneNumberTestCase(ValidatorTestBase):
         self.run_cases(validator, valid, invalid, message)
 
     def test_phone_number_dutch(self):
-        validator = DutchPhoneNumberValidator()
+        validator = partial(DutchPhoneNumberValidator(), submission="not_relevant")
         valid = [
             "+31612345678",
             "0031612345678",
