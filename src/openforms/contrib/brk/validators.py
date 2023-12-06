@@ -16,9 +16,9 @@ from .client import NoServiceConfigured, SearchParams, get_client
 
 class AddressValue(TypedDict, total=False):
     postcode: str
-    housenumber: str
-    houseletter: str
-    housenumberaddition: str
+    houseNumber: str
+    houseLetter: str
+    houseNumberAddition: str
 
 
 @register(
@@ -30,20 +30,21 @@ class AddressValue(TypedDict, total=False):
 class BRKZaakgerechtigdeValidator:
 
     error_messages = {
-        "not_found": _("%(type)s does not exist."),
+        "no_bsn": _("No BSN is available to validate your address."),
+        "retrieving_error": _(
+            "There was an error while retrieving the available properties. Please try again later"
+        ),
+        "not_owner": _("You are not one of the registered owners of this property"),
+        "multiple_cadastrals": _("We couldn't accurately determine your properties"),
+        "not_found": _("No property found for this address."),
     }
 
     def __call__(self, value: AddressValue, submission: Submission) -> bool:
 
-        validation_error = ValidationError(
-            self.error_messages["not_found"],
-            params={"type": _("Owner")},
-        )
-
         try:
             client = get_client()
         except NoServiceConfigured as e:
-            raise validation_error from e
+            raise ValidationError(self.error_messages["retrieving_error"]) from e
 
         address_query: SearchParams = {
             "postcode": value["postcode"],
@@ -57,7 +58,7 @@ class BRKZaakgerechtigdeValidator:
         # We assume submission has auth_info available, should we verify that this validator is used
         # on a step that requires login?
         if submission.auth_info.attribute != AuthAttribute.bsn:
-            raise validation_error
+            raise ValidationError(self.error_messages["no_bsn"])
 
         try:
             with client:
@@ -65,7 +66,9 @@ class BRKZaakgerechtigdeValidator:
                 kadastraals = cadastrals_resp["_embedded"]["kadastraalOnroerendeZaken"]
                 if len(kadastraals) > 1:
                     # The query by address returned more than one cadastral, this shouldn't happen
-                    raise validation_error
+                    raise ValidationError(self.error_messages["multiple_cadastrals"])
+                if not kadastraals:
+                    raise ValidationError(self.error_messages["not_found"])
                 kadastraal_id = kadastraals[0]["identificatie"]
 
                 titleholders_resp = client.get_cadastral_titleholders_by_cadastral_id(
@@ -85,9 +88,9 @@ class BRKZaakgerechtigdeValidator:
                     is_valid = submission.auth_info.value in bsns
 
                 if not is_valid:
-                    raise validation_error
+                    raise ValidationError(self.error_messages["not_owner"])
 
         except (RequestException, KeyError, TypeError) as e:
-            raise validation_error from e
+            raise ValidationError(self.error_messages["retrieving_error"]) from e
 
         return True

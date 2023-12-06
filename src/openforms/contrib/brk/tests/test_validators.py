@@ -29,7 +29,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
         )
 
         with self.assertRaisesMessage(
-            ValidationError, _("%(type)s does not exist.") % {"type": _("Owner")}
+            ValidationError, _("No BSN is available to validate your address.")
         ):
             validator(
                 {"postcode": "not_relevant", "houseNumber": "same"}, submission_no_bsn
@@ -66,7 +66,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
         )
 
         with self.assertRaisesMessage(
-            ValidationError, _("%(type)s does not exist.") % {"type": _("Owner")}
+            ValidationError, _("No property found for this address.")
         ):
             validator(
                 {"postcode": "wrong", "houseNumber": "wrong"}, submission_not_hashed
@@ -76,7 +76,8 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
         validator({"postcode": "1234AA", "houseNumber": "123"}, submission_hashed)
 
         with self.assertRaisesMessage(
-            ValidationError, _("%(type)s does not exist.") % {"type": _("Owner")}
+            ValidationError,
+            _("You are not one of the registered owners of this property"),
         ):
             validator(
                 {"postcode": "1234AA", "houseNumber": "123"}, submission_wrong_bsn
