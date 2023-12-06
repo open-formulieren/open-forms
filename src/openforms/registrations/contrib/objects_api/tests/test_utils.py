@@ -1,6 +1,13 @@
+import textwrap
+
 from django.test import TestCase
 
-from ..utils import html_escape_json
+from openforms.contrib.objects_api.rendering import render_to_json
+from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..utils import get_payment_context_data, html_escape_json
 
 
 class EscapeHTMLTests(TestCase):
@@ -63,3 +70,46 @@ class EscapeHTMLTests(TestCase):
                 result = html_escape_json(sample)
 
                 self.assertIs(result, sample)
+
+    def test_render_to_json_large_numbers(self):
+        payment = SubmissionPaymentFactory.create(
+            amount=1_000,
+        )
+
+        context_data = get_payment_context_data(payment.submission)
+
+        self.assertEqual("1000.00", context_data["amount"])
+
+    def test_render_to_json_many_decimal_places(self):
+        payment = SubmissionPaymentFactory.create(
+            amount=3.1415926535,
+        )
+
+        context_data = get_payment_context_data(payment.submission)
+
+        self.assertEqual("3.14", context_data["amount"])
+
+    def test_multiple_public_order_ids(self):
+        submission = SubmissionFactory.create()
+        payment1, payment2 = SubmissionPaymentFactory.create_batch(
+            2, submission=submission, status=PaymentStatus.completed, amount=10
+        )
+
+        template = textwrap.dedent(
+            """{"payment": {
+            "completed": {% if payment.completed %}true{% else %}false{% endif %},
+            "amount": {{ payment.amount }},
+            "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+        }}"""
+        )
+
+        rendered_json = render_to_json(
+            template, context={"payment": get_payment_context_data(submission)}
+        )
+
+        self.assertEqual(
+            rendered_json["payment"]["public_order_ids"],
+            [payment1.public_order_id, payment2.public_order_id],
+        )
+        self.assertEqual(rendered_json["payment"]["amount"], 20)
+        self.assertTrue(rendered_json["payment"]["completed"])

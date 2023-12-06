@@ -4,7 +4,9 @@
 {% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
 {% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
 {
-    "completed": {{ tt_openblock }} if payment.completed {{ tt_closeblock }}true{{ tt_openblock }} else {{ tt_closeblock }}false{{ tt_openblock }} endif {{ tt_closeblock }},
-    "amount": "{{ tt_openvariable }} payment.amount {{ tt_closevariable}}",
-    "public_order_ids":  "{{ tt_openvariable }} payment.public_order_ids {{ tt_closevariable}}"
+    "payment": {
+        "completed": {{ tt_openblock }} if payment.completed {{ tt_closeblock }}true{{ tt_openblock }} else {{ tt_closeblock }}false{{ tt_openblock }} endif {{ tt_closeblock }},
+        "amount": {{ tt_openvariable }} payment.amount {{ tt_closevariable}},
+        "public_order_ids":  [{{ tt_openblock }} for order_id in payment.public_order_ids{{ tt_closeblock }}"{{ tt_openvariable }} order_id|escapejs {{ tt_closevariable }}"{{ tt_openblock }} if not forloop.last {{ tt_closeblock }},{{ tt_openblock }} endif {{ tt_closeblock }}{{ tt_openblock }} endfor {{ tt_closeblock }}]
+    }
 }

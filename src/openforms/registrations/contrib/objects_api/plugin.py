@@ -1,12 +1,7 @@
-import json
 import logging
-import sys
 from functools import partial
 from typing import Any, Dict, NoReturn
 
-from django.conf import settings
-from django.core.exceptions import SuspiciousOperation
-from django.template.defaultfilters import filesizeformat
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -24,7 +19,6 @@ from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import set_submission_reference
-from openforms.template import openforms_backend, render_from_string
 from openforms.translations.utils import to_iso639_2b
 from openforms.variables.utils import get_variables_for_context
 
@@ -35,8 +29,8 @@ from ...registry import register
 from .checks import check_config
 from .client import get_documents_client, get_objects_client
 from .config import ObjectsAPIOptionsSerializer
-from .context_managers import catch_json_decode_errors
 from .models import ObjectsAPIConfig
+from .utils import get_payment_context_data
 
 PLUGIN_IDENTIFIER = "objects_api"
 
@@ -147,13 +141,7 @@ class ObjectsAPIRegistration(BasePlugin):
         context = {
             "_submission": submission,
             "productaanvraag_type": options["productaanvraag_type"],
-            "payment": {
-                "completed": submission.payment_user_has_paid,
-                "amount": submission.payments.sum_amount(),
-                "public_order_ids": ",".join(
-                    submission.payments.get_completed_public_order_ids()
-                ),
-            },
+            "payment": get_payment_context_data(submission),
             "variables": get_variables_for_context(submission),
             # Github issue #661, nested for namespacing note: other templates and context expose all submission
             # variables in the top level namespace, but that is due for refactor
@@ -213,36 +201,21 @@ class ObjectsAPIRegistration(BasePlugin):
 
         if not options["payment_status_update_json"]:
             logger.warning(
-                "Skipping payment status update because not template was configured."
+                "Skipping payment status update because no template was configured."
             )
             return
 
         context = {
             "variables": get_variables_for_context(submission),
-            "payment": {
-                "completed": submission.payment_user_has_paid,
-                "amount": submission.payments.sum_amount(),
-                "public_order_ids": ",".join(
-                    submission.payments.get_completed_public_order_ids()
-                ),
-            },
+            "payment": get_payment_context_data(submission),
         }
 
-        # FIXME: replace with better suited alternative dealing with JSON specifically
-        updated_record_data = render_from_string(
-            options["payment_status_update_json"],
-            context=context,
-            disable_autoescape=True,
-            backend=openforms_backend,
+        updated_record_data = render_to_json(
+            options["payment_status_update_json"], context
         )
-        self._check_size_rendered_json(updated_record_data)
-
-        with catch_json_decode_errors():
-            updated_record_data = json.loads(updated_record_data)
-
         updated_object_data = {
             "record": {
-                "data": {"payment": updated_record_data},
+                "data": updated_record_data,
                 "startAt": get_today(),
             },
         }
@@ -255,17 +228,6 @@ class ObjectsAPIRegistration(BasePlugin):
                 headers={"Content-Crs": "EPSG:4326"},
             )
             response.raise_for_status()
-
-    def _check_size_rendered_json(self, record_data: str) -> None:
-        if (
-            data_size := sys.getsizeof(record_data)
-        ) > settings.MAX_UNTRUSTED_JSON_PARSE_SIZE:
-            formatted_size = filesizeformat(data_size)
-            max_size = filesizeformat(settings.MAX_UNTRUSTED_JSON_PARSE_SIZE)
-            raise SuspiciousOperation(
-                f"Templated out content JSON exceeds the maximum size {max_size} ("
-                f"it is {formatted_size})."
-            )
 
 
 def register_submission_csv(

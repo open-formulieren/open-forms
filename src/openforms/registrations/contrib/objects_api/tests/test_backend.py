@@ -83,8 +83,8 @@ class ObjectsAPIBackendTests(TestCase):
                     "bijlagen": {% uploaded_attachment_urls %},
                     "payment": {
                         "completed": {% if payment.completed %}true{% else %}false{% endif %},
-                        "amount": "{{ payment.amount }}",
-                        "public_order_ids": "{{ payment.public_order_ids }}"
+                        "amount": {{ payment.amount }},
+                        "public_order_ids": {{ payment.public_order_ids }}
                     }
                 }"""
             ),
@@ -227,8 +227,8 @@ class ObjectsAPIBackendTests(TestCase):
                         "bijlagen": [],
                         "payment": {
                             "completed": False,
-                            "amount": "0",
-                            "public_order_ids": "",
+                            "amount": 0,
+                            "public_order_ids": [],
                         },
                     },
                     "startAt": date.today().isoformat(),
@@ -648,8 +648,8 @@ class ObjectsAPIBackendTests(TestCase):
                     "type": "terugbelnotitie",
                     "payment": {
                         "completed": False,
-                        "amount": "0",
-                        "public_order_ids": "",
+                        "amount": 0,
+                        "public_order_ids": [],
                     },
                 },
                 "startAt": date.today().isoformat(),
@@ -1261,7 +1261,7 @@ class ObjectsAPIBackendTests(TestCase):
             body["record"]["data"]["payment"],
             {
                 "completed": False,
-                "amount": "10,00",
-                "public_order_ids": "",
+                "amount": 10.00,
+                "public_order_ids": [],
             },
         )

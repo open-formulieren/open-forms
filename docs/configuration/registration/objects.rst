@@ -216,7 +216,7 @@ To configure the Objects API follow these steps:
    * **JSON content template**: This is a template for the JSON that will be sent to the Object API nested in the
      ``record.data`` field.
    * **Payment status update JSON template**: This is a template for the JSON that will be sent with a PATCH request to
-     the Object API to update the payment status of a submission. This JSON will be nested in the ``record.data`` field.
+     the Object API to update the payment status of a submission. This JSON will be nested in the ``record.data.payment`` field.
 
 #. Click **Opslaan**
 

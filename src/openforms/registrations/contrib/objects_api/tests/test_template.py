@@ -93,8 +93,8 @@ class JSONTemplatingTests(TestCase):
                         "type": "terugbelnotitie",
                         "payment": {
                             "completed": False,
-                            "amount": "0",
-                            "public_order_ids": "",
+                            "amount": 0,
+                            "public_order_ids": [],
                         },
                     },
                     "startAt": "2022-09-12",

@@ -36,7 +36,7 @@ class ObjectsAPIPaymentStatusUpdateTests(TestCase):
         SubmissionPaymentFactory.create(
             submission=submission,
             status=PaymentStatus.completed,
-            amount=10,
+            amount=10.01,
             public_order_id="TEST-123",
         )
 
@@ -48,9 +48,11 @@ class ObjectsAPIPaymentStatusUpdateTests(TestCase):
             payment_status_update_json=textwrap.dedent(
                 """
                 {
-                    "completed": {% if payment.completed %}true{% else %}false{% endif %},
-                    "amount": "{{ payment.amount }}",
-                    "public_order_ids": "{{ payment.public_order_ids }}"
+                    "payment": {
+                        "completed": {% if payment.completed %}true{% else %}false{% endif %},
+                        "amount": {{ payment.amount }},
+                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+                    }
                 }"""
             ),
         )
@@ -78,8 +80,8 @@ class ObjectsAPIPaymentStatusUpdateTests(TestCase):
             body["record"]["data"]["payment"],
             {
                 "completed": True,
-                "amount": "10,00",
-                "public_order_ids": "TEST-123",
+                "amount": 10.01,
+                "public_order_ids": ["TEST-123"],
             },
         )
         self.assertEqual(body["record"]["startAt"], "2020-02-02")
@@ -131,9 +133,11 @@ class ObjectsAPIPaymentStatusUpdateTests(TestCase):
                         "payment_status_update_json": textwrap.dedent(
                             """
                 {
-                    "completed": {% if payment.completed %}true{% else %}false{% endif %},
-                    "amount": "{{ payment.amount }}",
-                    "public_order_ids": "{{ payment.public_order_ids }}"
+                    "payment": {
+                        "completed": {% if payment.completed %}true{% else %}false{% endif %},
+                        "amount": {{ payment.amount }},
+                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+                    }
                 }"""
                         )
                     },
@@ -148,8 +152,8 @@ class ObjectsAPIPaymentStatusUpdateTests(TestCase):
             body["record"]["data"]["payment"],
             {
                 "completed": True,
-                "amount": "10,00",
-                "public_order_ids": "TEST-123",
+                "amount": 10,
+                "public_order_ids": ["TEST-123"],
             },
         )
         self.assertEqual(body["record"]["startAt"], "2020-02-02")

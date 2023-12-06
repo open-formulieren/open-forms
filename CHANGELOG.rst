@@ -368,8 +368,8 @@ It could become:
      "language_code": "{{ submission.language_code }}"
      "payment": {
          "completed": {% if payment.completed %}true{% else %}false{% endif %},
-         "amount": "{{ payment.amount }}",
-         "public_order_ids":  "{{ payment.public_order_ids }}"
+         "amount": {{ payment.amount }},
+         "public_order_ids":  {{ payment.public_order_ids }}
      }
   }
 
