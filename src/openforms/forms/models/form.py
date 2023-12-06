@@ -70,6 +70,17 @@ class Form(models.Model):
     category = models.ForeignKey(
         "forms.Category", null=True, blank=True, on_delete=models.PROTECT
     )
+    theme = models.ForeignKey(
+        "config.Theme",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name=_("form theme"),
+        help_text=_(
+            "Apply a specific appearance configuration to the form. If left blank, "
+            "then the globally configured default is applied."
+        ),
+    )
     translation_enabled = models.BooleanField(_("translation enabled"), default=False)
 
     # payments

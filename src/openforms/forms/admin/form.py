@@ -123,7 +123,6 @@ class FormAdmin(
         "remove_from_maintenance_mode",
         "export_forms",
     ]
-    list_select = ("category",)
     list_filter = (
         "active",
         "maintenance_mode",
@@ -231,6 +230,7 @@ class FormAdmin(
         return (
             super()
             .get_queryset(request)
+            .prefetch_related("category", "theme")
             .annotate(anno_name=FirstNotBlank("internal_name", "name"))
         )
 
