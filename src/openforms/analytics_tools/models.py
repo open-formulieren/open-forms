@@ -171,14 +171,14 @@ class AnalyticsToolsConfiguration(SingletonModel):
     )
 
     enable_piwik_pro_site_analytics = models.BooleanField(
-        _("enable Piwik PRO site analytics"),
+        _("enable Piwik PRO Site Analytics"),
         default=False,
-        help_text=_("Enabling this installs Piwik Pro Analytics"),
+        help_text=_("Enabling this installs Piwik PRO Analytics"),
     )
     enable_piwik_pro_tag_manager = models.BooleanField(
-        _("enable piwik pro tag manager"),
+        _("enable piwik Pro Tag Manager"),
         default=False,
-        help_text=_("Enabling this installs Piwik Pro Tag Manager."),
+        help_text=_("Enabling this installs Piwik PRO Tag Manager."),
     )
 
     siteimprove_id = models.CharField(
