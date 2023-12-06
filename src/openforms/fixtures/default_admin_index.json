@@ -171,6 +171,10 @@
                 "globalconfiguration"
             ],
             [
+                "config",
+                "theme"
+            ],
+            [
                 "cookie_consent",
                 "cookie"
             ],
