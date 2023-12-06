@@ -6,6 +6,7 @@
     "jcc.JccConfig",
     "kadaster.KadasterApiConfig",
     "kvk.KVKConfig",
+    "brk.BRKConfig",
     "microsoft.MSGraphService",
     "of_authentication.AuthInfo",
     "of_authentication.RegistratorInfo",
