@@ -19,6 +19,12 @@
   })(window, document, 'dataLayer', '{{ analytics_tools_config.piwik_pro_site_id|escapejs }}');
 </script>
 
+
+{% comment %} This is the snippet for the sync tags. They require extra logic to inject nounces into loaded scripts
+(see https://developers.piwik.pro/en/latest/tag_manager/content_security_policy.html#adjusting-tags-to-work-with-content-security-policy)
+and tag creators seems to have to edit their sync tag to include the nounce in some way.
+Thus we are not supporting them for now, leaving the script here in case we do in the future.
+
 <script id="piwik-pro-tag-manager-sync" type="text/javascript" nonce="{{ request.csp_nonce }}">
   (function(window, document, dataLayerName, id) {
   function stgCreateCookie(a,b,c){var d="";if(c){var e=new Date;e.setTime(e.getTime()+24*c*60*60*1e3),d=";expires="+e.toUTCString()}document.cookie=a+"="+b+d+"; path=/"}
@@ -28,6 +34,6 @@
   var qPString=qP.length>0?("?"+qP.join("&")):"";
   document.write('<script src="{{ analytics_tools_config.piwik_pro_url|escapejs }}/'+id+'.sync.js' + qPString + '" nonce="{{ request.csp_nonce|escapejs }}"></' + 'script>');
   })(window, document, 'dataLayer', '{{ analytics_tools_config.piwik_pro_site_id|escapejs }}');
-</script>
+</script> {% endcomment %}
 <!-- End Piwik PRO tag manager head tag -->
 {% endif %}

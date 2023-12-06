@@ -98,9 +98,7 @@ class AnalyticsToolsRenderingTest(WebTest):
         form_page = self.app.get(self.url)
 
         tag_manager_async = form_page.pyquery("#piwik-pro-tag-manager-async")
-        tag_manager_sync = form_page.pyquery("#piwik-pro-tag-manager-sync")
         self.assertTrue(tag_manager_async.is_("script"))
-        self.assertTrue(tag_manager_sync.is_("script"))
 
     def test_piwik_rendering(self):
         """Assert that the Piwik script is rendered"""

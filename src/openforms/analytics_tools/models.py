@@ -327,4 +327,9 @@ class AnalyticsToolsConfiguration(SingletonModel):
                     "If you enable {analytics_tool}, you must fill out all the required fields"
                 ).format(analytics_tool="SiteImprove")
             )
+        if self.enable_piwik_pro_site_analytics and self.enable_piwik_pro_tag_manager:
+            raise ValidationError(
+                _("Piwik Pro Analytics and Tag Manager can't be both activated"),
+                code="invalid_together",
+            )
         super().clean()

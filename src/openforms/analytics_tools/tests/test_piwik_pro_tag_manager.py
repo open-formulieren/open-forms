@@ -89,6 +89,16 @@ class PiwikProTagManagerTests(AnalyticsMixin, TestCase):
         with self.assertRaises(ValidationError):
             self.config.clean()
 
+    def test_piwik_pro_analytics_and_tag_manager_exclusive(self):
+        self.config.enable_piwik_pro_site_analytics = True
+        self.config.enable_piwik_pro_tag_manager = True
+        self.config.piwik_pro_url = self.piwik_pro_url
+        self.config.piwik_pro_site_id = "771cbcaa-7315-4663-ba47-88f9a8cc158c"
+
+        with self.assertRaises(ValidationError) as cm:
+            self.config.clean()
+        self.assertEqual(cm.exception.code, "invalid_together")
+
 
 @override_settings(CSP_DEFAULT_SRC=["'self'"], CSP_REPORT_ONLY=False)
 class CanLoadFormWithAnalyticsCSPTests(CSPMixin, APITestCase):
