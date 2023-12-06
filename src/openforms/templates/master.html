@@ -1,11 +1,12 @@
-{% load i18n static cookie_consent_tags solo_tags openforms %}<!DOCTYPE html>
+{% load i18n static cookie_consent_tags solo_tags openforms theme %}<!DOCTYPE html>
 
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
 {% firstof analytics_tools_config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
 {% with request|cookie_group_accepted:analytics_varname as enable_analytics %}
+{% get_theme as theme %}
 
-<html lang="nl" class="utrecht-document {{ config.get_theme_classname }}">
+<html lang="nl" class="utrecht-document {{ theme.get_classname }}">
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{% if config.organization_name %}{{ config.organization_name }} {% else %}Openforms{% endif %}{% endblock %}</title>
@@ -21,9 +22,9 @@
     {% endblock %}
 
     {# Note that the custom stylesheets are deliberately kept outside of extra_css to ensure it is the last stylesheet loaded! #}
-    {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
-    {% if config.theme_stylesheet_file %}<link href="{{ config.theme_stylesheet_file.url }}" media="all" rel="stylesheet" />{% endif %}
-
+    {% for stylesheet in theme.get_stylesheets %}
+        <link href="{{ stylesheet }}" media="all" rel="stylesheet" />
+    {% endfor %}
     {# Load the various supported analytics provider snippets - they are activated after consent #}
     {% include "analytics_tools/all_head.html" with analytics_varname=analytics_varname %}
 </head>

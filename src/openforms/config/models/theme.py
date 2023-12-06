@@ -113,7 +113,7 @@ class Theme(models.Model):
     def __str__(self):
         return self.name
 
-    def get_theme_classname(self) -> str:
+    def get_classname(self) -> str:
         """
         Use the configured theme classname or fall back to the implicit default.
         """

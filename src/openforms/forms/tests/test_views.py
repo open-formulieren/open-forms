@@ -9,6 +9,7 @@ from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.tests.utils import NOOP_CACHES
 
 from .factories import FormFactory
@@ -68,12 +69,14 @@ class FormDetailViewTests(WebTest):
         super().setUpTestData()
 
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         config.main_website = "https://example.com"
         config.save()
 
-        cls.config = config
+        cls.config: GlobalConfiguration = config
 
         form = FormFactory.create()
+        cls.form = form
         cls.url = reverse("forms:form-detail", kwargs={"slug": form.slug})
 
     def test_detail_page_renders_sdk_snippet(self):
@@ -82,9 +85,10 @@ class FormDetailViewTests(WebTest):
         self.assertTemplateUsed(form_page, "forms/sdk_snippet.html")
 
     def test_design_tokens_rendered(self):
-        self.config.design_token_values = {
-            "of": {"layout": {"background": {"value": "#ffffff"}}}
-        }
+        theme = ThemeFactory.create(
+            design_token_values={"of": {"layout": {"background": {"value": "#ffffff"}}}}
+        )
+        self.config.default_theme = theme
         self.config.save()
 
         form_page = self.app.get(self.url)
@@ -100,10 +104,13 @@ class FormDetailViewTests(WebTest):
         """
         Assert that configured theme stylesheets are loaded in the correct order.
         """
-        self.config.theme_stylesheet = "https://example.com/theme.css"
-        self.config.theme_stylesheet_file = File(
-            BytesIO(b".foo{display: block;}"), name="my-theme.css"
+        theme = ThemeFactory.create(
+            stylesheet="https://example.com/theme.css",
+            stylesheet_file=File(
+                BytesIO(b".foo{display: block;}"), name="my-theme.css"
+            ),
         )
+        self.config.default_theme = theme
         self.config.save()
 
         form_page = self.app.get(self.url)
@@ -118,8 +125,35 @@ class FormDetailViewTests(WebTest):
         )
         self.assertEqual(
             stylesheet_links[1].attrib["href"],
-            self.config.theme_stylesheet_file.url,
+            theme.stylesheet_file.url,
         )
+
+    @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+    def test_form_specific_theme_used(self):
+        theme = ThemeFactory.create(
+            stylesheet="https://example.com/theme.css",
+            stylesheet_file=File(
+                BytesIO(b".foo{display: block;}"), name="my-theme.css"
+            ),
+        )
+        self.config.default_theme = theme
+        self.config.save()
+
+        theme2 = ThemeFactory.create(stylesheet="https://example.com/override.css")
+        self.form.theme = theme2
+        self.form.save()
+
+        form_page = self.app.get(self.url)
+
+        # look up the last two stylesheet links in the page
+        stylesheet_links = {
+            link.attrib["href"] for link in form_page.pyquery('link[rel="stylesheet"]')
+        }
+
+        # only the override theme styles may be applied, not the global default
+        self.assertIn("https://example.com/override.css", stylesheet_links)
+        self.assertNotIn("https://example.com/theme.css", stylesheet_links)
+        self.assertNotIn(theme.stylesheet_file.url, stylesheet_links)
 
     def test_block_robots_indexing(self):
         self.config.allow_indexing_form_detail = False

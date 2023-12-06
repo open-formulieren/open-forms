@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView
 
 from openforms.config.models import GlobalConfiguration
+from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.utils.decorators import conditional_search_engine_index
 
 from ..models import Form
@@ -39,4 +40,11 @@ class FormListView(ListView):
 )
 class FormDetailView(DetailView):
     template_name = "forms/form_detail.html"
-    queryset = Form.objects.live()
+    queryset = Form.objects.select_related("theme").live()
+
+    object: Form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context[THEME_OVERRIDE_CONTEXT_VAR] = self.object.theme
+        return context

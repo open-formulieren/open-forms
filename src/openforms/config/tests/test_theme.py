@@ -59,7 +59,7 @@ class AdminTests(WebTest):
             self.assertEqual(theme.logo, "logo/logo.svg")
 
         with self.subTest(part="logo used"):
-            form = FormFactory.create()
+            form = FormFactory.create(theme=theme)
             url = reverse("forms:form-detail", kwargs={"slug": form.slug})
 
             form_page = self.app.get(url)
