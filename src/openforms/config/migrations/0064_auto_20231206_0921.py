@@ -7,6 +7,54 @@ from django.db import migrations, models
 import openforms.utils.fields
 
 
+def global_theme_config_to_dedicated_model(apps, _):
+    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+    Theme = apps.get_model("config", "Theme")
+
+    config = GlobalConfiguration.objects.first()
+    if not config:
+        return
+
+    # if no styling things are configured, there's no point in creating a theme record
+    if not any(
+        [
+            config.logo,
+            config.theme_classname,
+            config.theme_stylesheet,
+            config.theme_stylesheet_file,
+            config.design_token_values,
+        ]
+    ):
+        return
+
+    # create a theme record with the equivalent configuration and set it as default
+    theme = Theme.objects.create(
+        name="Standaard",
+        logo=config.logo,
+        classname=config.theme_classname,
+        stylesheet=config.theme_stylesheet,
+        stylesheet_file=config.theme_stylesheet_file,
+        design_token_values=config.design_token_values,
+    )
+    config.default_theme = theme
+    config.save()
+
+
+def dedicated_model_to_global_configuration(apps, _):
+    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+
+    config = GlobalConfiguration.objects.first()
+    if not config or not (theme := config.default_theme):
+        return
+
+    config.logo = theme.logo
+    config.theme_classname = theme.classname
+    config.theme_stylesheet = theme.stylesheet
+    config.theme_stylesheet_file = theme.stylesheet_file
+    config.design_token_values = theme.design_token_values
+    config.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -106,5 +154,9 @@ class Migration(migrations.Migration):
                 to="config.theme",
                 verbose_name="default theme",
             ),
+        ),
+        migrations.RunPython(
+            code=global_theme_config_to_dedicated_model,
+            reverse_code=dedicated_model_to_global_configuration,
         ),
     ]
