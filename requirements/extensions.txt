@@ -222,7 +222,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-digid-eherkenning==0.9.0
+django-digid-eherkenning==0.10.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
