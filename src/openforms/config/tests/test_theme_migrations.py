@@ -62,3 +62,58 @@ class TestExistingConfigIsMigrated(ForwardMigration):
         theme = config.default_theme
         self.assertEqual(theme.stylesheet, "https://example.com/styles/foo.css")
         self.assertNotEqual(theme.name, "")
+
+
+class ReverseMigration(TestMigrations):
+    app = "config"
+    migrate_from = "0064_auto_20231206_0921"
+    migrate_to = "0063_auto_20231122_1816"
+
+
+class TestNoDefaultThemeReverseMigration(ReverseMigration):
+    def setUpBeforeMigration(self, apps):
+        GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+        Theme = apps.get_model("config", "Theme")
+        assert not GlobalConfiguration.objects.exists()
+        # create a record as if it would have been created by calling get_solo()
+        GlobalConfiguration.objects.create()
+        assert not Theme.objects.exists()
+
+    def test_style_fields_have_empty_defaults(self):
+        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
+        config = GlobalConfiguration.objects.get()
+
+        self.assertEqual(config.logo, "")
+        self.assertEqual(config.theme_classname, "")
+        self.assertEqual(config.theme_stylesheet, "")
+        self.assertEqual(config.theme_stylesheet_file, "")
+        self.assertEqual(config.design_token_values, {})
+
+
+class DefaultThemeConvertedBackTests(ReverseMigration):
+    def setUpBeforeMigration(self, apps):
+        GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+        Theme = apps.get_model("config", "Theme")
+        Theme.objects.create(
+            name="not default", stylesheet="https://example.com/first.css"
+        )
+        theme2 = Theme.objects.create(
+            name="default",
+            classname="foo",
+            stylesheet="https://example.com/second.css",
+            design_token_values={"utrecht": {"link": {"color": {"value": "red"}}}},
+        )
+        GlobalConfiguration.objects.create(default_theme=theme2)
+
+    def test_style_fields_have_empty_defaults(self):
+        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
+        config = GlobalConfiguration.objects.get()
+
+        self.assertEqual(config.logo, "")
+        self.assertEqual(config.theme_classname, "foo")
+        self.assertEqual(config.theme_stylesheet, "https://example.com/second.css")
+        self.assertEqual(config.theme_stylesheet_file, "")
+        self.assertEqual(
+            config.design_token_values,
+            {"utrecht": {"link": {"color": {"value": "red"}}}},
+        )
