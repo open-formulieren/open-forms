@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import timezone
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.utils.dateparse import parse_date
 from django.utils.functional import empty
 from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import DataMapping, JSONEncodable, JSONSerializable
-from openforms.utils.date import format_date_value
+from openforms.utils.date import format_date_value, parse_datetime, parse_time
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
 
@@ -358,28 +358,23 @@ class SubmissionValueVariable(models.Model):
                 return aware_date.date()
 
             maybe_naive_datetime = parse_datetime(self.value)
-            if maybe_naive_datetime is not None:
-                if timezone.is_aware(maybe_naive_datetime):
-                    return maybe_naive_datetime.date()
-                return timezone.make_aware(maybe_naive_datetime).date()
+            if maybe_naive_datetime is None:
+                return
 
-            raise ValueError(f"Could not parse date '{self.value}'")  # pragma: nocover
+            if timezone.is_aware(maybe_naive_datetime):
+                return maybe_naive_datetime.date()
+            return timezone.make_aware(maybe_naive_datetime).date()
 
         if self.value and data_type == FormVariableDataTypes.datetime:
             maybe_naive_datetime = parse_datetime(self.value)
-            if maybe_naive_datetime is not None:
-                if timezone.is_aware(maybe_naive_datetime):
-                    return maybe_naive_datetime
-                return timezone.make_aware(maybe_naive_datetime)
+            if maybe_naive_datetime is None:
+                return
 
-            raise ValueError(
-                f"Could not parse datetime '{self.value}'"
-            )  # pragma: nocover
+            if timezone.is_aware(maybe_naive_datetime):
+                return maybe_naive_datetime
+            return timezone.make_aware(maybe_naive_datetime)
 
         if self.value and data_type == FormVariableDataTypes.time:
-            value = parse_time(self.value)
-            if value is not None:
-                return value
-            raise ValueError(f"Could not parse time '{self.value}'")  # pragma: nocover
+            return parse_time(self.value)
 
         return self.value

@@ -1,7 +1,11 @@
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, time
 
 from django.utils import timezone
+from django.utils.dateparse import (
+    parse_datetime as _parse_datetime,
+    parse_time as _parse_time,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +17,9 @@ def format_date_value(date_value: str) -> str:
         try:
             parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
         except ValueError:
-            logger.info("Can't parse date %s, using empty value.", date_value)
+            logger.info(
+                "Can't format date '%s', falling back to an empty string.", date_value
+            )
             return ""
 
     return parsed_date.isoformat()
@@ -31,3 +37,33 @@ def parse_date(value: str) -> date:
     dt = datetime.fromisoformat(value)
     assert dt.tzinfo is not None, "Expected the input variable to be timezone aware!"
     return timezone.localtime(value=dt).date()
+
+
+def parse_datetime(value: str) -> None | datetime:
+    try:
+        datetime_value = _parse_datetime(value)
+    except ValueError:
+        logger.info("Can't parse datetime '%s', falling back to 'None' instead.", value)
+        return
+
+    if datetime_value is None:
+        logger.info(
+            "Badly formatted datetime '%s', falling back to 'None' instead.", value
+        )
+        return
+
+    return datetime_value
+
+
+def parse_time(value: str) -> None | time:
+    try:
+        time_value = _parse_time(value)
+    except ValueError:
+        logger.info("Invalid time '%s', falling back to 'None' instead.", value)
+        return
+
+    if time_value is None:
+        logger.info("Badly formatted time '%s', falling back to 'None' instead.", value)
+        return
+
+    return time_value
