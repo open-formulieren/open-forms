@@ -770,6 +770,11 @@
     "description": "Payment provider fieldset title",
     "originalDefault": "Payment provider"
   },
+  "L97GKs": {
+    "defaultMessage": "Optional theme to use for styling.",
+    "description": "Form theme field help text",
+    "originalDefault": "Optional theme to use for styling."
+  },
   "LHBcNe": {
     "defaultMessage": "Variabeledefinitie",
     "description": "JSON editor: complex variable definition title",
@@ -1902,6 +1907,11 @@
     "defaultMessage": "Geschiedenis",
     "description": "History link button",
     "originalDefault": "History"
+  },
+  "vNRiMn": {
+    "defaultMessage": "Theme",
+    "description": "Form theme field label",
+    "originalDefault": "Theme"
   },
   "vQME+l": {
     "defaultMessage": "Maak een nieuwe formulierdefinitie",

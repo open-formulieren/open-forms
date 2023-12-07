@@ -1681,6 +1681,12 @@
       "value": "Payment provider"
     }
   ],
+  "L97GKs": [
+    {
+      "type": 0,
+      "value": "Optional theme to use for styling."
+    }
+  ],
   "LHBcNe": [
     {
       "type": 0,
@@ -3919,6 +3925,12 @@
     {
       "type": 0,
       "value": "History"
+    }
+  ],
+  "vNRiMn": [
+    {
+      "type": 0,
+      "value": "Theme"
     }
   ],
   "vQME+l": [
