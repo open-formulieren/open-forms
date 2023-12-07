@@ -1,3 +1,5 @@
+from django.test import tag
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
@@ -195,3 +197,45 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         data = response.json()
 
         self.assertTrue(data["submission"]["steps"][2]["isApplicable"])
+
+    @tag("gh-3647")
+    def test_sending_invalid_time_values(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "time", "key": "time"},
+                {"type": "date", "key": "date"},
+                {"type": "datetime", "key": "datetime"},
+            ]
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.submissionstep_set.first().form_step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        with (self.subTest("Invalid time"), self.assertLogs(level="INFO") as logs):
+            self.client.post(endpoint, data={"data": {"time": "25:00"}})
+
+        self.assertEqual(
+            logs.records[-1].msg, "Can't parse time '%s', using empty string."
+        )
+
+        with (self.subTest("Invalid date"), self.assertLogs(level="INFO") as logs):
+            self.client.post(endpoint, data={"data": {"date": "2020-13-46"}})
+
+        self.assertEqual(
+            logs.records[-1].msg, "Can't parse date %s, using empty value."
+        )
+
+        with (self.subTest("Invalid datetime"), self.assertLogs(level="INFO") as logs):
+            self.client.post(
+                endpoint, data={"data": {"datetime": "2022-13-46T00:00:00+02:00"}}
+            )
+
+        self.assertEqual(
+            logs.records[-1].msg, "Can't parse datetime '%s', using empty string."
+        )
