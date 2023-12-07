@@ -1,3 +1,5 @@
+import uuid as _uuid
+
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -19,6 +21,12 @@ class Theme(models.Model):
         _("name"),
         max_length=100,
         help_text=_("An easily recognizable name for the theme, used to identify it."),
+    )
+    uuid = models.UUIDField(
+        _("UUID"),
+        unique=True,
+        default=_uuid.uuid4,
+        editable=False,
     )
     # XXX: do not expose this field via the API to non-admin users! There is not
     # sufficient input validation to protect against the SVG attack surface. The SVG

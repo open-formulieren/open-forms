@@ -6,11 +6,13 @@ from rest_framework import serializers
 
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 
+from ..models import Theme
+
 
 @dataclass
 class PrivacyPolicyInfo:
     requires_privacy_consent: bool
-    privacy_label: str = None
+    privacy_label: str | None = None
 
 
 class PrivacyPolicyInfoSerializer(serializers.Serializer):
@@ -25,3 +27,15 @@ class PrivacyPolicyInfoSerializer(serializers.Serializer):
         ),
         required=False,
     )
+
+
+class ThemeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Theme
+        fields = ("url", "name")
+        extra_kwargs = {
+            "url": {
+                "view_name": "api:themes-detail",
+                "lookup_field": "uuid",
+            },
+        }
