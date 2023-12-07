@@ -5,8 +5,8 @@ from openforms.utils.form_fields import (
     get_arrayfield_choices,
 )
 
-from .models import GlobalConfiguration
-from .widgets import PluginConfigurationTextAreaReact
+from .models import GlobalConfiguration, Theme
+from .widgets import DesignTokenValuesTextareaReact, PluginConfigurationTextAreaReact
 
 
 class UploadFileTypesField(CheckboxChoicesArrayField):
@@ -26,9 +26,15 @@ class GlobalConfigurationAdminForm(forms.ModelForm):
         }
         widgets = {
             "plugin_configuration": PluginConfigurationTextAreaReact,
-            "design_token_values": forms.Textarea(
-                attrs={"class": "react-design-token-values"}
-            ),
+        }
+
+
+class ThemeAdminForm(forms.ModelForm):
+    class Meta:
+        model = Theme
+        fields = "__all__"
+        widgets = {
+            "design_token_values": DesignTokenValuesTextareaReact,
         }
 
     def clean_design_token_values(self):

@@ -7,7 +7,7 @@ from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from modeltranslation.admin import TranslationAdmin
 from solo.admin import SingletonModelAdmin
 
-from .forms import GlobalConfigurationAdminForm
+from .forms import GlobalConfigurationAdminForm, ThemeAdminForm
 from .models import CSPSetting, GlobalConfiguration, RichTextColor, Theme
 
 
@@ -216,6 +216,7 @@ class ThemeAdmin(admin.ModelAdmin):
     list_display = ("name", "logo", "classname")
     search_fields = ("name", "classname")
 
+    form = ThemeAdminForm
     fieldsets = (
         (None, {"fields": ("name",)}),
         (_("Logo"), {"fields": ("logo",)}),

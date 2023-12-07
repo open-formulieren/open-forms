@@ -49,3 +49,17 @@ class PluginConfigurationTextAreaReact(Textarea):
 
         extra = {"modules_and_plugins": modules_and_plugins}
         return {**context, **extra}
+
+
+class DesignTokenValuesTextareaReact(Textarea):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("attrs", {})
+        clsname = kwargs["attrs"].get("class", "")
+        kwargs["attrs"]["class"] = f"{clsname} react-design-token-values".strip()
+        super().__init__(*args, **kwargs)
+
+    class Media:
+        css = {
+            "all": ("bundles/core-css.css",),
+        }
+        js = ("bundles/core-js.js",)
