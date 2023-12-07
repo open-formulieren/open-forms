@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from openforms.forms.models import Form
+from openforms.utils.expressions import FirstNotBlank
 from openforms.utils.form_fields import (
     CheckboxChoicesArrayField,
     get_arrayfield_choices,
@@ -44,9 +45,18 @@ class ThemeAdminForm(forms.ModelForm):
         return value if value else {}
 
 
+class FormChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj: Form):
+        return obj.admin_name
+
+
 class ThemePreviewAdminForm(forms.Form):
-    form = forms.ModelChoiceField(
-        queryset=Form.objects.filter(_is_deleted=False),
+    form = FormChoiceField(
+        queryset=(
+            Form.objects.filter(_is_deleted=False)
+            .annotate(anno_name=FirstNotBlank("internal_name", "name"))
+            .order_by("anno_name")
+        ),
         label=_("Form for preview"),
         required=True,
         help_text=_("Pick a form to preview the theme with."),
