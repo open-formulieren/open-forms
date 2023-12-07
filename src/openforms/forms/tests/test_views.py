@@ -167,3 +167,46 @@ class FormDetailViewTests(WebTest):
 
         meta_tag = form_page.pyquery("meta[name='robots']")[0]
         self.assertEqual(meta_tag.attrib["content"], "noindex, nofollow")
+
+
+@override_settings(
+    CACHES=NOOP_CACHES, SESSION_ENGINE="django.contrib.sessions.backends.db"
+)
+class ThemePreviewViewTests(WebTest):
+    def test_must_be_staff_user(self):
+        theme = ThemeFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True)
+        user = UserFactory.create(is_staff=False)
+        url = reverse(
+            "forms:theme-preview",
+            kwargs={"theme_pk": theme.pk, "slug": form.slug},
+        )
+
+        response = self.app.get(url, user=user, status=403)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_404_on_nonexistent_theme(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        user = UserFactory.create(is_staff=True)
+        url = reverse(
+            "forms:theme-preview",
+            kwargs={"theme_pk": 42, "slug": form.slug},
+        )
+
+        response = self.app.get(url, user=user, status=404)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_renders_with_sufficient_permissions_and_existing_objects(self):
+        theme = ThemeFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True)
+        user = UserFactory.create(is_staff=True)
+        url = reverse(
+            "forms:theme-preview",
+            kwargs={"theme_pk": theme.pk, "slug": form.slug},
+        )
+
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(response.status_code, 200)
