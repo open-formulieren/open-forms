@@ -37,17 +37,17 @@ def parse_date(value: str) -> date:
     return timezone.localtime(value=dt).date()
 
 
-def parse_datetime(value: str) -> str | datetime:
+def parse_datetime(value: str) -> None | datetime:
     try:
         return _parse_datetime(value)
     except ValueError:
         logger.info("Can't parse datetime '%s', using empty string.", value)
-        return ""
+        return
 
 
-def parse_time(value: str) -> str | time:
+def parse_time(value: str) -> None | time:
     try:
         return _parse_time(value)
     except ValueError:
         logger.info("Can't parse time '%s', using empty string.", value)
-        return ""
+        return
