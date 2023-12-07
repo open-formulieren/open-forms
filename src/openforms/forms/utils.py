@@ -224,6 +224,11 @@ def import_form_data(
                 # so we always import forms with NO category at all to prevent import errors.
                 # See #1774 for one such example of an error.
                 entry["category"] = None
+                # theme overrides cannot be imported, since the theme records/FKs have to
+                # exist in the target environment. Importing/exporting themes is also not
+                # possible at this time, so we reset the theme and admin need to update
+                # the imported form.
+                entry["theme"] = None
 
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
