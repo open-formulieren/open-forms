@@ -1,5 +1,7 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
+from openforms.forms.models import Form
 from openforms.utils.form_fields import (
     CheckboxChoicesArrayField,
     get_arrayfield_choices,
@@ -40,3 +42,12 @@ class ThemeAdminForm(forms.ModelForm):
     def clean_design_token_values(self):
         value = self.cleaned_data["design_token_values"]
         return value if value else {}
+
+
+class ThemePreviewAdminForm(forms.Form):
+    form = forms.ModelChoiceField(
+        queryset=Form.objects.filter(_is_deleted=False),
+        label=_("Form for preview"),
+        required=True,
+        help_text=_("Pick a form to preview the theme with."),
+    )

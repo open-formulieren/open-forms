@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.urls import reverse
+from django.shortcuts import resolve_url
+from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -7,6 +8,7 @@ from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from modeltranslation.admin import TranslationAdmin
 from solo.admin import SingletonModelAdmin
 
+from .admin_views import ThemePreviewView
 from .forms import GlobalConfigurationAdminForm, ThemeAdminForm
 from .models import CSPSetting, GlobalConfiguration, RichTextColor, Theme
 
@@ -213,7 +215,7 @@ class CSPSettingAdmin(admin.ModelAdmin):
 
 @admin.register(Theme)
 class ThemeAdmin(admin.ModelAdmin):
-    list_display = ("name", "logo", "classname")
+    list_display = ("name", "logo", "classname", "get_preview_url")
     search_fields = ("name", "classname")
 
     form = ThemeAdminForm
@@ -232,3 +234,19 @@ class ThemeAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path(
+                "<path:object_id>/preview/",
+                self.admin_site.admin_view(ThemePreviewView.as_view()),
+                name="config_preview_theme",
+            ),
+        ]
+        return my_urls + urls
+
+    @admin.display(description=_("Preview"))
+    def get_preview_url(self, obj: Theme) -> str:
+        path = resolve_url("admin:config_preview_theme", object_id=obj.pk)
+        return format_html('<a href="{}">{}</a>', path, _("Show preview"))
