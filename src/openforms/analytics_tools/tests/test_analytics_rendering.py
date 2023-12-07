@@ -84,6 +84,22 @@ class AnalyticsToolsRenderingTest(WebTest):
         piwik_pro = form_page.pyquery("#piwik-pro-analytics")
         self.assertTrue(piwik_pro.is_("script"))
 
+    def test_piwik_pro_tag_manager_rendering(self):
+        """Assert that the Piwik Pro Tag Manager scripts are rendered"""
+
+        # Configure Piwik Pro site ID and URL
+        self.config.piwik_pro_site_id = 1234
+        self.config.piwik_pro_url = self.url
+        # Enable Tag manager
+        self.config.enable_piwik_pro_tag_manager = True
+        self.config.save()
+
+        # Accept cookies
+        form_page = self.app.get(self.url)
+
+        tag_manager_async = form_page.pyquery("#piwik-pro-tag-manager-async")
+        self.assertTrue(tag_manager_async.is_("script"))
+
     def test_piwik_rendering(self):
         """Assert that the Piwik script is rendered"""
 

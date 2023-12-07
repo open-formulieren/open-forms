@@ -1,0 +1,6 @@
+[
+    {
+        "directive" : "default-src",
+        "value": "SITE_URL"
+    }
+]

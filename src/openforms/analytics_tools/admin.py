@@ -46,6 +46,7 @@ class AnalyticsToolsConfigurationAdmin(SingletonModelAdmin):
                     "piwik_pro_url",
                     "piwik_pro_site_id",
                     "enable_piwik_pro_site_analytics",
+                    "enable_piwik_pro_tag_manager",
                 ),
             },
         ),

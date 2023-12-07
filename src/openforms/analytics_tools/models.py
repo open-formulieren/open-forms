@@ -61,6 +61,15 @@ DYNAMIC_TOOL_CONFIGURATION = {
             StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
         ],
     ),
+    AnalyticsTools.piwik_pro_tag_manager: ToolConfiguration(
+        enable_field_name="enable_piwik_pro_tag_manager",
+        is_enabled_property="is_piwik_pro_tag_manager_enabled",
+        replacements=[
+            StringReplacement(needle="SITE_ID", field_name="piwik_pro_site_id"),
+            StringReplacement(needle="SITE_URL", field_name="piwik_pro_url"),
+            StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
+        ],
+    ),
     AnalyticsTools.piwik: ToolConfiguration(
         enable_field_name="enable_piwik_site_analytics",
         is_enabled_property="is_piwik_enabled",
@@ -100,6 +109,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Google Analytics"),
     )
+
     matomo_url = models.URLField(
         _("Matomo server URL"),
         max_length=255,
@@ -120,6 +130,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Matomo"),
     )
+
     piwik_url = models.URLField(
         _("Piwik server URL"),
         max_length=255,
@@ -140,6 +151,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Piwik"),
     )
+
     piwik_pro_url = models.URLField(
         _("Piwik PRO server URL"),
         max_length=255,
@@ -159,10 +171,16 @@ class AnalyticsToolsConfiguration(SingletonModel):
     )
 
     enable_piwik_pro_site_analytics = models.BooleanField(
-        _("enable piwik pro site analytics"),
+        _("enable Piwik PRO Site Analytics"),
         default=False,
-        help_text=_("Enabling this installs Piwik Pro"),
+        help_text=_("Enabling this installs Piwik PRO Analytics"),
     )
+    enable_piwik_pro_tag_manager = models.BooleanField(
+        _("enable piwik Pro Tag Manager"),
+        default=False,
+        help_text=_("Enabling this installs Piwik PRO Tag Manager."),
+    )
+
     siteimprove_id = models.CharField(
         _("SiteImprove ID"),
         max_length=10,
@@ -173,7 +191,6 @@ class AnalyticsToolsConfiguration(SingletonModel):
             "The XXXXX is your ID."
         ),
     )
-
     enable_siteimprove_analytics = models.BooleanField(
         _("enable siteImprove analytics"),
         default=False,
@@ -218,6 +235,15 @@ class AnalyticsToolsConfiguration(SingletonModel):
             self.piwik_pro_url
             and self.piwik_pro_site_id
             and self.enable_piwik_pro_site_analytics
+            and self.analytics_cookie_consent_group
+        )
+
+    @property
+    def is_piwik_pro_tag_manager_enabled(self) -> bool:
+        return (
+            self.piwik_pro_url
+            and self.piwik_pro_site_id
+            and self.enable_piwik_pro_tag_manager
             and self.analytics_cookie_consent_group
         )
 
@@ -280,6 +306,15 @@ class AnalyticsToolsConfiguration(SingletonModel):
                     "If you enable {analytics_tool}, you must fill out all the required fields"
                 ).format(analytics_tool="Piwik Pro")
             )
+        if (
+            self.enable_piwik_pro_tag_manager
+            and not self.is_piwik_pro_tag_manager_enabled
+        ):
+            raise ValidationError(
+                _(
+                    "If you enable {analytics_tool}, you must fill out all the required fields"
+                ).format(analytics_tool="Tag Manager")
+            )
         if self.enable_piwik_site_analytics and not self.is_piwik_enabled:
             raise ValidationError(
                 _(
@@ -291,5 +326,10 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 _(
                     "If you enable {analytics_tool}, you must fill out all the required fields"
                 ).format(analytics_tool="SiteImprove")
+            )
+        if self.enable_piwik_pro_site_analytics and self.enable_piwik_pro_tag_manager:
+            raise ValidationError(
+                _("Piwik Pro Analytics and Tag Manager can't be both activated"),
+                code="invalid_together",
             )
         super().clean()
