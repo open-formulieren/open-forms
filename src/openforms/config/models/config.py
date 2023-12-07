@@ -2,12 +2,7 @@ import logging
 from functools import partial
 
 from django.core.exceptions import ValidationError
-from django.core.validators import (
-    FileExtensionValidator,
-    MaxValueValidator,
-    MinValueValidator,
-    RegexValidator,
-)
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str

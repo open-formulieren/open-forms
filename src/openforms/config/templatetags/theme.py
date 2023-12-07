@@ -1,6 +1,5 @@
 from django import template
 from django.template.context import Context
-from django.utils.translation import gettext as _
 
 from ..models import GlobalConfiguration, Theme
 
