@@ -35,7 +35,7 @@ def allow_redirect_url(url: str) -> bool:
     if allowed_hosts_check:
         return True
 
-    cors = CorsMiddleware()
+    cors = CorsMiddleware(get_response="not_relevant")  # type: ignore
     origin = origin_from_url(url)
     parts = urlparse(url)
 
