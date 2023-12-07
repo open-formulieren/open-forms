@@ -159,4 +159,24 @@ class Migration(migrations.Migration):
             code=global_theme_config_to_dedicated_model,
             reverse_code=dedicated_model_to_global_configuration,
         ),
+        migrations.RemoveField(
+            model_name="globalconfiguration",
+            name="design_token_values",
+        ),
+        migrations.RemoveField(
+            model_name="globalconfiguration",
+            name="logo",
+        ),
+        migrations.RemoveField(
+            model_name="globalconfiguration",
+            name="theme_classname",
+        ),
+        migrations.RemoveField(
+            model_name="globalconfiguration",
+            name="theme_stylesheet",
+        ),
+        migrations.RemoveField(
+            model_name="globalconfiguration",
+            name="theme_stylesheet_file",
+        ),
     ]

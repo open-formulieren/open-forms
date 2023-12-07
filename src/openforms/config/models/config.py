@@ -265,25 +265,6 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
-    # FIXME: do not expose this field via the API to non-admin users! There is not
-    # sufficient input validation to protect against the SVG attack surface. The SVG
-    # is rendered by the browser of end-users.
-    #
-    # See https://www.fortinet.com/blog/threat-research/scalable-vector-graphics-attack-surface-anatomy
-    #
-    # * XSS
-    # * HTML Injection
-    # * XML entity processing
-    # * DoS
-    logo = SVGOrImageField(
-        _("municipality logo"),
-        upload_to="logo/",
-        blank=True,
-        help_text=_(
-            "Upload the municipality logo, visible to users filling out forms. We "
-            "advise dimensions around 150px by 75px. SVG's are allowed."
-        ),
-    )
     favicon = SVGOrImageField(
         _("favicon"),
         upload_to="logo/",
@@ -306,68 +287,6 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "The name of your organization that will be used as label for elements "
             "like the logo."
-        ),
-    )
-    # the configuration of the values of available design tokens, following the
-    # format outlined in https://github.com/amzn/style-dictionary#design-tokens which
-    # is used by NLDS.
-    # TODO: validate against the JSON build from @open-formulieren/design-tokens for
-    # available tokens.
-    # Example:
-    # {
-    #   "of": {
-    #     "button": {
-    #       "background-color": {
-    #         "value": "fuchsia"
-    #       }
-    #     }
-    #   }
-    # }
-    #
-    design_token_values = models.JSONField(
-        _("design token values"),
-        blank=True,
-        default=dict,
-        help_text=_(
-            "Values of various style parameters, such as border radii, background "
-            "colors... Note that this is advanced usage. Any available but un-specified "
-            "values will use fallback default values. See https://open-forms.readthedocs.io/en/latest"
-            "/installation/form_hosting.html#run-time-configuration for documentation."
-        ),
-    )
-
-    theme_classname = models.SlugField(
-        _("theme CSS class name"),
-        blank=True,
-        help_text=_("If provided, this class name will be set on the <html> element."),
-    )
-    theme_stylesheet = models.URLField(
-        _("theme stylesheet URL"),
-        blank=True,
-        max_length=1000,
-        validators=[
-            RegexValidator(
-                regex=r"\.css$",
-                message=_("The URL must point to a CSS resource (.css extension)."),
-            ),
-        ],
-        help_text=_(
-            "The URL stylesheet with theme-specific rules for your organization. "
-            "This will be included as final stylesheet, overriding previously defined styles. "
-            "Note that you also have to include the host to the `style-src` CSP directive. "
-            "Example value: https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
-        ),
-    )
-    theme_stylesheet_file = models.FileField(
-        _("theme stylesheet"),
-        blank=True,
-        upload_to="config/themes/",
-        validators=[FileExtensionValidator(allowed_extensions=("css",))],
-        help_text=_(
-            "A stylesheet with theme-specific rules for your organization. "
-            "This will be included as final stylesheet, overriding previously defined styles. "
-            "If both a URL to a stylesheet and a stylesheet file have been configured, the "
-            "uploaded file is included after the stylesheet URL."
         ),
     )
 
@@ -666,6 +585,3 @@ class GlobalConfiguration(SingletonModel):
         if none is configured.
         """
         return self.default_theme or Theme()
-
-    def get_theme_classname(self) -> str:
-        return self.theme_classname or "openforms-theme"
