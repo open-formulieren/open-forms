@@ -6,6 +6,7 @@ export const PREFILL_PLUGINS_ENDPOINT = '/api/v2/prefill/plugins';
 export const PAYMENT_PLUGINS_ENDPOINT = '/api/v2/payment/plugins';
 export const PRODUCTS_ENDPOINT = '/api/v2/products';
 export const CATEGORIES_ENDPOINT = '/api/v2/categories';
+export const THEMES_ENDPOINT = '/api/v2/themes';
 export const PROCESS_DEFINITIONS_ENDPOINT =
   '/api/v2/registration/plugins/camunda/process-definitions';
 export const STATIC_VARIABLES_ENDPOINT = '/api/v2/variables/static';

@@ -1685,6 +1685,12 @@
       "value": "Betaalprovider"
     }
   ],
+  "L97GKs": [
+    {
+      "type": 0,
+      "value": "Optional theme to use for styling."
+    }
+  ],
   "LHBcNe": [
     {
       "type": 0,
@@ -3921,6 +3927,12 @@
     {
       "type": 0,
       "value": "Geschiedenis"
+    }
+  ],
+  "vNRiMn": [
+    {
+      "type": 0,
+      "value": "Theme"
     }
   ],
   "vQME+l": [

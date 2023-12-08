@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n django_admin_index %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">{% endblock %}
+
+{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+
+{% block title %} {% blocktrans %}Preview theme '{{ theme }}'{% endblocktrans %} {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:config_theme_changelist' %}">{% trans 'Themes' %}</a>
+&rsaquo; {% blocktrans %}Preview theme '{{ theme }}'{% endblocktrans %}
+</div>
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans 'Preview a theme' %}</h1>
+    <div id="content-main">
+        <form action="" method="post">
+            <div>
+                <fieldset class="module aligned ">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {{ field.label.capitalize }}: {{ field }}<br/>
+                        {{ field.help_text }}<br/><br/>
+                    {% endfor %}
+                </fieldset>
+
+                <div class="submit-row">
+                    <input type="submit" value="{% trans 'Preview' %}" name="_preview">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

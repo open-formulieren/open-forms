@@ -2,10 +2,14 @@ from django.contrib.admin.sites import AdminSite
 from django.test import TestCase
 from django.urls import reverse
 
+from django_webtest import WebTest
+
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.config.models import CSPSetting
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 
 from ..admin import CSPSettingAdmin
+from .factories import RichTextColorFactory
 
 
 class TestCSPAdmin(TestCase):
@@ -26,3 +30,23 @@ class TestCSPAdmin(TestCase):
         link = admin.content_type_link(csp)
 
         self.assertEqual(link, expected_link)
+
+
+class ColorAdminTests(WebTest):
+    def test_color_changelist(self):
+        RichTextColorFactory.create_batch(9)
+        url = reverse("admin:config_richtextcolor_changelist")
+        user = SuperUserFactory.create()
+
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_color_detail(self):
+        color = RichTextColorFactory.create()
+        url = reverse("admin:config_richtextcolor_change", args=(color.pk,))
+        user = SuperUserFactory.create()
+
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(response.status_code, 200)

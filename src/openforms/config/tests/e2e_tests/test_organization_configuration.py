@@ -8,15 +8,23 @@ from playwright.async_api import expect
 
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 
-from ...models import GlobalConfiguration
+from ...models import Theme
+from ..factories import ThemeFactory
 
 
 class OrganizationConfigurationTests(E2ETestCase):
     async def test_design_token_editor_integration(self):
+        @sync_to_async
+        def setupTestData():
+            theme = ThemeFactory.create()
+            return theme
+
         await create_superuser()
+        theme = await setupTestData()
+
         admin_url = str(
             furl(self.live_server_url)
-            / reverse("admin:config_globalconfiguration_change", args=(1,))
+            / reverse("admin:config_theme_change", args=(theme.pk,))
         )
 
         async with browser_page() as page:
@@ -61,10 +69,10 @@ class OrganizationConfigurationTests(E2ETestCase):
 
         @sync_to_async
         def assertState():
-            config = GlobalConfiguration.objects.get()
+            theme = Theme.objects.get()
 
             self.assertEqual(
-                config.design_token_values,
+                theme.design_token_values,
                 {"of": {"utrecht-link": {"font-family": {"value": "Roboto"}}}},
             )
 

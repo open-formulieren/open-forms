@@ -1,7 +1,8 @@
-{% load static i18n solo_tags style_dictionary appointments %}<!DOCTYPE html>
+{% load static i18n solo_tags style_dictionary appointments theme %}<!DOCTYPE html>
 {% get_solo 'config.GlobalConfiguration' as config %}
+{% get_theme as theme %}
 {% get_current_language as LANG %}
-<html lang="{{ LANG }}" class="{{ config.theme_classname }}">
+<html lang="{{ LANG }}" class="{{ theme.get_classname }}">
     <head>
         <meta charset="utf-8">
         <title>{% block title %}{% trans "Summary PDF" %}{% endblock %}</title>
@@ -9,32 +10,23 @@
         <link href="{% static 'bundles/pdf-css.css' %}" media="all" rel="stylesheet" />
         {% block extra_css %}{% endblock %}
 
-        {# if an external stylesheet is configured, apply it BEFORE the admin-specified design tokens #}
-        {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
+        {# if external stylesheets are configured, apply it BEFORE the admin-specified design tokens #}
+        {% for stylesheet in theme.get_stylesheets %}
+            <link href="{{ stylesheet }}" media="all" rel="stylesheet" />
+        {% endfor %}
 
         {# Inject design tokens for theming #}
-        {% style_dictionary config.design_token_values as design_tokens %}
         {# This goes through WeasyPrint normally, so excluded from CSP #}
-        <style>
-        :root {{% for token, value in design_tokens.items %}
-          {{ token }}: {{ value }};{% endfor %}
-        }
-
-        {% if config.logo %}
-        .header {
-            --of-header-logo-url: url('{{ config.logo.url }}');
-        }
-        {% endif %}
-        </style>
+        {% include 'includes/design-tokens.html' with skip_csp=True %}
     </head>
 
     <body class="A4">
 
         <section class="sheet padding-10mm">
-            <header class="header {% if config.logo %}header--has-logo{% endif %}">
+            <header class="header {% if theme.logo %}header--has-logo{% endif %}">
                 <span
                     class="header__logo"
-                    {% if config.logo %}role="img"{% endif %}
+                    {% if theme.logo %}role="img"{% endif %}
                 ></span>
             </header>
 

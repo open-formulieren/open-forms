@@ -1,5 +1,6 @@
 from django.views.generic import DetailView
 
+from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.submissions.models import Submission
 from openforms.utils.views import DevViewMixin
 
@@ -27,5 +28,7 @@ class SubmissionPDFTestView(DevViewMixin, DetailView):
 
         submission = ctx["submission"]
         ctx["report"] = Report(submission)
+        # apply form-specific theme override, if set
+        ctx[THEME_OVERRIDE_CONTEXT_VAR] = submission.form.theme
 
         return ctx

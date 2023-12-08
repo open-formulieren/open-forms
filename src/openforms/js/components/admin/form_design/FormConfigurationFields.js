@@ -74,6 +74,11 @@ const getCategoryChoices = available => {
   return choices;
 };
 
+const getThemeChoices = available => {
+  const choices = [['', '----'], ...available.map(theme => [theme.url, theme.name])];
+  return choices;
+};
+
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
@@ -81,6 +86,7 @@ const FormConfigurationFields = ({
   form,
   onChange,
   availableAuthPlugins,
+  availableThemes,
   selectedAuthPlugins,
   onAuthPluginChange,
   availableCategories,
@@ -92,6 +98,7 @@ const FormConfigurationFields = ({
     showProgressIndicator,
     active,
     category,
+    theme,
     isDeleted,
     activateOn,
     deactivateOn,
@@ -191,6 +198,27 @@ const FormConfigurationFields = ({
           />
         </Field>
       </FormRow>
+
+      {availableThemes.length ? (
+        <FormRow>
+          <Field
+            name="form.theme"
+            label={<FormattedMessage defaultMessage="Theme" description="Form theme field label" />}
+            helpText={
+              <FormattedMessage
+                defaultMessage="Optional theme to use for styling."
+                description="Form theme field help text"
+              />
+            }
+          >
+            <Select
+              choices={getThemeChoices(availableThemes)}
+              value={theme || ''}
+              onChange={onChange}
+            />
+          </Field>
+        </FormRow>
+      ) : null}
 
       {!isAppointment && (
         <>

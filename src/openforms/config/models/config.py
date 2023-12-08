@@ -1,24 +1,13 @@
 import logging
-from collections import defaultdict
 from functools import partial
 
-from django.contrib.admin.options import get_content_type_for_model
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.core.validators import (
-    FileExtensionValidator,
-    MaxValueValidator,
-    MinValueValidator,
-    RegexValidator,
-)
-from django.db import models, transaction
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from colorfield.fields import ColorField
 from django_better_admin_arrayfield.models.fields import ArrayField
 from glom import glom
 from solo.models import SingletonModel
@@ -33,8 +22,9 @@ from openforms.translations.utils import ensure_default_language
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import runtime_gettext
 
-from .constants import CSPDirective, UploadFileType
-from .utils import verify_clamav_connection
+from ..constants import UploadFileType
+from ..utils import verify_clamav_connection
+from .theme import Theme
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +36,11 @@ def _render(filename):
 
 get_confirmation_email_subject = partial(_render, "emails/confirmation/subject.txt")
 get_confirmation_email_content = partial(_render, "emails/confirmation/content.html")
+
+
+class GlobalConfigurationManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related("default_theme")
 
 
 class GlobalConfiguration(SingletonModel):
@@ -253,25 +248,18 @@ class GlobalConfiguration(SingletonModel):
         default=5.291266,
     )
     # 'subdomain' styling & content configuration
-    # FIXME: do not expose this field via the API to non-admin users! There is not
-    # sufficient input validation to protect against the SVG attack surface. The SVG
-    # is rendered by the browser of end-users.
-    #
-    # See https://www.fortinet.com/blog/threat-research/scalable-vector-graphics-attack-surface-anatomy
-    #
-    # * XSS
-    # * HTML Injection
-    # * XML entity processing
-    # * DoS
-    logo = SVGOrImageField(
-        _("municipality logo"),
-        upload_to="logo/",
+    default_theme = models.OneToOneField(
+        Theme,
+        on_delete=models.SET_NULL,
         blank=True,
+        null=True,
+        verbose_name=_("default theme"),
         help_text=_(
-            "Upload the municipality logo, visible to users filling out forms. We "
-            "advise dimensions around 150px by 75px. SVG's are allowed."
+            "If no explicit theme is configured, the configured default theme "
+            "will be used as a fallback."
         ),
     )
+
     favicon = SVGOrImageField(
         _("favicon"),
         upload_to="logo/",
@@ -294,68 +282,6 @@ class GlobalConfiguration(SingletonModel):
         help_text=_(
             "The name of your organization that will be used as label for elements "
             "like the logo."
-        ),
-    )
-    # the configuration of the values of available design tokens, following the
-    # format outlined in https://github.com/amzn/style-dictionary#design-tokens which
-    # is used by NLDS.
-    # TODO: validate against the JSON build from @open-formulieren/design-tokens for
-    # available tokens.
-    # Example:
-    # {
-    #   "of": {
-    #     "button": {
-    #       "background-color": {
-    #         "value": "fuchsia"
-    #       }
-    #     }
-    #   }
-    # }
-    #
-    design_token_values = models.JSONField(
-        _("design token values"),
-        blank=True,
-        default=dict,
-        help_text=_(
-            "Values of various style parameters, such as border radii, background "
-            "colors... Note that this is advanced usage. Any available but un-specified "
-            "values will use fallback default values. See https://open-forms.readthedocs.io/en/latest"
-            "/installation/form_hosting.html#run-time-configuration for documentation."
-        ),
-    )
-
-    theme_classname = models.SlugField(
-        _("theme CSS class name"),
-        blank=True,
-        help_text=_("If provided, this class name will be set on the <html> element."),
-    )
-    theme_stylesheet = models.URLField(
-        _("theme stylesheet URL"),
-        blank=True,
-        max_length=1000,
-        validators=[
-            RegexValidator(
-                regex=r"\.css$",
-                message=_("The URL must point to a CSS resource (.css extension)."),
-            ),
-        ],
-        help_text=_(
-            "The URL stylesheet with theme-specific rules for your organization. "
-            "This will be included as final stylesheet, overriding previously defined styles. "
-            "Note that you also have to include the host to the `style-src` CSP directive. "
-            "Example value: https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
-        ),
-    )
-    theme_stylesheet_file = models.FileField(
-        _("theme stylesheet"),
-        blank=True,
-        upload_to="config/themes/",
-        validators=[FileExtensionValidator(allowed_extensions=("css",))],
-        help_text=_(
-            "A stylesheet with theme-specific rules for your organization. "
-            "This will be included as final stylesheet, overriding previously defined styles. "
-            "If both a URL to a stylesheet and a stylesheet file have been configured, the "
-            "uploaded file is included after the stylesheet URL."
         ),
     )
 
@@ -603,6 +529,8 @@ class GlobalConfiguration(SingletonModel):
         default=list,
     )
 
+    objects = GlobalConfigurationManager()
+
     class Meta:
         verbose_name = _("General configuration")
 
@@ -646,119 +574,9 @@ class GlobalConfiguration(SingletonModel):
 
         return super().clean()
 
-    def get_theme_classname(self) -> str:
-        return self.theme_classname or "openforms-theme"
-
-
-class CSPSettingQuerySet(models.QuerySet):
-    def as_dict(self):
-        ret = defaultdict(set)
-        for directive, value in self.values_list("directive", "value"):
-            ret[directive].add(value)
-        return {k: list(v) for k, v in ret.items()}
-
-
-class CSPSettingManager(models.Manager.from_queryset(CSPSettingQuerySet)):
-    @transaction.atomic
-    def set_for(
-        self,
-        obj: models.Model,
-        settings: list[tuple[CSPDirective, str]],
-        identifier: str = "",
-    ) -> None:
+    def get_default_theme(self) -> Theme:
         """
-        Deletes all the connected CSP settings and creates new ones based on the new provided data.
-
-        :param obj: The configuration model providing this CSP entry.
-        :param settings: A two-tuple containing values used to create the underlying ``CSPSetting`` model.
-        :param identifier: An optional string to further identify the source of this CSP entry.
+        Use the configured default theme or create an in-memory instane on the fly
+        if none is configured.
         """
-        instances = [
-            CSPSetting(
-                content_object=obj,
-                directive=directive,
-                value=value,
-                identifier=identifier,
-            )
-            for directive, value in settings
-        ]
-
-        CSPSetting.objects.filter(
-            content_type=get_content_type_for_model(obj),
-            object_id=str(obj.id),
-            identifier=identifier,
-        ).delete()
-
-        self.bulk_create(instances)
-
-
-class CSPSetting(models.Model):
-    directive = models.CharField(
-        _("directive"),
-        max_length=64,
-        choices=CSPDirective.choices,
-        help_text=_("CSP header directive."),
-    )
-    value = models.CharField(
-        _("value"),
-        max_length=255,
-        help_text=_("CSP header value."),
-    )
-
-    identifier = models.CharField(
-        _("identifier"),
-        max_length=64,
-        blank=True,
-        help_text=_("An extra tag for this CSP entry, to identify the exact source."),
-    )
-
-    # Generic relation fields (see https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#generic-relations):
-    content_type = models.ForeignKey(
-        ContentType,
-        verbose_name=_("content type"),
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
-    object_id = models.TextField(
-        verbose_name=_("object id"),
-        blank=True,
-        db_index=True,
-    )
-    content_object = GenericForeignKey("content_type", "object_id")
-
-    objects: CSPSettingManager = CSPSettingManager()
-
-    class Meta:
-        ordering = ("directive", "value")
-
-    def __str__(self):
-        return f"{self.directive} '{self.value}'"
-
-
-class RichTextColor(models.Model):
-    color = ColorField(
-        _("color"),
-        format="hex",
-        help_text=_("Color in RGB hex format (#RRGGBB)"),
-    )
-    label = models.CharField(
-        _("label"),
-        max_length=64,
-        help_text=_("Human readable label for reference"),
-    )
-
-    class Meta:
-        verbose_name = _("text editor color preset")
-        verbose_name_plural = _("text editor color presets")
-        ordering = ("label",)
-
-    def __str__(self):
-        return f"{self.label} ({self.color})"
-
-    def example(self):
-        return mark_safe(
-            f'<span style="background-color: {self.color};">&nbsp; &nbsp; &nbsp;</span>'
-        )
-
-    example.short_description = _("Example")
+        return self.default_theme or Theme()

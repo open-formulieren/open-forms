@@ -10,6 +10,7 @@ from drf_spectacular.views import (
 from rest_framework import routers
 from rest_framework_nested.routers import NestedSimpleRouter
 
+from openforms.config.api.viewsets import ThemeViewSet
 from openforms.contrib.kadaster.api.views import AddressAutocompleteView
 from openforms.forms.api.viewsets import (
     CategoryViewSet,
@@ -60,6 +61,9 @@ router.register("services", ServiceViewSet)
 
 # service fetch configurations
 router.register("service-fetch-configurations", ServiceFetchConfigurationViewSet)
+
+# configuration
+router.register("themes", ThemeViewSet, basename="themes")
 
 urlpatterns = [
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),

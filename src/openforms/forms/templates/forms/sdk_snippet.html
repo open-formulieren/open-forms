@@ -5,7 +5,11 @@
     const formId = '{{ form.slug|escapejs }}';
     const baseUrl = '{% filter escapejs %}{% api_base_url %}{% endfilter %}';
     const targetNode = document.getElementById('{{ div_id|escapejs }}');
+    {% if base_path %}
+    const basePath = '{{ base_path|escapejs }}';
+    {% else %}
     const basePath = '{% filter escapejs %}{% url "forms:form-detail" slug=form.slug %}{% endfilter %}';
+    {% endif %}
     const CSPNonce = '{{ request.csp_nonce|escapejs }}';
     {% if sdk_sentry_dsn %}const sentryDSN = '{% filter escapejs %}{{ sdk_sentry_dsn }}{% endfilter %}';{% endif %}
     {% if sdk_sentry_env %}const sentryEnv = '{% filter escapejs %}{{ sdk_sentry_env }}{% endfilter %}';{% endif %}

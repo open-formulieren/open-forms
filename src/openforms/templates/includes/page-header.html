@@ -3,15 +3,16 @@ This header template is deliberately minimal. It is end-user facing and usually 
 will be redirected here from the municipality/organization website when they can't
 include the SDK snippet directly.
 {% endcomment %}
-{% load i18n solo_tags %}
+{% load i18n solo_tags theme %}
 
 {% get_solo 'config.GlobalConfiguration' as config %}
+{% get_theme as theme %}
 
 {% blocktranslate with name=config.organization_name asvar logo_alt trimmed %}
 Back to website of {{ name }}
 {% endblocktranslate %}
 
-<header class="utrecht-page-header {% if config.logo %}utrecht-page-header--openforms-with-logo{% endif %}">
+<header class="utrecht-page-header {% if theme.logo %}utrecht-page-header--openforms-with-logo{% endif %}">
     <a
         class="utrecht-link utrecht-link--openforms utrecht-page-header__openforms-return-url"
         href="{% firstof config.main_website '#' %}"

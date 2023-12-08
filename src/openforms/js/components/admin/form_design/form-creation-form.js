@@ -50,6 +50,7 @@ import {
   PREFILL_PLUGINS_ENDPOINT,
   REGISTRATION_BACKENDS_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
+  THEMES_ENDPOINT,
 } from './constants';
 import {loadForm, loadFromBackend, saveCompleteForm} from './data';
 import {updateWarningsValidationError} from './logic/utils';
@@ -123,6 +124,7 @@ const initialFormState = {
   selectedAuthPlugins: [],
   availablePaymentBackends: [],
   availableCategories: [],
+  availableThemes: [],
   languageInfo: {languages: [], current: ''},
   stepsToDelete: [],
   submitting: false,
@@ -975,6 +977,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
+    {endpoint: THEMES_ENDPOINT, stateVar: 'availableThemes'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
@@ -1308,6 +1311,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
               availableAuthPlugins={state.availableAuthPlugins}
               selectedAuthPlugins={state.selectedAuthPlugins}
               availableCategories={state.availableCategories}
+              availableThemes={state.availableThemes}
               onAuthPluginChange={onAuthPluginChange}
             />
           </TabPanel>

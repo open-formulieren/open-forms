@@ -12,6 +12,7 @@ from freezegun import freeze_time
 
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
@@ -976,3 +977,14 @@ class ImportExportTests(TestCase):
 
         self.assertIn("foo", comp1)
         self.assertNotIn("foo", comp2)
+
+    def test_rountrip_form_with_theme_override(self):
+        theme = ThemeFactory.create()
+        form = FormFactory.create(generate_minimal_setup=True, theme=theme)
+        call_command("export", form.pk, self.filepath)
+
+        # run the import again
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.exclude(pk=form.pk).get()
+        self.assertIsNone(imported_form.theme)

@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _, override
 from celery.result import AsyncResult
 from privates.fields import PrivateMediaFileField
 
+from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.utils.pdf import render_to_pdf
 
 from ..report import Report
@@ -70,7 +71,10 @@ class SubmissionReport(models.Model):
             form = self.submission.form
             html_report, pdf_report = render_to_pdf(
                 "report/submission_report.html",
-                context={"report": Report(self.submission)},
+                context={
+                    "report": Report(self.submission),
+                    THEME_OVERRIDE_CONTEXT_VAR: self.submission.form.theme,
+                },
             )
             self.content = ContentFile(
                 content=pdf_report,

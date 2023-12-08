@@ -40,6 +40,26 @@
                 "globalconfiguration"
             ],
             [
+                "add_theme",
+                "config",
+                "theme"
+            ],
+            [
+                "change_theme",
+                "config",
+                "theme"
+            ],
+            [
+                "delete_theme",
+                "config",
+                "theme"
+            ],
+            [
+                "view_theme",
+                "config",
+                "theme"
+            ],
+            [
                 "add_jccconfig",
                 "jcc",
                 "jccconfig"
@@ -727,6 +747,26 @@
                 "view_globalconfiguration",
                 "config",
                 "globalconfiguration"
+            ],
+                        [
+                "add_theme",
+                "config",
+                "theme"
+            ],
+            [
+                "change_theme",
+                "config",
+                "theme"
+            ],
+            [
+                "delete_theme",
+                "config",
+                "theme"
+            ],
+            [
+                "view_theme",
+                "config",
+                "theme"
             ],
             [
                 "add_contenttype",

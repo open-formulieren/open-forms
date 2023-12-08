@@ -15,7 +15,7 @@ from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, Theme
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.typing import Component
@@ -134,6 +134,15 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lookup_field="uuid",
         help_text=_("URL to the category in the Open Forms API"),
     )
+    theme = serializers.HyperlinkedRelatedField(
+        label=_("theme"),
+        queryset=Theme.objects.all(),
+        required=False,
+        allow_null=True,
+        view_name="api:themes-detail",
+        lookup_field="uuid",
+        help_text=_("URL to the theme in the Open Forms API"),
+    )
     product = serializers.HyperlinkedRelatedField(
         label=_("product"),
         queryset=Product.objects.all(),
@@ -216,6 +225,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "slug",
             "url",
             "category",
+            "theme",
             "steps",
             "show_progress_indicator",
             "maintenance_mode",
