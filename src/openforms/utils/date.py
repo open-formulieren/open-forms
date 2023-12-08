@@ -17,7 +17,9 @@ def format_date_value(date_value: str) -> str:
         try:
             parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
         except ValueError:
-            logger.info("Can't parse date %s, using empty value.", date_value)
+            logger.info(
+                "Can't format date '%s', falling back to an empty string.", date_value
+            )
             return ""
 
     return parsed_date.isoformat()
@@ -39,15 +41,29 @@ def parse_date(value: str) -> date:
 
 def parse_datetime(value: str) -> None | datetime:
     try:
-        return _parse_datetime(value)
+        datetime_value = _parse_datetime(value)
     except ValueError:
-        logger.info("Can't parse datetime '%s', using empty string.", value)
+        logger.info("Can't parse datetime '%s', falling back to 'None' instead.", value)
         return
+
+    if datetime_value is None:
+        logger.info(
+            "Badly formatted datetime '%s', falling back to 'None' instead.", value
+        )
+        return
+
+    return datetime_value
 
 
 def parse_time(value: str) -> None | time:
     try:
-        return _parse_time(value)
+        time_value = _parse_time(value)
     except ValueError:
-        logger.info("Can't parse time '%s', using empty string.", value)
+        logger.info("Invalid time '%s', falling back to 'None' instead.", value)
         return
+
+    if time_value is None:
+        logger.info("Badly formatted time '%s', falling back to 'None' instead.", value)
+        return
+
+    return time_value

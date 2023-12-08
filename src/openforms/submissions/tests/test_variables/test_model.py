@@ -210,6 +210,17 @@ class SubmissionValueVariableModelTests(TestCase):
             # we'll see if that causes any issues
             self.assertEqual(time_value, time(11, 15))
 
+        with self.subTest("Invalid time"):
+            time_var = SubmissionValueVariableFactory.create(
+                form_variable__user_defined=True,
+                form_variable__data_type=FormVariableDataTypes.time,
+                value="Invalid date",  # Issue 3647
+            )
+
+            time_value = time_var.to_python()
+
+            self.assertIsNone(time_value)
+
     def test_is_initially_prefilled_is_set(self):
         config = {
             "display": "form",

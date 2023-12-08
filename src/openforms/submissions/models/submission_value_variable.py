@@ -359,7 +359,7 @@ class SubmissionValueVariable(models.Model):
 
             maybe_naive_datetime = parse_datetime(self.value)
             if maybe_naive_datetime is None:
-                return ""
+                return
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime.date()
@@ -368,14 +368,13 @@ class SubmissionValueVariable(models.Model):
         if self.value and data_type == FormVariableDataTypes.datetime:
             maybe_naive_datetime = parse_datetime(self.value)
             if maybe_naive_datetime is None:
-                return ""
+                return
 
             if timezone.is_aware(maybe_naive_datetime):
                 return maybe_naive_datetime
             return timezone.make_aware(maybe_naive_datetime)
 
         if self.value and data_type == FormVariableDataTypes.time:
-            value = parse_time(self.value)
-            return value or ""
+            return parse_time(self.value)
 
         return self.value
