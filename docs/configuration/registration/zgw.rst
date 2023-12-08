@@ -35,7 +35,7 @@ OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
 Secret                        Secret for the JWT-token.
 **Documenten API**
-API root URL                  Root URL for the Documenten API that Open Forms can access.
+API root URL                  Root URL for the Documenten API (version 1.1+) that Open Forms can access.
 OAS                           URL to the OAS.
 Client ID                     Client ID for the JWT-token.
 Secret                        Secret for the JWT-token.
@@ -133,6 +133,6 @@ Technical
 API               Supported versions
 ================  ===================
 Zaken API         1.0
-Documenten API    1.0
+Documenten API    1.1+
 Catalogi API      1.0
 ================  ===================

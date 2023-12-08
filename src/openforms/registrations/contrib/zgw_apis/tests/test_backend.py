@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 
 from django.test import TestCase, override_settings, tag
@@ -1391,6 +1392,56 @@ class ZGWBackendTests(TestCase):
 
         submission.refresh_from_db()
         self.assertEqual(submission.public_registration_reference, "ZAAK-OF-TEST")
+
+    @tag("gh-3649")
+    def test_document_size_argument_present(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "field1",
+                    "type": "file",
+                },
+            ],
+        )
+        zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=SubmissionStep.objects.first(),
+            content__data=b"content",
+            file_name="attachment1.txt",
+            form_key="field1",
+            _component_configuration_path="components.0",
+        )
+
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
+        plugin.register_submission(submission, zgw_form_options)
+
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment1_document,
+            relate_attachment1_document,
+        ) = m.request_history
+
+        self.assertIn("bestandsomvang", json.loads(create_pdf_document.body))
+
+        attachment_data = json.loads(create_attachment1_document.body)
+
+        self.assertIn("bestandsomvang", attachment_data)
+        self.assertEqual(attachment_data["bestandsomvang"], 7)
 
 
 @tag("gh-1183")

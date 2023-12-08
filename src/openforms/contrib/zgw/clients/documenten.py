@@ -32,7 +32,8 @@ class DocumentenClient(NLXClient):
     ):
         assert author, "author must be a non-empty string"
         today = get_today()
-        base64_body = b64encode(content.read()).decode()
+        file_content = content.read()
+        base64_body = b64encode(file_content).decode()
         data = {
             "informatieobjecttype": informatieobjecttype,
             "bronorganisatie": bronorganisatie,
@@ -46,6 +47,9 @@ class DocumentenClient(NLXClient):
             "bestandsnaam": filename,
             "beschrijving": description,
             "indicatieGebruiksrecht": False,
+            "bestandsomvang": (
+                content.size if hasattr(content, "size") else len(file_content)
+            ),
         }
 
         if vertrouwelijkheidaanduiding:
