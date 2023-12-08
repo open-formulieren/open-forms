@@ -9,4 +9,5 @@ COMPONENT_DATATYPES = {
     "npFamilyMembers": "object",
     "map": "array",
     "editgrid": "array",
+    "datetime": "datetime",
 }

@@ -1,6 +1,9 @@
+from django.test import tag
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
+from testfixtures import LogCapture
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import (
@@ -195,3 +198,160 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         data = response.json()
 
         self.assertTrue(data["submission"]["steps"][2]["isApplicable"])
+
+    @tag("gh-3647")
+    def test_sending_invalid_time_values(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "time", "key": "time"},
+                {"type": "date", "key": "date"},
+                {"type": "datetime", "key": "datetime"},
+            ]
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.submissionstep_set.first().form_step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        with (
+            self.subTest("Invalid time with good format"),
+            LogCapture() as log_capture,
+        ):
+            self.client.post(endpoint, data={"data": {"time": "25:00"}})
+
+            log_capture.check_present(
+                (
+                    "openforms.utils.date",
+                    "INFO",
+                    "Invalid time '25:00', falling back to 'None' instead.",
+                )
+            )
+
+        with (
+            self.subTest("Invalid time with bad format"),
+            LogCapture() as log_capture,
+        ):
+            self.client.post(endpoint, data={"data": {"time": "Invalid"}})
+
+            log_capture.check_present(
+                (
+                    "openforms.utils.date",
+                    "INFO",
+                    "Badly formatted time 'Invalid', falling back to 'None' instead.",
+                )
+            )
+
+        with (self.subTest("Invalid date"), LogCapture() as log_capture):
+            self.client.post(endpoint, data={"data": {"date": "2020-13-46"}})
+
+            log_capture.check_present(
+                (
+                    "openforms.utils.date",
+                    "INFO",
+                    "Can't format date '2020-13-46', falling back to an empty string.",
+                ),
+                (
+                    "openforms.utils.date",
+                    "INFO",
+                    "Badly formatted datetime '2020-13-46', falling back to 'None' instead.",
+                ),
+            )
+
+        with (self.subTest("Invalid datetime"), LogCapture() as log_capture):
+            self.client.post(
+                endpoint, data={"data": {"datetime": "2022-13-46T00:00:00+02:00"}}
+            )
+
+            log_capture.check_present(
+                (
+                    "openforms.utils.date",
+                    "INFO",
+                    "Can't parse datetime '2022-13-46T00:00:00+02:00', falling back to 'None' instead.",
+                )
+            )
+
+    def test_handling_none_values_in_logic(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "time", "key": "time"},
+                {"type": "date", "key": "date"},
+                {"type": "datetime", "key": "datetime"},
+                {"type": "string", "key": "result"},
+                {"type": "date", "key": "resultDate"},
+                {"type": "datetime", "key": "resultDatetime"},
+            ]
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={
+                "and": [
+                    {"==": [None, {"var": "time"}]},
+                    {"==": [None, {"var": "date"}]},
+                    {"==": [None, {"var": "datetime"}]},
+                ]
+            },
+            actions=[
+                {
+                    "variable": "result",
+                    "action": {
+                        "type": "variable",
+                        "value": "All the variables were None",
+                    },
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "resultDate",
+                    "action": {
+                        "type": "variable",
+                        "value": {"+": [{"var": "date"}, {"duration": "P1M"}]},
+                    },
+                },
+                {
+                    "variable": "resultDatetime",
+                    "action": {
+                        "type": "variable",
+                        "value": {"+": [{"var": "datetime"}, {"duration": "P1M"}]},
+                    },
+                },
+            ],
+        )
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.submissionstep_set.first().form_step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            endpoint,
+            data={
+                "data": {
+                    "time": "Invalid",
+                    "date": "2020-13-46",
+                    "datetime": "2022-13-46T00:00:00+02:00",
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        data = response.json()
+
+        self.assertEqual(data["step"]["data"]["result"], "All the variables were None")
+        self.assertEqual(data["step"]["data"]["time"], "Invalid")
+        self.assertEqual(data["step"]["data"]["date"], "2020-13-46")
+        self.assertEqual(data["step"]["data"]["datetime"], "2022-13-46T00:00:00+02:00")
+        self.assertNotIn("resultDate", data["step"]["data"])
+        self.assertNotIn("resultDatetime", data["step"]["data"])
