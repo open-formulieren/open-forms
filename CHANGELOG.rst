@@ -99,6 +99,23 @@ stylesheets, you should update these:
 * ``--of-page-header-logo-return-url-mobile-min-width`` becomes
   ``--of-page-header-logo-return-url-mobile-min-inline-size``
 
+2.4.2 (2023-12-08)
+==================
+
+Periodic bugfix release
+
+* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* Updated CSP ``frame-ancestors`` directive to be consistent with the ``X-Frame-Options``
+  configuration.
+* [#3605] Fixed unintended number localization in StUF/SOAP messages.
+* [#3613] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+* [#3647] Fixed a backend (logic check) crash when non-parsable time, date or datetime
+  values are passed. The values are now ignored as if nothing was submitted.
+
 2.4.1 (2023-11-14)
 ==================
 
