@@ -226,7 +226,7 @@ def import_form_data(
                 entry["category"] = None
                 # theme overrides cannot be imported, since the theme records/FKs have to
                 # exist in the target environment. Importing/exporting themes is also not
-                # possible at this time, so we reset the theme and admin need to update
+                # possible at this time, so we reset the theme and admins need to update
                 # the imported form.
                 entry["theme"] = None
 

@@ -15,7 +15,7 @@ Organization name
     reasons.
 
 Main website link
-    The main website link is used so the end-user can return to you main website, e.g.
+    The main website link is used so the end-user can return to your main website, e.g.
     ``https://www.gemeente.nl``. Clicking the logo (or link) in the header will return the
     end-user to this URL.
 
@@ -45,7 +45,7 @@ aspects are:
 
 Logo
     You can upload a logo to be used in the header here. If no logo is uploaded, a plain
-    link will be shown. Logo's can be the usual image formats, or an SVG image.
+    link will be shown. Logos can be the usual image formats, or an SVG image.
 
 Theme CSS class name
     You can specify a CSS class name to apply to the root ``html`` element here. Typically
