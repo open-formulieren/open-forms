@@ -8,15 +8,13 @@ from django.utils import timezone
 from privates.test import temp_private_root
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
-from openforms.payments.constants import PaymentStatus
-from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
 from openforms.registrations.exceptions import RegistrationFailed
 
-from ..constants import RegistrationStatuses
-from ..tasks import on_completion_retry, retry_processing_submissions
+from ..constants import PostSubmissionEvents, RegistrationStatuses
+from ..tasks import on_post_submission_event, retry_processing_submissions
 from .factories import SubmissionFactory
 
 
@@ -50,11 +48,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
                     "identificatie": "ZAAK-123",
                 }
             },
-            public_registration_reference="ZAAK-123",
-        )
-        # status simulates that we received the payment paid event from the payment provider
-        SubmissionPaymentFactory.for_submission(
-            submission, status=PaymentStatus.completed
+            with_completed_payment=True,
         )
         assert submission.payment_required, "Form must require payment for this test"
         assert (
@@ -67,11 +61,10 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         )
         original_appointment_id = appointment_info.appointment_id
 
-        # invoke the chain
         with patch(
             "openforms.registrations.contrib.zgw_apis.client.ZakenClient.set_payment_status"
         ) as mock_set_payment_status:
-            on_completion_retry(submission.id)()
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
         appointment_info.refresh_from_db()
@@ -106,10 +99,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
                 }
             },
             public_registration_reference="ZAAK-123",
-        )
-        # status simulates that we received the payment paid event from the payment provider
-        SubmissionPaymentFactory.for_submission(
-            submission, status=PaymentStatus.completed
+            with_completed_payment=True,
         )
         assert submission.payment_required, "Form must require payment for this test"
         assert (
@@ -128,7 +118,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             side_effect=Exception("Something went wrong"),
         )
         with (patcher as mock_set_payment_status, self.assertRaises(Exception)):
-            on_completion_retry(submission.id)()
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
         appointment_info.refresh_from_db()
@@ -175,8 +165,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         with registration_patcher as mock_register, self.assertRaises(
             RegistrationFailed
         ):
-            # invoke the chain
-            on_completion_retry(submission.id)()
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
         mock_register.assert_called_once()
@@ -213,8 +202,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             registration_patcher as mock_register,
             self.assertRaises(RegistrationFailed),
         ):
-            # invoke the chain
-            on_completion_retry(submission.id)()
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
         mock_preregister.assert_called_once()
@@ -224,7 +212,9 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertTrue(submission.needs_on_completion_retry)
 
-    @patch("openforms.payments.tasks.update_submission_payment_registration")
+    @patch(
+        "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.update_payment_status"
+    )
     def test_backend_registration_succeeds(self, mock_update_payment):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
@@ -235,6 +225,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
+            with_completed_payment=True,
         )
         AppointmentInfoFactory.create(submission=submission, registration_ok=True)
         original_register_date = submission.last_register_date
@@ -253,13 +244,14 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         )
 
         with preregistration_patcher, registration_patcher as mock_register:
-            # invoke the chain
-            on_completion_retry(submission.id)()
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
         mock_register.assert_called_once()
         # downstream tasks should not have been called - chain should abort
-        mock_update_payment.assert_called_once_with(submission)
+        mock_update_payment.assert_called_once_with(
+            submission, {"zgw_api_group": zgw_group}
+        )
         self.assertNotEqual(submission.last_register_date, original_register_date)
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertFalse(submission.needs_on_completion_retry)
@@ -267,8 +259,8 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
 
 
 class RetrySubmissionTest(TestCase):
-    @patch("openforms.submissions.tasks.on_completion_retry")
-    def test_resend_submission_task_only_retries_certain_submissions(self, mock_chain):
+    @patch("openforms.submissions.tasks.on_post_submission_event")
+    def test_resend_submission_task_only_retries_certain_submissions(self, m):
         failed_within_time_limit = SubmissionFactory.create(
             registration_failed=True,
             needs_on_completion_retry=True,
@@ -292,6 +284,7 @@ class RetrySubmissionTest(TestCase):
 
         retry_processing_submissions()
 
-        self.assertEqual(mock_chain.call_count, 1)
-        mock_chain.assert_called_once_with(failed_within_time_limit.id)
-        mock_chain.return_value.delay.assert_called_once_with()
+        self.assertEqual(m.call_count, 1)
+        m.assert_called_once_with(
+            failed_within_time_limit.id, PostSubmissionEvents.on_retry
+        )

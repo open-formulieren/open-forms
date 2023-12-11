@@ -9,10 +9,11 @@ from celery.result import AsyncResult
 
 from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
+from openforms.config.models import GlobalConfiguration
 
-from ..models import Submission
+from ..constants import PostSubmissionEvents, RegistrationStatuses
+from ..models import PostCompletionMetadata, Submission
 from .cleanup import *  # noqa
-from .co_sign import *  # noqa
 from .emails import *  # noqa
 from .payments import *  # noqa
 from .pdf import *  # noqa
@@ -22,127 +23,66 @@ from .user_uploads import *  # noqa
 logger = logging.getLogger(__name__)
 
 
-def on_completion(submission_id: int) -> None:
+def on_post_submission_event(submission_id: int, event: PostSubmissionEvents) -> None:
     """
-    Celery chain of tasks to execute on a submission completion event.
+    Celery chain of tasks to execute on a submission completion or post completion event.
 
     This SHOULD be invoked as a transaction.on_commit(...) handler, therefore it should
     not execute any extra queries in the process this function is running in.
     """
-    # use immutable signatures so that the result of previous tasks is not passed
-    # in as an argument to chained tasks
-    register_appointment_task = maybe_register_appointment.si(submission_id)
-    pre_registration_task = pre_registration.si(submission_id)
-    send_email_cosigner_task = send_email_cosigner.si(submission_id)
-    generate_report_task = generate_submission_report.si(submission_id)
-    register_submission_task = register_submission.si(submission_id)
-    finalize_completion_task = finalize_completion.si(submission_id)
-
-    # for the orchestration with distributed processing and dependencies between
-    # tasks, see the Celery documentation:
-    # https://docs.celeryproject.org/en/stable/userguide/canvas.html#guide-canvas
-    # Additionally, check the developer documentation of Open Forms for a visual
-    # representation of the task orchestration and dependencies (TODO, @joeri)
-    # The linked task (= next task) is only executed if the previous task returns
-    # successfully, so error handling needs to happen inside each task.
-    on_completion_chain = chain(
-        # The appointment must be registered before a confirmation PDF is generated and
-        # any backend registration happens, as on-failure, the user should get feedback
-        # about the failure.
-        register_appointment_task,
-        pre_registration_task,
-        send_email_cosigner_task,
-        # The submission report needs to already have been generated before it can be
-        # attached in the registration backend.
-        # TODO: can be in parallel with register_appointment_task and if that fails -> delete the report again
-        generate_report_task,
-        # TODO: ensure that any images that need resizing are done so before this is attempted
-        register_submission_task,
-        # we schedule the finalization so that the ``async_result`` below is marked
-        # as done, which is the "signal" to show the confirmation page. Actual payment
-        # flow & confirmation e-mail follow later.
-        finalize_completion_task,
-    )
-
     # this can run any time because they have been claimed earlier
     cleanup_temporary_files_for.delay(submission_id)
 
-    async_result: AsyncResult = on_completion_chain.delay()
+    # If the form involves appointments and no appointment has been scheduled yet, schedule it.
+    # Todo: deprecated => Not needed with the new appointment flow
+    register_appointment_task = maybe_register_appointment.si(submission_id)
+
+    # Perform any pre-registration task specified by the registration plugin. If no registration plugin is configured,
+    # just set a submission reference (if it hasn't already been set)
+    pre_registration_task = pre_registration.si(submission_id, event)
+
+    # Generate the submission report. Contains information about the payment and co-sign status.
+    generate_report_task = generate_submission_report.si(submission_id)
+
+    # Attempt registering submission
+    register_submission_task = register_submission.si(submission_id, event)
+
+    # Payment status update
+    payment_status_update_task = update_submission_payment_status.si(
+        submission_id, event
+    )
+
+    # Finalise completion: schedule confirmation emails and maybe hash identifying attributes
+    finalise_completion_task = finalise_completion.si(submission_id)
+
+    actions_chain = chain(
+        register_appointment_task,
+        pre_registration_task,
+        generate_report_task,
+        register_submission_task,
+        payment_status_update_task,
+        finalise_completion_task,
+    )
+
+    async_result: AsyncResult = actions_chain.delay()
 
     # obtain all the task IDs so we can check the state later
-    task_ids = []
-
-    node = async_result
-    while node is not None:
-        task_ids.append(node.id)
-        node = node.parent
+    task_ids = async_result.as_list()
 
     # NOTE - this is "risky" since we're running outside of the transaction (this code
     # should run in transaction.on_commit)!
-    Submission.objects.filter(id=submission_id).update(on_completion_task_ids=task_ids)
+    if event == PostSubmissionEvents.on_completion:
+        # Case in which an exception was raised that aborts the chain and the user has to try to resubmit the form.
+        PostCompletionMetadata.objects.filter(
+            submission_id=submission_id,
+            trigger_event=PostSubmissionEvents.on_completion,
+        ).delete()
 
-
-@app.task(ignore_result=False)
-def finalize_completion(submission_id: int) -> None:
-    """
-    Schedule all the tasks that need to happen to finalize the submission completion.
-
-    Finalization happens _after_ the confirmation screen is shown to the end-user.
-    Showing this screen depends on all the previous registration tasks being completed,
-    so the :func:`on_completion` handler must kick this off AND have its own task ID
-    that finishes, which is checked in the submission status endpoint.
-    """
-    send_confirmation_email_task = maybe_send_confirmation_email.si(submission_id)
-    send_confirmation_email_task.delay()
-
-    hash_identifying_attributes_task = maybe_hash_identifying_attributes.si(
-        submission_id
+    PostCompletionMetadata.objects.create(
+        tasks_ids=task_ids,
+        submission_id=submission_id,
+        trigger_event=event,
     )
-    hash_identifying_attributes_task.delay()
-
-
-def on_completion_retry(submission_id: int) -> chain:
-    """
-    Celery chain of tasks to execute on a submission completion processing retry.
-
-    This differs from :func:`on_completion` in that it has a different "starting point"
-    and invokes some extra tasks or skips other tasks. It focuses on tasks that
-    typically fail downstream in external systems outside of our own control,
-    such as registration backends, appointment booking systems.
-
-    .. note::
-
-        The retry workflow may only need to execute a part of the entire flow, but
-        we still consider this an atomic unit/entrypoint to manage the dependencies
-        properly. It's important that the individual celery tasks making up the
-        workflow are idempotent and exit successfully when nothing needs to be done!
-
-    TODO: the results should be forgotten as part of the retry flow to not flood the
-    result backend!
-
-    TODO: see if we can find a way to suppress exceptions from being sent to error
-    monitoring _if and only if_ they're part of this particular workflow.
-    """
-    pre_register_submission_task = pre_registration.si(submission_id)
-    register_submission_task = register_submission.si(submission_id).set(
-        ignore_result=True
-    )
-    update_payments_task = update_submission_payment_status.si(submission_id).set(
-        ignore_result=True
-    )
-    finalize_completion_retry_task = finalize_completion_retry.si(submission_id).set(
-        ignore_result=True
-    )
-
-    retry_chain = chain(
-        pre_register_submission_task,
-        register_submission_task,
-        update_payments_task,
-        finalize_completion_retry_task,
-    )
-
-    # schedule the entire chain to celery
-    return retry_chain
 
 
 @app.task(ignore_result=True)
@@ -157,6 +97,57 @@ def retry_processing_submissions():
         needs_on_completion_retry=True,
         completed_on__gte=retry_time_limit,
     ):
-        logger.debug("Resend submission for registration '%s'", submission)
-        retry_chain = on_completion_retry(submission.id)
-        retry_chain.delay()
+        logger.debug("Retry processing submission '%s'", submission)
+        on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
+
+
+@app.task()
+def finalise_completion(submission_id: int) -> None:
+    """
+    Schedule all the tasks that need to happen to finalize the submission completion.
+
+    Finalization happens _after_ the confirmation screen is shown to the end-user.
+    Showing this screen depends on all the previous registration tasks being completed,
+    so the :func:`on_post_submission_event` handler must kick this off AND have its own task ID
+    that finishes, which is checked in the submission status endpoint.
+    """
+    submission = Submission.objects.get(id=submission_id)
+    config = GlobalConfiguration.get_solo()
+
+    # The chain should retry if the (pre-)registration failed or if the payment status update failed.
+    has_registration_failure = (
+        submission.registration_status == RegistrationStatuses.failed
+        or (
+            submission.payment_required
+            and submission.payment_user_has_paid
+            and not submission.payment_registered
+        )
+    )
+    if has_registration_failure:
+        submission.needs_on_completion_retry = (
+            submission.registration_attempts < config.registration_attempt_limit
+        )
+
+    # The task should not retry if the registration succeeded and, in the case that payment was required, the
+    # payment status update succeeded.
+    has_registration_success = (
+        (
+            submission.registration_status == RegistrationStatuses.success
+            and submission.payment_user_has_paid
+            and submission.payment_registered
+        )
+        if submission.payment_required
+        else submission.registration_status == RegistrationStatuses.success
+    )
+    if has_registration_success:
+        submission.needs_on_completion_retry = False
+
+    submission.save(update_fields=["needs_on_completion_retry"])
+
+    schedule_emails_task = schedule_emails.si(submission_id)
+    schedule_emails_task.delay()
+
+    hash_identifying_attributes_task = maybe_hash_identifying_attributes.si(
+        submission_id
+    )
+    hash_identifying_attributes_task.delay()

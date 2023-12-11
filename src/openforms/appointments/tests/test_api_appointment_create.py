@@ -13,6 +13,7 @@ from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import SubmissionAllowedChoices
+from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.tests.search_strategies import json_values
@@ -114,8 +115,8 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
         self.submission.refresh_from_db()
         self.assertTrue(self.submission.privacy_policy_accepted)
 
-    @patch("openforms.submissions.api.mixins.on_completion")
-    def test_submission_is_completed(self, mock_on_completion):
+    @patch("openforms.submissions.api.mixins.on_post_submission_event")
+    def test_submission_is_completed(self, mock_on_post_submission_event):
         appointment_datetime = timezone.make_aware(
             datetime.combine(TODAY, time(15, 15))
         )
@@ -147,7 +148,9 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
         self.assertIn("statusUrl", response.json())
 
         # assert that the async celery task execution is scheduled
-        mock_on_completion.assert_called_once_with(self.submission.id)
+        mock_on_post_submission_event.assert_called_once_with(
+            self.submission.id, PostSubmissionEvents.on_completion
+        )
 
     def test_retry_does_not_cause_integrity_error(self):
         # When there are on_completion processing errors, the client will re-post the

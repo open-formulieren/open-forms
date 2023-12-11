@@ -23,7 +23,7 @@ from openforms.payments.models import SubmissionPayment
 from openforms.submissions.admin_views import LogsEvaluatedLogicView
 
 from ..utils.admin import ReadOnlyAdminMixin
-from .constants import IMAGE_COMPONENTS, RegistrationStatuses
+from .constants import IMAGE_COMPONENTS, PostSubmissionEvents, RegistrationStatuses
 from .exports import ExportFileTypes, export_submissions
 from .models import (
     Submission,
@@ -33,7 +33,7 @@ from .models import (
     SubmissionValueVariable,
     TemporaryFileUpload,
 )
-from .tasks import on_completion_retry
+from .tasks import on_post_submission_event
 
 
 class SubmissionTypeListFilter(admin.ListFilter):
@@ -200,15 +200,18 @@ class SubmissionAdmin(admin.ModelAdmin):
         "get_appointment_status",
         "get_appointment_id",
         "get_appointment_error_information",
-        "on_completion_task_ids",
+        "post_completion_task_ids",
         "confirmation_email_sent",
         "registration_attempts",
         "pre_registration_completed",
         "cosign_complete",
+        "cosign_request_email_sent",
+        "cosign_confirmation_email_sent",
         "cosign_privacy_policy_accepted",
         "privacy_policy_accepted",
         "statement_of_truth_accepted",
         "cosign_statement_of_truth_accepted",
+        "payment_complete_confirmation_email_sent",
     ]
     raw_id_fields = ("form", "previous_submission")
     actions = [
@@ -335,7 +338,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         submissions.update(registration_attempts=0)
 
         for submission in submissions:
-            on_completion_retry(submission.id).delay()
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
     retry_processing_submissions.short_description = _(
         "Retry processing %(verbose_name_plural)s."

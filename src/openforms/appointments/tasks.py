@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 from celery_once import QueueOnce
 
@@ -31,6 +32,10 @@ def maybe_register_appointment(submission_id: int) -> None | str:
     be stored in the database. If appointment registration fails, this feedback
     should find its way back to the end-user.
     """
+    warnings.warn(
+        "This task is deprecated because of the new appointment flow.",
+        PendingDeprecationWarning,
+    )
     logger.info("Registering appointment for submission %d (if needed!)", submission_id)
     submission = Submission.objects.select_related("form").get(id=submission_id)
 

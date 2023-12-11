@@ -23,10 +23,30 @@ class SubmissionProcessingStatus:
     submission: Submission
 
     def get_async_results(self) -> List[AsyncResult]:
+        """Retrieve the results for the task scheduled ONLY when the submission was completed."""
         if not hasattr(self, "_async_result"):
-            task_ids = self.submission.on_completion_task_ids
+            task_ids = self.submission.post_completion_task_ids
             self._async_results = [AsyncResult(task_id) for task_id in task_ids]
         return self._async_results
+
+    def get_all_async_results(self) -> List[AsyncResult]:
+        """Retrieve the results for ALL tasks scheduled while processing a submission.
+
+        This includes tasks scheduled when the submission was completed, when it was cosigned, when a payment was
+        received or when a retry flow was triggered.
+        """
+        if not hasattr(self, "_all_async_results"):
+            task_ids_per_event = (
+                self.submission.postcompletionmetadata_set.all().values_list(
+                    "tasks_ids", flat=True
+                )
+            )
+            task_ids = []
+            for tasks_ids_list in task_ids_per_event:
+                task_ids += tasks_ids_list
+
+            self._all_async_results = [AsyncResult(task_id) for task_id in task_ids]
+        return self._all_async_results
 
     @property
     def status(self) -> str:
@@ -112,7 +132,7 @@ class SubmissionProcessingStatus:
 
         Forgetting the results ensures that we don't leak resources.
         """
-        results = self.get_async_results()
+        results = self.get_all_async_results()
         for result in results:
             result.forget()
 

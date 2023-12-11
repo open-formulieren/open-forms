@@ -6,10 +6,10 @@ from django.test import RequestFactory
 
 from rest_framework.request import Request
 
-from ...constants import ProcessingStatuses
+from ...constants import PostSubmissionEvents, ProcessingStatuses
 from ...models import Submission
 from ...status import SubmissionProcessingStatus
-from ...tasks import on_completion
+from ...tasks import on_post_submission_event
 
 
 class Command(BaseCommand):
@@ -72,7 +72,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Submission: {submission.id}")
         self.stdout.write("Entering on_completion flow...")
-        on_completion(submission.id)
+        on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
         request = RequestFactory().get("/irrelevant")

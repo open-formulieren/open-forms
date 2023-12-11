@@ -23,7 +23,11 @@ from openforms.template import openforms_backend, render_from_string
 from openforms.typing import JSONObject, RegistrationBackendKey
 from openforms.utils.validators import AllowedRedirectValidator, SerializerValidator
 
-from ..constants import RegistrationStatuses, SubmissionValueVariableSources
+from ..constants import (
+    PostSubmissionEvents,
+    RegistrationStatuses,
+    SubmissionValueVariableSources,
+)
 from ..pricing import get_submission_price
 from ..query import SubmissionManager
 from ..serializers import CoSignDataSerializer
@@ -193,11 +197,29 @@ class Submission(models.Model):
         default=False,
         help_text=_("Indicates whether the submission has been cosigned."),
     )
+    cosign_request_email_sent = models.BooleanField(
+        _("cosign request email sent"),
+        default=False,
+        help_text=_("Has the email to request a co-sign been sent?"),
+    )
+    cosign_confirmation_email_sent = models.BooleanField(
+        _("cosign confirmation email sent"),
+        default=False,
+        help_text=_(
+            "Has the confirmation email been sent after the submission has successfully been cosigned?"
+        ),
+    )
 
     confirmation_email_sent = models.BooleanField(
         _("confirmation email sent"),
         default=False,
         help_text=_("Indicates whether the confirmation email has been sent."),
+    )
+
+    payment_complete_confirmation_email_sent = models.BooleanField(
+        _("payment complete confirmation email sent"),
+        default=False,
+        help_text=_("Has the confirmation emails been sent after successful payment?"),
     )
 
     privacy_policy_accepted = models.BooleanField(
@@ -229,7 +251,7 @@ class Submission(models.Model):
         ),
     )
 
-    # tracking async execution state
+    # TODO: Deprecated, replaced by the PostCompletionMetadata model
     on_completion_task_ids = ArrayField(
         base_field=models.CharField(
             _("on completion task ID"),
@@ -244,6 +266,7 @@ class Submission(models.Model):
             "state of the async jobs."
         ),
     )
+
     needs_on_completion_retry = models.BooleanField(
         _("needs on_completion retry"),
         default=False,
@@ -311,7 +334,9 @@ class Submission(models.Model):
         if hasattr(self, "_execution_state"):
             del self._execution_state
 
-    def save_registration_status(self, status, result):
+    def save_registration_status(
+        self, status: RegistrationStatuses, result: dict
+    ) -> None:
         # combine the new result with existing data, where the new result overwrites
         # on key collisions. This allows storing intermediate results in the plugin
         # itself.
@@ -782,3 +807,15 @@ class Submission(models.Model):
             if (default_key := self.default_registration_backend_key)
             else None
         )
+
+    @property
+    def post_completion_task_ids(self) -> list[str]:
+        """Get the IDs of the tasks triggered when the submission was completed
+
+        Other tasks are triggered later once the submission is cosigned, a payment is made or a retry flow is triggered.
+        But to give feedback to the user we only need the first set of triggered tasks.
+        """
+        result = self.postcompletionmetadata_set.filter(
+            trigger_event=PostSubmissionEvents.on_completion
+        ).first()
+        return result.tasks_ids if result else []

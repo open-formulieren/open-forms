@@ -5,13 +5,14 @@ from datetime import date, datetime, time
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from django.utils.html import escape
 from django.utils.translation import gettext as _
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.typing import Component
+from openforms.submissions.tasks import schedule_emails
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.utils import send_confirmation_email
 from openforms.utils.tests.html_assert import HTMLAssertMixin
@@ -93,6 +94,7 @@ class WithEmailPlugin(NoEmailPlugin):
         return [LAST_NAME, EMAIL]
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -127,7 +129,7 @@ class AppointmentCreationConfirmationMailTests(HTMLAssertMixin, TestCase):
             contact_details={"lastName": "Powers", "email": "austin@powers.net"},
         )
 
-        send_confirmation_email(appointment.submission)
+        schedule_emails(appointment.submission.id)
 
         self.assertEqual(len(mail.outbox), 0)
 

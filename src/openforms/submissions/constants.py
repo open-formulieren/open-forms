@@ -38,3 +38,10 @@ class SubmissionValueVariableSources(models.TextChoices):
     prefill = "prefill", _("Prefill")
     logic = "logic", _("Logic")
     dmn = "dmn", _("DMN")
+
+
+class PostSubmissionEvents(models.TextChoices):
+    on_completion = "on_completion", _("On completion")
+    on_payment_complete = "on_payment_complete", _("On payment complete")
+    on_cosign_complete = "on_cosign_complete", _("On cosign complete")
+    on_retry = "on_retry", _("On retry")

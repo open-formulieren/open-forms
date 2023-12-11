@@ -12,7 +12,6 @@ from rest_framework.reverse import reverse
 
 from openforms.appointments.utils import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
-    SkipConfirmationEmail,
     get_confirmation_email_context_data,
     get_confirmation_email_templates,
 )
@@ -96,21 +95,10 @@ def remove_submission_uploads_from_session(
         remove_upload_from_session(attachment.temporary_file, session)
 
 
-def send_confirmation_email(submission: Submission):
+def send_confirmation_email(submission: Submission) -> None:
     logevent.confirmation_email_start(submission)
-    try:
-        subject_template, content_template = get_confirmation_email_templates(
-            submission
-        )
-    except SkipConfirmationEmail:
-        logger.debug(
-            "Form %d is configured to not send a confirmation email for submission %d, "
-            "skipping the confirmation e-mail.",
-            submission.form.id,
-            submission.id,
-        )
-        logevent.confirmation_email_skip(submission)
-        return
+
+    subject_template, content_template = get_confirmation_email_templates(submission)
 
     to_emails = submission.get_email_confirmation_recipients(submission.data)
     if not to_emails:
@@ -123,7 +111,10 @@ def send_confirmation_email(submission: Submission):
         return
 
     cc_emails = []
-    if cosigner_email := submission.cosigner_email:
+    should_cosigner_be_in_cc = (
+        submission.cosign_complete and not submission.cosign_confirmation_email_sent
+    )
+    if should_cosigner_be_in_cc and (cosigner_email := submission.cosigner_email):
         cc_emails.append(cosigner_email)
 
     context = get_confirmation_email_context_data(submission)
@@ -158,7 +149,18 @@ def send_confirmation_email(submission: Submission):
         raise
 
     submission.confirmation_email_sent = True
-    submission.save(update_fields=("confirmation_email_sent",))
+    if should_cosigner_be_in_cc:
+        submission.cosign_confirmation_email_sent = True
+    if submission.payment_required and submission.payment_user_has_paid:
+        submission.payment_complete_confirmation_email_sent = True
+
+    submission.save(
+        update_fields=(
+            "confirmation_email_sent",
+            "cosign_confirmation_email_sent",
+            "payment_complete_confirmation_email_sent",
+        )
+    )
 
     logevent.confirmation_email_success(submission)
 

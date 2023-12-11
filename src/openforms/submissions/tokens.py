@@ -48,7 +48,7 @@ class SubmissionStatusTokenGenerator(BaseTokenGenerator):
         chain was re-started (for example), the token is invalidated since it no longer
         represents the current state of execution.
         """
-        # on_completion_task_ids cannot be included, since this is set in the
+        # post_completion_task_ids cannot be included, since this is set in the
         # transaction.on_commit handler and we need to get a valid token _inside_ the
         # transaction.
         attributes = [

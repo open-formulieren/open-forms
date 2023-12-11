@@ -13,21 +13,34 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 
-from ...config.models import GlobalConfiguration
-from ..constants import SUBMISSIONS_SESSION_KEY, ProcessingResults, ProcessingStatuses
+from ..constants import (
+    SUBMISSIONS_SESSION_KEY,
+    PostSubmissionEvents,
+    ProcessingResults,
+    ProcessingStatuses,
+)
 from ..tasks import cleanup_on_completion_results
 from ..tokens import submission_status_token_generator
-from .factories import SubmissionFactory, SubmissionReportFactory
+from .factories import (
+    PostCompletionMetadataFactory,
+    SubmissionFactory,
+    SubmissionReportFactory,
+)
 
 
 class SubmissionStatusPermissionTests(APITestCase):
     def test_valid_token(self):
         # Use empty task ID to not need a real broker
-        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
+        submission = SubmissionFactory.create(
+            completed=True,
+            metadata__tasks_ids=[],
+            metadata__trigger_event=PostSubmissionEvents.on_completion,
+        )
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -43,7 +56,7 @@ class SubmissionStatusPermissionTests(APITestCase):
     )  # between 0-1am this fails because the tokens "roll over""
     def test_expired_token(self):
         # Use empty task ID to not need a real broker
-        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
+        submission = SubmissionFactory.create(completed=True, metadata__tasks_ids=[])
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -55,7 +68,7 @@ class SubmissionStatusPermissionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_token_invalidated_by_new_completion(self):
-        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
+        submission = SubmissionFactory.create(completed=True, metadata__tasks_ids=[])
         old_token = submission_status_token_generator.make_token(submission)
         submission.completed_on = timezone.now()
         submission.save()
@@ -69,7 +82,7 @@ class SubmissionStatusPermissionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_wrongly_formatted_token(self):
-        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
+        submission = SubmissionFactory.create(completed=True, metadata__tasks_ids=[])
         # can't reverse because bad format lol
         check_status_url = f"/api/v2/submissions/{submission.uuid}/badformat/status"
 
@@ -78,7 +91,7 @@ class SubmissionStatusPermissionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_invalid_token_timestamp(self):
-        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
+        submission = SubmissionFactory.create(completed=True, metadata__tasks_ids=[])
         # can't reverse because bad format lol
         check_status_url = f"/api/v2/submissions/{submission.uuid}/$$$-{'a'*20}/status"
 
@@ -89,7 +102,11 @@ class SubmissionStatusPermissionTests(APITestCase):
 
 class SubmissionStatusStatusAndResultTests(APITestCase):
     def test_no_task_id_registered(self):
-        submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
+        submission = SubmissionFactory.create(
+            completed=True,
+            metadata__tasks_ids=[],
+            metadata__trigger_event=PostSubmissionEvents.on_completion,
+        )
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -105,9 +122,7 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
         self.assertEqual(response_data["confirmationPageContent"], "")
 
     def test_in_progress_celery_states(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=["some-id"]
-        )
+        submission = SubmissionFactory.create(completed=True)
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -136,9 +151,7 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
                     self.assertEqual(response_data["paymentUrl"], "")
 
     def test_finished_celery_states(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=["some-id"]
-        )
+        submission = SubmissionFactory.create(completed=True)
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -162,9 +175,7 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
                     self.assertNotEqual(response_data["result"], "")
 
     def test_result_for_done_states(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=["some-id"]
-        )
+        submission = SubmissionFactory.create(completed=True)
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -190,9 +201,7 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
                     self.assertEqual(response_data["paymentUrl"], "")
 
     def test_submission_id_in_session_for_failed_result(self):
-        submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=["some-id"]
-        )
+        submission = SubmissionFactory.create(completed=True)
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
             "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
@@ -225,9 +234,10 @@ class SubmissionStatusExtraInformationTests(APITestCase):
     def test_succesful_processing(self):
         submission = SubmissionFactory.create(
             completed=True,
-            on_completion_task_ids=["some-id"],
             form__submission_confirmation_template="You get a cookie!",
             public_registration_reference="OF-ABCDE",
+            metadata__tasks_ids=["some-id"],
+            metadata__trigger_event=PostSubmissionEvents.on_completion,
         )
         SubmissionReportFactory.create(submission=submission)
         token = submission_status_token_generator.make_token(submission)
@@ -257,9 +267,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
 
     def test_appointment_user_error(self):
         submission = SubmissionFactory.create(
-            completed=True,
-            on_completion_task_ids=["some-id"],
-            form__submission_confirmation_template="You get a cookie!",
+            completed=True, form__submission_confirmation_template="You get a cookie!"
         )
         AppointmentInfoFactory.create(submission=submission, has_missing_info=True)
 
@@ -290,8 +298,9 @@ class SubmissionStatusExtraInformationTests(APITestCase):
     ):
         submission = SubmissionFactory.create(
             completed=True,
-            on_completion_task_ids=["some-id"],
             form__display_main_website_link=True,
+            metadata__tasks_ids=["some-id"],
+            metadata__trigger_event=PostSubmissionEvents.on_completion,
         )
 
         token = submission_status_token_generator.make_token(submission)
@@ -318,9 +327,7 @@ class SubmissionStatusExtraInformationTests(APITestCase):
         self, mock_get_solo
     ):
         submission = SubmissionFactory.create(
-            completed=True,
-            on_completion_task_ids=["some-id"],
-            form__display_main_website_link=False,
+            completed=True, form__display_main_website_link=False
         )
 
         token = submission_status_token_generator.make_token(submission)
@@ -343,7 +350,6 @@ class SubmissionStatusExtraInformationTests(APITestCase):
         merchant = OgoneMerchantFactory.create()
         submission = SubmissionFactory.create(
             completed=True,
-            on_completion_task_ids=["some-id"],
             form__product__price=Decimal("10"),
             form__payment_backend="ogone-legacy",
             # see PR#650 which drops this requirement
@@ -375,7 +381,6 @@ class SubmissionStatusExtraInformationTests(APITestCase):
     def test_payment_already_received(self):
         submission = SubmissionFactory.create(
             completed=True,
-            on_completion_task_ids=["some-id"],
             public_registration_reference="OF-ABCDE",
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
@@ -404,7 +409,6 @@ class CleanupTaskTests(TestCase):
         SubmissionFactory.create(
             completed=False,
             suspended_on=None,
-            on_completion_task_ids=["some-id"],
         )
 
         cleanup_on_completion_results()
@@ -416,7 +420,6 @@ class CleanupTaskTests(TestCase):
             completed=True,
             completed_on=timezone.now() - timedelta(seconds=10),
             suspended_on=None,
-            on_completion_task_ids=["some-id"],
         )
 
         cleanup_on_completion_results()
@@ -427,7 +430,6 @@ class CleanupTaskTests(TestCase):
         SubmissionFactory.create(
             completed=False,
             suspended_on=timezone.now() - timedelta(seconds=10),
-            on_completion_task_ids=[],
         )
 
         cleanup_on_completion_results()
@@ -439,21 +441,19 @@ class CleanupTaskTests(TestCase):
             completed=True,
             completed_on=timezone.now() - timedelta(days=2, seconds=10),
             suspended_on=None,
-            on_completion_task_ids=["some-id"],
         )
 
         cleanup_on_completion_results()
 
         mock_forget.assert_called_once_with()
         submission.refresh_from_db()
-        self.assertEqual(submission.on_completion_task_ids, [])
+        self.assertEqual(submission.post_completion_task_ids, [])
 
     def test_multiple_cleanup_calls_only_forget_once(self, mock_forget):
         SubmissionFactory.create(
             completed=True,
             completed_on=timezone.now() - timedelta(days=2, seconds=10),
             suspended_on=None,
-            on_completion_task_ids=["some-id"],
         )
 
         cleanup_on_completion_results()
@@ -466,9 +466,51 @@ class CleanupTaskTests(TestCase):
             completed=True,
             completed_on=timezone.now() - timedelta(days=2, seconds=10),
             suspended_on=None,
-            on_completion_task_ids=[],
+            metadata__tasks_ids=[],
         )
 
         cleanup_on_completion_results()
 
         mock_forget.assert_not_called()
+
+    def test_cleanup_for_submission_with_multiple_post_completion_events(
+        self, mock_forget
+    ):
+        submission = SubmissionFactory.create(
+            completed=True,
+            completed_on=timezone.now() - timedelta(days=2, seconds=10),
+            suspended_on=None,
+        )
+        submission.postcompletionmetadata_set.all().delete()
+
+        PostCompletionMetadataFactory.create(
+            submission=submission,
+            tasks_ids=["some-id-1", "some-id-2"],
+            trigger_event=PostSubmissionEvents.on_completion,
+        )
+        PostCompletionMetadataFactory.create(
+            submission=submission,
+            tasks_ids=["some-id-3"],
+            trigger_event=PostSubmissionEvents.on_cosign_complete,
+        )
+        PostCompletionMetadataFactory.create(
+            submission=submission,
+            tasks_ids=[],
+            trigger_event=PostSubmissionEvents.on_payment_complete,
+        )
+
+        cleanup_on_completion_results()
+
+        self.assertEqual(3, mock_forget.call_count)
+
+    def test_cleanup_for_submission_without_any_metadata(self, mock_forget):
+        submission = SubmissionFactory.create(
+            completed=True,
+            completed_on=timezone.now() - timedelta(days=2, seconds=10),
+            suspended_on=None,
+        )
+        submission.postcompletionmetadata_set.all().delete()
+
+        cleanup_on_completion_results()
+
+        self.assertEqual(0, mock_forget.call_count)

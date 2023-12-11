@@ -35,10 +35,10 @@ from openforms.registrations.registry import Registry
 from openforms.registrations.tests.utils import patch_registry
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..constants import SUBMISSIONS_SESSION_KEY
+from ..constants import SUBMISSIONS_SESSION_KEY, PostSubmissionEvents
 from ..logic.actions import LogicActionTypes
 from ..models import SubmissionStep
-from ..tasks import on_completion
+from ..tasks import on_post_submission_event
 from .factories import (
     SubmissionFactory,
     SubmissionStepFactory,
@@ -81,9 +81,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             ],
         )
 
-    @patch("openforms.submissions.api.mixins.on_completion")
+    @patch("openforms.submissions.api.mixins.on_post_submission_event")
     @freeze_time("2020-12-11T10:53:19+01:00")
-    def test_complete_submission(self, mock_on_completion):
+    def test_complete_submission(self, mock_on_post_submission_event):
         form = FormFactory.create(
             submission_confirmation_template="Thank you for submitting {{ foo }}."
         )
@@ -105,7 +105,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # assert that the async celery task execution is scheduled
-        mock_on_completion.assert_called_once_with(submission.id)
+        mock_on_post_submission_event.assert_called_once_with(
+            submission.id, PostSubmissionEvents.on_completion
+        )
 
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
@@ -749,7 +751,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         with self.monkeypatch:
-            on_completion(submission.id)
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
         self.assertEqual(len(self.mock_calls), 1)
         submission_in_args = self.mock_calls[0][0][0]
@@ -780,7 +782,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         with self.monkeypatch:
-            on_completion(submission.id)
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
         # it uses the first
         self.assertEqual(len(self.mock_calls), 1)
@@ -833,7 +835,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         with self.monkeypatch:
-            on_completion(submission.id)
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
         self.assertEqual(len(self.mock_calls), 1)
         submission_in_args = self.mock_calls[0][0][0]
@@ -873,7 +875,7 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         with self.monkeypatch:
-            on_completion(submission.id)
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
         # Still tries to use default
         self.assertEqual(len(self.mock_calls), 1)

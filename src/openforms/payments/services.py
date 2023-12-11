@@ -2,7 +2,6 @@ from django.db import transaction
 
 from openforms.logging import logevent
 from openforms.registrations.registry import register
-from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
 from .constants import PaymentStatus
@@ -11,17 +10,6 @@ __all__ = ["update_submission_payment_registration"]
 
 
 def update_submission_payment_registration(submission: Submission):
-    should_skip = any(
-        (
-            submission.registration_status != RegistrationStatuses.success,
-            not submission.payment_required,
-            submission.payment_registered,
-        )
-    )
-    if should_skip:
-        logevent.registration_payment_update_skip(submission)
-        return
-
     try:
         plugin = register[submission.registration_backend.backend]
     except (AttributeError, KeyError) as e:

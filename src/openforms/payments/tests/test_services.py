@@ -9,12 +9,12 @@ from rest_framework import serializers
 
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry
-from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..constants import PaymentStatus
-from ..services import update_submission_payment_registration
+from ..tasks import update_submission_payment_status
 from .factories import SubmissionPaymentFactory
 
 
@@ -65,7 +65,9 @@ class UpdatePaymentTests(TestCase):
         self.assertFalse(submission.payment_registered)
 
         with patch.object(self.plugin, "update_payment_status") as update_mock:
-            update_submission_payment_registration(submission)
+            update_submission_payment_status(
+                submission.id, PostSubmissionEvents.on_completion
+            )
             update_mock.assert_not_called()
 
     def test_submission_complete(self):
@@ -79,7 +81,9 @@ class UpdatePaymentTests(TestCase):
 
         # now check if we update
         with patch.object(self.plugin, "update_payment_status") as update_mock:
-            update_submission_payment_registration(submission)
+            update_submission_payment_status(
+                submission.id, PostSubmissionEvents.on_completion
+            )
             update_mock.assert_called_once_with(submission, dict())
 
         payment.refresh_from_db()
@@ -91,7 +95,9 @@ class UpdatePaymentTests(TestCase):
 
         # check we don't update again
         with patch.object(self.plugin, "update_payment_status") as update_mock:
-            update_submission_payment_registration(submission)
+            update_submission_payment_status(
+                submission.id, PostSubmissionEvents.on_retry
+            )
             update_mock.assert_not_called()
 
     def test_submission_bad(self):
@@ -111,7 +117,9 @@ class UpdatePaymentTests(TestCase):
 
                 # now check we don't update on these
                 with patch.object(self.plugin, "update_payment_status") as update_mock:
-                    update_submission_payment_registration(submission)
+                    update_submission_payment_status(
+                        submission.id, PostSubmissionEvents.on_completion
+                    )
                     update_mock.assert_not_called()
 
 
@@ -143,7 +151,9 @@ class TestPaymentRaceCondition(TransactionTestCase):
 
             def _thread(sid):
                 sub = Submission.objects.get(id=sid)
-                update_submission_payment_registration(sub)
+                update_submission_payment_status(
+                    sub.id, PostSubmissionEvents.on_completion
+                )
                 close_old_connections()
 
             threads = [Thread(target=_thread, args=(submission.id,)) for _ in range(5)]

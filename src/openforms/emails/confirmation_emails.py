@@ -10,8 +10,6 @@ from openforms.config.models import GlobalConfiguration
 from openforms.utils.urls import build_absolute_uri
 from openforms.variables.utils import get_variables_for_context
 
-from .exceptions import SkipConfirmationEmail
-
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission  # pragma: nocover
 
@@ -20,9 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_confirmation_email_templates(submission: "Submission") -> tuple[str, str]:
-    if not submission.form.send_confirmation_email:
-        raise SkipConfirmationEmail("Confirmation e-mail sending is disabled.")
-
     with translation.override(submission.language_code):
         config = GlobalConfiguration.get_solo()
         assert isinstance(config, GlobalConfiguration)
