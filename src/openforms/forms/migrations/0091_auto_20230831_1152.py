@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("forms", "0090_auto_20230816_1106"),
+        ("forms", "0046_squashed_to_openforms_v230"),
     ]
 
     operations = [
