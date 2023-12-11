@@ -190,7 +190,6 @@ INSTALLED_APPS = [
     "csp_post_processor",
     "django_camunda",
     "log_outgoing_requests",
-    "log_outgoing_requests_ext",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -716,7 +715,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="*"),
     },
     "cleanup-outgoing-request-logs": {
-        "task": "log_outgoing_requests_ext.tasks.cleanup_request_logs",
+        "task": "log_outgoing_requests.tasks.prune_logs",
         "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
     "send-daily-digest": {
