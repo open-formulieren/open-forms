@@ -1,3 +1,4 @@
+from typing import Callable
 from urllib.parse import quote
 
 from django.core.exceptions import ValidationError
@@ -126,12 +127,25 @@ class ServiceFetchConfiguration(models.Model):
         #
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
+        # Explicitly cast leaf values to strings to avoid localization
+        StringLeaved = str | list["StringLeaved"] | dict[str, "StringLeaved"]
+
+        def cast_leaves(thing: any, cast: Callable[[any], str] = str) -> StringLeaved:
+            match thing:
+                case [*xs]:
+                    return [cast_leaves(x, cast) for x in xs]
+                case {**d}:
+                    return {k: cast_leaves(v, cast) for k, v in d.items()}
+                case _:
+                    return cast(thing)
+
+        ctx = cast_leaves(context)
+
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
             header: render_from_string(
                 value,
-                # Explicitly cast values to strings to avoid localization
-                {k: str(v) for k, v in context.items()},
+                ctx,
                 backend=sandbox_backend,
                 disable_autoescape=True,
             )
@@ -145,14 +159,13 @@ class ServiceFetchConfiguration(models.Model):
         # this catches faults requests doesn't: https://github.com/psf/requests/issues/6359
         HeaderValidator()(headers)
 
-        escaped_for_path = {k: quote(str(v), safe="") for k, v in context.items()}
+        escaped_for_path = cast_leaves(context, lambda v: quote(str(v), safe=""))
 
         query_params = {
             param: [
                 render_from_string(
                     value,
-                    # Explicitly cast values to strings to avoid localization
-                    {k: str(v) for k, v in context.items()},
+                    ctx,
                     backend=sandbox_backend,
                     disable_autoescape=True,
                 )
