@@ -47,7 +47,8 @@ def build_response_header_component(
     component = ResolvedComponent(
         name=name,
         # see https://swagger.io/specification/#components-object
-        type="headers",  # TODO ResolvedComponent.HEADER does not exist yet -> PR upstream
+        # See upstream issue: https://github.com/tfranzel/drf-spectacular/issues/1128
+        type="headers",
         schema=parameter,
         object=name,
     )
