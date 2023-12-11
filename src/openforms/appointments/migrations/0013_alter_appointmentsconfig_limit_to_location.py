@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("appointments", "0012_rename_plugin_identifiers"),
+        ("appointments", "0001_initial_squashed"),
     ]
 
     operations = [

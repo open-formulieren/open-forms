@@ -11,23 +11,6 @@ import openforms.appointments.fields
 
 class Migration(migrations.Migration):
 
-    # TODO: in Open Forms 2.5.0 or 3.0, whichever comes first, remove the original
-    # migrations and convert this to a normal migration.
-    replaces = [
-        ("appointments", "0001_initial"),
-        ("appointments", "0002_auto_20210902_2120"),
-        ("appointments", "0003_auto_20210908_1350"),
-        ("appointments", "0004_appointmentinfo_created"),
-        ("appointments", "0005_auto_20211210_1804"),
-        ("appointments", "0006_auto_20220203_1500"),
-        ("appointments", "0007_alter_appointmentsconfig_config_path"),
-        ("appointments", "0008_rename_config_path_appointmentsconfig_plugin"),
-        ("appointments", "0009_appointmentsconfig_limit_to_location"),
-        ("appointments", "0010_appointment_appointmentproduct"),
-        ("appointments", "0011_auto_20230721_1700"),
-        ("appointments", "0012_rename_plugin_identifiers"),
-    ]
-
     dependencies = [
         ("submissions", "0001_initial_squashed_0057_alter_submissionvaluevariable_key"),
         ("submissions", "0076_alter_submission_form_url"),
