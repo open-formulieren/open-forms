@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("variables", "0011_migrate_interpolation_format"),
+        ("variables", "0001_initial_to_openforms_v230"),
     ]
 
     operations = [

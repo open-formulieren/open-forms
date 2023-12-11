@@ -74,8 +74,8 @@ class Migration(migrations.Migration):
     ]
 
     dependencies = [
-        ("variables", "0001_add_service_fetch_configuration"),
         ("forms", "0001_initial_pre_openforms_v230"),
+        ("variables", "0001_initial_to_openforms_v230"),
     ]
 
     operations = [

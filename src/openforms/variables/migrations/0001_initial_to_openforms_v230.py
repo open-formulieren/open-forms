@@ -8,23 +8,6 @@ import openforms.variables.validators
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("variables", "0001_add_service_fetch_configuration"),
-        ("variables", "0002_servicefetchconfiguration_name"),
-        ("variables", "0003_servicefetchconfiguration__query_params"),
-        ("variables", "0004_migrate_query_params"),
-        ("variables", "0005_remove_servicefetchconfiguration_query_params"),
-        (
-            "variables",
-            "0006_rename__query_params_servicefetchconfiguration_query_params",
-        ),
-        ("variables", "0007_alter_servicefetchconfiguration_headers"),
-        ("variables", "0008_alter_servicefetchconfiguration_query_params"),
-        ("variables", "0009_servicefetchconfiguration_name"),
-        ("variables", "0010_alter_servicefetchconfiguration_name"),
-        ("variables", "0011_migrate_interpolation_format"),
-    ]
-
     dependencies = [
         ("zgw_consumers", "0016_auto_20220818_1412"),
     ]
