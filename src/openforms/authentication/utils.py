@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 from openforms.forms.models import Form
 from openforms.submissions.models import Submission
 
-from .base import BasePlugin, LoginInfo
+from .base import LoginInfo
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
@@ -63,9 +63,8 @@ def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool
 
 def meets_plugin_requirements(request: Request, config: dict) -> bool:
     # called after is_authenticated_with_plugin so this is correct
-    # TODO make register a Generic so this annotation of BasePlugin isn't needed
     plugin_id = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
-    plugin: BasePlugin = auth_register[plugin_id]
+    plugin = auth_register[plugin_id]
     return plugin.check_requirements(request, config.get(plugin_id, {}))
 
 
