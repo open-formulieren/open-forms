@@ -6,21 +6,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("stuf", "0001_initial"),
-        ("stuf", "0002_auto_20210527_1125"),
-        ("stuf", "0003_auto_20210604_1355"),
-        ("stuf", "0004_auto_20210722_1826"),
-        ("stuf", "0005_auto_20210722_1827"),
-        ("stuf", "0006_auto_20210722_1832"),
-        ("stuf", "0007_auto_20210924_1518"),
-        ("stuf", "0008_auto_20210927_1555"),
-        ("stuf", "0009_auto_20220404_1050"),
-        ("stuf", "0010_auto_20220404_1053"),
-        ("stuf", "0011_auto_20220404_1119"),
-        ("stuf", "0012_auto_20220905_2218"),
-    ]
-
     dependencies = [
         ("soap", "0001_initial"),
     ]

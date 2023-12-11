@@ -7,18 +7,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("stuf_zds", "0001_initial"),
-        ("stuf_zds", "0002_nice_verbose_name"),
-        ("stuf_zds", "0003_auto_20210604_1355"),
-        ("stuf_zds", "0004_auto_20210624_2028"),
-        ("stuf_zds", "0005_stufzdsconfig_zds_zaaktype_status_omschrijving"),
-        ("stuf_zds", "0006_auto_20211001_1300"),
-        ("stuf_zds", "0007_auto_20211230_1558"),
-    ]
-
     dependencies = [
-        ("stuf", "0008_auto_20210927_1555"),
+        ("stuf", "0001_initial_pre_openforms_v230"),
     ]
 
     operations = [

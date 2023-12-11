@@ -6,14 +6,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("stuf_bg", "0001_initial"),
-        ("stuf_bg", "0002_nice_verbose_name"),
-        ("stuf_bg", "0003_auto_20211001_1300"),
-    ]
-
     dependencies = [
-        ("stuf", "0008_auto_20210927_1555"),
+        ("stuf", "0001_initial_pre_openforms_v230"),
     ]
 
     operations = [
