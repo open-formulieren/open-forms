@@ -10,7 +10,7 @@ from privates.test import temp_private_root
 from zgw_consumers.test import generate_oas_component
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
-from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
@@ -1387,7 +1387,7 @@ class ZGWBackendTests(TestCase):
         )
         assert submission.public_registration_reference == ""
 
-        pre_registration(submission.id)
+        pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
         submission.refresh_from_db()
         self.assertEqual(submission.public_registration_reference, "ZAAK-OF-TEST")
@@ -1469,8 +1469,8 @@ class PartialRegistrationFailureTests(TestCase):
         )
 
         with self.subTest("Initial document creation fails"):
-            pre_registration(self.submission.id)
-            register_submission(self.submission.id)
+            pre_registration(self.submission.id, PostSubmissionEvents.on_completion)
+            register_submission(self.submission.id, PostSubmissionEvents.on_completion)
 
             self.submission.refresh_from_db()
             assert self.submission.registration_result
@@ -1485,7 +1485,7 @@ class PartialRegistrationFailureTests(TestCase):
 
         with self.subTest("New document creation attempt does not create zaak again"):
             with self.assertRaises(RegistrationFailed):
-                register_submission(self.submission.id)
+                register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
             self.submission.refresh_from_db()
             self.assertEqual(
@@ -1633,8 +1633,8 @@ class PartialRegistrationFailureTests(TestCase):
         )
 
         with self.subTest("First try, attachment relation fails"):
-            pre_registration(self.submission.id)
-            register_submission(self.submission.id)
+            pre_registration(self.submission.id, PostSubmissionEvents.on_completion)
+            register_submission(self.submission.id, PostSubmissionEvents.on_completion)
 
             self.submission.refresh_from_db()
             assert self.submission.registration_result
@@ -1672,7 +1672,7 @@ class PartialRegistrationFailureTests(TestCase):
 
         with self.subTest("New attempt - ensure existing data is not created again"):
             with self.assertRaises(RegistrationFailed):
-                register_submission(self.submission.id)
+                register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
             self.submission.refresh_from_db()
             self.assertEqual(

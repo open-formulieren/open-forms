@@ -9,15 +9,16 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.models import Service
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import FormRegistrationBackend
-from openforms.submissions.constants import RegistrationStatuses
+from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ...logging.models import TimelineLogProxy
 from ..base import BasePlugin
 from ..exceptions import RegistrationFailed
 from ..registry import Registry
@@ -80,7 +81,7 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register):
-            register_submission(self.submission.id)
+            register_submission(self.submission.id, PostSubmissionEvents.on_completion)
 
         self.submission.refresh_from_db()
         self.assertEqual(
@@ -111,25 +112,34 @@ class RegistrationHookTests(TestCase):
 
         # call the hook for the submission, while patching the model field registry
         model_field = FormRegistrationBackend._meta.get_field("backend")
-        with patch_registry(model_field, register), self.assertLogs(
-            level="WARNING"
-        ) as log:
-            register_submission(self.submission.id)
+        with (
+            self.subTest("On completion - does NOT raise"),
+            patch_registry(model_field, register),
+            self.assertLogs(level="WARNING") as log,
+        ):
+            register_submission(self.submission.id, PostSubmissionEvents.on_completion)
 
-            # check we log an WARNING without stack
+            # check we log a WARNING with stack
             error_log = log.records[-1]
             self.assertEqual(error_log.levelname, "WARNING")
             self.assertIn("failed", error_log.message)
-            self.assertIsNone(error_log.exc_info)
+            self.assertIsNotNone(error_log.exc_info)
 
         self.submission.refresh_from_db()
-        self.assertTrue(self.submission.needs_on_completion_retry)
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.failed
         )
+        self.assertTrue(self.submission.needs_on_completion_retry)
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
         self.assertEqual(self.submission.last_register_date, timezone.now())
+
+        with (
+            self.subTest("On retry - does raise"),
+            patch_registry(model_field, register),
+            self.assertRaises(RegistrationFailed),
+        ):
+            register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
     @freeze_time("2021-08-04T12:00:00+02:00")
     def test_failing_registration_with_bugged_plugin(self):
@@ -150,10 +160,12 @@ class RegistrationHookTests(TestCase):
 
         # call the hook for the submission, while patching the model field registry
         model_field = FormRegistrationBackend._meta.get_field("backend")
-        with patch_registry(model_field, register), self.assertLogs(
-            level="ERROR"
-        ) as log:
-            register_submission(self.submission.id)
+        with (
+            self.subTest("On completion - does NOT raise"),
+            patch_registry(model_field, register),
+            self.assertLogs(level="ERROR") as log,
+        ):
+            register_submission(self.submission.id, PostSubmissionEvents.on_completion)
 
             # check we log an ERROR with stack
             error_log = log.records[-1]
@@ -169,6 +181,13 @@ class RegistrationHookTests(TestCase):
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Can't divide by zero", tb)
         self.assertEqual(self.submission.last_register_date, timezone.now())
+
+        with (
+            self.subTest("On retry - does raise"),
+            patch_registry(model_field, register),
+            self.assertRaises(ZeroDivisionError),
+        ):
+            register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
     @freeze_time("2021-08-04T12:00:00+02:00")
     def test_retrying_registration_already_succeeded_just_returns(self):
@@ -203,7 +222,9 @@ class RegistrationHookTests(TestCase):
 
         with patch_registry(model_field, register):
             # Assert task just returns
-            self.assertIsNone(register_submission(submission.id))
+            self.assertIsNone(
+                register_submission(submission.id, PostSubmissionEvents.on_completion)
+            )
 
         submission.refresh_from_db()
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
@@ -220,7 +241,10 @@ class RegistrationHookTests(TestCase):
         # call the hook for the submission, while patching the model field registry
         model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, Registry()):
-            register_submission(submission_no_registration_backend.id)
+            register_submission(
+                submission_no_registration_backend.id,
+                PostSubmissionEvents.on_completion,
+            )
 
         submission_no_registration_backend.refresh_from_db()
         self.assertEqual(
@@ -237,8 +261,13 @@ class RegistrationHookTests(TestCase):
     def test_submission_is_not_completed_yet(self):
         submission = SubmissionFactory.create(completed=False)
 
-        with self.assertRaises(RegistrationFailed):
-            register_submission(submission.id)
+        with self.assertLogs() as logs:
+            register_submission(submission.id, PostSubmissionEvents.on_completion)
+
+        self.assertEqual(
+            logs.records[0].msg,
+            "Trying to register submission '%s' which is not completed.",
+        )
 
     @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
     @freeze_time("2021-08-04T12:00:00+02:00")
@@ -264,17 +293,57 @@ class RegistrationHookTests(TestCase):
         # # call the hook for the submission, while patching the model field registry
         model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register):
-            with self.assertRaises(RegistrationFailed):
-                register_submission(self.submission.id)
+            with self.subTest("on completion"):
+                register_submission(
+                    self.submission.id, PostSubmissionEvents.on_completion
+                )
+
+            with self.subTest("on retry"):
+                with (
+                    self.assertRaises(RegistrationFailed),
+                    self.assertLogs(level="DEBUG") as logs,
+                ):
+                    register_submission(
+                        self.submission.id, PostSubmissionEvents.on_retry
+                    )
+
+        self.assertEqual(logs.records[-1].msg, "Plugin '%s' is not enabled")
 
         self.submission.refresh_from_db()
-        self.assertTrue(self.submission.needs_on_completion_retry)
         self.assertEqual(
             self.submission.registration_status, RegistrationStatuses.failed
         )
+        self.assertTrue(self.submission.needs_on_completion_retry)
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Registration plugin is not enabled", tb)
         self.assertEqual(self.submission.last_register_date, timezone.now())
+
+    def test_registration_backend_invalid_options(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__registration_backend="email",
+            form__registration_backend_options={},
+        )  # Missing "to_email" option
+
+        with (
+            self.subTest("On completion - does NOT raise"),
+            self.assertLogs(level="WARNING") as logs,
+        ):
+            register_submission(submission.id, PostSubmissionEvents.on_completion)
+
+            submission.refresh_from_db()
+
+            self.assertIn(
+                "Registration using plugin '%r' for submission '%s' failed",
+                logs.records[-1].msg,
+            )
+            self.assertTrue(submission.needs_on_completion_retry)
+
+        with (
+            self.subTest("On retry - does raise"),
+            self.assertRaises(ValidationError),
+        ):
+            register_submission(submission.id, PostSubmissionEvents.on_retry)
 
 
 class NumRegistrationsTest(TestCase):
@@ -309,7 +378,7 @@ class NumRegistrationsTest(TestCase):
         model_field = FormRegistrationBackend._meta.get_field("backend")
         with patch_registry(model_field, register):
             # first registration won't re-raise RegistrationFailed
-            register_submission(submission.id)
+            register_submission(submission.id, PostSubmissionEvents.on_completion)
 
             submission.refresh_from_db()
             self.assertEqual(
@@ -322,7 +391,7 @@ class NumRegistrationsTest(TestCase):
             # second and next attempts will re-raise RegistrationFailed for Celery retry
             for i in range(2, TEST_NUM_ATTEMPTS + 1):
                 with self.assertRaises(RegistrationFailed):
-                    register_submission(submission.id)
+                    register_submission(submission.id, PostSubmissionEvents.on_retry)
 
                 submission.refresh_from_db()
                 self.assertEqual(
@@ -335,16 +404,14 @@ class NumRegistrationsTest(TestCase):
             # check
             self.assertEqual(submission.registration_attempts, TEST_NUM_ATTEMPTS)
 
-            # now make more attempts then limit
-            register_submission(submission.id)
+            # now make more attempts than limit
+            register_submission(submission.id, PostSubmissionEvents.on_retry)
 
             submission.refresh_from_db()
             self.assertEqual(
                 submission.registration_status, RegistrationStatuses.failed
             )
             self.assertEqual(submission.registration_attempts, TEST_NUM_ATTEMPTS)
-            # no more retries
-            self.assertFalse(submission.needs_on_completion_retry)
 
             # added log
             log = TimelineLogProxy.objects.last()

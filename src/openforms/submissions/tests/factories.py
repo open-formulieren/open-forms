@@ -16,9 +16,15 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.payments.constants import PaymentStatus
 
-from ..constants import RegistrationStatuses, SubmissionValueVariableSources
+from ..constants import (
+    PostSubmissionEvents,
+    RegistrationStatuses,
+    SubmissionValueVariableSources,
+)
 from ..models import (
+    PostCompletionMetadata,
     Submission,
     SubmissionFileAttachment,
     SubmissionReport,
@@ -52,6 +58,12 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             ),
             pre_registration_completed=True,
             price=factory.PostGenerationMethodCall("calculate_price"),
+            metadata=factory.RelatedFactory(
+                "openforms.submissions.tests.factories.PostCompletionMetadataFactory",
+                factory_related_name="submission",
+                tasks_ids=["some-id"],
+                trigger_event=PostSubmissionEvents.on_completion,
+            ),
         )
         completed_not_preregistered = factory.Trait(
             completed_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
@@ -98,6 +110,22 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 "openforms.submissions.tests.factories.SubmissionReportFactory",
                 factory_related_name="submission",
             )
+        )
+        with_completed_payment = factory.Trait(
+            form__payment_backend="demo",
+            product=factory.RelatedFactory(
+                "openforms.payments.tests.factories.SubmissionPaymentFactory",
+                factory_related_name="submission",
+                status=PaymentStatus.completed,
+            ),
+        )
+        with_registered_payment = factory.Trait(
+            form__payment_backend="demo",
+            product=factory.RelatedFactory(
+                "openforms.payments.tests.factories.SubmissionPaymentFactory",
+                factory_related_name="submission",
+                status=PaymentStatus.registered,
+            ),
         )
 
     @factory.post_generation
@@ -340,3 +368,10 @@ class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = SubmissionValueVariable
         django_get_or_create = ("submission", "form_variable")
+
+
+class PostCompletionMetadataFactory(factory.django.DjangoModelFactory):
+    submission = factory.SubFactory(SubmissionFactory)
+
+    class Meta:
+        model = PostCompletionMetadata

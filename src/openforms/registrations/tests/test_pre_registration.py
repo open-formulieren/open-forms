@@ -2,16 +2,34 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
+from rest_framework.exceptions import ValidationError
+from testfixtures import LogCapture
+
+from openforms.config.models import GlobalConfiguration
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
-from openforms.registrations.exceptions import RegistrationFailed
 from openforms.registrations.tasks import register_submission
+from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks.registration import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
 class PreRegistrationTests(TestCase):
+    def test_pre_registration_with_submission_not_completed(self):
+        submission = SubmissionFactory.create()
+
+        with LogCapture() as logs:
+            pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+        logs.check_present(
+            (
+                "openforms.registrations.tasks",
+                "ERROR",
+                f"Trying to pre-register submission '{submission}' which is not completed.",
+            )
+        )
+
     @patch(
         "openforms.submissions.public_references.generate_unique_submission_reference",
         return_value="OF-1234",
@@ -25,7 +43,7 @@ class PreRegistrationTests(TestCase):
 
         self.assertEqual(submission.public_registration_reference, "")
 
-        pre_registration(submission.id)
+        pre_registration(submission.id, PostSubmissionEvents.on_completion)
         submission.refresh_from_db()
 
         self.assertEqual(submission.public_registration_reference, "OF-1234")
@@ -42,12 +60,14 @@ class PreRegistrationTests(TestCase):
         with patch(
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
         ) as mock_pre_register:
-            pre_registration(submission.id)
-            pre_registration(submission.id)
+            pre_registration(submission.id, PostSubmissionEvents.on_completion)
+            pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
         mock_pre_register.assert_called_once()
 
-    def test_pre_registration_task_with_invalid_options_does_not_raise_error(self):
+    def test_pre_registration_task_with_invalid_options_raises_error_only_on_retry(
+        self,
+    ):
         submission = SubmissionFactory.create(
             form__registration_backend="email",
             form__registration_backend_options={
@@ -62,14 +82,19 @@ class PreRegistrationTests(TestCase):
             "openforms.submissions.public_references.generate_unique_submission_reference",
             return_value="OF-test-registration-failure",
         ):
-            pre_registration(submission.id)
+            with self.subTest("On completion - no error raised"):
+                pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
-        submission.refresh_from_db()
+            submission.refresh_from_db()
 
-        self.assertEqual(
-            submission.public_registration_reference, "OF-test-registration-failure"
-        )
-        self.assertFalse(submission.pre_registration_completed)
+            self.assertEqual(
+                submission.public_registration_reference, "OF-test-registration-failure"
+            )
+            self.assertFalse(submission.pre_registration_completed)
+
+            with self.subTest("On retry -  raises errors"):
+                with self.assertRaises(ValidationError):
+                    pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
     def test_pre_registration_task_errors_but_does_not_raise_error(self):
         zgw_group = ZGWApiGroupConfigFactory.create()
@@ -88,7 +113,7 @@ class PreRegistrationTests(TestCase):
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
             side_effect=Exception("I FAILED :("),
         ):
-            pre_registration(submission.id)
+            pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
         submission.refresh_from_db()
 
@@ -96,7 +121,7 @@ class PreRegistrationTests(TestCase):
             submission.public_registration_reference, "OF-test-registration-failure"
         )
         self.assertFalse(submission.pre_registration_completed)
-        self.assertEqual(submission.registration_result["traceback"], "I FAILED :(")
+        self.assertIn("I FAILED :(", submission.registration_result["traceback"])
 
     def test_plugins_generating_reference_before_during_pre_registration(self):
         plugin_data = [
@@ -131,7 +156,7 @@ class PreRegistrationTests(TestCase):
                     "openforms.submissions.public_references.generate_unique_submission_reference",
                     return_value=f"OF-{plugin_name}",
                 ):
-                    pre_registration(submission.id)
+                    pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
                 submission.refresh_from_db()
 
@@ -139,7 +164,7 @@ class PreRegistrationTests(TestCase):
                     submission.public_registration_reference, f"OF-{plugin_name}"
                 )
 
-    def test_if_pre_registration_fails_registration_task_raises_error(self):
+    def test_if_pre_registration_fails_registration_task_skips(self):
         submission = SubmissionFactory.create(
             form__registration_backend="email",
             form__registration_backend_options={
@@ -148,14 +173,22 @@ class PreRegistrationTests(TestCase):
             completed_not_preregistered=True,
         )
 
-        pre_registration(submission.id)  # Fails because of invalid options
+        pre_registration(
+            submission.id, PostSubmissionEvents.on_completion
+        )  # Fails because of invalid options
 
-        with self.assertRaises(RegistrationFailed):
-            register_submission(submission.id)
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission",
+        ) as registration_patch:
+            register_submission(submission.id, PostSubmissionEvents.on_completion)
+
+        registration_patch.assert_not_called()
 
     def test_retry_doesnt_overwrite_internal_reference(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             completed_not_preregistered=True,
         )
 
@@ -167,13 +200,14 @@ class PreRegistrationTests(TestCase):
                 "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-IM-NOT-OVERWRITTEN",
             ):
-                pre_registration(submission.id)
+                pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
             with patch(
                 "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-IM-DIFFERENT",
             ):
-                pre_registration(submission.id)
+                with self.assertRaises(Exception):
+                    pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
 
@@ -196,16 +230,45 @@ class PreRegistrationTests(TestCase):
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
             side_effect=Exception,
         ):
-            pre_registration(submission.id)
+            pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
         with patch(
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
         ):
-            pre_registration(submission.id)
+            pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
 
         self.assertEqual(
             submission.registration_result["temporary_internal_reference"],
             "OF-IM-TEMPORARY",
+        )
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_retry_after_too_many_attempts_skips(self, m_get_solo):
+        zgw_group = ZGWApiGroupConfigFactory.create()
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            completed_not_preregistered=True,
+            registration_attempts=3,
+        )
+
+        TEST_NUM_ATTEMPTS = 3
+        m_get_solo.return_value = GlobalConfiguration(
+            registration_attempt_limit=TEST_NUM_ATTEMPTS,
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
+            ) as mock_pre_register,
+            self.assertLogs(level="DEBUG") as logs,
+        ):
+            pre_registration(submission.id, PostSubmissionEvents.on_retry)
+
+        mock_pre_register.assert_not_called()
+        self.assertEqual(
+            "Skipping pre-registration for submission '%s' because it retried and failed too many times.",
+            logs.records[-1].msg,
         )

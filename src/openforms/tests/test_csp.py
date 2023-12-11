@@ -98,11 +98,11 @@ class SubmissionConfirmationInlineStyleCSPTests(CSPMixin, APITestCase):
         mock_AsyncResult.return_value.state = states.SUCCESS
         submission = SubmissionFactory.create(
             completed=True,
-            on_completion_task_ids=["123"],
             with_report=False,
             form__submission_confirmation_template="""
             <p>This is some <span style="color: red;">inline styled</span> HTML.</p>
             """,
+            metadata__tasks_ids=["123"],
         )
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(
@@ -137,7 +137,7 @@ class SubmissionConfirmationInlineStyleCSPTests(CSPMixin, APITestCase):
             """
         )
         submission = SubmissionFactory.create(
-            completed=True, on_completion_task_ids=["123"], with_report=False
+            completed=True, with_report=False, metadata__tasks_ids=["123"]
         )
         token = submission_status_token_generator.make_token(submission)
         check_status_url = reverse(

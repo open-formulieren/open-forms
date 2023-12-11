@@ -6,6 +6,7 @@ from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
 from openforms.config.models import GlobalConfiguration
+from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import BasePlugin, PaymentInfo
@@ -33,8 +34,8 @@ class ViewsTests(TestCase):
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
-    @patch("openforms.payments.views.update_submission_payment_status.delay")
-    def test_views(self, update_payments_mock):
+    @patch("openforms.payments.views.on_post_submission_event")
+    def test_views(self, on_post_submission_event_mock):
         register = Registry()
         register("plugin1")(Plugin)
         plugin = register["plugin1"]
@@ -84,7 +85,7 @@ class ViewsTests(TestCase):
         self.assertRegex(url, r"^http://")
 
         with self.subTest("return ok"):
-            update_payments_mock.reset_mock()
+            on_post_submission_event_mock.reset_mock()
 
             with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.get(url)
@@ -92,20 +93,22 @@ class ViewsTests(TestCase):
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 302)
 
-            update_payments_mock.assert_called_once_with(submission.id)
+            on_post_submission_event_mock.assert_called_once_with(
+                submission.id, PostSubmissionEvents.on_payment_complete
+            )
 
         with self.subTest("return bad method"):
-            update_payments_mock.reset_mock()
+            on_post_submission_event_mock.reset_mock()
 
             with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.post(url)
 
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "GET")
-            update_payments_mock.assert_not_called()
+            on_post_submission_event_mock.assert_not_called()
 
         with self.subTest("return bad plugin"):
-            update_payments_mock.reset_mock()
+            on_post_submission_event_mock.reset_mock()
             bad_payment = SubmissionPaymentFactory.for_backend("bad_plugin")
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
 
@@ -114,10 +117,10 @@ class ViewsTests(TestCase):
 
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
-            update_payments_mock.assert_not_called()
+            on_post_submission_event_mock.assert_not_called()
 
         with self.subTest("return bad redirect"):
-            update_payments_mock.reset_mock()
+            on_post_submission_event_mock.reset_mock()
             bad_payment = SubmissionPaymentFactory.for_backend(
                 "plugin1", submission__form_url="http://bad.com/form"
             )
@@ -128,7 +131,7 @@ class ViewsTests(TestCase):
 
             self.assertEqual(response.data["detail"], "redirect not allowed")
             self.assertEqual(response.status_code, 400)
-            update_payments_mock.assert_not_called()
+            on_post_submission_event_mock.assert_not_called()
 
         # check the webhook view
         url = plugin.get_webhook_url(base_request)
@@ -137,7 +140,7 @@ class ViewsTests(TestCase):
         with self.subTest("webhook ok"), patch.object(
             plugin, "handle_webhook", return_value=payment
         ):
-            update_payments_mock.reset_mock()
+            on_post_submission_event_mock.reset_mock()
 
             with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.post(url)
@@ -145,20 +148,22 @@ class ViewsTests(TestCase):
             self.assertEqual(response.content, b"")
             self.assertEqual(response.status_code, 200)
 
-            update_payments_mock.assert_called_once_with(submission.id)
+            on_post_submission_event_mock.assert_called_once_with(
+                submission.id, PostSubmissionEvents.on_payment_complete
+            )
 
         with self.subTest("webhook bad method"):
-            update_payments_mock.reset_mock()
+            on_post_submission_event_mock.reset_mock()
 
             with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.get(url)
 
             self.assertEqual(response.status_code, 405)
             self.assertEqual(response["Allow"], "POST")
-            update_payments_mock.assert_not_called()
+            on_post_submission_event_mock.assert_not_called()
 
         with self.subTest("webhook bad plugin"):
-            update_payments_mock.reset_mock()
+            on_post_submission_event_mock.reset_mock()
             bad_url = bad_plugin.get_webhook_url(base_request)
 
             with self.captureOnCommitCallbacks(execute=True):
@@ -166,14 +171,16 @@ class ViewsTests(TestCase):
 
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
-            update_payments_mock.assert_not_called()
+            on_post_submission_event_mock.assert_not_called()
 
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
     @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    @patch("openforms.payments.views.update_submission_payment_status.delay")
-    def test_start_plugin_not_enabled(self, update_payments_mock, mock_get_solo):
+    @patch("openforms.payments.views.on_post_submission_event")
+    def test_start_plugin_not_enabled(
+        self, on_post_submission_event_mock, mock_get_solo
+    ):
         register = Registry()
         register("plugin1")(Plugin)
         plugin = register["plugin1"]

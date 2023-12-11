@@ -8,7 +8,7 @@ from privates.test import temp_private_root
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormRegistrationBackendFactory
-from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_zds.models import StufZDSConfig
@@ -114,8 +114,8 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
-        pre_registration(self.submission.id)
-        register_submission(self.submission.id)
+        pre_registration(self.submission.id, PostSubmissionEvents.on_completion)
+        register_submission(self.submission.id, PostSubmissionEvents.on_completion)
         with self.subTest("Initial registration fails"):
             self.submission.refresh_from_db()
             self.assertEqual(
@@ -130,7 +130,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
 
         with self.subTest("Retry does not create new zaaknummer"):
             with self.assertRaises(RegistrationFailed):
-                register_submission(self.submission.id)
+                register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
             self.submission.refresh_from_db()
             intermediate_results = self.submission.registration_result["intermediate"]
@@ -191,8 +191,8 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
         )
 
-        pre_registration(self.submission.id)
-        register_submission(self.submission.id)
+        pre_registration(self.submission.id, PostSubmissionEvents.on_completion)
+        register_submission(self.submission.id, PostSubmissionEvents.on_completion)
         with self.subTest("Document id generation fails"):
             self.submission.refresh_from_db()
             self.assertEqual(
@@ -210,7 +210,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
 
         with self.subTest("Retry does not create new zaak"):
             with self.assertRaises(RegistrationFailed):
-                register_submission(self.submission.id)
+                register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
             self.submission.refresh_from_db()
             intermediate_results = self.submission.registration_result["intermediate"]
@@ -287,8 +287,8 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("edcLk01"),
         )
 
-        pre_registration(self.submission.id)
-        register_submission(self.submission.id)
+        pre_registration(self.submission.id, PostSubmissionEvents.on_completion)
+        register_submission(self.submission.id, PostSubmissionEvents.on_completion)
         with self.subTest("Document id generation fails"):
             self.submission.refresh_from_db()
             self.assertEqual(
@@ -309,7 +309,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
 
         with self.subTest("Retry does not create new zaak"):
             with self.assertRaises(RegistrationFailed):
-                register_submission(self.submission.id)
+                register_submission(self.submission.id, PostSubmissionEvents.on_retry)
 
             self.submission.refresh_from_db()
             intermediate_results = self.submission.registration_result["intermediate"]

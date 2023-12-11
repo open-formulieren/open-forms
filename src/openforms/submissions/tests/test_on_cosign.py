@@ -6,8 +6,8 @@ from django.test import TestCase, override_settings
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.registrations.contrib.email.models import EmailConfig
 
-from ..constants import RegistrationStatuses
-from ..tasks.co_sign import on_cosign
+from ..constants import PostSubmissionEvents, RegistrationStatuses
+from ..tasks import on_post_submission_event
 from .factories import SubmissionFactory
 
 
@@ -45,7 +45,9 @@ class OnCosignTests(TestCase):
                 subject="Registration email whoop whoop",
             ),
         ):
-            on_cosign(submission.id)
+            on_post_submission_event(
+                submission.id, PostSubmissionEvents.on_cosign_complete
+            )
 
         self.assertEqual(len(mail.outbox), 2)
 
@@ -54,7 +56,6 @@ class OnCosignTests(TestCase):
 
         self.assertEqual(registration_email.subject, "Registration email whoop whoop")
         self.assertEqual(confirmation_email.subject, "Confirmation email whoop whoop")
-        # TODO Test CC
 
     def test_registration_failure_does_not_abort_the_chain(self):
         submission = SubmissionFactory.from_components(
@@ -86,7 +87,9 @@ class OnCosignTests(TestCase):
             "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission",
             side_effect=Exception,
         ):
-            on_cosign(submission.id)
+            on_post_submission_event(
+                submission.id, PostSubmissionEvents.on_cosign_complete
+            )
 
         self.assertEqual(len(mail.outbox), 1)
 

@@ -18,8 +18,7 @@ from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
-from ..tasks import maybe_send_confirmation_email
-from ..tasks.emails import send_confirmation_email
+from ..tasks.emails import schedule_emails, send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
 
 
@@ -32,7 +31,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         ), "There should not be any mail templates"
 
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         self.assertEqual(len(mail.outbox), 0)
 
@@ -93,7 +92,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -126,7 +125,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
@@ -187,7 +186,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -262,7 +261,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -296,7 +295,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         with patch.object(send_confirmation_email, "apply_async") as mock_apply_async:
             # "execute" the celery task
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
             # verify timeout task is delayed
             mock_apply_async.assert_called_once_with(
@@ -421,7 +420,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
             # "execute" the celery task
-            send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # Verify that email was not sent
         self.assertEqual(len(mail.outbox), 0)
@@ -449,7 +448,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
@@ -466,8 +465,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 },
             ],
             submitted_data={"email": "test@test.nl"},
-            form__product__price=Decimal("12.34"),
-            form__payment_backend="test",
             # mark as already sent
             confirmation_email_sent=True,
         )
@@ -475,7 +472,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # assert that no e-mail was sent
         self.assertEqual(len(mail.outbox), 0)
@@ -513,7 +510,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -640,7 +637,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            maybe_send_confirmation_email(submission.id)
+            schedule_emails(submission.id)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)

@@ -10,6 +10,7 @@ from requests import ConnectTimeout
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -2582,6 +2583,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "zds_documenttype_omschrijving_inzending": "aaabbc",
             },
             kvk="12345678",
+            completed_not_preregistered=True,
         )
 
         m.post(
@@ -2605,7 +2607,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             "openforms.submissions.public_references.get_reference_for_submission",
             return_value="OF-TEST!",
         ):
-            pre_registration(submission.id)
+            pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
         submission.refresh_from_db()
 
@@ -2681,7 +2683,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         self.assertEqual(submission.public_registration_reference, "")
 
-        pre_registration(submission.id)
+        pre_registration(submission.id, PostSubmissionEvents.on_completion)
         submission.refresh_from_db()
 
         self.assertEqual(submission.public_registration_reference, "ZAAK-FOOO")
