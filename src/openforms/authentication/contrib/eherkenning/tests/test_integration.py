@@ -18,10 +18,6 @@ class SubmissionIntegrationTests(APITestCase):
     def _set_kvk_in_session(self, kvknr: str):
         session = self.client.session
 
-        # TODO: remove old format, see #957 for the rework
-        # old format
-        session[AuthAttribute.kvk] = kvknr
-
         # new format
         session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "eherkenning",
