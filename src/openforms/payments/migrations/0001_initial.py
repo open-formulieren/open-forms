@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("submissions", "0001_initial_squashed_0057_alter_submissionvaluevariable_key"),
+        ("submissions", "0001_initial_to_openforms_v230"),
     ]
 
     operations = [

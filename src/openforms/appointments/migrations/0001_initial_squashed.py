@@ -12,8 +12,7 @@ import openforms.appointments.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("submissions", "0001_initial_squashed_0057_alter_submissionvaluevariable_key"),
-        ("submissions", "0076_alter_submission_form_url"),
+        ("submissions", "0001_initial_to_openforms_v230"),
     ]
 
     operations = [
