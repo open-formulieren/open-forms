@@ -1096,8 +1096,8 @@ LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
 
 # Custom settings
 LOG_OUTGOING_REQUESTS_MAX_AGE = config(
-    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
-)  # number of hours
+    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
+)  # number of days
 
 #
 # Open Forms extensions
