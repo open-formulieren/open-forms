@@ -13,7 +13,7 @@ import openforms.utils.translations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("config", "0052_auto_20230823_1523"),
+        ("config", "0002_squashed_to_of_v230"),
     ]
 
     operations = [
