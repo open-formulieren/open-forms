@@ -6,8 +6,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [("jcc", "0001_initial"), ("jcc", "0002_alter_jccconfig_service")]
-
     dependencies = [
         ("soap", "0001_initial"),
     ]
