@@ -24,7 +24,7 @@ class AddressValue(TypedDict, total=False):
 @register(
     "brk-Zaakgerechtigde",
     verbose_name=_("BRK - Zaakgerechtigde"),
-    for_components=("address",),
+    for_components=("addressNL",),
 )
 @deconstructible
 class BRKZaakgerechtigdeValidator:

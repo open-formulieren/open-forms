@@ -29,7 +29,7 @@ class AddressNL extends FieldComponent {
     return {
       title: 'AddressNL',
       icon: 'home',
-      group: 'basic',
+      group: 'custom_special',
       weight: 300,
       schema: AddressNL.schema(),
     };
