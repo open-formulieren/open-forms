@@ -8,7 +8,7 @@ import openforms.submissions.models.submission_step
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
+        ("forms", "0001_initial_pre_openforms_v230"),
         ("submissions", "0001_initial_squashed_0057_alter_submissionvaluevariable_key"),
     ]
 

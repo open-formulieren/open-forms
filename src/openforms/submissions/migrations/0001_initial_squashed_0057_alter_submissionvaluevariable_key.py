@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
+        ("forms", "0001_initial_pre_openforms_v230"),
         ("config", "0001_initial_squashed_0022_merge_20210903_1228"),
     ]
 

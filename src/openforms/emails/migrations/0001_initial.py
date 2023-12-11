@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("forms", "0001_initial_squashed_0037_merge_20210903_1213"),
+        ("forms", "0001_initial_pre_openforms_v230"),
     ]
 
     operations = [
