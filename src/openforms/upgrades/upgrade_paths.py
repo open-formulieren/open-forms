@@ -76,6 +76,11 @@ class UpgradeConstraint:
 # If your current version falls outside of a supported range, you need to do another
 # upgrade path (first) or there is no upgrade path at all.
 UPGRADE_PATHS = {
+    "2.5": UpgradeConstraint(
+        valid_ranges={
+            VersionRange(minimum="2.4.0"),  # squashed migration sources are removed
+        },
+    ),
     "2.4": UpgradeConstraint(
         valid_ranges={
             VersionRange(minimum="2.3.0"),  # 2.4.0 squashes migrations again
