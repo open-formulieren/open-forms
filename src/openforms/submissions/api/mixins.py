@@ -6,9 +6,10 @@ from rest_framework.reverse import reverse
 
 from openforms.logging import logevent
 
+from ..constants import PostSubmissionEvents
 from ..models import Submission
 from ..signals import submission_complete
-from ..tasks import on_completion
+from ..tasks import on_post_submission_event
 from ..tokens import submission_status_token_generator
 from ..utils import (
     persist_user_defined_variables,
@@ -47,7 +48,11 @@ class SubmissionCompletionMixin:
 
         # after committing the database transaction where the submissions completion is
         # stored, start processing the completion.
-        transaction.on_commit(lambda: on_completion(submission.pk))
+        transaction.on_commit(
+            lambda: on_post_submission_event(
+                submission.pk, PostSubmissionEvents.on_completion
+            )
+        )
 
         token = submission_status_token_generator.make_token(submission)
         status_url = self.request.build_absolute_uri(

@@ -29,6 +29,7 @@ from openforms.prefill import prefill_variables
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
+from ..constants import PostSubmissionEvents
 from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
@@ -39,7 +40,7 @@ from ..parsers import (
 )
 from ..signals import submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
-from ..tasks.co_sign import on_cosign
+from ..tasks import on_post_submission_event
 from ..utils import (
     add_submmission_to_session,
     check_form_status,
@@ -253,7 +254,11 @@ class SubmissionViewSet(
 
         remove_submission_from_session(submission, self.request.session)
 
-        transaction.on_commit(lambda: on_cosign(submission.id))
+        transaction.on_commit(
+            lambda: on_post_submission_event(
+                submission.id, PostSubmissionEvents.on_cosign_complete
+            )
+        )
 
         out_serializer = SubmissionReportUrlSerializer(
             instance=submission, context={"request": request}

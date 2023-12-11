@@ -20,13 +20,14 @@ from rest_framework.views import APIView
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ERR_CONTENT_TYPE
 from openforms.logging import logevent
+from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.models import Submission
+from openforms.submissions.tasks import on_post_submission_event
 from openforms.utils.redirect import allow_redirect_url
 
 from .api.serializers import PaymentInfoSerializer
 from .models import SubmissionPayment
 from .registry import register
-from .tasks import update_submission_payment_status
 
 logger = logging.getLogger(__name__)
 
@@ -236,7 +237,9 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
                 raise ParseError(detail="redirect not allowed")
 
         transaction.on_commit(
-            lambda: update_submission_payment_status.delay(payment.submission.id)
+            lambda: on_post_submission_event(
+                payment.submission.pk, PostSubmissionEvents.on_payment_complete
+            )
         )
 
         return response
@@ -315,7 +318,9 @@ class PaymentWebhookView(PaymentFlowBaseView):
         if payment:
             logevent.payment_flow_webhook(payment, plugin)
             transaction.on_commit(
-                lambda: update_submission_payment_status.delay(payment.submission.id)
+                lambda: on_post_submission_event(
+                    payment.submission.pk, PostSubmissionEvents.on_payment_complete
+                )
             )
 
         return HttpResponse("")
