@@ -139,7 +139,10 @@ class GlobalConfigurationAdmin(
         ),
         (_("Search engines"), {"fields": ("allow_indexing_form_detail",)}),
         (_("Plugin configuration"), {"fields": ("plugin_configuration",)}),
-        (_("Registration"), {"fields": ("registration_attempt_limit",)}),
+        (
+            _("Registration"),
+            {"fields": ("registration_attempt_limit", "wait_for_payment_to_register")},
+        ),
         (
             _("Virus scan"),
             {

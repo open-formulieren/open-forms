@@ -5,10 +5,12 @@ from django.test import TestCase, override_settings
 from django.utils.translation import gettext_lazy as _
 
 from privates.test import temp_private_root
+from testfixtures import LogCapture
 
 from openforms.appointments.exceptions import AppointmentRegistrationFailed
 from openforms.appointments.tests.utils import setup_jcc
 from openforms.authentication.constants import AuthAttribute
+from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory
 from openforms.payments.constants import PaymentStatus
@@ -211,6 +213,10 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             patch(
                 "openforms.registrations.contrib.email.plugin.EmailRegistration.update_payment_status"
             ) as mock_payment_status_update,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=False),
+            ),
         ):
             on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
@@ -447,6 +453,10 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             patch(
                 "openforms.registrations.contrib.email.plugin.EmailRegistration.update_payment_status"
             ) as mock_payment_status_update,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=False),
+            ),
         ):
             with self.captureOnCommitCallbacks(execute=True):
                 on_post_submission_event(
@@ -597,6 +607,10 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             patch(
                 "openforms.registrations.contrib.email.plugin.EmailRegistration.update_payment_status"
             ) as mock_payment_status_update,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=False),
+            ),
         ):
             with self.captureOnCommitCallbacks(execute=True):
                 on_post_submission_event(
@@ -967,3 +981,175 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         self.assertTrue(submission.cosign_request_email_sent)
         self.assertTrue(submission.confirmation_email_sent)
         self.assertEqual(submission.auth_info.value, "111222333")
+
+
+@temp_private_root()
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class PaymentFlowTests(TestCase):
+    def test_payment_required_and_not_should_wait_for_registration(self):
+        """
+        The payment is required and has not been completed, and the general configuration says to NOT skip registration if
+        the payment has not been completed.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "confirmationRecipient": True,
+                }
+            ],
+            completed=True,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            form__product__price=10,
+            form__payment_backend="demo",
+        )
+        SubmissionPaymentFactory.create(
+            submission=submission, amount=10, status=PaymentStatus.started
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+            ) as mock_registration,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+            ),
+            LogCapture() as logs,
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        mock_registration.assert_not_called()
+        logs.check_present(
+            (
+                "openforms.registrations.tasks",
+                "DEBUG",
+                f"Skipping registration for submission '{submission}' as the payment hasn't been received yet.",
+            )
+        )
+
+    def test_payment_done_and_should_wait_for_payment(
+        self,
+    ):
+        """
+        The payment is required and has been completed, so registration should not be skipped regardless of the general
+        configuration setting.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "confirmationRecipient": True,
+                }
+            ],
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            form__product__price=10,
+            form__payment_backend="demo",
+            completed=True,
+            with_completed_payment=True,
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+            ) as mock_registration,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+            ),
+            patch(
+                "openforms.payments.tasks.update_submission_payment_registration"
+            ) as mock_update_payment_status,
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        mock_registration.assert_called_once()
+        mock_update_payment_status.assert_not_called()
+
+    def test_payment_done_and_not_should_wait_for_payment(
+        self,
+    ):
+        """
+        The payment is required and has been completed, so registration should not be skipped regardless of the general
+        configuration setting.
+        """
+
+        submission = SubmissionFactory.create(
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            form__product__price=10,
+            form__payment_backend="demo",
+            completed=True,
+            with_completed_payment=True,
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+            ) as mock_registration,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=False),
+            ),
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        mock_registration.assert_called_once()
+
+    def test_payment_not_required_and_should_wait_for_payment(
+        self,
+    ):
+        """
+        The payment is NOT required, so registration should not be skipped regardless of the general
+        configuration setting.
+        """
+        submission = SubmissionFactory.create(
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            completed=True,
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+            ) as mock_registration,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+            ),
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        mock_registration.assert_called_once()
+
+    def test_payment_not_required_and_not_should_wait_for_payment(
+        self,
+    ):
+        """
+        The payment is NOT required, so registration should not be skipped regardless of the general
+        configuration setting.
+        """
+        submission = SubmissionFactory.create(
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            completed=True,
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+            ) as mock_registration,
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=False),
+            ),
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        mock_registration.assert_called_once()

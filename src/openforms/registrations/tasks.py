@@ -152,6 +152,18 @@ def register_submission(submission_id: int, event: PostSubmissionEvents) -> None
         return
 
     config = GlobalConfiguration.get_solo()
+    if (
+        config.wait_for_payment_to_register
+        and submission.payment_required
+        and not submission.payment_user_has_paid
+    ):
+        logger.debug(
+            "Skipping registration for submission '%s' as the payment hasn't been received yet.",
+            submission,
+        )
+        logevent.registration_skipped_not_yet_paid(submission)
+        return
+
     if submission.registration_attempts >= config.registration_attempt_limit:
         # if it fails after this many attempts we give up
         logevent.registration_attempts_limited(submission)

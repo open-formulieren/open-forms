@@ -207,6 +207,19 @@ dezelfde regels als reguliere **Logica**.
 Zie ook: :ref:`configuration_payment_index`
 
 
+Er zijn twee mogelijke flows om inzendingen te registreren voor formulieren waar een betaling nodig is.
+
+1. Zodra de inzending voltooid is, wordt de inzending naar de registratiebackend gestuurd. Als het wordt betaald, wordt
+   de status van de betaling in de registratiebackend aangepast. In het geval van de e-mailregistratiebackend, gebeurt
+   dit door een extra (update-)e-mail te sturen, terwijl voor StUF-ZDS en ZGW registratiebackends, de betaalstatus van de zaak
+   wordt aangepast.
+2. De inzending wordt naar de registratiebackend gestuurd pas ná dat de betaling voltooid is.
+
+De flow kan ingesteld worden in de **Algemene Configuratie**.
+
+Zie ook: :ref:`configuration_general_payment_flow`
+
+
 Gegevens opschonen
 ------------------
 

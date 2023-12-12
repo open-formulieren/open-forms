@@ -258,6 +258,10 @@ def registration_payment_update_skip(submission: "Submission"):
     _create_log(submission, "registration_payment_update_skip")
 
 
+def registration_skipped_not_yet_paid(submission: "Submission"):
+    _create_log(submission, "registration_skipped_not_yet_paid")
+
+
 # - - -
 
 
