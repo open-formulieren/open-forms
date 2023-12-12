@@ -99,6 +99,45 @@ stylesheets, you should update these:
 * ``--of-page-header-logo-return-url-mobile-min-width`` becomes
   ``--of-page-header-logo-return-url-mobile-min-inline-size``
 
+2.3.5 (2023-12-12)
+==================
+
+Periodic bugfix release
+
+* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* [#3605] Fixed unintended number localization in StUF/SOAP messages.
+* [#3613] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+
+2.2.7 (2023-12-12)
+==================
+
+Periodic bugfix release
+
+* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* [#3605] Fixed unintended number localization in StUF/SOAP messages.
+* [#3613] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+
+2.1.10 (2023-12-12)
+===================
+
+Periodic bugfix release
+
+* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* [#3605] Fixed unintended number localization in StUF/SOAP messages.
+* [#3613] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+
 2.4.2 (2023-12-08)
 ==================
 
