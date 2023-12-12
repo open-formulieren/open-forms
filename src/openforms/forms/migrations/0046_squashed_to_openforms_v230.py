@@ -17,65 +17,9 @@ import openforms.template.validators
 
 class Migration(migrations.Migration):
 
-    # TODO: in Open Forms 2.5.0 or 3.0, whichever comes first, remove the original
-    # migrations and convert this to a normal migration.
-    replaces = [
-        ("forms", "0046_convert_advanced_logic"),
-        ("forms", "0047_fix_broken_converted_rules"),
-        ("forms", "0048_update_formio_default_setting"),
-        ("forms", "0049_remove_editgrid_open_when_empty"),
-        ("forms", "0050_auto_20221024_1252"),
-        ("forms", "0051_update_translation_fields"),
-        ("forms", "0052_form_translation_enabled"),
-        ("forms", "0050_alter_formvariable_key"),
-        ("forms", "0053_merge_20221109_1806"),
-        ("forms", "0051_replace_urls_with_uuids"),
-        ("forms", "0054_merge_20221114_1308"),
-        ("forms", "0055_make_hidelabel_false"),
-        ("forms", "0052_fix_rules_with_selectboxes"),
-        ("forms", "0056_merge_20221122_1513"),
-        ("forms", "0057_alter_formvariable_data_type"),
-        ("forms", "0058_formdefinition_component_translations"),
-        ("forms", "0059_editgrid_inline_false"),
-        ("forms", "0060_formlogic_description"),
-        ("forms", "0061_generate_logic_rule_descriptions"),
-        ("forms", "0062_alter_formlogic_description"),
-        ("forms", "0063_form_include_confirmation_page_content_in_pdf"),
-        ("forms", "0064_auto_20230113_1641"),
-        ("forms", "0065_set_radio_data_type"),
-        ("forms", "0053_alter_formvariable_prefill_attribute"),
-        ("forms", "0065_merge_20230118_1801"),
-        ("forms", "0066_merge_20230119_1618"),
-        ("forms", "0067_fix_typo_20230124_1624"),
-        ("forms", "0068_add_options_data_source"),
-        ("forms", "0069_form_appointment_enabled"),
-        ("forms", "0070_remove_value_expression"),
-        ("forms", "0067_formvariable_service_fetch_configuration"),
-        ("forms", "0071_merge_20230213_1106"),
-        ("forms", "0072_check_form_variable_datatype"),
-        ("forms", "0073_change_bsn_validation"),
-        ("forms", "0074_add_custom_errors_numbers"),
-        ("forms", "0075_form_send_confirmation_email"),
-        ("forms", "0076_move_confirmation_email_setting"),
-        ("forms", "0077_remove_form_confirmation_email_option"),
-        ("forms", "0078_form_suspension_allowed"),
-        ("forms", "0079_replace_cosign_component"),
-        ("forms", "0080_add_show_in_summary_default"),
-        ("forms", "0081_form_authentication_backend_options"),
-        ("forms", "0082_rename_appointment_enabled_form_is_appointment"),
-        ("forms", "0083_alter_form_is_appointment"),
-        ("forms", "0084_formvariable_prefill_identifier_role"),
-        ("forms", "0085_auto_20230802_1025"),
-        ("forms", "0086_migrate_form_definition_slugs"),
-        ("forms", "0087_alter_formdefinition_slug"),
-        ("forms", "0088_add_time_custom_error"),
-        ("forms", "0089_enable_mutiple_registration_backends"),
-        ("forms", "0090_auto_20230816_1106"),
-    ]
-
     dependencies = [
-        ("variables", "0001_add_service_fetch_configuration"),
-        ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
+        ("forms", "0001_initial_pre_openforms_v230"),
+        ("variables", "0001_initial_to_openforms_v230"),
     ]
 
     operations = [

@@ -9,19 +9,6 @@ import digid_eherkenning_oidc_generics.models
 
 
 class Migration(migrations.Migration):
-
-    # TODO: in Open Forms 2.5.0 or 3.0, whichever comes first, remove the original
-    # migrations and convert this to a normal migration.
-    replaces = [
-        ("digid_eherkenning_oidc_generics", "0001_initial"),
-        ("digid_eherkenning_oidc_generics", "0002_openidconnectdigidmachtigenconfig"),
-        ("digid_eherkenning_oidc_generics", "0003_auto_20220421_1732"),
-        ("digid_eherkenning_oidc_generics", "0004_auto_20220425_1801"),
-        ("digid_eherkenning_oidc_generics", "0005_auto_20220426_1552"),
-        ("digid_eherkenning_oidc_generics", "0006_auto_20220428_0949"),
-        ("digid_eherkenning_oidc_generics", "0007_auto_20221213_1347"),
-    ]
-
     dependencies = []
 
     operations = [

@@ -26,13 +26,6 @@ import openforms.utils.files
 
 class Migration(migrations.Migration):
 
-    # TODO: in Open Forms 2.5.0 or 3.0, whichever comes first, remove the original
-    # migrations and convert this to a normal migration.
-    replaces = [
-        ("forms", "0001_initial_squashed_0037_merge_20210903_1213"),
-        ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
-    ]
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("products", "0001_initial"),

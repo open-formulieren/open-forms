@@ -10,19 +10,6 @@ import openforms.accounts.managers
 
 class Migration(migrations.Migration):
 
-    # TODO: in Open Forms 2.5.0 or 3.0, whichever comes first, remove the original
-    # migrations and convert this to a normal migration.
-    replaces = [
-        ("accounts", "0001_initial"),
-        ("accounts", "0002_auto_20210521_1352"),
-        ("accounts", "0003_fix_duplicate_emails"),
-        ("accounts", "0004_auto_20211129_1132"),
-        ("accounts", "0005_auto_20211216_1550"),
-        ("accounts", "0006_user_employee_id"),
-        ("accounts", "0007_remove_delete_user_perm"),
-        ("accounts", "0008_auto_20230217_1726"),
-    ]
-
     dependencies = [
         ("auth", "0008_alter_user_username_max_length"),
     ]

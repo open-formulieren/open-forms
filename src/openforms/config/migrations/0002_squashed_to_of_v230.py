@@ -19,42 +19,6 @@ import openforms.utils.translations
 
 class Migration(migrations.Migration):
 
-    # TODO: in Open Forms 2.5.0 or 3.0, whichever comes first, remove the original
-    # migrations and convert this to a normal migration.
-    replaces = [
-        ("config", "0002_make_react_ui_default_squashed_0028_auto_20220601_1422"),
-        ("config", "0029_rename_design_tokens"),
-        (
-            "config",
-            "0030_piwik_pro_support_squashed_0037_globalconfiguration_form_upload_default_file_types",
-        ),
-        ("config", "0031_auto_20221024_1507"),
-        ("config", "0032_auto_20221129_1241"),
-        ("config", "0033_globalconfiguration_organization_name"),
-        ("config", "0034_alter_globalconfiguration_form_upload_default_file_types"),
-        ("config", "0035_update_design_tokens"),
-        ("config", "0036_auto_20230113_1623"),
-        ("config", "0036_alter_globalconfiguration_form_upload_default_file_types"),
-        ("config", "0037_merge_20230118_1209"),
-        ("config", "0038_auto_20230127_0942"),
-        ("config", "0036_globalconfiguration_favicon"),
-        ("config", "0039_merge_20230201_1801"),
-        ("config", "0040_alter_globalconfiguration_favicon"),
-        ("config", "0041_add_antivirus_config"),
-        ("config", "0042_globalconfiguration_enable_service_fetch"),
-        ("config", "0043_globalconfiguration_templates"),
-        ("config", "0043_globalconfiguration_hide_non_applicable_steps"),
-        ("config", "0044_merge_20230414_1827"),
-        ("config", "0045_globalconfiguration_enable_react_formio_builder"),
-        ("config", "0046_auto_20230601_1514"),
-        ("config", "0047_globalconfiguration_enable_new_appointments"),
-        ("config", "0048_add_cosign_templatetag"),
-        ("config", "0049_auto_20230615_1507"),
-        ("config", "0050_auto_20230714_1419"),
-        ("config", "0051_auto_20230811_1217"),
-        ("config", "0052_auto_20230823_1523"),
-    ]
-
     dependencies = [
         ("config", "0001_initial_squashed_0022_merge_20210903_1228"),
     ]

@@ -5,19 +5,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    replaces = [
-        ("of_authentication", "0001_initial"),
-        ("of_authentication", "0002_migrate_submission_data"),
-        ("of_authentication", "0003_alter_authinfo_attribute"),
-        ("of_authentication", "0004_registratorinfo"),
-        ("of_authentication", "0005_alter_registratorinfo_options"),
-        ("of_authentication", "0006_authinfo_loa"),
-    ]
-
     dependencies = [
-        ("submissions", "0059_remove_submission_prefill_data"),
-        ("submissions", "0060_auto_20220812_1439"),
+        ("submissions", "0001_initial_to_openforms_v230"),
     ]
 
     operations = [

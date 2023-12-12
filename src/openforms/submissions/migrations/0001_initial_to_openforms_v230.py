@@ -20,37 +20,9 @@ import openforms.utils.validators
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("submissions", "0001_initial_squashed_0057_alter_submissionvaluevariable_key"),
-        ("submissions", "0058_alter_submissionvaluevariable_source"),
-        ("submissions", "0059_remove_submission_prefill_data"),
-        ("submissions", "0060_auto_20220812_1439"),
-        ("submissions", "0063_submissionvaluevariable_is_initially_prefilled"),
-        ("submissions", "0061_backfill_submissionfileattachment_variable"),
-        ("submissions", "0062_remove_submissionfileattachment_form_key"),
-        ("submissions", "0064_merge_20221025_1602"),
-        ("submissions", "0065_submission_language_code"),
-        ("submissions", "0066_remove_submissionvaluevariable_language"),
-        ("submissions", "0067_alter_submission_language_code"),
-        ("submissions", "0054_auto_20221103_1607"),
-        ("submissions", "0064_merge_20221107_1148"),
-        ("submissions", "0068_merge_20221107_1647"),
-        ("submissions", "0069_submission_privacy_policy_accepted"),
-        ("submissions", "0065_submission_attachments_paths"),
-        ("submissions", "0070_merge_20230223_1254"),
-        ("submissions", "0071_submission_pre_registration_completed"),
-        ("submissions", "0072_set_preregistration_complete"),
-        ("submissions", "0073_submission_registration_status_consistency_check"),
-        ("submissions", "0074_submission_cosign_complete"),
-        ("submissions", "0075_submission_cosign_privacy_policy_accepted"),
-        ("submissions", "0076_alter_submission_form_url"),
-        ("submissions", "0077_auto_20230811_1217"),
-        ("submissions", "0078_submission_finalised_registration_backend_key"),
-    ]
-
     dependencies = [
         ("config", "0001_initial_squashed_0022_merge_20210903_1228"),
-        ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
+        ("forms", "0001_initial_pre_openforms_v230"),
     ]
 
     operations = [
