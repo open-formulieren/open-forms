@@ -587,7 +587,7 @@ multidict==6.0.4
     # via yarl
 mypy-extensions==0.4.3
     # via black
-o365==2.0.18
+o365==2.0.31
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -759,9 +759,12 @@ pytz==2022.2.1
     #   django-yubin
     #   djangorestframework
     #   flower
-    #   o365
-    #   tzlocal
     #   zeep
+pytz-deprecation-shim==0.1.0.post0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   tzlocal
 pyyaml==6.0.1
     # via
     #   -c requirements/base.txt
@@ -957,7 +960,12 @@ tornado==6.3.3
     #   flower
 typing-extensions==4.7.1
     # via pyee
-tzlocal==2.1
+tzdata==2023.3
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   pytz-deprecation-shim
+tzlocal==4.3.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
