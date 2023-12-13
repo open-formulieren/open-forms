@@ -170,14 +170,6 @@ export default class Map extends TextFieldComponent {
     const {url: tileUrl, ...options} = TILE_LAYER_RD;
     const tiles = L.tileLayer(tileUrl, options);
     map.addLayer(tiles);
-
-    // Set initial marker at center
-    let marker = L.marker([52.1326332, 5.291266]).addTo(map);
-
-    map.on('click', e => {
-      map.removeLayer(marker);
-      marker = L.marker(e.latlng).addTo(map);
-    });
   }
 
   static editForm() {
