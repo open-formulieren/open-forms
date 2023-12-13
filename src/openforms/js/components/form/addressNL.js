@@ -19,6 +19,7 @@ class AddressNL extends FieldComponent {
         label: 'AddressNL',
         type: 'addressNL',
         input: false,
+        defaultValue: {}
       },
       ...extend
     );
