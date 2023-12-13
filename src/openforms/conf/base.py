@@ -190,7 +190,6 @@ INSTALLED_APPS = [
     "csp_post_processor",
     "django_camunda",
     "log_outgoing_requests",
-    "log_outgoing_requests_ext",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -716,7 +715,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute="*"),
     },
     "cleanup-outgoing-request-logs": {
-        "task": "log_outgoing_requests_ext.tasks.cleanup_request_logs",
+        "task": "log_outgoing_requests.tasks.prune_logs",
         "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
     "send-daily-digest": {
@@ -1097,8 +1096,8 @@ LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
 
 # Custom settings
 LOG_OUTGOING_REQUESTS_MAX_AGE = config(
-    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
-)  # number of hours
+    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
+)  # number of days
 
 #
 # Open Forms extensions
