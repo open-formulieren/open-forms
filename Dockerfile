@@ -45,7 +45,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && /tmp/patches/apply.sh /usr/local/lib/python3.10/site-packages
 
 # Stage 2 - Install frontend deps and build assets
-FROM node:16-bookworm-slim AS frontend-build
+FROM node:20-bookworm-slim AS frontend-build
 
 WORKDIR /app
 
