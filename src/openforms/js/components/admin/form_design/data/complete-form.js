@@ -1,4 +1,4 @@
-import produce from 'immer';
+import {produce} from 'immer';
 
 import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';

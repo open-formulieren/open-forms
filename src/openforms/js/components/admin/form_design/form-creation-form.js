@@ -994,6 +994,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   }
 
   const {loading} = useAsync(async () => {
+    let mounted = true;
     const promises = [loadFromBackend(backendDataToLoad), loadForm(formUuid)];
 
     // TODO: API error handling - this should be done using ErrorBoundary instead of
@@ -1002,10 +1003,14 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
     const supportingData = Object.fromEntries(
       zip(backendDataToLoad, backendData).map(([plugin, data]) => [plugin.stateVar, data])
     );
-    dispatch({
-      type: 'BACKEND_DATA_LOADED',
-      payload: {supportingData, formData},
-    });
+    mounted &&
+      dispatch({
+        type: 'BACKEND_DATA_LOADED',
+        payload: {supportingData, formData},
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useAsync(async () => {

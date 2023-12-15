@@ -1,8 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
-import {IntlProvider} from 'react-intl';
 
-import {getIntlProviderProps} from 'components/admin/i18n';
+import AppWrapper, {getWrapperProps} from 'components/admin/AppWrapper';
 import {onLoaded} from 'utils/dom';
 import jsonScriptToVar from 'utils/json-script';
 
@@ -14,7 +13,7 @@ const init = async () => {
   const nodes = document.querySelectorAll(CLASSNAME);
   if (!nodes.length) return;
 
-  const intlProviderProps = await getIntlProviderProps();
+  const wrapperProps = await getWrapperProps();
 
   for (const node of nodes) {
     const {name, value} = node.dataset;
@@ -30,16 +29,14 @@ const init = async () => {
     };
 
     root.render(
-      <React.StrictMode>
-        <IntlProvider {...intlProviderProps}>
-          <PluginConfiguration
-            name={name}
-            modulesAndPlugins={modulesAndPlugins}
-            value={JSON.parse(value) || {}}
-            onChange={onChange}
-          />
-        </IntlProvider>
-      </React.StrictMode>
+      <AppWrapper {...wrapperProps}>
+        <PluginConfiguration
+          name={name}
+          modulesAndPlugins={modulesAndPlugins}
+          value={JSON.parse(value) || {}}
+          onChange={onChange}
+        />
+      </AppWrapper>
     );
   }
 };

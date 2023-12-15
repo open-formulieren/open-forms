@@ -1,9 +1,8 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
-import {IntlProvider} from 'react-intl';
 import ReactModal from 'react-modal';
 
-import {getIntlProviderProps} from 'components/admin/i18n';
+import AppWrapper, {getWrapperProps} from 'components/admin/AppWrapper';
 import {onLoaded} from 'utils/dom';
 
 import DesignTokenValues from './DesignTokenValues';
@@ -14,7 +13,7 @@ const init = async () => {
   const nodes = document.querySelectorAll(SELECTOR);
   if (!nodes.length) return;
 
-  const intlProviderProps = await getIntlProviderProps();
+  const wrapperProps = await getWrapperProps();
 
   for (const node of nodes) {
     const initialValue = JSON.parse(node.value) || {};
@@ -38,11 +37,9 @@ const init = async () => {
 
     const render = value => {
       root.render(
-        <React.StrictMode>
-          <IntlProvider {...intlProviderProps}>
-            <DesignTokenValues initialValue={value} onChange={onChange} />
-          </IntlProvider>
-        </React.StrictMode>
+        <AppWrapper {...wrapperProps}>
+          <DesignTokenValues initialValue={value} onChange={onChange} />
+        </AppWrapper>
       );
     };
 

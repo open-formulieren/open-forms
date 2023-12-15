@@ -4,7 +4,7 @@ import {Formio} from 'formiojs';
 import Components from 'formiojs/components/Components';
 import FormioUtils from 'formiojs/utils';
 import BuilderUtils from 'formiojs/utils/builder';
-import produce from 'immer';
+import {produce} from 'immer';
 import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
@@ -328,10 +328,11 @@ class WebformBuilder extends WebformBuilderFormio {
     }
 
     this.componentEdit = this.ce('div', {class: 'component-edit-container'});
+    const root = createRoot(this.componentEdit);
 
     const onCancel = event => {
       event.preventDefault();
-      ReactDOM.unmountComponentAtNode(this.componentEdit);
+      root.unmount();
       this.emit('cancelComponent', component);
       this.dialog.close();
       this.highlightInvalidComponents();
@@ -341,7 +342,7 @@ class WebformBuilder extends WebformBuilderFormio {
       event.preventDefault();
       // Since we are already removing the component, don't trigger another remove.
       saved = true;
-      ReactDOM.unmountComponentAtNode(this.componentEdit);
+      root.unmount();
       this.removeComponent(component, parent, original);
       this.dialog.close();
       this.highlightInvalidComponents();
@@ -349,7 +350,7 @@ class WebformBuilder extends WebformBuilderFormio {
 
     const onSubmit = componentData => {
       saved = true;
-      ReactDOM.unmountComponentAtNode(this.componentEdit);
+      root.unmount();
       // we can't use the original saveComponent, as it relies on this.editForm being
       // a thing, which it isn't anymore here.
       this.dialog.close();
@@ -371,7 +372,6 @@ class WebformBuilder extends WebformBuilderFormio {
 
     // hand contents of modal over to React
     (async () => {
-      const root = createRoot(this.componentEdit);
       const intlProviderProps = await getIntlProviderProps();
       root.render(
         <IntlProvider {...intlProviderProps}>

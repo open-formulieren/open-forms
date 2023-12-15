@@ -3,21 +3,21 @@ import {Dutch} from 'flatpickr/dist/l10n/nl.js';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 
-import {FeatureFlagsContext} from 'components/admin/form_design/Context';
+import AppWrapper, {getWrapperProps} from 'components/admin/AppWrapper';
 import {
   clearObsoleteLiterals,
   isNewBuilderComponent,
   persistComponentTranslations,
 } from 'components/formio_builder/translation';
 import {onLoaded} from 'utils/dom';
-import jsonScriptToVar from 'utils/json-script';
 
 import FormIOBuilder from './builder';
 
-onLoaded(() => {
+onLoaded(async () => {
   const nodes = document.querySelectorAll('.form-builder');
-  const featureFlags = jsonScriptToVar('feature-flags', {default: {}});
-  const {react_formio_builder_enabled = false} = featureFlags;
+  const wrapperProps = await getWrapperProps();
+
+  const {react_formio_builder_enabled = false} = wrapperProps.featureFlags;
 
   for (const node of nodes) {
     const configurationInput = node.querySelector('.form-builder__configuration-input');
@@ -60,14 +60,14 @@ onLoaded(() => {
     };
     const root = createRoot(node.querySelector('.form-builder__container'));
     root.render(
-      <FeatureFlagsContext.Provider value={featureFlags}>
+      <AppWrapper {...wrapperProps}>
         <FormIOBuilder
           configuration={configuration}
           onChange={onChange}
           onComponentMutated={onComponentMutated}
           componentTranslations={componentTranslations}
         />
-      </FeatureFlagsContext.Provider>
+      </AppWrapper>
     );
   }
 
