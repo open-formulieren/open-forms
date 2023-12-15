@@ -32,7 +32,7 @@
     "@open-formulieren/formio-builder": "^0.9.0",
     "@open-formulieren/leaflet-tools": "^1.0.0",
     "@rjsf/core": "^4.2.1",
-    "@tinymce/tinymce-react": "^3.12.6",
+    "@tinymce/tinymce-react": "^4.3.2",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "babel-jest": "^29.3.1",
     "classnames": "^2.3.1",
