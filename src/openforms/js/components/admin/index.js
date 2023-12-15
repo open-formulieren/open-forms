@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import {IntlProvider} from 'react-intl';
 import ReactModal from 'react-modal';
 
@@ -26,8 +26,9 @@ const mountForm = intlProps => {
     const featureFlags = jsonScriptToVar('feature-flags');
 
     ReactModal.setAppElement(formCreationFormNode);
+    const root = createRoot(formCreationFormNode);
 
-    ReactDOM.render(
+    root.render(
       <IntlProvider {...intlProps}>
         <TinyMceContext.Provider value={tinymceUrl}>
           <FeatureFlagsContext.Provider value={featureFlags}>
@@ -40,8 +41,7 @@ const mountForm = intlProps => {
             </APIContext.Provider>
           </FeatureFlagsContext.Provider>
         </TinyMceContext.Provider>
-      </IntlProvider>,
-      formCreationFormNode
+      </IntlProvider>
     );
   }
 };
@@ -52,32 +52,26 @@ const mountFormVersions = intlProps => {
 
   for (const formVersionsNode of formVersionsNodes) {
     const {formUuid, csrftoken, currentRelease} = formVersionsNode.dataset;
+    const root = createRoot(formVersionsNode);
 
-    ReactDOM.render(
+    root.render(
       <IntlProvider {...intlProps}>
         <APIContext.Provider value={{csrftoken}}>
           <FormVersionsTable formUuid={formUuid} currentRelease={currentRelease} />
         </APIContext.Provider>
-      </IntlProvider>,
-      formVersionsNode
+      </IntlProvider>
     );
   }
-};
-
-const mountDebugComponent = () => {
-  const node = document.getElementById('react');
-  if (!node) return;
-  ReactDOM.render(<Debug />, node);
 };
 
 const mountSessionStatus = intlProps => {
   const nodes = document.querySelectorAll('.react-session-status');
   for (const node of nodes) {
-    ReactDOM.render(
+    const root = createRoot(node);
+    root.render(
       <IntlProvider {...intlProps}>
         <SessionStatus />
-      </IntlProvider>,
-      node
+      </IntlProvider>
     );
   }
 };

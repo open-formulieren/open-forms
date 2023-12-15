@@ -10,7 +10,7 @@ import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import {IntlProvider} from 'react-intl';
 
 import {getIntlProviderProps} from 'components/admin/i18n';
@@ -297,7 +297,6 @@ class WebformBuilder extends WebformBuilderFormio {
   // Custom react-based implementation
   editComponent(component, parent, isNew, isJsonEdit, original, flags = {}) {
     const {react_formio_builder_enabled = false} = this.options.openForms.featureFlags;
-    const registrationBackendInfoRef = this.options.openForms.registrationBackendInfoRef;
 
     if (
       !component.key ||
@@ -372,8 +371,9 @@ class WebformBuilder extends WebformBuilderFormio {
 
     // hand contents of modal over to React
     (async () => {
+      const root = createRoot(this.componentEdit);
       const intlProviderProps = await getIntlProviderProps();
-      ReactDOM.render(
+      root.render(
         <IntlProvider {...intlProviderProps}>
           <ComponentConfiguration
             // Context binding
@@ -397,8 +397,7 @@ class WebformBuilder extends WebformBuilderFormio {
             onRemove={onRemove}
             onSubmit={onSubmit}
           />
-        </IntlProvider>,
-        this.componentEdit
+        </IntlProvider>
       );
       // Create and open the modal - contents are managed by React component.
       this.dialog = this.createModal(this.componentEdit, get(this.options, 'dialogAttr', {}));

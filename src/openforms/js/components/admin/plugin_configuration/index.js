@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import {IntlProvider} from 'react-intl';
 
 import {getIntlProviderProps} from 'components/admin/i18n';
@@ -23,12 +23,13 @@ const init = async () => {
 
     const mountNode = node.querySelector(`${CLASSNAME}__widget`);
     const hiddenInput = node.querySelector(`${CLASSNAME}__input`);
+    const root = createRoot(mountNode);
 
     const onChange = newConfiguration => {
       hiddenInput.value = JSON.stringify(newConfiguration);
     };
 
-    ReactDOM.render(
+    root.render(
       <React.StrictMode>
         <IntlProvider {...intlProviderProps}>
           <PluginConfiguration
@@ -38,8 +39,7 @@ const init = async () => {
             onChange={onChange}
           />
         </IntlProvider>
-      </React.StrictMode>,
-      mountNode
+      </React.StrictMode>
     );
   }
 };

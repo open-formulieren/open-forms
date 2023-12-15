@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import {IntlProvider} from 'react-intl';
 import ReactModal from 'react-modal';
 
@@ -28,6 +28,7 @@ const init = async () => {
     replacement.appendChild(reactRoot);
     replacement.appendChild(clonedTextArea);
     container.replaceChild(replacement, node);
+    const root = createRoot(reactRoot);
 
     const onChange = newValues => {
       const serialized = JSON.stringify(newValues, null, 2);
@@ -36,13 +37,12 @@ const init = async () => {
     };
 
     const render = value => {
-      ReactDOM.render(
+      root.render(
         <React.StrictMode>
           <IntlProvider {...intlProviderProps}>
             <DesignTokenValues initialValue={value} onChange={onChange} />
           </IntlProvider>
-        </React.StrictMode>,
-        reactRoot
+        </React.StrictMode>
       );
     };
 

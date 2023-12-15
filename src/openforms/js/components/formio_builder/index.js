@@ -1,8 +1,7 @@
-import BEM from 'bem.js';
 import flatpickr from 'flatpickr';
 import {Dutch} from 'flatpickr/dist/l10n/nl.js';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 
 import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import {
@@ -15,24 +14,16 @@ import jsonScriptToVar from 'utils/json-script';
 
 import FormIOBuilder from './builder';
 
-/** @const {string} The form builder block name. */
-export const BLOCK_FORM_BUILDER = 'form-builder';
-
-/** @const {string} The container element to render Formio on. */
-export const ELEMENT_CONTAINER = 'container';
-
 onLoaded(() => {
-  const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
-  const featureFlags = FORM_BUILDERS.length ? jsonScriptToVar('feature-flags') : {};
+  const nodes = document.querySelectorAll('.form-builder');
+  const featureFlags = jsonScriptToVar('feature-flags', {default: {}});
   const {react_formio_builder_enabled = false} = featureFlags;
 
-  [...FORM_BUILDERS].forEach(node => {
-    const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, 'configuration-input');
-    const componentTranslationsInput = BEM.getChildBEMNode(
-      node.closest('form'),
-      BLOCK_FORM_BUILDER,
-      'component-translations'
-    );
+  for (const node of nodes) {
+    const configurationInput = node.querySelector('.form-builder__configuration-input');
+    const componentTranslationsInput = node
+      .closest('form')
+      .querySelector('.form-builder__component-translations');
 
     const configuration = JSON.parse(configurationInput.value) || {display: 'form'};
     let componentTranslations = JSON.parse(componentTranslationsInput.value) || {};
@@ -67,8 +58,8 @@ onLoaded(() => {
         componentTranslationsInput.value = JSON.stringify(componentTranslations);
       }
     };
-
-    ReactDOM.render(
+    const root = createRoot(node.querySelector('.form-builder__container'));
+    root.render(
       <FeatureFlagsContext.Provider value={featureFlags}>
         <FormIOBuilder
           configuration={configuration}
@@ -76,10 +67,9 @@ onLoaded(() => {
           onComponentMutated={onComponentMutated}
           componentTranslations={componentTranslations}
         />
-      </FeatureFlagsContext.Provider>,
-      BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER)
+      </FeatureFlagsContext.Provider>
     );
-  });
+  }
 
   initFlatpickr();
 });
