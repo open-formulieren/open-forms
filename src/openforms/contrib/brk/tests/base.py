@@ -23,12 +23,12 @@ def load_json_mock(name: TestFileNames):
 
 
 BRK_SERVICE = ServiceFactory.build(
-    api_root="http://localhost:8150/",
-    oas="http://localhost:8150/",  # ignored/unused
+    api_root="https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/",
+    oas="https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/",  # ignored/unused
     api_type=APITypes.orc,
     auth_type=AuthTypes.api_key,
-    header_key="apikey",
-    header_value="l7xx1f2691f2520d487b902f4e0b57a0b197",
+    header_key="X-Api-Key",
+    header_value="fake",
 )
 
 

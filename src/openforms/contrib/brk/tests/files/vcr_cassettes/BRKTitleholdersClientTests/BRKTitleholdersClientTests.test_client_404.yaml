@@ -5,30 +5,39 @@ interactions:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken/dummy/zakelijkgerechtigden
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/dummy/zakelijkgerechtigden
   response:
     body:
-      string: '{"detail":"Not Found"}'
+      string: '{"type":"https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?#System_Net_HttpStatusCode_NotFound","title":"Opgevraagde
+        resource bestaat niet.","status":404,"detail":"Not Found","instance":"/kadastraalonroerendezaken/dummy/zakelijkgerechtigden","code":"notFound"}'
     headers:
-      content-length:
-      - '22'
-      content-type:
-      - application/json
-      date:
-      - Tue, 05 Dec 2023 16:30:50 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '217'
+      Content-Type:
+      - application/problem+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:14 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 404
-      message: Not Found
+      message: ''
 version: 1

@@ -5,228 +5,311 @@ interactions:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken?postcode=wrong&huisnummer=wrong
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AA&huisnummer=1
   response:
     body:
-      string: '{"_embedded":{"kadastraalOnroerendeZaken":[]}}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=1234AA&huisnummer=1"}},"_embedded":{}}'
     headers:
-      content-length:
-      - '46'
-      content-type:
-      - application/json
-      date:
-      - Wed, 06 Dec 2023 10:53:20 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '113'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:12 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 200
-      message: OK
+      message: ''
 - request:
     body: null
     headers:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken?postcode=1234AA&huisnummer=123
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}},"_embedded":{"kadastraalOnroerendeZaken":[{"identificatie":"cadastral_id","domein":"string","indicatieVervallen":true,"begrenzingPerceel":{"type":"Polygon","coordinates":[[[0,0],[0,0],[0,0],[0,0]]]},"perceelnummerRotatie":999,"plaatscoordinaten":{"type":"Point","coordinates":[0,0]},"koopsom":{"koopsom":0,"koopjaar":0,"indicatieMetMeerObjectenVerkregen":true},"toelichtingBewaarder":"string","type":"appartementsrecht","aardCultuurBebouwd":{"code":"string","waarde":"string"},"aardCultuurOnbebouwd":{"code":"string","waarde":"string"},"kadastraleAanduiding":"string","kadastraleGrootte":{"soortGrootte":{"code":"string","waarde":"string"},"waarde":0},"perceelnummerVerschuiving":{"deltax":0,"deltay":0},"adressen":[{"straat":"Laan
-        van de landinrichtingscommissie Duiven-Westervoort","huisnummer":1,"huisletter":"A","huisnummertoevoeging":"bis","postcode":"6922KZ","woonplaats":"Duiven","nummeraanduidingIdentificatie":"1234207890123456","adresregel1":"Ln
-        vd l D-Westervoort 1A-bis","adresregel2":"6922KZ  Duiven","adresregel3":"Selangor","land":{"code":"string","waarde":"string"},"koppelingswijze":{"code":"string","waarde":"string"},"adresseerbaarObjectIdentificatie":"string"}],"gesplitstZakelijkRecht":"beklemrechthouder","zakelijkGerechtigdeIdentificaties":["string"],"privaatrechtelijkeBeperkingIdentificaties":["string"],"hypotheekIdentificaties":["string"],"beslagIdentificaties":["string"],"isOvergegaanIn":{"aard":{"code":"string","waarde":"string"},"kadastraalOnroerendeZaken":[{"identificatie":"string"}]},"isOntstaanUit":{"aard":{"code":"string","waarde":"string"},"kadastraalOnroerendeZaken":[{"identificatie":"string"}]},"bijbehorendeGrondpercelen":[{"identificatie":"string"}],"bijbehorendeAppartementsrechten":[{"identificatie":"string","volgnummer":0,"indicatieSluimerend":true}],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"],"indicatieSluimerend":true,"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"zakelijkGerechtigden":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"privaatrechtelijkeBeperkingen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"hypotheken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"isOntstaanUit":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"isOvergegaanIn":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"beslagen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"adressen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"adresseerbareObjecten":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"bijbehorendeGrondpercelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"bijbehorendeAppartementsrechten":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"string","type":"beklemrechthouder","aanvangsdatum":"2023-11-29","erfpachtCanon":{"soortErfpachtCanon":{"code":"string","waarde":"string"},"jaarlijksBedrag":{"som":0,"valuta":{"code":"string","waarde":"string"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2023-11-29","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"string","waarde":"string"},"verkregenNamensSamenwerkingsverband":{"code":"string","waarde":"string"},"aantekeningen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"]}],"gezamenlijkAandeel":{"noemer":2,"teller":1},"betrokkenPartner":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"betrokkenSamenwerkingsverband":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"betrokkenGorzenEnAanwassen":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"zakelijkRecht":{"stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"]},"persoon":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"persoon":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenPartner":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenSamenwerkingsverband":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenGorzenEnAanwassen":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}],"privaatrechtelijkeBeperkingen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}]}}]}}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21"}},"_embedded":{"kadastraalOnroerendeZaken":[{"identificatie":"76870482570000","domein":"NL.IMKAD.KadastraalObject","begrenzingPerceel":{"type":"Polygon","coordinates":[[[194618.354,464161.294],[194619.326,464151.276],[194631.322,464153.988],[194635.099,464154.75],[194633.498,464163.819],[194631.173,464176.992],[194627.691,464176.428],[194624.201,464175.924],[194620.702,464175.479],[194617.197,464175.093],[194616.973,464175.072],[194618.174,464162.759],[194618.354,464161.294]]]},"plaatscoordinaten":{"type":"Point","coordinates":[194625.551,464156.205]},"type":"perceel","kadastraleAanduiding":"Beekbergen
+        K 4825","kadastraleGrootte":{"soortGrootte":{"code":"1","waarde":"Vastgesteld"},"waarde":350},"adressen":[{"straat":"Atalanta","huisnummer":21,"postcode":"7361EW","woonplaats":"Beekbergen","nummeraanduidingIdentificatie":"0200200000003730","adresregel1":"Atalanta
+        21","adresregel2":"7361EW Beekbergen","koppelingswijze":{"code":"ADM_GEO","waarde":"administratief
+        en geometrisch"}}],"zakelijkGerechtigdeIdentificaties":["20170719","20170717","20170718"],"hypotheekIdentificaties":["25381030"],"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000"},"zakelijkGerechtigden":[{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/{zakelijkGerechtigdeIdentificaties}","templated":true}],"hypotheken":[{"href":"/kadastraalonroerendezaken/76870482570000/hypotheken/{hypotheekIdentificaties}","templated":true}],"adressen":[{"href":"https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/{adressen.nummeraanduidingIdentificatie}","templated":true}]}}]}}'
     headers:
-      content-length:
-      - '7892'
-      content-type:
-      - application/json
-      date:
-      - Wed, 06 Dec 2023 10:53:20 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - epsg:28992
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '736'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:12 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 200
-      message: OK
+      message: ''
 - request:
     body: null
     headers:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken/cadastral_id/zakelijkgerechtigden
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"kadastraalOnroerendeZakenUitSplitsing":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"kadastraalOnroerendeZakenUitSplitsingInclusiefZakelijkGerechtigden":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"string","type":"beklemrechthouder","aanvangsdatum":"2023-11-29","erfpachtCanon":{"soortErfpachtCanon":{"code":"string","waarde":"string"},"jaarlijksBedrag":{"som":0,"valuta":{"code":"string","waarde":"string"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2023-11-29","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"string","waarde":"string"},"verkregenNamensSamenwerkingsverband":{"code":"string","waarde":"string"},"aantekeningen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"]}],"gezamenlijkAandeel":{"noemer":2,"teller":1},"betrokkenPartner":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"betrokkenSamenwerkingsverband":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"betrokkenGorzenEnAanwassen":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"zakelijkRecht":{"stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"]},"persoon":{"identificatie":"123456789","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"persoon":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenPartner":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenSamenwerkingsverband":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenGorzenEnAanwassen":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}]},"gesplitstZakelijkRecht":"string"}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden"}},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"20170719","type":"eigenaar","aanvangsdatum":"2018-10-11","tenaamstelling":{"aandeel":{"noemer":1,"teller":1},"isGebaseerdOpStukdeelIdentificaties":["1006938879"],"isVermeldInStukdeelIdentificaties":["1006971479"],"stukIdentificaties":["20160425002157","20161130002071"]},"persoon":{"identificatie":"71291440","omschrijving":"Bankbedrijf","type":"kadaster_niet_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170719"},"persoon":{"href":"/kadasternietnatuurlijkpersonen/71291440"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{tenaamstelling.isVermeldInStukdeelIdentificaties}","templated":true}]}},{"identificatie":"20170717","type":"erfpachter","aanvangsdatum":"2018-10-11","erfpachtCanon":{"soortErfpachtCanon":{"code":"2","waarde":"Afgekocht
+        tot en met"},"jaarlijksBedrag":{"som":100.0,"valuta":{"code":"EUR","waarde":"Euro"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2028-09-30","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"1006942716","isVermeldInStukdeelIdentificaties":["32790052","32790053"],"stukIdentificaties":["20160523001278","20200617001837"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"2","waarde":"Ongehuwd
+        en geen geregistreerd partnerschap"},"isGebaseerdOpStukdeelIdentificaties":["1006942716"],"stukIdentificaties":["20160523001278"]},"persoon":{"identificatie":"71303564","omschrijving":"Christiaan
+        de Goede","type":"kadaster_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170717"},"persoon":{"href":"/kadasternatuurlijkpersonen/71303564"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true},{"href":"/stukken/{erfpachtCanon.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isGebaseerdOpStukdeelIdentificatie}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isVermeldInStukdeelIdentificaties}","templated":true}]}},{"identificatie":"20170718","type":"erfpachter","aanvangsdatum":"2018-10-11","erfpachtCanon":{"soortErfpachtCanon":{"code":"2","waarde":"Afgekocht
+        tot en met"},"jaarlijksBedrag":{"som":100.0,"valuta":{"code":"EUR","waarde":"Euro"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2028-09-30","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"1006942716","isVermeldInStukdeelIdentificaties":["32790052","32790053"],"stukIdentificaties":["20160523001278","20200617001837"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"2","waarde":"Ongehuwd
+        en geen geregistreerd partnerschap"},"isGebaseerdOpStukdeelIdentificaties":["1006942716"],"stukIdentificaties":["20160523001278"]},"persoon":{"identificatie":"999991905","omschrijving":"Linda
+        Haglund","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170718"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true},{"href":"/stukken/{erfpachtCanon.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isGebaseerdOpStukdeelIdentificatie}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isVermeldInStukdeelIdentificaties}","templated":true}]}}]}}'
     headers:
-      content-length:
-      - '3513'
-      content-type:
-      - application/json
-      date:
-      - Wed, 06 Dec 2023 10:53:20 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '784'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:13 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 200
-      message: OK
+      message: ''
 - request:
     body: null
     headers:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken?postcode=1234AA&huisnummer=123
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}},"_embedded":{"kadastraalOnroerendeZaken":[{"identificatie":"cadastral_id","domein":"string","indicatieVervallen":true,"begrenzingPerceel":{"type":"Polygon","coordinates":[[[0,0],[0,0],[0,0],[0,0]]]},"perceelnummerRotatie":999,"plaatscoordinaten":{"type":"Point","coordinates":[0,0]},"koopsom":{"koopsom":0,"koopjaar":0,"indicatieMetMeerObjectenVerkregen":true},"toelichtingBewaarder":"string","type":"appartementsrecht","aardCultuurBebouwd":{"code":"string","waarde":"string"},"aardCultuurOnbebouwd":{"code":"string","waarde":"string"},"kadastraleAanduiding":"string","kadastraleGrootte":{"soortGrootte":{"code":"string","waarde":"string"},"waarde":0},"perceelnummerVerschuiving":{"deltax":0,"deltay":0},"adressen":[{"straat":"Laan
-        van de landinrichtingscommissie Duiven-Westervoort","huisnummer":1,"huisletter":"A","huisnummertoevoeging":"bis","postcode":"6922KZ","woonplaats":"Duiven","nummeraanduidingIdentificatie":"1234207890123456","adresregel1":"Ln
-        vd l D-Westervoort 1A-bis","adresregel2":"6922KZ  Duiven","adresregel3":"Selangor","land":{"code":"string","waarde":"string"},"koppelingswijze":{"code":"string","waarde":"string"},"adresseerbaarObjectIdentificatie":"string"}],"gesplitstZakelijkRecht":"beklemrechthouder","zakelijkGerechtigdeIdentificaties":["string"],"privaatrechtelijkeBeperkingIdentificaties":["string"],"hypotheekIdentificaties":["string"],"beslagIdentificaties":["string"],"isOvergegaanIn":{"aard":{"code":"string","waarde":"string"},"kadastraalOnroerendeZaken":[{"identificatie":"string"}]},"isOntstaanUit":{"aard":{"code":"string","waarde":"string"},"kadastraalOnroerendeZaken":[{"identificatie":"string"}]},"bijbehorendeGrondpercelen":[{"identificatie":"string"}],"bijbehorendeAppartementsrechten":[{"identificatie":"string","volgnummer":0,"indicatieSluimerend":true}],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"],"indicatieSluimerend":true,"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"zakelijkGerechtigden":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"privaatrechtelijkeBeperkingen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"hypotheken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"isOntstaanUit":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"isOvergegaanIn":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"beslagen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"adressen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"adresseerbareObjecten":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"bijbehorendeGrondpercelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"bijbehorendeAppartementsrechten":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"string","type":"beklemrechthouder","aanvangsdatum":"2023-11-29","erfpachtCanon":{"soortErfpachtCanon":{"code":"string","waarde":"string"},"jaarlijksBedrag":{"som":0,"valuta":{"code":"string","waarde":"string"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2023-11-29","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"string","waarde":"string"},"verkregenNamensSamenwerkingsverband":{"code":"string","waarde":"string"},"aantekeningen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"]}],"gezamenlijkAandeel":{"noemer":2,"teller":1},"betrokkenPartner":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"betrokkenSamenwerkingsverband":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"betrokkenGorzenEnAanwassen":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"zakelijkRecht":{"stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"]},"persoon":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"persoon":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenPartner":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenSamenwerkingsverband":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenGorzenEnAanwassen":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}],"privaatrechtelijkeBeperkingen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}]}}]}}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21"}},"_embedded":{"kadastraalOnroerendeZaken":[{"identificatie":"76870482570000","domein":"NL.IMKAD.KadastraalObject","begrenzingPerceel":{"type":"Polygon","coordinates":[[[194618.354,464161.294],[194619.326,464151.276],[194631.322,464153.988],[194635.099,464154.75],[194633.498,464163.819],[194631.173,464176.992],[194627.691,464176.428],[194624.201,464175.924],[194620.702,464175.479],[194617.197,464175.093],[194616.973,464175.072],[194618.174,464162.759],[194618.354,464161.294]]]},"plaatscoordinaten":{"type":"Point","coordinates":[194625.551,464156.205]},"type":"perceel","kadastraleAanduiding":"Beekbergen
+        K 4825","kadastraleGrootte":{"soortGrootte":{"code":"1","waarde":"Vastgesteld"},"waarde":350},"adressen":[{"straat":"Atalanta","huisnummer":21,"postcode":"7361EW","woonplaats":"Beekbergen","nummeraanduidingIdentificatie":"0200200000003730","adresregel1":"Atalanta
+        21","adresregel2":"7361EW Beekbergen","koppelingswijze":{"code":"ADM_GEO","waarde":"administratief
+        en geometrisch"}}],"zakelijkGerechtigdeIdentificaties":["20170719","20170717","20170718"],"hypotheekIdentificaties":["25381030"],"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000"},"zakelijkGerechtigden":[{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/{zakelijkGerechtigdeIdentificaties}","templated":true}],"hypotheken":[{"href":"/kadastraalonroerendezaken/76870482570000/hypotheken/{hypotheekIdentificaties}","templated":true}],"adressen":[{"href":"https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/{adressen.nummeraanduidingIdentificatie}","templated":true}]}}]}}'
     headers:
-      content-length:
-      - '7892'
-      content-type:
-      - application/json
-      date:
-      - Wed, 06 Dec 2023 10:53:20 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - epsg:28992
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '736'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:13 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 200
-      message: OK
+      message: ''
 - request:
     body: null
     headers:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken/cadastral_id/zakelijkgerechtigden
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"kadastraalOnroerendeZakenUitSplitsing":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"kadastraalOnroerendeZakenUitSplitsingInclusiefZakelijkGerechtigden":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"string","type":"beklemrechthouder","aanvangsdatum":"2023-11-29","erfpachtCanon":{"soortErfpachtCanon":{"code":"string","waarde":"string"},"jaarlijksBedrag":{"som":0,"valuta":{"code":"string","waarde":"string"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2023-11-29","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"string","waarde":"string"},"verkregenNamensSamenwerkingsverband":{"code":"string","waarde":"string"},"aantekeningen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"]}],"gezamenlijkAandeel":{"noemer":2,"teller":1},"betrokkenPartner":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"betrokkenSamenwerkingsverband":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"betrokkenGorzenEnAanwassen":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"zakelijkRecht":{"stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"]},"persoon":{"identificatie":"123456789","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"persoon":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenPartner":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenSamenwerkingsverband":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenGorzenEnAanwassen":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}]},"gesplitstZakelijkRecht":"string"}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden"}},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"20170719","type":"eigenaar","aanvangsdatum":"2018-10-11","tenaamstelling":{"aandeel":{"noemer":1,"teller":1},"isGebaseerdOpStukdeelIdentificaties":["1006938879"],"isVermeldInStukdeelIdentificaties":["1006971479"],"stukIdentificaties":["20160425002157","20161130002071"]},"persoon":{"identificatie":"71291440","omschrijving":"Bankbedrijf","type":"kadaster_niet_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170719"},"persoon":{"href":"/kadasternietnatuurlijkpersonen/71291440"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{tenaamstelling.isVermeldInStukdeelIdentificaties}","templated":true}]}},{"identificatie":"20170717","type":"erfpachter","aanvangsdatum":"2018-10-11","erfpachtCanon":{"soortErfpachtCanon":{"code":"2","waarde":"Afgekocht
+        tot en met"},"jaarlijksBedrag":{"som":100.0,"valuta":{"code":"EUR","waarde":"Euro"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2028-09-30","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"1006942716","isVermeldInStukdeelIdentificaties":["32790052","32790053"],"stukIdentificaties":["20160523001278","20200617001837"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"2","waarde":"Ongehuwd
+        en geen geregistreerd partnerschap"},"isGebaseerdOpStukdeelIdentificaties":["1006942716"],"stukIdentificaties":["20160523001278"]},"persoon":{"identificatie":"71303564","omschrijving":"Christiaan
+        de Goede","type":"kadaster_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170717"},"persoon":{"href":"/kadasternatuurlijkpersonen/71303564"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true},{"href":"/stukken/{erfpachtCanon.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isGebaseerdOpStukdeelIdentificatie}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isVermeldInStukdeelIdentificaties}","templated":true}]}},{"identificatie":"20170718","type":"erfpachter","aanvangsdatum":"2018-10-11","erfpachtCanon":{"soortErfpachtCanon":{"code":"2","waarde":"Afgekocht
+        tot en met"},"jaarlijksBedrag":{"som":100.0,"valuta":{"code":"EUR","waarde":"Euro"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2028-09-30","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"1006942716","isVermeldInStukdeelIdentificaties":["32790052","32790053"],"stukIdentificaties":["20160523001278","20200617001837"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"2","waarde":"Ongehuwd
+        en geen geregistreerd partnerschap"},"isGebaseerdOpStukdeelIdentificaties":["1006942716"],"stukIdentificaties":["20160523001278"]},"persoon":{"identificatie":"999991905","omschrijving":"Linda
+        Haglund","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170718"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true},{"href":"/stukken/{erfpachtCanon.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isGebaseerdOpStukdeelIdentificatie}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isVermeldInStukdeelIdentificaties}","templated":true}]}}]}}'
     headers:
-      content-length:
-      - '3513'
-      content-type:
-      - application/json
-      date:
-      - Wed, 06 Dec 2023 10:53:20 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '784'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:13 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 200
-      message: OK
+      message: ''
 - request:
     body: null
     headers:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken?postcode=1234AA&huisnummer=123
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}},"_embedded":{"kadastraalOnroerendeZaken":[{"identificatie":"cadastral_id","domein":"string","indicatieVervallen":true,"begrenzingPerceel":{"type":"Polygon","coordinates":[[[0,0],[0,0],[0,0],[0,0]]]},"perceelnummerRotatie":999,"plaatscoordinaten":{"type":"Point","coordinates":[0,0]},"koopsom":{"koopsom":0,"koopjaar":0,"indicatieMetMeerObjectenVerkregen":true},"toelichtingBewaarder":"string","type":"appartementsrecht","aardCultuurBebouwd":{"code":"string","waarde":"string"},"aardCultuurOnbebouwd":{"code":"string","waarde":"string"},"kadastraleAanduiding":"string","kadastraleGrootte":{"soortGrootte":{"code":"string","waarde":"string"},"waarde":0},"perceelnummerVerschuiving":{"deltax":0,"deltay":0},"adressen":[{"straat":"Laan
-        van de landinrichtingscommissie Duiven-Westervoort","huisnummer":1,"huisletter":"A","huisnummertoevoeging":"bis","postcode":"6922KZ","woonplaats":"Duiven","nummeraanduidingIdentificatie":"1234207890123456","adresregel1":"Ln
-        vd l D-Westervoort 1A-bis","adresregel2":"6922KZ  Duiven","adresregel3":"Selangor","land":{"code":"string","waarde":"string"},"koppelingswijze":{"code":"string","waarde":"string"},"adresseerbaarObjectIdentificatie":"string"}],"gesplitstZakelijkRecht":"beklemrechthouder","zakelijkGerechtigdeIdentificaties":["string"],"privaatrechtelijkeBeperkingIdentificaties":["string"],"hypotheekIdentificaties":["string"],"beslagIdentificaties":["string"],"isOvergegaanIn":{"aard":{"code":"string","waarde":"string"},"kadastraalOnroerendeZaken":[{"identificatie":"string"}]},"isOntstaanUit":{"aard":{"code":"string","waarde":"string"},"kadastraalOnroerendeZaken":[{"identificatie":"string"}]},"bijbehorendeGrondpercelen":[{"identificatie":"string"}],"bijbehorendeAppartementsrechten":[{"identificatie":"string","volgnummer":0,"indicatieSluimerend":true}],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"],"indicatieSluimerend":true,"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"zakelijkGerechtigden":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"privaatrechtelijkeBeperkingen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"hypotheken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"isOntstaanUit":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"isOvergegaanIn":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"beslagen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"adressen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"adresseerbareObjecten":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"bijbehorendeGrondpercelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"bijbehorendeAppartementsrechten":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"string","type":"beklemrechthouder","aanvangsdatum":"2023-11-29","erfpachtCanon":{"soortErfpachtCanon":{"code":"string","waarde":"string"},"jaarlijksBedrag":{"som":0,"valuta":{"code":"string","waarde":"string"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2023-11-29","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"string","waarde":"string"},"verkregenNamensSamenwerkingsverband":{"code":"string","waarde":"string"},"aantekeningen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"]}],"gezamenlijkAandeel":{"noemer":2,"teller":1},"betrokkenPartner":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"betrokkenSamenwerkingsverband":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"betrokkenGorzenEnAanwassen":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"zakelijkRecht":{"stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"]},"persoon":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"persoon":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenPartner":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenSamenwerkingsverband":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenGorzenEnAanwassen":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}],"privaatrechtelijkeBeperkingen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}]}}]}}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21"}},"_embedded":{"kadastraalOnroerendeZaken":[{"identificatie":"76870482570000","domein":"NL.IMKAD.KadastraalObject","begrenzingPerceel":{"type":"Polygon","coordinates":[[[194618.354,464161.294],[194619.326,464151.276],[194631.322,464153.988],[194635.099,464154.75],[194633.498,464163.819],[194631.173,464176.992],[194627.691,464176.428],[194624.201,464175.924],[194620.702,464175.479],[194617.197,464175.093],[194616.973,464175.072],[194618.174,464162.759],[194618.354,464161.294]]]},"plaatscoordinaten":{"type":"Point","coordinates":[194625.551,464156.205]},"type":"perceel","kadastraleAanduiding":"Beekbergen
+        K 4825","kadastraleGrootte":{"soortGrootte":{"code":"1","waarde":"Vastgesteld"},"waarde":350},"adressen":[{"straat":"Atalanta","huisnummer":21,"postcode":"7361EW","woonplaats":"Beekbergen","nummeraanduidingIdentificatie":"0200200000003730","adresregel1":"Atalanta
+        21","adresregel2":"7361EW Beekbergen","koppelingswijze":{"code":"ADM_GEO","waarde":"administratief
+        en geometrisch"}}],"zakelijkGerechtigdeIdentificaties":["20170719","20170717","20170718"],"hypotheekIdentificaties":["25381030"],"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000"},"zakelijkGerechtigden":[{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/{zakelijkGerechtigdeIdentificaties}","templated":true}],"hypotheken":[{"href":"/kadastraalonroerendezaken/76870482570000/hypotheken/{hypotheekIdentificaties}","templated":true}],"adressen":[{"href":"https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/{adressen.nummeraanduidingIdentificatie}","templated":true}]}}]}}'
     headers:
-      content-length:
-      - '7892'
-      content-type:
-      - application/json
-      date:
-      - Wed, 06 Dec 2023 10:53:20 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - epsg:28992
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '736'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:13 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 200
-      message: OK
+      message: ''
 - request:
     body: null
     headers:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      apikey:
-      - l7xx1f2691f2520d487b902f4e0b57a0b197
+      X-Api-Key:
+      - fake
     method: GET
-    uri: http://localhost:8150/kadastraalonroerendezaken/cadastral_id/zakelijkgerechtigden
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden
   response:
     body:
-      string: '{"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"kadastraalOnroerendeZakenUitSplitsing":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"kadastraalOnroerendeZakenUitSplitsingInclusiefZakelijkGerechtigden":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"string","type":"beklemrechthouder","aanvangsdatum":"2023-11-29","erfpachtCanon":{"soortErfpachtCanon":{"code":"string","waarde":"string"},"jaarlijksBedrag":{"som":0,"valuta":{"code":"string","waarde":"string"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2023-11-29","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"string","waarde":"string"},"verkregenNamensSamenwerkingsverband":{"code":"string","waarde":"string"},"aantekeningen":[{"aard":{"code":"string","waarde":"string"},"omschrijving":"string","identificatie":"string","domein":"string","einddatum":"2023-11-29","einddatumRecht":"2023-11-29","stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificatie":"string","isVermeldInStukdeelIdentificaties":["string"]}],"gezamenlijkAandeel":{"noemer":2,"teller":1},"betrokkenPartner":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"betrokkenSamenwerkingsverband":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"betrokkenGorzenEnAanwassen":{"identificatie":"string","omschrijving":"string","type":"ingeschreven_niet_natuurlijk_persoon"},"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"],"stukIdentificaties":["string"]},"zakelijkRecht":{"stukIdentificaties":["string"],"isGebaseerdOpStukdeelIdentificaties":["string"],"isVermeldInStukdeelIdentificaties":["string"]},"persoon":{"identificatie":"123456789","omschrijving":"string","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"persoon":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenPartner":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenSamenwerkingsverband":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"betrokkenGorzenEnAanwassen":{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"},"stukken":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}],"stukdelen":[{"href":"https://datapunt.voorbeeldgemeente.nl/api/v{major-versie}/resourcename/{resource-identificatie}","templated":true,"title":"string"}]}}]},"gesplitstZakelijkRecht":"string"}'
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden"}},"_embedded":{"zakelijkGerechtigden":[{"identificatie":"20170719","type":"eigenaar","aanvangsdatum":"2018-10-11","tenaamstelling":{"aandeel":{"noemer":1,"teller":1},"isGebaseerdOpStukdeelIdentificaties":["1006938879"],"isVermeldInStukdeelIdentificaties":["1006971479"],"stukIdentificaties":["20160425002157","20161130002071"]},"persoon":{"identificatie":"71291440","omschrijving":"Bankbedrijf","type":"kadaster_niet_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170719"},"persoon":{"href":"/kadasternietnatuurlijkpersonen/71291440"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{tenaamstelling.isVermeldInStukdeelIdentificaties}","templated":true}]}},{"identificatie":"20170717","type":"erfpachter","aanvangsdatum":"2018-10-11","erfpachtCanon":{"soortErfpachtCanon":{"code":"2","waarde":"Afgekocht
+        tot en met"},"jaarlijksBedrag":{"som":100.0,"valuta":{"code":"EUR","waarde":"Euro"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2028-09-30","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"1006942716","isVermeldInStukdeelIdentificaties":["32790052","32790053"],"stukIdentificaties":["20160523001278","20200617001837"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"2","waarde":"Ongehuwd
+        en geen geregistreerd partnerschap"},"isGebaseerdOpStukdeelIdentificaties":["1006942716"],"stukIdentificaties":["20160523001278"]},"persoon":{"identificatie":"71303564","omschrijving":"Christiaan
+        de Goede","type":"kadaster_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170717"},"persoon":{"href":"/kadasternatuurlijkpersonen/71303564"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true},{"href":"/stukken/{erfpachtCanon.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isGebaseerdOpStukdeelIdentificatie}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isVermeldInStukdeelIdentificaties}","templated":true}]}},{"identificatie":"20170718","type":"erfpachter","aanvangsdatum":"2018-10-11","erfpachtCanon":{"soortErfpachtCanon":{"code":"2","waarde":"Afgekocht
+        tot en met"},"jaarlijksBedrag":{"som":100.0,"valuta":{"code":"EUR","waarde":"Euro"}},"betrefMeerOnroerendeZaken":true,"einddatumAfkoop":"2028-09-30","indicatieOudeOnroerendeZaakBetrokken":true,"isGebaseerdOpStukdeelIdentificatie":"1006942716","isVermeldInStukdeelIdentificaties":["32790052","32790053"],"stukIdentificaties":["20160523001278","20200617001837"]},"tenaamstelling":{"aandeel":{"noemer":2,"teller":1},"burgerlijkeStaatTenTijdeVanVerkrijging":{"code":"2","waarde":"Ongehuwd
+        en geen geregistreerd partnerschap"},"isGebaseerdOpStukdeelIdentificaties":["1006942716"],"stukIdentificaties":["20160523001278"]},"persoon":{"identificatie":"999991905","omschrijving":"Linda
+        Haglund","type":"ingeschreven_natuurlijk_persoon"},"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/20170718"},"stukken":[{"href":"/stukken/{tenaamstelling.stukIdentificaties}","templated":true},{"href":"/stukken/{erfpachtCanon.stukIdentificaties}","templated":true}],"stukdelen":[{"href":"/stukdelen/{tenaamstelling.isGebaseerdOpStukdeelIdentificaties}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isGebaseerdOpStukdeelIdentificatie}","templated":true},{"href":"/stukdelen/{erfpachtCanon.isVermeldInStukdeelIdentificaties}","templated":true}]}}]}}'
     headers:
-      content-length:
-      - '3513'
-      content-type:
-      - application/json
-      date:
-      - Wed, 06 Dec 2023 10:53:20 GMT
-      server:
-      - uvicorn
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '784'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:13 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
     status:
       code: 200
-      message: OK
+      message: ''
 version: 1

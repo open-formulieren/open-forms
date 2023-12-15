@@ -32,7 +32,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
             ValidationError, _("No BSN is available to validate your address.")
         ):
             validator(
-                {"postcode": "not_relevant", "houseNumber": "same"}, submission_no_bsn
+                {"postcode": "not_relevant", "house_number": "same"}, submission_no_bsn
             )
 
         submission_not_hashed = SubmissionFactory.create(
@@ -41,7 +41,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
             form__formstep__form_definition__login_required=False,
             auth_info__attribute_hashed=False,
             auth_info__attribute=AuthAttribute.bsn,
-            auth_info__value="123456789",
+            auth_info__value="71291440",
             auth_info__plugin="demo",
         )
 
@@ -51,7 +51,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
             form__formstep__form_definition__login_required=False,
             auth_info__attribute_hashed=True,
             auth_info__attribute=AuthAttribute.bsn,
-            auth_info__value=get_salted_hash("123456789"),
+            auth_info__value=get_salted_hash("71303564"),
             auth_info__plugin="demo",
         )
 
@@ -69,16 +69,16 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
             ValidationError, _("No property found for this address.")
         ):
             validator(
-                {"postcode": "wrong", "houseNumber": "wrong"}, submission_not_hashed
+                {"postcode": "1234AA", "house_number": "1"}, submission_not_hashed
             )
 
-        validator({"postcode": "1234AA", "houseNumber": "123"}, submission_not_hashed)
-        validator({"postcode": "1234AA", "houseNumber": "123"}, submission_hashed)
+        validator({"postcode": "7361EW", "house_number": "21"}, submission_not_hashed)
+        validator({"postcode": "7361EW", "house_number": "21"}, submission_hashed)
 
         with self.assertRaisesMessage(
             ValidationError,
             _("You are not one of the registered owners of this property"),
         ):
             validator(
-                {"postcode": "1234AA", "houseNumber": "123"}, submission_wrong_bsn
+                {"postcode": "7361EW", "house_number": "21"}, submission_wrong_bsn
             )
