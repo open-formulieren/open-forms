@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Callable, Iterable, List, Type, Union
+from typing import Any, Callable, Iterable, List, Type, Union
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -14,7 +14,7 @@ from openforms.submissions.models import Submission
 
 logger = logging.getLogger(__name__)
 
-ValidatorType = Callable[[str], None]
+ValidatorType = Callable[[Any, Submission], bool]
 
 
 @dataclasses.dataclass()
@@ -33,8 +33,8 @@ class RegisteredValidator:
     # TODO always enabled for now, see: https://github.com/open-formulieren/open-forms/issues/1149
     is_enabled: bool = True
 
-    def __call__(self, value):
-        return self.callable(value)
+    def __call__(self, *args, **kwargs) -> bool:
+        return self.callable(*args, **kwargs)
 
 
 def flatten(iterables: Iterable) -> List[str]:
@@ -51,7 +51,14 @@ def flatten(iterables: Iterable) -> List[str]:
     return list(_flat(iterables))
 
 
-class Registry(BaseRegistry):
+def filter_empty_values(value: Any) -> Any:
+    if not isinstance(value, dict):
+        # Let the serializer raise a the validation error
+        return value
+    return {k: v for k, v in value.items() if v}
+
+
+class Registry(BaseRegistry[RegisteredValidator]):
     """
     A registry for the validations module plugins.
 
@@ -80,6 +87,10 @@ class Registry(BaseRegistry):
                 )
 
             call = validator
+            if not hasattr(call, "value_serializer"):
+                raise ValueError(
+                    f"Validator '{identifier}' doesn't have a 'value_serializer' attribute."
+                )
             if isinstance(call, type):
                 call = validator()
             if not callable(call):
@@ -98,7 +109,7 @@ class Registry(BaseRegistry):
 
     @elasticapm.capture_span("app.validations.validate")
     def validate(
-        self, plugin_id: str, value: str, submission: Submission
+        self, plugin_id: str, value: Any, submission: Submission
     ) -> ValidationResult:
         try:
             validator = self._registry[plugin_id]
@@ -121,8 +132,12 @@ class Registry(BaseRegistry):
                 ],
             )
 
+        SerializerClass = validator.callable.value_serializer
+        serializer = SerializerClass(data={"value": filter_empty_values(value)})
+        serializer.is_valid(raise_exception=True)
+
         try:
-            validator(value, submission)
+            validator(serializer.data["value"], submission)
         except (DJ_ValidationError, DRF_ValidationError) as e:
             errors = as_serializer_error(e)
             messages = flatten(errors.values())

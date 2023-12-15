@@ -166,3 +166,13 @@ class SignatureFormatter(FormatterBase):
             src=value,
             alt=text,
         )
+
+
+class AddressNLFormatter(FormatterBase):
+
+    empty_values = ({},)
+
+    def format(component: Component, value: dict[str, str]) -> str:
+        return format_html(
+            "{postcode} {houseNumber}{houseLetter}{houseNumberAddition}", **value
+        )

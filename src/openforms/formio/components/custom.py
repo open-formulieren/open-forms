@@ -14,7 +14,7 @@ from openforms.utils.date import format_date_value
 
 from ..dynamic_config.date import mutate as mutate_min_max_validation
 from ..formatters.custom import DateFormatter, DateTimeFormatter, MapFormatter
-from ..formatters.formio import DefaultFormatter, TextFieldFormatter
+from ..formatters.formio import AddressNLFormatter, DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
 from ..typing import Component, DateComponent, DatetimeComponent
 from ..utils import conform_to_mask
@@ -185,6 +185,6 @@ class NPFamilyMembers(BasePlugin):
 
 
 @register("addressNL")
-class Default(BasePlugin):
+class AddressNL(BasePlugin):
 
-    formatter = DefaultFormatter
+    formatter = AddressNLFormatter

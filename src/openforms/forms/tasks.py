@@ -76,7 +76,6 @@ def recouple_submission_variables_to_form_variables(form_id: int) -> None:
         if form_variable := form_variables.get(submission_variable.key):
             submission_variable.form_variable = form_variable
             submission_variables_to_update.append(submission_variable)
-
     try:
         SubmissionValueVariable.objects.bulk_update(
             submission_variables_to_update, fields=["form_variable"]

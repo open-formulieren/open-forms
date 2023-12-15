@@ -5,7 +5,9 @@ from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
+from glom import glom
 from requests import RequestException
+from rest_framework import serializers
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
@@ -16,9 +18,29 @@ from .client import NoServiceConfigured, SearchParams, get_client
 
 class AddressValue(TypedDict, total=False):
     postcode: str
-    houseNumber: str
-    houseLetter: str
-    houseNumberAddition: str
+    house_number: str
+    house_letter: str
+    house_number_addition: str
+
+
+class AddressValueSerializer(serializers.Serializer):
+    postcode = serializers.RegexField(
+        "^[1-9][0-9][0-9][0-9][A-Z][A-Z]$",
+    )
+    house_number = serializers.RegexField(
+        "^\d{1,5}$",
+    )
+    house_letter = serializers.RegexField(
+        "^[a-zA-Z]$",
+        required=False,
+    )
+    house_number_addition = serializers.RegexField(
+        "^([a-z,A-Z,0-9]){1,4}$", required=False
+    )
+
+
+class ValueSerializer(serializers.Serializer):
+    value = AddressValueSerializer()
 
 
 @register(
@@ -28,6 +50,8 @@ class AddressValue(TypedDict, total=False):
 )
 @deconstructible
 class BRKZaakgerechtigdeValidator:
+
+    value_serializer = ValueSerializer
 
     error_messages = {
         "no_bsn": _("No BSN is available to validate your address."),
@@ -40,7 +64,6 @@ class BRKZaakgerechtigdeValidator:
     }
 
     def __call__(self, value: AddressValue, submission: Submission) -> bool:
-
         try:
             client = get_client()
         except NoServiceConfigured as e:
@@ -48,12 +71,12 @@ class BRKZaakgerechtigdeValidator:
 
         address_query: SearchParams = {
             "postcode": value["postcode"],
-            "huisnummer": value["houseNumber"],
+            "huisnummer": value["house_number"],
         }
         if "houseLetter" in value:
-            address_query["huisletter"] = value["houseLetter"]
+            address_query["huisletter"] = value["house_letter"]
         if "houseNumberAddition" in value:
-            address_query["huisnummertoevoeging"] = value["houseNumberAddition"]
+            address_query["huisnummertoevoeging"] = value["house_number_addition"]
 
         # We assume submission has auth_info available, should we verify that this validator is used
         # on a step that requires login?
@@ -63,7 +86,9 @@ class BRKZaakgerechtigdeValidator:
         try:
             with client:
                 cadastrals_resp = client.get_cadastrals_by_address(address_query)
-                kadastraals = cadastrals_resp["_embedded"]["kadastraalOnroerendeZaken"]
+                kadastraals = glom(
+                    cadastrals_resp, "_embedded.kadastraalOnroerendeZaken", default=[]
+                )
                 if len(kadastraals) > 1:
                     # The query by address returned more than one cadastral, this shouldn't happen
                     raise ValidationError(self.error_messages["multiple_cadastrals"])

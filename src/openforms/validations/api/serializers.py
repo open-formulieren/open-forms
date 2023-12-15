@@ -11,7 +11,7 @@ from openforms.api.utils import underscore_to_camel
 
 
 class ValidationInputSerializer(serializers.Serializer):
-    value = serializers.CharField(
+    value = serializers.JSONField(
         label=_("value"), help_text=_("Value to be validated")
     )
     submission_uuid = serializers.UUIDField(

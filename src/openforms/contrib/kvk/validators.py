@@ -5,6 +5,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 from requests import RequestException
+from rest_framework import serializers
 
 from openforms.utils.validators import validate_digits, validate_rsin
 from openforms.validations.registry import register
@@ -47,9 +48,15 @@ validate_kvk = KVKNumberValidator()
 validate_branchNumber = KVKBranchNumberValidator()
 
 
+class ValueSerializer(serializers.Serializer):
+    value = serializers.CharField()
+
+
 class KVKRemoteBaseValidator:
     query_param: Literal["kvkNummer", "rsin", "vestigingsnummer"]
     value_label: str
+
+    value_serializer = ValueSerializer
 
     error_messages = {
         "not_found": _("%(type)s does not exist."),
