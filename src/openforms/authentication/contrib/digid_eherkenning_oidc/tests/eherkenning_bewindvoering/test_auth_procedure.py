@@ -170,7 +170,7 @@ class EHerkenningBewindvoeringOIDCTests(TestCase):
         ).set({"next": redirect_form_url})
 
         session = self.client.session
-        session["oidc_login_next"] = redirect_url.url
+        session["of_redirect_next"] = redirect_url.url
         session.save()
 
         with patch(

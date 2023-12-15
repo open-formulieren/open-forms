@@ -13,6 +13,7 @@ from digid_eherkenning_oidc_generics.models import (
     OpenIDConnectEHerkenningBewindvoeringConfig,
     OpenIDConnectPublicConfig,
 )
+from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.authentication.constants import (
     CO_SIGN_PARAMETER,
     FORM_AUTH_SESSION_KEY,
@@ -163,7 +164,7 @@ class DigiDMachtigenOIDCTests(TestCase):
         ).set({"next": redirect_form_url})
 
         session = self.client.session
-        session["oidc_login_next"] = redirect_url.url
+        session["of_redirect_next"] = redirect_url.url
         session.save()
 
         with patch(
@@ -335,11 +336,11 @@ class DigiDMachtigenOIDCTests(TestCase):
         )
         self.assertEqual(query_params["kc_idp_hint"], "oidc-digid-machtigen")
 
-    @tag("gh-3656")
-    # This is an example of a specific provider. It may differs when a different provider is used.
+    @tag("gh-3656", "gh-3692")
+    # This is an example of a specific provider. It may differ when a different provider is used.
     # According to https://openid.net/specs/openid-connect-core-1_0.html#AuthError and
     # https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.2.1 , this is the error we expect from OIDC
-    def test_redirect_to_form_login_cancelled(self, m):
+    def test_redirect_to_form_when_login_cancelled_by_anonymous_user(self, m_get_solo):
         form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
         form_url = f"http://testserver{form_path}"
         redirect_form_url = furl(form_url).set({"_start": "1"})
@@ -351,7 +352,41 @@ class DigiDMachtigenOIDCTests(TestCase):
         ).set({"next": redirect_form_url})
 
         session = self.client.session
-        session["oidc_login_next"] = redirect_url.url
+        session["of_redirect_next"] = redirect_url.url
+        session.save()
+
+        response = self.client.get(
+            reverse("digid_machtigen_oidc:callback"),
+            {"error": "access_denied", "error_description": "The user cancelled"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+        parsed = furl(response.url)
+        query_params = parsed.query.params
+
+        self.assertEqual(query_params["_digid-message"], "login-cancelled")
+        self.assertIsNone(query_params.get("of-auth-problem"))
+
+    @tag("gh-3656", "gh-3692")
+    def test_redirect_to_form_when_login_cancelled_by_authenticated_user(
+        self, m_get_solo
+    ):
+        user = StaffUserFactory.create()
+        self.client.force_login(user=user)
+
+        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
+        form_url = f"http://testserver{form_path}"
+        redirect_form_url = furl(form_url).set({"_start": "1"})
+        redirect_url = furl(
+            reverse(
+                "authentication:return",
+                kwargs={"slug": self.form.slug, "plugin_id": "digid_machtigen_oidc"},
+            )
+        ).set({"next": redirect_form_url})
+
+        session = self.client.session
+        session["of_redirect_next"] = redirect_url.url
         session.save()
 
         response = self.client.get(
