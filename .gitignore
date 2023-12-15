@@ -49,6 +49,9 @@ local.py
 !/tmp/.gitkeep
 /bin/ssh_tunnel*
 
+# Local type stubs
+typings/
+
 # Static files
 src/openforms/static/bundles/
 src/openforms/fonts/
