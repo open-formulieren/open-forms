@@ -771,7 +771,7 @@
     "originalDefault": "Payment provider"
   },
   "L97GKs": {
-    "defaultMessage": "Optional theme to use for styling.",
+    "defaultMessage": "Stijl waarin het formulier wordt weergegeven (niet verplicht).",
     "description": "Form theme field help text",
     "originalDefault": "Optional theme to use for styling."
   },
@@ -1909,7 +1909,7 @@
     "originalDefault": "History"
   },
   "vNRiMn": {
-    "defaultMessage": "Theme",
+    "defaultMessage": "Stijl",
     "description": "Form theme field label",
     "originalDefault": "Theme"
   },

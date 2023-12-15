@@ -1688,7 +1688,7 @@
   "L97GKs": [
     {
       "type": 0,
-      "value": "Optional theme to use for styling."
+      "value": "Stijl waarin het formulier wordt weergegeven (niet verplicht)."
     }
   ],
   "LHBcNe": [
@@ -3932,7 +3932,7 @@
   "vNRiMn": [
     {
       "type": 0,
-      "value": "Theme"
+      "value": "Stijl"
     }
   ],
   "vQME+l": [
