@@ -35,7 +35,6 @@
     "@tinymce/tinymce-react": "^3.12.6",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "babel-jest": "^29.3.1",
-    "bem.js": "^1.0.10",
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
     "design-token-editor": "^0.5.1",
