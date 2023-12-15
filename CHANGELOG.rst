@@ -2,102 +2,33 @@
 Changelog
 =========
 
-2.5.0 (in development)
-======================
+2.5.0-alpha.0 (2023-12-15)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
 
 Upgrade procedure
 -----------------
 
-**Layout design tokens refactor**
+⚠️ Ensure you upgrade to Open Forms 2.4.0 before upgrading to the 2.5 release series.
 
-We've refactored more components to make use of NL DS. This is done in a
-backwards-compatible way, but we recommend updating your design token values. For
-overrides specified in the admin, an automatic migration covers most of these, however
-some tokens cannot be reliably be converted. These are:
+⚠️ Please review the instructions in the documentation under **Installation** >
+**Upgrade details to Open Forms 2.5.0** before and during upgrading.
 
-*Page Footer*
+Detailed changes
+----------------
 
-The old token ``of.page-footer.mobile.padding`` should be used for:
+**New features**
 
-* ``--of-utrecht-page-footer-mobile-padding-block-end``
-* ``--of-utrecht-page-footer-mobile-padding-block-start``
-* ``--of-utrecht-page-footer-mobile-padding-inline-end``
-* ``--of-utrecht-page-footer-mobile-padding-inline-start``
 
-The old token ``of.page-footer.tablet.padding`` should be used for:
 
-* ``--of-utrecht-page-footer-tablet-padding-block-end``
-* ``--of-utrecht-page-footer-tablet-padding-block-start``
-* ``--of-utrecht-page-footer-tablet-padding-inline-end``
-* ``--of-utrecht-page-footer-tablet-padding-inline-start``
+**Bugfixes**
 
-The old token ``of.page-footer.laptop.padding`` should be used for:
 
-* ``--of-utrecht-page-footer-laptop-padding-block-end``
-* ``--of-utrecht-page-footer-laptop-padding-block-start``
-* ``--of-utrecht-page-footer-laptop-padding-inline-end``
-* ``--of-utrecht-page-footer-laptop-padding-inline-start``
 
-The old token ``of.page-footer.desktop.padding`` should be used for:
+**Project maintenance**
 
-* ``--of-utrecht-page-footer-desktop-padding-block-end``
-* ``--of-utrecht-page-footer-desktop-padding-block-start``
-* ``--of-utrecht-page-footer-desktop-padding-inline-end``
-* ``--of-utrecht-page-footer-desktop-padding-inline-start``
 
-*Page header*
-
-The old token ``of.page-header.mobile.padding`` should be used for:
-
-* ``--of-utrecht-page-header-mobile-padding-block-end``
-* ``--of-utrecht-page-header-mobile-padding-block-start``
-* ``--of-utrecht-page-header-mobile-padding-inline-end``
-* ``--of-utrecht-page-header-mobile-padding-inline-start``
-
-The old token ``of.page-header.tablet.padding`` should be used for:
-
-* ``--of-utrecht-page-header-tablet-padding-block-end``
-* ``--of-utrecht-page-header-tablet-padding-block-start``
-* ``--of-utrecht-page-header-tablet-padding-inline-end``
-* ``--of-utrecht-page-header-tablet-padding-inline-start``
-
-The old token ``of.page-header.laptop.padding`` should be used for:
-
-* ``--of-utrecht-page-header-laptop-padding-block-end``
-* ``--of-utrecht-page-header-laptop-padding-block-start``
-* ``--of-utrecht-page-header-laptop-padding-inline-end``
-* ``--of-utrecht-page-header-laptop-padding-inline-start``
-
-The old token ``of.page-header.desktop.padding`` should be used for:
-
-* ``--of-utrecht-page-header-desktop-padding-block-end``
-* ``--of-utrecht-page-header-desktop-padding-block-start``
-* ``--of-utrecht-page-header-desktop-padding-inline-end``
-* ``--of-utrecht-page-header-desktop-padding-inline-start``
-
-*Page*
-
-You may want to specify a background color for the ``.utrecht-page`` selector. Open
-Forms currently falls back to ``--of-layout-background-color``, but if you have a custom
-theme this will not be picked up.
-
-*Other*
-
-These are direct mappings and are handled automatically, but if you have custom
-stylesheets, you should update these:
-
-* ``--of-page-footer-bg`` becomes ``--utrecht-page-footer-background-color``
-* ``--of-page-footer-fg`` becomes ``--utrecht-page-footer-color``
-* ``--of-page-header-bg`` becomes ``--utrecht-page-header-background-color``
-* ``--of-page-header-fg`` becomes ``--utrecht-page-header-color``
-* ``--of-page-header-logo-return-url-min-height`` becomes
-  ``--of-page-header-logo-return-url-min-block-size``
-* ``--of-page-header-logo-return-url-min-width`` becomes
-  ``--of-page-header-logo-return-url-min-inline-size``
-* ``--of-page-header-logo-return-url-mobile-min-height`` becomes
-  ``--of-page-header-logo-return-url-mobile-min-block-size``
-* ``--of-page-header-logo-return-url-mobile-min-width`` becomes
-  ``--of-page-header-logo-return-url-mobile-min-inline-size``
 
 2.3.5 (2023-12-12)
 ==================
