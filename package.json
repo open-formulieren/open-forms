@@ -51,7 +51,7 @@
     "react-dom": "^18.2.0",
     "react-formio": "^4.3.0",
     "react-intl": "^6.4.2",
-    "react-modal": "^3.14.3",
+    "react-modal": "^3.16.1",
     "react-tabs": "^3.2.2",
     "react-use": "^17.2.4",
     "state-pool": "^0.7.1",
