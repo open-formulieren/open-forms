@@ -20,15 +20,70 @@ Detailed changes
 
 **New features**
 
+* [#3178] Replaced more custom components with NL Design System components for improved
+  themeing. You can now use design tokens for:
 
+  * ``utrecht-document``
+  * ``utrecht-page``
+  * ``utrecht-page-header``
+  * ``utrecht-page-footer``
+  * ``utrecht-page-content``
+
+* [#3573] Added support for sending geo (Point2D) coordinates as GeoJSON to the Objects API.
+* Added CSP ``object-src`` directive to settings (preventing embedding by default).
+* Upgraded the version of the new (experimental) form builder.
+* [#3559] Added support for Piwik PRO Tag Manager as an alternative for Piwik PRO Analytics.
+* [#3403] Added support for multiple themes. You can now configure a default theme and
+  specify form-specific styles to apply.
+* [#3649] Improved support for different vendors of the Documenten API implementation.
+* [#3651] The suffix to a field label for optional fields now uses simpler language.
+* [#3005] Submission processing can now be deferred until payment is completed (when
+  relevant).
 
 **Bugfixes**
 
-
+* [#3362] We've reworked and fixed the flow to redirect from the backend back to the
+  form in the frontend, fixing the issues with hash-based routing in the process.
+  Resuming forms after pausing, cosign flows... should now all work properly when you
+  use hash-based routing.
+* [#3548] Fixed not being able to remove the MS Graph service/registration configuration.
+* [#3604] Fixed a regression in the Objects API and ZGW API's registration backends. The
+  required ``Content-Crs`` request header was no longer sent in outgoing requests after
+  the API client refactoring.
+* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* Updated the CSP ``frame-ancestors`` directive to match the ``X-Frame-Options``
+  configuration.
+* [#3605] Fixed unintended number localization in StUF/SOAP messages.
+* [#3613] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+* [#3641] Fixed the DigiD/eHerkenning authentication flows aborting when the user
+  changes connection/IP address.
+* [#3647] Fixed a backend (logic check) crash when non-parsable time, date or datetime
+  values are passed. The values are now ignored as if nothing was submitted.
 
 **Project maintenance**
 
-
+* Deleted dead/unused CSS.
+* Upgraded dependencies having new patch/security releases.
+* [#3620] Upgraded storybook to v7.
+* Updated the Docker image workflow, OS packages are now upgraded during the build and
+  image vulnerability scanning added to the CI pipeline.
+* Fixed generic type hinting of registry.
+* [#3558] Refactored the CSP setting generation from analytics configuration mechanism
+  to be more resilient.
+* Ensured that we send tracebacks to Sentry on DigiD errors.
+* Refactored card component usage to use the component from the SDK.
+* Upgraded WeasyPrint for PDF generation.
+* [#3049] Replaced deprecated calls to ``ugettext*``.
+* Fixed a deprecation warning when using new-style middlewares.
+* [#3005] Simplified/refactored the task orchestration for submission processing.
+* Require OF to be minimum of 2.4 before upgrading to 2.5.
+* Removed original source migrations that were squashed in Open Forms 2.4.
+* Replaced some (vendored) code with their equivalent library versions.
+* Upgraded the NodeJS version from v16 to v20.
 
 2.3.5 (2023-12-12)
 ==================
