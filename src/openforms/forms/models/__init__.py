@@ -1,5 +1,5 @@
 from .category import Category
-from .form import Form
+from .form import Form, FormsExport
 from .form_definition import FormDefinition
 from .form_registration_backend import FormRegistrationBackend
 from .form_step import FormStep
@@ -10,6 +10,7 @@ from .pricing_logic import FormPriceLogic
 
 __all__ = [
     "Form",
+    "FormsExport",
     "FormDefinition",
     "FormStep",
     "FormVersion",
