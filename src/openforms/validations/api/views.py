@@ -87,6 +87,6 @@ class ValidationView(APIView):
 
         submission = Submission.objects.get(uuid=serializer.data["submission_uuid"])
         result = register.validate(
-            self.kwargs["validator"], serializer.data["value"], submission
+            self.kwargs["validator"], request.data["value"], submission
         )
         return Response(ValidationResultSerializer(result).data)

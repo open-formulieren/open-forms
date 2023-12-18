@@ -1,6 +1,4 @@
-import json
 from pathlib import Path
-from typing import Literal
 from unittest.mock import patch
 
 from zgw_consumers.constants import APITypes, AuthTypes
@@ -9,17 +7,6 @@ from openforms.contrib.brk.models import BRKConfig
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"
-
-TestFileNames = Literal[
-    "basisprofiel_response.json",
-    "basisprofiel_response_vve.json",
-    "zoeken_response.json",
-]
-
-
-def load_json_mock(name: TestFileNames):
-    with (TEST_FILES / name).open("r") as f:
-        return json.load(f)
 
 
 BRK_SERVICE = ServiceFactory.build(

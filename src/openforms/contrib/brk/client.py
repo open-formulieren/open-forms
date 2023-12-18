@@ -36,7 +36,7 @@ class BRKClient(HALClient):
         """
         Search for cadastrals by querying for a specifc address.
 
-        API docs: https://vng-realisatie.github.io/Haal-Centraal-BRK-bevragen/swagger-ui-1.5#/Kadastraal%20Onroerende%20Zaken/GetKadastraalOnroerendeZaken
+        API docs: https://vng-realisatie.github.io/Haal-Centraal-BRK-bevragen/swagger-ui-2.0#/Kadastraal%20Onroerende%20Zaken/GetKadastraalOnroerendeZaken
         """
         assert query_params, "You must provide at least one query parameter"
 
@@ -56,7 +56,7 @@ class BRKClient(HALClient):
         """
         Search for commercial titleholders of a cadastral immovable property.
 
-        API docs: https://vng-realisatie.github.io/Haal-Centraal-BRK-bevragen/swagger-ui-1.5#/Zakelijke%20Gerechtigden/GetZakelijkGerechtigden
+        API docs: https://vng-realisatie.github.io/Haal-Centraal-BRK-bevragen/swagger-ui-2.0#/Zakelijke%20Gerechtigden/GetZakelijkGerechtigden
         """
         try:
             response = self.get(

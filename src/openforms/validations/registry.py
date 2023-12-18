@@ -6,8 +6,8 @@ from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
-from rest_framework.serializers import as_serializer_error
 
 from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.models import Submission
@@ -15,6 +15,12 @@ from openforms.submissions.models import Submission
 logger = logging.getLogger(__name__)
 
 ValidatorType = Callable[[Any, Submission], bool]
+
+
+class StringValueSerializer(serializers.Serializer):
+    """A default serializer that accepts ``value`` as a string."""
+
+    value = serializers.CharField()
 
 
 @dataclasses.dataclass()
@@ -139,7 +145,7 @@ class Registry(BaseRegistry[RegisteredValidator]):
         try:
             validator(serializer.data["value"], submission)
         except (DJ_ValidationError, DRF_ValidationError) as e:
-            errors = as_serializer_error(e)
+            errors = serializers.as_serializer_error(e)
             messages = flatten(errors.values())
             return ValidationResult(False, messages=messages)
         else:

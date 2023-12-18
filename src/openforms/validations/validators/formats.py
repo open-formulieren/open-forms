@@ -5,9 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 import phonenumbers
 from phonenumbers import NumberParseException
-from rest_framework import serializers
 
-from openforms.validations.registry import register
+from openforms.validations.registry import StringValueSerializer, register
 
 if TYPE_CHECKING:
     from phonenumbers.phonenumber import PhoneNumber
@@ -18,15 +17,11 @@ class ParsePhoneNumber(Protocol):
         ...  # pragma: nocover
 
 
-class ValueSerializer(serializers.Serializer):
-    value = serializers.CharField()
-
-
 class PhoneNumberBaseValidator:
     country: Optional[str]
     country_name: str = ""
     error_message = _("Not a valid %(country)s phone number")
-    value_serializer = ValueSerializer
+    value_serializer = StringValueSerializer
     _parse_phonenumber: ParsePhoneNumber
 
     def __call__(self, value, submission):
