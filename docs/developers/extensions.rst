@@ -51,5 +51,5 @@ The flow works as follows:
 
 .. _token exchange: https://www.keycloak.org/docs/latest/securing_apps/#_token-exchange
 .. _open-forms-ext-token-exchange: https://github.com/open-formulieren/open-forms-ext-token-exchange
-.. _custom authentication class: https://requests.readthedocs.io/en/latest/user/advanced/#custom-authentication
+.. _custom authentication class: https://requests.readthedocs.io/en/latest/user/advanced.html#custom-authentication
 .. _mozilla-django-oidc: https://github.com/mozilla/mozilla-django-oidc/blob/2.0.0/mozilla_django_oidc/auth.py
