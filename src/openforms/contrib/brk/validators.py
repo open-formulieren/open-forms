@@ -28,7 +28,7 @@ class AddressValueSerializer(serializers.Serializer):
         "^[1-9][0-9][0-9][0-9][A-Z][A-Z]$",
     )
     house_number = serializers.RegexField(
-        "^\d{1,5}$",
+        r"^\d{1,5}$",
     )
     house_letter = serializers.RegexField(
         "^[a-zA-Z]$",
