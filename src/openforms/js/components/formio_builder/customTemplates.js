@@ -1,3 +1,4 @@
+import addressNL from './templates/addressNL';
 import builderSidebar from './templates/builderSidebar';
 import coSign from './templates/coSign';
 import columnsTemplate from './templates/columns.ejs';
@@ -7,6 +8,7 @@ import fieldsetTemplate from './templates/fieldset.ejs';
 
 const TEMPLATES = {
   builderSidebar: {form: builderSidebar},
+  addressNL: {form: addressNL},
   coSign: {form: coSign},
   field: {form: fieldTemplate},
   columns: {form: columnsTemplate},

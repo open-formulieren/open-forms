@@ -19,7 +19,7 @@ class AddressNL extends FieldComponent {
         label: 'AddressNL',
         type: 'addressNL',
         input: true,
-        defaultValue: {}
+        defaultValue: {},
       },
       ...extend
     );
@@ -36,16 +36,9 @@ class AddressNL extends FieldComponent {
     };
   }
 
-  // render(content) {
-  //   const btnContent = this.t('AddressNL', {
-  //     authPlugin: this.component.authPlugin,
-  //   });
-  //   const context = {
-  //     content: content,
-  //     btnContent: btnContent,
-  //   };
-  //   return super.render(this.renderTemplate('addressNL', context));
-  // }
+  render(content) {
+    return super.render(this.renderTemplate('addressNL', {}));
+  }
 }
 
 export default AddressNL;
