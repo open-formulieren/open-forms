@@ -2,102 +2,88 @@
 Changelog
 =========
 
-2.5.0 (in development)
-======================
+2.5.0-alpha.0 (2023-12-15)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
 
 Upgrade procedure
 -----------------
 
-**Layout design tokens refactor**
+⚠️ Ensure you upgrade to Open Forms 2.4.0 before upgrading to the 2.5 release series.
 
-We've refactored more components to make use of NL DS. This is done in a
-backwards-compatible way, but we recommend updating your design token values. For
-overrides specified in the admin, an automatic migration covers most of these, however
-some tokens cannot be reliably be converted. These are:
+⚠️ Please review the instructions in the documentation under **Installation** >
+**Upgrade details to Open Forms 2.5.0** before and during upgrading.
 
-*Page Footer*
+Detailed changes
+----------------
 
-The old token ``of.page-footer.mobile.padding`` should be used for:
+**New features**
 
-* ``--of-utrecht-page-footer-mobile-padding-block-end``
-* ``--of-utrecht-page-footer-mobile-padding-block-start``
-* ``--of-utrecht-page-footer-mobile-padding-inline-end``
-* ``--of-utrecht-page-footer-mobile-padding-inline-start``
+* [#3178] Replaced more custom components with NL Design System components for improved
+  themeing. You can now use design tokens for:
 
-The old token ``of.page-footer.tablet.padding`` should be used for:
+  * ``utrecht-document``
+  * ``utrecht-page``
+  * ``utrecht-page-header``
+  * ``utrecht-page-footer``
+  * ``utrecht-page-content``
 
-* ``--of-utrecht-page-footer-tablet-padding-block-end``
-* ``--of-utrecht-page-footer-tablet-padding-block-start``
-* ``--of-utrecht-page-footer-tablet-padding-inline-end``
-* ``--of-utrecht-page-footer-tablet-padding-inline-start``
+* [#3573] Added support for sending geo (Point2D) coordinates as GeoJSON to the Objects API.
+* Added CSP ``object-src`` directive to settings (preventing embedding by default).
+* Upgraded the version of the new (experimental) form builder.
+* [#3559] Added support for Piwik PRO Tag Manager as an alternative for Piwik PRO Analytics.
+* [#3403] Added support for multiple themes. You can now configure a default theme and
+  specify form-specific styles to apply.
+* [#3649] Improved support for different vendors of the Documenten API implementation.
+* [#3651] The suffix to a field label for optional fields now uses simpler language.
+* [#3005] Submission processing can now be deferred until payment is completed (when
+  relevant).
 
-The old token ``of.page-footer.laptop.padding`` should be used for:
+**Bugfixes**
 
-* ``--of-utrecht-page-footer-laptop-padding-block-end``
-* ``--of-utrecht-page-footer-laptop-padding-block-start``
-* ``--of-utrecht-page-footer-laptop-padding-inline-end``
-* ``--of-utrecht-page-footer-laptop-padding-inline-start``
+* [#3362] We've reworked and fixed the flow to redirect from the backend back to the
+  form in the frontend, fixing the issues with hash-based routing in the process.
+  Resuming forms after pausing, cosign flows... should now all work properly when you
+  use hash-based routing.
+* [#3548] Fixed not being able to remove the MS Graph service/registration configuration.
+* [#3604] Fixed a regression in the Objects API and ZGW API's registration backends. The
+  required ``Content-Crs`` request header was no longer sent in outgoing requests after
+  the API client refactoring.
+* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* Updated the CSP ``frame-ancestors`` directive to match the ``X-Frame-Options``
+  configuration.
+* [#3605] Fixed unintended number localization in StUF/SOAP messages.
+* [#3613] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+* [#3641] Fixed the DigiD/eHerkenning authentication flows aborting when the user
+  changes connection/IP address.
+* [#3647] Fixed a backend (logic check) crash when non-parsable time, date or datetime
+  values are passed. The values are now ignored as if nothing was submitted.
 
-The old token ``of.page-footer.desktop.padding`` should be used for:
+**Project maintenance**
 
-* ``--of-utrecht-page-footer-desktop-padding-block-end``
-* ``--of-utrecht-page-footer-desktop-padding-block-start``
-* ``--of-utrecht-page-footer-desktop-padding-inline-end``
-* ``--of-utrecht-page-footer-desktop-padding-inline-start``
-
-*Page header*
-
-The old token ``of.page-header.mobile.padding`` should be used for:
-
-* ``--of-utrecht-page-header-mobile-padding-block-end``
-* ``--of-utrecht-page-header-mobile-padding-block-start``
-* ``--of-utrecht-page-header-mobile-padding-inline-end``
-* ``--of-utrecht-page-header-mobile-padding-inline-start``
-
-The old token ``of.page-header.tablet.padding`` should be used for:
-
-* ``--of-utrecht-page-header-tablet-padding-block-end``
-* ``--of-utrecht-page-header-tablet-padding-block-start``
-* ``--of-utrecht-page-header-tablet-padding-inline-end``
-* ``--of-utrecht-page-header-tablet-padding-inline-start``
-
-The old token ``of.page-header.laptop.padding`` should be used for:
-
-* ``--of-utrecht-page-header-laptop-padding-block-end``
-* ``--of-utrecht-page-header-laptop-padding-block-start``
-* ``--of-utrecht-page-header-laptop-padding-inline-end``
-* ``--of-utrecht-page-header-laptop-padding-inline-start``
-
-The old token ``of.page-header.desktop.padding`` should be used for:
-
-* ``--of-utrecht-page-header-desktop-padding-block-end``
-* ``--of-utrecht-page-header-desktop-padding-block-start``
-* ``--of-utrecht-page-header-desktop-padding-inline-end``
-* ``--of-utrecht-page-header-desktop-padding-inline-start``
-
-*Page*
-
-You may want to specify a background color for the ``.utrecht-page`` selector. Open
-Forms currently falls back to ``--of-layout-background-color``, but if you have a custom
-theme this will not be picked up.
-
-*Other*
-
-These are direct mappings and are handled automatically, but if you have custom
-stylesheets, you should update these:
-
-* ``--of-page-footer-bg`` becomes ``--utrecht-page-footer-background-color``
-* ``--of-page-footer-fg`` becomes ``--utrecht-page-footer-color``
-* ``--of-page-header-bg`` becomes ``--utrecht-page-header-background-color``
-* ``--of-page-header-fg`` becomes ``--utrecht-page-header-color``
-* ``--of-page-header-logo-return-url-min-height`` becomes
-  ``--of-page-header-logo-return-url-min-block-size``
-* ``--of-page-header-logo-return-url-min-width`` becomes
-  ``--of-page-header-logo-return-url-min-inline-size``
-* ``--of-page-header-logo-return-url-mobile-min-height`` becomes
-  ``--of-page-header-logo-return-url-mobile-min-block-size``
-* ``--of-page-header-logo-return-url-mobile-min-width`` becomes
-  ``--of-page-header-logo-return-url-mobile-min-inline-size``
+* Deleted dead/unused CSS.
+* Upgraded dependencies having new patch/security releases.
+* [#3620] Upgraded storybook to v7.
+* Updated the Docker image workflow, OS packages are now upgraded during the build and
+  image vulnerability scanning added to the CI pipeline.
+* Fixed generic type hinting of registry.
+* [#3558] Refactored the CSP setting generation from analytics configuration mechanism
+  to be more resilient.
+* Ensured that we send tracebacks to Sentry on DigiD errors.
+* Refactored card component usage to use the component from the SDK.
+* Upgraded WeasyPrint for PDF generation.
+* [#3049] Replaced deprecated calls to ``ugettext*``.
+* Fixed a deprecation warning when using new-style middlewares.
+* [#3005] Simplified/refactored the task orchestration for submission processing.
+* Require OF to be minimum of 2.4 before upgrading to 2.5.
+* Removed original source migrations that were squashed in Open Forms 2.4.
+* Replaced some (vendored) code with their equivalent library versions.
+* Upgraded the NodeJS version from v16 to v20.
 
 2.3.5 (2023-12-12)
 ==================

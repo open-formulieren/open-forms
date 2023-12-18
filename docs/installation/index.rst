@@ -30,3 +30,4 @@ and expertise.
    redis
    issues/index
    upgrade-240
+   upgrade-250
