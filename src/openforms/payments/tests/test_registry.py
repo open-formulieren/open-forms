@@ -52,7 +52,7 @@ class RegistryTests(TestCase):
 
         with self.assertRaisesMessage(
             ValueError,
-            f"The unique identifier '{long_identifier}' is longer then {UNIQUE_ID_MAX_LENGTH} characters.",
+            f"The unique identifier '{long_identifier}' is longer than {UNIQUE_ID_MAX_LENGTH} characters.",
         ):
             register(long_identifier)(Plugin)
 

@@ -26,7 +26,7 @@ class ValidatorTestBase(TestCase):
 class PhoneNumberTestCase(ValidatorTestBase):
     def test_phone_number_international(self):
         validator = partial(
-            InternationalPhoneNumberValidator(), submission=Submission()
+            InternationalPhoneNumberValidator("id"), submission=Submission()
         )
         valid = [
             "+31612345678",
@@ -46,7 +46,7 @@ class PhoneNumberTestCase(ValidatorTestBase):
         self.run_cases(validator, valid, invalid, message)
 
     def test_phone_number_dutch(self):
-        validator = partial(DutchPhoneNumberValidator(), submission=Submission())
+        validator = partial(DutchPhoneNumberValidator("id"), submission=Submission())
         valid = [
             "+31612345678",
             "0031612345678",

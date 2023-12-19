@@ -67,7 +67,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=500,
         )
 
-        validator = partial(KVKNumberRemoteValidator(), submission=Submission())
+        validator = partial(KVKNumberRemoteValidator("id"), submission=Submission())
         validator("69599084")
 
         with self.assertRaisesMessage(
@@ -96,7 +96,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             {"resultaten": []},
             {},
         )
-        validate = partial(KVKNumberRemoteValidator(), submission=Submission())
+        validate = partial(KVKNumberRemoteValidator("id"), submission=Submission())
 
         for response_json in bad_responses:
             with self.subTest(response_json=response_json):
@@ -120,7 +120,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=404,
         )
 
-        validator = partial(KVKRSINRemoteValidator(), submission=Submission())
+        validator = partial(KVKRSINRemoteValidator("id"), submission=Submission())
         validator("111222333")
 
         with self.assertRaisesMessage(
@@ -151,7 +151,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=404,
         )
 
-        validator = partial(KVKBranchNumberRemoteValidator(), submission=Submission())
+        validator = partial(KVKBranchNumberRemoteValidator(""), submission=Submission())
         validator("112233445566")
 
         with self.assertRaisesMessage(

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Callable, Generic, Iterator, TypeVar
 
 from django.db import OperationalError
 
@@ -35,7 +35,7 @@ class BaseRegistry(Generic[PluginType_co]):
         def decorator(plugin_cls: type[PluginType_co]) -> type[PluginType_co]:
             if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
                 raise ValueError(
-                    f"The unique identifier '{unique_identifier}' is longer then {UNIQUE_ID_MAX_LENGTH} characters."
+                    f"The unique identifier '{unique_identifier}' is longer than {UNIQUE_ID_MAX_LENGTH} characters."
                 )
             if unique_identifier in self._registry:
                 raise ValueError(
@@ -50,7 +50,7 @@ class BaseRegistry(Generic[PluginType_co]):
 
         return decorator
 
-    def check_plugin(self, plugin):
+    def check_plugin(self, plugin: PluginType_co):
         # validation hook
         pass
 
@@ -63,7 +63,7 @@ class BaseRegistry(Generic[PluginType_co]):
     def __contains__(self, key: str):
         return key in self._registry
 
-    def iter_enabled_plugins(self):
+    def iter_enabled_plugins(self) -> Iterator[PluginType_co]:
         try:
             config = GlobalConfiguration.get_solo()
             assert isinstance(config, GlobalConfiguration)
