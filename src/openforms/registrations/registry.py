@@ -10,7 +10,7 @@ class Registry(BaseRegistry[BasePlugin]):
 
     module = "registrations"
 
-    def check_plugin(self, plugin):
+    def check_plugin(self, plugin: BasePlugin):
         if not plugin.configuration_options:
             raise ValueError(
                 "Please specify 'configuration_options' attribute for plugin class."
