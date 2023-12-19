@@ -4,12 +4,13 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import authentication, permissions
+from rest_framework import authentication, permissions, serializers
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
+from openforms.api.drf_spectacular.plumbing import extend_inline_serializer
 from openforms.api.views import ListMixin
 from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
 from openforms.submissions.models import Submission
@@ -61,14 +62,21 @@ class ValidationView(APIView):
     @extend_schema(
         operation_id="validation_run",
         summary=_("Validate value using validation plugin"),
-        request=ValidationInputSerializer,
+        request=extend_inline_serializer(
+            ValidationInputSerializer,
+            {
+                "value": serializers.CharField(
+                    label=_("value"), help_text=_("Value to be validated.")
+                )
+            },
+        ),
         responses=ValidationResultSerializer,
         parameters=[
             OpenApiParameter(
                 "validator",
                 OpenApiTypes.STR,
                 OpenApiParameter.PATH,
-                enum=[validator.identifier for validator in register],
+                enum=sorted([validator.identifier for validator in register]),
                 description=_(
                     "ID of the validation plugin, see the [`validation_plugin_list`]"
                     "(./#operation/validation_plugin_list) operation"
