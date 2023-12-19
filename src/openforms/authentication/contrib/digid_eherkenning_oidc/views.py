@@ -22,6 +22,7 @@ from openforms.authentication.contrib.digid.views import (
     LOGIN_CANCELLED,
 )
 from openforms.authentication.contrib.eherkenning.views import MESSAGE_PARAMETER
+
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .backends import (
     OIDCAuthenticationDigiDBackend,
