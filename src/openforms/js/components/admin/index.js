@@ -1,97 +1,76 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import {IntlProvider} from 'react-intl';
+import {createRoot} from 'react-dom/client';
 import ReactModal from 'react-modal';
 
-import jsonScriptToVar from 'utils/json-script';
-
+import AppWrapper, {getWrapperProps} from './AppWrapper';
 import SessionStatus from './SessionStatus';
-import Debug from './debug';
 import './design_token_values';
 import setE2EMarker from './e2e-marker';
 import './form-category';
-import {APIContext, FeatureFlagsContext, TinyMceContext} from './form_design/Context';
+import {TinyMceContext} from './form_design/Context';
 import {FormCreationForm} from './form_design/form-creation-form';
 import FormVersionsTable from './form_versions/FormVersionsTable';
-import {getIntlProviderProps} from './i18n';
 import './plugin_configuration';
 import './submissions/filter';
 
-const mountForm = intlProps => {
+const mountForm = wrapperProps => {
   const formCreationFormNodes = document.getElementsByClassName('react-form-create');
   if (!formCreationFormNodes.length) return;
 
   for (const formCreationFormNode of formCreationFormNodes) {
     const {csrftoken, formUuid, formUrl, tinymceUrl, formHistoryUrl} = formCreationFormNode.dataset;
 
-    const featureFlags = jsonScriptToVar('feature-flags');
-
     ReactModal.setAppElement(formCreationFormNode);
+    const root = createRoot(formCreationFormNode);
 
-    ReactDOM.render(
-      <IntlProvider {...intlProps}>
+    root.render(
+      // Immer updates crash when using strict mode due to mutations being made by formio (?).
+      // Strict mode is likely only viable once we've simplified the code substantially.
+      <AppWrapper {...wrapperProps} csrftoken={csrftoken} strict={false}>
         <TinyMceContext.Provider value={tinymceUrl}>
-          <FeatureFlagsContext.Provider value={featureFlags}>
-            <APIContext.Provider value={{csrftoken}}>
-              <FormCreationForm
-                formUuid={formUuid}
-                formUrl={formUrl}
-                formHistoryUrl={formHistoryUrl}
-              />
-            </APIContext.Provider>
-          </FeatureFlagsContext.Provider>
+          <FormCreationForm formUuid={formUuid} formUrl={formUrl} formHistoryUrl={formHistoryUrl} />
         </TinyMceContext.Provider>
-      </IntlProvider>,
-      formCreationFormNode
+      </AppWrapper>
     );
   }
 };
 
-const mountFormVersions = intlProps => {
+const mountFormVersions = wrapperProps => {
   const formVersionsNodes = document.getElementsByClassName('react-form-versions-table');
   if (!formVersionsNodes.length) return;
 
   for (const formVersionsNode of formVersionsNodes) {
     const {formUuid, csrftoken, currentRelease} = formVersionsNode.dataset;
+    const root = createRoot(formVersionsNode);
 
-    ReactDOM.render(
-      <IntlProvider {...intlProps}>
-        <APIContext.Provider value={{csrftoken}}>
-          <FormVersionsTable formUuid={formUuid} currentRelease={currentRelease} />
-        </APIContext.Provider>
-      </IntlProvider>,
-      formVersionsNode
+    root.render(
+      <AppWrapper {...wrapperProps} csrftoken={csrftoken}>
+        <FormVersionsTable formUuid={formUuid} currentRelease={currentRelease} />
+      </AppWrapper>
     );
   }
 };
 
-const mountDebugComponent = () => {
-  const node = document.getElementById('react');
-  if (!node) return;
-  ReactDOM.render(<Debug />, node);
-};
-
-const mountSessionStatus = intlProps => {
+const mountSessionStatus = wrapperProps => {
   const nodes = document.querySelectorAll('.react-session-status');
   for (const node of nodes) {
-    ReactDOM.render(
-      <IntlProvider {...intlProps}>
+    const root = createRoot(node);
+    root.render(
+      <AppWrapper {...wrapperProps}>
         <SessionStatus />
-      </IntlProvider>,
-      node
+      </AppWrapper>
     );
   }
 };
 
 const bootstrapApplication = async () => {
-  const intlProviderProps = await getIntlProviderProps();
-  mountSessionStatus(intlProviderProps);
-  mountForm(intlProviderProps);
-  mountFormVersions(intlProviderProps);
+  const wrapperProps = await getWrapperProps();
+  mountSessionStatus(wrapperProps);
+  mountForm(wrapperProps);
+  mountFormVersions(wrapperProps);
 };
 
 bootstrapApplication();
-mountDebugComponent();
 
 // this must be the last call in the script, as we rely on the marker being absent
 // to detect crashes in the JS via E2E integration tests

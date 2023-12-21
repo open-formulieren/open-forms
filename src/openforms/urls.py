@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import TemplateView
 
 from decorator_include import decorator_include
 
@@ -102,7 +101,6 @@ if settings.DEBUG and apps.is_installed("debug_toolbar"):  # pragma: no cover
     ] + urlpatterns
 
 if settings.DEBUG:  # pragma: nocover
-    from openforms.forms.models import Form
     from openforms.registrations.contrib.email.views import EmailRegistrationTestView
 
     urlpatterns += [
@@ -125,13 +123,6 @@ if settings.DEBUG:  # pragma: nocover
             "dev/submissions/<int:pk>/pdf",
             SubmissionPDFTestView.as_view(),
             name="dev-submissions-pdf",
-        ),
-        path(
-            "dev/react",
-            TemplateView.as_view(
-                template_name="debug.html",
-                extra_context={"opts": Form._meta},
-            ),
         ),
     ]
 

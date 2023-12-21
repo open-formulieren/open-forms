@@ -1,5 +1,5 @@
 import {useArgs} from '@storybook/client-api';
-import produce from 'immer';
+import {produce} from 'immer';
 import set from 'lodash/set';
 
 import {FormDecorator, FormLogicDecorator} from 'components/admin/form_design/story-decorators';

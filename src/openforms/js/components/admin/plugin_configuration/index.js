@@ -1,8 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import {IntlProvider} from 'react-intl';
+import {createRoot} from 'react-dom/client';
 
-import {getIntlProviderProps} from 'components/admin/i18n';
+import AppWrapper, {getWrapperProps} from 'components/admin/AppWrapper';
 import {onLoaded} from 'utils/dom';
 import jsonScriptToVar from 'utils/json-script';
 
@@ -14,7 +13,7 @@ const init = async () => {
   const nodes = document.querySelectorAll(CLASSNAME);
   if (!nodes.length) return;
 
-  const intlProviderProps = await getIntlProviderProps();
+  const wrapperProps = await getWrapperProps();
 
   for (const node of nodes) {
     const {name, value} = node.dataset;
@@ -23,23 +22,21 @@ const init = async () => {
 
     const mountNode = node.querySelector(`${CLASSNAME}__widget`);
     const hiddenInput = node.querySelector(`${CLASSNAME}__input`);
+    const root = createRoot(mountNode);
 
     const onChange = newConfiguration => {
       hiddenInput.value = JSON.stringify(newConfiguration);
     };
 
-    ReactDOM.render(
-      <React.StrictMode>
-        <IntlProvider {...intlProviderProps}>
-          <PluginConfiguration
-            name={name}
-            modulesAndPlugins={modulesAndPlugins}
-            value={JSON.parse(value) || {}}
-            onChange={onChange}
-          />
-        </IntlProvider>
-      </React.StrictMode>,
-      mountNode
+    root.render(
+      <AppWrapper {...wrapperProps}>
+        <PluginConfiguration
+          name={name}
+          modulesAndPlugins={modulesAndPlugins}
+          value={JSON.parse(value) || {}}
+          onChange={onChange}
+        />
+      </AppWrapper>
     );
   }
 };
