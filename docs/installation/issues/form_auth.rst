@@ -126,3 +126,19 @@ The DigiD broker should either sign the assertion in the XML or the entire
 response. The Open Forms supplier should set ``DIGID_WANT_ASSERTIONS_SIGNED`` to 
 either ``True`` if the assertion is signed and to ``False`` if the response is 
 signed.
+
+**Error**
+
+.. code::
+
+    The Response could not be validated due to the following error:
+    The status code of the Response was not Success, was Responder ->
+    urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext
+
+**Solution**
+
+You most likely tried to login with the option to test a level of assurance
+that is too low for the form. Remember that if you didn't set a LoA in the 
+form, the default is "middle". Select the proper level in either DigiD login
+screen (only available with DigiD pre-production) or change the level in the
+form.
