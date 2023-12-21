@@ -2,6 +2,26 @@
 
 from django.db import migrations
 
+from openforms.forms.fd_translations_converter import process_component_tree
+
+
+def migrate_fd_translations(apps, _):
+    FormDefinition = apps.get_model("forms", "FormDefinition")
+
+    for form_definition in FormDefinition.objects.iterator():
+        has_translations = any(
+            bool(translations)
+            for translations in form_definition.component_translations.values()
+        )
+        if not has_translations:
+            continue
+
+        process_component_tree(
+            components=form_definition.configuration["components"],
+            translations_store=form_definition.component_translations,
+        )
+        form_definition.save(update_fields=["configuration"])
+
 
 class Migration(migrations.Migration):
 
@@ -9,4 +29,6 @@ class Migration(migrations.Migration):
         ("forms", "0101_update_action_property"),
     ]
 
-    operations = []
+    operations = [
+        migrations.RunPython(migrate_fd_translations, migrations.RunPython.noop),
+    ]
