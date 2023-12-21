@@ -365,8 +365,8 @@ class TestSetDataSrcMigration(TestMigrations):
         FormDefinition = apps.get_model("forms", "FormDefinition")
 
         FormDefinition.objects.create(
-            name="Date",
-            slug="date",
+            name="DataSrc",
+            slug="datasrc",
             configuration={
                 "components": [
                     # Select variants
@@ -601,3 +601,151 @@ class TestUpdateActionProperty(TestMigrations):
                 },
             },
         )
+
+class TestFormioTranslationsMigration(TestMigrations):
+    app = "forms"
+    migrate_from = "0101_update_action_property"
+    migrate_to = "0102_convert_formio_translations"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        FormDefinition.objects.create(
+            name="Translations",
+            slug="translations",
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Reused label",
+                        "description": "Textfield description",
+                        "tooltip": "",
+                    },
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "label": "Reused label",
+                        "components": [
+                            {
+                                "type": "content",
+                                "key": "content",
+                                "html": "<p>Some content</p>",
+                            },
+                            {
+                                "type": "radio",
+                                "key": "radio",
+                                "label": "Radio label",
+                                "values": [
+                                    {
+                                        "value": "option-1",
+                                        "label": "Option 1",
+                                    },
+                                ],
+                            },
+                            {
+                                "type": "select",
+                                "key": "select",
+                                "label": "Reused label",
+                                "data": {
+                                    "values": [
+                                        {
+                                            "value": "option-1",
+                                            "label": "Option 1",
+                                        },
+                                        {
+                                            "value": "option-2",
+                                            "label": "Option 2",
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                ]
+            },
+            component_translations={
+                "nl": {
+                    "Reused label": "Herbruikt label",
+                    "Textfield description": "Omschrijving van tekstveld",
+                    "<p>Some content</p>": "<p>Inhoud</p>",
+                    # "Radio label": "DELIBERATELY OMITTED",
+                    "Option 1": "Optie 1",
+                },
+            },
+        )
+
+    def test_translations_moved_to_components(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+
+        textfield, fieldset = fd.configuration["components"]
+        content, radio, select = fieldset["components"]
+
+        with self.subTest("textfield"):
+            self.assertIn("openForms", textfield)
+            self.assertIn("translations", textfield["openForms"])
+            self.assertIn("nl", textfield["openForms"]["translations"])
+            textfield_nl_translations = textfield["openForms"]["translations"]["nl"]
+            self.assertEqual(
+                textfield_nl_translations,
+                {
+                    "label": "Herbruikt label",
+                    "description": "Omschrijving van tekstveld",
+                },
+            )
+
+        with self.subTest("fieldset"):
+            self.assertIn("openForms", fieldset)
+            self.assertIn("translations", fieldset["openForms"])
+            self.assertIn("nl", fieldset["openForms"]["translations"])
+            fieldset_nl_translations = fieldset["openForms"]["translations"]["nl"]
+            self.assertEqual(fieldset_nl_translations, {"label": "Herbruikt label"})
+
+        with self.subTest("content"):
+            self.assertIn("openForms", content)
+            self.assertIn("translations", content["openForms"])
+            self.assertIn("nl", content["openForms"]["translations"])
+            content_nl_translations = content["openForms"]["translations"]["nl"]
+            self.assertEqual(content_nl_translations, {"html": "<p>Inhoud</p>"})
+
+        with self.subTest("radio"):
+            self.assertNotIn("openForms", radio)
+
+            radio_option_1 = radio["values"][0]
+            self.assertIn("openForms", radio_option_1)
+            self.assertIn("translations", radio_option_1["openForms"])
+            self.assertIn("nl", radio_option_1["openForms"]["translations"])
+            radio_option_1_nl_translations = radio_option_1["openForms"][
+                "translations"
+            ]["nl"]
+            self.assertEqual(
+                radio_option_1_nl_translations,
+                {
+                    "label": "Optie 1",
+                },
+            )
+
+        with self.subTest("select"):
+            self.assertIn("openForms", select)
+            self.assertIn("translations", select["openForms"])
+            self.assertIn("nl", select["openForms"]["translations"])
+            select_nl_translations = select["openForms"]["translations"]["nl"]
+            self.assertEqual(select_nl_translations, {"label": "Herbruikt label"})
+
+            select_option_1, select_option_2 = select["data"]["values"]
+
+            self.assertIn("openForms", select_option_1)
+            self.assertIn("translations", select_option_1["openForms"])
+            self.assertIn("nl", select_option_1["openForms"]["translations"])
+            select_option_1_nl_translations = select_option_1["openForms"][
+                "translations"
+            ]["nl"]
+            self.assertEqual(
+                select_option_1_nl_translations,
+                {
+                    "label": "Optie 1",
+                },
+            )
+
+            self.assertNotIn("openForms", select_option_2)
