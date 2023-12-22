@@ -41,6 +41,8 @@ class DatetimeComponent(Component):
 
 
 class Column(TypedDict):
+    size: int
+    sizeMobile: int
     components: list[Component]
 
 
