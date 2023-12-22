@@ -16,7 +16,7 @@ reference for this is the typescript type definitions:
 https://open-formulieren.github.io/types/modules/index.html
 """
 import logging
-from typing import Literal, TypeAlias, TypedDict
+from typing import TypedDict
 
 from glom import assign
 
@@ -24,8 +24,6 @@ from openforms.formio.service import iter_components
 from openforms.formio.typing import Component
 
 logger = logging.getLogger(__name__)
-
-LanguageCode: TypeAlias = Literal["nl", "en"]
 
 
 class Option(TypedDict):
@@ -36,7 +34,7 @@ class Option(TypedDict):
 def _set_translations(
     obj: Component | Option,
     translations_from_store: dict[str, str],
-    locale: LanguageCode,
+    locale: str,
     fields: list[str],
 ) -> None:
     translations = {
@@ -50,9 +48,7 @@ def _set_translations(
     assign(obj, f"openForms.translations.{locale}", translations, missing=dict)
 
 
-def _move_translations(
-    component: Component, locale: LanguageCode, translations: dict[str, str]
-):
+def _move_translations(component: Component, locale: str, translations: dict[str, str]):
     """
     Given a component and translation store, mutate the component to bake in translations.
 
@@ -172,8 +168,9 @@ def _move_translations(
 
 
 def process_component_tree(
-    components: list[Component], translations_store: dict[LanguageCode, dict[str, str]]
+    components: list[Component], translations_store: dict[str, dict[str, str]]
 ):
-    for component in iter_components({"components": components}, recursive=True):
+    tree = {"components": components}
+    for component in iter_components(tree, recursive=True):  # type: ignore
         for lang_code, translations in translations_store.items():
             _move_translations(component, lang_code, translations)
