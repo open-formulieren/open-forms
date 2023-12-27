@@ -310,7 +310,7 @@ maykin-python3-saml==1.14.0.post0
     # via django-digid-eherkenning
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.12.0
+mozilla-django-oidc-db==0.13.0
     # via -r requirements/base.in
 o365==2.0.31
     # via -r requirements/base.in
