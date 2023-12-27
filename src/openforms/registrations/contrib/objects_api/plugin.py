@@ -1,13 +1,9 @@
-import json
-import sys
 from typing import Any, Dict, NoReturn
 
-from django.conf import settings
-from django.core.exceptions import SuspiciousOperation
-from django.template.defaultfilters import filesizeformat
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.clients import DocumentenClient
 from openforms.contrib.zgw.clients.utils import get_today
 from openforms.contrib.zgw.service import (
@@ -19,7 +15,6 @@ from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import set_submission_reference
-from openforms.template import openforms_backend, render_from_string
 from openforms.translations.utils import to_iso639_2b
 from openforms.variables.utils import get_variables_for_context
 
@@ -157,30 +152,7 @@ class ObjectsAPIRegistration(BasePlugin):
             },
         }
 
-        # FIXME: replace with better suited alternative dealing with JSON specifically
-        record_data = render_from_string(
-            options["content_json"],
-            context=context,
-            disable_autoescape=True,
-            backend=openforms_backend,
-        )
-
-        if (
-            data_size := sys.getsizeof(record_data)
-        ) > settings.MAX_UNTRUSTED_JSON_PARSE_SIZE:
-            formatted_size = filesizeformat(data_size)
-            max_size = filesizeformat(settings.MAX_UNTRUSTED_JSON_PARSE_SIZE)
-            raise SuspiciousOperation(
-                f"Templated out content JSON exceeds the maximum size {max_size} ("
-                f"it is {formatted_size})."
-            )
-
-        try:
-            record_data = json.loads(record_data)
-        except json.decoder.JSONDecodeError as err:
-            raise RuntimeError(
-                "Template evaluation did not result in valid JSON"
-            ) from err
+        record_data = render_to_json(options["content_json"], context)
 
         object_data = {
             "type": options["objecttype"],
