@@ -3641,8 +3641,7 @@ msgid ""
 "Please visit the form page by navigating to the following link: "
 "%(form_url)s.<br />"
 msgstr ""
-"Gelieve de webpagina van het formulier te openen met de volgende link: "
-"%(form_url)s.<br />"
+"Klik op deze link: %(form_url)s om het formulier te openen."
 
 #: openforms/emails/templates/emails/cosign.html:13
 msgid ""
@@ -3658,9 +3657,9 @@ msgid ""
 "fill in the following code to retrieve the form submission:<br /><br /> "
 "%(code)s <br /><br />"
 msgstr ""
-"U wordt hierna omgeleid naar een inlogpagina. Nadat u ingelogd bent, kunt "
-"ude de volgende code invoeren om de formulierinzending op te halen:<br /><br"
-" /> %(code)s <br /><br />"
+"Daarna wordt u doorgestuurd naar een pagina waar u moet inloggen. "
+"Nadat u bent ingelogd, voert u de volgende code in:<br /><br /> "
+"%(code)s <br /><br />"
 
 #: openforms/emails/templates/emails/save_form/content.html:5
 #, python-format
@@ -3757,8 +3756,8 @@ msgid ""
 "This form will not be processed until it has been co-signed. A co-sign "
 "request was sent to %(cosigner_email)s."
 msgstr ""
-"Deze formulierinzending wordt nog niet verwerkt totdat het mede-ondertekend "
-"is. Hiervoor is een verzoek gestuurd naar %(cosigner_email)s."
+"Wij kunnen uw aanvraag nog niet verwerken want deze moet eerst worden mede-ondertekend. "
+"We hebben het verzoek hiervoor gestuurd naar het e-mailadres dat u heeft ingevuld: %(cosigner_email)s."
 
 #: openforms/emails/templates/emails/templatetags/cosign_information.txt:3
 #, python-format
