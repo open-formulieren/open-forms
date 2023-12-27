@@ -354,3 +354,166 @@ class TestPrefillUpdateDefaultValuesMigration(TestMigrations):
         )
 
         self.assertIsNone(bsn2["prefill"])
+
+
+class TestSetDataSrcMigration(TestMigrations):
+    app = "forms"
+    migrate_from = "0099_form_theme"
+    migrate_to = "0100_ensure_datasrc_property"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        FormDefinition.objects.create(
+            name="Date",
+            slug="date",
+            configuration={
+                "components": [
+                    # Select variants
+                    {
+                        # dataSrc already set
+                        "key": "select1",
+                        "type": "select",
+                        "label": "Select 1",
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "itemsExpression": "foo",
+                        },
+                    },
+                    {
+                        # dataSrc not set
+                        "key": "select2",
+                        "type": "select",
+                        "label": "Select 2",
+                        "openForms": {},
+                        "data": {"values": [{"value": "option1", "label": "Option 1"}]},
+                    },
+                    {
+                        # dataSrc not set (bis)
+                        "key": "select3",
+                        "type": "select",
+                        "label": "Select 3",
+                        "data": {"values": [{"value": "option1", "label": "Option 1"}]},
+                    },
+                    {
+                        # dataSrc already set (bis)
+                        "key": "select4",
+                        "type": "select",
+                        "label": "Select 4",
+                        "openForms": {
+                            "dataSrc": "manual",
+                        },
+                        "data": {"values": [{"value": "option1", "label": "Option 1"}]},
+                    },
+                    # Radio variants
+                    {
+                        # dataSrc already set
+                        "key": "radio1",
+                        "type": "radio",
+                        "label": "radio 1",
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "itemsExpression": "foo",
+                        },
+                    },
+                    {
+                        # dataSrc not set
+                        "key": "radio2",
+                        "type": "radio",
+                        "label": "radio 2",
+                        "openForms": {},
+                        "values": [{"value": "option1", "label": "Option 1"}],
+                    },
+                    {
+                        # dataSrc not set (bis)
+                        "key": "radio3",
+                        "type": "radio",
+                        "label": "radio 3",
+                        "values": [{"value": "option1", "label": "Option 1"}],
+                    },
+                    {
+                        # dataSrc already set (bis)
+                        "key": "radio4",
+                        "type": "radio",
+                        "label": "radio 4",
+                        "openForms": {
+                            "dataSrc": "manual",
+                        },
+                        "values": [{"value": "option1", "label": "Option 1"}],
+                    },
+                    # Selectboxes variants
+                    {
+                        # dataSrc already set
+                        "key": "selectboxes1",
+                        "type": "selectboxes",
+                        "label": "selectboxes 1",
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "itemsExpression": "foo",
+                        },
+                    },
+                    {
+                        # dataSrc not set
+                        "key": "selectboxes2",
+                        "type": "selectboxes",
+                        "label": "selectboxes 2",
+                        "openForms": {},
+                        "values": [{"value": "option1", "label": "Option 1"}],
+                    },
+                    {
+                        # dataSrc not set (bis)
+                        "key": "selectboxes3",
+                        "type": "selectboxes",
+                        "label": "selectboxes 3",
+                        "values": [{"value": "option1", "label": "Option 1"}],
+                    },
+                    {
+                        # dataSrc already set (bis)
+                        "key": "selectboxes4",
+                        "type": "selectboxes",
+                        "label": "selectboxes 4",
+                        "openForms": {
+                            "dataSrc": "manual",
+                        },
+                        "values": [{"value": "option1", "label": "Option 1"}],
+                    },
+                ]
+            },
+        )
+
+    def test_migration(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+
+        form_def = FormDefinition.objects.get()
+        (
+            select1,
+            select2,
+            select3,
+            select4,
+            radio1,
+            radio2,
+            radio3,
+            radio4,
+            selectboxes1,
+            selectboxes2,
+            selectboxes3,
+            selectboxes4,
+        ) = form_def.configuration["components"]
+
+        with self.subTest("select"):
+            self.assertEqual(select1["openForms"]["dataSrc"], "variable")
+            self.assertEqual(select2["openForms"]["dataSrc"], "manual")
+            self.assertEqual(select3["openForms"]["dataSrc"], "manual")
+            self.assertEqual(select4["openForms"]["dataSrc"], "manual")
+
+        with self.subTest("radio"):
+            self.assertEqual(radio1["openForms"]["dataSrc"], "variable")
+            self.assertEqual(radio2["openForms"]["dataSrc"], "manual")
+            self.assertEqual(radio3["openForms"]["dataSrc"], "manual")
+            self.assertEqual(radio4["openForms"]["dataSrc"], "manual")
+
+        with self.subTest("selectboxes"):
+            self.assertEqual(selectboxes1["openForms"]["dataSrc"], "variable")
+            self.assertEqual(selectboxes2["openForms"]["dataSrc"], "manual")
+            self.assertEqual(selectboxes3["openForms"]["dataSrc"], "manual")
+            self.assertEqual(selectboxes4["openForms"]["dataSrc"], "manual")
