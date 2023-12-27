@@ -2387,7 +2387,7 @@ msgid ""
 msgstr ""
 "Indien aangevinkt, dan zijn verplichte velden gemarkeerd met een asterisk en"
 " optionele velden niet gemarkeerd. Indien uitgevinkt, dan zijn optionele "
-"velden gemarkeerd met '(optioneel)' en verplichte velden ongemarkeerd."
+"velden gemarkeerd met '(niet verplicht)' en verplichte velden ongemarkeerd."
 
 #: openforms/config/models/config.py:213
 msgid "Default allowed file upload types"
