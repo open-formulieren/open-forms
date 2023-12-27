@@ -57,10 +57,20 @@ div.flatpickr-calendar.open {
 
 .component-edit-container {
   .tab-pane.active {
-    min-height: 50vh;
+    min-block-size: 50vh;
+
+    &:has(.formio-component-content) {
+      min-block-size: 0;
+    }
   }
   .formio-component-content .tab-pane.active {
-    min-height: 0;
+    min-block-size: 0;
+  }
+
+  .formio-component-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
   }
 
   // the select dropdowns are overflowing, which is hidden by the modal. this is the

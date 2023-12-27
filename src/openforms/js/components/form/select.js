@@ -32,7 +32,15 @@ const getOptionsChoices = () => {
 
 class SelectField extends Select {
   static schema(...extend) {
-    return localiseSchema({...Select.schema(...extend), key: 'select-key'});
+    const schema = Select.schema(
+      {
+        openForms: {dataSrc: 'manual'},
+        values: [{value: '', label: ''}],
+        defaultValue: '',
+      },
+      ...extend
+    );
+    return localiseSchema({...schema, key: 'select-key'});
   }
 
   static get builderInfo() {

@@ -6,6 +6,8 @@ component definitions are rewritten to be compatible with the current code.
 """
 from typing import Protocol
 
+from glom import assign, glom
+
 from .typing import Component
 
 
@@ -66,6 +68,14 @@ def alter_prefill_default_values(component: Component) -> bool:
     return altered
 
 
+def set_openforms_datasrc(component: Component) -> bool:
+    # if a dataSrc is specified, there is nothing to do
+    if glom(component, "openForms.dataSrc", default=None):
+        return False
+    assign(component, "openForms.dataSrc", val="manual", missing=dict)
+    return True
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
@@ -80,6 +90,9 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "time": {
         "move_time_validators": move_time_validators,
     },
+    "select": {"set_openforms_datasrc": set_openforms_datasrc},
+    "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
+    "radio": {"set_openforms_datasrc": set_openforms_datasrc},
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
     },

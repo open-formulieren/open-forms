@@ -616,10 +616,26 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
                             "label": "Field 2",
                             "description": "Description 2",
                             "tooltip": "Tooltip 2",
+                            "openForms": {
+                                "dataSrc": "manual",
+                            },
                             "data": {
                                 "values": [
-                                    {"value": "option1", "label": "Option 1"},
-                                    {"value": "option2", "label": "Option 2"},
+                                    {
+                                        "value": "option1",
+                                        "label": "Option 1",
+                                        "openForms": {
+                                            "translations": {
+                                                "nl": {
+                                                    "label": "Optie 1",
+                                                }
+                                            }
+                                        },
+                                    },
+                                    {
+                                        "value": "option2",
+                                        "label": "Option 2",
+                                    },
                                 ]
                             },
                         },
@@ -689,24 +705,32 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
             # version of @open-formulieren/formio-builder npm package.
             with phase("Select component checks"):
                 await open_component_options_modal(page, "Field 2")
+
                 # find and click translations tab
-                await page.get_by_role("link", name="Vertalingen").click()
+                await page.get_by_role(
+                    "link", name=self._translate("Vertalingen")
+                ).click()
 
-                expected_literals = [
-                    "Field 2",
-                    "Description 2",
-                    "Tooltip 2",
-                    "Option 1",
-                    "Option 2",
-                ]
-                for index, literal in enumerate(expected_literals):
-                    with self.subTest(literal=literal, index=index):
-                        literal_loc = page.locator(
-                            f'css=[name="data[openForms.translations.nl][{index}]"]'
-                        )
-                        await expect(literal_loc).to_have_value(literal)
+                # check the values of the translation inputs
+                await self._check_translation(page, "label", "Label", "Field 2", "")
+                await self._check_translation(
+                    page, "description", "Description", "Description 2", ""
+                )
+                await self._check_translation(
+                    page, "tooltip", "Tooltip", "Tooltip 2", ""
+                )
 
-                await page.get_by_role("button", name="Annuleren").click()
+                # Check options translations are present
+                option1_translation_field = page.get_by_label(
+                    'Translation for option with value "option1"', exact=True
+                )
+                await expect(option1_translation_field).to_have_value("Optie 1")
+                option2_translation_field = page.get_by_label(
+                    'Translation for option with value "option2"', exact=True
+                )
+                await expect(option2_translation_field).to_have_value("")
+
+                await page.get_by_role("button", name="Cancel").click()
                 await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
 
             with phase("save form changes to backend"):
@@ -768,6 +792,102 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
                 expected_literal="Test 2",
                 expected_translation="Vertaald label",
             )
+
+    @tag("gh-2820")
+    async def test_editing_content_translations_are_saved(self):
+        """
+        Assert that entering translations and then changing the source string keeps the translation.
+        """
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await add_new_step(page)
+
+            # Open the menu for the layout components
+            await page.get_by_text("Opmaak").click()
+            await drag_and_drop_component(page, "Vrije tekst")
+
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            # first translation tab (NL) is the default
+            await page.get_by_role("link", name="NL", exact=True).click()
+            wysiwyg_nl = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_nl).to_be_editable()
+
+            await wysiwyg_nl.click()
+            await wysiwyg_nl.fill("This is the default/NL translation.")
+
+            await page.get_by_role("link", name="EN", exact=True).click()
+            wysiwyg_en = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_en).to_be_editable()
+            await wysiwyg_en.click()
+            await wysiwyg_en.fill("This is the English translation.")
+
+            # Save the component
+            modal = page.locator("css=.formio-dialog-content")
+            await modal.get_by_role("button", name="Save", exact=True).click()
+
+            await open_component_options_modal(
+                page, "This is the default/NL translation."
+            )
+
+            await page.get_by_role("link", name="NL", exact=True).click()
+            wysiwyg_nl_2 = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_nl_2).to_contain_text(
+                "This is the default/NL translation."
+            )
+
+            await page.get_by_role("link", name="EN", exact=True).click()
+            wysiwyg_en_2 = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_en_2).to_contain_text(
+                "This is the English translation."
+            )
+
+    @tag("gh-2800")
+    async def test_key_automatically_generated_for_select_options(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Drag and drop a component
+            await drag_and_drop_component(page, "Keuzelijst")
+
+            # Check that the modal is open
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            # Update the label
+            value_label_input = page.get_by_label("Option label")
+            await value_label_input.click()
+            await value_label_input.fill("Test")
+
+            # Check that the key has been updated
+            value_key_input = page.get_by_label("Option value")
+            await expect(value_key_input).to_have_value("test")
 
 
 class FormDesignerRegressionTests(E2ETestCase):

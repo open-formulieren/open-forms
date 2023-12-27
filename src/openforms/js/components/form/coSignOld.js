@@ -1,5 +1,6 @@
 import {Formio} from 'react-formio';
 
+import {AUTH_PLUGINS_ENDPOINT} from 'components/admin/form_design/constants.js';
 import {DESCRIPTION, HIDDEN, LABEL_REQUIRED} from 'components/form/edit/options';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
@@ -29,9 +30,9 @@ const EDIT_FORM_TABS = [
             dataSrc: 'url',
             data: {
               // if the url starts with '/', then formio will prefix it with the formio
-              // base URL, which is of course wrong. We there explicitly use the detected
+              // base URL, which is of course wrong. So, we explicitly use the detected
               // host.
-              url: getFullyQualifiedUrl('/api/v2/authentication/plugins'),
+              url: getFullyQualifiedUrl(AUTH_PLUGINS_ENDPOINT),
             },
             valueProperty: 'id',
             template: `<span>{{ item.label }}, provides: {{ item.providesAuth }}</span>`,
