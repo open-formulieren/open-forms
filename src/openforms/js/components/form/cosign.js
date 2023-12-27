@@ -1,5 +1,7 @@
 import {Formio} from 'formiojs';
 
+import {AUTH_PLUGINS_ENDPOINT} from 'components/admin/form_design/constants.js';
+import {get} from 'utils/fetch';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {
@@ -17,6 +19,11 @@ import {
 import DEFAULT_TABS, {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
+export const getAvailableAuthPlugins = async () => {
+  const response = await get(AUTH_PLUGINS_ENDPOINT);
+  return response.data;
+};
+
 const FormioEmail = Formio.Components.components.email;
 
 class CoSignField extends FormioEmail {
@@ -28,6 +35,7 @@ class CoSignField extends FormioEmail {
         label: 'Co-signer email address',
         validateOn: 'blur',
         authPlugin: 'digid',
+        defaultValue: '',
       },
       ...extend
     );
@@ -61,9 +69,9 @@ class CoSignField extends FormioEmail {
           dataSrc: 'url',
           data: {
             // if the url starts with '/', then formio will prefix it with the formio
-            // base URL, which is of course wrong. We there explicitly use the detected
+            // base URL, which is of course wrong. So, we explicitly use the detected
             // host.
-            url: getFullyQualifiedUrl('/api/v2/authentication/plugins'),
+            url: getFullyQualifiedUrl(AUTH_PLUGINS_ENDPOINT),
           },
           valueProperty: 'id',
           template: `<span>{{ item.label }}, provides: {{ item.providesAuth }}</span>`,

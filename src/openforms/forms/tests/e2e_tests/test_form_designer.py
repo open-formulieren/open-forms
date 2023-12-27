@@ -509,6 +509,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
             await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
+            breakpoint()
             default_string = page.locator("css=.ck-editor__editable").nth(0)
             await default_string.click()
             await default_string.fill("This is the default")
@@ -767,6 +768,59 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
                 "Label",
                 expected_literal="Test 2",
                 expected_translation="Vertaald label",
+            )
+
+    @tag("gh-2820")
+    async def test_editing_content_translations_are_saved(self):
+        """
+        Assert that entering translations and then changing the source string keeps the translation.
+        """
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await add_new_step(page)
+
+            # Open the menu for the layout components
+            await page.get_by_text("Opmaak").click()
+            await drag_and_drop_component(page, "Vrije tekst")
+
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            # first translation tab (NL) is the default
+            await page.get_by_role("link", name="NL", exact=True).click()
+            wysiwyg_nl = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_nl).to_be_editable()
+
+            await wysiwyg_nl.click()
+            await wysiwyg_nl.fill("This is the default/NL translation.")
+
+            await page.get_by_role("link", name="EN", exact=True).click()
+            wysiwyg_en = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_en).to_be_editable()
+            await wysiwyg_en.click()
+            await wysiwyg_en.fill("This is the English translation.")
+
+            # Save the component
+            modal = page.locator("css=.formio-dialog-content")
+            await modal.get_by_role("button", name="Save", exact=True).click()
+
+            await open_component_options_modal(
+                page, "This is the default/NL translation."
+            )
+
+            await page.get_by_role("link", name="NL", exact=True).click()
+            wysiwyg_nl_2 = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_nl_2).to_contain_text(
+                "This is the default/NL translation."
+            )
+
+            await page.get_by_role("link", name="EN", exact=True).click()
+            wysiwyg_en_2 = page.get_by_label("Editor editing area: main")
+            await expect(wysiwyg_en_2).to_contain_text(
+                "This is the English translation."
             )
 
 

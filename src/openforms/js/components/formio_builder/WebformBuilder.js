@@ -14,6 +14,7 @@ import {createRoot} from 'react-dom/client';
 import {IntlProvider} from 'react-intl';
 
 import {getIntlProviderProps} from 'components/admin/i18n';
+import {getAvailableAuthPlugins} from 'components/form/cosign';
 import {getAvailableDocumentTypes} from 'components/form/file';
 import {getComponentEmptyValue} from 'components/utils';
 import jsonScriptToVar from 'utils/json-script';
@@ -34,6 +35,7 @@ import {
 const CONFIDENTIALITY_LEVELS = jsonScriptToVar('CONFIDENTIALITY_LEVELS', {default: []});
 const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
 const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});
+const RICH_TEXT_COLORS = jsonScriptToVar('config-RICH_TEXT_COLORS', {default: []});
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -379,6 +381,7 @@ class WebformBuilder extends WebformBuilderFormio {
             // Context binding
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
+            richTextColors={RICH_TEXT_COLORS}
             componentTranslationsRef={componentTranslationsRef}
             getFormComponents={() => parent.formioContainer}
             getValidatorPlugins={getValidatorPlugins}
@@ -389,6 +392,7 @@ class WebformBuilder extends WebformBuilderFormio {
             serverUploadLimit={MAX_FILE_UPLOAD_SIZE}
             getDocumentTypes={async () => await getAvailableDocumentTypes(this)}
             getConfidentialityLevels={async () => CONFIDENTIALITY_LEVELS}
+            getAuthPlugins={getAvailableAuthPlugins}
             // Component/builder state
             isNew={isNew}
             component={componentCopy}

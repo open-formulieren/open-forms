@@ -1,3 +1,4 @@
+import cssHasPseudo from 'css-has-pseudo/browser';
 import {Formio} from 'react-formio';
 
 import './components';
@@ -15,3 +16,6 @@ const DebugPlugin = {
 };
 
 // Formio.registerPlugin(DebugPlugin, 'debug');
+
+// set up :has polyfill;
+cssHasPseudo(document);

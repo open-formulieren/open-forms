@@ -107,6 +107,12 @@
       "value": "Instellingen"
     }
   ],
+  "/stTVr": [
+    {
+      "type": 0,
+      "value": "Geef de knoptekst om een groep te bewaren op."
+    }
+  ],
   "/yDnA3": [
     {
       "type": 0,
@@ -123,6 +129,16 @@
     {
       "type": 0,
       "value": "Knopteksten"
+    }
+  ],
+  "0TGt4t": [
+    {
+      "type": 1,
+      "value": "groupLabel"
+    },
+    {
+      "type": 0,
+      "value": " 2"
     }
   ],
   "0ZtMje": [
@@ -217,6 +233,12 @@
     {
       "type": 0,
       "value": "Verwijderd"
+    }
+  ],
+  "2Lg8Vc": [
+    {
+      "type": 0,
+      "value": "Verberg veldengroepheader"
     }
   ],
   "2MK7iF": [
@@ -319,6 +341,12 @@
     {
       "type": 0,
       "value": "Vraag verklaring invullen naar waarheid"
+    }
+  ],
+  "3h215E": [
+    {
+      "type": 0,
+      "value": "Weergavestijl"
     }
   ],
   "4/cCvG": [
@@ -687,6 +715,16 @@
       "value": "is kleiner dan of gelijk aan"
     }
   ],
+  "7qqbU9": [
+    {
+      "type": 1,
+      "value": "groupLabel"
+    },
+    {
+      "type": 0,
+      "value": " 1"
+    }
+  ],
   "89fqYz": [
     {
       "type": 0,
@@ -867,6 +905,12 @@
       "value": "Gelieve opnieuw in te loggen om door te gaan."
     }
   ],
+  "ADTla/": [
+    {
+      "type": 0,
+      "value": "Latitudecoordinaat waarop de kaart gecentreerd wordt."
+    }
+  ],
   "AFyQut": [
     {
       "type": 0,
@@ -883,6 +927,12 @@
     {
       "type": 0,
       "value": "Eenvoudig"
+    }
+  ],
+  "AMqUHx": [
+    {
+      "type": 0,
+      "value": "Vink dit aan om de 'Groep toevoegen'- en 'Groep verwijderen'-knoppen te verbergen."
     }
   ],
   "APOVFs": [
@@ -907,6 +957,12 @@
     {
       "type": 0,
       "value": "Bestandstypen"
+    }
+  ],
+  "AyOwJl": [
+    {
+      "type": 0,
+      "value": "'Groep verwijderen'-tekst"
     }
   ],
   "B1ONuu": [
@@ -969,6 +1025,12 @@
     {
       "type": 0,
       "value": "De optiewaarde is een verplicht veld."
+    }
+  ],
+  "BR10QN": [
+    {
+      "type": 0,
+      "value": "Toevoegen/verwijderen"
     }
   ],
   "BR6rKB": [
@@ -1167,6 +1229,12 @@
       "value": "Logica"
     }
   ],
+  "E/biiX": [
+    {
+      "type": 0,
+      "value": "Knopteksten"
+    }
+  ],
   "E5FZz/": [
     {
       "type": 0,
@@ -1343,6 +1411,12 @@
       "value": "De beginwaarde voor dit veld, vóór dat gebruikersinteractie plaats vindt."
     }
   ],
+  "Fn2vnC": [
+    {
+      "type": 0,
+      "value": "Grootte van de kolommen"
+    }
+  ],
   "FyNxJn": [
     {
       "type": 0,
@@ -1435,6 +1509,12 @@
       "value": "Leeg (null)"
     }
   ],
+  "GjumK9": [
+    {
+      "type": 0,
+      "value": "Geef de grootte van elke kolom op. De som van alle breedtes moet 100% zijn."
+    }
+  ],
   "H3dRU6": [
     {
       "type": 0,
@@ -1525,6 +1605,12 @@
     {
       "type": 0,
       "value": "Selecteer formulierdefinitie"
+    }
+  ],
+  "I7lkuw": [
+    {
+      "type": 0,
+      "value": "Kind 1"
     }
   ],
   "IOko1U": [
@@ -1649,10 +1735,22 @@
       "value": "Inhoud"
     }
   ],
+  "KMbfsU": [
+    {
+      "type": 0,
+      "value": "Grootte (mobiel)"
+    }
+  ],
   "KYTAJZ": [
     {
       "type": 0,
       "value": "(actief binnen elke stap)"
+    }
+  ],
+  "Kdgpxf": [
+    {
+      "type": 0,
+      "value": "Longitudecoordinaat waarop de kaart gecentreerd wordt."
     }
   ],
   "Kj8P8I": [
@@ -1671,6 +1769,12 @@
     {
       "type": 0,
       "value": "Het maximaal aantal bestanden die mogen geüpload worden."
+    }
+  ],
+  "KwatvH": [
+    {
+      "type": 0,
+      "value": "Het aantal regels voor dit tekstvlak."
     }
   ],
   "KzlSYi": [
@@ -1697,6 +1801,12 @@
       "value": "Variabeledefinitie"
     }
   ],
+  "LJckD5": [
+    {
+      "type": 0,
+      "value": "Maak automatisch groter"
+    }
+  ],
   "LMCo4N": [
     {
       "type": 0,
@@ -1713,6 +1823,12 @@
     {
       "type": 0,
       "value": "Kopiëren"
+    }
+  ],
+  "LZc4TN": [
+    {
+      "type": 0,
+      "value": "Longitude"
     }
   ],
   "LaovNg": [
@@ -1757,6 +1873,12 @@
       "value": "Veld"
     }
   ],
+  "MTdKuN": [
+    {
+      "type": 0,
+      "value": "Blokkeer het toevoegen/verwijderen van groepen"
+    }
+  ],
   "MXKqVO": [
     {
       "type": 0,
@@ -1791,6 +1913,12 @@
     {
       "type": 0,
       "value": "De maximale datum die gekozen kan worden."
+    }
+  ],
+  "NudLUt": [
+    {
+      "type": 0,
+      "value": "Een korte instructie onder het handtekenvlak."
     }
   ],
   "NwTdLM": [
@@ -2007,6 +2135,12 @@
       "value": "Betaalprovider backendopties"
     }
   ],
+  "R/XadM": [
+    {
+      "type": 0,
+      "value": "Je moet latitude en longitude allebei instellen."
+    }
+  ],
   "RN628y": [
     {
       "type": 0,
@@ -2125,6 +2259,12 @@
       "value": "wijzig een attribuut van een veld/component."
     }
   ],
+  "Su4nqf": [
+    {
+      "type": 0,
+      "value": "Welke authenticatiemethode de mede-ondertekener moet gebruiken. Let op: Dit moet dezelfde authenticatiemethode zijn als is gebruikt op het formulier."
+    }
+  ],
   "T0OLUV": [
     {
       "type": 0,
@@ -2227,6 +2367,12 @@
       "value": "Selecteer de plugin(s) om te gebruiken voor validatie."
     }
   ],
+  "UJTIZU": [
+    {
+      "type": 0,
+      "value": "Begin-zoomniveau van de kaart."
+    }
+  ],
   "UKTqb8": [
     {
       "type": 0,
@@ -2249,6 +2395,20 @@
     {
       "type": 0,
       "value": "Minimale tijd"
+    }
+  ],
+  "Uu+81U": [
+    {
+      "type": 0,
+      "value": "Mede-ondertekenen ("
+    },
+    {
+      "type": 1,
+      "value": "authPlugin"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "Uv58uI": [
@@ -2351,6 +2511,12 @@
       "value": "Automatisch aanvullen"
     }
   ],
+  "VhCwEK": [
+    {
+      "type": 0,
+      "value": "Het label dat boven elke herhaalde groep weergegeven wordt in de overzichtspagina, inzendings-PDF en bevestigingsmail. De index van de groep wordt hieraan toegevoegd, bijvoorbeeld als je 'Item' opgeeft, dan wordt dit weergegeven als 'Item 1', 'Item 2', ..."
+    }
+  ],
   "Vi0+dd": [
     {
       "type": 0,
@@ -2441,6 +2607,12 @@
       "value": "Authenticatie automatische login"
     }
   ],
+  "XMV3t2": [
+    {
+      "type": 0,
+      "value": "Info"
+    }
+  ],
   "XNqV97": [
     {
       "type": 0,
@@ -2459,6 +2631,12 @@
       "value": "Vraag toestemming om gegevens te verwerken"
     }
   ],
+  "XWsNZ9": [
+    {
+      "type": 0,
+      "value": "Standaard"
+    }
+  ],
   "XXRiTx": [
     {
       "type": 0,
@@ -2469,6 +2647,12 @@
     {
       "type": 0,
       "value": "Basis"
+    }
+  ],
+  "Xj1uvL": [
+    {
+      "type": 0,
+      "value": "Verwijderen"
     }
   ],
   "Y4oNhH": [
@@ -2628,6 +2812,12 @@
       "value": "'Vorige' tekst"
     }
   ],
+  "ZOytnI": [
+    {
+      "type": 0,
+      "value": "Indien aangevinkt, dan worden gegevens van partners opgehaald en ingesloten."
+    }
+  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -2688,10 +2878,22 @@
       "value": "Mappingexpressie"
     }
   ],
+  "axygDt": [
+    {
+      "type": 0,
+      "value": "Waarschuwing"
+    }
+  ],
   "b/AHC/": [
     {
       "type": 0,
       "value": "Weergave in overzichten en bevestigingen"
+    }
+  ],
+  "b5Bxb/": [
+    {
+      "type": 0,
+      "value": "Huislettertoevoeging"
     }
   ],
   "b9D64D": [
@@ -2888,6 +3090,12 @@
       "value": "Van formulierveld"
     }
   ],
+  "d3V6A+": [
+    {
+      "type": 0,
+      "value": "Weergave"
+    }
+  ],
   "d45v2X": [
     {
       "type": 0,
@@ -2916,6 +3124,12 @@
     {
       "type": 0,
       "value": "Optionele categorie om formulieren in te groeperen."
+    }
+  ],
+  "dWWO3N": [
+    {
+      "type": 0,
+      "value": "Label verbergen"
     }
   ],
   "dazu9j": [
@@ -2984,6 +3198,12 @@
       "value": "configured"
     }
   ],
+  "e6SsfR": [
+    {
+      "type": 0,
+      "value": "Kaartinstellingen"
+    }
+  ],
   "eBk+W0": [
     {
       "type": 0,
@@ -3002,10 +3222,28 @@
       "value": "Geavanceerde opties"
     }
   ],
+  "eUowhH": [
+    {
+      "type": 0,
+      "value": "'Groep bewaren'-tekst"
+    }
+  ],
+  "ee4oWr": [
+    {
+      "type": 0,
+      "value": "Kolom toevoegen"
+    }
+  ],
   "eg8uKC": [
     {
       "type": 0,
       "value": "De maximale tijd die gekozen kan worden."
+    }
+  ],
+  "ehP4dQ": [
+    {
+      "type": 0,
+      "value": "Groepslabel"
     }
   ],
   "etny39": [
@@ -3080,6 +3318,12 @@
       "value": "Informatieobjecttype"
     }
   ],
+  "fagx6e": [
+    {
+      "type": 0,
+      "value": "Verberg de titel/het label van dit component in het formulier."
+    }
+  ],
   "fe3wyn": [
     {
       "type": 0,
@@ -3122,6 +3366,12 @@
       "value": "(nog niet ingesteld)"
     }
   ],
+  "gCQtSJ": [
+    {
+      "type": 0,
+      "value": "Geef de knoptekst om een groep te verwijderen op."
+    }
+  ],
   "gGNIdG": [
     {
       "type": 0,
@@ -3132,6 +3382,12 @@
     {
       "type": 0,
       "value": "Applicatieversie"
+    }
+  ],
+  "guySt0": [
+    {
+      "type": 0,
+      "value": "Postcode"
     }
   ],
   "gz32s2": [
@@ -3162,6 +3418,12 @@
     {
       "type": 0,
       "value": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "h2ZNhM": [
+    {
+      "type": 0,
+      "value": "Veldengroepinhoud"
     }
   ],
   "h9debR": [
@@ -3212,6 +3474,12 @@
       "value": "Configureren"
     }
   ],
+  "hwsnj9": [
+    {
+      "type": 0,
+      "value": "Mobiel"
+    }
+  ],
   "hzx+WF": [
     {
       "type": 0,
@@ -3258,6 +3526,12 @@
     {
       "type": 0,
       "value": "is kleiner dan"
+    }
+  ],
+  "ifG3sd": [
+    {
+      "type": 0,
+      "value": "Succes"
     }
   ],
   "inhTXo": [
@@ -3318,16 +3592,34 @@
       "value": "Tekstsjabloon"
     }
   ],
+  "jV58dA": [
+    {
+      "type": 0,
+      "value": "Dit zorgt ervoor dat het tekstvlak automatisch groter wordt wanneer de gebruiker tekst invoert."
+    }
+  ],
   "jZIu+e": [
     {
       "type": 0,
       "value": "Nee"
     }
   ],
+  "jiDz2v": [
+    {
+      "type": 0,
+      "value": "Waarde in decimale graden, tussen -90 en +90."
+    }
+  ],
   "jitewC": [
     {
       "type": 0,
       "value": "HTTP-method"
+    }
+  ],
+  "jnHPfU": [
+    {
+      "type": 0,
+      "value": "Latitude"
     }
   ],
   "jo1PVg": [
@@ -3414,6 +3706,22 @@
       "value": "Toon aantal karakters"
     }
   ],
+  "kw2jNc": [
+    {
+      "type": 0,
+      "value": "Opties via de expressie: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    }
+  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -3438,6 +3746,12 @@
       "value": "Inclusief de 'huidige datum'"
     }
   ],
+  "lOSmt+": [
+    {
+      "type": 0,
+      "value": "Authenticatiemethode"
+    }
+  ],
   "lVEpR9": [
     {
       "type": 0,
@@ -3448,6 +3762,12 @@
     {
       "type": 0,
       "value": "Item toevoegen"
+    }
+  ],
+  "loKqis": [
+    {
+      "type": 0,
+      "value": "Partner 1"
     }
   ],
   "lvxPCk": [
@@ -3516,6 +3836,18 @@
       "value": "Formulierveld"
     }
   ],
+  "mf9eF+": [
+    {
+      "type": 0,
+      "value": "Huisnummer"
+    }
+  ],
+  "mpzdoT": [
+    {
+      "type": 0,
+      "value": "De som van de kolombreedtes mag niet meer dan 12 zijn."
+    }
+  ],
   "myvtu0": [
     {
       "type": 0,
@@ -3534,6 +3866,12 @@
       "value": "Wanneer dit is ingeschakeld, dan wordt het afbeeldingsformaat gewijzigd."
     }
   ],
+  "nC9GEx": [
+    {
+      "type": 0,
+      "value": "Indien aangevinkt, dan worden gegevens van kinderen opgehaald en ingesloten."
+    }
+  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -3544,6 +3882,12 @@
     {
       "type": 0,
       "value": "Triggervoorwaarde"
+    }
+  ],
+  "nSRkSW": [
+    {
+      "type": 0,
+      "value": "Grootte"
     }
   ],
   "nW5g1S": [
@@ -3570,6 +3914,18 @@
       "value": "Tooltip"
     }
   ],
+  "o5Mfn3": [
+    {
+      "type": 0,
+      "value": "Inclusief kinderen"
+    }
+  ],
+  "o83CBr": [
+    {
+      "type": 0,
+      "value": "Geef de knoptekst om een groep toe te voegen op."
+    }
+  ],
   "o8CfuS": [
     {
       "type": 0,
@@ -3586,6 +3942,12 @@
     {
       "type": 0,
       "value": "Suffix (bijv. m²)"
+    }
+  ],
+  "oXOxWz": [
+    {
+      "type": 0,
+      "value": "Indien aangevinkt, dan worden de kaartinstellingen uit de algemene instellingen toegepast."
     }
   ],
   "oYmpN5": [
@@ -3673,10 +4035,22 @@
       "value": "Minimale waarde"
     }
   ],
+  "pDVNSf": [
+    {
+      "type": 0,
+      "value": "Aantal rijen"
+    }
+  ],
   "pGmjYH": [
     {
       "type": 0,
       "value": "Gebruiker"
+    }
+  ],
+  "pT5jx/": [
+    {
+      "type": 0,
+      "value": "Kolombreedte op mobiel, de waarde moet tussen 1 en 4 liggen."
     }
   ],
   "pWHOT1": [
@@ -3699,6 +4073,12 @@
       ],
       "type": 8,
       "value": "code"
+    }
+  ],
+  "pfdsz9": [
+    {
+      "type": 0,
+      "value": "Huisnummertoevoeging"
     }
   ],
   "piUWzT": [
@@ -3747,6 +4127,12 @@
     {
       "type": 0,
       "value": "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "qmBAmr": [
+    {
+      "type": 0,
+      "value": "Inclusief partner(s)"
     }
   ],
   "qo1UbS": [
@@ -3813,6 +4199,12 @@
       "value": "Excuses, we konden deze actie niet uitvoeren omdat u uitgelogd bent. Uw sessie is waarschijnlijk vervallen."
     }
   ],
+  "rkJLBr": [
+    {
+      "type": 0,
+      "value": "'Groep toevoegen'-tekst"
+    }
+  ],
   "sFHD3/": [
     {
       "type": 0,
@@ -3829,6 +4221,16 @@
     {
       "type": 0,
       "value": "Pluginattribuut"
+    }
+  ],
+  "smPv/m": [
+    {
+      "type": 1,
+      "value": "groupLabel"
+    },
+    {
+      "type": 0,
+      "value": " 3"
     }
   ],
   "t99ynC": [
@@ -3873,6 +4275,12 @@
       "value": "Naam"
     }
   ],
+  "u5XYQh": [
+    {
+      "type": 0,
+      "value": "Voettekst"
+    }
+  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -3889,6 +4297,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "uVVO4b": [
+    {
+      "type": 0,
+      "value": "Fout"
     }
   ],
   "uiliGe": [
@@ -3927,6 +4341,12 @@
     {
       "type": 0,
       "value": "Geschiedenis"
+    }
+  ],
+  "unjdIB": [
+    {
+      "type": 0,
+      "value": "Verberg de koptekst en de lijn boven de veldengroep in het formulier."
     }
   ],
   "vNRiMn": [
@@ -4033,6 +4453,32 @@
       "value": "JSON-waarde invoeren"
     }
   ],
+  "wVYRMC": [
+    {
+      "type": 0,
+      "value": "Kolom "
+    },
+    {
+      "type": 1,
+      "value": "number"
+    }
+  ],
+  "wVoT0I": [
+    {
+      "type": 0,
+      "value": "Opties via de expressie: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    }
+  ],
   "wZ99FU": [
     {
       "type": 0,
@@ -4099,6 +4545,12 @@
       "value": "Wijzig JSON"
     }
   ],
+  "xxVNeU": [
+    {
+      "type": 0,
+      "value": "Zoomniveau"
+    }
+  ],
   "yCogwi": [
     {
       "type": 0,
@@ -4147,6 +4599,12 @@
       "value": "Telefoonnummer veld"
     }
   ],
+  "yrz/oC": [
+    {
+      "type": 0,
+      "value": "Kolombreedte, de waarde moet tussen 1 en 12 liggen."
+    }
+  ],
   "yujuQr": [
     {
       "type": 0,
@@ -4177,6 +4635,18 @@
     {
       "type": 0,
       "value": "Actie"
+    }
+  ],
+  "z45pcO": [
+    {
+      "type": 0,
+      "value": "Waarde in decimale graden, tussen -180 en +180."
+    }
+  ],
+  "z7HXSS": [
+    {
+      "type": 0,
+      "value": "Gebruik algemene kaartinstellingen"
     }
   ],
   "zGMQ75": [

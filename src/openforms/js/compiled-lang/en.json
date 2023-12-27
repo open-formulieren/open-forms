@@ -107,6 +107,12 @@
       "value": "Configuration"
     }
   ],
+  "/stTVr": [
+    {
+      "type": 0,
+      "value": "Set the text of the 'Save row' button."
+    }
+  ],
   "/yDnA3": [
     {
       "type": 0,
@@ -123,6 +129,16 @@
     {
       "type": 0,
       "value": "Literals"
+    }
+  ],
+  "0TGt4t": [
+    {
+      "type": 1,
+      "value": "groupLabel"
+    },
+    {
+      "type": 0,
+      "value": " 2"
     }
   ],
   "0ZtMje": [
@@ -217,6 +233,12 @@
     {
       "type": 0,
       "value": "Is deleted"
+    }
+  ],
+  "2Lg8Vc": [
+    {
+      "type": 0,
+      "value": "Hide fieldset header"
     }
   ],
   "2MK7iF": [
@@ -319,6 +341,12 @@
     {
       "type": 0,
       "value": "Ask statement of truth"
+    }
+  ],
+  "3h215E": [
+    {
+      "type": 0,
+      "value": "CSS class"
     }
   ],
   "4/cCvG": [
@@ -683,6 +711,16 @@
       "value": "is less than or equal to"
     }
   ],
+  "7qqbU9": [
+    {
+      "type": 1,
+      "value": "groupLabel"
+    },
+    {
+      "type": 0,
+      "value": " 1"
+    }
+  ],
   "89fqYz": [
     {
       "type": 0,
@@ -863,6 +901,12 @@
       "value": "Please log in again to continue."
     }
   ],
+  "ADTla/": [
+    {
+      "type": 0,
+      "value": "Latitude coordinate of the initial center point of the map."
+    }
+  ],
   "AFyQut": [
     {
       "type": 0,
@@ -879,6 +923,12 @@
     {
       "type": 0,
       "value": "Simple conditional"
+    }
+  ],
+  "AMqUHx": [
+    {
+      "type": 0,
+      "value": "Check if you want to hide/disable the 'Add Another' and 'Remove row' buttons."
     }
   ],
   "APOVFs": [
@@ -903,6 +953,12 @@
     {
       "type": 0,
       "value": "File types"
+    }
+  ],
+  "AyOwJl": [
+    {
+      "type": 0,
+      "value": "'Remove row' text"
     }
   ],
   "B1ONuu": [
@@ -965,6 +1021,12 @@
     {
       "type": 0,
       "value": "The option value is a required field."
+    }
+  ],
+  "BR10QN": [
+    {
+      "type": 0,
+      "value": "Add/remove"
     }
   ],
   "BR6rKB": [
@@ -1163,6 +1225,12 @@
       "value": "Logic"
     }
   ],
+  "E/biiX": [
+    {
+      "type": 0,
+      "value": "Button labels"
+    }
+  ],
   "E5FZz/": [
     {
       "type": 0,
@@ -1339,6 +1407,12 @@
       "value": "This will be the initial value for this field before user interaction."
     }
   ],
+  "Fn2vnC": [
+    {
+      "type": 0,
+      "value": "Column sizes"
+    }
+  ],
   "FyNxJn": [
     {
       "type": 0,
@@ -1431,6 +1505,12 @@
       "value": "Null"
     }
   ],
+  "GjumK9": [
+    {
+      "type": 0,
+      "value": "Specify the size of each column. The sum of all the widths should be 100%."
+    }
+  ],
   "H3dRU6": [
     {
       "type": 0,
@@ -1521,6 +1601,12 @@
     {
       "type": 0,
       "value": "Select form definition"
+    }
+  ],
+  "I7lkuw": [
+    {
+      "type": 0,
+      "value": "Child 1"
     }
   ],
   "IOko1U": [
@@ -1645,10 +1731,22 @@
       "value": "Content"
     }
   ],
+  "KMbfsU": [
+    {
+      "type": 0,
+      "value": "Size (mobile)"
+    }
+  ],
   "KYTAJZ": [
     {
       "type": 0,
       "value": "(checked for every step)"
+    }
+  ],
+  "Kdgpxf": [
+    {
+      "type": 0,
+      "value": "Longitude coordinate of the initial center point of the map."
     }
   ],
   "Kj8P8I": [
@@ -1667,6 +1765,12 @@
     {
       "type": 0,
       "value": "The maximum number of files that can be uploaded."
+    }
+  ],
+  "KwatvH": [
+    {
+      "type": 0,
+      "value": "The number of rows for this text area."
     }
   ],
   "KzlSYi": [
@@ -1693,6 +1797,12 @@
       "value": "Variable definition"
     }
   ],
+  "LJckD5": [
+    {
+      "type": 0,
+      "value": "Auto Expand"
+    }
+  ],
   "LMCo4N": [
     {
       "type": 0,
@@ -1709,6 +1819,12 @@
     {
       "type": 0,
       "value": "Copy"
+    }
+  ],
+  "LZc4TN": [
+    {
+      "type": 0,
+      "value": "Longitude"
     }
   ],
   "LaovNg": [
@@ -1753,6 +1869,12 @@
       "value": "Component"
     }
   ],
+  "MTdKuN": [
+    {
+      "type": 0,
+      "value": "Disable adding or removing groups"
+    }
+  ],
   "MXKqVO": [
     {
       "type": 0,
@@ -1787,6 +1909,12 @@
     {
       "type": 0,
       "value": "The maximum date that can be picked."
+    }
+  ],
+  "NudLUt": [
+    {
+      "type": 0,
+      "value": "A short instruction shown below the signature pad."
     }
   ],
   "NwTdLM": [
@@ -2007,6 +2135,12 @@
       "value": "Payment backend options"
     }
   ],
+  "R/XadM": [
+    {
+      "type": 0,
+      "value": "You need to configure both longitude and latitude."
+    }
+  ],
   "RN628y": [
     {
       "type": 0,
@@ -2125,6 +2259,12 @@
       "value": "change a property of a component."
     }
   ],
+  "Su4nqf": [
+    {
+      "type": 0,
+      "value": "Which authentication method the co-signer must use. Note that this must be an authentication method available on the form."
+    }
+  ],
   "T0OLUV": [
     {
       "type": 0,
@@ -2227,6 +2367,12 @@
       "value": "Select the plugin(s) to use for the validation functionality."
     }
   ],
+  "UJTIZU": [
+    {
+      "type": 0,
+      "value": "Zoom level for the map when it initially loads."
+    }
+  ],
   "UKTqb8": [
     {
       "type": 0,
@@ -2249,6 +2395,20 @@
     {
       "type": 0,
       "value": "Minimum time"
+    }
+  ],
+  "Uu+81U": [
+    {
+      "type": 0,
+      "value": "Cosign ("
+    },
+    {
+      "type": 1,
+      "value": "authPlugin"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "Uv58uI": [
@@ -2351,6 +2511,12 @@
       "value": "Autocomplete"
     }
   ],
+  "VhCwEK": [
+    {
+      "type": 0,
+      "value": "The label that will be shown above each repeating group in the summary page, the submission report and the confirmation email. The index of the item will be added next to it, i.e. if you enter 'Item' it will be displayed as 'Item 1', 'Item 2', ..."
+    }
+  ],
   "Vi0+dd": [
     {
       "type": 0,
@@ -2441,6 +2607,12 @@
       "value": "Authentication automatic login"
     }
   ],
+  "XMV3t2": [
+    {
+      "type": 0,
+      "value": "Info"
+    }
+  ],
   "XNqV97": [
     {
       "type": 0,
@@ -2459,6 +2631,12 @@
       "value": "Ask privacy consent"
     }
   ],
+  "XWsNZ9": [
+    {
+      "type": 0,
+      "value": "Default"
+    }
+  ],
   "XXRiTx": [
     {
       "type": 0,
@@ -2469,6 +2647,12 @@
     {
       "type": 0,
       "value": "Basic"
+    }
+  ],
+  "Xj1uvL": [
+    {
+      "type": 0,
+      "value": "Remove"
     }
   ],
   "Y4oNhH": [
@@ -2627,6 +2811,12 @@
       "value": "Previous text"
     }
   ],
+  "ZOytnI": [
+    {
+      "type": 0,
+      "value": "Whether to add partners information to the component."
+    }
+  ],
   "ZdZ2Mb": [
     {
       "type": 0,
@@ -2687,10 +2877,22 @@
       "value": "Mapping expression"
     }
   ],
+  "axygDt": [
+    {
+      "type": 0,
+      "value": "Warning"
+    }
+  ],
   "b/AHC/": [
     {
       "type": 0,
       "value": "Display in summaries and confirmations"
+    }
+  ],
+  "b5Bxb/": [
+    {
+      "type": 0,
+      "value": "House letter addition"
     }
   ],
   "b9D64D": [
@@ -2887,6 +3089,12 @@
       "value": "From form field"
     }
   ],
+  "d3V6A+": [
+    {
+      "type": 0,
+      "value": "Display"
+    }
+  ],
   "d45v2X": [
     {
       "type": 0,
@@ -2915,6 +3123,12 @@
     {
       "type": 0,
       "value": "Optional category for internal organisation."
+    }
+  ],
+  "dWWO3N": [
+    {
+      "type": 0,
+      "value": "Hide label"
     }
   ],
   "dazu9j": [
@@ -2983,6 +3197,12 @@
       "value": "configured"
     }
   ],
+  "e6SsfR": [
+    {
+      "type": 0,
+      "value": "Map configuration"
+    }
+  ],
   "eBk+W0": [
     {
       "type": 0,
@@ -3001,10 +3221,28 @@
       "value": "Advanced options"
     }
   ],
+  "eUowhH": [
+    {
+      "type": 0,
+      "value": "'Save row' text"
+    }
+  ],
+  "ee4oWr": [
+    {
+      "type": 0,
+      "value": "Add column"
+    }
+  ],
   "eg8uKC": [
     {
       "type": 0,
       "value": "The latest possible value that can be entered."
+    }
+  ],
+  "ehP4dQ": [
+    {
+      "type": 0,
+      "value": "Group label"
     }
   ],
   "etny39": [
@@ -3079,6 +3317,12 @@
       "value": "Information object type"
     }
   ],
+  "fagx6e": [
+    {
+      "type": 0,
+      "value": "Hide the title/label of this component in the form."
+    }
+  ],
   "fe3wyn": [
     {
       "type": 0,
@@ -3121,6 +3365,12 @@
       "value": "(not configured yet)"
     }
   ],
+  "gCQtSJ": [
+    {
+      "type": 0,
+      "value": "Set the text of the 'Remove row' button."
+    }
+  ],
   "gGNIdG": [
     {
       "type": 0,
@@ -3131,6 +3381,12 @@
     {
       "type": 0,
       "value": "App version"
+    }
+  ],
+  "guySt0": [
+    {
+      "type": 0,
+      "value": "Postcode"
     }
   ],
   "gz32s2": [
@@ -3161,6 +3417,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "h2ZNhM": [
+    {
+      "type": 0,
+      "value": "Fieldset content"
     }
   ],
   "h9debR": [
@@ -3211,6 +3473,12 @@
       "value": "Configure"
     }
   ],
+  "hwsnj9": [
+    {
+      "type": 0,
+      "value": "Mobile"
+    }
+  ],
   "hzx+WF": [
     {
       "type": 0,
@@ -3257,6 +3525,12 @@
     {
       "type": 0,
       "value": "is less than"
+    }
+  ],
+  "ifG3sd": [
+    {
+      "type": 0,
+      "value": "Success"
     }
   ],
   "inhTXo": [
@@ -3317,16 +3591,34 @@
       "value": "Resulting string"
     }
   ],
+  "jV58dA": [
+    {
+      "type": 0,
+      "value": "This will make the text area auto expand its height as the user is typing into the area."
+    }
+  ],
   "jZIu+e": [
     {
       "type": 0,
       "value": "No"
     }
   ],
+  "jiDz2v": [
+    {
+      "type": 0,
+      "value": "Value in decimal degrees, between -90 and +90."
+    }
+  ],
   "jitewC": [
     {
       "type": 0,
       "value": "HTTP method"
+    }
+  ],
+  "jnHPfU": [
+    {
+      "type": 0,
+      "value": "Latitude"
     }
   ],
   "jo1PVg": [
@@ -3413,6 +3705,22 @@
       "value": "Show character counter"
     }
   ],
+  "kw2jNc": [
+    {
+      "type": 0,
+      "value": "Options from expression: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    }
+  ],
   "l1fi1t": [
     {
       "type": 0,
@@ -3437,6 +3745,12 @@
       "value": "Including today"
     }
   ],
+  "lOSmt+": [
+    {
+      "type": 0,
+      "value": "Authentication method"
+    }
+  ],
   "lVEpR9": [
     {
       "type": 0,
@@ -3447,6 +3761,12 @@
     {
       "type": 0,
       "value": "Add item"
+    }
+  ],
+  "loKqis": [
+    {
+      "type": 0,
+      "value": "Partner 1"
     }
   ],
   "lvxPCk": [
@@ -3515,6 +3835,18 @@
       "value": "Form field"
     }
   ],
+  "mf9eF+": [
+    {
+      "type": 0,
+      "value": "House number"
+    }
+  ],
+  "mpzdoT": [
+    {
+      "type": 0,
+      "value": "The sum of column sizes may not exceed 12."
+    }
+  ],
   "myvtu0": [
     {
       "type": 0,
@@ -3533,6 +3865,12 @@
       "value": "When this is checked, any uploaded image(s) will be resized."
     }
   ],
+  "nC9GEx": [
+    {
+      "type": 0,
+      "value": "Whether to add children information to the component."
+    }
+  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -3543,6 +3881,12 @@
     {
       "type": 0,
       "value": "Trigger condition"
+    }
+  ],
+  "nSRkSW": [
+    {
+      "type": 0,
+      "value": "Size"
     }
   ],
   "nW5g1S": [
@@ -3569,6 +3913,18 @@
       "value": "Tooltip"
     }
   ],
+  "o5Mfn3": [
+    {
+      "type": 0,
+      "value": "Include children"
+    }
+  ],
+  "o83CBr": [
+    {
+      "type": 0,
+      "value": "Set the text of the 'Add Another' button."
+    }
+  ],
   "o8CfuS": [
     {
       "type": 0,
@@ -3585,6 +3941,12 @@
     {
       "type": 0,
       "value": "Suffix (e.g. m²)"
+    }
+  ],
+  "oXOxWz": [
+    {
+      "type": 0,
+      "value": "When this is checked, the map component settings configured in the global configuration will be used."
     }
   ],
   "oYmpN5": [
@@ -3671,10 +4033,22 @@
       "value": "Minimum value"
     }
   ],
+  "pDVNSf": [
+    {
+      "type": 0,
+      "value": "Number of rows"
+    }
+  ],
   "pGmjYH": [
     {
       "type": 0,
       "value": "User"
+    }
+  ],
+  "pT5jx/": [
+    {
+      "type": 0,
+      "value": "Column size on mobile, value between 1 and 4."
     }
   ],
   "pWHOT1": [
@@ -3697,6 +4071,12 @@
       ],
       "type": 8,
       "value": "code"
+    }
+  ],
+  "pfdsz9": [
+    {
+      "type": 0,
+      "value": "House number addition"
     }
   ],
   "piUWzT": [
@@ -3745,6 +4125,12 @@
     {
       "type": 0,
       "value": "How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+    }
+  ],
+  "qmBAmr": [
+    {
+      "type": 0,
+      "value": "Include partners"
     }
   ],
   "qo1UbS": [
@@ -3811,6 +4197,12 @@
       "value": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
     }
   ],
+  "rkJLBr": [
+    {
+      "type": 0,
+      "value": "'Add another' text"
+    }
+  ],
   "sFHD3/": [
     {
       "type": 0,
@@ -3827,6 +4219,16 @@
     {
       "type": 0,
       "value": "Plugin attribute"
+    }
+  ],
+  "smPv/m": [
+    {
+      "type": 1,
+      "value": "groupLabel"
+    },
+    {
+      "type": 0,
+      "value": " 3"
     }
   ],
   "t99ynC": [
@@ -3871,6 +4273,12 @@
       "value": "Name"
     }
   ],
+  "u5XYQh": [
+    {
+      "type": 0,
+      "value": "Footer"
+    }
+  ],
   "uBO/Al": [
     {
       "type": 0,
@@ -3887,6 +4295,12 @@
     {
       "type": 0,
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "uVVO4b": [
+    {
+      "type": 0,
+      "value": "Error"
     }
   ],
   "uiliGe": [
@@ -3925,6 +4339,12 @@
     {
       "type": 0,
       "value": "History"
+    }
+  ],
+  "unjdIB": [
+    {
+      "type": 0,
+      "value": "Do not display the configured label and top line as the header in the fieldset."
     }
   ],
   "vNRiMn": [
@@ -4031,6 +4451,32 @@
       "value": "Use raw JSON input"
     }
   ],
+  "wVYRMC": [
+    {
+      "type": 0,
+      "value": "Column "
+    },
+    {
+      "type": 1,
+      "value": "number"
+    }
+  ],
+  "wVoT0I": [
+    {
+      "type": 0,
+      "value": "Options from expression: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "expression"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    }
+  ],
   "wZ99FU": [
     {
       "type": 0,
@@ -4097,6 +4543,12 @@
       "value": "Edit JSON"
     }
   ],
+  "xxVNeU": [
+    {
+      "type": 0,
+      "value": "Zoom level"
+    }
+  ],
   "yCogwi": [
     {
       "type": 0,
@@ -4145,6 +4597,12 @@
       "value": "Phone Number Component"
     }
   ],
+  "yrz/oC": [
+    {
+      "type": 0,
+      "value": "Column size, value between 1 and 12."
+    }
+  ],
   "yujuQr": [
     {
       "type": 0,
@@ -4175,6 +4633,18 @@
     {
       "type": 0,
       "value": "Action"
+    }
+  ],
+  "z45pcO": [
+    {
+      "type": 0,
+      "value": "Value in decimal degrees, between -180 and +180."
+    }
+  ],
+  "z7HXSS": [
+    {
+      "type": 0,
+      "value": "Use globally configured map component settings"
     }
   ],
   "zGMQ75": [
