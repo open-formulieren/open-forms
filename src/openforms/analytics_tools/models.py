@@ -205,6 +205,33 @@ class AnalyticsToolsConfiguration(SingletonModel):
         help_text=_("Enabling this installs SiteImprove"),
     )
 
+    govmetric_source_id = models.CharField(
+        _("GovMetric source ID"),
+        max_length=10,
+        blank=True,
+        help_text=_(
+            "Your GovMetric source ID - This is created by KLANTINFOCUS when a list of questions is created. "
+            "It is a numerical value that is unique per set of questions."
+        ),
+    )
+    govmetric_secure_guid = models.CharField(
+        _("GovMetric secure GUID"),
+        blank=True,
+        max_length=10,
+        help_text=_(
+            "Your GovMetric secure GUID - This is an optional value. It is created by KLANTINFOCUS when a list "
+            "of questions is created. It is a string that is unique per set of questions."
+        ),
+    )
+    enable_govmetric_analytics = models.BooleanField(
+        _("enable GovMetric analytics"),
+        default=False,
+        help_text=_(
+            "This enables GovMetric to collect data while a user fills in a form and it adds a button at the "
+            "end of a form to fill in a client satisfaction survey."
+        ),
+    )
+
     analytics_cookie_consent_group = models.ForeignKey(
         "cookie_consent.CookieGroup",
         on_delete=models.SET_NULL,
@@ -262,6 +289,10 @@ class AnalyticsToolsConfiguration(SingletonModel):
             and self.enable_siteimprove_analytics
             and self.analytics_cookie_consent_group
         )
+
+    @property
+    def is_govmetric_enabled(self) -> bool:
+        return self.govmetric_source_id and self.enable_govmetric_analytics
 
     @property
     def is_google_analytics_enabled(self) -> bool:

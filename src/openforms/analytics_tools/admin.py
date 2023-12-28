@@ -50,4 +50,14 @@ class AnalyticsToolsConfigurationAdmin(SingletonModelAdmin):
                 ),
             },
         ),
+        (
+            _("Analytics: GovMetric"),
+            {
+                "fields": (
+                    "govmetric_source_id",
+                    "govmetric_secure_guid",
+                    "enable_govmetric_analytics",
+                )
+            },
+        ),
     )
