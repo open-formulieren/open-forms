@@ -1,3 +1,4 @@
 <template class="analytics-scripts">
     {% include "analytics_tools/siteimprove.html" with request=request only %}
+    {% include "analytics_tools/govmetric.html" with request=request  form_slug=form.slug only %}
 </template>

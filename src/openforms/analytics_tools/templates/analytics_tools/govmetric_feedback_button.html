@@ -1,0 +1,12 @@
+{% load i18n %}
+<div class="gm_sidebar">
+    <a
+        href="https://websurveys2.govmetric.com/theme/kf/{{ analytics_tools_config.govmetric_source_id|urlencode }}?{% if analytics_tools_config.govmetric_secure_guid %}GUID={{ analytics_tools_config.govmetric_secure_guid|urlencode }}&{% endif %}Q_Formid={{ form_slug|urlencode }}"
+        class="gm_sidebar_anchor"
+        title="{% translate "Give feedback about this form" %}"
+        role="button"
+        rel="nofollow"
+    >
+        <img src="https://www.klantinfocus.nl/wp-content/themes/klantinfocus/assets/img/Knop_feedback.svg" alt="Geef uw beoordeling">
+    </a>
+</div>

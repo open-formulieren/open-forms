@@ -83,6 +83,14 @@ DYNAMIC_TOOL_CONFIGURATION = {
         enable_field_name="enable_siteimprove_analytics",
         is_enabled_property="is_siteimprove_enabled",
     ),
+    AnalyticsTools.govmetric: ToolConfiguration(
+        enable_field_name="enable_govmetric_analytics",
+        is_enabled_property="is_govmetric_enabled",
+        replacements=[
+            StringReplacement(needle="SOURCE_ID", field_name="govmetric_source_id"),
+            StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
+        ],
+    ),
 }
 
 
@@ -332,4 +340,9 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 _("Piwik Pro Analytics and Tag Manager can't be both activated"),
                 code="invalid_together",
             )
+        if self.enable_govmetric_analytics and not self.is_govmetric_enabled:
+            raise ValidationError(
+                _("If you enable GovMetric, you need to provide the source ID.")
+            )
+
         super().clean()

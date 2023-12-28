@@ -56,6 +56,8 @@
             {% block a11y-toolbar %}
                 {% include "includes/a11y_toolbar.html" only %}
             {% endblock a11y-toolbar %}
+
+            {% include "analytics_tools/all_content.html" with analytics_varname=analytics_varname %}
         </div>
     {% endblock %}
 

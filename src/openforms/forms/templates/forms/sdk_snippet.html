@@ -23,6 +23,10 @@
             {% if sdk_sentry_dsn %}sentryDSN,{% endif %}
             {% if sdk_sentry_env %}sentryEnv,{% endif %}
             languageSelectorTarget: '#react-portal--language-selection',
+            {% if analytics_tools_config.is_govmetric_enabled %}onComplete: () => {
+                const element = document.getElementsByClassName("gm_sidebar").item(0);
+                if (element) element.style.display = "block";
+            }{% endif %}
         }
     );
     form.init();
