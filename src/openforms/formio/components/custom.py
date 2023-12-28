@@ -101,7 +101,7 @@ class Postcode(BasePlugin):
 
 class FamilyMembersHandler(Protocol):
     def __call__(
-        self, bsn: str, include_children: bool, include_partner: bool
+        self, bsn: str, include_children: bool, include_partners: bool
     ) -> list[tuple[str, str]]:
         ...  # pragma: nocover
 

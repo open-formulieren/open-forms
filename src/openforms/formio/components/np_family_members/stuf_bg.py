@@ -1,12 +1,10 @@
-from typing import List, Tuple
-
 from stuf.stuf_bg.client import get_client
 
 
 def get_np_family_members_stuf_bg(
     bsn: str, include_children: bool, include_partners: bool
-) -> List[Tuple[str, str]]:
-    values = []
+) -> list[tuple[str, str]]:
+    values: list[str] = []
     if include_children:
         values.append("inp.heeftAlsKinderen")
 
