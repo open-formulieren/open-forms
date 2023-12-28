@@ -43,6 +43,10 @@ class OIDCAuthenticationRequestView(_OIDCAuthenticationRequestView):
         if not next_url:
             raise DisallowedRedirect
 
+        # We add our own key to keep track of the redirect URL. In the case of authentication failure (or canceled logins),
+        # the session is cleared, so in OIDCAuthenticationCallbackView we store this URL so that we know where to.
+        self.request.session["of_redirect_next"] = next_url
+
         try:
             # Verify that the identity provider endpoint can be reached
             response = requests.get(self.OIDC_OP_AUTH_ENDPOINT)
@@ -66,6 +70,10 @@ class OIDCAuthenticationRequestView(_OIDCAuthenticationRequestView):
 
 
 class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
+    def get(self, request):
+        self._redirect_next = request.session.get("of_redirect_next")
+        return super().get(request)
+
     def get_error_message_parameters(
         self, parameter: str, problem_code: str
     ) -> tuple[str, str]:
@@ -82,7 +90,7 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
         """
         On failure, redirect to the form with an appropriate error message
         """
-        f = furl(self.success_url)
+        f = furl(self._redirect_next or self.get_settings("LOGIN_REDIRECT_URL", "/"))
         f = furl(f.args["next"])
 
         parameter, problem_code = self.get_error_message_parameters(
