@@ -988,3 +988,73 @@ class ImportExportTests(TestCase):
 
         imported_form = Form.objects.exclude(pk=form.pk).get()
         self.assertIsNone(imported_form.theme)
+
+    def test_import_form_with_legacy_formio_component_translations_format(self):
+        """
+        Legacy translations need to be converted to the new format.
+        """
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "authentication_backends": [],
+                    "is_deleted": False,
+                    "login_required": False,
+                    "maintenance_mode": False,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "product": None,
+                    "show_progress_indicator": True,
+                    "slug": "translations",
+                    "url": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                }
+            ],
+            "formSteps": [
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "form_definition": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "index": 0,
+                    "slug": "test-step-1",
+                    "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+                },
+            ],
+            "formDefinitions": [
+                {
+                    "configuration": {
+                        "components": [
+                            {
+                                "key": "textfield",
+                                "type": "textfield",
+                                "label": "TEXTFIELD_LABEL",
+                            },
+                        ]
+                    },
+                    "name": "Def 1 - With condition",
+                    "slug": "test-definition-1",
+                    "url": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "component_translations": {
+                        "nl": {
+                            "TEXTFIELD_LABEL": "Tekstveld",
+                        }
+                    },
+                },
+            ],
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        fd = FormDefinition.objects.get()
+        textfield = fd.configuration["components"][0]
+
+        self.assertIn("openForms", textfield)
+        self.assertIn("translations", textfield["openForms"])
+        self.assertIn("nl", textfield["openForms"]["translations"])
+        nl_translations = textfield["openForms"]["translations"]["nl"]
+        self.assertIn("label", nl_translations)
+        self.assertEqual(nl_translations["label"], "Tekstveld")
