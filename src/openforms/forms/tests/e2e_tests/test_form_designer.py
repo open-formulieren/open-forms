@@ -442,10 +442,13 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.get_by_text("Verouderd").click()
             await drag_and_drop_component(page, "Wachtwoord")
             # save with the defaults
-            await page.get_by_role("button", name="Opslaan").first.click()
+            modal = page.locator("css=.formio-dialog-content")
+            await modal.get_by_role(
+                "button", name=self._translate("Opslaan"), exact=True
+            ).click()
 
             # the modal should close
-            await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
+            await expect(modal).to_be_hidden()
 
     @tag("gh-2800")
     async def test_key_automatically_generated_for_select_options(self):
