@@ -370,8 +370,6 @@ class WebformBuilder extends WebformBuilderFormio {
       return temp.key;
     };
 
-    const {componentTranslationsRef} = this.options.openForms;
-
     // hand contents of modal over to React
     (async () => {
       const intlProviderProps = await getIntlProviderProps();
@@ -382,7 +380,6 @@ class WebformBuilder extends WebformBuilderFormio {
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
             richTextColors={RICH_TEXT_COLORS}
-            componentTranslationsRef={componentTranslationsRef}
             getFormComponents={() => parent.formioContainer}
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}
