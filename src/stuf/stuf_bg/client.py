@@ -47,7 +47,7 @@ class Client(BaseClient):
     sector_alias = "bg"
     soap_security_expires_minutes = STUF_BG_EXPIRY_MINUTES
 
-    def get_values_for_attributes(self, bsn: str, attributes) -> bytes:
+    def get_values_for_attributes(self, bsn: str, attributes: list[str]) -> bytes:
         context = {
             # replace . with _ to circumvent dot notation in template
             **{attr.replace(".", "_"): True for attr in attributes},
