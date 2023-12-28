@@ -2,6 +2,18 @@
 Changelog
 =========
 
+2.1.11 (2023-12-28)
+===================
+
+Final release in the 2.1.x series.
+
+Upgrade to Open Forms 2.2 or higher to continue receiving support/bugfixes.
+
+* [#3656] Fixed an incorrect DigiD error message being shown with OIDC authentication
+  plugins.
+* [#3692] Fixed a crash when cancelling DigiD authentication while logged in as admin
+  user.
+
 2.1.10 (2023-12-12)
 ===================
 
