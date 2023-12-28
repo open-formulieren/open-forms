@@ -5,6 +5,7 @@ from unittest.mock import patch
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings, tag
 
+from freezegun import freeze_time
 from hypothesis import given, settings, strategies as st
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from privates.test import temp_private_root
@@ -29,6 +30,14 @@ from .factories import (
 @temp_private_root()
 class SubmissionTests(TestCase):
     maxDiff = None
+
+    @freeze_time("2021-11-26T17:00:00+01:00")
+    @override_settings(LANGUAGE_CODE="en")
+    def test_submission_str(self):
+        submission = SubmissionFactory.create()
+        self.assertEqual(
+            str(submission), f"{submission.pk} - started on Nov. 26, 2021, 4 p.m."
+        )
 
     def test_submission_data_with_selectboxes_formio_formatters(self):
         form_definition = FormDefinitionFactory.create(
