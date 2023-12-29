@@ -30,13 +30,12 @@ def formio_key():
 
     See :func:`openforms.forms.models.form_variable.variable_key_validator` for the
     validator implementation.
+
+    This strategy differs slightly from the validator - it will generate keys with a
+    maximum length of 100 chars.
     """
-    only_alphanumeric = st.text(alphabet=ascii_letters + digits, min_size=1, max_size=1)
-    middle = st.text(max_size=100, alphabet=".-" + ascii_letters + digits)
-    # Combine them using st.tuples and then concatenate the results
-    return st.tuples(only_alphanumeric, middle, only_alphanumeric).map(
-        lambda x: "".join(x)
-    )
+    alphabet = ".-" + ascii_letters + digits
+    return st.from_regex(r"\A(\w|\w[\w.\-]{0,98}\w)\Z", alphabet=alphabet)
 
 
 def _minimal_component_mapping(component_type: str):
@@ -501,4 +500,4 @@ def any_component(stop_nesting=False):
         cosign_v1_component(),
     ]
     all_types = inputs + special + layout + deprecated
-    return st.one_of(*all_types)
+    return st.one_of(all_types)

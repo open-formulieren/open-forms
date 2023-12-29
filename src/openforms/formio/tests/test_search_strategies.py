@@ -50,6 +50,7 @@ from .search_strategies import (
 class SearchStrategyTests(SimpleTestCase):
     @given(formio_key())
     def test_formio_key_validates(self, key: str):
+        self.assertNotIn("\n", key)
         try:
             variable_key_validator(key)
         except ValidationError:
