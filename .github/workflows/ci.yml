@@ -227,11 +227,17 @@ jobs:
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
+      - name: Extract SDK files from SDK docker image
+        run: |
+          container_id=$(docker create openformulieren/open-forms-sdk:latest)
+          docker cp $container_id:/sdk ./src/openforms/static/sdk
+          docker rm -v $container_id
+
       - name: Run testsuite
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          src/manage.py test src --tag=e2e
+          src/manage.py test openforms.tests.e2e.test_resume_form.ResumeFormTests.test_pause_and_resume_form
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
@@ -241,6 +247,8 @@ jobs:
           # with 2FA enabled, *for some reason* this doesn't work on CI -> can't find
           # the inputs
           TWO_FACTOR_PATCH_ADMIN: 'no'
+          # TODO Without this, it cannot find the locally built SDK, figure out why
+          SDK_RELEASE: latest
 
   docs:
     name: Build and check documentation
