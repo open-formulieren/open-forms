@@ -129,3 +129,22 @@ class AnalyticsToolsRenderingTest(WebTest):
 
         siteimprove = form_page.pyquery("#siteimprove-analytics")
         self.assertTrue(siteimprove.is_("script"))
+
+    def test_govmetric_rendering(self):
+        """Assert that the scripts tags for govmetric are rendered"""
+
+        self.config.enable_govmetric_analytics = True
+        self.config.govmetric_source_id = "1234"
+        self.config.save()
+
+        form_page = self.app.get(self.url)
+
+        scripts = form_page.pyquery("script")
+
+        self.assertEqual(
+            scripts[-1].attrib["src"], "https://hitcounter.govmetric.com/1234"
+        )
+        self.assertEqual(
+            scripts[-2].attrib["src"],
+            "https://websurveys2.govmetric.com/js/client/gm_sidebar.js",
+        )
