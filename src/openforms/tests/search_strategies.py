@@ -1,5 +1,3 @@
-from string import ascii_letters
-
 from django.core.exceptions import ValidationError
 
 from hypothesis import strategies as st
@@ -8,6 +6,10 @@ from openforms.forms.models.form_variable import variable_key_validator
 from openforms.typing import JSONPrimitive, JSONValue
 
 language_code = st.sampled_from(["nl", "en", "fy"])
+
+
+def no_null_byte_characters(**kwargs):
+    return st.characters(codec="utf-8", blacklist_characters="\x00", **kwargs)
 
 
 def json_primitives(text_strategy=st.text()) -> st.SearchStrategy[JSONPrimitive]:
@@ -35,7 +37,7 @@ def json_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
 
 
 def jsonb_text() -> st.SearchStrategy[str]:
-    return st.text().filter(lambda s: "\x00" not in s)
+    return st.text(alphabet=no_null_byte_characters())
 
 
 def jsonb_primitives() -> st.SearchStrategy[JSONPrimitive]:
@@ -56,7 +58,3 @@ def valid_key(key: str) -> bool:
     except ValidationError:
         return False
     return True
-
-
-def formio_component_key() -> st.SearchStrategy[str]:
-    return st.text(min_size=1, alphabet=".-" + ascii_letters).filter(valid_key)

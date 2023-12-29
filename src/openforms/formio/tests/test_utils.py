@@ -2,7 +2,8 @@ from django.test import SimpleTestCase
 
 from hypothesis import example, given, strategies as st
 
-from openforms.tests.search_strategies import formio_component_key, json_primitives
+from openforms.formio.tests.search_strategies import formio_key
+from openforms.tests.search_strategies import json_primitives
 from openforms.typing import JSONPrimitive
 
 from ..typing import Component
@@ -65,7 +66,7 @@ class FormioUtilsTest(SimpleTestCase):
     @given(
         hidden=st.booleans(),
         show=st.one_of(st.none(), st.booleans(), st.just("")),
-        when=st.one_of(st.none(), formio_component_key(), st.just("")),
+        when=st.one_of(st.none(), formio_key(), st.just("")),
         eq=json_primitives(),
     )
     # Sentry 326223
