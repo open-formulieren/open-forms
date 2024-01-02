@@ -227,7 +227,7 @@ jobs:
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Determine SDK version to checkout
+      - name: Determine SDK version to pull
         id: sdk-ref
         run: |
           # Strip git ref prefix from version
@@ -237,24 +237,24 @@ jobs:
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # default to version in .sdk-release file
-          SDK_REF=$(cat .sdk-release | tr -d '[:space:]')
+          SDK_TAG=$(cat .sdk-release | tr -d '[:space:]')
 
           case $VERSION in
-            # if building master -> include main of SDK
-            master) SDK_REF=main;;
-            # PRs result in version 'merge' that'll go to master -> include main of SDK
-            merge) SDK_REF=main;;
+            # if building master -> include latest image of SDK
+            master) SDK_TAG=latest;;
+            # PRs result in version 'merge' that'll go to master -> include latest image of SDK
+            merge) SDK_TAG=latest;;
           esac
 
-          echo "sdk_ref=${SDK_REF}" >> $GITHUB_OUTPUT
+          echo "sdk_tag=${SDK_TAG}" >> $GITHUB_OUTPUT
 
       - name: Extract SDK files from SDK docker image
         run: |
-          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-ref.outputs.sdk_ref }})
+          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-ref.outputs.sdk_tag }})
 
-          case ${{ steps.sdk-ref.outputs.sdk_ref }} in:
+          case ${{ steps.sdk-ref.outputs.sdk_tag }} in:
             latest) SDK_STATIC_PATH=./src/openforms/static/sdk;;
-            *) SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-ref.outputs.sdk_ref }};;
+            *) SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-ref.outputs.sdk_tag }};;
           esac
 
           echo $SDK_STATIC_PATH

@@ -17,6 +17,9 @@ factory = APIRequestFactory()
 
 class ResumeFormTests(E2ETestCase):
     async def test_pause_and_resume_form(self):
+        # If using the ci.py settings locally, the SDK_RELEASE  variable should be set to 'latest', otherwise the
+        # JS/CSS for the SDK will not be found (since they will be expected to be in the folder
+        # openforms/static/sdk/<SDK version tag> instead of openforms/static/sdk
         @sync_to_async
         def setUpTestData():
             # set up a form
