@@ -227,7 +227,7 @@ jobs:
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Determine the SDK image to use to extract the JS/CSS files
+      - name: Determine which SDK image to use to extract the JS/CSS files
         id: sdk-tag
         run: |
           # Strip git ref prefix from version
@@ -253,8 +253,11 @@ jobs:
           container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-tag.outputs.sdk_tag }})
 
           case ${{ steps.sdk-tag.outputs.sdk_tag }} in
-            latest) SDK_STATIC_PATH=./src/openforms/static/sdk;;
-            *) SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-tag.outputs.sdk_tag }};;
+            latest)
+              SDK_STATIC_PATH=./src/openforms/static/sdk;;
+            *)
+              SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-tag.outputs.sdk_tag }};
+              mkdir ./src/openforms/static/sdk;; # Docker will not create this directory when copying
           esac
 
           echo $SDK_STATIC_PATH
