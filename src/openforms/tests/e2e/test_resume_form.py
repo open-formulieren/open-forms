@@ -28,17 +28,18 @@ class ResumeFormTests(E2ETestCase):
                 slug="form-to-pause-and-resume",
                 generate_minimal_setup=True,
                 formstep__form_definition__name="First step",
+                formstep__form_definition__slug="first-step",
             )
             return form
 
         @sync_to_async
-        def get_resume_url(form, request, live_server):
+        def get_submission_uuid_and_resume_url(form, request, live_server):
             submission = Submission.objects.get(form=form)
 
             serializer = SubmissionSuspensionSerializer(context={"request": request})
             continue_url = furl(serializer.get_continue_url(submission))
             continue_url.origin = live_server
-            return continue_url.url
+            return {"uuid": submission.uuid, "resume_url": continue_url.url}
 
         form = await setUpTestData()
         form_url = str(
@@ -62,10 +63,14 @@ class ResumeFormTests(E2ETestCase):
 
                 await page.wait_for_url(f"{form_url}startpagina")
 
-                resume_url = await get_resume_url(form, request, self.live_server_url)
+                submission_info = await get_submission_uuid_and_resume_url(
+                    form, request, self.live_server_url
+                )
 
-                await page.goto(resume_url)
-                await page.wait_for_url(resume_url)
+                await page.goto(submission_info["resume_url"])
+                await page.wait_for_url(
+                    f"{form_url}stap/first-step?submission_uuid={submission_info['uuid']}"
+                )
 
                 header = page.get_by_role("heading", name="First step")
 
