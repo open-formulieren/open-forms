@@ -251,25 +251,13 @@ jobs:
       - name: Extract SDK files from SDK docker image
         run: |
           container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-tag.outputs.sdk_tag }})
-
-          case ${{ steps.sdk-tag.outputs.sdk_tag }} in
-            latest)
-              SDK_STATIC_PATH=./src/openforms/static/sdk;;
-            *)
-              SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-tag.outputs.sdk_tag }};
-              mkdir ./src/openforms/static/sdk;; # Docker will not create this directory when copying
-          esac
-
-          echo $SDK_STATIC_PATH
-          docker cp $container_id:/sdk $SDK_STATIC_PATH
+          docker cp $container_id:/sdk ./src/openforms/static/
           docker rm -v $container_id
 
       - name: Run testsuite
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          ls ./static/sdk
-          ls ./static/sdk/${{ steps.sdk-tag.outputs.sdk_tag }}
           src/manage.py test openforms.tests.e2e.test_resume_form.ResumeFormTests.test_pause_and_resume_form
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
