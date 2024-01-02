@@ -268,8 +268,6 @@ jobs:
           # with 2FA enabled, *for some reason* this doesn't work on CI -> can't find
           # the inputs
           TWO_FACTOR_PATCH_ADMIN: 'no'
-          # TODO Without this, it cannot find the locally built SDK, figure out why
-          SDK_RELEASE: latest
 
   docs:
     name: Build and check documentation
