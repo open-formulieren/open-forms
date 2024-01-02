@@ -247,7 +247,6 @@ jobs:
           esac
 
           echo "sdk_ref=${SDK_REF}" >> $GITHUB_OUTPUT
-        working-directory: open-forms
 
       - name: Extract SDK files from SDK docker image
         run: |
