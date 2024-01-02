@@ -227,8 +227,8 @@ jobs:
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Determine SDK version to pull
-        id: sdk-ref
+      - name: Determine the SDK image to use to extract the JS/CSS files
+        id: sdk-tag
         run: |
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
@@ -250,11 +250,11 @@ jobs:
 
       - name: Extract SDK files from SDK docker image
         run: |
-          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-ref.outputs.sdk_tag }})
+          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-tag.outputs.sdk_tag }})
 
-          case ${{ steps.sdk-ref.outputs.sdk_tag }} in:
+          case ${{ steps.sdk-tag.outputs.sdk_tag }} in
             latest) SDK_STATIC_PATH=./src/openforms/static/sdk;;
-            *) SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-ref.outputs.sdk_tag }};;
+            *) SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-tag.outputs.sdk_tag }};;
           esac
 
           echo $SDK_STATIC_PATH
