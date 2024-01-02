@@ -258,6 +258,9 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
+          if [${{ steps.sdk-tag.outputs.sdk_tag }} == latest]; then
+            SDK_RELEASE=latest
+          fi
           src/manage.py test openforms.tests.e2e.test_resume_form.ResumeFormTests.test_pause_and_resume_form
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci

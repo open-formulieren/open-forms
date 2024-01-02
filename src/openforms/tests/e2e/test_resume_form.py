@@ -65,6 +65,7 @@ class ResumeFormTests(E2ETestCase):
                 resume_url = await get_resume_url(form, request, self.live_server_url)
 
                 await page.goto(resume_url)
+                await page.wait_for_url(resume_url)
 
                 header = page.get_by_role("heading", name="First step")
 
