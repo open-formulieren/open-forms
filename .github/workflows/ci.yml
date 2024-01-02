@@ -227,6 +227,33 @@ jobs:
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
+      - name: Determine which SDK image to use to extract the JS/CSS files
+        id: sdk-tag
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name (if present at all)
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # default to version in .sdk-release file
+          SDK_TAG=$(cat .sdk-release | tr -d '[:space:]')
+
+          case $VERSION in
+            # if building master -> include latest image of SDK
+            master) SDK_TAG=latest;;
+            # PRs result in version 'merge' that'll go to master -> include latest image of SDK
+            merge) SDK_TAG=latest;;
+          esac
+
+          echo "sdk_tag=${SDK_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Extract SDK files from SDK docker image
+        run: |
+          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-tag.outputs.sdk_tag }})
+          docker cp $container_id:/sdk ./src/openforms/static/
+          docker rm -v $container_id
+
       - name: Run testsuite
         run: |
           python src/manage.py compilemessages
@@ -241,6 +268,7 @@ jobs:
           # with 2FA enabled, *for some reason* this doesn't work on CI -> can't find
           # the inputs
           TWO_FACTOR_PATCH_ADMIN: 'no'
+          SDK_RELEASE: ${{ steps.sdk-tag.outputs.sdk_tag }}
 
   docs:
     name: Build and check documentation
