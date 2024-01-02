@@ -227,10 +227,39 @@ jobs:
       - name: Install playwright deps
         run: playwright install --with-deps ${{ matrix.browser }}
 
+      - name: Determine SDK version to checkout
+        id: sdk-ref
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name (if present at all)
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # default to version in .sdk-release file
+          SDK_REF=$(cat .sdk-release | tr -d '[:space:]')
+
+          case $VERSION in
+            # if building master -> include main of SDK
+            master) SDK_REF=main;;
+            # PRs result in version 'merge' that'll go to master -> include main of SDK
+            merge) SDK_REF=main;;
+          esac
+
+          echo "sdk_ref=${SDK_REF}" >> $GITHUB_OUTPUT
+        working-directory: open-forms
+
       - name: Extract SDK files from SDK docker image
         run: |
-          container_id=$(docker create openformulieren/open-forms-sdk:latest)
-          docker cp $container_id:/sdk ./src/openforms/static/sdk
+          container_id=$(docker create openformulieren/open-forms-sdk:${{ steps.sdk-ref.outputs.sdk_ref }})
+
+          case ${{ steps.sdk-ref.outputs.sdk_ref }} in:
+            latest) SDK_STATIC_PATH=./src/openforms/static/sdk;;
+            *) SDK_STATIC_PATH=./src/openforms/static/sdk/${{ steps.sdk-ref.outputs.sdk_ref }};;
+          esac
+
+          echo $SDK_STATIC_PATH
+          docker cp $container_id:/sdk $SDK_STATIC_PATH
           docker rm -v $container_id
 
       - name: Run testsuite
