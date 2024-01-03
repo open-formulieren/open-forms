@@ -17,10 +17,12 @@ BROWSER: Literal["chromium", "firefox", "webkit"] = os.getenv(
     "E2E_DRIVER", default="chromium"
 )  # type:ignore
 SLOW_MO = int(os.environ.get("SLOW_MO", "100"))
+PLAYWRIGHT_BROWSERS_PATH = os.getenv("PLAYWRIGHT_BROWSERS_PATH", default=None)
 
 LAUNCH_KWARGS = {
     "headless": HEADLESS,
     "slow_mo": SLOW_MO,
+    "executable_path": PLAYWRIGHT_BROWSERS_PATH,
 }
 
 

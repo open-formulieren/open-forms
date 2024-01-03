@@ -303,9 +303,8 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         transaction.on_commit(lambda: self.notify_suspension(instance, email))
         return instance
 
-    def notify_suspension(self, instance: Submission, email: str):
+    def get_continue_url(self, instance: Submission) -> str:
         token = submission_resume_token_generator.make_token(instance)
-        config = GlobalConfiguration.get_solo()
 
         continue_path = reverse(
             "submissions:resume",
@@ -314,10 +313,12 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
                 "submission_uuid": instance.uuid,
             },
         )
-        continue_url = build_absolute_uri(
-            continue_path, request=self.context.get("request")
-        )
+        return build_absolute_uri(continue_path, request=self.context.get("request"))
 
+    def notify_suspension(self, instance: Submission, email: str):
+        continue_url = self.get_continue_url(instance)
+
+        config = GlobalConfiguration.get_solo()
         days_until_removal = (
             instance.form.incomplete_submissions_removal_limit
             or config.incomplete_submissions_removal_limit
