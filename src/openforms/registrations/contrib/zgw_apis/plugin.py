@@ -6,20 +6,25 @@ from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
+from furl import furl
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.config.data import Action
+from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.zgw.clients.catalogi import omschrijving_matcher
 from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
+from openforms.registrations.contrib.objects_api.client import get_objects_client
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
+from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
@@ -65,6 +70,36 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_(
             "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
         ),
+    )
+
+    # Objects API
+    objecttype = serializers.URLField(
+        label=_("objects API - objecttype"),
+        help_text=_(
+            "URL that points to the ProductAanvraag objecttype in the Objecttypes API. "
+            "The objecttype should have the following three attributes: "
+            "1) submission_id; "
+            "2) type (the type of productaanvraag); "
+            "3) data (the submitted form data)"
+        ),
+        required=False,
+    )
+    objecttype_version = serializers.IntegerField(
+        label=_("objects API - objecttype version"),
+        help_text=_("Version of the objecttype in the Objecttypes API"),
+        required=False,
+    )
+    content_json = serializers.CharField(
+        label=_("objects API - JSON content field"),
+        help_text=_(
+            "JSON template for the body of the request sent to the Objects API."
+        ),
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+        ],
+        required=False,
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -401,6 +436,34 @@ class ZGWRegistration(BasePlugin):
         if submission.has_registrator:
             result["medewerker_rol"] = medewerker_rol
 
+        # Register submission to Objects API if configured
+        if (
+            (object_type := options.get("objecttype"))
+            and (object_type_version := options.get("objecttype_version"))
+            and options.get("content_json")
+        ):
+            result["objects_api_object"] = execute_unless_result_exists(
+                partial(self.register_submission_to_objects_api, submission, options),
+                submission,
+                "intermediate.objects_api_object",
+            )
+
+            # connect the zaak with the object
+            objecttype_version = (
+                furl(object_type) / "versions" / str(object_type_version)
+            )
+
+            result["zaakobject"] = execute_unless_result_exists(
+                partial(
+                    zaken_client.create_zaakobject,
+                    zaak,
+                    result["objects_api_object"]["url"],
+                    objecttype_version.url,
+                ),
+                submission,
+                "intermediate.objects_api_zaakobject",
+            )
+
         submission.registration_result = result
         submission.save()
         return result
@@ -444,3 +507,37 @@ class ZGWRegistration(BasePlugin):
                 ),
             ),
         ]
+
+    def register_submission_to_objects_api(
+        self, submission: Submission, options: dict
+    ) -> dict:
+        object_mapping = {
+            "record.geometry": FieldConf(
+                RegistrationAttribute.locatie_coordinaat,
+                transform=_point_coordinate,
+            ),
+        }
+
+        context = {
+            "_submission": submission,
+            "productaanvraag_type": "ProductAanvraag",
+            "variables": get_variables_for_context(submission),
+            "submission": {
+                "public_reference": submission.public_registration_reference,
+                "kenmerk": str(submission.uuid),
+                "language_code": submission.language_code,
+            },
+        }
+
+        object_data = prepare_data_for_registration(
+            submission, context, options, object_mapping
+        )
+
+        with get_objects_client() as objects_client:
+            response = execute_unless_result_exists(
+                partial(objects_client.create_object, object_data=object_data),
+                submission,
+                "intermediate.objects_api_object",
+            )
+
+            return response

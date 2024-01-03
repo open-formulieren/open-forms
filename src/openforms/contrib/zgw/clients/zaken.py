@@ -130,3 +130,22 @@ class ZakenClient(NLXClient):
         response.raise_for_status()
 
         return response.json()
+
+    def create_zaakobject(
+        self, zaak: dict, object: str, objecttype_version: str
+    ) -> dict:
+        data = {
+            "zaak": zaak["url"],
+            "object": object,
+            "objectType": "overige",
+            "objectTypeOverigeDefinitie": {
+                "url": objecttype_version,
+                "schema": ".jsonSchema",
+                "objectData": ".record.data",
+            },
+        }
+
+        response = self.post("zaakobjecten", json=data)
+        response.raise_for_status()
+
+        return response.json()

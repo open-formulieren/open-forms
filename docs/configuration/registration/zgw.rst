@@ -107,6 +107,11 @@ Configuration
    * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://example.com/catalogi/api/v1/informatieobjecttypen/1/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
+#. You can combine ZGW API with Objects API. The submission data will be sent to both if the following have been provided:
+
+   * **Objects API - Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API *For example* ``https://example.com/api/v1/objecttypes``
+   * **Objects API - Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API *For example:* ``1``
+
 #. Click **Opslaan**
 
 If you have added services to multiple ZGW APIs, you can create multiple ZGW API sets. This will enable you to specify

@@ -1,25 +1,26 @@
+from functools import partial
 from typing import Any, Dict, NoReturn
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from openforms.contrib.objects_api.rendering import render_to_json
+from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.zgw.clients import DocumentenClient
-from openforms.contrib.zgw.clients.utils import get_today
 from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_csv_document,
     create_report_document,
 )
+from openforms.registrations.utils import execute_unless_result_exists
 from openforms.submissions.exports import create_submission_export
-from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
+from openforms.submissions.mapping import SKIP, FieldConf
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import set_submission_reference
 from openforms.translations.utils import to_iso639_2b
 from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
-from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
+from ...constants import RegistrationAttribute
 from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .checks import check_config
@@ -76,7 +77,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
         # Prepare all documents to relate to the Objects API record
         with get_documents_client() as documents_client:
-
             # Create the document for the PDF summary
             submission_report = SubmissionReport.objects.get(submission=submission)
             submission_report_options = build_options(
@@ -132,10 +132,6 @@ class ObjectsAPIRegistration(BasePlugin):
             # If no CSV is being uploaded, then `assert csv_url == ""` applies.
             csv_url = register_submission_csv(submission, options, documents_client)
 
-        # Prepare the submission data for sending it to the Objects API. This requires
-        # rendering the configured JSON template and running some basic checks for
-        # security and validity, before throwing it over the fence to the Objects API.
-
         context = {
             "_submission": submission,
             "productaanvraag_type": options["productaanvraag_type"],
@@ -152,28 +148,18 @@ class ObjectsAPIRegistration(BasePlugin):
             },
         }
 
-        record_data = render_to_json(options["content_json"], context)
-
-        object_data = {
-            "type": options["objecttype"],
-            "record": {
-                "typeVersion": options["objecttype_version"],
-                "data": record_data,
-                "startAt": get_today(),
-            },
-        }
-        apply_data_mapping(
-            submission, self.object_mapping, REGISTRATION_ATTRIBUTE, object_data
+        object_data = prepare_data_for_registration(
+            submission, context, options, self.object_mapping
         )
 
-        # Finally, send it over the wire to the Objects API
         with get_objects_client() as objects_client:
-            response = objects_client.post(
-                "objects", json=object_data, headers={"Content-Crs": "EPSG:4326"}
+            response = execute_unless_result_exists(
+                partial(objects_client.create_object, object_data=object_data),
+                submission,
+                "intermediate.objects_api_object",
             )
-            response.raise_for_status()
 
-        return response.json()
+        return response
 
     def get_reference_from_result(self, result: None) -> NoReturn:
         raise NoSubmissionReference("Object API plugin does not emit a reference")

@@ -1,5 +1,8 @@
 import json
+import textwrap
+from datetime import date
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.test import TestCase, override_settings, tag
 
@@ -8,9 +11,11 @@ from freezegun import freeze_time
 from furl import furl
 from glom import glom
 from privates.test import temp_private_root
+from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tasks import pre_registration
@@ -18,6 +23,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed
@@ -1443,6 +1449,245 @@ class ZGWBackendTests(TestCase):
         self.assertIn("bestandsomvang", attachment_data)
         self.assertEqual(attachment_data["bestandsomvang"], 7)
 
+    @patch(
+        "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo"
+    )
+    def test_submission_with_zgw_and_objects_api_backends(self, m, obj_api_config):
+        config = ObjectsAPIConfig(
+            objects_service=ServiceFactory.build(
+                api_root="https://objecten.nl/api/v1/",
+                api_type=APITypes.orc,
+            ),
+            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
+            objecttype_version=1,
+            organisatie_rsin="000000000",
+            content_json=textwrap.dedent(
+                """
+                {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": "{{ submission.kenmerk }}"
+                    },
+                    "type": "{{ productaanvraag_type }}",
+                    "aanvraaggegevens": {% json_summary %},
+                    "taal": "{{ submission.language_code  }}",
+                    "betrokkenen": [
+                        {
+                            "inpBsn" : "{{ variables.auth_bsn }}",
+                            "rolOmschrijvingGeneriek" : "initiator"
+                        }
+                    ],
+                }"""
+            ),
+        )
+
+        def get_create_json_for_object(req, ctx):
+            request_body = req.json()
+            return {
+                "url": "https://objecten.nl/api/v1/objects/1",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "type": request_body["type"],
+                "record": {
+                    "index": 0,
+                    **request_body["record"],
+                    "endAt": None,
+                    "registrationAt": date.today().isoformat(),
+                    "correctionFor": 0,
+                    "correctedBy": "",
+                },
+            }
+
+        def get_create_json_for_zaakobject(req, ctx):
+            request_body = req.json()
+            return {
+                "url": "https://zaken.nl/api/v1/zaakobjecten/2c556247-aaa2-48d5-a94c-0aa72c78323a",
+                "uuid": "2c556247-aaa2-48d5-a94c-0aa72c78323a",
+                "zaak": request_body["zaak"],
+                "object": request_body["object"],
+                "zaakobjecttype": None,
+                "objectType": "overige",
+                "objectTypeOverige": "",
+                "objectTypeOverigeDefinitie": {
+                    "url": request_body["objectTypeOverigeDefinitie"]["url"],
+                    "schema": ".jsonSchema",
+                    "objectData": ".record.data",
+                },
+                "relatieomschrijving": "",
+                "objectIdentificatie": None,
+            }
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=get_create_json_for_object,
+        )
+        m.post(
+            "https://zaken.nl/api/v1/zaakobjecten",
+            status_code=201,
+            json=get_create_json_for_zaakobject,
+        )
+
+        obj_api_config.return_value = config
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voorletters",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voorletters,
+                    },
+                },
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "geslachtsaanduiding",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "postcode": "1000 AA",
+                "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "voorletters": "J.W.",
+                "geslachtsaanduiding": "mannelijk",
+            },
+            bsn="111222333",
+            language_code="en",
+            form_definition_kwargs={"slug": "test"},
+        )
+        zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
+            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
+            objecttype_version=1,
+        )
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
+        result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
+        self.assertEqual(
+            result["document"]["url"],
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+        self.assertEqual(result["rol"]["url"], "https://zaken.nl/api/v1/rollen/1")
+        self.assertEqual(result["status"]["url"], "https://zaken.nl/api/v1/statussen/1")
+        self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
+        self.assertEqual(
+            result["zaak"]["zaaktype"], "https://catalogi.nl/api/v1/zaaktypen/1"
+        )
+        self.assertEqual(
+            result["objects_api_object"],
+            {
+                "url": "https://objecten.nl/api/v1/objects/1",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "type": "https://objecttypen.nl/api/v1/objecttypes/2",
+                "record": {
+                    "index": 0,
+                    "typeVersion": 1,
+                    "data": {
+                        "data": {
+                            "test": {
+                                "voorletters": "J.W.",
+                                "voornaam": "Foo",
+                                "achternaam": "Bar",
+                                "tussenvoegsel": "de",
+                                "geboortedatum": "2000-12-31",
+                                "geslachtsaanduiding": "mannelijk",
+                                "postcode": "1000 AA",
+                                "coordinaat": [52.36673378967122, 4.893164274470299],
+                            }
+                        },
+                        "type": "ProductAanvraag",
+                        "bsn": "111222333",
+                        "submission_id": str(submission.uuid),
+                        "language_code": "en",
+                    },
+                    "startAt": date.today().isoformat(),
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [52.36673378967122, 4.893164274470299],
+                    },
+                    "endAt": None,
+                    "registrationAt": date.today().isoformat(),
+                    "correctionFor": 0,
+                    "correctedBy": "",
+                },
+            },
+        )
+        self.assertEqual(
+            result["zaakobject"],
+            {
+                "url": "https://zaken.nl/api/v1/zaakobjecten/2c556247-aaa2-48d5-a94c-0aa72c78323a",
+                "uuid": "2c556247-aaa2-48d5-a94c-0aa72c78323a",
+                "zaak": "https://zaken.nl/api/v1/zaken/1",
+                "object": "https://objecten.nl/api/v1/objects/1",
+                "zaakobjecttype": None,
+                "objectType": "overige",
+                "objectTypeOverige": "",
+                "objectTypeOverigeDefinitie": {
+                    "url": "https://objecttypen.nl/api/v1/objecttypes/2/versions/1",
+                    "schema": ".jsonSchema",
+                    "objectData": ".record.data",
+                },
+                "relatieomschrijving": "",
+                "objectIdentificatie": None,
+            },
+        )
+
 
 @tag("gh-1183")
 @temp_private_root()
@@ -1805,3 +2050,280 @@ class PartialRegistrationFailureTests(TestCase):
                 relate_attachment_document_attempt2.url,
                 "https://zaken.nl/api/v1/zaakinformatieobjecten",
             )
+
+
+@temp_private_root()
+@requests_mock.Mocker()
+class ObjectsAPIPartialRegistrationFailureTests(TestCase):
+    @patch(
+        "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo"
+    )
+    def test_failure_after_object_creation(self, m, obj_api_config):
+        config = ObjectsAPIConfig(
+            objects_service=ServiceFactory.build(
+                api_root="https://objecten.nl/api/v1/",
+                api_type=APITypes.orc,
+            ),
+            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
+            objecttype_version=1,
+            organisatie_rsin="000000000",
+            content_json=textwrap.dedent(
+                """
+                {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": "{{ submission.kenmerk }}"
+                    },
+                    "type": "{{ productaanvraag_type }}",
+                    "aanvraaggegevens": {% json_summary %},
+                    "taal": "{{ submission.language_code  }}",
+                    "betrokkenen": [
+                        {
+                            "inpBsn" : "{{ variables.auth_bsn }}",
+                            "rolOmschrijvingGeneriek" : "initiator"
+                        }
+                    ],
+                }"""
+            ),
+        )
+        zgw_api_group = ZGWApiGroupConfigFactory.create(
+            zrc_service__api_root="https://zaken.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
+            ztc_service__api_root="https://catalogus.nl/api/v1/",
+        )
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voorletters",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voorletters,
+                    },
+                },
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "geslachtsaanduiding",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "postcode": "1000 AA",
+                "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "voorletters": "J.W.",
+                "geslachtsaanduiding": "mannelijk",
+            },
+            bsn="111222333",
+            language_code="en",
+            completed_not_preregistered=True,
+            form_definition_kwargs={"slug": "test1"},
+            form__name="my-form",
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zgw_api_group": zgw_api_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "organisatie_rsin": "000000000",
+                "vertrouwelijkheidaanduiding": "openbaar",
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2",
+                "objecttype_version": 1,
+            },
+        )
+
+        obj_api_config.return_value = config
+
+        def get_create_json_for_object(req, ctx):
+            request_body = req.json()
+            return {
+                "url": "https://objecten.nl/api/v1/objects/1",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "type": request_body["type"],
+                "record": {
+                    "index": 0,
+                    **request_body["record"],
+                    "endAt": None,
+                    "registrationAt": date.today().isoformat(),
+                    "correctionFor": 0,
+                    "correctedBy": "",
+                },
+            }
+
+        m.post(
+            "https://zaken.nl/api/v1/zaken",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken",
+                "schemas/Zaak",
+                url="https://zaken.nl/api/v1/zaken/1",
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            ),
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            [
+                # two calls on same URL: one PDF and one attachment
+                {
+                    "json": generate_oas_component(
+                        "documenten",
+                        "schemas/EnkelvoudigInformatieObject",
+                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                    ),
+                    "status_code": 201,
+                },
+                {
+                    "json": generate_oas_component(
+                        "documenten",
+                        "schemas/EnkelvoudigInformatieObject",
+                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+                    ),
+                    "status_code": 201,
+                },
+            ],
+        )
+        m.post(
+            "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            [
+                # two calls on same URL: one PDF and one attachment
+                {
+                    "json": generate_oas_component(
+                        "zaken",
+                        "schemas/ZaakInformatieObject",
+                        url="https://zaken.nl/api/v1/zaakinformatieobjecten/1",
+                    ),
+                    "status_code": 201,
+                },
+                {
+                    "json": generate_oas_component(
+                        "zaken",
+                        "schemas/ZaakInformatieObject",
+                        url="https://zaken.nl/api/v1/zaakinformatieobjecten/2",
+                    ),
+                    "status_code": 201,
+                },
+            ],
+        )
+        m.get(
+            "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
+            status_code=200,
+            json={
+                "count": 1,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/RolType",
+                        url="https://catalogus.nl/api/v1/roltypen/1",
+                    )
+                ],
+            },
+        )
+        m.post(
+            "https://zaken.nl/api/v1/rollen",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken", "schemas/Rol", url="https://zaken.nl/api/v1/rollen/1"
+            ),
+        )
+        m.get(
+            "https://catalogus.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            status_code=200,
+            json={
+                "count": 2,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/StatusType",
+                        url="https://catalogus.nl/api/v1/statustypen/2",
+                        volgnummer=2,
+                    ),
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/StatusType",
+                        url="https://catalogus.nl/api/v1/statustypen/1",
+                        volgnummer=1,
+                    ),
+                ],
+            },
+        )
+        m.post(
+            "https://zaken.nl/api/v1/statussen",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken", "schemas/Status", url="https://zaken.nl/api/v1/statussen/1"
+            ),
+        )
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=get_create_json_for_object,
+        )
+        m.post(
+            "https://zaken.nl/api/v1/zaakobjecten",
+            status_code=500,
+            json={"type": "Server error"},
+        )
+
+        pre_registration(submission.id, PostSubmissionEvents.on_completion)
+        register_submission(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        assert submission.registration_result
+
+        self.assertEqual(submission.registration_status, RegistrationStatuses.failed)
+
+        intermediate_results = submission.registration_result["intermediate"]
+
+        object = glom(intermediate_results, "objects_api_object")
+
+        self.assertEqual(object["url"], "https://objecten.nl/api/v1/objects/1")
+        self.assertIn("traceback", submission.registration_result)

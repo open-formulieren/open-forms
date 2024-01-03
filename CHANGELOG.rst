@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.5.0 (Pending)
+==========================
+
+**New features**
+
+* [#3601] We have added the ability to relate the created zaak (ZGW APIs) with the created object (Objects API).
+  This is achieved by setting up ZGW in combination with Objects API in the form registrations settings (see registration/zgw docs).
+
+  ⚠️ Ensure that the issue (#355) concerning the Objects API concerning json schema validation has been resolved.
+
 2.1.11 (2023-12-28)
 ===================
 
