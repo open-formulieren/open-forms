@@ -1,12 +1,26 @@
-from openforms.contrib.objects_api.rendering import render_to_json
-from openforms.contrib.zgw.clients.utils import get_today
+from typing import TypedDict
+
+from openforms.contrib.zgw.clients.utils import (  # TODO: should be moved somewhere more generic?
+    get_today,
+)
 from openforms.registrations.constants import REGISTRATION_ATTRIBUTE
-from openforms.submissions.mapping import apply_data_mapping
+from openforms.submissions.mapping import MappingConfig, apply_data_mapping
 from openforms.submissions.models import Submission
+
+from .rendering import render_to_json
+
+
+class PrepareOptions(TypedDict):
+    content_json: str  # Django template syntax
+    objecttype: str  # URL to the objecttype in the Objecttypes API
+    objecttype_version: int
 
 
 def prepare_data_for_registration(
-    submission: Submission, context: dict, options: dict, object_mapping: dict
+    submission: Submission,
+    context: dict,
+    options: PrepareOptions,
+    object_mapping: MappingConfig,
 ) -> dict:
     # Prepare the submission data for sending it to the Objects API. This requires
     # rendering the configured JSON template and running some basic checks for
