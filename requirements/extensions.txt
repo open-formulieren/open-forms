@@ -140,6 +140,7 @@ django==3.2.23
     #   django-filter
     #   django-formtools
     #   django-hijack
+    #   django-jsonform
     #   django-log-outgoing-requests
     #   django-modeltranslation
     #   django-otp
@@ -242,6 +243,10 @@ django-ipware==5.0.0
     # via
     #   -r requirements/base.txt
     #   django-axes
+django-jsonform==2.21.2
+    # via
+    #   -c requirements/base.in
+    #   -r requirements/base.txt
 django-log-outgoing-requests==0.6.0
     # via
     #   -c requirements/base.in

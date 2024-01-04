@@ -201,6 +201,7 @@ django==3.2.23
     #   django-formtools
     #   django-hijack
     #   django-jenkins
+    #   django-jsonform
     #   django-log-outgoing-requests
     #   django-modeltranslation
     #   django-otp
@@ -311,6 +312,10 @@ django-ipware==5.0.0
     #   -r requirements/ci.txt
     #   django-axes
 django-jenkins==0.110.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+django-jsonform==2.21.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
