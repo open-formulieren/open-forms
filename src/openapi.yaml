@@ -889,7 +889,6 @@ paths:
         schema:
           type: string
           format: uuid
-        description: UUID of the form the definition is used in.
       tags:
       - forms
       - form-definitions
@@ -3673,7 +3672,15 @@ paths:
           type: string
           title: Registration backend ID
           minLength: 1
-        description: The ID of the registration backend to use.
+        description: |-
+          The ID of the registration backend to use.
+
+          * `zgw-create-zaak` - ZGW API's
+          * `email` - Email registration
+          * `stuf-zds-create-zaak` - StUF-ZDS
+          * `objects_api` - Objects API registration
+          * `microsoft-graph` - Microsoft Graph (OneDrive/SharePoint)
+          * `camunda` - Camunda
       - in: query
         name: zgw_api_group
         schema:
@@ -6228,11 +6235,25 @@ components:
       - vrc
       - orc
       type: string
+      description: |-
+        * `ac` - AC (Authorizations)
+        * `nrc` - NRC (Notifications)
+        * `zrc` - ZRC (Zaken)
+        * `ztc` - ZTC (Zaaktypen)
+        * `drc` - DRC (Informatieobjecten)
+        * `brc` - BRC (Besluiten)
+        * `cmc` - Contactmomenten API
+        * `kc` - Klanten API
+        * `vrc` - Verzoeken API
+        * `orc` - ORC (Overige)
     AppearanceEnum:
       enum:
       - dark
       - light
       type: string
+      description: |-
+        * `dark` - Dark
+        * `light` - Light
     Appointment:
       type: object
       properties:
@@ -6258,8 +6279,6 @@ components:
           title: Appointment time
           description: Date and time of the appointment
         contactDetails:
-          type: object
-          additionalProperties: {}
           description: Additional contact detail field values.
         privacyPolicyAccepted:
           type: boolean
@@ -6352,11 +6371,23 @@ components:
       - eherkenning_bewindvoering_oidc
       - org-oidc
       type: string
+      description: |-
+        * `digid` - DigiD
+        * `eherkenning` - eHerkenning
+        * `eidas` - eIDAS
+        * `digid_oidc` - DigiD
+        * `eherkenning_oidc` - eHerkenning
+        * `digid_machtigen_oidc` - DigiD Machtigen
+        * `eherkenning_bewindvoering_oidc` - eHerkenning bewindvoering
+        * `org-oidc` - OpenID Connect
     AvailableLanguagesEnum:
       enum:
       - nl
       - en
       type: string
+      description: |-
+        * `nl` - Dutch
+        * `en` - English
     BlankEnum:
       enum:
       - ''
@@ -6451,7 +6482,11 @@ components:
         type:
           allOf:
           - $ref: '#/components/schemas/ComponentPropertyTypeEnum'
-          description: The type of the value field
+          description: |-
+            The type of the value field
+
+            * `bool` - Boolean
+            * `json` - JSON
       required:
       - type
       - value
@@ -6460,6 +6495,9 @@ components:
       - bool
       - json
       type: string
+      description: |-
+        * `bool` - Boolean
+        * `json` - JSON
     ComponentTranslations:
       type: object
       description: |-
@@ -6619,6 +6657,9 @@ components:
       - JsonLogic
       - jq
       type: string
+      description: |-
+        * `JsonLogic` - JsonLogic
+        * `jq` - jq
     DataTypeEnum:
       enum:
       - string
@@ -6631,6 +6672,16 @@ components:
       - time
       - date
       type: string
+      description: |-
+        * `string` - String
+        * `boolean` - Boolean
+        * `object` - Object
+        * `array` - Array
+        * `int` - Integer
+        * `float` - Float
+        * `datetime` - Datetime
+        * `time` - Time
+        * `date` - Date
     Date:
       type: object
       properties:
@@ -6776,8 +6827,6 @@ components:
           type: string
           deprecated: true
         registrationBackendOptions:
-          type: object
-          additionalProperties: {}
           nullable: true
           deprecated: true
         authenticationBackends:
@@ -6807,8 +6856,6 @@ components:
           - $ref: '#/components/schemas/PaymentBackendEnum'
           - $ref: '#/components/schemas/BlankEnum'
         paymentBackendOptions:
-          type: object
-          additionalProperties: {}
           nullable: true
         paymentOptions:
           type: array
@@ -6883,21 +6930,33 @@ components:
         submissionAllowed:
           allOf:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
-          description: Whether the user is allowed to submit this form or not, and
-            whether the overview page should be shown if they are not.
+          description: |-
+            Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.
+
+            * `yes` - Yes
+            * `no_with_overview` - No (with overview page)
+            * `no_without_overview` - No (without overview page)
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.
         askPrivacyConsent:
           allOf:
           - $ref: '#/components/schemas/StatementCheckboxEnum'
-          description: If enabled, the user will have to agree to the privacy policy
-            before submitting a form.
+          description: |-
+            If enabled, the user will have to agree to the privacy policy before submitting a form.
+
+            * `global_setting` - Global setting
+            * `required` - Required
+            * `disabled` - Disabled
         askStatementOfTruth:
           allOf:
           - $ref: '#/components/schemas/StatementCheckboxEnum'
-          description: If enabled, the user will have to agree that they filled out
-            the form truthfully before submitting it.
+          description: |-
+            If enabled, the user will have to agree that they filled out the form truthfully before submitting it.
+
+            * `global_setting` - Global setting
+            * `required` - Required
+            * `disabled` - Disabled
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -6985,8 +7044,12 @@ components:
         submitAction:
           allOf:
           - $ref: '#/components/schemas/SubmitActionEnum'
-          description: Which submit action was clicked. This determines the success
-            message todisplay.
+          description: |-
+            Which submit action was clicked. This determines the success message todisplay.
+
+            * `_save` - Save
+            * `_addanother` - Save and add another
+            * `_continue` - Save and continue editing
         isCreate:
           type: boolean
           description: Whether the submit action was a create operation or update.
@@ -7004,8 +7067,6 @@ components:
       type: object
       properties:
         data:
-          type: object
-          additionalProperties: {}
           title: form data
           description: The Form.io submission data object. This will be merged with
             the full form submission data, including data from other steps, to evaluate
@@ -7033,8 +7094,6 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
           deprecated: true
         configuration:
-          type: object
-          additionalProperties: {}
           title: Form.io configuration
           description: The form definition as Form.io JSON schema
         loginRequired:
@@ -7076,8 +7135,6 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
           deprecated: true
         configuration:
-          type: object
-          additionalProperties: {}
           title: Form.io configuration
           description: The form definition as Form.io JSON schema
         loginRequired:
@@ -7295,8 +7352,6 @@ components:
           format: uri
           description: Form to which the JSON logic applies.
         jsonLogicTrigger:
-          type: object
-          additionalProperties: {}
           title: JSON logic
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
@@ -7441,8 +7496,6 @@ components:
           format: uri
           description: Form to which the pricing JSON logic applies.
         jsonLogicTrigger:
-          type: object
-          additionalProperties: {}
           title: JSON logic
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
@@ -7473,8 +7526,6 @@ components:
           title: Registration backend
           maxLength: 100
         options:
-          type: object
-          additionalProperties: {}
           title: Registration backend options
       required:
       - backend
@@ -7495,8 +7546,6 @@ components:
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
         configuration:
-          type: object
-          additionalProperties: {}
           readOnly: true
         formDefinition:
           type: string
@@ -7650,8 +7699,11 @@ components:
         source:
           allOf:
           - $ref: '#/components/schemas/SourceEnum'
-          description: Where will the data that will be associated with this variable
-            come from
+          description: |-
+            Where will the data that will be associated with this variable come from
+
+            * `component` - Component
+            * `user_defined` - User defined
         serviceFetchConfiguration:
           allOf:
           - $ref: '#/components/schemas/ServiceFetchConfiguration'
@@ -7668,14 +7720,26 @@ components:
         prefillIdentifierRole:
           allOf:
           - $ref: '#/components/schemas/PrefillIdentifierRoleEnum'
-          description: In case that multiple identifiers are returned (in the case
-            of eHerkenning bewindvoering and DigiD Machtigen), should the prefill
-            data related to the main identifier be used, or that related to the authorised
-            person?
+          description: |-
+            In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?
+
+            * `main` - Main
+            * `authorised_person` - Authorised person
         dataType:
           allOf:
           - $ref: '#/components/schemas/DataTypeEnum'
-          description: The type of the value that will be associated with this variable
+          description: |-
+            The type of the value that will be associated with this variable
+
+            * `string` - String
+            * `boolean` - Boolean
+            * `object` - Object
+            * `array` - Array
+            * `int` - Integer
+            * `float` - Float
+            * `datetime` - Datetime
+            * `time` - Time
+            * `date` - Date
         dataFormat:
           type: string
           description: The format of the value that will be associated with this variable
@@ -7684,8 +7748,6 @@ components:
           type: boolean
           description: Will this variable be associated with sensitive data?
         initialValue:
-          type: object
-          additionalProperties: {}
           nullable: true
           description: The initial value for this field
       required:
@@ -7749,6 +7811,9 @@ components:
       - delete_permanently
       - make_anonymous
       type: string
+      description: |-
+        * `delete_permanently` - Submissions will be deleted
+        * `make_anonymous` - Sensitive data within the submissions will be deleted
     InformatieObjectType:
       type: object
       properties:
@@ -7775,7 +7840,11 @@ components:
         code:
           allOf:
           - $ref: '#/components/schemas/AvailableLanguagesEnum'
-          description: RFC5646 language tag, e.g. `en` or `en-us`
+          description: |-
+            RFC5646 language tag, e.g. `en` or `en-us`
+
+            * `nl` - Dutch
+            * `en` - English
         name:
           type: string
           description: Language name in its local representation. e.g. "fy" = "frysk",
@@ -7789,7 +7858,11 @@ components:
         code:
           allOf:
           - $ref: '#/components/schemas/AvailableLanguagesEnum'
-          description: RFC5646 language tag, e.g. `en` or `en-us`
+          description: |-
+            RFC5646 language tag, e.g. `en` or `en-us`
+
+            * `nl` - Dutch
+            * `en` - English
       required:
       - code
     LanguageInfo:
@@ -7804,7 +7877,11 @@ components:
         current:
           allOf:
           - $ref: '#/components/schemas/AvailableLanguagesEnum'
-          description: RFC5646 language tag, e.g. `en` or `en-us`
+          description: |-
+            RFC5646 language tag, e.g. `en` or `en-us`
+
+            * `nl` - Dutch
+            * `en` - English
       required:
       - current
       - languages
@@ -7903,7 +7980,16 @@ components:
         type:
           allOf:
           - $ref: '#/components/schemas/LogicActionPolymorphicSharedTypeEnum'
-          description: Action type for this particular action.
+          description: |-
+            Action type for this particular action.
+
+            * `step-not-applicable` - Mark the form step as not-applicable
+            * `step-applicable` - Mark the form step as applicable
+            * `disable-next` - Disable the next step
+            * `property` - Modify a component property
+            * `variable` - Set the value of a variable
+            * `fetch-from-service` - Fetch the value from a service
+            * `set-registration-backend` - Set the registration backend to use for the submission
       required:
       - type
     LogicActionPolymorphicSharedTypeEnum:
@@ -7916,6 +8002,14 @@ components:
       - fetch-from-service
       - set-registration-backend
       type: string
+      description: |-
+        * `step-not-applicable` - Mark the form step as not-applicable
+        * `step-applicable` - Mark the form step as applicable
+        * `disable-next` - Disable the next step
+        * `property` - Modify a component property
+        * `variable` - Set the value of a variable
+        * `fetch-from-service` - Fetch the value from a service
+        * `set-registration-backend` - Set the registration backend to use for the submission
     LogicComponentAction:
       type: object
       properties:
@@ -7952,8 +8046,6 @@ components:
       type: object
       properties:
         expression:
-          type: object
-          additionalProperties: {}
           writeOnly: true
           title: JsonLogic expression
         description:
@@ -7968,8 +8060,6 @@ components:
       type: object
       properties:
         value:
-          type: object
-          additionalProperties: {}
           title: service_fetch_configuration
       required:
       - value
@@ -7979,8 +8069,6 @@ components:
         property:
           $ref: '#/components/schemas/ComponentProperty'
         state:
-          type: object
-          additionalProperties: {}
           title: value of the property
           description: 'Valid JSON determining the new value of the specified property.
             For example: `true` or `false`.'
@@ -7999,8 +8087,6 @@ components:
       type: object
       properties:
         value:
-          type: object
-          additionalProperties: {}
           description: A valid JsonLogic expression describing the value. This may
             refer to (other) Form.io components.
       required:
@@ -8029,7 +8115,11 @@ components:
           - $ref: '#/components/schemas/AppearanceEnum'
           readOnly: true
           title: Login logo appearance
-          description: The appearance of the login logo (dark/light)
+          description: |-
+            The appearance of the login logo (dark/light)
+
+            * `dark` - Dark
+            * `light` - Light
       required:
       - appearance
       - href
@@ -8075,6 +8165,9 @@ components:
       - GET
       - POST
       type: string
+      description: |-
+        * `GET` - GET
+        * `POST` - POST
     MinimalFormStep:
       type: object
       properties:
@@ -8267,8 +8360,6 @@ components:
           type: string
           deprecated: true
         registrationBackendOptions:
-          type: object
-          additionalProperties: {}
           nullable: true
           deprecated: true
         authenticationBackends:
@@ -8298,8 +8389,6 @@ components:
           - $ref: '#/components/schemas/PaymentBackendEnum'
           - $ref: '#/components/schemas/BlankEnum'
         paymentBackendOptions:
-          type: object
-          additionalProperties: {}
           nullable: true
         paymentOptions:
           type: array
@@ -8374,21 +8463,33 @@ components:
         submissionAllowed:
           allOf:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
-          description: Whether the user is allowed to submit this form or not, and
-            whether the overview page should be shown if they are not.
+          description: |-
+            Whether the user is allowed to submit this form or not, and whether the overview page should be shown if they are not.
+
+            * `yes` - Yes
+            * `no_with_overview` - No (with overview page)
+            * `no_without_overview` - No (without overview page)
         suspensionAllowed:
           type: boolean
           description: Whether the user is allowed to suspend this form or not.
         askPrivacyConsent:
           allOf:
           - $ref: '#/components/schemas/StatementCheckboxEnum'
-          description: If enabled, the user will have to agree to the privacy policy
-            before submitting a form.
+          description: |-
+            If enabled, the user will have to agree to the privacy policy before submitting a form.
+
+            * `global_setting` - Global setting
+            * `required` - Required
+            * `disabled` - Disabled
         askStatementOfTruth:
           allOf:
           - $ref: '#/components/schemas/StatementCheckboxEnum'
-          description: If enabled, the user will have to agree that they filled out
-            the form truthfully before submitting it.
+          description: |-
+            If enabled, the user will have to agree that they filled out the form truthfully before submitting it.
+
+            * `global_setting` - Global setting
+            * `required` - Required
+            * `disabled` - Disabled
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -8476,8 +8577,6 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
           deprecated: true
         configuration:
-          type: object
-          additionalProperties: {}
           title: Form.io configuration
           description: The form definition as Form.io JSON schema
         loginRequired:
@@ -8507,8 +8606,6 @@ components:
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
         configuration:
-          type: object
-          additionalProperties: {}
           readOnly: true
         formDefinition:
           type: string
@@ -8544,6 +8641,7 @@ components:
       enum:
       - ogone-legacy
       type: string
+      description: "* `` - \n* `ogone-legacy` - Ogone legacy"
     PaymentInfo:
       type: object
       properties:
@@ -8572,6 +8670,9 @@ components:
       - get
       - post
       type: string
+      description: |-
+        * `get` - Get
+        * `post` - Post
     PaymentOption:
       type: object
       properties:
@@ -8597,8 +8698,6 @@ components:
           type: string
           description: The human-readable name for a plugin.
         schema:
-          type: object
-          additionalProperties: {}
           title: JSON schema
           description: The generated JSON schema for the plugin options.
       required:
@@ -8622,6 +8721,9 @@ components:
       - main
       - authorised_person
       type: string
+      description: |-
+        * `main` - Main
+        * `authorised_person` - Authorised person
     PrefillPlugin:
       type: object
       properties:
@@ -8724,8 +8826,6 @@ components:
           type: string
           description: The human-readable name for a plugin.
         schema:
-          type: object
-          additionalProperties: {}
           title: JSON schema
           description: The generated JSON schema for the plugin options.
       required:
@@ -8737,6 +8837,9 @@ components:
       - failed
       - success
       type: string
+      description: |-
+        * `failed` - Failed, should return to the start of the form.
+        * `success` - Success, proceed to confirmation page.
     RijksDriehoek:
       type: object
       properties:
@@ -8794,20 +8897,18 @@ components:
           allOf:
           - $ref: '#/components/schemas/MethodEnum'
           title: HTTP method
-          description: POST is allowed, but should not be used to mutate data
+          description: |-
+            POST is allowed, but should not be used to mutate data
+
+            * `GET` - GET
+            * `POST` - POST
         headers:
-          type: object
-          additionalProperties: {}
           title: HTTP request headers
           description: Additions and overrides for the HTTP request headers as defined
             in the Service.
         queryParams:
-          type: object
-          additionalProperties: {}
           title: HTTP query string
         body:
-          type: object
-          additionalProperties: {}
           nullable: true
           title: HTTP request body
           description: Request body for POST requests (only "application/json" is
@@ -8818,8 +8919,6 @@ components:
           - $ref: '#/components/schemas/DataMappingTypeEnum'
           - $ref: '#/components/schemas/BlankEnum'
         mappingExpression:
-          type: object
-          additionalProperties: {}
           nullable: true
           description: For jq, pass a string containing the filter expression
         cacheTimeout:
@@ -8839,17 +8938,27 @@ components:
       - component
       - user_defined
       type: string
+      description: |-
+        * `component` - Component
+        * `user_defined` - User defined
     StatementCheckboxEnum:
       enum:
       - global_setting
       - required
       - disabled
       type: string
+      description: |-
+        * `global_setting` - Global setting
+        * `required` - Required
+        * `disabled` - Disabled
     StatusEnum:
       enum:
       - in_progress
       - done
       type: string
+      description: |-
+        * `in_progress` - In progress
+        * `done` - Done
     Submission:
       type: object
       properties:
@@ -8877,8 +8986,12 @@ components:
           allOf:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
           readOnly: true
-          description: Whether the user is allowed to submit this form and whether
-            the user should see the overview page.
+          description: |-
+            Whether the user is allowed to submit this form and whether the user should see the overview page.
+
+            * `yes` - Yes
+            * `no_with_overview` - No (with overview page)
+            * `no_without_overview` - No (without overview page)
         isAuthenticated:
           type: boolean
           readOnly: true
@@ -8908,6 +9021,10 @@ components:
       - no_with_overview
       - no_without_overview
       type: string
+      description: |-
+        * `yes` - Yes
+        * `no_with_overview` - No (with overview page)
+        * `no_without_overview` - No (without overview page)
     SubmissionCoSignStatus:
       type: object
       properties:
@@ -8945,12 +9062,8 @@ components:
           type: string
           description: Display name of the component.
         value:
-          type: object
-          additionalProperties: {}
           description: Raw value of the component.
         component:
-          type: object
-          additionalProperties: {}
           description: Configuration of the component.
       required:
       - component
@@ -8964,13 +9077,18 @@ components:
           - $ref: '#/components/schemas/StatusEnum'
           default: in_progress
           title: background processing status
-          description: The async task state, managed by the async task queue. Once
-            the status is `done`, check the `result` field for the outcome.
+          description: |-
+            The async task state, managed by the async task queue. Once the status is `done`, check the `result` field for the outcome.
+
+            * `in_progress` - In progress
+            * `done` - Done
         result:
           title: background processing result
-          description: The result from the background processing. This field only
-            has a value if the processing has completed (both successfully or with
-            errors).
+          description: |-
+            The result from the background processing. This field only has a value if the processing has completed (both successfully or with errors).
+
+            * `failed` - Failed, should return to the start of the form.
+            * `success` - Success, proceed to confirmation page.
           oneOf:
           - $ref: '#/components/schemas/ResultEnum'
           - $ref: '#/components/schemas/BlankEnum'
@@ -9049,8 +9167,6 @@ components:
           - $ref: '#/components/schemas/ContextAwareFormStep'
           readOnly: true
         data:
-          type: object
-          additionalProperties: {}
           nullable: true
         isApplicable:
           type: boolean
@@ -9116,8 +9232,11 @@ components:
           description: Amount of days successful submissions of this form will remain
             before being removed. Leave blank to use value in General Configuration.
         successfulSubmissionsRemovalMethod:
-          description: How successful submissions of this form will be removed after
-            the limit. Leave blank to use value in General Configuration.
+          description: |-
+            How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.
+
+            * `delete_permanently` - Submissions will be deleted
+            * `make_anonymous` - Sensitive data within the submissions will be deleted
           oneOf:
           - $ref: '#/components/schemas/IncompleteSubmissionsRemovalMethodEnum'
           - $ref: '#/components/schemas/BlankEnum'
@@ -9130,8 +9249,11 @@ components:
           description: Amount of days incomplete submissions of this form will remain
             before being removed. Leave blank to use value in General Configuration.
         incompleteSubmissionsRemovalMethod:
-          description: How incomplete submissions of this form will be removed after
-            the limit. Leave blank to use value in General Configuration.
+          description: |-
+            How incomplete submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.
+
+            * `delete_permanently` - Submissions will be deleted
+            * `make_anonymous` - Sensitive data within the submissions will be deleted
           oneOf:
           - $ref: '#/components/schemas/IncompleteSubmissionsRemovalMethodEnum'
           - $ref: '#/components/schemas/BlankEnum'
@@ -9145,8 +9267,11 @@ components:
             before being removed. Leave blank to use value in General Configuration.
         erroredSubmissionsRemovalMethod:
           title: Errored submission removal limit
-          description: How errored submissions of this form will be removed after
-            the limit. Leave blank to use value in General Configuration.
+          description: |-
+            How errored submissions of this form will be removed after the limit. Leave blank to use value in General Configuration.
+
+            * `delete_permanently` - Submissions will be deleted
+            * `make_anonymous` - Sensitive data within the submissions will be deleted
           oneOf:
           - $ref: '#/components/schemas/IncompleteSubmissionsRemovalMethodEnum'
           - $ref: '#/components/schemas/BlankEnum'
@@ -9163,6 +9288,10 @@ components:
       - _addanother
       - _continue
       type: string
+      description: |-
+        * `_save` - Save
+        * `_addanother` - Save and add another
+        * `_continue` - Save and continue editing
     TemporaryFileUpload:
       type: object
       description: |-
