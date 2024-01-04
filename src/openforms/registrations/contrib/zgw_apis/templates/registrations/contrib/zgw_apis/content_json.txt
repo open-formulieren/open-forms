@@ -1,0 +1,12 @@
+{% load capture_tags %}
+{% capture as tt_openblock silent %}{% templatetag openblock %}{% endcapture %}
+{% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+{
+  "data": {{ tt_openblock }} json_summary {{ tt_closeblock }},
+  "type": "{{ tt_openvariable }} productaanvraag_type {{ tt_closevariable }}",
+  "bsn": "{{ tt_openvariable }} variables.auth_bsn {{ tt_closevariable }}",
+  "submission_id": "{{ tt_openvariable }} submission.kenmerk {{ tt_closevariable }}",
+  "language_code": "{{ tt_openvariable }} submission.language_code {{ tt_closevariable }}"
+}

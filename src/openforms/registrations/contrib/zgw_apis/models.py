@@ -1,12 +1,18 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.constants import APITypes
 
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.validators import validate_rsin
+
+
+def get_content_text() -> str:
+    return render_to_string("registrations/contrib/zgw_apis/content_json.txt").strip()
 
 
 class ZgwConfig(SingletonModel):
@@ -103,6 +109,21 @@ class ZGWApiGroupConfig(models.Model):
         default="Aanvrager",
     )
 
+    # Objects API
+    content_json = models.TextField(
+        _("objects API - JSON content template"),
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+        ],
+        blank=True,
+        default=get_content_text,
+        help_text=_(
+            "This template is evaluated with the submission data and the resulting JSON is sent to the objects API."
+        ),
+    )
+
     class Meta:
         verbose_name = _("ZGW API set")
         verbose_name_plural = _("ZGW API sets")
@@ -141,3 +162,7 @@ class ZGWApiGroupConfig(models.Model):
             self.doc_vertrouwelijkheidaanduiding,
         )
         options.setdefault("auteur", self.auteur)
+
+        # Objects API
+        if not options.get("content_json", "").strip():
+            options["content_json"] = self.content_json

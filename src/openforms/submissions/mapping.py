@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Any, Callable, Mapping, Optional, Union
+from typing import Any, Callable, Mapping, Optional, TypeAlias, Union
 
 from glom import Assign, glom
 
@@ -34,9 +34,12 @@ class FieldConf:
         assert self.attribute or self.form_field or self.submission_auth_info_attribute
 
 
+MappingConfig: TypeAlias = Mapping[str, Union[str, FieldConf]]
+
+
 def apply_data_mapping(
     submission: Submission,
-    mapping_config: Mapping[str, Union[str, FieldConf]],
+    mapping_config: MappingConfig,
     component_attribute: str,
     target_dict: dict | None = None,
 ) -> dict:

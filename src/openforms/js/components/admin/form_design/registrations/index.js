@@ -33,4 +33,14 @@ export const BACKEND_OPTIONS_FORMS = {
       emailContentTemplateHtml: {'ui:widget': WysiwygWidget},
     },
   },
+  'zgw-create-zaak': {
+    uiSchema: {
+      contentJson: {
+        'ui:widget': 'textarea',
+        'ui:options': {
+          rows: 5,
+        },
+      },
+    },
+  },
 };
