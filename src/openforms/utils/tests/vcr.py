@@ -42,6 +42,14 @@ with a url from an environment variable (see dotenv-example).
 You can set the environment variable ``VCR_RECORD_MODE`` to any of the supported
 `record modes`_.
 
+.. note::
+
+    When you use VCR for tests with obfuscated URLs or credentials (or any sensitive
+    data in general), you must document this information (in Taiga) so that other
+    people have all the necessary information/steps at hand to re-record cassettes.
+
+    Re-recording is done as part of the :ref:`release process<developers_releases>`.
+
 .. _mitmproxy: https://github.com/mitmproxy/mitmproxy
 .. _record modes: https://vcrpy.readthedocs.io/en/latest/usage.html#record-modes
 """
@@ -64,7 +72,7 @@ class OFVCRMixin(VCRMixin):
 
     VCR_TEST_FILES: Path
     """
-    A :class:`pathlib.Path` instance where the casettes should be stored.
+    A :class:`pathlib.Path` instance where the cassettes should be stored.
     """
 
     def _get_cassette_library_dir(self):

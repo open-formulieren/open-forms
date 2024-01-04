@@ -46,6 +46,35 @@ missing JS translations.
 Note that the translations in ``src/openforms/js/lang/formio/[locale].json`` cannot be
 automatically extracted and requires tedious manual checking and adding translations.
 
+**Re-recording the VCR cassettes**
+
+(Stable) minor and major releases must re-record the VCR cassettes to ensure that any
+feature that interacts with external APIs still works properly. Re-recording the
+cassettes forces the tests to talk to the real services again instead of replaying the
+recorded mock data, which can give a false sense of security.
+
+You may have to run subsets of the test suite separately, due to different integrations
+all configured on the same obfuscated URL (e.g. ``http://localhost:8080``), for example:
+
+.. code-block:: bash
+
+    python src/manage.py test openforms.authentication.contrib.digid
+
+.. note::
+
+    One example of this is in appointments - ``mitmproxy`` is used and exposes the
+    external service on ``http://localhost:8080``, but the Camunda tests also expect
+    this URL to be available. The Camunda tests would fail here because the returned
+    data is not compatible with the Camunda API at all.
+
+    Camunda tests are skipped by default if the test code cannot connect to
+    ``localhost:8080``, so you don't run into this issue usually.
+
+Instructions and (pointers to) credentials are documented in our internal Taiga.
+
+Set ``VCR_RECORD_MODE=all`` in your environment to force re-recording of the cassettes,
+and then commit the results/changes.
+
 **Updating the changelog**
 
 ``Changelog.rst`` contains a summary of changes compared to the previous release. Use
