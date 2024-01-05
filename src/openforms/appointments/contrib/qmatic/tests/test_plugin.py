@@ -9,7 +9,6 @@ import requests_mock
 from hypothesis import given, strategies as st
 
 from openforms.formio.validation import build_validation_chain
-from openforms.tests.utils import c_profile
 from openforms.utils.tests.logging import disable_logging
 
 from ....base import AppointmentDetails, Customer, Location, Product
@@ -428,7 +427,6 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
         self.assertEqual(locations, [])
 
-    @c_profile()
     @requests_mock.Mocker()
     @given(st.integers(min_value=400, max_value=499))
     def test_get_locations_client_error(self, m, status_code):
@@ -445,7 +443,6 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         with self.assertRaises(AppointmentException):
             self.plugin.get_locations()
 
-    @c_profile()
     @requests_mock.Mocker()
     @given(st.integers(min_value=500, max_value=511))
     def test_get_dates_server_error(self, m, status_code):
@@ -490,7 +487,6 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
         self.assertEqual(times, [])
 
-    @c_profile()
     @requests_mock.Mocker()
     @given(st.integers(min_value=400, max_value=499))
     def test_get_times_client_error(self, m, status_code):

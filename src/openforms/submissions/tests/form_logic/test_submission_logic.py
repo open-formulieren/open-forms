@@ -25,7 +25,6 @@ from openforms.forms.tests.factories import (
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.tests.search_strategies import jsonb_values
-from openforms.tests.utils import c_profile
 from openforms.typing import JSONPrimitive, JSONValue
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import DataMappingTypes, FormVariableDataTypes
@@ -1376,7 +1375,6 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
         )
         self.assertIn("https://httpbin.org/get", str(log_entry.extra_data))
 
-    @c_profile()
     @given(jsonb_values())
     @example({"var": "foo"})
     @example([{"/": None}])
