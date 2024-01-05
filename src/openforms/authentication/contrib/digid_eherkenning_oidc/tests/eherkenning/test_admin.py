@@ -1,3 +1,5 @@
+import json
+
 from django.test import override_settings
 from django.urls import reverse
 
@@ -5,7 +7,6 @@ from django_webtest import WebTest
 
 from digid_eherkenning_oidc_generics.models import OpenIDConnectEHerkenningConfig
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory
 
 default_config = dict(
@@ -30,15 +31,6 @@ class eHerkenningOIDCFormAdminTests(WebTest):
         self.user = SuperUserFactory.create(app=self.app)
         self.app.set_user(self.user)
 
-        global_config = GlobalConfiguration.get_solo()
-        global_config.enable_react_form = False
-        global_config.save()
-
-        def _cleanup():
-            GlobalConfiguration.get_solo().delete()
-
-        self.addCleanup(_cleanup)
-
     def test_eherkenning_oidc_disable_allowed(self):
         # Patching `get_solo()` doesn't seem to work when retrieving the change_form
         config = OpenIDConnectEHerkenningConfig(**default_config)
@@ -54,6 +46,8 @@ class eHerkenningOIDCFormAdminTests(WebTest):
 
         form = response.form
         form["enabled"] = False
+        # set the value manually, normally this is done through JS
+        form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
         response = form.submit()
 
         self.assertEqual(response.status_code, 302)
@@ -74,6 +68,8 @@ class eHerkenningOIDCFormAdminTests(WebTest):
 
         form = response.form
         form["enabled"] = False
+        # set the value manually, normally this is done through JS
+        form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
         response = form.submit()
 
         self.assertEqual(response.status_code, 200)
