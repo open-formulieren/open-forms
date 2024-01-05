@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
 from openforms.appointments.registry import register as appointments_register
+from openforms.contrib.brk.checks import BRKValidatorCheck
 from openforms.contrib.kadaster.config_check import BAGCheck, LocatieServerCheck
 from openforms.contrib.kvk.checks import KVKRemoteValidatorCheck
 from openforms.dmn.registry import register as dmn_register
@@ -75,6 +76,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
                     "entries": [
                         # uses KVK 'zoeken' client
                         self.get_plugin_entry(KVKRemoteValidatorCheck),
+                        self.get_plugin_entry(BRKValidatorCheck),
                     ],
                 },
             ]
