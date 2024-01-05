@@ -208,6 +208,7 @@ INSTALLED_APPS = [
     "openforms.ui",
     "openforms.submissions",
     "openforms.logging.apps.LoggingAppConfig",
+    "openforms.contrib.brk",
     "openforms.contrib.brp",
     "openforms.contrib.digid_eherkenning",
     "openforms.contrib.haal_centraal",
