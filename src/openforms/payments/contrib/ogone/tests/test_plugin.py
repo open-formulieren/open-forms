@@ -1,6 +1,8 @@
+import json
 from decimal import Decimal
 
 from django.test import RequestFactory, TestCase, override_settings
+from django.urls import resolve
 
 from furl import furl
 
@@ -101,9 +103,21 @@ class OgoneTests(TestCase):
         # check if we end up back at the form
         self.assertRegex(response["Location"], r"^http://foo.bar")
         loc = furl(response["Location"])
-        self.assertEqual(loc.args["of_payment_action"], "accept")
-        self.assertEqual(loc.args["of_payment_status"], "completed")
-        self.assertEqual(loc.args["of_payment_id"], str(payment.uuid))
+
+        self.assertEqual(loc.args["_of_action"], "payment")
+        self.assertIn("_of_action_params", loc.args)
+
+        params = json.loads(loc.args["_of_action_params"])
+
+        self.assertEqual(params["of_payment_action"], "accept")
+        self.assertEqual(params["of_payment_status"], "completed")
+        self.assertEqual(params["of_payment_id"], str(payment.uuid))
+        self.assertIn("of_submission_status", params)
+
+        status_url = params["of_submission_status"]
+        match = resolve(furl(status_url).path)
+
+        self.assertEqual(match.view_name, "api:submission-status")
 
         # check payment
         submission.refresh_from_db()
