@@ -248,11 +248,6 @@ django-axes[ipware]==6.0.5
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-axes
-django-better-admin-arrayfield==1.4.2
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   mozilla-django-oidc-db
 django-camunda==0.13.0
     # via
     #   -c requirements/ci.txt
@@ -319,6 +314,7 @@ django-jsonform==2.21.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   mozilla-django-oidc-db
 django-log-outgoing-requests==0.6.0
     # via
     #   -c requirements/ci.txt
@@ -661,12 +657,12 @@ mccabe==0.7.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flake8
-mozilla-django-oidc==1.2.4
+mozilla-django-oidc==3.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.13.0
+mozilla-django-oidc-db==0.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1005,7 +1001,6 @@ six==1.15.0
     #   html5lib
     #   isodate
     #   mail-parser
-    #   mozilla-django-oidc
     #   orderedmultidict
     #   prance
     #   python-dateutil

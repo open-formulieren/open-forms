@@ -136,8 +136,6 @@ django-autoslug==1.9.9
     # via -r requirements/base.in
 django-axes[ipware]==6.0.5
     # via -r requirements/base.in
-django-better-admin-arrayfield==1.4.2
-    # via mozilla-django-oidc-db
 django-camunda==0.13.0
     # via -r requirements/base.in
 django-capture-tag==1.0
@@ -165,7 +163,9 @@ django-hijack==3.4.1
 django-ipware==5.0.0
     # via django-axes
 django-jsonform==2.21.2
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   mozilla-django-oidc-db
 django-log-outgoing-requests==0.6.0
     # via -r requirements/base.in
 django-modeltranslation==0.18.12
@@ -309,9 +309,9 @@ maykin-json-logic-py==0.13.0
     # via -r requirements/base.in
 maykin-python3-saml==1.14.0.post0
     # via django-digid-eherkenning
-mozilla-django-oidc==1.2.4
+mozilla-django-oidc==3.0.0
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.13.0
+mozilla-django-oidc-db==0.14.0
     # via -r requirements/base.in
 o365==2.0.31
     # via -r requirements/base.in
@@ -450,7 +450,6 @@ six==1.15.0
     #   html5lib
     #   isodate
     #   mail-parser
-    #   mozilla-django-oidc
     #   orderedmultidict
     #   prance
     #   python-dateutil
