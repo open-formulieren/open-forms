@@ -29,6 +29,7 @@ xmltodict
 self-certifi
 semantic-version
 tabulate
+typing-extensions
 weasyprint
 zeep
 # Pinned setuptools to a version lower than 58 to allow pyzmail36 to be

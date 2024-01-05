@@ -1,0 +1,47 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/hal+json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/hal+json
+      User-Agent:
+      - python-requests/2.31.0
+      X-Api-Key:
+      - fake
+    method: GET
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21
+  response:
+    body:
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21"}},"_embedded":{"kadastraalOnroerendeZaken":[{"identificatie":"76870482570000","domein":"NL.IMKAD.KadastraalObject","begrenzingPerceel":{"type":"Polygon","coordinates":[[[194618.354,464161.294],[194619.326,464151.276],[194631.322,464153.988],[194635.099,464154.75],[194633.498,464163.819],[194631.173,464176.992],[194627.691,464176.428],[194624.201,464175.924],[194620.702,464175.479],[194617.197,464175.093],[194616.973,464175.072],[194618.174,464162.759],[194618.354,464161.294]]]},"plaatscoordinaten":{"type":"Point","coordinates":[194625.551,464156.205]},"type":"perceel","kadastraleAanduiding":"Beekbergen
+        K 4825","kadastraleGrootte":{"soortGrootte":{"code":"1","waarde":"Vastgesteld"},"waarde":350},"adressen":[{"straat":"Atalanta","huisnummer":21,"postcode":"7361EW","woonplaats":"Beekbergen","nummeraanduidingIdentificatie":"0200200000003730","adresregel1":"Atalanta
+        21","adresregel2":"7361EW Beekbergen","koppelingswijze":{"code":"ADM_GEO","waarde":"administratief
+        en geometrisch"}}],"zakelijkGerechtigdeIdentificaties":["20170719","20170717","20170718"],"hypotheekIdentificaties":["25381030"],"_links":{"self":{"href":"/kadastraalonroerendezaken/76870482570000"},"zakelijkGerechtigden":[{"href":"/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden/{zakelijkGerechtigdeIdentificaties}","templated":true}],"hypotheken":[{"href":"/kadastraalonroerendezaken/76870482570000/hypotheken/{hypotheekIdentificaties}","templated":true}],"adressen":[{"href":"https://api.bag.kadaster.nl/lvbag/individuelebevragingen/v2/adressen/{adressen.nummeraanduidingIdentificatie}","templated":true}]}}]}}'
+    headers:
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - epsg:28992
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '736'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Fri, 15 Dec 2023 16:34:14 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
+    status:
+      code: 200
+      message: ''
+version: 1

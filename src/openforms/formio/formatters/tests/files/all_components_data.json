@@ -25,5 +25,11 @@
     },
     "licenseplate": "1-AAA-BB",
     "select2": "2021-12-29",
-    "select3": "2021-12-29T08:15:00+01:00"
+    "select3": "2021-12-29T08:15:00+01:00",
+    "addressNL": {
+        "postcode": "1234AA",
+        "houseNumber": "1",
+        "houseLetter": "",
+        "houseNumberAddition": ""
+    }
 }

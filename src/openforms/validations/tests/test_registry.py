@@ -4,14 +4,16 @@ from django.utils.translation import gettext as _
 
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from openforms.validations.registry import Registry
+from openforms.submissions.models import Submission
+from openforms.validations.registry import Registry, StringValueSerializer
 
 
 class DjangoValidator:
     is_enabled = True
     components = ("textfield",)
+    value_serializer = StringValueSerializer
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         if value != "VALID":
             raise DjangoValidationError("not VALID value")
 
@@ -19,8 +21,9 @@ class DjangoValidator:
 class DRFValidator:
     is_enabled = True
     components = ("phoneNumber",)
+    value_serializer = StringValueSerializer
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         if value != "VALID":
             raise DRFValidationError("not VALID value")
 
@@ -28,15 +31,19 @@ class DRFValidator:
 class DisabledValidator:
     is_enabled = False
     components = ("textfield",)
+    value_serializer = StringValueSerializer
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         if value != "VALID":
             raise DRFValidationError("not VALID value")
 
 
-def function_validator(value):
+def function_validator(value, submission):
     if value != "VALID":
         raise DjangoValidationError("not VALID value")
+
+
+function_validator.value_serializer = StringValueSerializer
 
 
 class RegistryTest(TestCase):
@@ -60,9 +67,11 @@ class RegistryTest(TestCase):
     def test_decorator(self):
         registry = Registry()
 
-        @registry("func", verbose_name="Function")
-        def decorated(value):
+        def decorated(value, submission):
             pass
+
+        decorated.value_serializer = StringValueSerializer
+        registry("func", verbose_name="Function")(decorated)
 
         wrapped = list(registry)[0]
         self.assertEqual(wrapped.identifier, "func")
@@ -75,28 +84,29 @@ class RegistryTest(TestCase):
         registry("drf", "DRF")(DRFValidator)
         registry("func", "Function")(function_validator)
 
-        res = registry.validate("django", "VALID")
+        # The submission object is not relevant for these validators, we use a dummy string instead
+        res = registry.validate("django", "VALID", Submission())
         self.assertEqual(res.is_valid, True)
         self.assertEqual(res.messages, [])
-        res = registry.validate("django", "INVALID")
+        res = registry.validate("django", "INVALID", Submission())
         self.assertEqual(res.is_valid, False)
         self.assertEqual(res.messages, ["not VALID value"])
 
-        res = registry.validate("drf", "VALID")
+        res = registry.validate("drf", "VALID", Submission())
         self.assertEqual(res.is_valid, True)
         self.assertEqual(res.messages, [])
-        res = registry.validate("drf", "INVALID")
+        res = registry.validate("drf", "INVALID", Submission())
         self.assertEqual(res.is_valid, False)
         self.assertEqual(res.messages, ["not VALID value"])
 
-        res = registry.validate("func", "VALID")
+        res = registry.validate("func", "VALID", Submission())
         self.assertEqual(res.is_valid, True)
         self.assertEqual(res.messages, [])
-        res = registry.validate("func", "INVALID")
+        res = registry.validate("func", "INVALID", Submission())
         self.assertEqual(res.is_valid, False)
         self.assertEqual(res.messages, ["not VALID value"])
 
-        res = registry.validate("NOT_REGISTERED", "VALID")
+        res = registry.validate("NOT_REGISTERED", "VALID", Submission())
         self.assertEqual(res.is_valid, False)
         self.assertEqual(
             res.messages,
@@ -111,7 +121,7 @@ class RegistryTest(TestCase):
         registry = Registry()
         registry("disabled", "Disabled")(DisabledValidator())
 
-        res = registry.validate("disabled", "VALID")
+        res = registry.validate("disabled", "VALID", Submission())
         self.assertEqual(res.is_valid, False)
         self.assertEqual(
             res.messages,

@@ -477,6 +477,8 @@ tinycss2==1.1.0
     #   weasyprint
 tornado==6.3.3
     # via flower
+typing-extensions==4.9.0
+    # via -r requirements/base.in
 tzdata==2023.3
     # via pytz-deprecation-shim
 tzlocal==4.3.1

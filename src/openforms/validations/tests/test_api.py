@@ -7,8 +7,9 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.config.models import GlobalConfiguration
-from openforms.validations.api.serializers import ValidationInputSerializer
-from openforms.validations.registry import Registry
+from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.validations.registry import Registry, StringValueSerializer
 from openforms.validations.tests.test_registry import (
     DjangoValidator,
     DRFValidator,
@@ -16,7 +17,7 @@ from openforms.validations.tests.test_registry import (
 )
 
 
-class ValidationsAPITests(APITestCase):
+class ValidationsAPITests(SubmissionsMixin, APITestCase):
     def setUp(self):
         self.user = StaffUserFactory()
         self.client.force_login(self.user)
@@ -147,16 +148,31 @@ class ValidationsAPITests(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data, [])
 
-    def test_input_serializer(self):
-        self.assertTrue(ValidationInputSerializer(data={"value": "foo"}).is_valid())
-        self.assertFalse(ValidationInputSerializer(data={"value": ""}).is_valid())
-        self.assertFalse(ValidationInputSerializer(data={"value": None}).is_valid())
-        self.assertFalse(ValidationInputSerializer(data={"bazz": "buzz"}).is_valid())
+    def test_default_string_serializer(self):
+        self.assertTrue(StringValueSerializer(data={"value": "foo"}).is_valid())
+        self.assertFalse(StringValueSerializer(data={"value": ""}).is_valid())
+        self.assertFalse(StringValueSerializer(data={"value": None}).is_valid())
+        self.assertFalse(StringValueSerializer(data={"bazz": "buzz"}).is_valid())
 
-    def test_validation(self):
+    def test_validation_forbidden(self):
+        submission = SubmissionFactory.create()
+        submission_uuid = str(submission.uuid)
         url = reverse("api:validate-value", kwargs={"validator": "django"})
 
-        response = self.client.post(url, {"value": "VALID"}, format="json")
+        response = self.client.post(
+            url, {"value": "VALID", "submission_uuid": submission_uuid}, format="json"
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_validation(self):
+        submission = SubmissionFactory.create()
+        submission_uuid = str(submission.uuid)
+        url = reverse("api:validate-value", kwargs={"validator": "django"})
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            url, {"value": "VALID", "submission_uuid": submission_uuid}, format="json"
+        )
         expected = {
             "is_valid": True,
             "messages": [],
@@ -164,7 +180,11 @@ class ValidationsAPITests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, expected)
 
-        response = self.client.post(url, {"value": "NOT-VALID"}, format="json")
+        response = self.client.post(
+            url,
+            {"value": "NOT-VALID", "submission_uuid": submission_uuid},
+            format="json",
+        )
         expected = {
             "is_valid": False,
             "messages": ["not VALID value"],

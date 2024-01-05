@@ -5276,6 +5276,7 @@ paths:
         schema:
           type: string
           enum:
+          - brk-zakelijk-gerechtigd
           - kvk-branchNumber
           - kvk-kvkNumber
           - kvk-rsin
@@ -9440,9 +9441,13 @@ components:
       type: object
       properties:
         value:
+          description: Value to be validated.
+        submissionUuid:
           type: string
-          description: Value to be validated
+          format: uuid
+          description: UUID of the submission.
       required:
+      - submissionUuid
       - value
     ValidationPlugin:
       type: object

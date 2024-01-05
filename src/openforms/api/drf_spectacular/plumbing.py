@@ -1,9 +1,13 @@
+from typing import Any
+
 from drf_spectacular.plumbing import (
     ResolvedComponent,
     build_basic_type,
     build_parameter_type,
 )
-from drf_spectacular.utils import OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter, inline_serializer
+from rest_framework.fields import Field
+from rest_framework.serializers import Serializer
 
 
 def build_response_header_parameter(
@@ -53,3 +57,18 @@ def build_response_header_component(
         object=name,
     )
     return component
+
+
+def extend_inline_serializer(
+    serializer: type[Serializer],
+    fields: dict[str, Field],
+    name: str = "",
+    **kwargs: Any,
+) -> Serializer:
+    """Return an inline serializer, with fields extended from the provided serializer.
+
+    If one of the provided extra fields already exists on the base serializer, it will be overridden.
+    """
+    return inline_serializer(
+        name or serializer.__name__, serializer().get_fields() | fields, **kwargs
+    )

@@ -1,9 +1,13 @@
+from functools import partial
+
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 from django.utils.translation import gettext as _
 
 import requests_mock
 from privates.test import temp_private_root
+
+from openforms.submissions.models import Submission
 
 from ..validators import (
     KVKBranchNumberRemoteValidator,
@@ -63,7 +67,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=500,
         )
 
-        validator = KVKNumberRemoteValidator()
+        validator = partial(KVKNumberRemoteValidator(), submission=Submission())
         validator("69599084")
 
         with self.assertRaisesMessage(
@@ -92,7 +96,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             {"resultaten": []},
             {},
         )
-        validate = KVKNumberRemoteValidator()
+        validate = partial(KVKNumberRemoteValidator(), submission=Submission())
 
         for response_json in bad_responses:
             with self.subTest(response_json=response_json):
@@ -116,7 +120,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=404,
         )
 
-        validator = KVKRSINRemoteValidator()
+        validator = partial(KVKRSINRemoteValidator(), submission=Submission())
         validator("111222333")
 
         with self.assertRaisesMessage(
@@ -147,7 +151,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
             status_code=404,
         )
 
-        validator = KVKBranchNumberRemoteValidator()
+        validator = partial(KVKBranchNumberRemoteValidator(), submission=Submission())
         validator("112233445566")
 
         with self.assertRaisesMessage(

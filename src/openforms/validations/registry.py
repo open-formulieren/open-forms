@@ -6,14 +6,22 @@ from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
-from rest_framework.serializers import as_serializer_error
 
 from openforms.plugins.registry import BaseRegistry
+from openforms.submissions.models import Submission
+from openforms.typing import JSONValue
 
 logger = logging.getLogger(__name__)
 
-ValidatorType = Callable[[str], None]
+ValidatorType = Callable[[JSONValue, Submission], bool]
+
+
+class StringValueSerializer(serializers.Serializer):
+    """A default serializer that accepts ``value`` as a string."""
+
+    value = serializers.CharField()
 
 
 @dataclasses.dataclass()
@@ -32,8 +40,8 @@ class RegisteredValidator:
     # TODO always enabled for now, see: https://github.com/open-formulieren/open-forms/issues/1149
     is_enabled: bool = True
 
-    def __call__(self, value):
-        return self.callable(value)
+    def __call__(self, *args, **kwargs) -> bool:
+        return self.callable(*args, **kwargs)
 
 
 def flatten(iterables: Iterable) -> List[str]:
@@ -50,7 +58,7 @@ def flatten(iterables: Iterable) -> List[str]:
     return list(_flat(iterables))
 
 
-class Registry(BaseRegistry):
+class Registry(BaseRegistry[RegisteredValidator]):
     """
     A registry for the validations module plugins.
 
@@ -79,6 +87,10 @@ class Registry(BaseRegistry):
                 )
 
             call = validator
+            assert hasattr(
+                call, "value_serializer"
+            ), "Plugins must define a 'value_serializer' attribute"
+
             if isinstance(call, type):
                 call = validator()
             if not callable(call):
@@ -96,7 +108,9 @@ class Registry(BaseRegistry):
         return decorator
 
     @elasticapm.capture_span("app.validations.validate")
-    def validate(self, plugin_id: str, value: str) -> ValidationResult:
+    def validate(
+        self, plugin_id: str, value: JSONValue, submission: Submission
+    ) -> ValidationResult:
         try:
             validator = self._registry[plugin_id]
         except KeyError:
@@ -118,10 +132,20 @@ class Registry(BaseRegistry):
                 ],
             )
 
+        SerializerClass = validator.callable.value_serializer
+        serializer = SerializerClass(data={"value": value})
+
+        # first, run the cheap validation to check that the data actually conforms to the expected schema.
+        # only if that succeeds we may invoke the actual validator which potentially performs expensive
+        # (network) checks.
+        # TODO this will raise a 400 and will not have the same structure as below. This should only
+        # raise here if someone's playing with the API directly. Otherwise, the SDK should perform the
+        # necessary checks before making a call.
+        serializer.is_valid(raise_exception=True)
         try:
-            validator(value)
+            validator(serializer.data["value"], submission)
         except (DJ_ValidationError, DRF_ValidationError) as e:
-            errors = as_serializer_error(e)
+            errors = serializers.as_serializer_error(e)
             messages = flatten(errors.values())
             return ValidationResult(False, messages=messages)
         else:

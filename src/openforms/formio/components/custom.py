@@ -13,7 +13,12 @@ from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
 
 from ..dynamic_config.date import mutate as mutate_min_max_validation
-from ..formatters.custom import DateFormatter, DateTimeFormatter, MapFormatter
+from ..formatters.custom import (
+    AddressNLFormatter,
+    DateFormatter,
+    DateTimeFormatter,
+    MapFormatter,
+)
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
 from ..typing import Component, DateComponent, DatetimeComponent
@@ -182,3 +187,9 @@ class NPFamilyMembers(BasePlugin):
                 }
                 for value, label in child_choices
             ]
+
+
+@register("addressNL")
+class AddressNL(BasePlugin):
+
+    formatter = AddressNLFormatter

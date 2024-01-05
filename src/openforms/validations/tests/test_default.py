@@ -13,6 +13,7 @@ class DefaultRegistryTest(TestCase):
             enable_demo_plugins=False,
         )
         expected_identifiers = {
+            "brk-zakelijk-gerechtigd",
             "kvk-kvkNumber",
             "kvk-branchNumber",
             "kvk-rsin",

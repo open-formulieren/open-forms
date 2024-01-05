@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from requests import RequestException
 
 from openforms.utils.validators import validate_digits, validate_rsin
-from openforms.validations.registry import register
+from openforms.validations.registry import StringValueSerializer, register
 
 from .client import NoServiceConfigured, SearchParams, get_client
 
@@ -51,6 +51,8 @@ class KVKRemoteBaseValidator:
     query_param: Literal["kvkNummer", "rsin", "vestigingsnummer"]
     value_label: str
 
+    value_serializer = StringValueSerializer
+
     error_messages = {
         "not_found": _("%(type)s does not exist."),
         "too_short": _("%(type)s should have %(size)i characters."),
@@ -88,7 +90,7 @@ class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "kvkNummer"
     value_label = _("KvK number")
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         validate_kvk(value)
         super().__call__(value)
 
@@ -99,7 +101,7 @@ class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
     query_param = "rsin"
     value_label = _("RSIN")
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         validate_rsin(value)
         super().__call__(value)
 
@@ -114,6 +116,6 @@ class KVKBranchNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "vestigingsnummer"
     value_label = _("Branch number")
 
-    def __call__(self, value):
+    def __call__(self, value, submission):
         validate_branchNumber(value)
         super().__call__(value)

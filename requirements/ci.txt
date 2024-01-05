@@ -958,8 +958,11 @@ tornado==6.3.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   flower
-typing-extensions==4.7.1
-    # via pyee
+typing-extensions==4.9.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   pyee
 tzdata==2023.3
     # via
     #   -c requirements/base.txt

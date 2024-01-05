@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+      X-Api-Key:
+      - fake_changeme_when_testing
+    method: GET
+    uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add
+  response:
+    body:
+      string: '{"_links":{"self":{"href":"/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add"}},"_embedded":{}}'
+    headers:
+      Api-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '133'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Thu, 04 Jan 2024 16:15:08 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - Unspecified
+    status:
+      code: 200
+      message: ''
+version: 1

@@ -1788,6 +1788,83 @@
             "allowMultipleMasks": false,
             "customDefaultValue": "",
             "allowCalculateOverride": false
+        },
+        {
+            "id": "ede8s0n",
+            "key": "addressNL",
+            "mask": false,
+            "type": "addressNL",
+            "input": true,
+            "label": "Address NL",
+            "hidden": false,
+            "unique": false,
+            "widget": {
+                "type": "input"
+            },
+            "dbIndex": false,
+            "overlay": {
+                "top": "",
+                "left": "",
+                "style": "",
+                "width": "",
+                "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate": {
+                "custom": "",
+                "unique": false,
+                "plugins": [],
+                "multiple": false,
+                "required": false,
+                "maxLength": "",
+                "minLength": "",
+                "customPrivate": false,
+                "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "inputMask": "",
+            "inputType": "text",
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": true,
+            "attributes": {},
+            "errorLabel": "",
+            "persistent": true,
+            "properties": {},
+            "spellcheck": true,
+            "validateOn": "blur",
+            "clearOnHide": true,
+            "conditional": {
+                "eq": "",
+                "show": null,
+                "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "inputFormat": "plain",
+            "placeholder": "",
+            "showInEmail": false,
+            "defaultValue": null,
+            "registration": {
+                "attribute": ""
+            },
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "isSensitiveData": true,
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
         }
     ]
 }
