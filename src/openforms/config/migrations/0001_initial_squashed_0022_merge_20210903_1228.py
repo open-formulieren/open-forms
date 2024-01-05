@@ -12,7 +12,7 @@ from django.core.management import call_command
 from django.db import migrations, models
 
 import colorfield.fields
-import django_better_admin_arrayfield.models.fields
+import django_jsonform.models.fields
 import tinymce.models
 
 import openforms.utils.fields
@@ -209,7 +209,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "email_template_netloc_allowlist",
-                    django_better_admin_arrayfield.models.fields.ArrayField(
+                    django_jsonform.models.fields.ArrayField(
                         base_field=models.CharField(max_length=1000),
                         blank=True,
                         default=list,

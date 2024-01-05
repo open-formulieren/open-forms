@@ -4,7 +4,6 @@ from django.urls import path, reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from modeltranslation.admin import TranslationAdmin
 from solo.admin import SingletonModelAdmin
 
@@ -14,9 +13,7 @@ from .models import CSPSetting, GlobalConfiguration, RichTextColor, Theme
 
 
 @admin.register(GlobalConfiguration)
-class GlobalConfigurationAdmin(
-    DynamicArrayMixin, TranslationAdmin, SingletonModelAdmin
-):
+class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
     form = GlobalConfigurationAdminForm
     fieldsets = (
         (

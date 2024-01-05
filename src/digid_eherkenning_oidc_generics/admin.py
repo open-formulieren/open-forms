@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from solo.admin import SingletonModelAdmin
 
 from .forms import (
@@ -18,7 +17,7 @@ from .models import (
 )
 
 
-class OpenIDConnectConfigBaseAdmin(DynamicArrayMixin, SingletonModelAdmin):
+class OpenIDConnectConfigBaseAdmin(SingletonModelAdmin):
     fieldsets = (
         (
             _("Activation"),
@@ -66,7 +65,7 @@ class OpenIDConnectConfigEHerkenningAdmin(OpenIDConnectConfigBaseAdmin):
 
 
 @admin.register(OpenIDConnectDigiDMachtigenConfig)
-class OpenIDConnectConfigDigiDMachtigenAdmin(DynamicArrayMixin, SingletonModelAdmin):
+class OpenIDConnectConfigDigiDMachtigenAdmin(SingletonModelAdmin):
     form = OpenIDConnectDigiDMachtigenConfigForm
 
     fieldsets = (
@@ -114,9 +113,7 @@ class OpenIDConnectConfigDigiDMachtigenAdmin(DynamicArrayMixin, SingletonModelAd
 
 
 @admin.register(OpenIDConnectEHerkenningBewindvoeringConfig)
-class OpenIDConnectConfigEHerkenningBewindvoeringAdmin(
-    DynamicArrayMixin, SingletonModelAdmin
-):
+class OpenIDConnectConfigEHerkenningBewindvoeringAdmin(SingletonModelAdmin):
     form = OpenIDConnectEHerkenningBewindvoeringConfigForm
 
     fieldsets = (

@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-import django_better_admin_arrayfield.models.fields
+import django_jsonform.models.fields
 
 import openforms.appointments.contrib.qmatic.models
 
@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="qmaticconfig",
             name="required_customer_fields",
-            field=django_better_admin_arrayfield.models.fields.ArrayField(
+            field=django_jsonform.models.fields.ArrayField(
                 base_field=models.CharField(
                     choices=[
                         ("firstName", "First name"),

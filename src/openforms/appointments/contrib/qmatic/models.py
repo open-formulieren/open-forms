@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_better_admin_arrayfield.models.fields import ArrayField
+from django_jsonform.models.fields import ArrayField
 from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
 
