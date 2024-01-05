@@ -42,7 +42,7 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
                 "state" in request.GET
                 and "oidc_states" in request.session
                 and request.GET["state"] in request.session["oidc_states"]
-            ):
+            ):  # pragma: no cover
                 del request.session["oidc_states"][request.GET["state"]]
                 request.session.save()
 
