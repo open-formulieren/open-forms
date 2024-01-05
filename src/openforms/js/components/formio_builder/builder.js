@@ -59,6 +59,7 @@ const getBuilderOptions = () => {
           cosign: true,
           map: true,
           editgrid: true,
+          addressNL: true,
         },
       },
       custom_layout: {
