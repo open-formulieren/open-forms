@@ -3,7 +3,7 @@ from typing import Literal, TypeAlias
 
 from openforms.submissions.models import Submission
 
-SDKAction: TypeAlias = Literal["resume", "afspraak-annuleren", "cosign"]
+SDKAction: TypeAlias = Literal["resume", "afspraak-annuleren", "cosign", "payment"]
 
 
 def get_frontend_redirect_url(
