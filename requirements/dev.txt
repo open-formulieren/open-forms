@@ -167,7 +167,7 @@ cssselect==1.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pyquery
-cssselect2==0.4.1
+cssselect2==0.7.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
