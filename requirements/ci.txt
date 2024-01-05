@@ -144,7 +144,7 @@ cryptography==41.0.7
     #   pyopenssl
 cssselect==1.1.0
     # via pyquery
-cssselect2==0.4.1
+cssselect2==0.7.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
