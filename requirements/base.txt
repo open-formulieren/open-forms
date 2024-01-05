@@ -137,9 +137,7 @@ django-autoslug==1.9.9
 django-axes[ipware]==6.0.5
     # via -r requirements/base.in
 django-better-admin-arrayfield==1.4.2
-    # via
-    #   -r requirements/base.in
-    #   mozilla-django-oidc-db
+    # via mozilla-django-oidc-db
 django-camunda==0.13.0
     # via -r requirements/base.in
 django-capture-tag==1.0

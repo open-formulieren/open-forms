@@ -188,7 +188,6 @@ django-axes[ipware]==6.0.5
     #   django-axes
 django-better-admin-arrayfield==1.4.2
     # via
-    #   -c requirements/base.in
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
 django-camunda==0.13.0

@@ -41,7 +41,6 @@ django ~= 3.2.0
 django-admin-index
 django-autoslug
 django-axes[ipware]
-django-better-admin-arrayfield
 django-camunda
 django-capture-tag
 django-colorfield
