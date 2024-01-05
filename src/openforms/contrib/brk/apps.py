@@ -7,3 +7,6 @@ class BRKApp(AppConfig):
     label = "brk"
     verbose_name = _("BRK configuration")
 
+    def ready(self):
+        # register the plugin
+        from . import validators  # noqa
