@@ -31,6 +31,7 @@ class DefaultFormatterTestCase(TestCase):
             "licenseplate": "1-AAA-BB",
             "select2": "29 december 2021",
             "select3": "08:15",
+            "addressNL": "1234AA 1",
         }
 
         for component in all_components:
@@ -122,4 +123,18 @@ class DefaultFormatterTestCase(TestCase):
         self.assertHTMLEqual(
             formatted_html,
             f"""<img src="{value}" alt="{_('signature added')}" style="max-width: 100%;" />""",
+        )
+
+    def test_addressnl_missing_keys(self):
+        component = {
+            "type": "addressNL",
+            "multiple": False,
+            "key": "addressNL",
+        }
+
+        value = {"postcode": "1234AA", "houseNumber": "1"}
+        formatted_html = format_value(component, value, as_html=True)
+        self.assertHTMLEqual(
+            formatted_html,
+            "1234AA 1",
         )
