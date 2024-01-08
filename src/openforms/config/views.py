@@ -31,10 +31,10 @@ def _subset_match(requested: Optional[str], checking: str) -> bool:
 class ConfigCheckable(Protocol):
     verbose_name: str
 
-    def check_config(self) -> None:  # pragma: no cover
+    def check_config(self) -> None:
         ...
 
-    def get_config_actions(self) -> list[Action]:  # pragma: no cover
+    def get_config_actions(self) -> list[Action]:
         ...
 
 

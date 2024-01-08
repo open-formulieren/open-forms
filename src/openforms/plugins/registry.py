@@ -5,7 +5,7 @@ from django.db import OperationalError
 from openforms.config.models import GlobalConfiguration
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .plugin import AbstractBasePlugin  # noqa: F401
 
 

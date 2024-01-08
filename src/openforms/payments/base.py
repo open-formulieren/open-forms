@@ -11,7 +11,7 @@ from openforms.utils.urls import reverse_plus
 
 from .constants import PaymentRequestType
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .models import Submission, SubmissionPayment
 
 

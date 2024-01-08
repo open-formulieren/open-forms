@@ -7,7 +7,7 @@ from openforms.registrations.contrib.objects_api.utils import html_escape_json
 from openforms.typing import JSONObject, JSONValue
 from openforms.utils.date import parse_date
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 

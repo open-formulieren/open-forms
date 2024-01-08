@@ -42,20 +42,20 @@ class Person:
 
 class BRPClient(PreRequestMixin, ABC, APIClient):
     @abstractmethod
-    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
+    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
         ...
 
     @abstractmethod
     def get_family_members(
         self, bsn: str, include_children: bool, include_partner: bool
-    ) -> list[Person]:  # pragma: no cover
+    ) -> list[Person]:
         """
         Look up the partner(s) and/or the children of the person with the given BSN.
         """
         ...
 
     @abstractmethod
-    def make_config_test_request(self) -> None:  # pragma: no cover
+    def make_config_test_request(self) -> None:
         ...
 
 

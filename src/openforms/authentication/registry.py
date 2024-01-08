@@ -5,7 +5,7 @@ from django.http import HttpRequest
 
 from openforms.plugins.registry import BaseRegistry
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from openforms.forms.models import Form
 
     from .base import BasePlugin, LoginInfo  # noqa: F401

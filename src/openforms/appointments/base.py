@@ -2,7 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Callable, Generic, List, TypeAlias, TypeVar
+from typing import Callable, Generic, TypeAlias, TypeVar
 
 from django.db.models import TextChoices
 from django.urls import reverse
@@ -109,7 +109,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         self,
         current_products: list[Product] | None = None,
         location_id: str = "",
-    ) -> list[Product]:  # pragma: no cover
+    ) -> list[Product]:
         """
         Retrieve all available products and services to create an appointment for.
 
@@ -128,7 +128,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
     def get_locations(
         self,
         products: list[Product] | None = None,
-    ) -> list[Location]:  # pragma: no cover
+    ) -> list[Location]:
         """
         Retrieve all available locations.
 
@@ -147,7 +147,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         location: Location,
         start_at: date | None = None,
         end_at: date | None = None,
-    ) -> List[date]:  # pragma: no cover
+    ) -> list[date]:
         """
         Retrieve all available dates for given ``products`` and ``location``.
 
@@ -165,7 +165,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         products: list[Product],
         location: Location,
         day: date,
-    ) -> List[datetime]:  # pragma: no cover
+    ) -> list[datetime]:
         """
         Retrieve all available times for given ``products``, ``location`` and ``day``.
 
@@ -180,7 +180,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
     def get_required_customer_fields(
         self,
         products: list[Product],
-    ) -> list[Component]:  # pragma: no cover
+    ) -> list[Component]:
         """
         Given a list of products, return the additional required customer fields.
 
@@ -211,7 +211,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         start_at: datetime,
         client: CustomerDetails[F] | Customer,
         remarks: str = "",
-    ) -> str:  # pragma: no cover
+    ) -> str:
         """
         Create an appointment.
 
@@ -226,7 +226,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def delete_appointment(self, identifier: str) -> None:  # pragma: no cover
+    def delete_appointment(self, identifier: str) -> None:
         """
         Delete an appointment.
 
@@ -236,9 +236,7 @@ class BasePlugin(Generic[F], ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_appointment_details(
-        self, identifier: str
-    ) -> AppointmentDetails:  # pragma: no cover
+    def get_appointment_details(self, identifier: str) -> AppointmentDetails:
         """
         Get appointment details.
 

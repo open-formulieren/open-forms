@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class DescriptionGeneratorProtocol(Protocol):
     def __call__(self, operation: Operation, for_root: bool) -> str:
-        ...  # pragma: no cover
+        ...
 
 
 def _generate_description(tree: JSONLogicExpressionTree, root=False) -> str:
