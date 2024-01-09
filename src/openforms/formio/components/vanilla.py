@@ -43,7 +43,7 @@ from ..typing import (
 )
 from .translations import translate_options
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 

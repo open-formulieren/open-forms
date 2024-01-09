@@ -17,7 +17,7 @@ from openforms.typing import JSONObject
 
 from .tasks import log_logic_evaluation
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from openforms.submissions.logic.rules import EvaluatedRule, FormLogic
     from openforms.submissions.models import (
         Submission,

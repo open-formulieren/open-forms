@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Iterator
 from .constants import RenderModes
 
 if TYPE_CHECKING:
-    from .renderer import Renderer  # pragma: nocover
+    from .renderer import Renderer
 
 
 @dataclass
@@ -45,7 +45,7 @@ class Node(ABC):
             return True
 
     @abstractmethod
-    def get_children(self) -> Iterator["Node"]:  # pragma: nocover
+    def get_children(self) -> Iterator["Node"]:
         """
         Yield the specific child nodes in the node tree.
         """
@@ -58,7 +58,7 @@ class Node(ABC):
         yield from self.get_children()
 
     @abstractmethod
-    def render(self) -> str:  # pragma: nocover
+    def render(self) -> str:
         """
         Output the result of rendering the particular type of node.
         """

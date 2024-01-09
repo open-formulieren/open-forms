@@ -23,11 +23,11 @@ from openforms.typing import DataMapping
 
 from .typing import Component
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-class FormatterProtocol(Protocol):  # pragma: nocover
+class FormatterProtocol(Protocol):
     def __init__(self, as_html: bool):
         ...
 
@@ -35,12 +35,12 @@ class FormatterProtocol(Protocol):  # pragma: nocover
         ...
 
 
-class NormalizerProtocol(Protocol):  # pragma: nocover
+class NormalizerProtocol(Protocol):
     def __call__(self, component: Component, value: Any) -> Any:
         ...
 
 
-class RewriterForRequestProtocol(Protocol):  # pragma: nocover
+class RewriterForRequestProtocol(Protocol):
     def __call__(self, component: Component, request: Request) -> None:
         ...
 
@@ -77,7 +77,7 @@ class BasePlugin(Generic[T], AbstractBasePlugin):
 
     def mutate_config_dynamically(
         self, component: T, submission: "Submission", data: DataMapping
-    ) -> None:  # pragma: nocover
+    ) -> None:
         ...
 
     def localize(self, component: T, language_code: str, enabled: bool):

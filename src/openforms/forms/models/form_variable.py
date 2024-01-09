@@ -21,7 +21,7 @@ from openforms.variables.utils import check_initial_value
 
 from .form_definition import FormDefinition
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from .form import Form
     from .form_step import FormStep
 

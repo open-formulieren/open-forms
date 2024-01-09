@@ -20,7 +20,7 @@ from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySet
 from .submission import Submission
 from .submission_step import SubmissionStep
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from .submission_value_variable import SubmissionValueVariable
 
 logger = logging.getLogger(__name__)

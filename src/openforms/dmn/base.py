@@ -35,7 +35,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         Note that different versions of the same definition must be filtered out, as
         specifying a particular version is a separate action.
         """
-        raise NotImplementedError()  # pragma: nocover
+        raise NotImplementedError()
 
     @abstractmethod
     def evaluate(
@@ -44,7 +44,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         """
         Evaluate the decision definition with the given input data.
         """
-        raise NotImplementedError()  # pragma: nocover
+        raise NotImplementedError()
 
     def get_decision_definition_versions(
         self, definition_id: str
