@@ -749,3 +749,96 @@ class TestFormioTranslationsMigration(TestMigrations):
             )
 
             self.assertNotIn("openForms", select_option_2)
+
+
+class TestColumnsSizeMigration(TestMigrations):
+    app = "forms"
+    migrate_from = "0101_convert_formio_translations"
+    migrate_to = "0102_fix_columns_size_type"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        FormDefinition.objects.create(
+            name="Translations",
+            slug="translations",
+            configuration={
+                "components": [
+                    {
+                        "type": "columns",
+                        "key": "columns",
+                        "columns": [
+                            {
+                                "size": "5",
+                                "sizeMobile": "4",
+                                "components": [],
+                            },
+                            {
+                                "size": 6,
+                                "sizeMobile": "4",
+                                "components": [],
+                            },
+                            # malformed - should not crash
+                            {
+                                "components": [],
+                            },
+                            # nothing to do
+                            {
+                                "size": 4,
+                                "components": [],
+                            },
+                            # invalid configurations
+                            {
+                                "size": "xl",
+                                "components": [],
+                            },
+                            {
+                                "size": "3.14",
+                                "sizeMobile": "xs",
+                                "components": [],
+                            },
+                            {
+                                "size": None,
+                                "components": [],
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+
+    def test_column_sizes_converted_to_int(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+
+        col1, col2, col3, col4, col5, col6, col7 = fd.configuration["components"][0][
+            "columns"
+        ]
+
+        with self.subTest("Column 1"):
+            self.assertEqual(col1["size"], 5)
+            self.assertEqual(col1["sizeMobile"], 4)
+
+        with self.subTest("Column 2"):
+            self.assertEqual(col2["size"], 6)
+            self.assertEqual(col2["sizeMobile"], 4)
+
+        with self.subTest("Column 3"):
+            self.assertEqual(col3["size"], 6)
+            self.assertNotIn("sizeMobile", col3)
+
+        with self.subTest("Column 4"):
+            self.assertEqual(col4["size"], 4)
+            self.assertNotIn("sizeMobile", col4)
+
+        with self.subTest("Column 5"):
+            self.assertEqual(col5["size"], 6)
+            self.assertNotIn("sizeMobile", col5)
+
+        with self.subTest("Column 6"):
+            self.assertEqual(col6["size"], 6)
+            self.assertEqual(col6["sizeMobile"], 4)
+
+        with self.subTest("Column 7"):
+            self.assertEqual(col7["size"], 6)
+            self.assertNotIn("sizeMobile", col7)
