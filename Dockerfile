@@ -90,7 +90,7 @@ COPY ./bin/celery_beat.sh /celery_beat.sh
 COPY ./bin/celery_flower.sh /celery_flower.sh
 COPY ./bin/dump_configuration.sh /dump_configuration.sh
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle /app/tmp
-COPY ./bin/check_celery_worker_liveness.py ./bin/check_non_unique_steps.py ./bin/
+COPY ./bin/check_celery_worker_liveness.py ./bin/check_non_unique_steps.py ./bin/report_component_problems.py ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
 # This also serves as a hint for the intended volumes.
