@@ -517,3 +517,87 @@ class TestSetDataSrcMigration(TestMigrations):
             self.assertEqual(selectboxes2["openForms"]["dataSrc"], "manual")
             self.assertEqual(selectboxes3["openForms"]["dataSrc"], "manual")
             self.assertEqual(selectboxes4["openForms"]["dataSrc"], "manual")
+
+
+class TestUpdateActionProperty(TestMigrations):
+    app = "forms"
+    migrate_from = "0100_ensure_datasrc_property"
+    migrate_to = "0101_update_action_property"
+
+    def setUpBeforeMigration(self, apps):
+        FormLogic = apps.get_model("forms", "FormLogic")
+        Form = apps.get_model("forms", "Form")
+
+        form = Form.objects.create(name="Form time")
+        FormLogic.objects.create(
+            order=0,
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "nicePostcode",
+                    "action": {
+                        "name": "Make not required",
+                        "type": "property",
+                        "property": {
+                            "type": "object",
+                            "value": "validate",
+                        },
+                        "state": {"required": True},
+                    },
+                }
+            ],
+        )
+        FormLogic.objects.create(
+            order=1,
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "nicePostcode",
+                    "action": {
+                        "type": "property",
+                        "property": {"type": "bool", "value": "hidden"},
+                        "state": True,
+                        "value": "",
+                    },
+                }
+            ],
+        )
+        FormLogic.objects.create(
+            order=2,
+            form=form,
+            json_logic_trigger=True,
+            actions=[],
+        )
+
+    def test_migration(self):
+        FormLogic = self.apps.get_model("forms", "FormLogic")
+
+        self.assertEqual(
+            FormLogic.objects.get(order=0).actions[0],
+            {
+                "component": "nicePostcode",
+                "action": {
+                    "name": "Make not required",
+                    "type": "property",
+                    "property": {
+                        "type": "bool",
+                        "value": "validate.required",
+                    },
+                    "state": True,
+                },
+            },
+        )
+        self.assertEqual(
+            FormLogic.objects.get(order=1).actions[0],
+            {
+                "component": "nicePostcode",
+                "action": {
+                    "type": "property",
+                    "property": {"type": "bool", "value": "hidden"},
+                    "state": True,
+                    "value": "",
+                },
+            },
+        )

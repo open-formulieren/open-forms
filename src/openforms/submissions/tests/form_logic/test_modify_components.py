@@ -1045,3 +1045,84 @@ class ComponentModificationTests(TestCase):
         evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
 
         self.assertEqual(submission_step.data["textField"], "Test value")
+
+    @tag("gh-3744")
+    def test_postcode_component_made_optional(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "nicePostcode",
+                        "validate": {
+                            "custom": "",
+                            "unique": False,
+                            "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+                            "plugins": [],
+                            "multiple": False,
+                            "required": True,
+                            "maxLength": "",
+                            "minLength": "",
+                            "customMessage": "Invalid Postcode",
+                            "customPrivate": False,
+                            "strictDateValidation": False,
+                        },
+                    }
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "nicePostcode",
+                    "action": {
+                        "name": "Make not required",
+                        "type": "property",
+                        "property": {
+                            "type": "object",
+                            "value": "validate.required",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.build(
+            submission=submission,
+            form_step=step,
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step, submission.data
+        )
+
+        expected = {
+            "components": [
+                {
+                    "type": "postcode",
+                    "key": "nicePostcode",
+                    "validate": {
+                        "custom": "",
+                        "unique": False,
+                        "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+                        "plugins": [],
+                        "multiple": False,
+                        "required": False,  # Changed
+                        "maxLength": "",
+                        "minLength": "",
+                        "customMessage": "Invalid Postcode",
+                        "customPrivate": False,
+                        "strictDateValidation": False,
+                    },
+                }
+            ]
+        }
+
+        self.assertEqual(configuration, expected)
