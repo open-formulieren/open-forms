@@ -602,6 +602,7 @@ class TestUpdateActionProperty(TestMigrations):
             },
         )
 
+
 class TestFormioTranslationsMigration(TestMigrations):
     app = "forms"
     migrate_from = "0101_update_action_property"
@@ -751,10 +752,10 @@ class TestFormioTranslationsMigration(TestMigrations):
             self.assertNotIn("openForms", select_option_2)
 
 
-class TestColumnsSizeMigration(TestMigrations):
+class TestComponentFixesMigration(TestMigrations):
     app = "forms"
-    migrate_from = "0101_convert_formio_translations"
-    migrate_to = "0102_fix_columns_size_type"
+    migrate_from = "0102_convert_formio_translations"
+    migrate_to = "0103_fix_component_problems"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -803,6 +804,14 @@ class TestColumnsSizeMigration(TestMigrations):
                             },
                         ],
                     },
+                    {
+                        "type": "file",
+                        "defaultValue": None,
+                    },
+                    {
+                        "type": "file",
+                        "defaultValue": [None],
+                    },
                 ]
             },
         )
@@ -842,3 +851,14 @@ class TestColumnsSizeMigration(TestMigrations):
         with self.subTest("Column 7"):
             self.assertEqual(col7["size"], 6)
             self.assertNotIn("sizeMobile", col7)
+
+    def test_file_default_value_fixed(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+        file1, file2 = fd.configuration["components"][1:3]
+
+        with self.subTest("File 1 (ok)"):
+            self.assertIsNone(file1["defaultValue"])
+
+        with self.subTest("File 2 (broken)"):
+            self.assertIsNone(file2["defaultValue"])

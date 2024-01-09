@@ -8,7 +8,7 @@ from typing import Protocol, cast
 
 from glom import assign, glom
 
-from openforms.formio.typing.vanilla import ColumnsComponent
+from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
 
 from .typing import Component
 
@@ -108,6 +108,18 @@ def fix_column_sizes(component: Component) -> bool:
     return changed
 
 
+def fix_file_default_value(component: Component) -> bool:
+    component = cast(FileComponent, component)
+    default_value = component.get("defaultValue")
+
+    match default_value:
+        case list() if None in default_value:
+            component["defaultValue"] = None
+            return True
+        case _:
+            return False
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
@@ -127,6 +139,9 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "radio": {"set_openforms_datasrc": set_openforms_datasrc},
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
+    },
+    "file": {
+        "fix_default_value": fix_file_default_value,
     },
     # Special components
     "bsn": {

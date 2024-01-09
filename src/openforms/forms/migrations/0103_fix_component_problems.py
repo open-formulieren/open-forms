@@ -8,9 +8,10 @@ from openforms.forms.migration_operations import ConvertComponentsOperation
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0101_convert_formio_translations"),
+        ("forms", "0102_convert_formio_translations"),
     ]
 
     operations = [
         ConvertComponentsOperation("columns", "fix_column_sizes"),
+        ConvertComponentsOperation("file", "fix_default_value"),
     ]
