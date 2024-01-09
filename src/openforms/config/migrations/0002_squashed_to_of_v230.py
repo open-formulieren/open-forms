@@ -5,7 +5,7 @@ import functools
 import django.core.validators
 from django.db import migrations, models
 
-import django_better_admin_arrayfield.models.fields
+import django_jsonform.models.fields
 import tinymce.models
 
 import openforms.config.models
@@ -539,7 +539,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="globalconfiguration",
             name="form_upload_default_file_types",
-            field=django_better_admin_arrayfield.models.fields.ArrayField(
+            field=django_jsonform.models.fields.ArrayField(
                 base_field=models.CharField(
                     choices=[
                         ("*", "any filetype"),

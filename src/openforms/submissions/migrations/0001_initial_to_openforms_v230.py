@@ -6,7 +6,7 @@ import django.db.models.deletion
 import django.utils.translation
 from django.db import migrations, models
 
-import django_better_admin_arrayfield.models.fields
+import django_jsonform.models.fields
 import privates.fields
 import privates.storages
 
@@ -172,7 +172,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "on_completion_task_ids",
-                    django_better_admin_arrayfield.models.fields.ArrayField(
+                    django_jsonform.models.fields.ArrayField(
                         base_field=models.CharField(
                             blank=True,
                             max_length=255,

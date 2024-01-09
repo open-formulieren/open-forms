@@ -1,3 +1,5 @@
+import json
+
 from django.test import override_settings
 from django.urls import reverse
 
@@ -44,6 +46,8 @@ class DigiDOIDCFormAdminTests(WebTest):
 
         form = response.form
         form["enabled"] = False
+        # set the value manually, normally this is done through JS
+        form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
         response = form.submit()
 
         self.assertEqual(response.status_code, 302)
@@ -64,6 +68,8 @@ class DigiDOIDCFormAdminTests(WebTest):
 
         form = response.form
         form["enabled"] = False
+        # set the value manually, normally this is done through JS
+        form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
         response = form.submit()
 
         self.assertEqual(response.status_code, 200)

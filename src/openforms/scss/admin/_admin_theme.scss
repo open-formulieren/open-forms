@@ -377,25 +377,45 @@ body.popup {
 }
 
 /**
- * DJANGO-BETTER-ADMIN-ARRAYFIELD
- * Some elements are marked as !important because the style is loaded after
- * this theme.
+ * DJANGO-JSONFORM
  */
-.dynamic-array-widget {
-  /* Substitute with icon */
-  .remove {
-    background: url('../img/admin/trash-alt-regular.svg') 0 0/14px 14px no-repeat;
-    width: 14px;
-    line-height: 16px;
+.rjf-form-wrapper {
+  .rjf-form-group {
+    max-inline-size: calc($input-field-size + 72px + 0.5rem);
+  }
 
-    .inline-deletelink {
-      display: none;
+  .rjf-form-group-inner {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .rjf-form-row-inner {
+    padding: 0 !important;
+  }
+
+  .rjf-form-row {
+    padding: 0;
+
+    input {
+      inline-size: $input-field-size;
+      max-inline-size: 100%;
+      margin-block-start: 2px !important;
+      margin-block-end: 2px !important;
     }
   }
 
-  .array-item {
-    input {
-      width: $input-field-size;
+  .rjf-add-button {
+    @include icon-override('../img/admin/plus-square-regular.svg');
+  }
+
+  @at-root div[data-django-jsonform-container] {
+    display: inline-block;
+    inline-size: calc($input-field-size + 72px + 0.5rem);
+
+    & ~ .help {
+      background-position-y: 7px;
+      block-size: 24px;
     }
   }
 }

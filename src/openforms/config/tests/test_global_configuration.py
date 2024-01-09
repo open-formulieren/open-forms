@@ -11,11 +11,24 @@ from django.utils.translation import gettext as _
 
 import clamd
 from django_webtest import WebTest
+from webtest import Form as WebTestForm
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.tests.utils import NOOP_CACHES, disable_2fa
 
 from ..models import GlobalConfiguration
+
+
+def _ensure_arrayfields(form: WebTestForm, config: GlobalConfiguration | None = None):
+    if config is None:
+        config = GlobalConfiguration.get_solo()  # type: ignore
+    assert isinstance(config, GlobalConfiguration)
+    # set the values manually, normally this is done through JS (django-jsonform takes
+    # care of it)
+    form["email_template_netloc_allowlist"] = json.dumps(
+        config.email_template_netloc_allowlist
+    )
+    form["recipients_email_digest"] = json.dumps(config.recipients_email_digest)
 
 
 @disable_2fa
@@ -47,6 +60,7 @@ class AdminTests(WebTest):
     def test_plugin_configuration(self):
         # mocking the admin/solo machinery is not straightforward here...
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         config.plugin_configuration = {
             "authentication": {
                 "digid": {
@@ -78,12 +92,14 @@ class AdminTests(WebTest):
 
     def test_configuration_save_form_email_can_be_added(self):
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         url = reverse("admin:config_globalconfiguration_change", args=(1,))
 
         change_page = self.app.get(url)
 
         change_page.form["save_form_email_subject_nl"] = "Subject {{form_name}}"
         change_page.form["save_form_email_content_nl"] = "Content {{form_name}}"
+        _ensure_arrayfields(change_page.form, config=config)
         change_page.form.submit()
 
         config.refresh_from_db()
@@ -97,6 +113,7 @@ class AdminTests(WebTest):
         change_page = self.app.get(url)
 
         change_page.form["enable_virus_scan"] = True
+        _ensure_arrayfields(change_page.form)
         response = change_page.form.submit()
 
         self.assertEqual(200, response.status_code)
@@ -129,6 +146,7 @@ class AdminTests(WebTest):
             "ping",
             side_effect=clamd.ConnectionError("Cannot connect!"),
         ):
+            _ensure_arrayfields(change_page.form)
             response = change_page.form.submit()
 
         self.assertEqual(200, response.status_code)

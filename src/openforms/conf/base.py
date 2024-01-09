@@ -160,7 +160,7 @@ INSTALLED_APPS = [
     "colorfield",
     "cookie_consent",
     "corsheaders",
-    "django_better_admin_arrayfield",
+    "django_jsonform",  # django_better_admin_arrayfield replacement
     "django_yubin",
     "hijack",
     "hijack.contrib.admin",

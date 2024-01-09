@@ -11,7 +11,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
-from django_better_admin_arrayfield.models.fields import ArrayField
+from django_jsonform.models.fields import ArrayField
 from furl import furl
 from glom import glom
 
