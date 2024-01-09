@@ -130,7 +130,7 @@ defusedxml==0.7.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django==3.2.24
+django==4.2.10
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -234,7 +234,7 @@ django-filter==23.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-formtools==2.3
+django-formtools==2.5.1
     # via
     #   -r requirements/base.txt
     #   django-two-factor-auth
@@ -268,7 +268,7 @@ django-otp==1.3.0
     # via
     #   -r requirements/base.txt
     #   django-two-factor-auth
-django-phonenumber-field==5.2.0
+django-phonenumber-field==7.3.0
     # via
     #   -r requirements/base.txt
     #   django-two-factor-auth
@@ -591,6 +591,10 @@ pyphen==0.14.0
     # via
     #   -r requirements/base.txt
     #   weasyprint
+pypng==0.20220715.0
+    # via
+    #   -r requirements/base.txt
+    #   qrcode
 pyrsistent==0.17.3
     # via
     #   -r requirements/base.txt
@@ -618,7 +622,6 @@ pytz==2022.2.1
     #   -c requirements/base.in
     #   -r requirements/base.txt
     #   celery
-    #   django
     #   django-yubin
     #   djangorestframework
     #   flower
@@ -633,7 +636,7 @@ pyyaml==6.0.1
     #   drf-spectacular
     #   gemma-zds-client
     #   jsonschema-spec
-qrcode==6.1
+qrcode==7.4.2
     # via
     #   -r requirements/base.txt
     #   django-two-factor-auth
@@ -713,7 +716,6 @@ six==1.15.0
     #   orderedmultidict
     #   prance
     #   python-dateutil
-    #   qrcode
     #   requests-file
     #   rfc3339-validator
 soupsieve==2.3
@@ -753,6 +755,7 @@ typing-extensions==4.9.0
     #   -c requirements/base.in
     #   -r requirements/base.txt
     #   asgiref
+    #   qrcode
 tzdata==2023.3
     # via
     #   -r requirements/base.txt
