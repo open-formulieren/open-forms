@@ -26,7 +26,7 @@ The OpenID Connect configuration is shared with :ref:`the configuration of the m
 
 - It is not recommended to use the *Default groups* configuration option when using OpenID Connect for organization members to authenticate on forms.
 
-- To store user information from OpenID and track an "Employee ID" it is required to configure the ``claim mapping``. This is JSON object where the claims from the OIDC user-info gets mapped to attributes on the user in Open Forms. For more info and options on configuring the mapping see `mozilla-django-oidc-db <https://github.com/maykinmedia/mozilla-django-oidc-db#user-content-user-profile>`_ and the documentation of your OpenID Connect provider for the structure of the returned user-info.
+- To store user information from OpenID and track an "Employee ID" it is required to configure the ``claim mapping``. This is JSON object where the claims from the OIDC user-info gets mapped to attributes on the user in Open Forms. For more info and options on configuring the mapping see `mozilla-django-oidc-db <https://github.com/maykinmedia/mozilla-django-oidc-db>`_ (Section 4.1, User profile) and the documentation of your OpenID Connect provider for the structure of the returned user-info.
 
   Example:
 
