@@ -141,28 +141,13 @@ const BOOL_OPTIONS = [
 ];
 
 const MODIFIABLE_PROPERTIES = {
-  validate: {
+  ['validate.required']: {
     label: defineMessage({
       description: 'component property "required" label',
       defaultMessage: 'required',
     }),
-    type: 'json',
-    options: [
-      [
-        JSON.stringify({required: true}),
-        defineMessage({
-          description: 'Component property boolean value "true"',
-          defaultMessage: 'Yes',
-        }),
-      ],
-      [
-        JSON.stringify({required: false}),
-        defineMessage({
-          description: 'Component property boolean value "false"',
-          defaultMessage: 'No',
-        }),
-      ],
-    ],
+    type: 'bool',
+    options: BOOL_OPTIONS,
   },
   hidden: {
     label: defineMessage({
@@ -178,22 +163,7 @@ const MODIFIABLE_PROPERTIES = {
       defaultMessage: 'disabled',
     }),
     type: 'bool',
-    options: [
-      [
-        'true',
-        defineMessage({
-          description: 'Component property boolean value "true"',
-          defaultMessage: 'Yes',
-        }),
-      ],
-      [
-        'false',
-        defineMessage({
-          description: 'Component property boolean value "false"',
-          defaultMessage: 'No',
-        }),
-      ],
-    ],
+    options: BOOL_OPTIONS,
   },
 };
 

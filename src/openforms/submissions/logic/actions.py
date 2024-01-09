@@ -1,6 +1,7 @@
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, Dict, Mapping, Optional, Type, TypedDict
 
+from glom import assign
 from json_logic import jsonLogic
 
 from openforms.formio.service import FormioConfigurationWrapper
@@ -95,7 +96,7 @@ class PropertyAction(ActionOperation):
         if self.component not in configuration:
             return None
         component = configuration[self.component]
-        component[self.property] = self.value
+        assign(component, self.property, self.value, missing=dict)
 
     def get_action_log_data(
         self,
