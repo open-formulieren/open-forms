@@ -107,3 +107,5 @@ linkcheck_ignore = [
     r"https://www\.jccsoftware\.nl/.*",  # looks like the requests user agent is blocked...
     r"https://hub\.docker\.com/r/.*",  # HTTP 429, presumably docker hub is blocking/limiting Github CI runners
 ]
+
+linkcheck_anchors_ignore = ["41user-profile"]
