@@ -83,8 +83,8 @@ class ColumnField extends FormioColumnField {
         key: 'columns',
         type: 'columns',
         columns: [
-          {size: '6', components: []},
-          {size: '6', components: []},
+          {size: 6, components: []},
+          {size: 6, components: []},
         ],
       },
       ...extend
