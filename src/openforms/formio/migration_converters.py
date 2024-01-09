@@ -4,9 +4,11 @@ Expose a centralized registry of migration converters.
 This registry is used by the data migrations *and* form import. It guarantees that
 component definitions are rewritten to be compatible with the current code.
 """
-from typing import Protocol
+from typing import Protocol, cast
 
 from glom import assign, glom
+
+from openforms.formio.typing.vanilla import ColumnsComponent
 
 from .typing import Component
 
@@ -76,6 +78,36 @@ def set_openforms_datasrc(component: Component) -> bool:
     return True
 
 
+def fix_column_sizes(component: Component) -> bool:
+    component = cast(ColumnsComponent, component)
+
+    changed = False
+    for column in component.get("columns", []):
+        size = column.get("size", "6")
+        size_mobile = column.get("sizeMobile")
+
+        size_ok = isinstance(size, int)
+        size_mobile_ok = size_mobile is None or isinstance(size_mobile, int)
+
+        if size_ok and size_mobile_ok:
+            continue
+
+        changed = True
+        if not size_ok:
+            try:
+                column["size"] = int(size)
+            except (TypeError, ValueError):
+                column["size"] = 6
+
+        if not size_mobile_ok:
+            try:
+                column["sizeMobile"] = int(size_mobile)
+            except (TypeError, ValueError):
+                column["sizeMobile"] = 4
+
+    return changed
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
@@ -99,6 +131,10 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Special components
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
+    },
+    # Layout components
+    "columns": {
+        "fix_column_sizes": fix_column_sizes,
     },
 }
 """A mapping of the component types to their converter functions.

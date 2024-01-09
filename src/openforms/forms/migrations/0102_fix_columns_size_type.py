@@ -2,6 +2,8 @@
 
 from django.db import migrations
 
+from openforms.forms.migration_operations import ConvertComponentsOperation
+
 
 class Migration(migrations.Migration):
 
@@ -9,4 +11,6 @@ class Migration(migrations.Migration):
         ("forms", "0101_convert_formio_translations"),
     ]
 
-    operations = []
+    operations = [
+        ConvertComponentsOperation("columns", "fix_column_sizes"),
+    ]
