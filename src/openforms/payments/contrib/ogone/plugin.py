@@ -11,7 +11,9 @@ from rest_framework.exceptions import ParseError
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.config.data import Entry
+from openforms.frontend import get_frontend_redirect_url
 from openforms.logging import logevent
+from openforms.submissions.tokens import submission_status_token_generator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
@@ -83,15 +85,25 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         self.apply_status(payment, params.STATUS)
 
-        form_url = payment.submission.cleaned_form_url
-        form_url.args.update(
-            {
+        token = submission_status_token_generator.make_token(payment.submission)
+        status_url = request.build_absolute_uri(
+            reverse(
+                "api:submission-status",
+                kwargs={"uuid": payment.submission.uuid, "token": token},
+            )
+        )
+
+        redirect_url = get_frontend_redirect_url(
+            payment.submission,
+            action="payment",
+            action_params={
                 "of_payment_status": payment.status,
                 "of_payment_id": str(payment.uuid),
                 "of_payment_action": action or UserAction.unknown,
-            }
+                "of_submission_status": status_url,
+            },
         )
-        return HttpResponseRedirect(form_url.url)
+        return HttpResponseRedirect(redirect_url)
 
     def handle_webhook(self, request):
         # unvalidated data
