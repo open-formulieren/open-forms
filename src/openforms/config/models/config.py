@@ -391,12 +391,8 @@ class GlobalConfiguration(SingletonModel):
 
     enable_react_formio_builder = models.BooleanField(
         _("enable new formio builder"),
-        default=False,
-        help_text=_(
-            "Use the experimental Form.io component builder implementation. Note that "
-            "this falls back to the existing builder for components that are not "
-            "supported yet."
-        ),
+        default=True,
+        help_text=_("Use the new Form.io component builder implementation."),
     )
 
     display_sdk_information = models.BooleanField(

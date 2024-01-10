@@ -70,6 +70,15 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
     translations_translation_suffix = "[translation]"
     is_translations_order_fixed = False
 
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(clear_caches)
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+        config.enable_react_formio_builder = False
+        config.save()
+
     def _translate(self, text: str) -> str:
         return self.translation_map.get(text, text)
 
@@ -203,7 +212,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                         )
                         await expect(literal_loc).to_have_value(literal)
 
-                await page.get_by_role("button", name="Annuleren").click()
+                await page.get_by_role("button", name="Cancel").click()
                 await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
 
             with phase("save form changes to backend"):
@@ -573,6 +582,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
 
         self.addCleanup(clear_caches)
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         config.enable_react_formio_builder = True
         config.save()
 
@@ -1178,7 +1188,7 @@ class FormDesignerRegressionTests(E2ETestCase):
                 await expect(months).to_have_value("8")
 
                 # close modal again
-                await page.get_by_role("button", name="Annuleren").click()
+                await page.get_by_role("button", name="Cancel").click()
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()
@@ -1578,7 +1588,7 @@ class FormDesignerTooltipTests(E2ETestCase):
                 with self.subTest(label=label):
                     await open_component_options_modal(page, label, exact=True)
                     await expect(page.get_by_label("Tooltip")).to_be_visible()
-                    await page.get_by_role("button", name="Annuleren").first.click()
+                    await page.get_by_role("button", name="Cancel").first.click()
 
 
 class FormDesignerMapComponentTests(E2ETestCase):
