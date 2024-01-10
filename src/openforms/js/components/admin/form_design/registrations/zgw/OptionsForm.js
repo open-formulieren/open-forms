@@ -1,0 +1,63 @@
+import PropTypes from 'prop-types';
+import React from 'react';
+
+import Field from 'components/admin/forms/Field';
+
+import ZGWFormFields from './OptionsFormFields';
+
+const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
+  return (
+    <Field name={name} label={label} errors={[]}>
+      <ZGWFormFields
+        index={index}
+        name={name}
+        schema={schema}
+        formData={formData}
+        onChange={formData => onChange({formData})}
+      />
+    </Field>
+  );
+};
+
+export default ZGWOptionsForm;
+
+ZGWOptionsForm.propTypes = {
+  index: PropTypes.number,
+  name: PropTypes.string,
+  label: PropTypes.node,
+  schema: PropTypes.shape({
+    contentJson: PropTypes.string,
+    informatieobjecttype: PropTypes.string,
+    medewerkerRoltype: PropTypes.string,
+    objecttype: PropTypes.string,
+    objecttypeVersion: PropTypes.number,
+    organisatieRsin: PropTypes.string,
+    variablesProperties: PropTypes.arrayOf(
+      PropTypes.shape({
+        componentKey: PropTypes.string,
+        eigenshap: PropTypes.string,
+      })
+    ),
+    zaakVertrouwelijkheidaanduiding: PropTypes.string,
+    zaaktype: PropTypes.string,
+    zgwApiGroup: PropTypes.number,
+  }),
+  formData: PropTypes.shape({
+    contentJson: PropTypes.string,
+    informatieobjecttype: PropTypes.string,
+    medewerkerRoltype: PropTypes.string,
+    objecttype: PropTypes.string,
+    objecttypeVersion: PropTypes.string,
+    organisatieRsin: PropTypes.string,
+    variablesProperties: PropTypes.arrayOf(
+      PropTypes.shape({
+        componentKey: PropTypes.string,
+        eigenshap: PropTypes.string,
+      })
+    ).isRequired,
+    zaakVertrouwelijkheidaanduiding: PropTypes.string,
+    zaaktype: PropTypes.string,
+    zgwApiGroup: PropTypes.number,
+  }),
+  onChange: PropTypes.func.isRequired,
+};

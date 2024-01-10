@@ -38,6 +38,22 @@ from .models import ZGWApiGroupConfig, ZgwConfig
 logger = logging.getLogger(__name__)
 
 
+class MappedVariablePropertySerializer(serializers.Serializer):
+    component_key = serializers.CharField(
+        label=_("Component key"),
+        help_text=_("Key of the Formio.js component to take the value from."),
+        required=False,
+    )
+    eigenshap = serializers.CharField(
+        required=False,
+        default="",
+        label=_("Property"),
+        help_text=_(
+            "This is the name of the property with which the variable will be connected."
+        ),
+    )
+
+
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.all(),
@@ -100,6 +116,12 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             ),
         ],
         required=False,
+    )
+
+    # Eigenshappen
+    variables_properties = MappedVariablePropertySerializer(
+        many=True,
+        label=_("Mapped properties variables"),
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:

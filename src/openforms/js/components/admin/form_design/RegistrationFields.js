@@ -40,6 +40,7 @@ const BackendOptionsFormRow = ({backendType = null, currentOptions = {}, onChang
   return (
     <FormRow>
       <OptionsFormComponent
+        index={index}
         name={`form.registrationBackends.${index}.options`}
         label={
           <FormattedMessage

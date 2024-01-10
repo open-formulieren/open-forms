@@ -8,6 +8,7 @@ import Select from './Select';
 const allowAny = () => true;
 
 const VariableSelection = ({
+  id,
   name,
   value,
   onChange,
@@ -34,10 +35,13 @@ const VariableSelection = ({
   {
     /*TODO: This should be a searchable select for when there are a billion variables -> react-select */
   }
-  return <Select name={name} choices={choices} allowBlank onChange={onChange} value={value} />;
+  return (
+    <Select id={id} name={name} choices={choices} allowBlank onChange={onChange} value={value} />
+  );
 };
 
 VariableSelection.propTypes = {
+  id: PropTypes.string,
   name: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
