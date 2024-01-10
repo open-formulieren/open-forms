@@ -1,6 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
+import useAsync from 'react-use/esm/useAsync';
 
 import {APIContext} from 'components/admin/form_design/Context';
 import {LOGIC_DESCRIPTION_ENDPOINT} from 'components/admin/form_design/constants';
@@ -42,7 +43,7 @@ const LogicDescriptionInput = ({
 
   const mustBail = isEmpty(logicExpression) || !generationAllowed || modifiedByHuman || hasFocus;
 
-  useEffect(async () => {
+  useAsync(async () => {
     if (mustBail) {
       return;
     }
