@@ -25,6 +25,9 @@
             {% if voorvoegselGeslachtsnaam %}
                 <ns:voorvoegselGeslachtsnaam xsi:nil="true"/>
             {% endif %}
+            {% if voorletters %}
+                <ns:voorletters xsi:nil="true"/>
+            {% endif %}
             {% if voornamen %}
                 <ns:voornamen xsi:nil="true"/>
             {% endif %}
