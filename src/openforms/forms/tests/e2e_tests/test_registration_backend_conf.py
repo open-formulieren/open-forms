@@ -9,7 +9,7 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import (
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 
 from ..factories import FormFactory
-from .test_form_designer import open_component_options_modal, phase
+from .helpers import close_modal, open_component_options_modal, phase
 
 
 class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
@@ -105,7 +105,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await open_component_options_modal(page, label="File upload test")
-                await page.get_by_role("button", name="Opslaan").first.click()
+                await close_modal(page, "Save")
 
             with phase("Update the ZGW API group configured"):
                 await page.get_by_role("tab", name="Registration").click()
@@ -118,7 +118,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await open_component_options_modal(page, label="File upload test")
-                await page.get_by_role("button", name="Opslaan").first.click()
+                await close_modal(page, "Save")
 
         # Formio fires the request twice everytime you open the component
         self.assertEqual(len(requests_to_endpoint), 4)
@@ -193,7 +193,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await open_component_options_modal(page, label="File upload test")
-                await page.get_by_role("button", name="Opslaan").first.click()
+                await close_modal(page, "Save")
 
         # Formio fires the request twice everytime you open the component
         self.assertEqual(len(requests_to_endpoint), 2)

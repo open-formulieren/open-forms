@@ -1,5 +1,4 @@
 import re
-from contextlib import contextmanager
 
 from django.test import tag
 from django.urls import reverse
@@ -21,11 +20,7 @@ from ..factories import (
     FormRegistrationBackendFactory,
     FormStepFactory,
 )
-
-
-@contextmanager
-def phase(desc: str):
-    yield
+from .helpers import close_modal, open_component_options_modal, phase
 
 
 async def add_new_step(page: Page):
@@ -46,19 +41,6 @@ async def drag_and_drop_component(page: Page, component: str):
     await page.mouse.move(0, 0)
     await page.locator('css=[ref="-container"]').hover()
     await page.mouse.up()
-
-
-async def open_component_options_modal(page: Page, label: str, exact: bool = False):
-    """
-    Find the component in the builder with the given label and click the edit icon
-    to bring up the options modal.
-    """
-    # hover over component to bring up action icons
-    await page.get_by_text(label, exact=exact).hover()
-    # formio doesn't have accessible roles here, so use CSS selector
-    await page.locator('css=[ref="editComponent"]').locator("visible=true").last.click()
-    # check that the modal is open now
-    await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
 
 class FormDesignerComponentTranslationTests(E2ETestCase):
@@ -188,10 +170,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
                 # enter translations and save
                 await label_translation.fill("Veldlabel")
-                modal = page.locator("css=.formio-dialog-content")
-                await modal.get_by_role(
-                    "button", name=self._translate("Opslaan"), exact=True
-                ).click()
+                await close_modal(page, self._translate("Opslaan"), exact=True)
 
             with phase("Select component checks"):
                 await open_component_options_modal(page, "Field 2")
@@ -451,13 +430,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.get_by_text("Verouderd").click()
             await drag_and_drop_component(page, "Wachtwoord")
             # save with the defaults
-            modal = page.locator("css=.formio-dialog-content")
-            await modal.get_by_role(
-                "button", name=self._translate("Opslaan"), exact=True
-            ).click()
-
-            # the modal should close
-            await expect(modal).to_be_hidden()
+            await close_modal(page, self._translate("Opslaan"), exact=True)
 
     @tag("gh-2800")
     async def test_key_automatically_generated_for_select_options(self):
@@ -709,10 +682,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
 
                 # enter translations and save
                 await label_translation.fill("Veldlabel")
-                modal = page.locator("css=.formio-dialog-content")
-                await modal.get_by_role(
-                    "button", name=self._translate("Opslaan"), exact=True
-                ).click()
+                await close_modal(page, self._translate("Opslaan"), exact=True)
 
             # TODO: this still uses the old translation mechanism, will follow in a later
             # version of @open-formulieren/formio-builder npm package.
@@ -840,8 +810,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
             await wysiwyg_en.fill("This is the English translation.")
 
             # Save the component
-            modal = page.locator("css=.formio-dialog-content")
-            await modal.get_by_role("button", name="Save", exact=True).click()
+            await close_modal(page, "Save", exact=True)
 
             await open_component_options_modal(
                 page, "This is the default/NL translation."
@@ -1631,8 +1600,7 @@ class FormDesignerTooltipTests(E2ETestCase):
                     await open_component_options_modal(page, label, exact=True)
                     await expect(page.get_by_label("Tooltip")).to_be_visible()
 
-                    modal = page.locator("css=.formio-dialog-content")
-                    await modal.get_by_role("button", name="Cancel").click()
+                    await close_modal(page, "Cancel")
 
 
 class FormDesignerMapComponentTests(E2ETestCase):
