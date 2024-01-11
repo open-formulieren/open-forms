@@ -1,6 +1,6 @@
 import logging
 from functools import partial, wraps
-from typing import Any
+from typing import Any, Dict
 
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
@@ -38,19 +38,49 @@ from .models import ZGWApiGroupConfig, ZgwConfig
 logger = logging.getLogger(__name__)
 
 
+def get_variables_properties_from_submission(
+    submission: Submission, options: Dict[str, Any]
+) -> Dict[str, Any]:
+    variables_properties = {}
+
+    connections = options.get("variables_properties", [])
+
+    # dict of {eigenshap: componentKey} mapping
+    simple_mappings = dict(
+        [
+            (connection.get("component_key"), connection.get("eigenshap"))
+            for connection in connections
+        ]
+    )
+
+    merged_data: Dict[str, Any] = submission.get_merged_data()
+
+    for component in submission.form.iter_components(recursive=True):
+        if (key := component.get("key")) not in simple_mappings:
+            continue
+
+        form_value = merged_data.get(key)
+        eigenshap = simple_mappings[key]
+
+        variables_properties[eigenshap] = form_value
+
+    return variables_properties
+
+
 class MappedVariablePropertySerializer(serializers.Serializer):
     component_key = serializers.CharField(
         label=_("Component key"),
         help_text=_("Key of the Formio.js component to take the value from."),
         required=False,
+        allow_blank=True,
     )
     eigenshap = serializers.CharField(
-        required=False,
-        default="",
         label=_("Property"),
         help_text=_(
             "This is the name of the property with which the variable will be connected."
         ),
+        required=False,
+        allow_blank=True,
     )
 
 
@@ -122,6 +152,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     variables_properties = MappedVariablePropertySerializer(
         many=True,
         label=_("Mapped properties variables"),
+        required=False,
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -485,6 +516,41 @@ class ZGWRegistration(BasePlugin):
                 submission,
                 "intermediate.objects_api_zaakobject",
             )
+
+        # Connect variables with zaak eigenshappen
+        if options.get("variables_properties"):
+            mapped_variables_properties = get_variables_properties_from_submission(
+                submission, options
+            )
+
+            eigenshappen = catalogi_client.list_eigenshappen(
+                zaaktype=options["zaaktype"]
+            )
+
+            retrieved_eigenshappen = {
+                eigenshap["naam"]: eigenshap["url"] for eigenshap in eigenshappen
+            }
+
+            zaak_eigenschappen_list = []
+            for key in mapped_variables_properties:
+                if key in retrieved_eigenshappen:
+                    zaak_eigenschappen_list.append(
+                        {
+                            "zaak": zaak["url"],
+                            "eigenschap": retrieved_eigenshappen[key],
+                            "waarde": mapped_variables_properties[key],
+                        }
+                    )
+
+            for zaak_eigenshap_data in zaak_eigenschappen_list:
+                eigenschap_url = furl(zaak_eigenshap_data["eigenschap"])
+                uuid = eigenschap_url.path.segments[-1]
+
+                result[f"zaakeigenshap-{uuid}"] = execute_unless_result_exists(
+                    partial(zaken_client.create_zaakeigenschap, zaak_eigenshap_data),
+                    submission,
+                    f"intermediate.zaakeigenshap-{uuid}",
+                )
 
         submission.registration_result = result
         submission.save()

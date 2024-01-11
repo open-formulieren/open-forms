@@ -238,7 +238,7 @@ VariablePropertyModal.propTypes = {
     ).isRequired,
     zaakVertrouwelijkheidaanduiding: PropTypes.string,
     zaaktype: PropTypes.string,
-    zgwApiGroup: PropTypes.number,
+    zgwApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }),
   onChange: PropTypes.func.isRequired,
 };

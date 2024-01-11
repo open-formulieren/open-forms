@@ -62,3 +62,12 @@ class CatalogiClient(NLXClient):
 
         results = response.json()["results"]
         return matcher(results)
+
+    def list_eigenshappen(self, zaaktype: str) -> list[dict]:
+        query = {"zaaktype": zaaktype}
+
+        response = self.get("eigenschappen", params=query)
+        response.raise_for_status()
+
+        results = response.json()["results"]
+        return results

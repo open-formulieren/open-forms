@@ -149,3 +149,17 @@ class ZakenClient(NLXClient):
         response.raise_for_status()
 
         return response.json()
+
+    def create_zaakeigenschap(self, zaak_eigenshap_data: dict) -> dict:
+        response = self.post(
+            "zaakeigenschappen",
+            uuid=zaak_eigenshap_data["zaak"],
+            json=zaak_eigenshap_data,
+        )
+        response.raise_for_status()
+        from celery.contrib import rdb
+
+        rdb.set_trace()
+
+        print()
+        return response.json()
