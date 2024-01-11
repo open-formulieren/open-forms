@@ -1502,6 +1502,13 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "type": "licenseplate",
                             "key": "licenseplate",
                             "label": "License plate 1",
+                            # The intent from the existing code is for this to be baked into the
+                            # component definition, and the TypeScript type definitions are set up
+                            # accordingly. There is a data migration normalizing existing data
+                            # and handling old exports being re-imported.
+                            "validate": {
+                                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$",
+                            },
                         },
                         {"type": "number", "key": "number", "label": "Number 1"},
                         {"type": "password", "key": "password", "label": "Password 1"},
@@ -1510,7 +1517,18 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "key": "phoneNumber",
                             "label": "Phone Number 1",
                         },
-                        {"type": "postcode", "key": "postcode", "label": "Postcode 1"},
+                        {
+                            "type": "postcode",
+                            "key": "postcode",
+                            "label": "Postcode 1",
+                            # The intent from the existing code is for this to be baked into the
+                            # component definition, and the TypeScript type definitions are set up
+                            # accordingly. There is a data migration normalizing existing data
+                            # and handling old exports being re-imported.
+                            "validate": {
+                                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+                            },
+                        },
                         {"type": "radio", "key": "radio", "label": "Radio 1"},
                         {"type": "select", "key": "select", "label": "Select 1"},
                         {
@@ -1588,7 +1606,9 @@ class FormDesignerTooltipTests(E2ETestCase):
                 with self.subTest(label=label):
                     await open_component_options_modal(page, label, exact=True)
                     await expect(page.get_by_label("Tooltip")).to_be_visible()
-                    await page.get_by_role("button", name="Cancel").first.click()
+
+                    modal = page.locator("css=.formio-dialog-content")
+                    await modal.get_by_role("button", name="Cancel").click()
 
 
 class FormDesignerMapComponentTests(E2ETestCase):

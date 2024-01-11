@@ -320,8 +320,13 @@ class WebformBuilder extends WebformBuilderFormio {
     // using only produce seems to affect component itself, which crashes the preview
     // rebuild of formio...
     // const componentCopy = produce(component, draft => draft);
-    const componentCopy = produce(FormioUtils.fastCloneDeep(component), draft => draft);
+    const componentCopy = FormioUtils.fastCloneDeep(component);
     const ComponentClass = Components.components[componentCopy.type];
+
+    // takes care of setting the defaults from the schema etc., since `component` itself
+    // is really just the bare minimum and may not comply with our TypeScript definitions.
+    const instance = new ComponentClass(componentCopy);
+    const builderData = produce(instance.component, draft => draft);
 
     // Make sure we only have one dialog open at a time.
     if (this.dialog) {
@@ -392,7 +397,7 @@ class WebformBuilder extends WebformBuilderFormio {
             getAuthPlugins={getAvailableAuthPlugins}
             // Component/builder state
             isNew={isNew}
-            component={componentCopy}
+            component={builderData}
             builderInfo={ComponentClass.builderInfo}
             onCancel={onCancel}
             onRemove={onRemove}
