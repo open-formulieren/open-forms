@@ -57,6 +57,8 @@ class FormLiteralsSerializer(serializers.Serializer):
 
 
 class FormRegistrationBackendSerializer(serializers.ModelSerializer):
+    options = serializers.DictField(label=_("registration backend options"))
+
     class Meta:
         model = FormRegistrationBackend
         fields = [
@@ -160,6 +162,11 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         choices=[],
         required=False,
         default="",
+    )
+    payment_backend_options = serializers.DictField(
+        label=_("payment backend options"),
+        required=False,
+        allow_null=True,
     )
     payment_options = PaymentOptionsReadOnlyField()
 
