@@ -1529,12 +1529,36 @@ class FormDesignerTooltipTests(E2ETestCase):
                                 "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
                             },
                         },
-                        {"type": "radio", "key": "radio", "label": "Radio 1"},
-                        {"type": "select", "key": "select", "label": "Select 1"},
+                        {
+                            "type": "radio",
+                            "key": "radio",
+                            "label": "Radio 1",
+                            "openForms": {"dataSrc": "manual"},
+                            "values": [
+                                {"value": "option", "label": "Option"},
+                            ],
+                        },
+                        {
+                            "type": "select",
+                            "key": "select",
+                            "label": "Select 1",
+                            "openForms": {"dataSrc": "manual"},
+                            "dataSrc": "values",
+                            "data": {
+                                "values": [
+                                    {"value": "option", "label": "Option"},
+                                ],
+                            },
+                        },
                         {
                             "type": "selectboxes",
                             "key": "selectBoxes",
                             "label": "Select Boxes 1",
+                            "openForms": {"dataSrc": "manual"},
+                            "values": [
+                                {"value": "option", "label": "Option"},
+                            ],
+                            "defaultValue": {},
                         },
                         {
                             "type": "signature",
