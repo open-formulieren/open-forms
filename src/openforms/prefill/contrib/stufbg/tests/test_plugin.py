@@ -74,6 +74,7 @@ class StufBgPrefillTests(TestCase):
 
         self.assertEqual(values["bsn"], "999992314")
         self.assertEqual(values["voornamen"], "Media")
+        self.assertEqual(values["voorletters"], "M")
         self.assertEqual(values["geslachtsnaam"], "Maykin")
         self.assertEqual(values["straatnaam"], "Keizersgracht")
         self.assertEqual(values["huisnummer"], "117")
