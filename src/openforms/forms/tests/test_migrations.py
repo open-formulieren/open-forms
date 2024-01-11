@@ -806,11 +806,28 @@ class TestComponentFixesMigration(TestMigrations):
                     },
                     {
                         "type": "file",
+                        "key": "file1",
                         "defaultValue": None,
                     },
                     {
                         "type": "file",
+                        "key": "file2",
                         "defaultValue": [None],
+                    },
+                    {
+                        "type": "licenseplate",
+                        "key": "licenseplate1",
+                    },
+                    {
+                        "type": "licenseplate",
+                        "key": "licenseplate2",
+                        "validate": {
+                            "required": True,
+                        },
+                    },
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
                     },
                 ]
             },
@@ -862,3 +879,35 @@ class TestComponentFixesMigration(TestMigrations):
 
         with self.subTest("File 2 (broken)"):
             self.assertIsNone(file2["defaultValue"])
+
+    def test_licenseplate_validate_added(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+        plate1, plate2 = fd.configuration["components"][3:5]
+
+        with self.subTest("License plate 1"):
+            self.assertIn("validate", plate1)
+            self.assertEqual(
+                plate1["validate"]["pattern"],
+                r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$",
+            )
+            self.assertNotIn("required", plate1["validate"])
+
+        with self.subTest("License plate 2"):
+            self.assertIn("validate", plate2)
+            self.assertEqual(
+                plate2["validate"]["pattern"],
+                r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$",
+            )
+            self.assertTrue(plate2["validate"]["required"])
+
+    def test_postcode_validate_added(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+        postcode = fd.configuration["components"][5]
+
+        self.assertIn("validate", postcode)
+        self.assertEqual(
+            postcode["validate"]["pattern"],
+            r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+        )

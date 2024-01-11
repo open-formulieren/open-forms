@@ -120,6 +120,26 @@ def fix_file_default_value(component: Component) -> bool:
             return False
 
 
+def ensure_licensplate_validate_pattern(component: Component) -> bool:
+    # assume that it's the correct pattern if it's set
+    if "validate" in component and "pattern" in component["validate"]:
+        return False
+
+    component.setdefault("validate", {})
+    component["validate"]["pattern"] = r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$"  # type: ignore
+    return True
+
+
+def ensure_postcode_validate_pattern(component: Component) -> bool:
+    # assume that it's the correct pattern if it's set
+    if "validate" in component and "pattern" in component["validate"]:
+        return False
+
+    component.setdefault("validate", {})
+    component["validate"]["pattern"] = r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$"  # type: ignore
+    return True
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
@@ -139,11 +159,15 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "radio": {"set_openforms_datasrc": set_openforms_datasrc},
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
+        "ensure_validate_pattern": ensure_postcode_validate_pattern,
     },
     "file": {
         "fix_default_value": fix_file_default_value,
     },
     # Special components
+    "licenseplate": {
+        "ensure_validate_pattern": ensure_licensplate_validate_pattern,
+    },
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
     },

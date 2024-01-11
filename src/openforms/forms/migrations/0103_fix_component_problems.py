@@ -14,4 +14,6 @@ class Migration(migrations.Migration):
     operations = [
         ConvertComponentsOperation("columns", "fix_column_sizes"),
         ConvertComponentsOperation("file", "fix_default_value"),
+        ConvertComponentsOperation("licenseplate", "ensure_validate_pattern"),
+        ConvertComponentsOperation("postcode", "ensure_validate_pattern"),
     ]
