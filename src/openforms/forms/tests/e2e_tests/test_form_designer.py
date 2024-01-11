@@ -1,5 +1,4 @@
 import re
-from contextlib import contextmanager
 
 from django.test import tag
 from django.urls import reverse
@@ -21,11 +20,12 @@ from ..factories import (
     FormRegistrationBackendFactory,
     FormStepFactory,
 )
-
-
-@contextmanager
-def phase(desc: str):
-    yield
+from .helpers import (
+    click_modal_button,
+    close_modal,
+    open_component_options_modal,
+    phase,
+)
 
 
 async def add_new_step(page: Page):
@@ -48,19 +48,6 @@ async def drag_and_drop_component(page: Page, component: str):
     await page.mouse.up()
 
 
-async def open_component_options_modal(page: Page, label: str, exact: bool = False):
-    """
-    Find the component in the builder with the given label and click the edit icon
-    to bring up the options modal.
-    """
-    # hover over component to bring up action icons
-    await page.get_by_text(label, exact=exact).hover()
-    # formio doesn't have accessible roles here, so use CSS selector
-    await page.locator('css=[ref="editComponent"]').locator("visible=true").last.click()
-    # check that the modal is open now
-    await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-
-
 class FormDesignerComponentTranslationTests(E2ETestCase):
     # TODO: once the form builder has been replaced completely with our react-based
     # implemenation, these shims need to be removed.
@@ -69,6 +56,15 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
     translations_literal_suffix = ""
     translations_translation_suffix = "[translation]"
     is_translations_order_fixed = False
+
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(clear_caches)
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+        config.enable_react_formio_builder = False
+        config.save()
 
     def _translate(self, text: str) -> str:
         return self.translation_map.get(text, text)
@@ -179,10 +175,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
                 # enter translations and save
                 await label_translation.fill("Veldlabel")
-                modal = page.locator("css=.formio-dialog-content")
-                await modal.get_by_role(
-                    "button", name=self._translate("Opslaan"), exact=True
-                ).click()
+                await close_modal(page, self._translate("Opslaan"), exact=True)
 
             with phase("Select component checks"):
                 await open_component_options_modal(page, "Field 2")
@@ -203,8 +196,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                         )
                         await expect(literal_loc).to_have_value(literal)
 
-                await page.get_by_role("button", name="Annuleren").click()
-                await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
+                await close_modal(page, self._translate("Annuleren"))
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()
@@ -442,13 +434,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.get_by_text("Verouderd").click()
             await drag_and_drop_component(page, "Wachtwoord")
             # save with the defaults
-            modal = page.locator("css=.formio-dialog-content")
-            await modal.get_by_role(
-                "button", name=self._translate("Opslaan"), exact=True
-            ).click()
-
-            # the modal should close
-            await expect(modal).to_be_hidden()
+            await close_modal(page, self._translate("Opslaan"), exact=True)
 
     @tag("gh-2800")
     async def test_key_automatically_generated_for_select_options(self):
@@ -573,6 +559,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
 
         self.addCleanup(clear_caches)
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         config.enable_react_formio_builder = True
         config.save()
 
@@ -699,10 +686,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
 
                 # enter translations and save
                 await label_translation.fill("Veldlabel")
-                modal = page.locator("css=.formio-dialog-content")
-                await modal.get_by_role(
-                    "button", name=self._translate("Opslaan"), exact=True
-                ).click()
+                await close_modal(page, self._translate("Opslaan"), exact=True)
 
             # TODO: this still uses the old translation mechanism, will follow in a later
             # version of @open-formulieren/formio-builder npm package.
@@ -830,8 +814,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
             await wysiwyg_en.fill("This is the English translation.")
 
             # Save the component
-            modal = page.locator("css=.formio-dialog-content")
-            await modal.get_by_role("button", name="Save", exact=True).click()
+            await close_modal(page, "Save", exact=True)
 
             await open_component_options_modal(
                 page, "This is the default/NL translation."
@@ -1126,51 +1109,56 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             with phase("Initial set up of datetime validation"):
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # select the validation mode in the dropdown
-                label = page.get_by_text("Validatiemethode", exact=True).first
-                field = label.locator("..")  # grab the parent
-                dropdown = field.get_by_role("combobox")
-                await dropdown.click()
-                await dropdown.get_by_text("Ten opzichte van een variabele").click()
+                dropdown = page.get_by_role("combobox", name="Mode preset")
+                await dropdown.focus()
+                await page.keyboard.press("ArrowDown")
+                option = page.get_by_text("Relative to variable", exact=True)
+                await option.scroll_into_view_if_needed()
+                await option.click()
 
                 # Fill in years, months, days and submit
-                years = page.get_by_label("Jaren")
-                months = page.get_by_label("Maanden")
-                days = page.get_by_label("Dagen")
+                years = page.get_by_label("Years")
+                months = page.get_by_label("Months")
+                days = page.get_by_label("Days")
                 await years.fill("1")
                 await months.fill("1")
                 await days.fill("1")
-                await page.get_by_role("button", name="Opslaan").click()
+                await close_modal(page, "Save")
 
                 # Navigate back to Validation
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # Check expectations
                 await expect(years).to_have_value("1")
                 await expect(months).to_have_value("1")
                 await expect(months).to_have_value("1")
 
-                await page.get_by_role("button", name="Opslaan").click()
+                await close_modal(page, "Save")
 
             with phase("Change values for datetime validation"):
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # Fill in years, months, days and submit
-                years = page.get_by_label("Jaren")
-                months = page.get_by_label("Maanden")
-                days = page.get_by_label("Dagen")
+                years = page.get_by_label("Years")
+                months = page.get_by_label("Months")
+                days = page.get_by_label("Days")
                 await years.fill("8")
                 await months.fill("8")
                 await days.fill("8")
-                await page.get_by_role("button", name="Opslaan").click()
+                await close_modal(page, "Save")
 
                 # Navigate back to Validation
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # Check expectations
                 await expect(years).to_have_value("8")
@@ -1178,7 +1166,7 @@ class FormDesignerRegressionTests(E2ETestCase):
                 await expect(months).to_have_value("8")
 
                 # close modal again
-                await page.get_by_role("button", name="Annuleren").click()
+                await close_modal(page, "Cancel")
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()
@@ -1307,40 +1295,17 @@ class FormDesignerRegressionTests(E2ETestCase):
             # Go to the validation tab of the number component
             await page.get_by_role("tab", name="Steps and fields").click()
             await open_component_options_modal(page, "Number Field")
-            await page.get_by_role("link", name="Validatie").click()
+            await page.get_by_role("link", name="Validation").click()
 
             # Check the custom errors for the number component
-            await page.get_by_text("Foutmeldingen").click()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][0][__key]"]'
-                )
-            ).to_be_visible()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][0][__key]"]'
-                )
-            ).to_have_value("required")
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][1][__key]"]'
-                )
-            ).to_be_visible()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][1][__key]"]'
-                )
-            ).to_have_value("min")
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][2][__key]"]'
-                )
-            ).to_be_visible()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][2][__key]"]'
-                )
-            ).to_have_value("max")
+            await page.get_by_role("button", name="Custom error messages").click()
+
+            for index, attribute in enumerate(["required", "min", "max"]):
+                with self.subTest(validator_key=attribute):
+                    test_id = f"input-translatedErrors.nl[{index}].key"
+                    locator = page.get_by_test_id(test_id)
+                    await expect(locator).to_be_visible()
+                    await expect(locator).to_have_value(attribute)
 
     @tag("gh-3132")
     async def test_replacing_step_with_overlapping_config(self):
@@ -1492,6 +1457,13 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "type": "licenseplate",
                             "key": "licenseplate",
                             "label": "License plate 1",
+                            # The intent from the existing code is for this to be baked into the
+                            # component definition, and the TypeScript type definitions are set up
+                            # accordingly. There is a data migration normalizing existing data
+                            # and handling old exports being re-imported.
+                            "validate": {
+                                "pattern": r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$",
+                            },
                         },
                         {"type": "number", "key": "number", "label": "Number 1"},
                         {"type": "password", "key": "password", "label": "Password 1"},
@@ -1500,13 +1472,48 @@ class FormDesignerTooltipTests(E2ETestCase):
                             "key": "phoneNumber",
                             "label": "Phone Number 1",
                         },
-                        {"type": "postcode", "key": "postcode", "label": "Postcode 1"},
-                        {"type": "radio", "key": "radio", "label": "Radio 1"},
-                        {"type": "select", "key": "select", "label": "Select 1"},
+                        {
+                            "type": "postcode",
+                            "key": "postcode",
+                            "label": "Postcode 1",
+                            # The intent from the existing code is for this to be baked into the
+                            # component definition, and the TypeScript type definitions are set up
+                            # accordingly. There is a data migration normalizing existing data
+                            # and handling old exports being re-imported.
+                            "validate": {
+                                "pattern": r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+                            },
+                        },
+                        {
+                            "type": "radio",
+                            "key": "radio",
+                            "label": "Radio 1",
+                            "openForms": {"dataSrc": "manual"},
+                            "values": [
+                                {"value": "option", "label": "Option"},
+                            ],
+                        },
+                        {
+                            "type": "select",
+                            "key": "select",
+                            "label": "Select 1",
+                            "openForms": {"dataSrc": "manual"},
+                            "dataSrc": "values",
+                            "data": {
+                                "values": [
+                                    {"value": "option", "label": "Option"},
+                                ],
+                            },
+                        },
                         {
                             "type": "selectboxes",
                             "key": "selectBoxes",
                             "label": "Select Boxes 1",
+                            "openForms": {"dataSrc": "manual"},
+                            "values": [
+                                {"value": "option", "label": "Option"},
+                            ],
+                            "defaultValue": {},
                         },
                         {
                             "type": "signature",
@@ -1578,7 +1585,8 @@ class FormDesignerTooltipTests(E2ETestCase):
                 with self.subTest(label=label):
                     await open_component_options_modal(page, label, exact=True)
                     await expect(page.get_by_label("Tooltip")).to_be_visible()
-                    await page.get_by_role("button", name="Annuleren").first.click()
+
+                    await close_modal(page, "Cancel")
 
 
 class FormDesignerMapComponentTests(E2ETestCase):
@@ -1619,13 +1627,17 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
+            await page.get_by_role("button", name="Map configuration").click()
             # both fields are required so we clear one.
             await page.get_by_label("Latitude").clear()
 
-            await page.get_by_role("button", name="Opslaan").first.click()
+            await click_modal_button(page, "Save")
 
             error_node = page.locator("css=.error")
             await expect(error_node).to_be_visible()
+            await expect(error_node).to_have_text(
+                "You need to configure both longitude and latitude."
+            )
 
     async def test_map_component_without_longitude(self):
         @sync_to_async
@@ -1666,13 +1678,17 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
+            await page.get_by_role("button", name="Map configuration").click()
             # both fields are required so we clear one.
             await page.get_by_label("Longitude").clear()
 
-            await page.get_by_role("button", name="Opslaan").first.click()
+            await click_modal_button(page, "Save")
 
             error_node = page.locator("css=.error")
             await expect(error_node).to_be_visible()
+            await expect(error_node).to_have_text(
+                "You need to configure both longitude and latitude."
+            )
 
 
 class AppointmentFormTests(E2ETestCase):

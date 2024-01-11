@@ -1,3 +1,5 @@
+import warnings
+
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +14,7 @@ from openforms.translations.api.serializers import (
     ModelTranslationsSerializer,
 )
 
+from ...fd_translations_converter import process_component_tree
 from ...models import Form, FormDefinition
 from ...validators import (
     validate_form_definition_is_reusable,
@@ -131,6 +134,21 @@ class FormDefinitionSerializer(
             validate_form_definition_is_reusable(
                 self.instance, new_value=attrs.get("is_reusable")
             )
+
+        # during import, process legacy format component translations
+        if self.context.get("is_import", False) and (
+            translations_store := attrs.get("component_translations")
+        ):
+            warnings.warn(
+                "Form-definition component translations are deprecated, the "
+                "compatibility layer wil be removed in Open Forms 3.0.",
+                DeprecationWarning,
+            )
+            process_component_tree(
+                components=attrs["configuration"]["components"],
+                translations_store=translations_store,
+            )
+
         return attrs
 
 

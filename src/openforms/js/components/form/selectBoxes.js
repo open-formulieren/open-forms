@@ -38,6 +38,16 @@ class SelectBoxesField extends SelectBoxes {
     return {components: [defaultChoicesTabs]};
   }
 
+  constructor(...args) {
+    super(...args);
+
+    // somewhere the default emptyValue/defaultValue does not seem to be used and it forces
+    // component.defaultValue to be null, which crashes the builder.
+    if (this.component.defaultValue === null) {
+      this.component.defaultValue = {};
+    }
+  }
+
   setSelectedClasses() {
     // In the case the source is a variable, the input.value can be null in the form editor for the default value component
     if (this.dataValue === null) return;

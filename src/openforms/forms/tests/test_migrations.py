@@ -365,8 +365,8 @@ class TestSetDataSrcMigration(TestMigrations):
         FormDefinition = apps.get_model("forms", "FormDefinition")
 
         FormDefinition.objects.create(
-            name="Date",
-            slug="date",
+            name="DataSrc",
+            slug="datasrc",
             configuration={
                 "components": [
                     # Select variants
@@ -600,4 +600,314 @@ class TestUpdateActionProperty(TestMigrations):
                     "value": "",
                 },
             },
+        )
+
+
+class TestFormioTranslationsMigration(TestMigrations):
+    app = "forms"
+    migrate_from = "0101_update_action_property"
+    migrate_to = "0102_convert_formio_translations"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        FormDefinition.objects.create(
+            name="Translations",
+            slug="translations",
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "label": "Reused label",
+                        "description": "Textfield description",
+                        "tooltip": "",
+                    },
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "label": "Reused label",
+                        "components": [
+                            {
+                                "type": "content",
+                                "key": "content",
+                                "html": "<p>Some content</p>",
+                            },
+                            {
+                                "type": "radio",
+                                "key": "radio",
+                                "label": "Radio label",
+                                "values": [
+                                    {
+                                        "value": "option-1",
+                                        "label": "Option 1",
+                                    },
+                                ],
+                            },
+                            {
+                                "type": "select",
+                                "key": "select",
+                                "label": "Reused label",
+                                "data": {
+                                    "values": [
+                                        {
+                                            "value": "option-1",
+                                            "label": "Option 1",
+                                        },
+                                        {
+                                            "value": "option-2",
+                                            "label": "Option 2",
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                ]
+            },
+            component_translations={
+                "nl": {
+                    "Reused label": "Herbruikt label",
+                    "Textfield description": "Omschrijving van tekstveld",
+                    "<p>Some content</p>": "<p>Inhoud</p>",
+                    # "Radio label": "DELIBERATELY OMITTED",
+                    "Option 1": "Optie 1",
+                },
+            },
+        )
+
+    def test_translations_moved_to_components(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+
+        textfield, fieldset = fd.configuration["components"]
+        content, radio, select = fieldset["components"]
+
+        with self.subTest("textfield"):
+            self.assertIn("openForms", textfield)
+            self.assertIn("translations", textfield["openForms"])
+            self.assertIn("nl", textfield["openForms"]["translations"])
+            textfield_nl_translations = textfield["openForms"]["translations"]["nl"]
+            self.assertEqual(
+                textfield_nl_translations,
+                {
+                    "label": "Herbruikt label",
+                    "description": "Omschrijving van tekstveld",
+                },
+            )
+
+        with self.subTest("fieldset"):
+            self.assertIn("openForms", fieldset)
+            self.assertIn("translations", fieldset["openForms"])
+            self.assertIn("nl", fieldset["openForms"]["translations"])
+            fieldset_nl_translations = fieldset["openForms"]["translations"]["nl"]
+            self.assertEqual(fieldset_nl_translations, {"label": "Herbruikt label"})
+
+        with self.subTest("content"):
+            self.assertIn("openForms", content)
+            self.assertIn("translations", content["openForms"])
+            self.assertIn("nl", content["openForms"]["translations"])
+            content_nl_translations = content["openForms"]["translations"]["nl"]
+            self.assertEqual(content_nl_translations, {"html": "<p>Inhoud</p>"})
+
+        with self.subTest("radio"):
+            self.assertNotIn("openForms", radio)
+
+            radio_option_1 = radio["values"][0]
+            self.assertIn("openForms", radio_option_1)
+            self.assertIn("translations", radio_option_1["openForms"])
+            self.assertIn("nl", radio_option_1["openForms"]["translations"])
+            radio_option_1_nl_translations = radio_option_1["openForms"][
+                "translations"
+            ]["nl"]
+            self.assertEqual(
+                radio_option_1_nl_translations,
+                {
+                    "label": "Optie 1",
+                },
+            )
+
+        with self.subTest("select"):
+            self.assertIn("openForms", select)
+            self.assertIn("translations", select["openForms"])
+            self.assertIn("nl", select["openForms"]["translations"])
+            select_nl_translations = select["openForms"]["translations"]["nl"]
+            self.assertEqual(select_nl_translations, {"label": "Herbruikt label"})
+
+            select_option_1, select_option_2 = select["data"]["values"]
+
+            self.assertIn("openForms", select_option_1)
+            self.assertIn("translations", select_option_1["openForms"])
+            self.assertIn("nl", select_option_1["openForms"]["translations"])
+            select_option_1_nl_translations = select_option_1["openForms"][
+                "translations"
+            ]["nl"]
+            self.assertEqual(
+                select_option_1_nl_translations,
+                {
+                    "label": "Optie 1",
+                },
+            )
+
+            self.assertNotIn("openForms", select_option_2)
+
+
+class TestComponentFixesMigration(TestMigrations):
+    app = "forms"
+    migrate_from = "0102_convert_formio_translations"
+    migrate_to = "0103_fix_component_problems"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        FormDefinition.objects.create(
+            name="Translations",
+            slug="translations",
+            configuration={
+                "components": [
+                    {
+                        "type": "columns",
+                        "key": "columns",
+                        "columns": [
+                            {
+                                "size": "5",
+                                "sizeMobile": "4",
+                                "components": [],
+                            },
+                            {
+                                "size": 6,
+                                "sizeMobile": "4",
+                                "components": [],
+                            },
+                            # malformed - should not crash
+                            {
+                                "components": [],
+                            },
+                            # nothing to do
+                            {
+                                "size": 4,
+                                "components": [],
+                            },
+                            # invalid configurations
+                            {
+                                "size": "xl",
+                                "components": [],
+                            },
+                            {
+                                "size": "3.14",
+                                "sizeMobile": "xs",
+                                "components": [],
+                            },
+                            {
+                                "size": None,
+                                "components": [],
+                            },
+                        ],
+                    },
+                    {
+                        "type": "file",
+                        "key": "file1",
+                        "defaultValue": None,
+                    },
+                    {
+                        "type": "file",
+                        "key": "file2",
+                        "defaultValue": [None],
+                    },
+                    {
+                        "type": "licenseplate",
+                        "key": "licenseplate1",
+                    },
+                    {
+                        "type": "licenseplate",
+                        "key": "licenseplate2",
+                        "validate": {
+                            "required": True,
+                        },
+                    },
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                    },
+                ]
+            },
+        )
+
+    def test_column_sizes_converted_to_int(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+
+        col1, col2, col3, col4, col5, col6, col7 = fd.configuration["components"][0][
+            "columns"
+        ]
+
+        with self.subTest("Column 1"):
+            self.assertEqual(col1["size"], 5)
+            self.assertEqual(col1["sizeMobile"], 4)
+
+        with self.subTest("Column 2"):
+            self.assertEqual(col2["size"], 6)
+            self.assertEqual(col2["sizeMobile"], 4)
+
+        with self.subTest("Column 3"):
+            self.assertEqual(col3["size"], 6)
+            self.assertNotIn("sizeMobile", col3)
+
+        with self.subTest("Column 4"):
+            self.assertEqual(col4["size"], 4)
+            self.assertNotIn("sizeMobile", col4)
+
+        with self.subTest("Column 5"):
+            self.assertEqual(col5["size"], 6)
+            self.assertNotIn("sizeMobile", col5)
+
+        with self.subTest("Column 6"):
+            self.assertEqual(col6["size"], 6)
+            self.assertEqual(col6["sizeMobile"], 4)
+
+        with self.subTest("Column 7"):
+            self.assertEqual(col7["size"], 6)
+            self.assertNotIn("sizeMobile", col7)
+
+    def test_file_default_value_fixed(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+        file1, file2 = fd.configuration["components"][1:3]
+
+        with self.subTest("File 1 (ok)"):
+            self.assertIsNone(file1["defaultValue"])
+
+        with self.subTest("File 2 (broken)"):
+            self.assertIsNone(file2["defaultValue"])
+
+    def test_licenseplate_validate_added(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+        plate1, plate2 = fd.configuration["components"][3:5]
+
+        with self.subTest("License plate 1"):
+            self.assertIn("validate", plate1)
+            self.assertEqual(
+                plate1["validate"]["pattern"],
+                r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$",
+            )
+            self.assertNotIn("required", plate1["validate"])
+
+        with self.subTest("License plate 2"):
+            self.assertIn("validate", plate2)
+            self.assertEqual(
+                plate2["validate"]["pattern"],
+                r"^[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}\-[a-zA-Z0-9]{1,3}$",
+            )
+            self.assertTrue(plate2["validate"]["required"])
+
+    def test_postcode_validate_added(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fd = FormDefinition.objects.get()
+        postcode = fd.configuration["components"][5]
+
+        self.assertIn("validate", postcode)
+        self.assertEqual(
+            postcode["validate"]["pattern"],
+            r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
         )

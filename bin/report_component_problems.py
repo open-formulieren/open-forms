@@ -32,6 +32,12 @@ def report_problems() -> bool:
                     if None in default_value:
                         problems.append([*problem_base, "'null' in file default value"])
 
+                case {"type": "licenseplate"}:
+                    if "validate" not in component:
+                        problems.append(
+                            [*problem_base, "Missing validation configuration"]
+                        )
+
                 case {"type": "columns", "columns": list() as columns}:
                     for col in columns:
                         has_problem = False
