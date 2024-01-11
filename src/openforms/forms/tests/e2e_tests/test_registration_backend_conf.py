@@ -90,6 +90,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
 
             await self._admin_login(page)
             await page.goto(str(admin_url))
+            modal = page.locator("css=.formio-dialog-content")
 
             with phase("Configure registration backend"):
                 await page.get_by_role("tab", name="Registration").click()
@@ -105,6 +106,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await open_component_options_modal(page, label="File upload test")
+                await modal.get_by_role("tab", name="Registration").click()
                 await close_modal(page, "Save")
 
             with phase("Update the ZGW API group configured"):
@@ -118,10 +120,10 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await open_component_options_modal(page, label="File upload test")
+                await modal.get_by_role("tab", name="Registration").click()
                 await close_modal(page, "Save")
 
-        # Formio fires the request twice everytime you open the component
-        self.assertEqual(len(requests_to_endpoint), 4)
+        self.assertEqual(len(requests_to_endpoint), 2)
         self.assertEqual(
             furl(requests_to_endpoint[0].url).args["zgw_api_group"],
             str(zgw_api_1.pk),
@@ -131,11 +133,11 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
             "zgw-create-zaak",
         )
         self.assertEqual(
-            furl(requests_to_endpoint[2].url).args["zgw_api_group"],
+            furl(requests_to_endpoint[1].url).args["zgw_api_group"],
             str(zgw_api_2.pk),
         )
         self.assertEqual(
-            furl(requests_to_endpoint[2].url).args["registration_backend"],
+            furl(requests_to_endpoint[1].url).args["registration_backend"],
             "zgw-create-zaak",
         )
 
@@ -193,10 +195,11 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await open_component_options_modal(page, label="File upload test")
+                modal = page.locator("css=.formio-dialog-content")
+                await modal.get_by_role("tab", name="Registration").click()
                 await close_modal(page, "Save")
 
-        # Formio fires the request twice everytime you open the component
-        self.assertEqual(len(requests_to_endpoint), 2)
+        self.assertEqual(len(requests_to_endpoint), 1)
         self.assertEqual(
             furl(requests_to_endpoint[0].url).args["registration_backend"],
             "objects_api",

@@ -7,6 +7,7 @@ from playwright.async_api import expect
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 
 from ..factories import FormFactory
+from .helpers import close_modal
 from .test_form_designer import drag_and_drop_component
 
 
@@ -35,17 +36,19 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and Fields").click()
 
             await drag_and_drop_component(page, "Bestandsupload")
-            await page.get_by_role("link", name="Bestand").click()
-            label = page.get_by_text("Bestandstypen", exact=True).first
-            field = label.locator("..")  # grab the parent
-            dropdown = field.get_by_role("combobox")
-            await dropdown.click()
-            await dropdown.get_by_text(".pdf").click()
+
+            await page.get_by_role("link", name="File").click()
+
+            dropdown = page.get_by_role("combobox", name="File types")
+            await dropdown.focus()
+            await page.keyboard.press("ArrowDown")
+            option = page.get_by_text(".pdf", exact=True)
+            await option.scroll_into_view_if_needed()
+            await option.click()
             await dropdown.blur()
 
             # Save component
-            await page.get_by_role("button", name="Opslaan").click()
-            await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
+            await close_modal(page, "Save")
 
             # Save form
             await page.get_by_role("button", name="Save", exact=True).click()
@@ -96,7 +99,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
 
             # Add first component
             await drag_and_drop_component(page, "Mede-ondertekenen")
-            await page.get_by_role("button", name="Opslaan").click()
+            await close_modal(page, "Save")
 
             warning_node = page.get_by_role("list").filter(
                 has=page.locator("css=.warning")
@@ -106,7 +109,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
 
             # Add second component
             await drag_and_drop_component(page, "Mede-ondertekenen")
-            await page.get_by_role("button", name="Opslaan").click()
+            await close_modal(page, "Save")
 
             # Check that a warning has appeared
             await expect(warning_node).to_be_visible()
@@ -145,7 +148,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
             # Check that there is no warning
             await expect(warning_node).not_to_be_visible()
 
-            await page.get_by_role("checkbox", name="DigiD", checked="true").click()
+            await page.get_by_role("checkbox", name="DigiD", checked=True).click()
 
             # Check that the warning has appeared
             await expect(warning_node).to_be_visible()

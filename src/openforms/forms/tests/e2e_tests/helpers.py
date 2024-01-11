@@ -21,7 +21,12 @@ async def open_component_options_modal(page: Page, label: str, exact: bool = Fal
     await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
 
-async def close_modal(page: Page, button_text: str, **kwargs):
+async def click_modal_button(page: Page, button_text: str, **kwargs):
     modal = page.locator("css=.formio-dialog-content")
     await modal.get_by_role("button", name=button_text, **kwargs).click()
+    return modal
+
+
+async def close_modal(page: Page, button_text: str, **kwargs):
+    modal = await click_modal_button(page, button_text, **kwargs)
     await expect(modal).to_be_hidden()

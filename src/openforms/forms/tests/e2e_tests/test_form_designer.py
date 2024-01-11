@@ -20,7 +20,12 @@ from ..factories import (
     FormRegistrationBackendFactory,
     FormStepFactory,
 )
-from .helpers import close_modal, open_component_options_modal, phase
+from .helpers import (
+    click_modal_button,
+    close_modal,
+    open_component_options_modal,
+    phase,
+)
 
 
 async def add_new_step(page: Page):
@@ -191,8 +196,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                         )
                         await expect(literal_loc).to_have_value(literal)
 
-                await page.get_by_role("button", name="Cancel").click()
-                await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
+                await close_modal(page, self._translate("Annuleren"))
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()
@@ -1105,51 +1109,56 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             with phase("Initial set up of datetime validation"):
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # select the validation mode in the dropdown
-                label = page.get_by_text("Validatiemethode", exact=True).first
-                field = label.locator("..")  # grab the parent
-                dropdown = field.get_by_role("combobox")
-                await dropdown.click()
-                await dropdown.get_by_text("Ten opzichte van een variabele").click()
+                dropdown = page.get_by_role("combobox", name="Mode preset")
+                await dropdown.focus()
+                await page.keyboard.press("ArrowDown")
+                option = page.get_by_text("Relative to variable", exact=True)
+                await option.scroll_into_view_if_needed()
+                await option.click()
 
                 # Fill in years, months, days and submit
-                years = page.get_by_label("Jaren")
-                months = page.get_by_label("Maanden")
-                days = page.get_by_label("Dagen")
+                years = page.get_by_label("Years")
+                months = page.get_by_label("Months")
+                days = page.get_by_label("Days")
                 await years.fill("1")
                 await months.fill("1")
                 await days.fill("1")
-                await page.get_by_role("button", name="Opslaan").click()
+                await close_modal(page, "Save")
 
                 # Navigate back to Validation
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # Check expectations
                 await expect(years).to_have_value("1")
                 await expect(months).to_have_value("1")
                 await expect(months).to_have_value("1")
 
-                await page.get_by_role("button", name="Opslaan").click()
+                await close_modal(page, "Save")
 
             with phase("Change values for datetime validation"):
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # Fill in years, months, days and submit
-                years = page.get_by_label("Jaren")
-                months = page.get_by_label("Maanden")
-                days = page.get_by_label("Dagen")
+                years = page.get_by_label("Years")
+                months = page.get_by_label("Months")
+                days = page.get_by_label("Days")
                 await years.fill("8")
                 await months.fill("8")
                 await days.fill("8")
-                await page.get_by_role("button", name="Opslaan").click()
+                await close_modal(page, "Save")
 
                 # Navigate back to Validation
                 await open_component_options_modal(page, "Some Field")
-                await page.get_by_role("link", name="Validatie").click()
+                await page.get_by_role("link", name="Validation").click()
+                await page.get_by_role("button", name="Minimum date").click()
 
                 # Check expectations
                 await expect(years).to_have_value("8")
@@ -1157,7 +1166,7 @@ class FormDesignerRegressionTests(E2ETestCase):
                 await expect(months).to_have_value("8")
 
                 # close modal again
-                await page.get_by_role("button", name="Cancel").click()
+                await close_modal(page, "Cancel")
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()
@@ -1286,40 +1295,17 @@ class FormDesignerRegressionTests(E2ETestCase):
             # Go to the validation tab of the number component
             await page.get_by_role("tab", name="Steps and fields").click()
             await open_component_options_modal(page, "Number Field")
-            await page.get_by_role("link", name="Validatie").click()
+            await page.get_by_role("link", name="Validation").click()
 
             # Check the custom errors for the number component
-            await page.get_by_text("Foutmeldingen").click()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][0][__key]"]'
-                )
-            ).to_be_visible()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][0][__key]"]'
-                )
-            ).to_have_value("required")
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][1][__key]"]'
-                )
-            ).to_be_visible()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][1][__key]"]'
-                )
-            ).to_have_value("min")
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][2][__key]"]'
-                )
-            ).to_be_visible()
-            await expect(
-                page.locator(
-                    'css=[name="data[translations][translatedErrors.nl][2][__key]"]'
-                )
-            ).to_have_value("max")
+            await page.get_by_role("button", name="Custom error messages").click()
+
+            for index, attribute in enumerate(["required", "min", "max"]):
+                with self.subTest(validator_key=attribute):
+                    test_id = f"input-translatedErrors.nl[{index}].key"
+                    locator = page.get_by_test_id(test_id)
+                    await expect(locator).to_be_visible()
+                    await expect(locator).to_have_value(attribute)
 
     @tag("gh-3132")
     async def test_replacing_step_with_overlapping_config(self):
@@ -1641,13 +1627,17 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
+            await page.get_by_role("button", name="Map configuration").click()
             # both fields are required so we clear one.
             await page.get_by_label("Latitude").clear()
 
-            await page.get_by_role("button", name="Opslaan").first.click()
+            await click_modal_button(page, "Save")
 
             error_node = page.locator("css=.error")
             await expect(error_node).to_be_visible()
+            await expect(error_node).to_have_text(
+                "You need to configure both longitude and latitude."
+            )
 
     async def test_map_component_without_longitude(self):
         @sync_to_async
@@ -1688,13 +1678,17 @@ class FormDesignerMapComponentTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             await open_component_options_modal(page, "Map 1", exact=True)
+            await page.get_by_role("button", name="Map configuration").click()
             # both fields are required so we clear one.
             await page.get_by_label("Longitude").clear()
 
-            await page.get_by_role("button", name="Opslaan").first.click()
+            await click_modal_button(page, "Save")
 
             error_node = page.locator("css=.error")
             await expect(error_node).to_be_visible()
+            await expect(error_node).to_have_text(
+                "You need to configure both longitude and latitude."
+            )
 
 
 class AppointmentFormTests(E2ETestCase):
