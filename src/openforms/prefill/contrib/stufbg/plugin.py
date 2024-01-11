@@ -60,6 +60,7 @@ https://github.com/maykinmedia/open-personen/tree/master/src/openpersonen/templa
 ATTRIBUTES_TO_STUF_BG_MAPPING = {
     FieldChoices.bsn: Target["inp.bsn"],
     FieldChoices.voornamen: Target["voornamen"],
+    FieldChoices.voorletters: Target["voorletters"],
     FieldChoices.geslachtsnaam: Target["geslachtsnaam"],
     FieldChoices.voorvoegselGeslachtsnaam: Target["voorvoegselGeslachtsnaam"],
     FieldChoices.geboorteplaats: Target["inp.geboorteplaats"],

@@ -30,6 +30,7 @@
                     <ns:inp.bsn>999992314</ns:inp.bsn>
                     <ns:geslachtsnaam>Maykin</ns:geslachtsnaam>
                     <ns:voorvoegselGeslachtsnaam xsi:nil="true" StUF:noValue="geenWaarde"></ns:voorvoegselGeslachtsnaam>
+                    <ns:voorletters>M</ns:voorletters>
                     <ns:voornamen>Media</ns:voornamen>
                     <ns:geslachtsaanduiding>M</ns:geslachtsaanduiding>
                     <ns:geboortedatum>19800915</ns:geboortedatum>
