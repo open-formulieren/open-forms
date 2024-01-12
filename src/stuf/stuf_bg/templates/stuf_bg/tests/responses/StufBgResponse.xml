@@ -56,6 +56,13 @@
                     -->
                     <ns:inp.gemeenteVanInschrijving>1000</ns:inp.gemeenteVanInschrijving>
                     <ns:inp.datumInschrijving>20051216</ns:inp.datumInschrijving>
+                    <ns:inp.heeftAlsEchtgenootPartner StUF:entiteittype="NPSNPSHUW" StUF:sleutelVerzendend="11870" StUF:sleutelGegevensbeheer="11870">
+                        <ns:gerelateerde StUF:entiteittype="NPS" StUF:sleutelVerzendend="11865" StUF:sleutelGegevensbeheer="11865">
+                            <ns:inp.bsn>149221897</ns:inp.bsn>
+                            <ns:voornamenAanschrijving xsi:nil="true" StUF:noValue="waardeOnbekend" />
+                            <ns:geslachtsnaamAanschrijving xsi:nil="true" StUF:noValue="nietGeautoriseerd" />
+                        </ns:gerelateerde>
+                    </ns:inp.heeftAlsEchtgenootPartner>
                 </ns:object>
             </ns:antwoord>
         </ns:npsLa01>
