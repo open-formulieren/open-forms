@@ -64,6 +64,23 @@ For small textual changes like fixing incorrect spelling, hyperlinks, outdated i
 documentation, etc. you don't need to create an issue. Simply create a Pull Request (see below) that
 does the update.
 
+#### Usage of typing
+
+Python supports type annotations since a couple of versions and the entire system is still being
+iterated on in the core language. Type annotations can help catch problems through static code
+analysis and is in general considered a good thing to have.
+
+Open Forms encourages the usage of type annotations, but please be pragmatic about this - for simple
+primitives and straight forward usage, we expect type hints to be added. However, you can also
+easily get lost in generics and complex type annotations where you end up spending more time and
+energy fighting the type system than actually implementing the functional aspect of a user
+story/ticket. The functional, runtime behaviour trumps the typing information and if it conflicts,
+consider leaving out or postponing the type annotations.
+
+Additionally, while we allow usage of the `typing_extensions` module, this usage is limited to
+features that are not yet available in the Python version used by Open Forms but implemented in
+later versions. Non-stable and/or proposal features are not allowed.
+
 ### Making a pull request
 
 If all changes have been committed, you can push the branch to your fork of the repository and
