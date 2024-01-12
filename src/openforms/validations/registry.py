@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Callable, Iterable, List, Type, Union
+from typing import Iterable
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -13,38 +13,18 @@ from openforms.plugins.registry import BaseRegistry
 from openforms.submissions.models import Submission
 from openforms.typing import JSONValue
 
+from .base import BasePlugin
+
 logger = logging.getLogger(__name__)
-
-ValidatorType = Callable[[JSONValue, Submission], bool]
-
-
-class StringValueSerializer(serializers.Serializer):
-    """A default serializer that accepts ``value`` as a string."""
-
-    value = serializers.CharField()
 
 
 @dataclasses.dataclass()
 class ValidationResult:
     is_valid: bool
-    messages: List[str] = dataclasses.field(default_factory=list)
+    messages: list[str] = dataclasses.field(default_factory=list)
 
 
-@dataclasses.dataclass()
-class RegisteredValidator:
-    identifier: str
-    verbose_name: str
-    callable: ValidatorType
-    for_components: tuple[str]
-    is_demo_plugin: bool = False
-    # TODO always enabled for now, see: https://github.com/open-formulieren/open-forms/issues/1149
-    is_enabled: bool = True
-
-    def __call__(self, *args, **kwargs) -> bool:
-        return self.callable(*args, **kwargs)
-
-
-def flatten(iterables: Iterable) -> List[str]:
+def flatten(iterables: Iterable[str]) -> list[str]:
     def _flat(it):
         if isinstance(it, str):
             yield it
@@ -58,7 +38,7 @@ def flatten(iterables: Iterable) -> List[str]:
     return list(_flat(iterables))
 
 
-class Registry(BaseRegistry[RegisteredValidator]):
+class Registry(BaseRegistry[BasePlugin[JSONValue]]):
     """
     A registry for the validations module plugins.
 
@@ -70,43 +50,6 @@ class Registry(BaseRegistry[RegisteredValidator]):
 
     module = "validations"
 
-    def __call__(
-        self,
-        identifier: str,
-        verbose_name: str,
-        is_demo_plugin: bool = False,
-        for_components: tuple[str] = tuple(),
-        *args,
-        **kwargs,
-    ) -> Callable:
-        def decorator(validator: Union[Type, ValidatorType]):
-            if identifier in self._registry:
-                raise ValueError(
-                    f"The unique identifier '{identifier}' is already present "
-                    "in the registry."
-                )
-
-            call = validator
-            assert hasattr(
-                call, "value_serializer"
-            ), "Plugins must define a 'value_serializer' attribute"
-
-            if isinstance(call, type):
-                call = validator()
-            if not callable(call):
-                raise ValueError(f"Validator '{identifier}' is not callable.")
-
-            self._registry[identifier] = RegisteredValidator(
-                identifier=identifier,
-                verbose_name=verbose_name,
-                callable=call,
-                for_components=for_components,
-                is_demo_plugin=is_demo_plugin,
-            )
-            return validator
-
-        return decorator
-
     @elasticapm.capture_span("app.validations.validate")
     def validate(
         self, plugin_id: str, value: JSONValue, submission: Submission
@@ -114,7 +57,7 @@ class Registry(BaseRegistry[RegisteredValidator]):
         try:
             validator = self._registry[plugin_id]
         except KeyError:
-            logger.warning(f"called unregistered plugin_id '{plugin_id}'")
+            logger.warning("called unregistered plugin_id %s", plugin_id)
             return ValidationResult(
                 False,
                 messages=[
@@ -124,7 +67,7 @@ class Registry(BaseRegistry[RegisteredValidator]):
                 ],
             )
 
-        if not getattr(validator.callable, "is_enabled", True):
+        if not validator.is_enabled:
             return ValidationResult(
                 False,
                 messages=[
@@ -132,7 +75,7 @@ class Registry(BaseRegistry[RegisteredValidator]):
                 ],
             )
 
-        SerializerClass = validator.callable.value_serializer
+        SerializerClass = validator.value_serializer
         serializer = SerializerClass(data={"value": value})
 
         # first, run the cheap validation to check that the data actually conforms to the expected schema.

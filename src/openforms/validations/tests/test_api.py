@@ -9,12 +9,9 @@ from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.validations.registry import Registry, StringValueSerializer
-from openforms.validations.tests.test_registry import (
-    DjangoValidator,
-    DRFValidator,
-    function_validator,
-)
+from openforms.validations.base import StringValueSerializer
+from openforms.validations.registry import Registry
+from openforms.validations.tests.test_registry import DjangoValidator, DRFValidator
 
 
 class ValidationsAPITests(SubmissionsMixin, APITestCase):
@@ -23,20 +20,8 @@ class ValidationsAPITests(SubmissionsMixin, APITestCase):
         self.client.force_login(self.user)
 
         register = Registry()
-        register(
-            "django",
-            verbose_name="Django Test Validator",
-            for_components=("textfield",),
-        )(DjangoValidator)
-        register(
-            "drf", verbose_name="DRF Test Validator", for_components=("phoneNumber",)
-        )(DRFValidator)
-        register("func", verbose_name="Django function Validator", for_components=())(
-            function_validator
-        )
-        register(
-            "demo", verbose_name="Demo function", for_components=(), is_demo_plugin=True
-        )(function_validator)
+        register("django")(DjangoValidator)
+        register("drf")(DRFValidator)
 
         patcher = patch("openforms.validations.api.views.register", new=register)
         patcher.start()
@@ -70,11 +55,6 @@ class ValidationsAPITests(SubmissionsMixin, APITestCase):
                         "id": "drf",
                         "label": "DRF Test Validator",
                         "for_components": ["phoneNumber"],
-                    },
-                    {
-                        "id": "func",
-                        "label": "Django function Validator",
-                        "for_components": [],
                     },
                 ],
             )
@@ -131,11 +111,6 @@ class ValidationsAPITests(SubmissionsMixin, APITestCase):
                         "id": "drf",
                         "label": "DRF Test Validator",
                         "for_components": ["phoneNumber"],
-                    },
-                    {
-                        "id": "func",
-                        "label": "Django function Validator",
-                        "for_components": [],
                     },
                 ],
             )

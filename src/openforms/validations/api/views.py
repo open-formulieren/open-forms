@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -21,7 +19,8 @@ from openforms.validations.api.serializers import (
     ValidatorsFilterSerializer,
 )
 
-from ..registry import RegisteredValidator, register
+from ..base import BasePlugin
+from ..registry import register
 
 
 @extend_schema_view(
@@ -39,16 +38,18 @@ class ValidatorsListView(ListMixin, APIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = ValidationPluginSerializer
 
-    def get_objects(self) -> list[RegisteredValidator]:
+    def get_objects(self) -> list[BasePlugin]:
         filter_serializer = ValidatorsFilterSerializer(data=self.request.query_params)
         if not filter_serializer.is_valid(raise_exception=False):
             return []
 
-        plugins: Iterable[RegisteredValidator] = register.iter_enabled_plugins()
-        for_component = filter_serializer.validated_data.get("component_type") or ""
+        plugins = register.iter_enabled_plugins()
+        for_component: str = (
+            filter_serializer.validated_data.get("component_type") or ""
+        )
 
         if not for_component:
-            return plugins
+            return list(plugins)
         return [plugin for plugin in plugins if for_component in plugin.for_components]
 
 

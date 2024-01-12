@@ -21,7 +21,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
     VCR_TEST_FILES = TEST_FILES
 
     def test_brk_validator_no_auth(self):
-        validator = BRKZakelijkGerechtigdeValidator()
+        validator = BRKZakelijkGerechtigdeValidator("brk_validator")
 
         submission_no_auth = SubmissionFactory.create(
             form__generate_minimal_setup=True,
@@ -35,7 +35,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
             )
 
     def test_brk_validator_no_bsn(self):
-        validator = BRKZakelijkGerechtigdeValidator()
+        validator = BRKZakelijkGerechtigdeValidator("brk_validator")
 
         submission_no_bsn = SubmissionFactory.create(
             form__generate_minimal_setup=True,
@@ -52,7 +52,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
             )
 
     def test_brk_validator_wrong_bsn(self):
-        validator = BRKZakelijkGerechtigdeValidator()
+        validator = BRKZakelijkGerechtigdeValidator("brk_validator")
 
         submission_wrong_bsn = SubmissionFactory.create(
             form__generate_minimal_setup=True,
@@ -73,7 +73,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
             )
 
     def test_brk_validator_bsn(self):
-        validator = BRKZakelijkGerechtigdeValidator()
+        validator = BRKZakelijkGerechtigdeValidator("brk_validator")
 
         submission_bsn = SubmissionFactory.create(
             form__generate_minimal_setup=True,
@@ -112,7 +112,7 @@ class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_brk_validator_requests_error(self, m: requests_mock.Mocker):
-        validator = BRKZakelijkGerechtigdeValidator()
+        validator = BRKZakelijkGerechtigdeValidator("brk_validator")
 
         submission_bsn = SubmissionFactory.create(
             form__generate_minimal_setup=True,
@@ -150,7 +150,7 @@ class BRKValidatorNotConfiguredTestCase(TestCase):
         self.addCleanup(patcher.stop)
 
     def test_brk_validator_not_configured(self):
-        validator = BRKZakelijkGerechtigdeValidator()
+        validator = BRKZakelijkGerechtigdeValidator("brk_validator")
 
         submission_bsn = SubmissionFactory.create(
             form__generate_minimal_setup=True,

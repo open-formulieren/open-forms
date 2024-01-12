@@ -23,11 +23,7 @@ class BRKValidatorIntegrationTestCase(
     def setUp(self) -> None:
         super().setUp()
         register = Registry()
-        register(
-            "brk-zakelijk-gerechtigd",
-            verbose_name="dummy",
-            for_components=("addressNL",),
-        )(BRKZakelijkGerechtigdeValidator)
+        register("brk-zakelijk-gerechtigd")(BRKZakelijkGerechtigdeValidator)
 
         patcher = patch("openforms.validations.api.views.register", new=register)
         patcher.start()

@@ -12,6 +12,7 @@ from rest_framework import serializers
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
+from openforms.validations.base import BasePlugin
 from openforms.validations.registry import register
 
 from .client import NoServiceConfigured, SearchParams, get_client
@@ -56,15 +57,13 @@ class ValueSerializer(serializers.Serializer):
     value = AddressValueSerializer()
 
 
-@register(
-    "brk-zakelijk-gerechtigd",
-    verbose_name=_("BRK - Zakelijk gerechtigd"),
-    for_components=("addressNL",),
-)
+@register("brk-zakelijk-gerechtigd")
 @deconstructible
-class BRKZakelijkGerechtigdeValidator:
+class BRKZakelijkGerechtigdeValidator(BasePlugin[AddressValue]):
 
     value_serializer = ValueSerializer
+    verbose_name = _("BRK - Zakelijk gerechtigd")
+    for_components = ("addressNL",)
 
     error_messages = {
         "no_bsn": _("No BSN is available to validate your address."),

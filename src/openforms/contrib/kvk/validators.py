@@ -7,7 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from requests import RequestException
 
 from openforms.utils.validators import validate_digits, validate_rsin
-from openforms.validations.registry import StringValueSerializer, register
+from openforms.validations.base import BasePlugin
+from openforms.validations.registry import register
 
 from .client import NoServiceConfigured, SearchParams, get_client
 
@@ -20,7 +21,7 @@ class NumericBaseValidator:
         "too_short": _("%(type)s should have %(size)i characters."),
     }
 
-    def __call__(self, value):
+    def __call__(self, value: str):
         validate_digits(value)
 
         if len(value) != self.value_size:
@@ -47,18 +48,16 @@ validate_kvk = KVKNumberValidator()
 validate_branchNumber = KVKBranchNumberValidator()
 
 
-class KVKRemoteBaseValidator:
+class KVKRemoteValidatorMixin:
     query_param: Literal["kvkNummer", "rsin", "vestigingsnummer"]
     value_label: str
-
-    value_serializer = StringValueSerializer
 
     error_messages = {
         "not_found": _("%(type)s does not exist."),
         "too_short": _("%(type)s should have %(size)i characters."),
     }
 
-    def __call__(self, value: str) -> bool:
+    def validate(self, value: str) -> bool:
         assert self.query_param
         query = cast(
             SearchParams, {self.query_param: value}
@@ -84,38 +83,43 @@ class KVKRemoteBaseValidator:
         return True
 
 
-@register("kvk-kvkNumber", verbose_name=_("KvK number"), for_components=("textfield",))
+@register("kvk-kvkNumber")
 @deconstructible
-class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
+class KVKNumberRemoteValidator(KVKRemoteValidatorMixin, BasePlugin[str]):
     query_param = "kvkNummer"
     value_label = _("KvK number")
 
-    def __call__(self, value, submission):
+    verbose_name = _("KvK number")
+    for_components = ("textfield",)
+
+    def __call__(self, value: str, submission):
         validate_kvk(value)
-        super().__call__(value)
+        self.validate(value)
 
 
-@register("kvk-rsin", verbose_name=_("KvK RSIN"), for_components=("textfield",))
+@register("kvk-rsin")
 @deconstructible
-class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
+class KVKRSINRemoteValidator(KVKRemoteValidatorMixin, BasePlugin[str]):
     query_param = "rsin"
     value_label = _("RSIN")
 
-    def __call__(self, value, submission):
+    verbose_name = _("KvK RSIN")
+    for_components = ("textfield",)
+
+    def __call__(self, value: str, submission):
         validate_rsin(value)
-        super().__call__(value)
+        self.validate(value)
 
 
-@register(
-    "kvk-branchNumber",
-    verbose_name=_("KvK branch number"),
-    for_components=("textfield",),
-)
+@register("kvk-branchNumber")
 @deconstructible
-class KVKBranchNumberRemoteValidator(KVKRemoteBaseValidator):
+class KVKBranchNumberRemoteValidator(KVKRemoteValidatorMixin, BasePlugin[str]):
     query_param = "vestigingsnummer"
     value_label = _("Branch number")
 
-    def __call__(self, value, submission):
+    verbose_name = _("KvK branch number")
+    for_components = ("textfield",)
+
+    def __call__(self, value: str, submission):
         validate_branchNumber(value)
-        super().__call__(value)
+        self.validate(value)
