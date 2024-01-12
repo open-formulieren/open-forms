@@ -2,6 +2,23 @@
 Changelog
 =========
 
+2.3.6 (2024-01-12)
+==================
+
+Periodic bugfix release
+
+* [#3656] Fixed incorrect DigiD error messages being shown when using OIDC-based plugins.
+* [#3692] Fixed crash when using OIDC DigiD login while logged into the admin interface.
+* [#3744] Fixed conditionally marking a postcode component as required/optional.
+
+  .. note:: We cannot automatically fix existing logic rules. For affected forms, you
+     can remove and re-add the logic rule action to modify the 'required' state.
+
+* [#3704] Fixed the family members component not retrieving the partners when using
+  StUF-BG as data source.
+* [#2710] Added missing initials (voorletters) prefill option for StUF-BG plugin.
+* Fixed failing docs build by disabling/changing some link checks.
+
 2.3.5 (2023-12-12)
 ==================
 
