@@ -20,6 +20,7 @@ class FieldChoices(models.TextChoices):
     bsn = "bsn", _("BSN")
 
     voornamen = "voornamen", _("First name")
+    voorletters = "voorletters", _("Initials")
     geslachtsnaam = "geslachtsnaam", _("Last name")
     voorvoegselGeslachtsnaam = "voorvoegselGeslachtsnaam", _("Last name prefix")
 
