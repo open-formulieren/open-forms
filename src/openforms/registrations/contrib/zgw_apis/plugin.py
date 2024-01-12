@@ -517,14 +517,16 @@ class ZGWRegistration(BasePlugin):
                 "intermediate.objects_api_zaakobject",
             )
 
-        # Connect variables with zaak eigenshappen
+        # Connect variables with zaak eigenshappen (if a connection has been in ZGW registration)
         if options.get("variables_properties"):
             mapped_variables_properties = get_variables_properties_from_submission(
                 submission, options
             )
 
-            eigenshappen = catalogi_client.list_eigenshappen(
-                zaaktype=options["zaaktype"]
+            eigenshappen = execute_unless_result_exists(
+                partial(catalogi_client.list_eigenshappen, options["zaaktype"]),
+                submission,
+                "intermediate.eigenshap",
             )
 
             retrieved_eigenshappen = {

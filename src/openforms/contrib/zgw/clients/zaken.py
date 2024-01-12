@@ -2,6 +2,7 @@ import logging
 
 from django.utils import timezone
 
+from furl import furl
 from zgw_consumers.nlx import NLXClient
 
 from .catalogi import CatalogiClient
@@ -151,15 +152,11 @@ class ZakenClient(NLXClient):
         return response.json()
 
     def create_zaakeigenschap(self, zaak_eigenshap_data: dict) -> dict:
-        response = self.post(
-            "zaakeigenschappen",
-            uuid=zaak_eigenshap_data["zaak"],
-            json=zaak_eigenshap_data,
-        )
+        zaak_url = furl(zaak_eigenshap_data["zaak"])
+        zaak_uuid = zaak_url.path.segments[-1]
+        url = furl(self.base_url) / "zaken" / zaak_uuid / "zaakeigenschappen"
+
+        response = self.post(url, json=zaak_eigenshap_data)
         response.raise_for_status()
-        from celery.contrib import rdb
 
-        rdb.set_trace()
-
-        print()
         return response.json()
