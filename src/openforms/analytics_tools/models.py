@@ -83,6 +83,14 @@ DYNAMIC_TOOL_CONFIGURATION = {
         enable_field_name="enable_siteimprove_analytics",
         is_enabled_property="is_siteimprove_enabled",
     ),
+    AnalyticsTools.govmetric: ToolConfiguration(
+        enable_field_name="enable_govmetric_analytics",
+        is_enabled_property="is_govmetric_enabled",
+        replacements=[
+            StringReplacement(needle="SOURCE_ID", field_name="govmetric_source_id"),
+            StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
+        ],
+    ),
 }
 
 
@@ -196,6 +204,32 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs SiteImprove"),
     )
+    govmetric_source_id = models.CharField(
+        _("GovMetric source ID"),
+        max_length=10,
+        blank=True,
+        help_text=_(
+            "Your GovMetric source ID - This is created by KLANTINFOCUS when a list of questions is created. "
+            "It is a numerical value that is unique per set of questions."
+        ),
+    )
+    govmetric_secure_guid = models.CharField(
+        _("GovMetric secure GUID"),
+        blank=True,
+        max_length=50,
+        help_text=_(
+            "Your GovMetric secure GUID - This is an optional value. It is created by KLANTINFOCUS when a list "
+            "of questions is created. It is a string that is unique per set of questions."
+        ),
+    )
+    enable_govmetric_analytics = models.BooleanField(
+        _("enable GovMetric analytics"),
+        default=False,
+        help_text=_(
+            "This enables GovMetric to collect data while a user fills in a form and it adds a button at the "
+            "end of a form to fill in a client satisfaction survey."
+        ),
+    )
 
     analytics_cookie_consent_group = models.ForeignKey(
         "cookie_consent.CookieGroup",
@@ -264,6 +298,10 @@ class AnalyticsToolsConfiguration(SingletonModel):
             and self.analytics_cookie_consent_group
         )
 
+    @property
+    def is_govmetric_enabled(self) -> bool:
+        return self.govmetric_source_id and self.enable_govmetric_analytics
+
     def save(self, *args, **kwargs):
         # If instance is being created, we can't find original values
         # (we use the _state API and not self.pk because `SingletonModel` hardcodes the PK).
@@ -331,5 +369,11 @@ class AnalyticsToolsConfiguration(SingletonModel):
             raise ValidationError(
                 _("Piwik Pro Analytics and Tag Manager can't be both activated"),
                 code="invalid_together",
+            )
+        if self.enable_govmetric_analytics and not self.is_govmetric_enabled:
+            raise ValidationError(
+                _(
+                    "If you enable GovMetric, you need to provide the source ID for all languages (the same one can be reused)."
+                )
             )
         super().clean()
