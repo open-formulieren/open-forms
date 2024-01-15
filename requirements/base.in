@@ -57,7 +57,7 @@ django-ordered-model
 django-privates
 django-redis
 django-simple-certmanager
-django-solo
+django-solo@git+https://github.com/lazybird/django-solo.git@master
 django-tinymce
 django-treebeard
 django-yubin

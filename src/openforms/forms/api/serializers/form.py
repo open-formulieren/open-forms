@@ -514,7 +514,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     @extend_schema_field(field=build_array_type(STATEMENT_CHECKBOX_SCHEMA))
     def get_submission_statements_configuration(self, obj: Form) -> list[Component]:
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
 
         ask_privacy_consent = (
             obj.ask_privacy_consent == StatementCheckboxChoices.required

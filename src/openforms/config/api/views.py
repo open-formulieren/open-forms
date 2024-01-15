@@ -21,7 +21,6 @@ class PrivacyPolicyInfoView(APIView):
 
     def get(self, request: Request) -> Response:
         conf = GlobalConfiguration.get_solo()
-        assert isinstance(conf, GlobalConfiguration)
         if not conf.ask_privacy_consent:
             info = PrivacyPolicyInfo(requires_privacy_consent=False)
         else:

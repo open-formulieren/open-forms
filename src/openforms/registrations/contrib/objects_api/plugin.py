@@ -72,7 +72,6 @@ class ObjectsAPIRegistration(BasePlugin):
         'doc_vertrouwelijkheidaanduiding' because this is what the ZGW service functions
         use."""
         config = ObjectsAPIConfig.get_solo()
-        assert isinstance(config, ObjectsAPIConfig)
         config.apply_defaults_to(options)
 
         # Prepare all documents to relate to the Objects API record

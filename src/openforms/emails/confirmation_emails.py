@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 def get_confirmation_email_templates(submission: "Submission") -> tuple[str, str]:
     with translation.override(submission.language_code):
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         if not hasattr(submission.form, "confirmation_email_template"):
             return config.confirmation_email_subject, config.confirmation_email_content
 

@@ -32,7 +32,6 @@ def get_plugin(plugin: str = "") -> BasePlugin:
     """returns plugin selected in AppointmentsConfig"""
     if not plugin:
         config = AppointmentsConfig.get_solo()
-        assert isinstance(config, AppointmentsConfig)
         if not (plugin := config.plugin):
             raise ValueError("No plugin is specified in AppointmentsConfig")
     return register[plugin]

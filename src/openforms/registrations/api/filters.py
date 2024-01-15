@@ -45,11 +45,9 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
             return get_catalogi_client(zgw_api_group)
         elif registration_backend == "objects_api":
             config = ObjectsAPIConfig.get_solo()
-            assert isinstance(config, ObjectsAPIConfig)
             if service := config.catalogi_service:
                 return build_client(service, client_factory=CatalogiClient)
 
         config = ZgwConfig.get_solo()
-        assert isinstance(config, ZgwConfig)
         if group := config.default_zgw_api_group:
             return get_catalogi_client(group)

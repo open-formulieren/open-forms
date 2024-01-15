@@ -18,7 +18,6 @@ class NoServiceConfigured(RuntimeError):
 
 def get_client() -> "BRKClient":
     config = BRKConfig.get_solo()
-    assert isinstance(config, BRKConfig)
     if not (service := config.service):
         raise NoServiceConfigured("No BRK service configured!")
     service_client_factory = ServiceClientFactory(service)

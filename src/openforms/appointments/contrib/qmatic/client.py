@@ -75,7 +75,6 @@ def QmaticClient() -> "Client":
     Create a Qmatic client instance from the database configuration.
     """
     config = QmaticConfig.get_solo()
-    assert isinstance(config, QmaticConfig)
     if (service := config.service) is None:
         raise NoServiceConfigured("No Qmatic service defined, aborting!")
     assert isinstance(service, Service)

@@ -54,7 +54,6 @@ class DigiDConfigMixin:
         METADATA = TEST_FILES / "metadata.xml"
 
         config = DigidConfiguration.get_solo()
-        assert isinstance(config, DigidConfiguration)
         config.certificate = cert
         config.base_url = "https://test-sp.nl"
         config.entity_id = "https://test-sp.nl"

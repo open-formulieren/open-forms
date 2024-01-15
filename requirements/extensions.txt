@@ -292,7 +292,7 @@ django-simple-certmanager==1.4.1
     #   -r requirements/base.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.1.0
+django-solo @ git+https://github.com/lazybird/django-solo.git@master
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -740,6 +740,7 @@ typing-extensions==4.9.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
+    #   django-solo
 tzdata==2023.3
     # via
     #   -r requirements/base.txt

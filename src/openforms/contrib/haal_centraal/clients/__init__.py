@@ -10,7 +10,6 @@ class NoServiceConfigured(RuntimeError):
 
 def get_brp_client(**kwargs) -> BRPClient:
     config = HaalCentraalConfig.get_solo()
-    assert isinstance(config, HaalCentraalConfig)
     if not (service := config.brp_personen_service):
         raise NoServiceConfigured("No BRP service configured!")
 

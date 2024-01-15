@@ -24,7 +24,6 @@ class NoServiceConfigured(RuntimeError):
 
 def get_client() -> "Client":
     config = StufBGConfig.get_solo()
-    assert isinstance(config, StufBGConfig)
     if not (service := config.service):
         raise NoServiceConfigured("You must configure a service!")
     return StufBGClient(service)

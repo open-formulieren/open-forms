@@ -89,7 +89,6 @@ class File(BasePlugin):
         # check if we need to apply "filePattern" modifications
         if component.get("useConfigFiletypes", False):
             config = GlobalConfiguration.get_solo()
-            assert isinstance(config, GlobalConfiguration)
             component["filePattern"] = ",".join(config.form_upload_default_file_types)
             component["file"].update(
                 {

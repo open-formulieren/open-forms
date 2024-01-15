@@ -197,7 +197,7 @@ django-simple-certmanager==1.4.1
     #   -r requirements/base.in
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.1.0
+django-solo @ git+https://github.com/lazybird/django-solo.git@master
     # via
     #   -r requirements/base.in
     #   django-camunda
@@ -471,7 +471,9 @@ tinycss2==1.1.0
 tornado==6.3.3
     # via flower
 typing-extensions==4.9.0
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   django-solo
 tzdata==2023.3
     # via pytz-deprecation-shim
 tzlocal==4.3.1

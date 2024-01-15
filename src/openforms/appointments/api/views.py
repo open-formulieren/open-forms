@@ -110,7 +110,6 @@ class ProductsListView(ListMixin, APIView):
 
         plugin = get_plugin()
         config = AppointmentsConfig().get_solo()
-        assert isinstance(config, AppointmentsConfig)
         kwargs = {}
         if location_id := config.limit_to_location:
             kwargs["location_id"] = location_id

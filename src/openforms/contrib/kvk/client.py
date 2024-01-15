@@ -19,7 +19,6 @@ class NoServiceConfigured(RuntimeError):
 
 def get_client() -> "KVKClient":
     config = KVKConfig.get_solo()
-    assert isinstance(config, KVKConfig)
     if not (service := config.service):
         raise NoServiceConfigured("No KVK service configured!")
     service_client_factory = ServiceClientFactory(service)

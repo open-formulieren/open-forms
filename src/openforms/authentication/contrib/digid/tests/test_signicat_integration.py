@@ -81,7 +81,6 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         )
 
         config = DigidConfiguration.get_solo()
-        assert isinstance(config, DigidConfiguration)
         config.certificate = cert
         # broker insists using https
         config.base_url = config.entity_id = "https://localhost:8000"

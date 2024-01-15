@@ -39,7 +39,6 @@ def check_config():
             )
 
     config = ObjectsAPIConfig.get_solo()
-    assert isinstance(config, ObjectsAPIConfig)
 
     urls = [
         "objecttype",

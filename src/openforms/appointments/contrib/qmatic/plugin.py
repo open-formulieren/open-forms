@@ -303,7 +303,6 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         products: list[Product],
     ) -> list[Component]:
         config = QmaticConfig.get_solo()
-        assert isinstance(config, QmaticConfig)
         components = [
             FIELD_TO_FORMIO_COMPONENT[field]
             for field in config.required_customer_fields

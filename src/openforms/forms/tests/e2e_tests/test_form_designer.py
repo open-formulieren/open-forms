@@ -62,7 +62,6 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
         self.addCleanup(clear_caches)
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         config.enable_react_formio_builder = False
         config.save()
 
@@ -559,7 +558,6 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
 
         self.addCleanup(clear_caches)
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         config.enable_react_formio_builder = True
         config.save()
 

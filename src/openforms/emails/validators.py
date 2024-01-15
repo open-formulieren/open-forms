@@ -39,7 +39,6 @@ class URLSanitationValidator:
         from openforms.emails.utils import get_system_netloc_allowlist
 
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
 
         allowlist = (
             get_system_netloc_allowlist() + config.email_template_netloc_allowlist

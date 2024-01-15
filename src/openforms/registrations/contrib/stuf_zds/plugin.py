@@ -345,7 +345,6 @@ class StufZDSRegistration(BasePlugin):
 
     def check_config(self):
         config = StufZDSConfig.get_solo()
-        assert isinstance(config, StufZDSConfig)
 
         if not config.gemeentecode:
             raise InvalidPluginConfiguration(

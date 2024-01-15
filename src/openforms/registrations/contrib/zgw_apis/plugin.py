@@ -106,7 +106,6 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         # First checking that a ZGWApiGroupConfig is available:
         if attrs.get("zgw_api_group") is None:
             config = ZgwConfig.get_solo()
-            assert isinstance(config, ZgwConfig)
             if config.default_zgw_api_group is None:
                 raise serializers.ValidationError(
                     {
@@ -223,7 +222,6 @@ class ZGWRegistration(BasePlugin):
         zgw = options.get("zgw_api_group")
         if zgw is None:
             config = ZgwConfig.get_solo()
-            assert isinstance(config, ZgwConfig)
             zgw = config.default_zgw_api_group
         return zgw
 

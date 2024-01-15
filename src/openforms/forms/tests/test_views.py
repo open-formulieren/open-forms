@@ -69,7 +69,6 @@ class FormDetailViewTests(WebTest):
         super().setUpTestData()
 
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         config.main_website = "https://example.com"
         config.save()
 

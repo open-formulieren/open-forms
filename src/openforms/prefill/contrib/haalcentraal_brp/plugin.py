@@ -37,7 +37,6 @@ AttributesSequence: TypeAlias = Sequence[AttributesV1 | AttributesV2]
 
 def get_attributes_cls():
     config = HaalCentraalConfig.get_solo()
-    assert isinstance(config, HaalCentraalConfig)
 
     match config:
         case HaalCentraalConfig(

@@ -66,7 +66,6 @@ class BaseRegistry(Generic[PluginType_co]):
     def iter_enabled_plugins(self) -> Iterator[PluginType_co]:
         try:
             config = GlobalConfiguration.get_solo()
-            assert isinstance(config, GlobalConfiguration)
             with_demos = config.enable_demo_plugins
             enable_all = False
         except OperationalError:

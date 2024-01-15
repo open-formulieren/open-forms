@@ -207,7 +207,6 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
             )
 
         config = AppointmentsConfig.get_solo()
-        assert isinstance(config, AppointmentsConfig)
         plugin = get_plugin()
         # normalize to data class instances to call plugin methods
         products = [
