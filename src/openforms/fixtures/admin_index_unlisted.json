@@ -1,8 +1,12 @@
 [
     "config.RichTextColor",
     "forms.FormLogic",
+    "forms.FormDefinition",
     "forms.FormsExport",
     "forms.FormStep",
+    "forms.FormVariable",
+    "forms.FormVersion",
+    "emails.ConfirmationEmailTemplate",
     "jcc.JccConfig",
     "kadaster.KadasterApiConfig",
     "kvk.KVKConfig",
