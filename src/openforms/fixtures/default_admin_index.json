@@ -61,28 +61,12 @@
         "slug": "formulieren",
         "models": [
             [
-                "emails",
-                "confirmationemailtemplate"
-            ],
-            [
                 "forms",
                 "category"
             ],
             [
                 "forms",
                 "form"
-            ],
-            [
-                "forms",
-                "formdefinition"
-            ],
-            [
-                "forms",
-                "formvariable"
-            ],
-            [
-                "forms",
-                "formversion"
             ]
         ]
     }
