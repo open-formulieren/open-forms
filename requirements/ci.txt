@@ -335,7 +335,7 @@ django-simple-certmanager[testutils]==1.4.1
     #   -r requirements/test-tools.in
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.1.0
+django-solo @ git+https://github.com/Viicos/django-solo.git@patch-1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -952,6 +952,7 @@ typing-extensions==4.9.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-solo
     #   pyee
 tzdata==2023.3
     # via
