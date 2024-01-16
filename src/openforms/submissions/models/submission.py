@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import uuid
 from collections import OrderedDict
@@ -412,7 +414,7 @@ class Submission(models.Model):
         return hasattr(self, "auth_info")
 
     @property
-    def registrator(self):
+    def registrator(self) -> AuthInfo | RegistratorInfo | None:
         if hasattr(self, "_registrator") and self._registrator:
             return self._registrator
         elif self.is_authenticated:
