@@ -16,7 +16,7 @@ from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
 
 from .logevent import _create_log
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from .models import TimelineLogProxy
 
 

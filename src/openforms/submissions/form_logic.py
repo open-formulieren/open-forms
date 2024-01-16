@@ -24,7 +24,7 @@ from .logic.rules import (
 )
 from .models.submission_step import DirtyData
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
 
 

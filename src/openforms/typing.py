@@ -23,7 +23,7 @@ RegistrationBackendKey = NewType("RegistrationBackendKey", str)
 
 
 class RequestHandler(Protocol):
-    def __call__(self, request: HttpRequest) -> HttpResponseBase:  # pragma: no cover
+    def __call__(self, request: HttpRequest) -> HttpResponseBase:
         ...
 
 
@@ -41,7 +41,7 @@ DjangoJSONEncodable = Union[
 
 
 class JSONSerializable(Protocol):
-    def __json__(self) -> DjangoJSONEncodable:  # pragma: no cover
+    def __json__(self) -> DjangoJSONEncodable:
         ...
 
 

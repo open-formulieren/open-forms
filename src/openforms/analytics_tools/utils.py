@@ -14,7 +14,7 @@ from openforms.typing import JSONObject
 
 from .constants import AnalyticsTools
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .models import AnalyticsToolsConfiguration, ToolConfiguration
 
 

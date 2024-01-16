@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from openforms.plugins.plugin import AbstractBasePlugin
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .clients import PreRequestClientContext
 
 
@@ -22,4 +22,4 @@ class PreRequestHookBase(ABC, AbstractBasePlugin):
         kwargs: dict | None,
         context: PreRequestClientContext | None = None,
     ) -> None:
-        raise NotImplementedError()  # pragma: nocover
+        raise NotImplementedError()

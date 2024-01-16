@@ -22,7 +22,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         Return a choice list of available attributes this plugin offers.
         """
-        raise NotImplementedError(  # pragma: nocover
+        raise NotImplementedError(
             "You must implement the 'get_available_attributes' method."
         )
 
@@ -46,9 +46,7 @@ class BasePlugin(AbstractBasePlugin):
         When no prefill value can be found for a given attribute, you may omit the key
         altogether, or use ``None``.
         """
-        raise NotImplementedError(
-            "You must implement the 'get_prefill_values' method."
-        )  # pragma: nocover
+        raise NotImplementedError("You must implement the 'get_prefill_values' method.")
 
     def get_co_sign_values(
         self, identifier: str, submission: Optional["Submission"] = None
@@ -64,9 +62,7 @@ class BasePlugin(AbstractBasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        raise NotImplementedError(
-            "You must implement the 'get_co_sign_values' method."
-        )  # pragma: nocover
+        raise NotImplementedError("You must implement the 'get_co_sign_values' method.")
 
     def get_identifier_value(
         self, submission: Submission, identifier_role: IdentifierRoles

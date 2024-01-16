@@ -19,7 +19,7 @@ from openforms.variables.service import get_static_variables
 from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from .submission_step import SubmissionStep
 
 

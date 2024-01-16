@@ -40,7 +40,7 @@ from zgw_consumers.concurrent import parallel
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.variables.constants import FormVariableSources
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from openforms.formio.service import FormioConfigurationWrapper
     from openforms.submissions.models import Submission
 

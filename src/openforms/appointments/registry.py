@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from openforms.plugins.registry import BaseRegistry
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .base import BasePlugin  # noqa: F401
 
 

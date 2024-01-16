@@ -15,7 +15,7 @@ class BaseStaticVariable(ABC, AbstractBasePlugin):
 
     @abstractmethod
     def get_initial_value(self, submission: Optional[Submission] = None):
-        raise NotImplementedError()  # pragma: nocover
+        raise NotImplementedError()
 
     def get_static_variable(self, submission: Optional[Submission] = None):
         return FormVariable(

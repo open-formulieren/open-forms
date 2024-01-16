@@ -6,7 +6,7 @@ from openforms.plugins.registry import BaseRegistry
 
 from .base import APIInfo, BasePlugin
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from openforms.forms.models import Form
 
 

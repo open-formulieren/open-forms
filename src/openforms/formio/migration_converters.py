@@ -14,7 +14,7 @@ from .typing import Component
 
 
 class ComponentConverter(Protocol):
-    def __call__(self, component: Component) -> bool:  # pragma: no cover
+    def __call__(self, component: Component) -> bool:
         """
         Mutate a component in place.
 

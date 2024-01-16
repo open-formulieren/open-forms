@@ -3,7 +3,6 @@ Base implementation for timestamped salted HMAC tokens.
 """
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import List
 
 from django.conf import settings
 from django.db import models
@@ -103,7 +102,7 @@ class BaseTokenGenerator(ABC):
         return self.token_timeout_days
 
     @abstractmethod
-    def get_hash_value_parts(self, obj: models.Model) -> List[str]:  # pragma: no cover
+    def get_hash_value_parts(self, obj: models.Model) -> list[str]:
         """
         Obtain a list of strings reflecting object state.
 

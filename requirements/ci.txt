@@ -133,7 +133,7 @@ click-repl==0.2.0
     #   celery
 commonmark==0.9.1
     # via recommonmark
-coverage==7.1.0
+coverage==7.4.0
     # via -r requirements/test-tools.in
 cryptography==41.0.7
     # via

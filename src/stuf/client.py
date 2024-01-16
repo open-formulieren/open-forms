@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 class LoggingHook(Protocol):
     def __call__(self, url: str) -> None:
-        ...  # pragma: nocover
+        ...
 
 
 def noop_log(*args, **kwargs) -> None:

@@ -108,7 +108,7 @@ class FamilyMembersHandler(Protocol):
     def __call__(
         self, bsn: str, include_children: bool, include_partner: bool
     ) -> list[tuple[str, str]]:
-        ...  # pragma: nocover
+        ...
 
 
 @register("npFamilyMembers")
