@@ -27,6 +27,7 @@ import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {APIContext, FeatureFlagsContext, FormContext} from './Context';
 import DataRemoval from './DataRemoval';
+import FormAdvancedConfiguration from './FormAdvancedConfiguration';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
 import {EMPTY_RULE, FormLogic} from './FormLogic';
@@ -112,6 +113,7 @@ const initialFormState = {
     authenticationBackendOptions: {},
     translations: {},
     appointmentOptions: {isAppointment: false},
+    brpPersonenRequestOptions: {},
   },
   newForm: true,
   formSteps: [],
@@ -173,6 +175,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   priceRules: 'product-payment',
   variables: 'variables',
   appointmentOptions: 'form',
+  brpPersonenRequestOptions: 'advanced-configuration',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
@@ -1306,6 +1309,12 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
                 <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
               </Tab>
             )}
+            <Tab hasErrors={state.tabsWithErrors.includes('advanced-configuration')}>
+              <FormattedMessage
+                defaultMessage="Advanced configuration"
+                description="Advanced configuration tab title"
+              />
+            </Tab>
           </TabList>
 
           <TabPanel>
@@ -1442,6 +1451,14 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
               />
             </TabPanel>
           )}
+
+          <TabPanel>
+            <FormAdvancedConfiguration
+              form={state.form}
+              formSteps={state.formSteps}
+              onChange={onFieldChange}
+            ></FormAdvancedConfiguration>
+          </TabPanel>
         </Tabs>
       </FormContext.Provider>
 
