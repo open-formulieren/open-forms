@@ -104,7 +104,7 @@ class ZGWAPIGroupConfigTest(TestCase):
             serializer.errors["zgw_api_group"][0],
         )
 
-    def test_no_zgw_api_group_and_no_default(self):
+    def test_provided_variable_with_missing_eigenshap(self):
         zgw_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
