@@ -1090,6 +1090,63 @@ class FormsAPITests(APITestCase):
         self.assertEqual(error["name"], "submissionConfirmationTemplate")
         self.assertEqual(error["code"], "syntax_error")
 
+    def test_create_form_with_brp_personen_request_options_successful(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "brp_personen_request_options": {
+                "brp_personen_purpose_limitation_header_value": "BRPACT-AanschrijvenZakelijkGerechtigde",
+                "brp_personen_processing_header_value": "Financiële administratie@Correspondentie factuur",
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Form.objects.count(), 1)
+        form = Form.objects.get()
+        self.assertEqual(form.name, "Test Post Form")
+        self.assertEqual(form.slug, "test-post-form")
+        self.assertEqual(
+            form.brp_personen_request_options.brp_personen_purpose_limitation_header_value,
+            "BRPACT-AanschrijvenZakelijkGerechtigde",
+        )
+        self.assertEqual(
+            form.brp_personen_request_options.brp_personen_processing_header_value,
+            "Financiële administratie@Correspondentie factuur",
+        )
+
+    def test_creating_a_brp_personen_request_options_for_an_existing_form(self):
+        form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "brp_personen_request_options": {
+                "brp_personen_purpose_limitation_header_value": "BRPACT-AanschrijvenZakelijkGerechtigde",
+                "brp_personen_processing_header_value": "Financiële administratie@Correspondentie factuur",
+            },
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        form.refresh_from_db()
+        self.assertEqual(
+            form.brp_personen_request_options.brp_personen_purpose_limitation_header_value,
+            "BRPACT-AanschrijvenZakelijkGerechtigde",
+        )
+        self.assertEqual(
+            form.brp_personen_request_options.brp_personen_processing_header_value,
+            "Financiële administratie@Correspondentie factuur",
+        )
+
     def test_create_form_auto_login_authentication_backend_validation_fails(self):
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True

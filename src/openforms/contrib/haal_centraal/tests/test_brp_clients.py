@@ -1,15 +1,19 @@
 from unittest.mock import patch
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from glom import glom
 
+from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.utils import store_registrator_details
+from openforms.config.models import GlobalConfiguration
+from openforms.submissions.tests.factories import SubmissionFactory
 from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..clients import get_brp_client
-from ..constants import BRPVersions
-from ..models import HaalCentraalConfig
+from ..constants import DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER, BRPVersions
+from ..models import BRPPersonenRequestOptions, HaalCentraalConfig
 from .utils import load_json_mock
 
 
@@ -49,6 +53,14 @@ class HaalCentraalFindPersonTests:
         )
         config_patcher.start()
         self.addCleanup(config_patcher.stop)  # type: ignore
+
+        global_config = GlobalConfiguration()
+        global_config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+            return_value=global_config,
+        )
+        global_config_patcher.start()
+        self.addCleanup(global_config_patcher.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
@@ -535,7 +547,7 @@ class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
         super().test_get_family_members()
 
 
-class ClientFactoryTests(SimpleTestCase):
+class ClientFactoryInvalidVersionTests(SimpleTestCase):
     def test_invalid_version_raises_error(self):
         config = HaalCentraalConfig(
             brp_personen_service=ServiceFactory.build(
@@ -549,6 +561,155 @@ class ClientFactoryTests(SimpleTestCase):
         with patch(
             "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
             return_value=config,
+        ), patch(
+            "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(),
         ):
             with self.assertRaises(RuntimeError):
-                get_brp_client()
+                get_brp_client(SubmissionFactory.build())
+
+
+class HaalCentraalXHeadersTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        # set up patcher for the configuration
+        config = HaalCentraalConfig(
+            brp_personen_service=ServiceFactory.build(
+                api_root="https://personen/api/",
+                oas="https://this.is.ignored",
+            ),
+            brp_personen_version=BRPVersions.v20,
+            default_brp_personen_purpose_limitation_header_value="BRPACT-AanschrijvenZakelijkGerechtigde",
+            default_brp_personen_processing_header_value="Financiële administratie@Correspondentie factuur",
+        )
+        config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
+            return_value=config,
+        )
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+        self.requests_mock = requests_mock.Mocker()
+        self.requests_mock.start()
+        self.addCleanup(self.requests_mock.stop)
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(),
+    )
+    def test_uses_default_headers(self, m):
+        self.requests_mock.register_uri(
+            requests_mock.ANY, requests_mock.ANY, status_code=200
+        )
+        client = get_brp_client()
+        client.post("irrelevant")
+
+        request_headers = self.requests_mock.last_request.headers
+        self.assertEqual(
+            request_headers["x-doelbinding"], "BRPACT-AanschrijvenZakelijkGerechtigde"
+        )
+        self.assertEqual(
+            request_headers["x-verwerking"],
+            "Financiële administratie@Correspondentie factuur",
+        )
+        self.assertEqual(
+            request_headers["x-gebruiker"], DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER
+        )
+        self.assertEqual(request_headers["x-origin-oin"], "")
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(),
+    )
+    def test_uses_haal_centraal_options(self, m):
+        submission = SubmissionFactory.create()
+        BRPPersonenRequestOptions.objects.create(
+            form=submission.form,
+            brp_personen_purpose_limitation_header_value="OVERRIDDEN_BRPACT-AanschrijvenZakelijkGerechtigde",
+            brp_personen_processing_header_value="OVERRIDDEN_Financiële administratie@Correspondentie factuur",
+        )
+
+        self.requests_mock.register_uri(
+            requests_mock.ANY, requests_mock.ANY, status_code=200
+        )
+
+        client = get_brp_client(submission)
+        client.post("irrelevant")
+
+        request_headers = self.requests_mock.last_request.headers
+
+        self.assertEqual(
+            request_headers["x-doelbinding"],
+            "OVERRIDDEN_BRPACT-AanschrijvenZakelijkGerechtigde",
+        )
+        self.assertEqual(
+            request_headers["x-verwerking"],
+            "OVERRIDDEN_Financiële administratie@Correspondentie factuur",
+        )
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(organization_oin="oin"),
+    )
+    def test_uses_organization_oin(self, m):
+        self.requests_mock.register_uri(
+            requests_mock.ANY, requests_mock.ANY, status_code=200
+        )
+
+        client = get_brp_client()
+        client.post("irrelevant")
+
+        request_headers = self.requests_mock.last_request.headers
+        self.assertEqual(request_headers["x-origin-oin"], "oin")
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(),
+    )
+    def test_uses_registrator_attribute(self, m):
+        submission = SubmissionFactory.create()
+        store_registrator_details(
+            submission,
+            {
+                "attribute": AuthAttribute.employee_id,
+                "plugin": "irrelevant",
+                "value": "test_employee_id",
+            },
+        )
+
+        self.requests_mock.register_uri(
+            requests_mock.ANY, requests_mock.ANY, status_code=200
+        )
+
+        client = get_brp_client(submission)
+        client.post("irrelevant")
+
+        request_headers = self.requests_mock.last_request.headers
+        self.assertEqual(request_headers["x-gebruiker"], "test_employee_id")
+
+    @patch(
+        "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(),
+    )
+    def test_skips_registrator_attribute(self, m):
+        """Tests the registrator attribute is not used if not an employee id."""
+        submission = SubmissionFactory.create()
+        store_registrator_details(
+            submission,
+            {
+                "attribute": AuthAttribute.pseudo,
+                "plugin": "irrelevant",
+                "value": "test_pseudo",
+            },
+        )
+
+        self.requests_mock.register_uri(
+            requests_mock.ANY, requests_mock.ANY, status_code=200
+        )
+
+        client = get_brp_client(submission)
+        client.post("irrelevant")
+
+        request_headers = self.requests_mock.last_request.headers
+        self.assertNotEqual(request_headers["x-gebruiker"], "test_pseudo")

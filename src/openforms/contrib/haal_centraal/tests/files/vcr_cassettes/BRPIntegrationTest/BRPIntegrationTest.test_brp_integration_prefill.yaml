@@ -1,0 +1,53 @@
+interactions:
+- request:
+    body: '{"type": "RaadpleegMetBurgerservicenummer", "burgerservicenummer": ["999990421"],
+      "fields": ["burgerservicenummer", "adressering"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '131'
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - python-requests/2.31.0
+      x-doelbinding:
+      - BRPACT-AanschrijvenZakelijkGerechtigde
+      x-gebruiker:
+      - SAP001
+      x-origin-oin:
+      - 00000003273229750000
+      x-verwerking:
+      - "Financi\xEBle administratie@Correspondentie factuur"
+    method: POST
+    uri: https://example.com/personen
+  response:
+    body:
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"aNummer":"6374749384","burgerservicenummer":"999990421","geslacht":{"code":"M","omschrijving":"man"},"leeftijd":119,"naam":{"aanduidingNaamgebruik":{"code":"E","omschrijving":"eigen
+        geslachtsnaam"},"voornamen":"Adrianus Hendrikus","geslachtsnaam":"Holthuizen","voorletters":"A.H.","volledigeNaam":"Adrianus
+        Hendrikus Holthuizen"},"geboorte":{"datum":{"type":"Datum","datum":"1904-02-15","langFormaat":"15
+        februari 1904"}},"verblijfplaats":{"type":"Adres","verblijfadres":{"officieleStraatnaam":"Nieuwe
+        Parklaan","korteStraatnaam":"Nieuwe Parklaan","huisnummer":58,"postcode":"2597LD","woonplaats":"''s-Gravenhage"},"functieAdres":{"code":"W","omschrijving":"woonadres"},"adresseerbaarObjectIdentificatie":"0518010000436226","nummeraanduidingIdentificatie":"0518200000436225","datumVan":{"type":"Datum","datum":"2001-07-28","langFormaat":"28
+        juli 2001"}},"gemeenteVanInschrijving":{"code":"0518","omschrijving":"''s-Gravenhage"},"adressering":{"aanhef":"Geachte
+        heer Holthuizen","aanschrijfwijze":{"naam":"A.H. Holthuizen"},"gebruikInLopendeTekst":"de
+        heer Holthuizen","adresregel1":"Nieuwe Parklaan 58","adresregel2":"2597 LD  ''S-GRAVENHAGE"},"partners":[{"naam":{"geslachtsnaam":"Wiegman"},"aangaanHuwelijkPartnerschap":{"datum":{"type":"Datum","datum":"1926-07-15","langFormaat":"15
+        juli 1926"}}}]}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 10 Jan 2024 13:57:55 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+version: 1

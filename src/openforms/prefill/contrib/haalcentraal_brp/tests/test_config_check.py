@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 
 import requests_mock
 
+from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -39,6 +40,13 @@ class ConfigCheckTests:
         )
         self.config_mock = config_patcher.start()
         self.addCleanup(config_patcher.stop)  # type: ignore
+
+        global_config_patcher = patch(
+            "openforms.contrib.haal_centraal.clients.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(),
+        )
+        self.config_mock = global_config_patcher.start()
+        self.addCleanup(global_config_patcher.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
         self.requests_mock = requests_mock.Mocker()
