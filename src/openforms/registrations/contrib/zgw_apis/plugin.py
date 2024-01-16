@@ -171,19 +171,20 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 )
 
         # Make sure we have a variable-eigenshap mapping
-        for variable_property in attrs.get("variables_properties"):
-            component_key = variable_property.get("component_key")
-            property = variable_property.get("eigenshap")
+        if variables_properties := attrs.get("variables_properties"):
+            for variable_property in variables_properties:
+                component_key = variable_property.get("component_key")
+                property = variable_property.get("eigenshap")
 
-            if (component_key and not property) or (property and not component_key):
-                raise serializers.ValidationError(
-                    {
-                        "variables_properties": _(
-                            "Both variable selection and property name are required."
-                        )
-                    },
-                    code="invalid",
-                )
+                if (component_key and not property) or (property and not component_key):
+                    raise serializers.ValidationError(
+                        {
+                            "variables_properties": _(
+                                "Both variable selection and property name are required."
+                            )
+                        },
+                        code="invalid",
+                    )
 
         if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
             return attrs
