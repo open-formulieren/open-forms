@@ -1244,6 +1244,7 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `brpPersonenRequestOptions`
       summary: List forms
       parameters:
       - in: header
@@ -1316,6 +1317,7 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `brpPersonenRequestOptions`
       summary: Create form
       parameters:
       - in: header
@@ -1832,6 +1834,7 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `brpPersonenRequestOptions`
 
         Wanneer meertaligheid niet ingeschakeld is voor het formulier, dan wordt de standaardtaal (`settings.LANGUAGE_CODE`) geforceerd gezet in een language cookie. De actieve taal wordt gecommuniceerd in de Content-Language response header. De gebruikelijke HTTP Content Negotiation principes zijn van toepassing.
       summary: Retrieve form details
@@ -1910,6 +1913,7 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `brpPersonenRequestOptions`
       summary: Update all details of a form
       parameters:
       - in: header
@@ -1992,6 +1996,7 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `brpPersonenRequestOptions`
       summary: Update given details of a form
       parameters:
       - in: header
@@ -6389,6 +6394,19 @@ components:
       description: |-
         * `nl` - Dutch
         * `en` - English
+    BRPPersonenRequestOptions:
+      type: object
+      properties:
+        brpPersonenPurposeLimitationHeaderValue:
+          type: string
+          description: The purpose limitation ("doelbinding") for queries to the BRP
+            Persoon API.
+          maxLength: 255
+        brpPersonenProcessingHeaderValue:
+          type: string
+          description: The processing ("verwerking") for queries to the BRP Persoon
+            API.
+          maxLength: 242
     BlankEnum:
       enum:
       - ''
@@ -6802,7 +6820,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -7022,6 +7040,10 @@ components:
         submissionReportDownloadLinkTitle:
           type: string
           readOnly: true
+        brpPersonenRequestOptions:
+          allOf:
+          - $ref: '#/components/schemas/BRPPersonenRequestOptions'
+          nullable: true
       required:
       - cosignLoginInfo
       - hideNonApplicableSteps
@@ -7266,7 +7288,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -7431,7 +7453,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         name:
           type: string
@@ -8335,7 +8357,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackends`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `theme`, `activateOn`, `deactivateOn`, `isDeleted`, `submissionConfirmationTemplate`, `askPrivacyConsent`, `askStatementOfTruth`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `brpPersonenRequestOptions`.
       properties:
         uuid:
           type: string
@@ -8555,6 +8577,10 @@ components:
         submissionReportDownloadLinkTitle:
           type: string
           readOnly: true
+        brpPersonenRequestOptions:
+          allOf:
+          - $ref: '#/components/schemas/BRPPersonenRequestOptions'
+          nullable: true
     PatchedFormDefinition:
       type: object
       properties:
