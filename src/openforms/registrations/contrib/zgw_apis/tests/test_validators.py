@@ -103,3 +103,24 @@ class ZGWAPIGroupConfigTest(TestCase):
             "No ZGW API set was configured on the form and no default was specified globally.",
             serializer.errors["zgw_api_group"][0],
         )
+
+    def test_no_zgw_api_group_and_no_default(self):
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            zrc_service__api_root="https://zaken.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
+            ztc_service__api_root="https://catalogus.nl/api/v1/",
+        )
+
+        data = {
+            "zgw_api_group": zgw_group.pk,
+            "variables_properties": [{"component_key": "textField", "eigenshap": ""}],
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("variables_properties", serializer.errors)
+        self.assertEqual(
+            "Both variable selection and property name are required.",
+            serializer.errors["variables_properties"][0],
+        )

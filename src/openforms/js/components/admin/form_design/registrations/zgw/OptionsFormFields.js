@@ -46,6 +46,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
   return (
     <Wrapper>
       <CustomFieldTemplate
+        id="root_zgwApiGroup"
         label={intl.formatMessage({
           defaultMessage: 'ZGW API group',
           description: 'ZGW API group',
@@ -72,6 +73,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_zaaktype"
         label={intl.formatMessage({
           defaultMessage: 'Zaaktype',
           description: 'URL of the ZAAKTYPE in the Catalogi API',
@@ -92,6 +94,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_informatieobjecttype"
         label={intl.formatMessage({
           defaultMessage: 'Informatieobjecttype',
           description: 'URL of the INFORMATIEOBJECTTYPE in the Catalogi API',
@@ -117,6 +120,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_organisatieRsin"
         label={intl.formatMessage({
           defaultMessage: 'Organisatie rsin',
           description: 'RSIN of organization, which creates the ZAAK',
@@ -142,6 +146,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_zaakVertrouwelijkheidaanduiding"
         label={intl.formatMessage({
           defaultMessage: 'Confidentiality',
           description:
@@ -170,6 +175,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_medewerkerRoltype"
         label={intl.formatMessage({
           defaultMessage: 'Medewerker roltype',
           description:
@@ -197,6 +203,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_objecttype"
         label={intl.formatMessage({
           defaultMessage: 'Objects API - objecttype',
           description:
@@ -224,6 +231,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_objecttypeVersion"
         label={intl.formatMessage({
           defaultMessage: 'Objects API - objecttype version',
           description: 'Version of the object type in the Object Types API',
@@ -249,6 +257,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       </CustomFieldTemplate>
 
       <CustomFieldTemplate
+        id="root_contentJson"
         label={intl.formatMessage({
           defaultMessage: 'Objects API - JSON content field',
           description: 'JSON template for the content of the request sent to the Objects API',
