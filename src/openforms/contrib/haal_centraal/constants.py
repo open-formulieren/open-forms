@@ -1,5 +1,7 @@
 from django.db import models
 
+DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER = "BurgerZelf"
+
 
 class BRPVersions(models.TextChoices):
     """

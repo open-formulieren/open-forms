@@ -106,7 +106,11 @@ class Postcode(BasePlugin):
 
 class FamilyMembersHandler(Protocol):
     def __call__(
-        self, bsn: str, include_children: bool, include_partner: bool
+        self,
+        bsn: str,
+        include_children: bool,
+        include_partner: bool,
+        submission: Submission | None = ...,
     ) -> list[tuple[str, str]]:
         ...
 
@@ -178,6 +182,7 @@ class NPFamilyMembers(BasePlugin):
                 bsn,
                 include_children=component.get("includeChildren", True),
                 include_partners=component.get("includePartners", True),
+                submission=submission,
             )
 
             component["values"] = [

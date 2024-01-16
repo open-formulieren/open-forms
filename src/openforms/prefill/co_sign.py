@@ -58,7 +58,8 @@ def add_co_sign_representation(
     )
 
     values, representation = plugin.get_co_sign_values(
-        submission.co_sign_data["identifier"]
+        submission,
+        submission.co_sign_data["identifier"],
     )
     submission.co_sign_data["fields"] = values
     submission.co_sign_data["representation"] = representation
