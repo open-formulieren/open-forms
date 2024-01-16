@@ -9,7 +9,7 @@ import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import {VariablePropertyModal} from './OptionsVariablesProperties';
-import {getChoicesFromSchema, getErrorMarkup} from './utils';
+import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
 
 const Wrapper = ({children}) => (
   <form className="rjsf" name="form.registrationBackendOptions">
@@ -43,41 +43,23 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
     onChange(updatedFormData);
   };
 
-  const getFieldErrors = (index, errors, field) => {
-    const errorMessages = [];
-
-    for (const [errorName, errorReason] of errors) {
-      if (errorName.startsWith(name)) {
-        const errorNameBits = errorName.split('.');
-        if (
-          errorNameBits[2] === String(index) &&
-          errorNameBits[errorNameBits.length - 1] === field
-        ) {
-          errorMessages.push(errorReason);
-        }
-      }
-    }
-
-    return errorMessages.length > 0 ? errorMessages : null;
-  };
-
   return (
     <Wrapper>
       <CustomFieldTemplate
         label={intl.formatMessage({
-          defaultMessage: 'ZGW API set',
-          description: 'ZGW API set',
+          defaultMessage: 'ZGW API group',
+          description: 'ZGW API group',
         })}
         rawDescription={intl.formatMessage({
-          description: 'ZGW API set selection',
-          defaultMessage: 'Which ZGW API set to use.',
+          description: 'ZGW API group selection',
+          defaultMessage: 'Which ZGW API group to use.',
         })}
         rawErrors={null}
         errors={null}
         displayLabel
       >
         <Select
-          id="zgwApiGroup"
+          id="root_zgwApiGroup"
           name="zgwApiGroup"
           choices={getChoicesFromSchema(
             schema?.properties?.zgwApiGroup?.enum,
@@ -98,10 +80,10 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           description: 'ZAAKTYPE URL',
           defaultMessage: 'URL of the ZAAKTYPE in the Catalogi API.',
         })}
-        rawErrors={getFieldErrors(index, validationErrors, 'zaaktype')}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'zaaktype')}
         errors={
-          getFieldErrors(index, validationErrors, 'zaaktype')
-            ? getErrorMarkup(getFieldErrors(index, validationErrors, 'zaaktype'))
+          getFieldErrors(name, index, validationErrors, 'zaaktype')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'zaaktype'))
             : null
         }
         displayLabel
@@ -118,10 +100,10 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           description: 'Informatieobjecttype URL',
           defaultMessage: 'URL of the INFORMATIEOBJECTTYPE in the Catalogi API.',
         })}
-        rawErrors={getFieldErrors(index, validationErrors, 'informatieobjecttype')}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'informatieobjecttype')}
         errors={
-          getFieldErrors(index, validationErrors, 'informatieobjecttype')
-            ? getErrorMarkup(getFieldErrors(index, validationErrors, 'informatieobjecttype'))
+          getFieldErrors(name, index, validationErrors, 'informatieobjecttype')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'informatieobjecttype'))
             : null
         }
         displayLabel
@@ -143,10 +125,10 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           description: 'Organisatie rsin',
           defaultMessage: 'RSIN of organization, which creates the ZAAK.',
         })}
-        rawErrors={getFieldErrors(index, validationErrors, 'organisatieRsin')}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'organisatieRsin')}
         errors={
-          getFieldErrors(index, validationErrors, 'organisatieRsin')
-            ? getErrorMarkup(getFieldErrors(index, validationErrors, 'organisatieRsin'))
+          getFieldErrors(name, index, validationErrors, 'organisatieRsin')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'organisatieRsin'))
             : null
         }
         displayLabel
@@ -198,10 +180,10 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           defaultMessage:
             'Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.',
         })}
-        rawErrors={getFieldErrors(index, validationErrors, 'medewerkerRoltype')}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'medewerkerRoltype')}
         errors={
-          getFieldErrors(index, validationErrors, 'medewerkerRoltype')
-            ? getErrorMarkup(getFieldErrors(index, validationErrors, 'medewerkerRoltype'))
+          getFieldErrors(name, index, validationErrors, 'medewerkerRoltype')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'medewerkerRoltype'))
             : null
         }
         displayLabel
@@ -225,10 +207,10 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           defaultMessage:
             'URL to the OBJECT TYPE for the "Product Request" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the "Product Request") 3) data (submitted form data).',
         })}
-        rawErrors={getFieldErrors(index, validationErrors, 'objecttype')}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'objecttype')}
         errors={
-          getFieldErrors(index, validationErrors, 'objecttype')
-            ? getErrorMarkup(getFieldErrors(index, validationErrors, 'objecttype'))
+          getFieldErrors(name, index, validationErrors, 'objecttype')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'objecttype'))
             : null
         }
         displayLabel
@@ -250,10 +232,10 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           description: 'Objects API - objecttype version',
           defaultMessage: 'Version of the object type in the Object Types API.',
         })}
-        rawErrors={getFieldErrors(index, validationErrors, 'objecttypeVersion')}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'objecttypeVersion')}
         errors={
-          getFieldErrors(index, validationErrors, 'objecttypeVersion')
-            ? getErrorMarkup(getFieldErrors(index, validationErrors, 'objecttypeVersion'))
+          getFieldErrors(name, index, validationErrors, 'objecttypeVersion')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'objecttypeVersion'))
             : null
         }
         displayLabel
@@ -275,10 +257,10 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           description: 'Objects API - JSON content field',
           defaultMessage: 'JSON template for the content of the request sent to the Objects API.',
         })}
-        rawErrors={getFieldErrors(index, validationErrors, 'contentJson')}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'contentJson')}
         errors={
-          getFieldErrors(index, validationErrors, 'contentJson')
-            ? getErrorMarkup(getFieldErrors(index, validationErrors, 'contentJson'))
+          getFieldErrors(name, index, validationErrors, 'contentJson')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'contentJson'))
             : null
         }
         displayLabel
@@ -291,7 +273,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
         />
       </CustomFieldTemplate>
 
-      <VariablePropertyModal formData={formData} onChange={onChange} />
+      <VariablePropertyModal index={index} name={name} formData={formData} onChange={onChange} />
     </Wrapper>
   );
 };

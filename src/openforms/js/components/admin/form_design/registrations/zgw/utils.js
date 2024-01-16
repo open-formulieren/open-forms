@@ -9,6 +9,21 @@ const getChoicesFromSchema = (enums, enumNames) => {
   return finalChoices;
 };
 
+const getFieldErrors = (name, index, errors, field) => {
+  const errorMessages = [];
+
+  for (const [errorName, errorReason] of errors) {
+    if (errorName.startsWith(name)) {
+      const errorNameBits = errorName.split('.');
+      if (errorNameBits[2] === String(index) && errorNameBits[errorNameBits.length - 1] === field) {
+        errorMessages.push(errorReason);
+      }
+    }
+  }
+
+  return errorMessages.length > 0 ? errorMessages : null;
+};
+
 const getErrorMarkup = errorMessages => {
   return (
     <div className="rjsf-field__errors">
@@ -25,4 +40,4 @@ const getErrorMarkup = errorMessages => {
   );
 };
 
-export {getChoicesFromSchema, getErrorMarkup};
+export {getChoicesFromSchema, getErrorMarkup, getFieldErrors};

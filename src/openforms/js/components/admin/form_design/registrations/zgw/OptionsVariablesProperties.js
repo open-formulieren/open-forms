@@ -1,17 +1,21 @@
 import {produce} from 'immer';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
+import {FormContext} from 'components/admin/form_design/Context';
 import ActionButton, {SubmitAction} from 'components/admin/forms/ActionButton';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import {TextInput} from 'components/admin/forms/Inputs';
 import SubmitRow from 'components/admin/forms/SubmitRow';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import {FormModal} from 'components/admin/modals';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
+
+import {getErrorMarkup, getFieldErrors} from './utils';
 
 const EMPTY_VARIABLE_PROPERTY = {
   variablesProperties: [{componentKey: '', eigenshap: ''}],
@@ -92,9 +96,12 @@ VariableProperty.propTypes = {
 };
 
 const SelectVariablesProperties = ({variablesProperties = [], onChange, onAdd, onDelete}) => {
+  const formContext = useContext(FormContext);
+  const allComponents = formContext.components;
+
   const usedComponents = variablesProperties
-    .filter(variable => variable.componentKey !== '')
-    .map(variable => variable.componentKey);
+    .filter(connection => connection.componentKey !== '')
+    .map(connection => connection.componentKey);
 
   const filterFunc = (componentKey, {key}) => componentKey === key || !usedComponents.includes(key);
 
@@ -113,9 +120,14 @@ const SelectVariablesProperties = ({variablesProperties = [], onChange, onAdd, o
         ))}
       </ChangelistTableWrapper>
 
-      <ButtonContainer onClick={onAdd}>
-        <FormattedMessage description="Add process variable button" defaultMessage="Add variable" />
-      </ButtonContainer>
+      {usedComponents.length < Object.keys(allComponents).length ? (
+        <ButtonContainer onClick={onAdd}>
+          <FormattedMessage
+            description="Add process variable button"
+            defaultMessage="Add variable"
+          />
+        </ButtonContainer>
+      ) : null}
     </>
   );
 };
@@ -132,9 +144,10 @@ SelectVariablesProperties.propTypes = {
   onDelete: PropTypes.func.isRequired,
 };
 
-const VariablePropertyModal = ({formData, onChange}) => {
+const VariablePropertyModal = ({index, name, formData, onChange}) => {
   const intl = useIntl();
   const [modalOpen, setModalOpen] = useState(false);
+  const validationErrors = useContext(ValidationErrorContext);
 
   const {variablesProperties = []} = formData;
 
@@ -166,13 +179,17 @@ const VariablePropertyModal = ({formData, onChange}) => {
       <CustomFieldTemplate
         id="zgwOptions.managePropertiesVariables"
         displayLabel={false}
-        rawErrors={null}
-        errors={null}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'variablesProperties')}
+        errors={
+          getFieldErrors(name, index, validationErrors, 'variablesProperties')
+            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'variablesProperties'))
+            : null
+        }
       >
         <ActionButton
           text={intl.formatMessage({
             description: 'Open connect ZGW properties with variables modal button',
-            defaultMessage: 'Connect variables with ZGW properties',
+            defaultMessage: 'Connect variables with ZAAK properties',
           })}
           type="button"
           onClick={() => setModalOpen(!modalOpen)}
@@ -194,7 +211,7 @@ const VariablePropertyModal = ({formData, onChange}) => {
         title={
           <FormattedMessage
             description="ZGW properties with variables connection modal title"
-            defaultMessage="Connect variables with ZGW properties"
+            defaultMessage="Connect variables with ZAAK properties"
           />
         }
         closeModal={() => setModalOpen(false)}
@@ -223,6 +240,8 @@ const VariablePropertyModal = ({formData, onChange}) => {
 };
 
 VariablePropertyModal.propTypes = {
+  index: PropTypes.number,
+  name: PropTypes.string,
   formData: PropTypes.shape({
     contentJson: PropTypes.string,
     informatieobjecttype: PropTypes.string,
