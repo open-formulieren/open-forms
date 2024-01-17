@@ -37,6 +37,8 @@ from ..serializers import CoSignDataSerializer
 from .submission_step import SubmissionStep
 
 if TYPE_CHECKING:
+    from openforms.authentication.models import AuthInfo, RegistratorInfo
+
     from .submission_files import (
         SubmissionFileAttachment,
         SubmissionFileAttachmentQuerySet,
