@@ -26,8 +26,8 @@ paths:
   /api/v2/analytics/analytics_tools_config_info:
     get:
       operationId: analytics_analytics_tools_config_info_retrieve
-      description: Returns information about the the analytics tools that are needed
-        by the frontend.
+      description: Returns information about the analytics tools that are needed by
+        the frontend.
       summary: Analytics Tools Configuration
       tags:
       - analytics
