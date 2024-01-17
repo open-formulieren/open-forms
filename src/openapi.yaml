@@ -23,6 +23,34 @@ info:
   license:
     name: UNLICENSED
 paths:
+  /api/v2/analytics/analytics_tools_config_info:
+    get:
+      operationId: analytics_analytics_tools_config_info_retrieve
+      description: Returns information about the analytics tools that are needed by
+        the frontend.
+      summary: Analytics Tools Configuration
+      tags:
+      - analytics
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsToolsConfig'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/appointments/{submission_uuid}/cancel:
     post:
       operationId: appointments_cancel_create
@@ -6223,6 +6251,26 @@ components:
       - label
       - latLng
       - rd
+    AnalyticsToolsConfig:
+      type: object
+      properties:
+        govmetricSourceId:
+          type: string
+          description: Your GovMetric source ID - This is created by KLANTINFOCUS
+            when a list of questions is created. It is a numerical value that is unique
+            per set of questions.
+          maxLength: 10
+        govmetricSecureGuid:
+          type: string
+          description: Your GovMetric secure GUID - This is an optional value. It
+            is created by KLANTINFOCUS when a list of questions is created. It is
+            a string that is unique per set of questions.
+          maxLength: 50
+        enableGovmetricAnalytics:
+          type: boolean
+          description: This enables GovMetric to collect data while a user fills in
+            a form and it adds a button at the end of a form to fill in a client satisfaction
+            survey.
     ApiTypeEnum:
       enum:
       - ac

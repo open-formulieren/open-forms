@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
+from modeltranslation.admin import TranslationAdmin
 from solo.admin import SingletonModelAdmin
 
 from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 
 
 @admin.register(AnalyticsToolsConfiguration)
-class AnalyticsToolsConfigurationAdmin(SingletonModelAdmin):
+class AnalyticsToolsConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
     autocomplete_fields = ("analytics_cookie_consent_group",)
     fieldsets = (
         (_("Analytics cookies group"), {"fields": ("analytics_cookie_consent_group",)}),
@@ -48,6 +49,16 @@ class AnalyticsToolsConfigurationAdmin(SingletonModelAdmin):
                     "enable_piwik_pro_site_analytics",
                     "enable_piwik_pro_tag_manager",
                 ),
+            },
+        ),
+        (
+            _("Analytics: GovMetric"),
+            {
+                "fields": (
+                    "govmetric_source_id",
+                    "govmetric_secure_guid",
+                    "enable_govmetric_analytics",
+                )
             },
         ),
     )
