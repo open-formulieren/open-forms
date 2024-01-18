@@ -122,7 +122,7 @@ Submission {submission.id} - public name
         Currency                           1.234,56
         A container with visible children
         Input 4                            fourth input
-        WYSIWYG Content                    WYSIWYG with markup
+                                           WYSIWYG with markup
         ---------------------------------  -------------------
     Variabelen
         ------------------  -----------
@@ -186,7 +186,7 @@ Submission {submission.id} - public name
         Currency                           1.234,56
         A container with visible children
         Input 4                            fourth input
-        WYSIWYG Content                    <p>WYSIWYG with <strong>markup</strong></p>
+                                           <p>WYSIWYG with <strong>markup</strong></p>
         ---------------------------------  -------------------------------------------
     Variabelen
         ------------------  -----------
