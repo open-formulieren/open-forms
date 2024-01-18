@@ -400,5 +400,8 @@
   "The uploaded file is not of an allowed type. It must be: {{ pattern }}.": "Het geuploaded bestand is niet van een toegestaan type. Het moet {{ pattern }} zijn.",
   "{{ labels }} or {{ lastLabel }}": "{{ labels }} of {{ lastLabel }}",
   "Note that any family member without a BSN will not be displayed.": "Let op, gezinsleden zonder BSN worden niet getoond.",
+  "invalidDatetime": "Ongeldige datum/tijd",
+  "maxDatetime": "De opgegeven datum/tijd liggen te ver in de toekomst.",
+  "minDatetime": "De opgegeven datum/tijd liggen te ver in het verleden.",
   "": ""
 }
