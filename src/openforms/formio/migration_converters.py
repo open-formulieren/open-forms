@@ -140,6 +140,14 @@ def ensure_postcode_validate_pattern(component: Component) -> bool:
     return True
 
 
+def prevent_datetime_components_from_emptying_invalid_values(
+    component: Component,
+) -> bool:
+    # Issue #3755
+    assign(component, "customOptions.allowInvalidPreload", True, missing=dict)
+    return True
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
@@ -150,6 +158,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
+        "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
     },
     "time": {
         "move_time_validators": move_time_validators,
