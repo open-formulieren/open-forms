@@ -29,9 +29,11 @@ So, to recap:
 .. todo:: Move the public API into ``openforms.prefill.service``.
 
 """
+from __future__ import annotations
+
 import logging
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 
 import elasticapm
 from glom import Path, PathAccessError, assign, glom
@@ -44,16 +46,19 @@ if TYPE_CHECKING:
     from openforms.formio.service import FormioConfigurationWrapper
     from openforms.submissions.models import Submission
 
+    from .registry import Registry
+
 logger = logging.getLogger(__name__)
 
 
 @elasticapm.capture_span(span_type="app.prefill")
 def _fetch_prefill_values(
-    grouped_fields: Dict[str, list], submission: "Submission", register
-) -> Dict[str, Dict[str, Any]]:
-    from openforms.logging import (  # local import to prevent AppRegistryNotReady
-        logevent,
-    )
+    grouped_fields: dict[str, dict[str, list[str]]],
+    submission: Submission,
+    register: Registry,
+) -> dict[str, dict[str, Any]]:
+    # local import to prevent AppRegistryNotReady:
+    from openforms.logging import logevent
 
     @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(
@@ -100,7 +105,7 @@ def _fetch_prefill_values(
 
 
 def inject_prefill(
-    configuration_wrapper: "FormioConfigurationWrapper", submission: "Submission"
+    configuration_wrapper: FormioConfigurationWrapper, submission: Submission
 ) -> None:
     """
     Mutates each component found in configuration according to the prefilled values.
@@ -146,7 +151,13 @@ def inject_prefill(
 
 
 @elasticapm.capture_span(span_type="app.prefill")
-def prefill_variables(submission: "Submission", register=None) -> None:
+def prefill_variables(submission: Submission, register: Registry | None = None) -> None:
+    """Update the submission variables state with the fetched attribute values.
+
+    For each submission value variable that need to be prefilled, the according plugin will
+    be used to fetch the value. If ``register`` is not specified, the default registry instance
+    will be used.
+    """
     from openforms.formio.service import normalize_value_for_component
 
     from .registry import register as default_register
@@ -156,11 +167,16 @@ def prefill_variables(submission: "Submission", register=None) -> None:
     state = submission.load_submission_value_variables_state()
     variables_to_prefill = state.get_prefill_variables()
 
-    grouped_fields = defaultdict(lambda: defaultdict(list))
+    # grouped_fields is a dict of the following shape:
+    # {"plugin_id": {"identifier_role": ["attr_1", "attr_2"]}}
+    # "identifier_role" is either "main" or "authorised_person"
+    grouped_fields: defaultdict[str, defaultdict[str, list[str]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
     for variable in variables_to_prefill:
         plugin_id = variable.form_variable.prefill_plugin
-        attribute_name = variable.form_variable.prefill_attribute
         identifier_role = variable.form_variable.prefill_identifier_role
+        attribute_name = variable.form_variable.prefill_attribute
 
         grouped_fields[plugin_id][identifier_role].append(attribute_name)
 
