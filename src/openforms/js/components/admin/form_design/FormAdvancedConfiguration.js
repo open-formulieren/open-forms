@@ -83,10 +83,12 @@ const FormAdvancedConfiguration = ({form, formSteps, onChange}) => {
           </FormRow>
         </Fieldset>
       ) : (
-        <FormattedMessage
-          defaultMessage="No advanced configuration is available for this form."
-          description="Form advanced configuration fallback message"
-        />
+        <p style={{padding: '1em 0 0', color: 'var(--body-quiet-color)'}}>
+          <FormattedMessage
+            defaultMessage="No advanced configuration is available for this form."
+            description="Form advanced configuration fallback message"
+          />
+        </p>
       )}
     </>
   );
