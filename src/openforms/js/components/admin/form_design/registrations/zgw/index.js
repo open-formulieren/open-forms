@@ -1,3 +1,3 @@
-import ZGWOptionsForm from './OptionsForm';
+import ZGWOptionsForm from './ZGWOptionsForm';
 
 export default ZGWOptionsForm;

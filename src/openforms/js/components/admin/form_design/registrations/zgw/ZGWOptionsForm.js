@@ -3,11 +3,11 @@ import React from 'react';
 
 import Field from 'components/admin/forms/Field';
 
-import ZGWFormFields from './OptionsFormFields';
+import ZGWFormFields from './ZGWOptionsFormFields';
 
 const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
   return (
-    <Field name={name} label={label} errors={[]}>
+    <Field name={name} label={label}>
       <ZGWFormFields
         index={index}
         name={name}
@@ -18,8 +18,6 @@ const ZGWOptionsForm = ({index, name, label, schema, formData, onChange}) => {
     </Field>
   );
 };
-
-export default ZGWOptionsForm;
 
 ZGWOptionsForm.propTypes = {
   index: PropTypes.number,
@@ -61,3 +59,5 @@ ZGWOptionsForm.propTypes = {
   }),
   onChange: PropTypes.func.isRequired,
 };
+
+export default ZGWOptionsForm;

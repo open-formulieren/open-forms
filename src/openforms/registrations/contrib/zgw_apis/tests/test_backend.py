@@ -1690,11 +1690,11 @@ class ZGWBackendTests(TestCase):
             [
                 {
                     "key": "textField1",
-                    "type": "textfield1",
+                    "type": "textfield",
                 },
                 {
                     "key": "textField2",
-                    "type": "textfield2",
+                    "type": "textfield",
                 },
             ],
             submitted_data={
@@ -1729,7 +1729,7 @@ class ZGWBackendTests(TestCase):
                     generate_oas_component(
                         "catalogi",
                         "schemas/Eigenschap",
-                        url="https://test.openzaak.nl/catalogi/api/v1/eigenschappen/1",
+                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
                         naam="a property name",
                         definitie="a definition",
                         specificatie={
@@ -1745,7 +1745,7 @@ class ZGWBackendTests(TestCase):
                     generate_oas_component(
                         "catalogi",
                         "schemas/Eigenschap",
-                        url="https://test.openzaak.nl/catalogi/api/v1/eigenschappen/2",
+                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
                         naam="second property",
                         definitie="a definition",
                         specificatie={
@@ -1769,10 +1769,10 @@ class ZGWBackendTests(TestCase):
                     "json": generate_oas_component(
                         "catalogi",
                         "schemas/Eigenschap",
-                        url="https://test.openzaak.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
+                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
                         uuid=1,
                         zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenshap="https://test.openzaak.nl/catalogi/api/v1/eigenschappen/1",
+                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
                         naam="a property name",
                         waarde="some data",
                         definitie="a definition",
@@ -1792,10 +1792,10 @@ class ZGWBackendTests(TestCase):
                     "json": generate_oas_component(
                         "catalogi",
                         "schemas/Eigenschap",
-                        url="https://test.openzaak.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
+                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
                         uuid=2,
                         zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenshap="https://test.openzaak.nl/catalogi/api/v1/eigenschappen/2",
+                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
                         naam="second property",
                         waarde="more data",
                         definitie="a definition",
@@ -1819,12 +1819,12 @@ class ZGWBackendTests(TestCase):
         assert result
 
         self.assertEqual(
-            result["zaakeigenshap-1"],
+            result["zaakeigenschappen"]["1"],
             {
-                "url": "https://test.openzaak.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
+                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
                 "uuid": 1,
                 "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenshap": "https://test.openzaak.nl/catalogi/api/v1/eigenschappen/1",
+                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
                 "naam": "a property name",
                 "waarde": "some data",
                 "definitie": "a definition",
@@ -1840,14 +1840,272 @@ class ZGWBackendTests(TestCase):
             },
         )
         self.assertEqual(
-            result["zaakeigenshap-2"],
+            result["zaakeigenschappen"]["2"],
             {
-                "url": "https://test.openzaak.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
+                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
                 "uuid": 2,
                 "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenshap": "https://test.openzaak.nl/catalogi/api/v1/eigenschappen/2",
+                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
                 "naam": "second property",
                 "waarde": "more data",
+                "definitie": "a definition",
+                "specificatie": {
+                    "groep": "",
+                    "formaat": "tekst",
+                    "lengte": "10",
+                    "kardinaliteit": "1",
+                    "waardenverzameling": [],
+                },
+                "toelichting": "",
+                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
+            },
+        )
+
+    def test_submission_with_nested_component_columns_and_eigenshap(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "column1",
+                    "type": "columns",
+                    "columns": [
+                        {
+                            "size": 6,
+                            "components": [
+                                {
+                                    "key": "textField1",
+                                    "type": "textfield",
+                                }
+                            ],
+                        },
+                        {
+                            "size": 6,
+                            "components": [
+                                {
+                                    "key": "textField2",
+                                    "type": "textfield",
+                                }
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "key": "textField3.blah",
+                    "type": "textfield",
+                },
+            ],
+            submitted_data={
+                "textField1": "data in columns",
+                "textField2": "more data",
+                "textField3": {"blah": "a value"},
+            },
+            language_code="en",
+            form_definition_kwargs={"slug": "test-eigenshappen"},
+        )
+        zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
+            variables_properties=[
+                {"component_key": "textField1", "eigenshap": "a property name"},
+                {"component_key": "textField2", "eigenshap": "second property"},
+                {"component_key": "textField3.blah", "eigenshap": "third property"},
+            ],
+        )
+        self.install_mocks(m)
+
+        m.get(
+            "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            status_code=200,
+            json={
+                "count": 3,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
+                        naam="a property name",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
+                        naam="second property",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://zaken.nl/catalogi/api/v1/eigenschappen/3",
+                        naam="third property",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                ],
+            },
+        )
+        m.post(
+            "https://zaken.nl/api/v1/zaken/1/zaakeigenschappen",
+            [
+                {
+                    "status_code": 201,
+                    "json": generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
+                        uuid=1,
+                        zaak="https://zaken.nl/api/v1/zaken/1",
+                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
+                        naam="a property name",
+                        waarde="data in columns",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                },
+                {
+                    "status_code": 201,
+                    "json": generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
+                        uuid=2,
+                        zaak="https://zaken.nl/api/v1/zaken/1",
+                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
+                        naam="second property",
+                        waarde="more data",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                },
+                {
+                    "status_code": 201,
+                    "json": generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/3",
+                        uuid=2,
+                        zaak="https://zaken.nl/api/v1/zaken/1",
+                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/3",
+                        naam="third property",
+                        waarde="a value",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                },
+            ],
+        )
+
+        plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
+        result = plugin.register_submission(submission, zgw_form_options)
+        assert result
+
+        self.assertEqual(
+            result["zaakeigenschappen"]["1"],
+            {
+                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
+                "uuid": 1,
+                "zaak": "https://zaken.nl/api/v1/zaken/1",
+                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
+                "naam": "a property name",
+                "waarde": "data in columns",
+                "definitie": "a definition",
+                "specificatie": {
+                    "groep": "",
+                    "formaat": "tekst",
+                    "lengte": "10",
+                    "kardinaliteit": "1",
+                    "waardenverzameling": [],
+                },
+                "toelichting": "",
+                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
+            },
+        )
+        self.assertEqual(
+            result["zaakeigenschappen"]["2"],
+            {
+                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
+                "uuid": 2,
+                "zaak": "https://zaken.nl/api/v1/zaken/1",
+                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
+                "naam": "second property",
+                "waarde": "more data",
+                "definitie": "a definition",
+                "specificatie": {
+                    "groep": "",
+                    "formaat": "tekst",
+                    "lengte": "10",
+                    "kardinaliteit": "1",
+                    "waardenverzameling": [],
+                },
+                "toelichting": "",
+                "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
+            },
+        )
+        self.assertEqual(
+            result["zaakeigenschappen"]["3"],
+            {
+                "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/3",
+                "uuid": 2,
+                "zaak": "https://zaken.nl/api/v1/zaken/1",
+                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/3",
+                "naam": "third property",
+                "waarde": "a value",
                 "definitie": "a definition",
                 "specificatie": {
                     "groep": "",

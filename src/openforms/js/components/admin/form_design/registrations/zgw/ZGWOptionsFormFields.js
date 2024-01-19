@@ -8,7 +8,7 @@ import {TextArea, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
-import {VariablePropertyModal} from './OptionsVariablesProperties';
+import {VariablePropertyModal} from './ZGWOptionsVariablesProperties';
 import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
 
 const Wrapper = ({children}) => (
@@ -41,6 +41,12 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
       draft[name] = value;
     });
     onChange(updatedFormData);
+  };
+
+  const buildErrorsComponent = field => {
+    return getFieldErrors(name, index, validationErrors, field)
+      ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'zaaktype'))
+      : null;
   };
 
   return (
@@ -83,11 +89,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           defaultMessage: 'URL of the ZAAKTYPE in the Catalogi API.',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'zaaktype')}
-        errors={
-          getFieldErrors(name, index, validationErrors, 'zaaktype')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'zaaktype'))
-            : null
-        }
+        errors={buildErrorsComponent('zaaktype')}
         displayLabel
       >
         <TextInput id="root_zaaktype" name="zaaktype" value={zaaktype} onChange={onFieldChange} />
@@ -104,11 +106,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           defaultMessage: 'URL of the INFORMATIEOBJECTTYPE in the Catalogi API.',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'informatieobjecttype')}
-        errors={
-          getFieldErrors(name, index, validationErrors, 'informatieobjecttype')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'informatieobjecttype'))
-            : null
-        }
+        errors={buildErrorsComponent('informatieobjecttype')}
         displayLabel
       >
         <TextInput
@@ -130,11 +128,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           defaultMessage: 'RSIN of organization, which creates the ZAAK.',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'organisatieRsin')}
-        errors={
-          getFieldErrors(name, index, validationErrors, 'organisatieRsin')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'organisatieRsin'))
-            : null
-        }
+        errors={buildErrorsComponent('organisatieRsin')}
         displayLabel
       >
         <TextInput
@@ -187,11 +181,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
             'Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'medewerkerRoltype')}
-        errors={
-          getFieldErrors(name, index, validationErrors, 'medewerkerRoltype')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'medewerkerRoltype'))
-            : null
-        }
+        errors={buildErrorsComponent('medewerkerRoltype')}
         displayLabel
       >
         <TextInput
@@ -215,11 +205,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
             'URL to the OBJECT TYPE for the "Product Request" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the "Product Request") 3) data (submitted form data).',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttype')}
-        errors={
-          getFieldErrors(name, index, validationErrors, 'objecttype')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'objecttype'))
-            : null
-        }
+        errors={buildErrorsComponent('objecttype')}
         displayLabel
       >
         <TextInput
@@ -241,11 +227,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           defaultMessage: 'Version of the object type in the Object Types API.',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttypeVersion')}
-        errors={
-          getFieldErrors(name, index, validationErrors, 'objecttypeVersion')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'objecttypeVersion'))
-            : null
-        }
+        errors={buildErrorsComponent('objecttypeVersion')}
         displayLabel
       >
         <TextInput
@@ -267,11 +249,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
           defaultMessage: 'JSON template for the content of the request sent to the Objects API.',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'contentJson')}
-        errors={
-          getFieldErrors(name, index, validationErrors, 'contentJson')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'contentJson'))
-            : null
-        }
+        errors={buildErrorsComponent('contentJson')}
         displayLabel
       >
         <TextArea
@@ -320,7 +298,7 @@ ZGWFormFields.propTypes = {
         componentKey: PropTypes.string,
         eigenshap: PropTypes.string,
       })
-    ).isRequired,
+    ),
     zaakVertrouwelijkheidaanduiding: PropTypes.string,
     zaaktype: PropTypes.string,
     zgwApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

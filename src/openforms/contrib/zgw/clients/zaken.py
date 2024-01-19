@@ -153,8 +153,7 @@ class ZakenClient(NLXClient):
 
     def create_zaakeigenschap(self, zaak_eigenshap_data: dict) -> dict:
         zaak_url = furl(zaak_eigenshap_data["zaak"])
-        zaak_uuid = zaak_url.path.segments[-1]
-        url = furl(self.base_url) / "zaken" / zaak_uuid / "zaakeigenschappen"
+        url = furl(zaak_url) / "zaakeigenschappen"
 
         response = self.post(url, json=zaak_eigenshap_data)
         response.raise_for_status()

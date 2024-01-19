@@ -79,11 +79,11 @@ Configuration
       * **Type**: Select the type, one of: ``ZRC``, ``DRC`` or ``ZTC``
       * **API root url**: The root of this API, *For example* ``https://example.com/zaken/api/v1/``
 
-      * **Client ID**: Fill the value provided by the backend service *For example:* ``open-zaak`` (*NOTE* this could be different for each component)
+      * **Client ID**: Fill the value provided by the backend service. *For example:* ``open-zaak`` (*NOTE* this could be different for each component)
       * **Secret**: Fill the value provided by the backend service (*NOTE* this could be different for each component)
       * **Authorization type**: Select the option: ``ZGW client_id + secret``
-      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
-        *for example:* ``https://example.com/zaken/api/v1/schema/openapi.yaml``
+      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it.
+        *For example:* ``https://example.com/zaken/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
       * **User ID**: Audit trail user ID, usually same as the Client ID
@@ -109,11 +109,11 @@ Configuration
 
 #. You can combine ZGW API with Objects API. The submission data will be sent to both if the following have been provided:
 
-   * **Objects API - Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API *For example* ``https://example.com/api/v1/objecttypes``
-   * **Objects API - Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API *For example:* ``1``
+   * **Objects API - Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API. *For example* ``https://example.com/api/v1/objecttypes``
+   * **Objects API - Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API. *For example:* ``1``
 
-#. You can map a form variable with a ZAAK property (eigenshap) by clicking the related button. A modal will open where you have to choose the variable along with providing a valid property name.
-   Both fields should be provided in order to create a connection.
+#. You can map a form variable with a Zaak property (eigenshap) by clicking the related button (*Connect variables with ZAAK properties*). 
+   A modal will open where you have to choose the variable along with providing a valid property name. Both fields should be provided in order to create a connection.
 
 #. Click **Opslaan**
 

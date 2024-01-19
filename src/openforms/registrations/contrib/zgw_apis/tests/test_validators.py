@@ -104,16 +104,97 @@ class ZGWAPIGroupConfigTest(TestCase):
             serializer.errors["zgw_api_group"][0],
         )
 
-    def test_provided_variable_with_missing_eigenshap(self):
+    @requests_mock.Mocker()
+    def test_existing_provided_variable_in_specific_zaaktype(self, m):
         zgw_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
         )
+        zgw_group.zaaktype = "https://zaken.nl/api/v1/zaaktypen/1"
+        zgw_group.save()
+        m.get(
+            "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fzaken.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            status_code=200,
+            json={
+                "count": 1,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://test.openzaak.nl/catalogi/api/v1/eigenschappen/1",
+                        naam="a property name",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                ],
+            },
+        )
 
         data = {
             "zgw_api_group": zgw_group.pk,
-            "variables_properties": [{"component_key": "textField", "eigenshap": ""}],
+            "variables_properties": [
+                {"component_key": "textField", "eigenshap": "a property name"}
+            ],
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+        is_valid = serializer.is_valid()
+
+        self.assertTrue(is_valid)
+        self.assertNotIn("variables_properties", serializer.errors)
+
+    @requests_mock.Mocker()
+    def test_provided_variable_does_not_exist_in_specific_zaaktype(self, m):
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            zrc_service__api_root="https://zaken.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
+            ztc_service__api_root="https://catalogus.nl/api/v1/",
+        )
+        zgw_group.zaaktype = "https://zaken.nl/api/v1/zaaktypen/1"
+        zgw_group.save()
+        m.get(
+            "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fzaken.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            status_code=200,
+            json={
+                "count": 1,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/Eigenschap",
+                        url="https://test.openzaak.nl/catalogi/api/v1/eigenschappen/1",
+                        naam="a property name",
+                        definitie="a definition",
+                        specificatie={
+                            "groep": "",
+                            "formaat": "tekst",
+                            "lengte": "10",
+                            "kardinaliteit": "1",
+                            "waardenverzameling": [],
+                        },
+                        toelichting="",
+                        zaaktype="https://zaken.nl/api/v1/zaaktypen/1",
+                    ),
+                ],
+            },
+        )
+
+        data = {
+            "zgw_api_group": zgw_group.pk,
+            "variables_properties": [
+                {"component_key": "textField", "eigenshap": "wrong variable"}
+            ],
         }
         serializer = ZaakOptionsSerializer(data=data)
         is_valid = serializer.is_valid()
@@ -121,6 +202,6 @@ class ZGWAPIGroupConfigTest(TestCase):
         self.assertFalse(is_valid)
         self.assertIn("variables_properties", serializer.errors)
         self.assertEqual(
-            "Both variable selection and property name are required.",
+            "Could not find a property with the name 'wrong variable' related to the zaaktype.",
             serializer.errors["variables_properties"][0],
         )

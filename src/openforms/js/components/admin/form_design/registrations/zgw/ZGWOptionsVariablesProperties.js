@@ -6,6 +6,7 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import DeleteIcon from 'components/admin/DeleteIcon';
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import {FormContext} from 'components/admin/form_design/Context';
+import {getComponentDatatype} from 'components/admin/form_design/variables/utils';
 import ActionButton, {SubmitAction} from 'components/admin/forms/ActionButton';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
@@ -15,7 +16,7 @@ import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import {FormModal} from 'components/admin/modals';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
 
-import {getErrorMarkup, getFieldErrors} from './utils';
+import {getErrorMarkup} from './utils';
 
 const EMPTY_VARIABLE_PROPERTY = {
   variablesProperties: [{componentKey: '', eigenshap: ''}],
@@ -24,17 +25,20 @@ const EMPTY_VARIABLE_PROPERTY = {
 const HeadColumns = () => {
   const intl = useIntl();
 
-  const componentText = (
-    <FormattedMessage description="Manage component column title" defaultMessage="Variable" />
-  );
+  const componentText = intl.formatMessage({
+    description: 'Manage component column title',
+    defaultMessage: 'Variable',
+  });
   const componentHelp = intl.formatMessage({
     description: 'Manage component help text',
     defaultMessage: 'The value of the selected field will be the process variable value.',
   });
 
-  const eigenshapText = (
-    <FormattedMessage description="Manage property column title" defaultMessage="Property" />
-  );
+  const eigenshapText = intl.formatMessage({
+    description: 'Manage property column title',
+    defaultMessage: 'Property',
+  });
+
   const eigenshapHelp = intl.formatMessage({
     description: 'Manage property help text',
     defaultMessage: 'Specify a ZGW property name.',
@@ -103,7 +107,24 @@ const SelectVariablesProperties = ({variablesProperties = [], onChange, onAdd, o
     .filter(connection => connection.componentKey !== '')
     .map(connection => connection.componentKey);
 
-  const filterFunc = (componentKey, {key}) => componentKey === key || !usedComponents.includes(key);
+  const filterFunc = (componentKey, component) => {
+    const isSimpleType = !['array', 'object'].includes(getComponentDatatype(component));
+    const componentNotUsed =
+      componentKey === component.key || !usedComponents.includes(component.key);
+
+    return isSimpleType && componentNotUsed;
+  };
+
+  const getSimpleComponentsLength = () => {
+    const filteredComponents = [];
+
+    for (const comp in allComponents) {
+      if (!['array', 'object'].includes(getComponentDatatype(allComponents[comp]))) {
+        filteredComponents.push(comp);
+      }
+    }
+    return filteredComponents.length;
+  };
 
   return (
     <>
@@ -120,7 +141,7 @@ const SelectVariablesProperties = ({variablesProperties = [], onChange, onAdd, o
         ))}
       </ChangelistTableWrapper>
 
-      {usedComponents.length < Object.keys(allComponents).length ? (
+      {usedComponents.length < getSimpleComponentsLength() ? (
         <ButtonContainer onClick={onAdd}>
           <FormattedMessage
             description="Add process variable button"
@@ -174,15 +195,36 @@ const VariablePropertyModal = ({index, name, formData, onChange}) => {
     onChange(nextFormData);
   };
 
+  /**
+   * Handle variables-properties errors and show them to the main page, not inside the modal.
+   */
+  const getCombinedErrors = (name, index, errors) => {
+    const errorMessages = [];
+
+    for (const [errorName, errorReason] of errors) {
+      if (errorName.startsWith(name + '.variablesProperties')) {
+        const errorNameBits = errorName.split('.');
+        if (errorNameBits[2] === String(index))
+          if (errorNameBits[errorNameBits.length - 1] === 'componentKey') {
+            errorMessages.push('Component key: ' + errorReason);
+          } else if (errorNameBits[errorNameBits.length - 1] === 'eigenshap') {
+            errorMessages.push('Property: ' + errorReason);
+          }
+      }
+    }
+
+    return errorMessages.length > 0 ? errorMessages : null;
+  };
+
   return (
     <>
       <CustomFieldTemplate
         id="zgwOptions.managePropertiesVariables"
         displayLabel={false}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'variablesProperties')}
+        rawErrors={getCombinedErrors(name, index, validationErrors)}
         errors={
-          getFieldErrors(name, index, validationErrors, 'variablesProperties')
-            ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'variablesProperties'))
+          getCombinedErrors(name, index, validationErrors)
+            ? getErrorMarkup(getCombinedErrors(name, index, validationErrors))
             : null
         }
       >

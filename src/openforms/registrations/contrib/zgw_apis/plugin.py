@@ -1,12 +1,13 @@
 import logging
 from functools import partial, wraps
-from typing import Any, Dict
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
 from furl import furl
+from glom import assign
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
@@ -39,29 +40,27 @@ logger = logging.getLogger(__name__)
 
 
 def get_variables_properties_from_submission(
-    submission: Submission, options: Dict[str, Any]
-) -> Dict[str, Any]:
+    submission: Submission, connections: dict[str, Any]
+) -> dict[str, Any]:
+    """
+    Extract the values from the submission and map onto the provided properties (eigenshappen).
+    """
     variables_properties = {}
 
-    connections = options.get("variables_properties", [])
+    # dict of {componentKey: eigenshap} mapping
+    simple_mappings = {conn["component_key"]: conn["eigenshap"] for conn in connections}
 
-    # dict of {eigenshap: componentKey} mapping
-    simple_mappings = dict(
-        [
-            (connection.get("component_key"), connection.get("eigenshap"))
-            for connection in connections
-        ]
+    merged_data = dict(
+        submission.submissionvaluevariable_set.filter(
+            key__in=[conn["component_key"] for conn in connections]
+        ).values_list("key", "value")
     )
 
-    merged_data: Dict[str, Any] = submission.get_merged_data()
-
-    for component in submission.form.iter_components(recursive=True):
-        if (key := component.get("key")) not in simple_mappings:
+    for key, form_value in merged_data.items():
+        if key not in simple_mappings:
             continue
 
-        form_value = merged_data.get(key)
-        eigenshap = simple_mappings[key]
-
+        eigenshap = simple_mappings.get(key)
         variables_properties[eigenshap] = form_value
 
     return variables_properties
@@ -71,16 +70,12 @@ class MappedVariablePropertySerializer(serializers.Serializer):
     component_key = serializers.CharField(
         label=_("Component key"),
         help_text=_("Key of the Formio.js component to take the value from."),
-        required=False,
-        allow_blank=True,
     )
     eigenshap = serializers.CharField(
         label=_("Property"),
         help_text=_(
             "This is the name of the property with which the variable will be connected."
         ),
-        required=False,
-        allow_blank=True,
     )
 
 
@@ -170,27 +165,32 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                     code="invalid",
                 )
 
-        # Make sure we have a variable-eigenshap mapping
-        if variables_properties := attrs.get("variables_properties"):
-            for variable_property in variables_properties:
-                component_key = variable_property.get("component_key")
-                property = variable_property.get("eigenshap")
+        # We know it exists thanks to the previous check
+        group_config = ZGWRegistration.get_zgw_config(attrs)
 
-                if (component_key and not property) or (property and not component_key):
-                    raise serializers.ValidationError(
-                        {
-                            "variables_properties": _(
-                                "Both variable selection and property name are required."
-                            )
-                        },
-                        code="invalid",
-                    )
+        # Make sure the property (eigenshap) related to the zaaktype exists
+        if connections := attrs.get("variables_properties"):
+            with get_catalogi_client(group_config) as client:
+                eigenshappen = client.list_eigenshappen(
+                    zaaktype=attrs.get("zaaktype") or group_config.zaaktype
+                )
+                retrieved_eigenshappen = {
+                    eigenshap["naam"]: eigenshap["url"] for eigenshap in eigenshappen
+                }
+
+                for conn in connections:
+                    if conn["eigenshap"] not in retrieved_eigenshappen:
+                        raise serializers.ValidationError(
+                            {
+                                "variables_properties": _(
+                                    "Could not find a property with the name '{property_name}' related to the zaaktype."
+                                ).format(property_name=conn["eigenshap"])
+                            },
+                            code="invalid",
+                        )
 
         if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
             return attrs
-
-        # We know it exists thanks to the previous check
-        group_config = ZGWRegistration.get_zgw_config(attrs)
 
         with get_catalogi_client(group_config) as client:
             roltypen = client.list_roltypen(
@@ -533,10 +533,10 @@ class ZGWRegistration(BasePlugin):
                 "intermediate.objects_api_zaakobject",
             )
 
-        # Connect variables with zaak eigenshappen (if a connection has been in ZGW registration)
-        if options.get("variables_properties"):
+        # Connect variables with zaak eigenshappen (if a connection has been used in ZGW registration)
+        if variables_properties := options.get("variables_properties"):
             mapped_variables_properties = get_variables_properties_from_submission(
-                submission, options
+                submission, variables_properties
             )
 
             eigenshappen = execute_unless_result_exists(
@@ -549,26 +549,30 @@ class ZGWRegistration(BasePlugin):
                 eigenshap["naam"]: eigenshap["url"] for eigenshap in eigenshappen
             }
 
-            zaak_eigenschappen_list = []
-            for key in mapped_variables_properties:
+            for key, value in mapped_variables_properties.items():
                 if key in retrieved_eigenshappen:
-                    zaak_eigenschappen_list.append(
-                        {
-                            "zaak": zaak["url"],
-                            "eigenschap": retrieved_eigenshappen[key],
-                            "waarde": mapped_variables_properties[key],
-                        }
+                    eigenschap_url = furl(retrieved_eigenshappen[key])
+                    eigenschap_uuid = eigenschap_url.path.segments[-1]
+
+                    created_zaakeigenshap = execute_unless_result_exists(
+                        partial(
+                            zaken_client.create_zaakeigenschap,
+                            {
+                                "zaak": zaak["url"],
+                                "eigenschap": retrieved_eigenshappen[key],
+                                "waarde": value,
+                            },
+                        ),
+                        submission,
+                        f"intermediate.zaakeigenshap.{eigenschap_uuid}",
                     )
 
-            for zaak_eigenshap_data in zaak_eigenschappen_list:
-                eigenschap_url = furl(zaak_eigenshap_data["eigenschap"])
-                uuid = eigenschap_url.path.segments[-1]
-
-                result[f"zaakeigenshap-{uuid}"] = execute_unless_result_exists(
-                    partial(zaken_client.create_zaakeigenschap, zaak_eigenshap_data),
-                    submission,
-                    f"intermediate.zaakeigenshap-{uuid}",
-                )
+                    assign(
+                        result,
+                        f"zaakeigenschappen.{eigenschap_uuid}",
+                        created_zaakeigenshap,
+                        missing=dict,
+                    )
 
         submission.registration_result = result
         submission.save()
