@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse
 
 from rest_framework import status
@@ -327,6 +327,32 @@ class SubmissionSummaryRendererTests(TestCase):
         conditional_textfield = step_data[3]
 
         self.assertEqual(conditional_textfield["value"], "Some data")
+
+    @tag("gh-3778")
+    def test_content_component_summary_has_empty_label(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "content",
+                        "type": "content",
+                        "label": "Content",
+                        "html": "<p>Some data</p>",
+                    }
+                ]
+            },
+            form_definition__slug="fd-0",
+            form_definition__name="Form Definition 0",
+        )
+
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        data = submission.render_summary_page()
+        step_data = data[0]["data"]
+
+        # 1 node for the content component
+        self.assertEqual(1, len(step_data))
+        self.assertEqual(step_data[0]["name"], "")
 
 
 class SubmissionCompletionTests(SubmissionsMixin, APITestCase):

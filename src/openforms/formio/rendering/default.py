@@ -153,6 +153,10 @@ class WYSIWYGNode(ComponentNode):
         return self.mode != RenderModes.cli
 
     @property
+    def label(self) -> str:
+        return ""
+
+    @property
     def is_visible(self) -> bool:
         if self.mode in (
             RenderModes.registration,
