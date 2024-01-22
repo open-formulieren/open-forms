@@ -45,7 +45,7 @@ class LogicTabTests(E2ETestCase):
             await page.goto(str(admin_url))
             await page.get_by_role("tab", name="Logic").click()
             await page.get_by_text("Add rule").click()
-            await page.get_by_text("Advanced").click()
+            await page.get_by_role("button", name="Advanced").click()
 
             textarea = page.locator("[name='jsonLogicTrigger']")
 

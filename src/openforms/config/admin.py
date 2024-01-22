@@ -89,6 +89,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                     "main_website",
                     "favicon",
                     "default_theme",
+                    "organization_oin",
                 ),
             },
         ),

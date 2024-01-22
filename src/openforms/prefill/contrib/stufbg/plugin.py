@@ -157,7 +157,9 @@ class StufBgPrefill(BasePlugin):
 
         return self._get_values_for_bsn(bsn_value, attributes)
 
-    def get_co_sign_values(self, identifier: str) -> tuple[dict[str, Any], str]:
+    def get_co_sign_values(
+        self, submission: Submission, identifier: str
+    ) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 

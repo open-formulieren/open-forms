@@ -1,12 +1,16 @@
 from openforms.contrib.haal_centraal.clients import get_brp_client
 from openforms.contrib.haal_centraal.clients.brp import Person
+from openforms.submissions.models import Submission
 
 
 def get_np_family_members_haal_centraal(
-    bsn: str, include_children: bool, include_partners: bool
+    bsn: str,
+    include_children: bool,
+    include_partners: bool,
+    submission: Submission | None = None,
 ) -> list[tuple[str, str]]:
     # TODO: add tests for missing configuration and error handling!
-    with get_brp_client() as client:
+    with get_brp_client(submission) as client:
         family_data = client.get_family_members(bsn, include_children, include_partners)
 
     family_member_choices = [

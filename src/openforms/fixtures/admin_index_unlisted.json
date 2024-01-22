@@ -11,6 +11,7 @@
     "kadaster.KadasterApiConfig",
     "kvk.KVKConfig",
     "brk.BRKConfig",
+    "haalcentraal.BRPPersonenRequestOptions",
     "microsoft.MSGraphService",
     "of_authentication.AuthInfo",
     "of_authentication.RegistratorInfo",

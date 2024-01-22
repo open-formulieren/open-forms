@@ -1,11 +1,13 @@
-from typing import List, Tuple
-
+from openforms.submissions.models import Submission
 from stuf.stuf_bg.client import get_client
 
 
 def get_np_family_members_stuf_bg(
-    bsn: str, include_children: bool, include_partners: bool
-) -> List[Tuple[str, str]]:
+    bsn: str,
+    include_children: bool,
+    include_partners: bool,
+    submission: Submission | None = None,
+) -> list[tuple[str, str]]:
     values = []
     if include_children:
         values.append("inp.heeftAlsKinderen")

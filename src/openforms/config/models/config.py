@@ -285,6 +285,14 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    # See https://gitdocumentatie.logius.nl/publicatie/dk/oin/#samenstelling-oin
+    organization_oin = models.CharField(
+        _("organization OIN"),
+        max_length=20,
+        blank=True,
+        help_text=_("The OIN of the organization."),
+    )
+
     # session timeouts
 
     admin_session_timeout = models.PositiveIntegerField(

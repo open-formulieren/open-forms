@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Sequence
-from typing import Any, Optional, TypeAlias
+from typing import Any, TypeAlias
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -106,7 +106,8 @@ class HaalCentraalPrefill(BasePlugin):
     ) -> dict[str, Any]:
         try:
             client = get_brp_client(
-                context=PreRequestClientContext(submission=submission)
+                submission=submission,
+                context=PreRequestClientContext(submission=submission),
             )
         except NoServiceConfigured:
             return {}
@@ -120,7 +121,7 @@ class HaalCentraalPrefill(BasePlugin):
 
     @classmethod
     def get_co_sign_values(
-        cls, identifier: str, submission: Optional["Submission"] = None
+        cls, submission: Submission, identifier: str
     ) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
@@ -135,7 +136,8 @@ class HaalCentraalPrefill(BasePlugin):
         """
         try:
             client = get_brp_client(
-                context=PreRequestClientContext(submission=submission)
+                submission=submission,
+                context=PreRequestClientContext(submission=submission),
             )
         except NoServiceConfigured:
             return ({}, "")

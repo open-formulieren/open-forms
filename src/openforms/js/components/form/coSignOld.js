@@ -9,6 +9,8 @@ import {localiseSchema} from './i18n';
 
 const FieldComponent = Formio.Components.components.field;
 
+export const COSIGN_V1_TYPE = 'coSign';
+
 // TODO: in the future, allow selection of an auth plugin (from the registry)
 const EDIT_FORM_TABS = [
   {
@@ -63,7 +65,7 @@ class CoSignFieldOld extends FieldComponent {
     const schema = FieldComponent.schema(
       {
         label: 'Co-sign',
-        type: 'coSign',
+        type: COSIGN_V1_TYPE,
         authPlugin: 'digid',
         input: false,
       },

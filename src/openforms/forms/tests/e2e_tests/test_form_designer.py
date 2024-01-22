@@ -1042,7 +1042,7 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             with phase("Add logic rule with triggerFromStep"):
                 await page.get_by_text("Add rule").click()
-                await page.get_by_text("Advanced").click()
+                await page.get_by_role("button", name="Advanced").click()
                 await page.get_by_title("Advanced options").click()
                 await page.locator("[name='triggerFromStep']").select_option(
                     label="Playwright test"

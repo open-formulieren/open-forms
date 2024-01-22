@@ -41,6 +41,21 @@ class Person:
 
 
 class BRPClient(PreRequestMixin, ABC, APIClient):
+    def __init__(
+        self,
+        *args,
+        origin_oin: str = "",
+        doelbinding: str = "",
+        verwerking: str = "",
+        gebruiker: str = "",
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.headers["x-origin-oin"] = origin_oin
+        self.headers["x-doelbinding"] = doelbinding
+        self.headers["x-verwerking"] = verwerking
+        self.headers["x-gebruiker"] = gebruiker
+
     @abstractmethod
     def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
         ...
@@ -98,7 +113,7 @@ class V1Client(HALMixin, BRPClient):
             persons.append(person)
         return persons
 
-    def _get_partner(self, bsn: str) -> list[Person]:
+    def _get_partners(self, bsn: str) -> list[Person]:
         response = self.get(f"ingeschrevenpersonen/{bsn}/partners")
         response.raise_for_status()
         response_data = response.json()["_embedded"]
@@ -128,7 +143,7 @@ class V1Client(HALMixin, BRPClient):
             family_members += self._get_children(bsn)
 
         if include_partner:
-            family_members += self._get_partner(bsn)
+            family_members += self._get_partners(bsn)
 
         return family_members
 

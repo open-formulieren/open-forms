@@ -28,10 +28,10 @@ class SuwinetConfigFactory(DjangoModelFactory):
             with_client_cert=True,
             client_certificate__type=CertificateTypes.key_pair,
             client_certificate__public_certificate=FileField(
-                from_path=str(DATA_DIR / "pub.cert")
+                from_path=str(DATA_DIR / "pub.cert"),
             ),
             client_certificate__private_key=FileField(
-                from_path=os.environ.get("SUWINET_CLIENT_KEY")
+                from_path=os.environ.get("SUWINET_CLIENT_KEY"),
             ),
             with_server_cert=True,
             server_certificate__type=CertificateTypes.cert_only,

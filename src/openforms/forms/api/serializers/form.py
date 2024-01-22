@@ -16,6 +16,10 @@ from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
 from openforms.config.models import GlobalConfiguration, Theme
+from openforms.contrib.haal_centraal.api.serializers import (
+    BRPPersonenRequestOptionsSerializer,
+)
+from openforms.contrib.haal_centraal.models import BRPPersonenRequestOptions
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.formio.typing import Component
@@ -189,6 +193,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "of type 'checkbox'."
         ),
     )
+    brp_personen_request_options = BRPPersonenRequestOptionsSerializer(
+        required=False, allow_null=True
+    )
 
     translations = ModelTranslationsSerializer()
 
@@ -251,6 +258,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
+            "brp_personen_request_options",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -297,6 +305,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
+        brp_personen_request_options = validated_data.pop(
+            "brp_personen_request_options", None
+        )
         registration_backends = validated_data.pop("registration_backends", [])
 
         registration_backend_options = (
@@ -323,6 +334,10 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+        if brp_personen_request_options is not None:
+            BRPPersonenRequestOptions.objects.create(
+                form=instance, **brp_personen_request_options
+            )
         FormRegistrationBackend.objects.bulk_create(
             FormRegistrationBackend(form=instance, **backend)
             for backend in registration_backends
@@ -361,6 +376,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         confirmation_email_template = validated_data.pop(
             "confirmation_email_template", None
         )
+        brp_personen_request_options = validated_data.pop(
+            "brp_personen_request_options", None
+        )
         registration_backends = validated_data.pop("registration_backends", None)
 
         self._update_v2_registration_backend(instance, validated_data)
@@ -369,6 +387,10 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         ConfirmationEmailTemplate.objects.set_for_form(
             form=instance, data=confirmation_email_template
         )
+        if brp_personen_request_options is not None:
+            BRPPersonenRequestOptions.objects.update_or_create(
+                form=instance, defaults=brp_personen_request_options
+            )
         if registration_backends is None:
             return instance
 

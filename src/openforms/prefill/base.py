@@ -1,4 +1,4 @@
-from typing import Any, Container, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Container, Dict, Iterable, List, Tuple
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -49,7 +49,7 @@ class BasePlugin(AbstractBasePlugin):
         raise NotImplementedError("You must implement the 'get_prefill_values' method.")
 
     def get_co_sign_values(
-        self, identifier: str, submission: Optional["Submission"] = None
+        self, submission: Submission, identifier: str
     ) -> Tuple[Dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
