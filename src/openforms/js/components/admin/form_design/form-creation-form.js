@@ -113,7 +113,10 @@ const initialFormState = {
     authenticationBackendOptions: {},
     translations: {},
     appointmentOptions: {isAppointment: false},
-    brpPersonenRequestOptions: {},
+    brpPersonenRequestOptions: {
+      brpPersonenPurposeLimitationHeaderValue: '',
+      brpPersonenProcessingHeaderValue: '',
+    },
   },
   newForm: true,
   formSteps: [],
@@ -1457,7 +1460,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
               form={state.form}
               formSteps={state.formSteps}
               onChange={onFieldChange}
-            ></FormAdvancedConfiguration>
+            />
           </TabPanel>
         </Tabs>
       </FormContext.Provider>

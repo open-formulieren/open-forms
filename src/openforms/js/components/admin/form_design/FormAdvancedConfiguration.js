@@ -7,7 +7,9 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
-import {COSIGN_OLD_TYPE_KEY} from 'components/form/coSignOld';
+import {COSIGN_V1_TYPE} from 'components/form/coSignOld';
+
+import TYPES from './types';
 
 /**
  * Component to render the metadata admin form for an Open Forms form.
@@ -22,7 +24,7 @@ const FormAdvancedConfiguration = ({form, formSteps, onChange}) => {
 
   // These two could not be relevant if using Stuf-BG, but this information is not available in the frontend.
   const hasNpFamilyMembers = components.some(comp => comp.type === 'npFamilyMembers');
-  const hasCosign = components.some(comp => comp.type === COSIGN_OLD_TYPE_KEY);
+  const hasCosign = components.some(comp => comp.type === COSIGN_V1_TYPE);
 
   return (
     <>
@@ -52,7 +54,7 @@ const FormAdvancedConfiguration = ({form, formSteps, onChange}) => {
               }
             >
               <TextInput
-                value={brpPersonenRequestOptions.brpPersonenPurposeLimitationHeaderValue}
+                value={brpPersonenRequestOptions?.brpPersonenPurposeLimitationHeaderValue || ''}
                 onChange={onChange}
                 maxLength="255"
               />
@@ -75,7 +77,7 @@ const FormAdvancedConfiguration = ({form, formSteps, onChange}) => {
               }
             >
               <TextInput
-                value={brpPersonenRequestOptions.brpPersonenProcessingHeaderValue}
+                value={brpPersonenRequestOptions?.brpPersonenProcessingHeaderValue || ''}
                 onChange={onChange}
                 maxLength="242"
               />
@@ -101,7 +103,7 @@ FormAdvancedConfiguration.propTypes = {
       brpPersonenProcessingHeaderValue: PropTypes.string,
     }),
   }).isRequired,
-  formSteps: PropTypes.array.isRequired,
+  formSteps: PropTypes.arrayOf(TYPES.FormStep).isRequired,
   onChange: PropTypes.func.isRequired,
 };
 

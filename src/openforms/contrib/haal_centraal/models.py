@@ -71,7 +71,7 @@ class BRPPersonenRequestOptions(models.Model):
     """Form specific options to be used when making requests to the Haal Centraal APIs.
 
     Each client can make use of this model to customize the request behavior (e.g. adding some headers).
-    See `get_brp_client` as an example.
+    See :func:`openforms.contrib.haal_centraal.clients.get_brp_client` as an example.
     """
 
     form = models.OneToOneField(
