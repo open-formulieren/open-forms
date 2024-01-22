@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 2.5.0-alpha.0
+  version: 2.5.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -26,9 +26,8 @@ paths:
   /api/v2/analytics/analytics_tools_config_info:
     get:
       operationId: analytics_analytics_tools_config_info_retrieve
-      description: Returns information about the analytics tools that are needed by
-        the frontend.
-      summary: Analytics Tools Configuration
+      description: Haal informatie op over de analytics-tools voor de frontend.
+      summary: Analytics tools-configuratie
       tags:
       - analytics
       security:
