@@ -915,8 +915,8 @@ class TestComponentFixesMigration(TestMigrations):
 
 class DatetimeAllowInvalidInputTests(TestMigrations):
     app = "forms"
-    migrate_from = "0103_fix_component_problems"
-    migrate_to = "0104_allow_invalid_input_datetime"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
