@@ -173,6 +173,12 @@
       "value": "Edit component JSON"
     }
   ],
+  "10KWbo": [
+    {
+      "type": 0,
+      "value": "BRP Personen processing header value"
+    }
+  ],
   "1ArmQ5": [
     {
       "type": 0,
@@ -571,6 +577,12 @@
     {
       "type": 0,
       "value": "Confidentiality level"
+    }
+  ],
+  "6Xhq/T": [
+    {
+      "type": 0,
+      "value": "You must specify a datetime."
     }
   ],
   "6ZW12a": [
@@ -1149,6 +1161,40 @@
       "value": "value"
     }
   ],
+  "CZ4Fby": [
+    {
+      "type": 1,
+      "value": "length"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "character remaining"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "characters remaining"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "length"
+    }
+  ],
   "CiaAYL": [
     {
       "type": 0,
@@ -1559,6 +1605,12 @@
       "value": "Slug of the form, used in URLs"
     }
   ],
+  "HXqhlN": [
+    {
+      "type": 0,
+      "value": "BRP Personen purpose limitation header value"
+    }
+  ],
   "Hfdfv2": [
     {
       "type": 0,
@@ -1719,6 +1771,12 @@
       "value": " requires login, but this form step doesn't have the login marked as required."
     }
   ],
+  "KClY/2": [
+    {
+      "type": 0,
+      "value": "Processing"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
@@ -1789,6 +1847,12 @@
     {
       "type": 0,
       "value": "Optional theme to use for styling."
+    }
+  ],
+  "LD3weJ": [
+    {
+      "type": 0,
+      "value": "Advanced configuration"
     }
   ],
   "LHBcNe": [
@@ -2163,6 +2227,12 @@
     {
       "type": 0,
       "value": "Language"
+    }
+  ],
+  "RiFNuZ": [
+    {
+      "type": 0,
+      "value": "You must specify a date."
     }
   ],
   "Rk13i+": [
@@ -2815,6 +2885,12 @@
     {
       "type": 0,
       "value": "Whether to add partners information to the component."
+    }
+  ],
+  "ZP5B/v": [
+    {
+      "type": 0,
+      "value": "The processing (\"verwerking\") for queries to the BRP Persoon API."
     }
   ],
   "ZdZ2Mb": [
@@ -3907,6 +3983,12 @@
       "value": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
     }
   ],
+  "nmUEDS": [
+    {
+      "type": 0,
+      "value": "The purpose limitation (\"doelbinding\") for queries to the BRP Persoon API."
+    }
+  ],
   "nqJbi9": [
     {
       "type": 0,
@@ -4007,6 +4089,12 @@
     {
       "type": 0,
       "value": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+    }
+  ],
+  "p+NeER": [
+    {
+      "type": 0,
+      "value": "No advanced configuration is available for this form."
     }
   ],
   "p18yml": [
