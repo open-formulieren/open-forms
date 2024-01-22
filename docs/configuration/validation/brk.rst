@@ -11,23 +11,25 @@ Configuration
 =============
 
 1. Obtain a BRK API key.
-2. In Open Forms, navigate to: **Miscellaneous** > **KvK configuration**.
-3. Click **Add** next to the **KvK API Basisprofiel** field and fill in the following
-   details:
+2. In Open Forms, navigate to: **Configuration** > **Services**.
+3. Click **Add service** and fill in the following details:
 
-   * **Label**: *Fill in a human readable label*, for example: ``My BRK API``
+   * **Label**: *Fill in a human readable label*, for example: ``Basisregistratie Kadaster (BRK)``
    * **Type**: ORC (Overige).
    * **API root URL**: *The API URL provided by KvK but typically:* ``https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/``.
    * **Authorization type**: API key.
    * **Header key**: ``X-Api-Key``.
    * **Header value**: *The KvK API key obtained in step 1*.
-   * **OAS file**: ``https://raw.githubusercontent.com/VNG-Realisatie/Haal-Centraal-BRK-bevragen/master/specificatie/genereervariant/openapi.yaml``.
 
-4. Click **Save** in the popup to save and close it.
-5. When building a form, add a *AddressNL* component from the *Special* dropdown.
-6. In the **Validation** tab, select *BRK - Zakelijk gerechtigd*.
+4. Click **Save**
+5. Navigate to **Configuration** > **Configuration overview**. In the **Validator plugins**
+   group, click on **Configuration** for the **Validation plugin config: BRK - Zakelijk gerechtigd** line.
+6. Select for the **BRK API**, the **Basisregistratie Kadaster (BRK)** option, that we just created in step 3.
+7. Click **Save**
+8. When building a form, add an *AddressNL* component from the *Special* group.
+9. In the **Validation** tab, select *BRK - Zakelijk gerechtigd*.
 
-.. warning::
+.. note::
 
    This validation plugin is only available if an :ref:`authentication plugin <configuration_authentication_index>`
    that provides a BSN is being used.
