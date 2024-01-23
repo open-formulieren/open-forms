@@ -511,7 +511,7 @@ gemma-zds-client==2.0.0
     #   zgw-consumers
 gitdb==4.0.7
     # via gitpython
-gitpython==3.1.36
+gitpython==3.1.41
     # via -r requirements/dev.in
 glom==20.11.0
     # via
@@ -572,7 +572,7 @@ isort==5.10.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-jinja2==3.1.2
+jinja2==3.1.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -740,7 +740,7 @@ phonenumbers==8.12.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-pillow==10.0.1
+pillow==10.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
