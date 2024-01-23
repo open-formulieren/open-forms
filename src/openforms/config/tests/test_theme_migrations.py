@@ -3,8 +3,8 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 class ForwardMigration(TestMigrations):
     app = "config"
-    migrate_from = "0063_auto_20231122_1816"
-    migrate_to = "0064_auto_20231206_0921"
+    migrate_from = "0002_squashed_to_of_v230"
+    migrate_to = "0053_v230_to_v250"
 
 
 class TestFreshInstanceMigration(ForwardMigration):
@@ -66,8 +66,8 @@ class TestExistingConfigIsMigrated(ForwardMigration):
 
 class ReverseMigration(TestMigrations):
     app = "config"
-    migrate_from = "0064_auto_20231206_0921"
-    migrate_to = "0063_auto_20231122_1816"
+    migrate_from = "0053_v230_to_v250"
+    migrate_to = "0002_squashed_to_of_v230"
 
 
 class TestNoDefaultThemeReverseMigration(ReverseMigration):
