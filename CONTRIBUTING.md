@@ -81,6 +81,10 @@ Additionally, while we allow usage of the `typing_extensions` module, this usage
 features that are not yet available in the Python version used by Open Forms but implemented in
 later versions. Non-stable and/or proposal features are not allowed.
 
+Make use of the new typing syntax, i.e. `str | None` instead of `Optional[str]`/`Union[str, None]`,
+`dict[str, str]` instead of `Dict[str, str]`, etc. If you are not sure, you can refer to the typing
+documentation for the type you are using, a deprecation notice will be indicated.
+
 ### Making a pull request
 
 If all changes have been committed, you can push the branch to your fork of the repository and
