@@ -1,5 +1,3 @@
-from typing import List
-
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
@@ -119,7 +117,7 @@ class PublicFieldsSerializerMixin:
     #             )
 
     @classmethod
-    def _get_admin_field_names(cls, camelize=True) -> List[str]:
+    def _get_admin_field_names(cls, camelize=True) -> list[str]:
         formatter = underscore_to_camel if camelize else lambda x: x
         return [
             formatter(name)

@@ -1,5 +1,3 @@
-from typing import List
-
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
@@ -22,7 +20,7 @@ from .serializers import (
 )
 
 
-def get_available_engines() -> List[str]:
+def get_available_engines() -> list[str]:
     return [engine.identifier for engine in register.iter_enabled_plugins()]
 
 
@@ -99,7 +97,7 @@ class DecisionDefinitionListView(
     serializer_class = DecisionDefinitionSerializer
     validate_params = (ENGINE_PARAMETER,)
 
-    def get_objects(self) -> List[DecisionDefinition]:
+    def get_objects(self) -> list[DecisionDefinition]:
         engine = self.validate_query_parameters()[ENGINE_PARAMETER]
         plugin = register[engine]
         definitions = plugin.get_available_decision_definitions()
@@ -133,7 +131,7 @@ class DecisionDefinitionVersionListView(
     serializer_class = DecisionDefinitionVersionSerializer
     validate_params = (ENGINE_PARAMETER, DEFINITION_PARAMETER)
 
-    def get_objects(self) -> List[DecisionDefinition]:
+    def get_objects(self) -> list[DecisionDefinition]:
         query_params = self.validate_query_parameters()
         engine = query_params[ENGINE_PARAMETER]
         definition_id = query_params[DEFINITION_PARAMETER]

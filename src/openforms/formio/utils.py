@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Iterator, List, Optional, Tuple, TypeAlias, TypeGuard
+from typing import Any, Iterator, Optional, TypeAlias, TypeGuard
 
 import elasticapm
 from glom import Coalesce, Path, glom
@@ -47,7 +47,7 @@ def iter_components(
 
 def iterate_components_with_configuration_path(
     configuration: ComponentLike, prefix: str = "components", recursive=True
-) -> Iterator[Tuple[str, Component]]:
+) -> Iterator[tuple[str, Component]]:
     for index, component in enumerate(iter_components(configuration, recursive=False)):
         full_path = f"{prefix}.{index}"
         yield full_path, component
@@ -69,7 +69,7 @@ def iterate_components_with_configuration_path(
 
 
 @elasticapm.capture_span(span_type="app.formio.configuration")
-def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
+def flatten_by_path(configuration: JSONObject) -> dict[str, Component]:
     """
     Flatten the formio configuration.
 
@@ -214,7 +214,7 @@ def conform_to_mask(value: str, mask: str) -> str:
     # NOTE: we don't check for numeric masks or not, let that be handled by Formio itself
 
     # the final result characters, build from the value and mask
-    result: List[str] = []
+    result: list[str] = []
     char_index, mask_index = 0, 0
     LOOP_GUARD, iterations = 1000, 0
 

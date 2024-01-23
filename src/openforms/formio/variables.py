@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Dict, Iterator, Tuple
+from typing import Callable, Iterator
 
 from django.template import TemplateSyntaxError
 
@@ -65,7 +65,7 @@ def render(formio_bit: JSONValue, context: dict) -> JSONValue:
     return _recursive_apply(formio_bit, render_from_string, context=context)
 
 
-def iter_template_properties(component: Component) -> Iterator[Tuple[str, JSONValue]]:
+def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONValue]]:
     """
     Return an iterator over the formio component properties that are template-enabled.
 
@@ -76,7 +76,7 @@ def iter_template_properties(component: Component) -> Iterator[Tuple[str, JSONVa
         yield (property_name, property_value)
 
 
-def validate_configuration(configuration: JSONObject) -> Dict[str, str]:
+def validate_configuration(configuration: JSONObject) -> dict[str, str]:
     """
     Check the Formio configuration for template syntax errors.
 

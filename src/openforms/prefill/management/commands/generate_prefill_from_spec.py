@@ -1,6 +1,5 @@
 import os.path
 from dataclasses import dataclass
-from typing import Tuple
 
 from django.core.management import BaseCommand
 
@@ -29,7 +28,7 @@ def json_path(obj, reference):
 class Choice:
     name: str
     path: str
-    labels: Tuple[str] = None
+    labels: tuple[str] = None
 
 
 simple_types = (

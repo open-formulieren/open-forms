@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 
@@ -57,7 +57,7 @@ class Plugin(BasePlugin):
     verbose_name = _("Camunda")
 
     @staticmethod
-    def get_available_decision_definitions() -> List[DecisionDefinition]:
+    def get_available_decision_definitions() -> list[DecisionDefinition]:
         with get_client() as client:
             results = client.get(
                 "decision-definition",
@@ -72,8 +72,8 @@ class Plugin(BasePlugin):
 
     @staticmethod
     def evaluate(
-        definition_id: str, *, version: str = "", input_values: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        definition_id: str, *, version: str = "", input_values: dict[str, Any]
+    ) -> dict[str, Any]:
         with get_client() as client:
             camunda_id = _get_decision_definition_id(client, definition_id, version)
             try:
@@ -91,7 +91,7 @@ class Plugin(BasePlugin):
     @staticmethod
     def get_decision_definition_versions(
         definition_id: str,
-    ) -> List[DecisionDefinitionVersion]:
+    ) -> list[DecisionDefinitionVersion]:
         """
         Get a collection of available versions for a given decision definition.
 

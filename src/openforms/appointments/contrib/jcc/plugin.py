@@ -4,7 +4,7 @@ from collections import Counter
 from contextlib import contextmanager
 from datetime import date, datetime
 from functools import wraps
-from typing import Callable, List, ParamSpec, TypeVar
+from typing import Callable, ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils import timezone
@@ -180,7 +180,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
         location: Location,
         start_at: date | None = None,
         end_at: date | None = None,
-    ) -> List[date]:
+    ) -> list[date]:
         client = get_client()
         product_ids = squash_ids(products)
         now_in_ams = timezone.make_naive(timezone.now(), timezone=TIMEZONE_AMS)
@@ -207,7 +207,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
     @with_graceful_default(default=[])
     def get_times(
         self,
-        products: List[Product],
+        products: list[Product],
         location: Location,
         day: date,
     ) -> list[datetime]:

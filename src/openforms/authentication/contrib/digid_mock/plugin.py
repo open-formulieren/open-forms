@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.http import urlencode
@@ -37,7 +37,7 @@ class DigidMockAuthentication(BasePlugin):
 
     def handle_co_sign(
         self, request: HttpRequest, form: Form
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[dict[str, Any]]:
         if not (bsn := request.GET.get("bsn")):
             raise InvalidCoSignData("Missing 'bsn' parameter/value")
         return {

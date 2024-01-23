@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Tuple
+from typing import Any
 
 from openforms.formio.service import FormioData
 from openforms.typing import DataMapping
@@ -16,7 +16,7 @@ class DataContainer:
 
     state: SubmissionValueVariablesState
 
-    _initial_data: Tuple[Tuple[str, Any]] = field(init=False, default_factory=tuple)
+    _initial_data: tuple[tuple[str, Any]] = field(init=False, default_factory=tuple)
 
     def __post_init__(self):
         # ensure the initial data is immutable

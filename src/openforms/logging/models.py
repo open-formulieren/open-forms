@@ -1,5 +1,3 @@
-from typing import List
-
 from django.db import models
 from django.template.defaultfilters import capfirst
 from django.urls import reverse
@@ -91,7 +89,7 @@ class TimelineLogProxy(TimelineLog):
             return ""
         return f'"{plugin_label}" ({plugin_id})'
 
-    def get_formatted_prefill_fields(self, fields) -> List:
+    def get_formatted_prefill_fields(self, fields) -> list:
         formatted_fields = []
         components = self.content_object.form.iter_components(recursive=True)
 

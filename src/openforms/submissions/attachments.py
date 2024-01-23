@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Iterable, Iterator, Optional, Tuple
+from typing import Iterable, Iterator, Optional
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -337,7 +337,7 @@ def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
 
 
 def resize_attachment(
-    attachment: SubmissionFileAttachment, size: Tuple[int, int]
+    attachment: SubmissionFileAttachment, size: tuple[int, int]
 ) -> bool:
     """
     'safe' resize an attached image that might not be an image or not need resize at all

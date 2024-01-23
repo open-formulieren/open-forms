@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 
 from django.template.defaultfilters import date as date_filter
 from django.urls import reverse
@@ -36,7 +36,7 @@ def get_confirmation_email_templates(submission: "Submission") -> tuple[str, str
         return (subject_template, content_template)
 
 
-def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, Any]:
+def get_confirmation_email_context_data(submission: "Submission") -> dict[str, Any]:
     with translation.override(submission.language_code):
         context = {
             # use private variables that can't be accessed in the template data, so that

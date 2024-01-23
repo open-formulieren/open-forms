@@ -1,7 +1,7 @@
 """
 Public Python API to access (static) form variables.
 """
-from typing import List, Optional
+from typing import Optional
 
 from openforms.forms.models import FormVariable
 from openforms.submissions.models import Submission
@@ -13,7 +13,7 @@ __all__ = ["get_static_variables"]
 
 def get_static_variables(
     *, submission: Optional[Submission] = None
-) -> List[FormVariable]:
+) -> list[FormVariable]:
     """
     Return the full collection of static variables registered by all apps.
 

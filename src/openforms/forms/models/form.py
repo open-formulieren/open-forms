@@ -2,7 +2,7 @@ import logging
 import uuid as _uuid
 from contextlib import suppress
 from copy import deepcopy
-from typing import List, Literal, Optional
+from typing import Literal, Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -510,7 +510,7 @@ class Form(models.Model):
 
         return copy
 
-    def get_keys_for_email_confirmation(self) -> List[str]:
+    def get_keys_for_email_confirmation(self) -> list[str]:
         return_keys = set()
         for form_step in self.formstep_set.select_related("form_definition"):
             for key in form_step.form_definition.get_keys_for_email_confirmation():

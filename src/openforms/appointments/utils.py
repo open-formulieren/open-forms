@@ -4,7 +4,7 @@ import logging
 import re
 import warnings
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from django.utils.translation import gettext_lazy as _
 
@@ -39,8 +39,8 @@ def get_plugin(plugin: str = "") -> BasePlugin:
 
 
 def get_missing_fields_labels(
-    appointment_data: dict, missing_fields_keys: List[str]
-) -> List[str]:
+    appointment_data: dict, missing_fields_keys: list[str]
+) -> list[str]:
     labels = []
     for key in missing_fields_keys:
         if label := appointment_data.get(key, {}).get("label"):

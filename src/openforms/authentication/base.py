@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, TypedDict
+from typing import Any, Optional, TypedDict
 
 from django.db.models import TextChoices
 from django.http import HttpRequest, HttpResponse
@@ -54,7 +54,7 @@ class BasePlugin(AbstractBasePlugin):
         # process and validate return information, store bsn in session
         raise NotImplementedError()  # noqa
 
-    def handle_co_sign(self, request: HttpRequest, form: Form) -> Dict[str, Any]:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any]:
         """
         Process the authentication and return a dict of co-sign details.
 

@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Iterator, List, Optional
+from typing import TYPE_CHECKING, Iterator, Optional
 
 from django.http import HttpRequest
 
@@ -30,7 +30,7 @@ class Registry(BaseRegistry["BasePlugin"]):
 
     def get_options(
         self, request: HttpRequest, form: Optional["Form"] = None
-    ) -> List["LoginInfo"]:
+    ) -> list["LoginInfo"]:
         options = list()
         for plugin_id in _iter_plugin_ids(form, self):
             if plugin_id not in self._registry:

@@ -1,6 +1,6 @@
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from django.test import SimpleTestCase, tag
 from django.utils import timezone
@@ -20,7 +20,7 @@ request_factory = APIRequestFactory()
 class DynamicDateConfigurationTests(SimpleTestCase):
     @staticmethod
     def _get_dynamic_config(
-        component: DateComponent, variables: Dict[str, Any]
+        component: DateComponent, variables: dict[str, Any]
     ) -> DateComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
         request = request_factory.get("/irrelevant")

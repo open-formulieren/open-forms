@@ -1,6 +1,6 @@
 import contextlib
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from openforms.forms.models import FormLogic, FormVariable
 from openforms.logging import logevent
@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 def get_targeted_components(
     rule: FormLogic,
     components_map: dict,
-    all_variables: Dict[str, FormVariable],
+    all_variables: dict[str, FormVariable],
     initial_data: dict,
     action_log_data: dict[int, JSONValue],
-) -> List[dict]:
+) -> list[dict]:
     return [
         action_operation.get_action_log_data(
             component_map=components_map,

@@ -7,7 +7,7 @@ so that django-camunda can map it to the appropriate Camunda type information.
 The work in #1068 should eventually make this module obsolete.
 """
 from decimal import Decimal
-from typing import Any, Dict, List
+from typing import Any
 
 from dateutil import parser
 
@@ -36,7 +36,7 @@ def select(component, value) -> str:
     return str(value)
 
 
-def selectboxes(component, value) -> List[str]:
+def selectboxes(component, value) -> list[str]:
     return [key for key, checked in value.items() if checked]
 
 
@@ -74,7 +74,7 @@ def convert_if_not_none(converter: callable, component: dict, value: Any) -> Any
         return converter(component, value)
 
 
-def to_python(component: Dict[str, Any], value: Any) -> Any:
+def to_python(component: dict[str, Any], value: Any) -> Any:
     converter = TYPE_MAP.get(component["type"], to_str)
 
     multiple = component.get("multiple", False)

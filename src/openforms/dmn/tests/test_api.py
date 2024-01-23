@@ -1,4 +1,3 @@
-from typing import Dict
 from unittest.mock import patch
 
 from rest_framework import status
@@ -31,8 +30,8 @@ class TestPlugin(BasePlugin):
 
     @staticmethod
     def evaluate(
-        definition_id, *, version: str = "", input_values: Dict[str, int]
-    ) -> Dict[str, int]:
+        definition_id, *, version: str = "", input_values: dict[str, int]
+    ) -> dict[str, int]:
         return {"sum": sum([input_values["a"], input_values["b"]])}
 
 

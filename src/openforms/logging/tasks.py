@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, TypedDict
+from typing import TypedDict
 
 from openforms.celery import app
 from openforms.forms.models import FormLogic
@@ -17,7 +17,7 @@ def log_logic_evaluation(
     *,
     submission_id: int,
     timestamp: str,  # ISO-8601 timestamp
-    evaluated_rules: List[EvaluatedRuleDict],
+    evaluated_rules: list[EvaluatedRuleDict],
     initial_data: JSONObject,
     resolved_data: JSONObject,
 ):

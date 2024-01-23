@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Union
 
 from django import template
 
@@ -11,7 +11,7 @@ class InvalidInput(Exception):
     pass
 
 
-def extract_tokens(node: dict, prefix: str | None = None) -> Dict[str, JSONPrimitive]:
+def extract_tokens(node: dict, prefix: str | None = None) -> dict[str, JSONPrimitive]:
     if not isinstance(node, dict):
         raise InvalidInput(
             "The node is not a dict, can't extract a value or nested keys."
@@ -37,7 +37,7 @@ def extract_tokens(node: dict, prefix: str | None = None) -> Dict[str, JSONPrimi
 
 
 @register.simple_tag()
-def style_dictionary(styles: dict) -> Dict[str, JSONPrimitive]:
+def style_dictionary(styles: dict) -> dict[str, JSONPrimitive]:
     """
     Transform a style dictionary into a mapping of resolved design tokens.
     """

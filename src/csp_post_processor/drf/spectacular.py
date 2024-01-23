@@ -2,7 +2,6 @@
 API schema generation extension using drf-spectacular.
 """
 import logging
-from typing import Type
 
 from django.utils.translation import gettext_lazy as _
 
@@ -37,7 +36,7 @@ NONCE_PARAMETER = OpenApiParameter(
 
 # Can't use the auto_schema as it's not passed to view inspectors. Code inspired on
 # drf_spectacular.openapi.AutoSchema._get_serializer
-def _get_serializer_class(view_cls: Type[APIView]):
+def _get_serializer_class(view_cls: type[APIView]):
     # be lenient - there may be views that don't have any serializer set at all
     if not issubclass(view_cls, GenericAPIView):
         serializer_attrs = [

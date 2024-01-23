@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 from openforms.plugins.plugin import AbstractBasePlugin
 
@@ -27,7 +27,7 @@ class DecisionDefinitionVersion:
 
 class BasePlugin(ABC, AbstractBasePlugin):
     @abstractmethod
-    def get_available_decision_definitions(self) -> List[DecisionDefinition]:
+    def get_available_decision_definitions(self) -> list[DecisionDefinition]:
         """
         Get a collection of all the available decision definitions.
 
@@ -39,8 +39,8 @@ class BasePlugin(ABC, AbstractBasePlugin):
 
     @abstractmethod
     def evaluate(
-        self, definition_id: str, *, version: str = "", input_values: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, definition_id: str, *, version: str = "", input_values: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Evaluate the decision definition with the given input data.
         """
@@ -48,7 +48,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
 
     def get_decision_definition_versions(
         self, definition_id: str
-    ) -> List[DecisionDefinitionVersion]:
+    ) -> list[DecisionDefinitionVersion]:
         """
         Get a collection of available versions for a given decision definition.
 

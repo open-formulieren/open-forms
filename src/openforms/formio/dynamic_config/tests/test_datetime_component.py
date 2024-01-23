@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from django.test import SimpleTestCase, override_settings
 from django.utils import timezone
@@ -20,7 +20,7 @@ request_factory = APIRequestFactory()
 class DynamicDatetimeConfigurationTests(SimpleTestCase):
     @staticmethod
     def _get_dynamic_config(
-        component: DatetimeComponent, variables: Dict[str, Any]
+        component: DatetimeComponent, variables: dict[str, Any]
     ) -> DatetimeComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
         request = request_factory.get("/irrelevant")

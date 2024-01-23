@@ -1,6 +1,6 @@
 import copy
 from datetime import timedelta
-from typing import List, Optional
+from typing import Optional
 
 from django.conf import settings
 from django.utils import timezone
@@ -148,7 +148,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
     @classmethod
     def from_components(
         cls,
-        components_list: List[dict],
+        components_list: list[dict],
         submitted_data: dict | None = None,
         form_definition_kwargs: dict | None = None,
         **kwargs,

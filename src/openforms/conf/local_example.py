@@ -4,7 +4,7 @@
 import os
 import sys
 
-from .dev import DATABASES, LOGGING as _LOGGING
+from .dev import LOGGING as _LOGGING
 from .utils import config
 
 # Configure your database via the DB_* envvars in .env, see also dotenv.example file.

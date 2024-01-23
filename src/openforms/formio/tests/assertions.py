@@ -1,5 +1,3 @@
-from typing import Dict
-
 from glom import GlomError, glom
 
 from openforms.typing import JSONObject, JSONValue
@@ -16,7 +14,7 @@ def _get_component(configuration: JSONObject, key: str) -> Component | None:
 
 class FormioMixin:
     def assertFormioComponent(
-        self, configuration: JSONObject, key: str, properties_map: Dict[str, JSONValue]
+        self, configuration: JSONObject, key: str, properties_map: dict[str, JSONValue]
     ) -> None:
         """
         Assert that the formio component with specified key has the expected properties.

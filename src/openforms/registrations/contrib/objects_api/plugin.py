@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Dict, NoReturn
+from typing import Any, NoReturn
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -62,7 +62,7 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Register a submission using the ObjectsAPI backend
 
         The creation of submission documents (report, attachment, csv) makes use of ZGW

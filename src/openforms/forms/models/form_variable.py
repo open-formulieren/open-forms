@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from django.core.validators import RegexValidator
 from django.db import models, transaction
@@ -47,7 +47,7 @@ class FormVariableManager(models.Manager):
         for form_step in form_steps:
             self.create_for_formstep(form_step)
 
-    def create_for_formstep(self, form_step: "FormStep") -> List["FormVariable"]:
+    def create_for_formstep(self, form_step: "FormStep") -> list["FormVariable"]:
         form_definition_configuration = form_step.form_definition.configuration
         component_keys = [
             component["key"]

@@ -6,7 +6,7 @@ See the `documentation <_variables>` to learn more about Camunda variable types.
 .. _variables: https://docs.camunda.org/manual/7.16/reference/rest/overview/variables/
 """
 import logging
-from typing import Any, Dict, List, NoReturn, Tuple
+from typing import Any, NoReturn
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_process_variables(
-    submission: Submission, options: Dict[str, Any]
-) -> Dict[str, Any]:
+    submission: Submission, options: dict[str, Any]
+) -> dict[str, Any]:
     """
     Extract the values from the submission and map onto the requested process variables.
     """
@@ -48,7 +48,7 @@ def get_process_variables(
         ]
     )
 
-    merged_data: Dict[str, Any] = submission.get_merged_data()
+    merged_data: dict[str, Any] = submission.get_merged_data()
     for component in submission.form.iter_components(recursive=True):
         if (key := component.get("key")) not in simple_mappings:
             continue
@@ -79,7 +79,7 @@ class CamundaRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         process_definition = options["process_definition"]
         version = options["process_definition_version"]
 
@@ -143,7 +143,7 @@ class CamundaRegistration(BasePlugin):
             }
         }
 
-    def get_reference_from_result(self, result: Dict[str, str]) -> NoReturn:
+    def get_reference_from_result(self, result: dict[str, str]) -> NoReturn:
         """
         Extract the public submission reference from the result data.
 
@@ -162,7 +162,7 @@ class CamundaRegistration(BasePlugin):
     def check_config(self):
         check_config()
 
-    def get_config_actions(self) -> List[Tuple[str, str]]:
+    def get_config_actions(self) -> list[tuple[str, str]]:
         return [
             (
                 _("Configuration"),

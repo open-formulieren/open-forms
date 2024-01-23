@@ -1,5 +1,5 @@
 import random
-from typing import Any, Dict, List
+from typing import Any
 
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
@@ -27,8 +27,8 @@ class DemoPrefill(BasePlugin):
 
     @staticmethod
     def get_prefill_values(
-        submission: Submission, attributes: List[str], identifier_role: str
-    ) -> Dict[str, Any]:
+        submission: Submission, attributes: list[str], identifier_role: str
+    ) -> dict[str, Any]:
         """
         Given the requested attributes, look up the appropriate values and return them.
 

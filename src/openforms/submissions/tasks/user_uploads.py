@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import Tuple
 
 from django.conf import settings
 
@@ -32,6 +31,6 @@ def cleanup_unclaimed_temporary_files() -> None:
 
 
 @app.task(ignore_result=True)
-def resize_submission_attachment(attachment_id: int, size: Tuple[int, int]) -> None:
+def resize_submission_attachment(attachment_id: int, size: tuple[int, int]) -> None:
     attachment = SubmissionFileAttachment.objects.get(id=attachment_id)
     resize_attachment(attachment, size)
