@@ -1,14 +1,8 @@
 from django.test import SimpleTestCase
-from django.utils.module_loading import import_string
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
-apply_button_mapping = import_string(
-    "openforms.config.migrations.0059_convert_button_design_tokens.apply_mapping"
-)
-apply_layout_mapping = import_string(
-    "openforms.config.migrations.0061_convert_container_layout_design_tokens.apply_mapping"
-)
+from ..migrations._design_tokens import apply_button_mapping, apply_layout_mapping
 
 
 class ButtonMapperTests(SimpleTestCase):
@@ -135,8 +129,8 @@ class LayoutMapperTests(SimpleTestCase):
 class ButtonDesignTokensMigrationTests(TestMigrations):
 
     app = "config"
-    migrate_from = "0058_auto_20231026_1525"
-    migrate_to = "0059_convert_button_design_tokens"
+    migrate_from = "0002_squashed_to_of_v230"
+    migrate_to = "0053_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
@@ -183,8 +177,8 @@ class ButtonDesignTokensMigrationTests(TestMigrations):
     def test_design_tokens_updated_correctly(self):
         self.maxDiff = None
 
-        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
-        config = GlobalConfiguration.objects.get()
+        Theme = self.apps.get_model("config", "Theme")
+        theme = Theme.objects.get()
 
         expected = {
             "of": {
@@ -228,14 +222,14 @@ class ButtonDesignTokensMigrationTests(TestMigrations):
                 },
             },
         }
-        self.assertEqual(config.design_token_values, expected)
+        self.assertEqual(theme.design_token_values, expected)
 
 
 class LayoutDesignTokensMigrationTests(TestMigrations):
 
     app = "config"
-    migrate_from = "0060_create_csp_form_action_configs"
-    migrate_to = "0061_convert_container_layout_design_tokens"
+    migrate_from = "0002_squashed_to_of_v230"
+    migrate_to = "0053_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
@@ -260,8 +254,8 @@ class LayoutDesignTokensMigrationTests(TestMigrations):
     def test_design_tokens_updated_correctly(self):
         self.maxDiff = None
 
-        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
-        config = GlobalConfiguration.objects.get()
+        Theme = self.apps.get_model("config", "Theme")
+        theme = Theme.objects.get()
 
         expected = {
             "of": {
@@ -281,4 +275,4 @@ class LayoutDesignTokensMigrationTests(TestMigrations):
                 },
             },
         }
-        self.assertEqual(config.design_token_values, expected)
+        self.assertEqual(theme.design_token_values, expected)
