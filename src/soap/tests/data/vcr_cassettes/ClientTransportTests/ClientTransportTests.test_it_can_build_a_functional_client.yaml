@@ -5,11 +5,11 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       User-Agent:
-      - Zeep/4.1.0 (www.python-zeep.org)
+      - Zeep/4.2.1 (www.python-zeep.org)
     method: GET
     uri: http://www.soapclient.com/xml/soapresponder.wsdl
   response:
@@ -44,12 +44,12 @@ interactions:
       Content-Type:
       - text/xml
       Date:
-      - Mon, 02 Oct 2023 10:18:03 GMT
+      - Wed, 24 Jan 2024 14:52:53 GMT
       Server:
       - SQLData-Server/3.01 Microsoft-HTTPAPI/2.0
       Set-Cookie:
-      - SessionId=SHARE013819017865022267018880001490015920004680;path=/;expires=Mon,  2-Oct-2023
-        10:34:43 GMT;Version=1; secure; HttpOnly
+      - SessionId=SHARE022775001545005203027235024865024331006160;path=/;expires=Wed,
+        24-Jan-2024 15:08:53 GMT;Version=1; secure; HttpOnly
     status:
       code: 200
       message: OK
@@ -63,7 +63,7 @@ interactions:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Length:
@@ -73,7 +73,7 @@ interactions:
       SOAPAction:
       - '"http://www.SoapClient.com/SoapObject"'
       User-Agent:
-      - Zeep/4.1.0 (www.python-zeep.org)
+      - Zeep/4.2.1 (www.python-zeep.org)
     method: POST
     uri: http://www.soapclient.com/xml/soapresponder.wsdl
   response:
@@ -91,12 +91,12 @@ interactions:
       Content-Type:
       - text/xml; charset="utf-8"
       Date:
-      - Mon, 02 Oct 2023 10:18:03 GMT
+      - Wed, 24 Jan 2024 14:52:53 GMT
       Server:
       - SQLData-Server/3.01 Microsoft-HTTPAPI/2.0
       Set-Cookie:
-      - SessionId=SHARE013822028614007364010175011804019847007792;path=/;expires=Mon,  2-Oct-2023
-        10:34:43 GMT;Version=1; secure; HttpOnly
+      - SessionId=SHARE022915004975019698013381009640029340008923;path=/;expires=Wed,
+        24-Jan-2024 15:09:34 GMT;Version=1; secure; HttpOnly
     status:
       code: 200
       message: OK
