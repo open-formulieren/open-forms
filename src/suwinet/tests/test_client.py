@@ -143,6 +143,8 @@ class SuwinetTestCase(OFVCRMixin, TestCase):
 
 
 class SuwinetKadasterTests(SuwinetTestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         # This makes libxmlsec dump some error data to stderr

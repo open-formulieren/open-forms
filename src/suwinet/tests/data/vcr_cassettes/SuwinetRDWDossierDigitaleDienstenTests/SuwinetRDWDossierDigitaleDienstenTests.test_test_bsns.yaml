@@ -3,7 +3,7 @@ interactions:
     body: '<?xml version=''1.0'' encoding=''utf-8''?>
 
       <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/"><soap-env:Header
-      xmlns:wsa="http://www.w3.org/2005/08/addressing"><wsa:Action>http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten-v0200/VoertuigbezitInfoPersoon</wsa:Action><wsa:MessageID>urn:uuid:8d34bad3-4a87-48f5-b70c-6987ae7fb69e</wsa:MessageID><wsa:To>https://mygateway.example.com/SuwiML/RDWDossierDigitaleDiensten-v0200/v1</wsa:To><wsse:Security
+      xmlns:wsa="http://www.w3.org/2005/08/addressing"><wsa:Action>http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten-v0200/VoertuigbezitInfoPersoon</wsa:Action><wsa:MessageID>urn:uuid:05a5b10d-dd93-4fdf-a4b6-1354ee87b0a0</wsa:MessageID><wsa:To>https://mygateway.example.com/SuwiML/RDWDossierDigitaleDiensten-v0200/v1</wsa:To><wsse:Security
       xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><Signature
       xmlns="http://www.w3.org/2000/09/xmldsig#">
 
@@ -13,7 +13,7 @@ interactions:
 
       <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
 
-      <Reference URI="#id-42a8eff3-8698-4595-b85b-a1d5a0172a18">
+      <Reference URI="#id-aaf373d6-3336-4c78-9640-dda9fd9ddb01">
 
       <Transforms>
 
@@ -23,23 +23,23 @@ interactions:
 
       <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
 
-      <DigestValue>R5ExvEman2NIxBYJaC0nxQBztHc=</DigestValue>
+      <DigestValue>SH1PkhPy4iUX0kiuh/F/pGdLEII=</DigestValue>
 
       </Reference>
 
       </SignedInfo>
 
-      <SignatureValue>ZzNmKzRdbuYpS8igvQCv8aDuTXh24CRk73Qh7L58Pwzq831fzREzuMZ+GFovIJDY
+      <SignatureValue>RWYWmJk08riwornvq0ET9EALN0AevhfO1CMniw6RtCZ5t5vLwpGiMFnWgSkRT3dG
 
-      e5oqV8vNkvtxjYEfagkZSlNyPbhLWsQizbMf6NeCVh1vqpDZFALJ0UW71BLoxIeB
+      n01JxRYzQtLhHMsrFN9lLd6FS66AXoYD3O9N6NoWgyRSV9HBpGgy8mUJkwGtToLy
 
-      yNu5Nc7B1eXODxRknpWKDTRQDqwKyxm++O1y2lP4fv6vci/neH9caet42W/mS/YS
+      UcyJgfsGMzhDftqLC8AUUd/Gf+ClJ8+kefW0aBQ0Gsm/vrEmvm7MVtJmy0MKVbKT
 
-      3Z7vUGGFU91YcWMlhgXdoL+zK8q87Y+moWhTEgeaYW7zfL3xZXaIJR0OU0TyD4E5
+      iWVv5+l+1HI/FtKPSzwDXJlu2oDfEusDbDty9Nte58vHZqUYAaDEmxDepQSBNF6R
 
-      mBAFmH6P6/ZWnzJs8BPct2uyog7joKLqMDvvGW/W5mT+azanUFr5G4s6ftXvT7uN
+      kdsvihU+lA8+yG7t7fpn1IU55qBQ2jjvG+YsbilDn8hNDO5v6XnCwyqnoPLF4hrP
 
-      /wSBZmCaxEpe1SZ6j67mng==</SignatureValue>
+      FOiAZ/T0L9UIlWpFfMJ/Iw==</SignatureValue>
 
       <KeyInfo>
 
@@ -110,24 +110,26 @@ interactions:
 
       swT8Ci7g6HQXk0LERzTkGscPXYjStEFk/T6XkiT6Bd+5BA4DMATB9qvncy0IeQEX
 
-      aRJQtBB5sA/phIc4PeM2h7JoJko58KtMEzOmV5Xo1SssTUGLRtbeQi1AsdK/zg==</X509Certificate>
+      aRJQtBB5sA/phIc4PeM2h7JoJko58KtMEzOmV5Xo1SssTUGLRtbeQi1AsdK/zg==
+
+      </X509Certificate>
 
       </X509Data>
 
       </wsse:SecurityTokenReference></KeyInfo>
 
       </Signature></wsse:Security></soap-env:Header><soap-env:Body xmlns:ns1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
-      ns1:Id="id-42a8eff3-8698-4595-b85b-a1d5a0172a18"><ns0:VoertuigbezitInfoPersoon
+      ns1:Id="id-aaf373d6-3336-4c78-9640-dda9fd9ddb01"><ns0:VoertuigbezitInfoPersoon
       xmlns:ns0="http://bkwi.nl/SuwiML/Diensten/RDWDossierDigitaleDiensten/v0200"><Burgerservicenr>111111110</Burgerservicenr></ns0:VoertuigbezitInfoPersoon></soap-env:Body></soap-env:Envelope>'
     headers:
       Accept:
       - '*/*'
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Length:
-      - '4194'
+      - '4195'
       Content-Type:
       - text/xml; charset=utf-8
       SOAPAction:
@@ -152,7 +154,7 @@ interactions:
       Content-Type:
       - text/xml;charset=utf-8
       Date:
-      - Fri, 20 Oct 2023 20:06:51 GMT
+      - Wed, 24 Jan 2024 14:47:15 GMT
       Server:
       - Layer7-API-Gateway
     status:
