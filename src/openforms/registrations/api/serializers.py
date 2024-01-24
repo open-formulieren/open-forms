@@ -10,7 +10,7 @@ from openforms.plugins.api.serializers import PluginBaseSerializer
 
 
 class RegistrationPluginSerializer(PluginBaseSerializer):
-    schema = serializers.JSONField(
+    schema = serializers.DictField(
         source="configuration_options.display_as_jsonschema",
         label=_("JSON schema"),
         help_text=_("The generated JSON schema for the plugin options."),

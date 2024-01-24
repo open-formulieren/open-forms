@@ -248,17 +248,22 @@ class FormDefinitionsAPITests(APITestCase):
                 "name": "Name",
                 "slug": "a-slug",
                 "configuration": {
-                    "someCamelCase": "field",
-                    "key": "somekey",
-                    "type": "textfield",
+                    "display": "form",
+                    "components": [
+                        {
+                            "someCamelCase": "field",
+                            "key": "somekey",
+                            "type": "textfield",
+                        }
+                    ],
                 },
             },
         )
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
         config = FormDefinition.objects.get().configuration
-        self.assertIn("someCamelCase", config)
-        self.assertNotIn("some_amel_case", config)
+        self.assertIn("someCamelCase", config["components"][0])
+        self.assertNotIn("some_amel_case", config["components"][0])
 
     def test_get_no_snakecase_camelcase_conversion(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
@@ -623,7 +628,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         error = response.json()["invalidParams"][0]
         self.assertEqual(error["code"], "invalid")
-        self.assertEqual(error["name"], "configuration")
+        self.assertEqual(error["name"], "configuration.nonFieldErrors")
 
     def test_configuration_with_co_sign_but_missing_global_config(self):
         prefill_config = PrefillConfig.get_solo()
@@ -654,7 +659,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         error = response.json()["invalidParams"][0]
         self.assertEqual(error["code"], "invalid")
-        self.assertEqual(error["name"], "configuration")
+        self.assertEqual(error["name"], "configuration.nonFieldErrors")
 
     @patch("openforms.prefill.co_sign.PrefillConfig.get_solo")
     def test_configuration_with_co_sign_ok(self, mock_get_solo):

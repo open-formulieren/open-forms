@@ -211,7 +211,7 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     form_step = ContextAwareFormStepSerializer(read_only=True)
     slug = serializers.SlugField(source="form_step.slug", read_only=True)
-    data = serializers.JSONField(
+    data = serializers.DictField(
         label=_("data"),
         required=False,
         allow_null=True,
@@ -261,7 +261,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
 
 class FormDataSerializer(serializers.Serializer):
-    data = serializers.JSONField(
+    data = serializers.DictField(
         label=_("form data"),
         required=False,
         help_text=_(
@@ -469,7 +469,7 @@ class SubmissionComponentSummarySerializer(serializers.Serializer):
         help_text=_("Raw value of the component."),
         required=True,
     )
-    component = serializers.JSONField(
+    component = serializers.DictField(
         help_text=_("Configuration of the component."),
         required=True,
     )

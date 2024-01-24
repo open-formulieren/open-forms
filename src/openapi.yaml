@@ -6333,6 +6333,8 @@ components:
           title: Appointment time
           description: Date and time of the appointment
         contactDetails:
+          type: object
+          additionalProperties: {}
           description: Additional contact detail field values.
         privacyPolicyAccepted:
           type: boolean
@@ -6805,6 +6807,11 @@ components:
       required:
       - id
       - label
+    DisplayEnum:
+      enum:
+      - form
+      type: string
+      description: '* `form` - form'
     Exception:
       type: object
       description: |-
@@ -6923,6 +6930,8 @@ components:
           - $ref: '#/components/schemas/PaymentBackendEnum'
           - $ref: '#/components/schemas/BlankEnum'
         paymentBackendOptions:
+          type: object
+          additionalProperties: {}
           nullable: true
         paymentOptions:
           type: array
@@ -7138,6 +7147,8 @@ components:
       type: object
       properties:
         data:
+          type: object
+          additionalProperties: {}
           title: form data
           description: The Form.io submission data object. This will be merged with
             the full form submission data, including data from other steps, to evaluate
@@ -7165,6 +7176,8 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
           deprecated: true
         configuration:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionConfiguration'
           title: Form.io configuration
           description: The form definition as Form.io JSON schema
         loginRequired:
@@ -7183,6 +7196,14 @@ components:
       - configuration
       - name
       - url
+    FormDefinitionConfiguration:
+      type: object
+      properties:
+        display:
+          $ref: '#/components/schemas/DisplayEnum'
+        components:
+          type: array
+          items: {}
     FormDefinitionDetail:
       type: object
       properties:
@@ -7206,6 +7227,8 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
           deprecated: true
         configuration:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionConfiguration'
           title: Form.io configuration
           description: The form definition as Form.io JSON schema
         loginRequired:
@@ -7597,11 +7620,14 @@ components:
           title: Registration backend
           maxLength: 100
         options:
-          title: Registration backend options
+          type: object
+          additionalProperties: {}
+          title: registration backend options
       required:
       - backend
       - key
       - name
+      - options
     FormStep:
       type: object
       properties:
@@ -7617,6 +7643,8 @@ components:
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
         configuration:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionConfiguration'
           readOnly: true
         formDefinition:
           type: string
@@ -8460,6 +8488,8 @@ components:
           - $ref: '#/components/schemas/PaymentBackendEnum'
           - $ref: '#/components/schemas/BlankEnum'
         paymentBackendOptions:
+          type: object
+          additionalProperties: {}
           nullable: true
         paymentOptions:
           type: array
@@ -8652,6 +8682,8 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
           deprecated: true
         configuration:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionConfiguration'
           title: Form.io configuration
           description: The form definition as Form.io JSON schema
         loginRequired:
@@ -8681,6 +8713,8 @@ components:
           maxLength: 100
           pattern: ^[-a-zA-Z0-9_]+$
         configuration:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionConfiguration'
           readOnly: true
         formDefinition:
           type: string
@@ -8773,6 +8807,8 @@ components:
           type: string
           description: The human-readable name for a plugin.
         schema:
+          type: object
+          additionalProperties: {}
           title: JSON schema
           description: The generated JSON schema for the plugin options.
       required:
@@ -8901,6 +8937,8 @@ components:
           type: string
           description: The human-readable name for a plugin.
         schema:
+          type: object
+          additionalProperties: {}
           title: JSON schema
           description: The generated JSON schema for the plugin options.
       required:
@@ -8978,10 +9016,17 @@ components:
             * `GET` - GET
             * `POST` - POST
         headers:
+          type: object
+          additionalProperties: {}
           title: HTTP request headers
           description: Additions and overrides for the HTTP request headers as defined
             in the Service.
         queryParams:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
           title: HTTP query string
         body:
           nullable: true
@@ -9139,6 +9184,8 @@ components:
         value:
           description: Raw value of the component.
         component:
+          type: object
+          additionalProperties: {}
           description: Configuration of the component.
       required:
       - component
@@ -9242,6 +9289,8 @@ components:
           - $ref: '#/components/schemas/ContextAwareFormStep'
           readOnly: true
         data:
+          type: object
+          additionalProperties: {}
           nullable: true
         isApplicable:
           type: boolean

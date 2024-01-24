@@ -168,6 +168,12 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
             "one day."
         ),
     )
+    contact_details = serializers.DictField(
+        label=_("contact details"),
+        help_text=_("Additional contact detail field values."),
+        required=True,
+        allow_null=False,
+    )
 
     _status_url: str  # set by the view
 
@@ -187,10 +193,6 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
             "submission": {
                 "view_name": "api:submission-detail",
                 "lookup_field": "uuid",
-            },
-            "contact_details": {
-                "required": True,
-                "allow_null": False,
             },
         }
 

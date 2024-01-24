@@ -13,6 +13,7 @@ from ...models import FormDefinition, FormStep
 from ...validators import validate_no_duplicate_keys_across_steps
 from ..validators import FormStepIsApplicableIfFirstValidator
 from .button_text import ButtonTextSerializer
+from .form_definition import FormDefinitionConfigurationSerializer
 
 
 class FormStepLiteralsSerializer(serializers.Serializer):
@@ -68,7 +69,7 @@ class FormStepSerializer(
     PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
 ):
     index = serializers.IntegerField(source="order")
-    configuration = serializers.JSONField(
+    configuration = FormDefinitionConfigurationSerializer(
         source="form_definition.configuration", read_only=True
     )
     login_required = serializers.BooleanField(

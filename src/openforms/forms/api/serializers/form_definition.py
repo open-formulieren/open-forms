@@ -58,6 +58,14 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
         return request.build_absolute_uri(admin_url)
 
 
+class FormDefinitionConfigurationSerializer(serializers.Serializer):
+    display = serializers.ChoiceField(
+        choices=["form"],
+        required=False,
+    )
+    components = serializers.ListField(required=False)
+
+
 @extend_schema_serializer(deprecate_fields=["slug"])
 class FormDefinitionSerializer(
     PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
@@ -65,6 +73,15 @@ class FormDefinitionSerializer(
     translations = ModelTranslationsSerializer()
     component_translations = ComponentTranslationsSerializer(
         required=False, allow_null=True
+    )
+    configuration = FormDefinitionConfigurationSerializer(
+        label=_("Form.io configuration"),
+        help_text=_("The form definition as Form.io JSON schema"),
+        validators=[
+            FormIOComponentsValidator(),
+            validate_template_expressions,
+            validate_no_duplicate_keys,
+        ],
     )
 
     class Meta:
@@ -101,13 +118,6 @@ class FormDefinitionSerializer(
             # "name": {"read_only": True},  # writing is done via the `translations` field
             "slug": {
                 "required": False,
-            },
-            "configuration": {
-                "validators": [
-                    FormIOComponentsValidator(),
-                    validate_template_expressions,
-                    validate_no_duplicate_keys,
-                ],
             },
         }
 
