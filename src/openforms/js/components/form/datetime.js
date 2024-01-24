@@ -63,6 +63,12 @@ class DateTimeField extends DateTimeFormio {
             },
           },
         },
+        customOptions: {
+          // Issue #3755 - Flatpickr is preventing the value from being set when entering it manually if it is outside the set minDate/maxDate range.
+          // With allowInvalidPreload: true, we tell it to set the value also if it is invalid, so that then validators can kick in.
+          // https://github.com/flatpickr/flatpickr/blob/master/src/index.ts#L2498
+          allowInvalidPreload: true,
+        },
       },
       ...extend
     );

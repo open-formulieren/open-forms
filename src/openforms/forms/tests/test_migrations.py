@@ -911,3 +911,35 @@ class TestComponentFixesMigration(TestMigrations):
             postcode["validate"]["pattern"],
             r"^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
         )
+
+
+class DatetimeAllowInvalidInputTests(TestMigrations):
+    app = "forms"
+    migrate_from = "0103_fix_component_problems"
+    migrate_to = "0104_allow_invalid_input_datetime"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        self.form_definition = FormDefinition.objects.create(
+            name="Datetime",
+            slug="datetime",
+            configuration={
+                "components": [
+                    {"key": "datetime", "type": "datetime"},
+                    {"key": "time", "type": "time"},
+                ]
+            },
+        )
+
+    def test_datetime_component_modified(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertTrue(
+            self.form_definition.configuration["components"][0]["customOptions"][
+                "allowInvalidPreload"
+            ]
+        )
+        self.assertNotIn(
+            "customOptions", self.form_definition.configuration["components"][1]
+        )
