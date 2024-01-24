@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 import factory
-from factory.django import DjangoModelFactory, FileField
+from factory.django import DjangoModelFactory
 from simple_certmanager.constants import CertificateTypes
 
 from soap.constants import EndpointSecurity
@@ -16,50 +16,35 @@ DATA_DIR = Path(__file__).parent / "data"
 FAKE_BASE_URL = "https://mygateway.example.com/SuwiML"
 SUWINET_BASE_URL = os.environ.get("SUWINET_BASE_URL", FAKE_BASE_URL)
 
+if client_key_path := os.environ.get("SUWINET_CLIENT_KEY"):
+    MTLS_CLIENT_KEY_KWARGS = {
+        "client_certificate__public_certificate__from_path": str(DATA_DIR / "pub.cert"),
+        "client_certificate__private_key__from_path": client_key_path,
+    }
+else:
+    MTLS_CLIENT_KEY_KWARGS = {
+        # "client_certificate__public_certificate__from_path": str(DATA_DIR / "pub.cert")
+        # "client_certificate__private_key__from_path": os.environ.get("SUWINET_CLIENT_KEY")
+    }
+
 
 class SuwinetConfigFactory(DjangoModelFactory):
+    service = factory.SubFactory(
+        SoapServiceFactory,
+        url="",
+        with_client_cert=True,
+        client_certificate__with_private_key=True,
+        with_server_cert=True,
+        server_certificate__type=CertificateTypes.cert_only,
+        server_certificate__public_certificate__from_path=str(
+            DATA_DIR / "server-chain.pem"
+        ),
+        endpoint_security=EndpointSecurity.wss,
+        **MTLS_CLIENT_KEY_KWARGS,
+    )
+
     class Meta:
         model = SuwinetConfig
-
-    if "SUWINET_CLIENT_KEY" in os.environ:
-        service = factory.SubFactory(
-            SoapServiceFactory,
-            url="",
-            with_client_cert=True,
-            client_certificate__type=CertificateTypes.key_pair,
-            client_certificate__public_certificate=FileField(
-                from_path=str(DATA_DIR / "pub.cert"),
-            ),
-            client_certificate__private_key=FileField(
-                from_path=os.environ.get("SUWINET_CLIENT_KEY"),
-            ),
-            with_server_cert=True,
-            server_certificate__type=CertificateTypes.cert_only,
-            server_certificate__public_certificate=FileField(
-                from_path=str(DATA_DIR / "server-chain.pem")
-            ),
-            endpoint_security=EndpointSecurity.wss,
-        )
-    else:
-        service = factory.SubFactory(
-            SoapServiceFactory,
-            url="",
-            with_client_cert=True,
-            client_certificate__with_private_key=True,
-            # client_certificate__type=CertificateTypes.key_pair,
-            # client_certificate__public_certificate=FileField(
-            #     from_path=str(DATA_DIR / "pub.cert")
-            # ),
-            # client_certificate__private_key=FileField(
-            #     from_path=os.environ.get("SUWINET_CLIENT_KEY")
-            # ),
-            with_server_cert=True,
-            server_certificate__type=CertificateTypes.cert_only,
-            server_certificate__public_certificate=FileField(
-                from_path=str(DATA_DIR / "server-chain.pem")
-            ),
-            endpoint_security=EndpointSecurity.wss,
-        )
 
     class Params:
         all_endpoints = factory.Trait(
