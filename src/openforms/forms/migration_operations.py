@@ -56,7 +56,7 @@ class ConvertComponentsOperation(migrations.RunPython):
         apply_converter = ApplyConverter(component_type, identifier)
         super().__init__(code=apply_converter, reverse_code=migrations.RunPython.noop)
 
-    def deconstruct(self):
+    def deconstruct(self):  # pragma: no cover
         # Same as migrations.Operation base class
         return (
             self.__class__.__name__,
