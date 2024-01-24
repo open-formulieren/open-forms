@@ -1,18 +1,16 @@
 {# Takes a 'field' context argument, which should be an instance of a BoundField #}
-<div class="openforms-form-control openforms-form-control--{{ type|default:'textfield' }}">
-
+<div class="{% if field.errors %}formio-error-wrapper has-message{%  endif %}" ref="component">
     {% if type == 'radio' %}
         {% include "./radio.html" %}
     {% else %}
-        <div class="utrecht-form-field utrecht-form-field--openforms">
+        <div class="utrecht-form-field utrecht-form-field--{{ type }} utrecht-form-field--openforms">
             <p class="utrecht-paragraph utrecht-form-field__label">
                 <label for="{{ field.auto_id }}" class="utrecht-form-label">
                     {{ field.label }}
                 </label>
             </p>
-            <div>
                 {{ field }}
-            </div>
+
             {% if field.help_text %}
             <div class="utrecht-form-field-description utrecht-form-field-description--openforms-helptext">
                 {{ field.help_text }}
@@ -24,3 +22,5 @@
     {# validation errors #}
     {% include "includes/forms/errorlist.html" with errors=field.errors only %}
 </div>
+
+{# TODO: 1) understand where the formio-error-wrapper padding is coming from 2) why is the description outside of the utrecht-form-field div#}
