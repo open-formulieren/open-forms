@@ -2,8 +2,9 @@
 <div class="{% if field.errors %}formio-error-wrapper has-message{%  endif %}" ref="component">
     {% if type == 'radio' %}
         {% include "./radio.html" %}
+        {% include "includes/forms/errorlist.html" with errors=field.errors only %}
     {% else %}
-        <div class="utrecht-form-field utrecht-form-field--{{ type }} utrecht-form-field--openforms">
+        <div class="utrecht-form-field utrecht-form-field--{{ type|default:'textfield' }} utrecht-form-field--openforms">
             <p class="utrecht-paragraph utrecht-form-field__label">
                 <label for="{{ field.auto_id }}" class="utrecht-form-label">
                     {{ field.label }}
@@ -16,11 +17,9 @@
                 {{ field.help_text }}
             </div>
             {% endif %}
+            {# validation errors #}
+            {% include "includes/forms/errorlist.html" with errors=field.errors only %}
         </div>
     {% endif %}
-
-    {# validation errors #}
-    {% include "includes/forms/errorlist.html" with errors=field.errors only %}
 </div>
 
-{# TODO: 1) understand where the formio-error-wrapper padding is coming from 2) why is the description outside of the utrecht-form-field div#}
