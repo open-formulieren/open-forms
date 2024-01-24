@@ -24,8 +24,7 @@
     // TODO: remove of-layout support in Open Forms 3.0
     background-color: var(--of-layout-background-color, var(--utrecht-page-background-color));
 
-    &,
-    & * {
+    .utrecht-page-content {
       box-sizing: border-box;
     }
 
