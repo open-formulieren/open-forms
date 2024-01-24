@@ -49,6 +49,57 @@ Configuration
 
 The Haal Centraal configuration is now complete.
 
+Configuration of *protocollering* headers
+=========================================
+
+When using the BRP API via a gateway, you likely need to configure extra headers.
+
+*Doelbinding* and *Verwerking*
+------------------------------
+
+These two values correspond to the following headers: ``x-doelbinding`` and ``x-verwerking``. Possible values
+depends on your gateway supplier and/or organization.
+
+They can be configured per form or as a global default.
+
+Configuration per form
+~~~~~~~~~~~~~~~~~~~~~~
+
+1. Create a form with a component using a prefill plugin. An example can be found :ref:`here <example_prefill>`.
+   Be sure to select *Haal Centraal: BRP Personen Bevragen*.
+2. In the *Advanced configuration* tab under the *Processing* group, fill in the values for the two headers:
+
+   * **BRP Personen purpose limitation header value**: The *Doelbinding* value.
+   * **BRP Personen processing header value**: The *Verwerking* value.
+
+Global default
+~~~~~~~~~~~~~~
+
+You can also define global defaults that will be used if no values are configured at the form level.
+
+1. Navigate to **Configuration** > **Configuration overview**. In the **Prefill plugins**
+   group, click on **Configuration** for the **Haal Centraal: BRP Personen Bevragen**
+   line.
+2. Fill in the values for the two headers:
+
+   * **Default BRP Personen purpose limitation header value**: The *Doelbinding* value.
+   * **Default BRP Personen processing header value**: The *Verwerking* value.
+
+Origin OIN
+----------
+
+This value corresponds to the ``x-origin-oin`` header.
+
+1. Navigate to **Configuration** > **General configuration**.
+2. In the **Organization configuration**, fill in the value for the **Organization OIN**.
+
+
+.. note::
+
+   An extra header ``x-gebruiker`` will automatically be set. If the form is being filled in by
+   an authenticated employee, the employee ID will be used. Otherwise, a default value of ``BurgerZelf``
+   will be used.
+
 
 Technical
 =========
