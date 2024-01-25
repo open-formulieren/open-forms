@@ -59,7 +59,16 @@ class DemoAppointment(BasePlugin[CustomerFields]):
                 "maxLength": 20,
             },
         }
-        return [last_name]
+        email: Component = {
+            "type": "email",
+            "key": "email",
+            "label": gettext("Email"),
+            "validate": {
+                "required": True,
+                "maxLength": 100,
+            },
+        }
+        return [last_name, email]
 
     def create_appointment(self, products, location, start_at, client, remarks=""):
         print(
