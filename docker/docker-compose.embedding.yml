@@ -1,0 +1,23 @@
+version: '3.8'
+
+# Create a .env file in this directory and specify the environment variables there:
+#
+# OPENFORMS_HOST=https://openforms.example.com
+#
+# Test by navigating to https://localhost:9000/embedding/query-params.html?form=<slug> for example.
+# You will need to accept the self-signed certificates.
+
+services:
+  embed-with-query-params:
+    image: nginx:1.25
+    volumes:
+      - ./embedding/default.conf:/etc/nginx/conf.d/default.conf
+      - ./embedding:/etc/nginx/templates
+      - ./certs:/certs:ro
+    ports:
+      - 9000:443
+    environment:
+      NGINX_ENVSUBST_TEMPLATE_DIR: /etc/nginx/templates
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: .template
+      NGINX_ENVSUBST_OUTPUT_DIR: /usr/share/nginx/html/
+      OPENFORMS_HOST: ${OPENFORMS_HOST:-UNSET}

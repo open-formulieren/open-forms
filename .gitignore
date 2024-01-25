@@ -43,6 +43,7 @@ local.py
 /log/*.log*
 /log/nginx/*.log*
 /.env
+/docker/.env
 /private_media/
 /celerybeat
 /tmp/*
