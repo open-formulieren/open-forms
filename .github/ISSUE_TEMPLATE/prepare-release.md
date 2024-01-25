@@ -9,6 +9,12 @@ assignees: sergei-maertens
 - [ ] Resolve release blockers
   - [ ] ...
 - [ ] Re-generate VCR cassettes for API tests (see instructions on Taiga)
+  - [ ] Appoinments: Qmatic
+  - [ ] Suwinet
+  - [ ] DigiD/eHerkenning (Signicat)
+  - [ ] Haal Centraal BRP Personen bevragen
+  - [ ] `src.soap.tests.test_client`
+  - [ ] BRK (Kadaster)
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
