@@ -3,15 +3,15 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/hal+json
       Accept-Encoding:
       - gzip, deflate, br
       Connection:
       - keep-alive
+      Content-Type:
+      - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      X-Api-Key:
-      - fake_changeme_when_testing
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1&huisletter=A&huisnummertoevoeging=Add
   response:
@@ -29,7 +29,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Thu, 04 Jan 2024 16:15:08 GMT
+      - Thu, 25 Jan 2024 10:17:09 GMT
       Keep-Alive:
       - timeout=60
       Server:

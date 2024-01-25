@@ -2,11 +2,11 @@ import logging
 from typing import TypedDict
 
 import requests
-from ape_pie.client import APIClient
 from typing_extensions import NotRequired
 
 from zgw_consumers_ext.api_client import ServiceClientFactory
 
+from ..hal_client import HALClient
 from .models import BRKConfig
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class SearchParams(TypedDict):
     huisnummertoevoeging: NotRequired[str]
 
 
-class BRKClient(APIClient):
+class BRKClient(HALClient):
     def get_real_estate_by_address(self, query_params: SearchParams):
         """
         Search for real estate by querying for a specific address.
