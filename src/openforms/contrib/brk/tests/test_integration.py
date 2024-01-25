@@ -16,7 +16,7 @@ from .base import TEST_FILES, BRKTestMixin
 
 
 class BRKValidatorIntegrationTestCase(
-    SubmissionsMixin, OFVCRMixin, BRKTestMixin, APITestCase
+    SubmissionsMixin, BRKTestMixin, OFVCRMixin, APITestCase
 ):
     VCR_TEST_FILES = TEST_FILES
 

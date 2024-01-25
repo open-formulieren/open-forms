@@ -11,11 +11,10 @@ from .base import TEST_FILES, BRKTestMixin
 
 
 @temp_private_root()
-class BRKCadastralClientTests(OFVCRMixin, BRKTestMixin, SimpleTestCase):
+class BRKCadastralClientTests(BRKTestMixin, OFVCRMixin, SimpleTestCase):
     VCR_TEST_FILES = TEST_FILES
 
     def test_client(self):
-
         with get_client() as client:
             res = client.get_real_estate_by_address(
                 {"postcode": "7361EW", "huisnummer": "21"}
@@ -45,11 +44,10 @@ class BRKCadastralClientTests(OFVCRMixin, BRKTestMixin, SimpleTestCase):
 
 
 @temp_private_root()
-class BRKTitleholdersClientTests(OFVCRMixin, BRKTestMixin, SimpleTestCase):
+class BRKTitleholdersClientTests(BRKTestMixin, OFVCRMixin, SimpleTestCase):
     VCR_TEST_FILES = TEST_FILES
 
     def test_client(self):
-
         with get_client() as client:
             res = client.get_cadastral_titleholders_by_cadastral_id("76870482570000")
 

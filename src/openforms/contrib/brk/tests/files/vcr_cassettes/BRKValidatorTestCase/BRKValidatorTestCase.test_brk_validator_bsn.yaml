@@ -3,15 +3,15 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/hal+json
       Accept-Encoding:
       - gzip, deflate, br
       Connection:
       - keep-alive
+      Content-Type:
+      - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      X-Api-Key:
-      - fake_changeme_when_testing
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AA&huisnummer=1
   response:
@@ -29,7 +29,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 03 Jan 2024 13:36:10 GMT
+      - Thu, 25 Jan 2024 10:17:10 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -41,15 +41,15 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/hal+json
       Accept-Encoding:
       - gzip, deflate, br
       Connection:
       - keep-alive
+      Content-Type:
+      - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      X-Api-Key:
-      - fake_changeme_when_testing
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21&huisletter=A&huisnummertoevoeging=B
   response:
@@ -67,7 +67,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 03 Jan 2024 13:36:11 GMT
+      - Thu, 25 Jan 2024 10:17:10 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -79,15 +79,15 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/hal+json
       Accept-Encoding:
       - gzip, deflate, br
       Connection:
       - keep-alive
+      Content-Type:
+      - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      X-Api-Key:
-      - fake_changeme_when_testing
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=7361EW&huisnummer=21
   response:
@@ -110,7 +110,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 03 Jan 2024 13:36:10 GMT
+      - Thu, 25 Jan 2024 10:17:10 GMT
       Keep-Alive:
       - timeout=60
       Server:
@@ -122,15 +122,15 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/hal+json
       Accept-Encoding:
       - gzip, deflate, br
       Connection:
       - keep-alive
+      Content-Type:
+      - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      X-Api-Key:
-      - fake_changeme_when_testing
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden
   response:
@@ -154,7 +154,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Wed, 03 Jan 2024 13:36:11 GMT
+      - Thu, 25 Jan 2024 10:17:10 GMT
       Keep-Alive:
       - timeout=60
       Server:

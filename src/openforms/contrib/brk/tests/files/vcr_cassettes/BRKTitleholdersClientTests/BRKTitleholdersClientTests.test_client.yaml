@@ -12,8 +12,6 @@ interactions:
       - application/hal+json
       User-Agent:
       - python-requests/2.31.0
-      X-Api-Key:
-      - fake
     method: GET
     uri: https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken/76870482570000/zakelijkgerechtigden
   response:
@@ -37,7 +35,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Fri, 15 Dec 2023 16:34:14 GMT
+      - Thu, 25 Jan 2024 10:17:11 GMT
       Keep-Alive:
       - timeout=60
       Server:
