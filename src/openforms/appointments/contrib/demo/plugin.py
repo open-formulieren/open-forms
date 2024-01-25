@@ -82,7 +82,9 @@ class DemoAppointment(BasePlugin[CustomerFields]):
                 Product(identifier="1", name="Test product 1"),
                 Product(identifier="2", name="Test product 2"),
             ],
-            location=Location(identifier="1", name="Test location"),
+            location=Location(
+                identifier="1", name="Test location", address="Test address"
+            ),
             start_at=datetime(2021, 1, 1, 12, 0),
             end_at=datetime(2021, 1, 1, 12, 15),
             remarks="Remarks",

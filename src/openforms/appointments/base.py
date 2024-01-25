@@ -88,7 +88,8 @@ class AppointmentDetails:
     remarks: str | None = None
 
     # These are typically key/values-pairs where both the key and value are
-    # considered to be HTML-safe and suited to show to end users.
+    # considered *not* to be HTML-safe. Plugins need to explicitly mark trusted
+    # data as safe.
     other: dict | None = None
 
     def __str__(self):

@@ -1,4 +1,5 @@
 from django.test import RequestFactory, TestCase, override_settings
+from django.utils.html import escape
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.submissions.dev_views import SubmissionPDFTestView
@@ -31,7 +32,10 @@ class PDFGenerationTests(TestCase):
         self.assertIn("Afspraakinformatie", html)
         self.assertIn("Test product 1", html)
         self.assertIn("Test location", html)
+        self.assertIn("Test address", html)
         self.assertIn("Datum en tijd", html)
+
+        self.assertIn(escape("<h1>Data</h1>"), html)
 
     @override_settings(DEBUG=True)
     def test_appointment_info_is_included_in_submission_pdf_test_view(self):
