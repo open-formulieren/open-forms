@@ -4,6 +4,7 @@ from django import forms
 from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import Q
+from django.http import Http404
 from django.template.defaultfilters import filesizeformat
 from django.urls import path
 from django.utils.translation import gettext_lazy as _, ngettext
@@ -268,6 +269,8 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
+        if submission is None:
+            raise Http404(f"No {self.model._meta.object_name} matches the given query.")
         submission_details_view_admin(submission, request.user)
         extra_context = {
             "data": submission.get_ordered_data_with_component_type(),
