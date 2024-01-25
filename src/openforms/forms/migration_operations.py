@@ -55,3 +55,11 @@ class ConvertComponentsOperation(migrations.RunPython):
     def __init__(self, component_type: str, identifier: str):
         apply_converter = ApplyConverter(component_type, identifier)
         super().__init__(code=apply_converter, reverse_code=migrations.RunPython.noop)
+
+    def deconstruct(self):  # pragma: no cover
+        # Same as migrations.Operation base class
+        return (
+            self.__class__.__name__,
+            self._constructor_args[0],
+            self._constructor_args[1],
+        )

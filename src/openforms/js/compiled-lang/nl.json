@@ -173,6 +173,12 @@
       "value": "Component-JSON aanpassen"
     }
   ],
+  "10KWbo": [
+    {
+      "type": 0,
+      "value": "BRP Personen 'verwerking' header-waarde"
+    }
+  ],
   "1ArmQ5": [
     {
       "type": 0,
@@ -571,6 +577,12 @@
     {
       "type": 0,
       "value": "Vertrouwelijkheidaanduiding"
+    }
+  ],
+  "6Xhq/T": [
+    {
+      "type": 0,
+      "value": "Je moet een datum en tijd opgeven."
     }
   ],
   "6ZW12a": [
@@ -1153,6 +1165,40 @@
       "value": "de waarde"
     }
   ],
+  "CZ4Fby": [
+    {
+      "type": 1,
+      "value": "length"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "karakter over"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "karakters over"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "length"
+    }
+  ],
   "CiaAYL": [
     {
       "type": 0,
@@ -1563,6 +1609,12 @@
       "value": "URL-deel van het formulier."
     }
   ],
+  "HXqhlN": [
+    {
+      "type": 0,
+      "value": "BRP Personen 'doelbinding' header-waarde"
+    }
+  ],
   "Hfdfv2": [
     {
       "type": 0,
@@ -1723,6 +1775,12 @@
       "value": " vereist authenticatie, maar authenticatie is niet verplicht op de formulierstap."
     }
   ],
+  "KClY/2": [
+    {
+      "type": 0,
+      "value": "Verwerking"
+    }
+  ],
   "KIy7Wr": [
     {
       "type": 0,
@@ -1793,6 +1851,12 @@
     {
       "type": 0,
       "value": "Stijl waarin het formulier wordt weergegeven (niet verplicht)."
+    }
+  ],
+  "LD3weJ": [
+    {
+      "type": 0,
+      "value": "Geavanceerde instellingen"
     }
   ],
   "LHBcNe": [
@@ -2163,6 +2227,12 @@
     {
       "type": 0,
       "value": "Taal"
+    }
+  ],
+  "RiFNuZ": [
+    {
+      "type": 0,
+      "value": "Je moet een datum opgeven."
     }
   ],
   "Rk13i+": [
@@ -2816,6 +2886,12 @@
     {
       "type": 0,
       "value": "Indien aangevinkt, dan worden gegevens van partners opgehaald en ingesloten."
+    }
+  ],
+  "ZP5B/v": [
+    {
+      "type": 0,
+      "value": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier."
     }
   ],
   "ZdZ2Mb": [
@@ -3908,6 +3984,12 @@
       "value": "Aantal dagen dat een inzending bewaard blijft voordat deze definitief verwijderd wordt. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "nmUEDS": [
+    {
+      "type": 0,
+      "value": "De waarde voor \"doelbinding\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier en/of eigen organisatie-instellingen."
+    }
+  ],
   "nqJbi9": [
     {
       "type": 0,
@@ -4009,6 +4091,12 @@
     {
       "type": 0,
       "value": "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "p+NeER": [
+    {
+      "type": 0,
+      "value": "Er zijn geen relevante geavanceerde instellingen."
     }
   ],
   "p18yml": [

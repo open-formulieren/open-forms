@@ -22,9 +22,9 @@ interactions:
       x-origin-oin:
       - 00000003273229750000
       x-verwerking:
-      - "Financi\xEBle administratie@Correspondentie factuur"
+      - Financiele administratie@Correspondentie factuur
     method: POST
-    uri: https://example.com/personen
+    uri: https://lab.api.mijniconnect.nl/iconnect/apihcbrp/actueel/v2/personen
   response:
     body:
       string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"aNummer":"6374749384","burgerservicenummer":"999990421","geslacht":{"code":"M","omschrijving":"man"},"leeftijd":119,"naam":{"aanduidingNaamgebruik":{"code":"E","omschrijving":"eigen
@@ -42,7 +42,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 10 Jan 2024 13:57:55 GMT
+      - Wed, 24 Jan 2024 17:43:01 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Transfer-Encoding:

@@ -17,7 +17,7 @@ from .base import TEST_FILES, BRKTestMixin
 
 
 @temp_private_root()
-class BRKValidatorTestCase(OFVCRMixin, BRKTestMixin, TestCase):
+class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
     VCR_TEST_FILES = TEST_FILES
 
     def test_brk_validator_no_auth(self):

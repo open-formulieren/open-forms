@@ -27,6 +27,16 @@ export const getAvailableAuthPlugins = async () => {
 const FormioEmail = Formio.Components.components.email;
 
 class CoSignField extends FormioEmail {
+  constructor(...args) {
+    super(...args);
+
+    // somewhere the default emptyValue/defaultValue does not seem to be used and it forces
+    // component.defaultValue to be null, which crashes the builder.
+    if (this.component.defaultValue === null) {
+      this.component.defaultValue = '';
+    }
+  }
+
   static schema(...extend) {
     const schema = FormioEmail.schema(
       {

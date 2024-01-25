@@ -2,15 +2,156 @@
 Changelog
 =========
 
-2.5.0 (Pending)
-==========================
+2.5.0 "Noaberschap" (2024-01-24)
+================================
+
+Open Forms 2.5.0 is a feature release.
+
+.. epigraph::
+
+   Noaberschap of naoberschap bunt de gezamenleke noabers in ne kleine sociale,
+   oaverweagend agrarische samenleaving. Binnen den noaberschap besteet de noaberplicht.
+   Dit höldt de verplichting in, dat de noabers mekare bi-j mot stoan in road en doad as
+   dat neudig is. Et begrip is veural bekand in den Achterhook, Twente Salland en
+   Drenthe, moar i-j kunt et eavenens in et westen van Duutslaand vinden (Graofschap
+   Bentheim en umgeaving).
+
+   -- definition in Achterhoeks, Dutch dialect
+
+Upgrade procedure
+-----------------
+
+* ⚠️ Ensure you upgrade to Open Forms 2.4.0 before upgrading to the 2.5 release series.
+
+* ⚠️ Please review the instructions in the documentation under **Installation** >
+  **Upgrade details to Open Forms 2.5.0** before and during upgrading.
+
+* We recommend running the ``bin/report_component_problems.py`` script to diagnose any
+  problems in existing form definitions. These will be patched up during the upgrade,
+  but it's good to know which form definitions will be touched in case something looks
+  odd.
+
+* Existing instances need to enable the new formio builder feature flag in the admin
+  configuration.
+
+Major features
+--------------
+
+**🏗️ Form builder rework**
+
+We have taken lessons from the past into account and decided to implement our form
+builder from the ground up so that we are not limited anymore by third party limitations.
+
+The new form builder looks visually (mostly) the same, but the interface is a bit snappier
+and much more accessible. Most importantly for us, it's now easier to change and extend
+functionalities.
+
+We have not fully replaced all aspects yet, the remainer will come in the future.
+
+**🌐 Translation improvements**
+
+Doing the form builder rework was crucial to be able to improve on our translation
+machinery of form field components. We've resolved the issues with translations in
+fieldsets, repeating groups and columns *and* translations are now directly tied to
+the component/field they apply too, making everything much more intuitive.
+
+Additionally, in the translations table we are now able to provide more context to help
+translators in providing the correct literals.
+
+**💰 Payment flow rework**
+
+Before this version, we would always register the submission in the configured backend
+and then send an update when payment is fulfilled. Now, you can configure to only
+perform the registration after payment is completed.
+
+On top of that, we've updated the UI to make it more obvious to the end user that payment
+is required.
+
+**🏡 BRK integration**
+
+We've added support for the Basiregistratie Kadaster Haal Centraal API. You can now
+validate that the authenticated user (DigiD) is "zaakgerechtigd" for the property at
+a given address (postcode + number and suffixes).
+
+**🧵 Embedding rework**
+
+We have overhauled our embedding and redirect flows between backend and frontend. This
+should now properly support all features when using hash based routing. Please let us
+know if you run into any edge cases that don't work as expected yet!
+
+**🧩 More NL Design System components**
+
+We've restructured page-scaffolding to make use of NL Design System components, which
+makes your themes more reusable and portable accross different applications.
+
+
+Detailed changes
+----------------
+
+The 2.5.0-alpha.0 changes are included as well, see the earlier changelog entry.
 
 **New features**
 
-* [#3601] We have added the ability to relate the created zaak (ZGW APIs) with the created object (Objects API).
-  This is achieved by setting up ZGW in combination with Objects API in the form registrations settings (see registration/zgw docs).
+* Form designer
 
-  ⚠️ Ensure that the issue (#355) concerning the Objects API concerning json schema validation has been resolved.
+    * [#3712] Replaced the form builder with our own implementation. The feature flag is
+      now on by default for new instances. Existing instances need to toggle this.
+    * [#2958] Converted component translations to the new format used by the new form
+      builder.
+    * [#3607] Added a new component type ``addressNL`` to integrate with the BRK.
+    * [#2710] Added "initials" to StufBG prefill options.
+
+* Registration plugins
+
+    * [#3601], ZGW plugin: you can now register (part of) the submission data in the
+      Objects API, and it will be related to the created Zaak.
+
+      ⚠️ This requires a compatible version of the Objects API, see the
+      `upstream issue <https://github.com/maykinmedia/objects-api/issues/355>`_.
+
+* [#3726] Reworked the payment flow to make it more obvious that payment is required.
+* [#3707] group synchronization/mapping can now be disabled with OIDC SSO.
+* [#3201] Updated more language to be B1-level.
+* [#3702] Simplified language in co-sign emails.
+* [#180] Added support for GovMetric analytics.
+* [#3779] Updated the menu structure following user feedback about the form building
+  experience.
+* [#3731] Added support for "protocollering" headers when using the BRP Personen
+  Bevragen API.
+
+**Bugfixes**
+
+* [#3656] Fixed incorrect DigiD error messages being shown when using OIDC-based plugins.
+* [#3705] Fixed the ``__str__`` datetime representation of submissions to take the timezone
+  into account.
+* [#3692] Fixed crash when using OIDC DigiD login while logged into the admin interface.
+* [#3704] Fixed the family members component not retrieving the partners when using
+  StUF-BG as data source.
+* Fixed 'none' value in CSP configugration.
+* [#3744] Fixed conditionally marking a postcode component as required/optional.
+* [#3743] Fixed a crash in the admin with bad ZGW API configuration.
+* [#3778] Ensured that the ``content`` component label is consistently *not* displayed
+  anywhere.
+* [#3755] Fixed date/datetime fields clearing invalid values rather than showing a
+  validation error.
+
+**Project maintenance**
+
+* [#3626] Added end-to-end tests for submission resume flows.
+* [#3694] Upgraded to React 18.
+* Removed some development tooling which was superceded by Storybook.
+* Added documentation for a DigiD/eHerkenning LoA error and its solution.
+* Refactored the utilities for dealing with JSON templates.
+* Removed (EOL) 2.1.x from CI configuration.
+* [#2958] Added formio component Hypothesis search strategies.
+* Upgraded to the latest ``drf-spectacular`` version.
+* [#3049] Replaced the admin array widget with another library.
+* Upgraded libraries to have their latest security fixes.
+* Improved documentation for the release process.
+* Documented typing philosophy in contributing guidelines.
+* Modernized dev-tooling configuration (isort, flake8, coverage).
+* Squashed forms and config app migrations.
+
 
 2.4.3 (2024-01-12)
 ==================

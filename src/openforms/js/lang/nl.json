@@ -64,6 +64,11 @@
     "description": "Form configuration fieldset title",
     "originalDefault": "Form configuration"
   },
+  "10KWbo": {
+    "defaultMessage": "BRP Personen 'verwerking' header-waarde",
+    "description": "Form 'BRP Personen processing header value' field label",
+    "originalDefault": "BRP Personen processing header value"
+  },
   "1ArmQ5": {
     "defaultMessage": "Bevestigen",
     "description": "Camunda complex process variables confirm button",
@@ -650,6 +655,11 @@
     "description": "Form slug field help text",
     "originalDefault": "Slug of the form, used in URLs"
   },
+  "HXqhlN": {
+    "defaultMessage": "BRP Personen 'doelbinding' header-waarde",
+    "description": "Form 'BRP Personen purpose limitation header value' field label",
+    "originalDefault": "BRP Personen purpose limitation header value"
+  },
   "Hfdfv2": {
     "defaultMessage": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt.",
     "description": "Camunda 'process definition version' help text",
@@ -740,6 +750,11 @@
     "description": "No login required for formstep",
     "originalDefault": "Component {label} requires login, but this form step doesn't have the login marked as required."
   },
+  "KClY/2": {
+    "defaultMessage": "Verwerking",
+    "description": "Form processing fieldset title",
+    "originalDefault": "Processing"
+  },
   "KIy7Wr": {
     "defaultMessage": "Naam (of titel) van het formulier.",
     "description": "Form name field help text",
@@ -774,6 +789,11 @@
     "defaultMessage": "Stijl waarin het formulier wordt weergegeven (niet verplicht).",
     "description": "Form theme field help text",
     "originalDefault": "Optional theme to use for styling."
+  },
+  "LD3weJ": {
+    "defaultMessage": "Geavanceerde instellingen",
+    "description": "Advanced configuration tab title",
+    "originalDefault": "Advanced configuration"
   },
   "LHBcNe": {
     "defaultMessage": "Variabeledefinitie",
@@ -1240,6 +1260,11 @@
     "defaultMessage": "'Vorige' tekst",
     "description": "Form step previous text label",
     "originalDefault": "Previous text"
+  },
+  "ZP5B/v": {
+    "defaultMessage": "De waarde voor \"verwerking\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier.",
+    "description": "Form 'BRP Personen processing header value' field help text",
+    "originalDefault": "The processing (\"verwerking\") for queries to the BRP Persoon API."
   },
   "ZdZ2Mb": {
     "defaultMessage": "Zet registratieplugin voor de inzending",
@@ -1718,6 +1743,11 @@
     "description": "All Submissions Removal Limit help text",
     "originalDefault": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration."
   },
+  "nmUEDS": {
+    "defaultMessage": "De waarde voor \"doelbinding\" die meegestuurd wordt bij het bevragen van de BRP Personen API. Mogelijke waarden hiervoor zijn afhankelijk van je gateway-leverancier en/of eigen organisatie-instellingen.",
+    "description": "Form 'BRP Personen purpose limitation header value' field help text",
+    "originalDefault": "The purpose limitation (\"doelbinding\") for queries to the BRP Persoon API."
+  },
   "o8CfuS": {
     "defaultMessage": "Tekst (string)",
     "description": "JSON variable type \"string\" representation",
@@ -1747,6 +1777,11 @@
     "defaultMessage": "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Successful Submissions Removal Method help text",
     "originalDefault": "How successful submissions of this form will be removed after the limit. Leave blank to use value in General Configuration."
+  },
+  "p+NeER": {
+    "defaultMessage": "Er zijn geen relevante geavanceerde instellingen.",
+    "description": "Form advanced configuration fallback message",
+    "originalDefault": "No advanced configuration is available for this form."
   },
   "p18yml": {
     "defaultMessage": "Complexe procesvariabelen",

@@ -3,8 +3,8 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 class TestAddMoreCustomErrorMessagesTimeComponent(TestMigrations):
     app = "forms"
-    migrate_from = "0091_auto_20230831_1152"
-    migrate_to = "0092_more_time_custom_errors"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -58,8 +58,8 @@ class TestAddMoreCustomErrorMessagesTimeComponent(TestMigrations):
 
 class TestAddDateComponentSettings(TestMigrations):
     app = "forms"
-    migrate_from = "0092_more_time_custom_errors"
-    migrate_to = "0093_date_component_settings"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -130,8 +130,8 @@ class TestAddDateComponentSettings(TestMigrations):
 
 class TestChangeFamilyMembersComponent(TestMigrations):
     app = "forms"
-    migrate_from = "0093_date_component_settings"
-    migrate_to = "0094_update_config_family"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -166,8 +166,8 @@ class TestChangeFamilyMembersComponent(TestMigrations):
 
 class TestTimeComponentValidatorMigration(TestMigrations):
     app = "forms"
-    migrate_from = "0095_formstep_form_form_definition_unique_together"
-    migrate_to = "0096_move_time_component_validators"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -239,8 +239,8 @@ class TestTimeComponentValidatorMigration(TestMigrations):
 
 class TestPrefillUpdateDefaultValuesMigration(TestMigrations):
     app = "forms"
-    migrate_from = "0097_formstep_is_applicable"
-    migrate_to = "0098_update_default_value_components_prefill"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -358,8 +358,8 @@ class TestPrefillUpdateDefaultValuesMigration(TestMigrations):
 
 class TestSetDataSrcMigration(TestMigrations):
     app = "forms"
-    migrate_from = "0099_form_theme"
-    migrate_to = "0100_ensure_datasrc_property"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -521,8 +521,8 @@ class TestSetDataSrcMigration(TestMigrations):
 
 class TestUpdateActionProperty(TestMigrations):
     app = "forms"
-    migrate_from = "0100_ensure_datasrc_property"
-    migrate_to = "0101_update_action_property"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormLogic = apps.get_model("forms", "FormLogic")
@@ -605,8 +605,8 @@ class TestUpdateActionProperty(TestMigrations):
 
 class TestFormioTranslationsMigration(TestMigrations):
     app = "forms"
-    migrate_from = "0101_update_action_property"
-    migrate_to = "0102_convert_formio_translations"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -711,7 +711,8 @@ class TestFormioTranslationsMigration(TestMigrations):
             self.assertEqual(content_nl_translations, {"html": "<p>Inhoud</p>"})
 
         with self.subTest("radio"):
-            self.assertNotIn("openForms", radio)
+            self.assertIn("openForms", radio)
+            self.assertNotIn("translations", radio["openForms"])
 
             radio_option_1 = radio["values"][0]
             self.assertIn("openForms", radio_option_1)
@@ -754,8 +755,8 @@ class TestFormioTranslationsMigration(TestMigrations):
 
 class TestComponentFixesMigration(TestMigrations):
     app = "forms"
-    migrate_from = "0102_convert_formio_translations"
-    migrate_to = "0103_fix_component_problems"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -915,8 +916,8 @@ class TestComponentFixesMigration(TestMigrations):
 
 class DatetimeAllowInvalidInputTests(TestMigrations):
     app = "forms"
-    migrate_from = "0103_fix_component_problems"
-    migrate_to = "0104_allow_invalid_input_datetime"
+    migrate_from = "0046_squashed_to_openforms_v230"
+    migrate_to = "0091_v230_to_v250"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")

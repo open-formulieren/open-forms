@@ -85,7 +85,7 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
 
     def _get_vcr_kwargs(self):
         kwargs = super()._get_vcr_kwargs()
-        kwargs["filter_headers"] = "x-api-key"
+        kwargs["filter_headers"] = ["x-api-key"]
         return kwargs
 
     def assertPrefillVariableValues(self, value: JSONValue) -> None:
@@ -104,18 +104,16 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
         return_value=HaalCentraalConfigFactory.build(
             default_brp_personen_purpose_limitation_header_value="BRPACT-AanschrijvenZakelijkGerechtigde",
-            default_brp_personen_processing_header_value="Financiële administratie@Correspondentie factuur",
+            default_brp_personen_processing_header_value="Financiele administratie@Correspondentie factuur",
         ),
     )
     def test_brp_integration_prefill_default_headers(self, m: MagicMock) -> None:
+        service = m.return_value.brp_personen_service
         # certificate instances need to be saved so that they get a correct path
         # (see https://forum.djangoproject.com/t/7533/)
-        if (
-            m.return_value.brp_personen_service.client_certificate
-            and m.return_value.brp_personen_service.server_certificate
-        ):
-            m.return_value.brp_personen_service.client_certificate.save()
-            m.return_value.brp_personen_service.server_certificate.save()
+        if service.client_certificate and service.server_certificate:
+            service.client_certificate.save()
+            service.server_certificate.save()
 
         prefill_variables(submission=self.submission)
         state = self.submission.load_submission_value_variables_state()
@@ -130,19 +128,17 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
         ),
     )
     def test_brp_integration_prefill(self, m: MagicMock) -> None:
+        service = m.return_value.brp_personen_service
         # certificate instances need to be saved so that they get a correct path
         # (see https://forum.djangoproject.com/t/7533/)
-        if (
-            m.return_value.brp_personen_service.client_certificate
-            and m.return_value.brp_personen_service.server_certificate
-        ):
-            m.return_value.brp_personen_service.client_certificate.save()
-            m.return_value.brp_personen_service.server_certificate.save()
+        if service.client_certificate and service.server_certificate:
+            service.client_certificate.save()
+            service.server_certificate.save()
 
         BRPPersonenRequestOptions.objects.create(
             form=self.submission.form,
             brp_personen_purpose_limitation_header_value="BRPACT-AanschrijvenZakelijkGerechtigde",
-            brp_personen_processing_header_value="Financiële administratie@Correspondentie factuur",
+            brp_personen_processing_header_value="Financiele administratie@Correspondentie factuur",
         )
 
         prefill_variables(submission=self.submission)
