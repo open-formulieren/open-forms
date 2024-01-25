@@ -8,8 +8,10 @@
       {% trans "Products" %}
     </div>
     <div class="submission-step-row__value">
-      {% for product in appointment.products %} {{ product.name }}{% if product.amount > 1 %} (x{{
-      product.amount }}){% endif %}{% if not forloop.last %}<br />{% endif %} {% endfor %}
+      {% for product in appointment.products %}
+        {{ product.name }}{% if product.amount > 1 %} (x{{product.amount }}){% endif %}
+        {% if not forloop.last %}<br />{% endif %}
+      {% endfor %}
     </div>
   </div>
   <div class="submission-step-row">
@@ -17,9 +19,9 @@
       {% trans "Location" %}
     </div>
     <div class="submission-step-row__value">
-      {{ appointment.location.name }} {% if appointment.location.address %}<br />{{
-      appointment.location.address }}{% endif %} {% if appointment.location.city %}<br />{{
-      appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
+      {{ appointment.location.name }}
+      {% if appointment.location.address %}<br />{{ appointment.location.address }}{% endif %}
+      {% if appointment.location.city %}<br />{{ appointment.location.postalcode }} {{ appointment.location.city }}{% endif %}
     </div>
   </div>
   <div class="submission-step-row">
