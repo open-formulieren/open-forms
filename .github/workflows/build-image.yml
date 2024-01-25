@@ -44,7 +44,7 @@ jobs:
       artifact_name: ${{ steps.build-args.outputs.artifact_name }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Extract build args
         id: build-args
@@ -85,7 +85,7 @@ jobs:
         run: docker image save -o image.tar ${{ steps.build-args.outputs.image_name }}
 
       - name: Store image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build-args.outputs.artifact_name }}
           path: image.tar
