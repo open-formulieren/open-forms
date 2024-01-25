@@ -198,7 +198,7 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
 
         self.assertEqual(200, submission_response.status_code)
 
-        error_node = submission_response.html.find("div", class_="openforms-message")
+        error_node = submission_response.html.find("div", class_="error")
         self.assertEqual(
             "Could not find a submission corresponding to this code that requires co-signing",
             error_node.text.strip(),
@@ -244,7 +244,7 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
 
         self.assertEqual(200, submission_response.status_code)
 
-        error_node = submission_response.html.find("div", class_="openforms-message")
+        error_node = submission_response.html.find("div", class_="error")
         expected_message = _(
             "Could not find a submission corresponding to this code that requires co-signing"
         )
