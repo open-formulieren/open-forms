@@ -46,7 +46,8 @@ The new form builder looks visually (mostly) the same, but the interface is a bi
 and much more accessible. Most importantly for us, it's now easier to change and extend
 functionalities.
 
-We have not fully replaced all aspects yet, the remainer will come in the future.
+There are some further implementation details that have not been fully replaced yet,
+but those do not affect the available functionality. We'll keep improving on this topic!
 
 **🌐 Translation improvements**
 
