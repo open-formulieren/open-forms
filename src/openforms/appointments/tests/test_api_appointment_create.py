@@ -188,6 +188,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             "contactDetails": {
                 "lastName": "Periwinkle",
                 "firstName": "Caro",
+                "email": "user@example.com",
             },
         }
         response = self.client.post(ENDPOINT, updated_data)
@@ -200,6 +201,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             {
                 "lastName": "Periwinkle",
                 "firstName": "Caro",
+                "email": "user@example.com",
             },
         )
 
