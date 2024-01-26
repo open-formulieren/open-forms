@@ -49,7 +49,7 @@ billiard==3.6.4.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-black==22.12.0
+black==24.1.1
     # via -r requirements/test-tools.in
 bleach[css]==5.0.1
     # via
@@ -622,6 +622,7 @@ packaging==23.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   black
     #   prance
     #   pytest
     #   sphinx
@@ -952,6 +953,7 @@ typing-extensions==4.9.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   black
     #   pyee
 tzdata==2023.3
     # via
