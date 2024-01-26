@@ -293,6 +293,12 @@ class TestSubmissionAdmin(WebTest):
 
         self.assertEqual(200, response.status_code)
 
+    def test_change_view(self):
+        change_url = reverse(
+            "admin:submissions_submission_change", kwargs={"object_id": "0"}
+        )
+        self.app.get(change_url, user=self.user, status=404)
+
 
 @disable_2fa
 class LogicLogsAdminTests(WebTest):
