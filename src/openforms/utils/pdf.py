@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class UrlFetcher:
-
     """
     URL fetcher that skips the network for /static/* files.
     """

@@ -3,6 +3,7 @@ Warning!
 
 Any template tag added to this file will automatically be added to the 'sandboxed' Django templates backend.
 """
+
 from django import template
 
 register = template.Library()

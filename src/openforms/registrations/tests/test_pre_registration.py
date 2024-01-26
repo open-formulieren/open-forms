@@ -106,12 +106,15 @@ class PreRegistrationTests(TestCase):
 
         self.assertEqual(submission.public_registration_reference, "")
 
-        with patch(
-            "openforms.submissions.public_references.generate_unique_submission_reference",
-            return_value="OF-test-registration-failure",
-        ), patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
-            side_effect=Exception("I FAILED :("),
+        with (
+            patch(
+                "openforms.submissions.public_references.generate_unique_submission_reference",
+                return_value="OF-test-registration-failure",
+            ),
+            patch(
+                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+                side_effect=Exception("I FAILED :("),
+            ),
         ):
             pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
@@ -223,12 +226,15 @@ class PreRegistrationTests(TestCase):
             completed_not_preregistered=True,
         )
 
-        with patch(
-            "openforms.submissions.public_references.generate_unique_submission_reference",
-            return_value="OF-IM-TEMPORARY",
-        ), patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
-            side_effect=Exception,
+        with (
+            patch(
+                "openforms.submissions.public_references.generate_unique_submission_reference",
+                return_value="OF-IM-TEMPORARY",
+            ),
+            patch(
+                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+                side_effect=Exception,
+            ),
         ):
             pre_registration(submission.id, PostSubmissionEvents.on_completion)
 

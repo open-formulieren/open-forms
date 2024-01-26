@@ -4,6 +4,7 @@ Test the render component node implementations for the built-in Formio component
 These can be considered integration tests for the Formio aspect, relying on the out
 of the box configuration in Open Forms through the registry.
 """
+
 from django.test import TestCase, override_settings
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory

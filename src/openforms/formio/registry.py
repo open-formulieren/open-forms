@@ -11,6 +11,7 @@ This allows us to treat all aspects of every component type together rather than
 smeared out across the codebase in similar but different implementations, while making
 the public API better defined and smaller.
 """
+
 from typing import TYPE_CHECKING, Any, Generic, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
@@ -28,21 +29,17 @@ if TYPE_CHECKING:
 
 
 class FormatterProtocol(Protocol):
-    def __init__(self, as_html: bool):
-        ...
+    def __init__(self, as_html: bool): ...
 
-    def __call__(self, component: Component, value: Any) -> str:
-        ...
+    def __call__(self, component: Component, value: Any) -> str: ...
 
 
 class NormalizerProtocol(Protocol):
-    def __call__(self, component: Component, value: Any) -> Any:
-        ...
+    def __call__(self, component: Component, value: Any) -> Any: ...
 
 
 class RewriterForRequestProtocol(Protocol):
-    def __call__(self, component: Component, request: Request) -> None:
-        ...
+    def __call__(self, component: Component, request: Request) -> None: ...
 
 
 T = TypeVar("T", bound=Component)
@@ -77,8 +74,7 @@ class BasePlugin(Generic[T], AbstractBasePlugin):
 
     def mutate_config_dynamically(
         self, component: T, submission: "Submission", data: DataMapping
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def localize(self, component: T, language_code: str, enabled: bool):
         pass  # noop by default, specific component types can extend the base behaviour

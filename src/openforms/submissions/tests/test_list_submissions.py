@@ -6,6 +6,7 @@ devices.
 In the future, it could be possible to retrieve submissions as well based on BSN after
 DigiD login (or comparable).
 """
+
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase

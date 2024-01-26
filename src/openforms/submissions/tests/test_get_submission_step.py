@@ -8,6 +8,7 @@ submission to be able to be transformed into vanilla Formio definitions.
 The tests in this module validate that we can retrieve the submission-context
 aware step definition.
 """
+
 import uuid
 from unittest.mock import patch
 

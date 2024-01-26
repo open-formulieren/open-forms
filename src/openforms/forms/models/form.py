@@ -376,9 +376,11 @@ class Form(models.Model):
     def get_registration_backend_display(self) -> str:
         return (
             ", ".join(
-                backend.name
-                if backend.backend in registration_register
-                else _("{backend} (invalid)").format(backend=backend.name)
+                (
+                    backend.name
+                    if backend.backend in registration_register
+                    else _("{backend} (invalid)").format(backend=backend.name)
+                )
                 for backend in self.registration_backends.all()
             )
             or "-"

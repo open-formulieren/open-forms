@@ -1,6 +1,7 @@
 """
 Test the submission reference extraction behaviour, independent from the plugin.
 """
+
 from django.test import TestCase
 
 from rest_framework import serializers

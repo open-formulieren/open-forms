@@ -246,7 +246,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 )
             )
 
-        with (self.subTest("Invalid date"), LogCapture() as log_capture):
+        with self.subTest("Invalid date"), LogCapture() as log_capture:
             self.client.post(endpoint, data={"data": {"date": "2020-13-46"}})
 
             log_capture.check_present(
@@ -262,7 +262,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 ),
             )
 
-        with (self.subTest("Invalid datetime"), LogCapture() as log_capture):
+        with self.subTest("Invalid datetime"), LogCapture() as log_capture:
             self.client.post(
                 endpoint, data={"data": {"datetime": "2022-13-46T00:00:00+02:00"}}
             )

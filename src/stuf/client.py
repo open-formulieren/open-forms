@@ -11,6 +11,7 @@ The base class here provides the shared mechanisms for StUF v3 that are domain-a
 Whenever you are implementing a particular StUF integration, you are expected to
 subclass the base class and implement your domain specific logic in your own class.
 """
+
 import logging
 import uuid
 from typing import Any, Literal, Protocol
@@ -30,8 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 class LoggingHook(Protocol):
-    def __call__(self, url: str) -> None:
-        ...
+    def __call__(self, url: str) -> None: ...
 
 
 def noop_log(*args, **kwargs) -> None:

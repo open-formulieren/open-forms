@@ -4,6 +4,7 @@ XML parsing with DTD/Entities blocking.
 Inspired by https://github.com/mvantellingen/python-zeep/pull/1179/ as their solution
 for the deprecated defusedxml.lxml module and the defaults applied in defusedxml.lxml.
 """
+
 from lxml.etree import XMLParser, fromstring as _fromstring
 
 

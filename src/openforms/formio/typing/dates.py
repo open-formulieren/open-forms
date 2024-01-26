@@ -1,6 +1,7 @@
 """
 Types for our date/datetime validation extension.
 """
+
 from typing import Literal, TypedDict
 
 

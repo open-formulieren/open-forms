@@ -4,6 +4,7 @@ Management command to simulate the submission renderer outputting to a particula
 On top of that, it is also a realistic example of using the high-level Python API for
 the renderer to output reports.
 """
+
 import inspect
 
 from django.core.management import BaseCommand

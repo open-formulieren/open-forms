@@ -15,6 +15,7 @@ schema. The exact set of supported fields for translation varies per component, 
 reference for this is the typescript type definitions:
 https://open-formulieren.github.io/types/modules/index.html
 """
+
 import logging
 from typing import TypedDict
 

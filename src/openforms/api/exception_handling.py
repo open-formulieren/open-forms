@@ -76,9 +76,11 @@ def get_validation_errors(validation_errors: dict | list, camelize=True):
                                 # ('type', 'about:blank'),
                                 (
                                     "name",
-                                    underscore_to_camel(field_name)
-                                    if camelize
-                                    else field_name,
+                                    (
+                                        underscore_to_camel(field_name)
+                                        if camelize
+                                        else field_name
+                                    ),
                                 ),
                                 ("code", err.code),
                                 ("reason", str(err)),
@@ -91,9 +93,11 @@ def get_validation_errors(validation_errors: dict | list, camelize=True):
                             # ('type', 'about:blank'),
                             (
                                 "name",
-                                underscore_to_camel(field_name)
-                                if camelize
-                                else field_name,
+                                (
+                                    underscore_to_camel(field_name)
+                                    if camelize
+                                    else field_name
+                                ),
                             ),
                             ("code", error.code),
                             ("reason", str(error)),

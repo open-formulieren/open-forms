@@ -37,8 +37,8 @@ def appointment_information(context):
             as_html=not as_text,
         ),
         "appointment_cancel_link": plugin.get_cancel_link(context["_submission"]),
-        "appointment_change_link": plugin.get_change_link(context["_submission"])
-        if not appointment
-        else "",
+        "appointment_change_link": (
+            plugin.get_change_link(context["_submission"]) if not appointment else ""
+        ),
     }
     return render_to_string(template_name, tag_context)

@@ -413,9 +413,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         fields = super().get_fields()
         # lazy set choices
         if "authentication_backends" in fields:
-            fields[
-                "authentication_backends"
-            ].child.choices = auth_register.get_choices()
+            fields["authentication_backends"].child.choices = (
+                auth_register.get_choices()
+            )
         if "payment_backend" in fields:
             fields["payment_backend"].choices = [
                 ("", "")

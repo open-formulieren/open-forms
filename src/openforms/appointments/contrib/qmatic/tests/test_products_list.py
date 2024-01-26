@@ -1,6 +1,7 @@
 """
 Tests for retrieving available products from Qmatic through our own API.
 """
+
 from django.test import TestCase
 
 from openforms.utils.tests.vcr import OFVCRMixin

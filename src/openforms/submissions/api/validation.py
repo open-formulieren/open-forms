@@ -4,6 +4,7 @@ Perform submission-level validation.
 TODO: refactor/rework the entire way we _run_ the validations and communicate them back
 to the frontend.
 """
+
 from django.core.validators import MaxLengthValidator
 from django.utils.translation import gettext_lazy as _
 

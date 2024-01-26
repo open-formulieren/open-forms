@@ -1,6 +1,7 @@
 """
 Utility classes for the submission report rendering.
 """
+
 import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING

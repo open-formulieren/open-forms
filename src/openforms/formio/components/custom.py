@@ -111,8 +111,7 @@ class FamilyMembersHandler(Protocol):
         include_children: bool,
         include_partner: bool,
         submission: Submission | None = ...,
-    ) -> list[tuple[str, str]]:
-        ...
+    ) -> list[tuple[str, str]]: ...
 
 
 @register("npFamilyMembers")

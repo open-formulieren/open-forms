@@ -31,11 +31,9 @@ def _subset_match(requested: str | None, checking: str) -> bool:
 class ConfigCheckable(Protocol):
     verbose_name: str
 
-    def check_config(self) -> None:
-        ...
+    def check_config(self) -> None: ...
 
-    def get_config_actions(self) -> list[Action]:
-        ...
+    def get_config_actions(self) -> list[Action]: ...
 
 
 def is_plugin(plugin: Any) -> TypeGuard[AbstractBasePlugin]:

@@ -27,9 +27,9 @@ class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
                 if not (translated_content := translations.get("content")):
                     continue
 
-                data["translations"][language_code][
-                    "content"
-                ] = self._add_cosign_templatetag(translated_content)
+                data["translations"][language_code]["content"] = (
+                    self._add_cosign_templatetag(translated_content)
+                )
 
         return super().to_internal_value(data)
 

@@ -4,6 +4,7 @@ makes resuming possible across devices (if you have a "magic link").
 
 This information drives the frontend/navigation.
 """
+
 from decimal import Decimal
 
 from django.test import tag

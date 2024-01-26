@@ -5,6 +5,7 @@ When a submission ("session") is started, the data for a single form step must b
 submitted to a submission step. Existing data can be overwritten and new data is created
 by using HTTP PUT.
 """
+
 from unittest.mock import patch
 
 from freezegun import freeze_time

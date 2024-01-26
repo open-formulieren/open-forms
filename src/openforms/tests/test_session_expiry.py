@@ -4,6 +4,7 @@ Assert that the session expiry works as intended.
 Administrators can configure the maximum session duration. The intent is that the
 session expires if there's no activity within that timespan.
 """
+
 from copy import deepcopy
 from datetime import datetime
 from unittest.mock import patch

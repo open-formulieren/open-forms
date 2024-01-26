@@ -5,6 +5,7 @@ The variable schema is both a schema and an instance of the schema. Submission d
 is injected and evaluated using json-logic expressions, while the remainder of the
 data may be static/hardcoded.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,7 +14,9 @@ from typing import Any, TypeAlias, TypedDict
 from django_camunda.types import JSONObject, JSONValue
 from json_logic import jsonLogic
 
-AnyVariable: TypeAlias = "ComponentVariable | StringVariable | NumberVariable | BooleanVariable | NullVariable | ObjectVariable | ArrayVariable"
+AnyVariable: TypeAlias = (
+    "ComponentVariable | StringVariable | NumberVariable | BooleanVariable | NullVariable | ObjectVariable | ArrayVariable"
+)
 
 
 class VarLogicExpression(TypedDict):

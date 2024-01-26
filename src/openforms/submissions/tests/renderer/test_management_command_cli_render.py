@@ -1,6 +1,7 @@
 """
 Integration test for a full render management command.
 """
+
 from io import StringIO
 
 from django.core.management import call_command

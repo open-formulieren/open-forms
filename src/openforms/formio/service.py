@@ -8,6 +8,7 @@ apps/packages:
 * Keep it small! The actual implementation should be done in specialized subpackages or
   submodules and only their 'public' API should be imported and used.
 """
+
 from typing import Any, Callable
 
 import elasticapm

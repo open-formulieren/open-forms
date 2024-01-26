@@ -6,6 +6,7 @@ based on their identifier to get a representation of the co-signer for the UI. T
 done by amending the co-sign data on a submission when the co-sign auth event is
 received, see the :mod:`signals` module.
 """
+
 import logging
 
 from openforms.authentication.constants import AuthAttribute

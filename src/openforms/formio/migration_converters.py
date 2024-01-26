@@ -4,6 +4,7 @@ Expose a centralized registry of migration converters.
 This registry is used by the data migrations *and* form import. It guarantees that
 component definitions are rewritten to be compatible with the current code.
 """
+
 from typing import Protocol, cast
 
 from glom import assign, glom

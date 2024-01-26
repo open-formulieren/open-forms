@@ -117,7 +117,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             "openforms.registrations.contrib.zgw_apis.client.ZakenClient.set_payment_status",
             side_effect=Exception("Something went wrong"),
         )
-        with (patcher as mock_set_payment_status, self.assertRaises(Exception)):
+        with patcher as mock_set_payment_status, self.assertRaises(Exception):
             on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
@@ -162,8 +162,9 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             side_effect=RegistrationFailed("still failing"),
         )
 
-        with registration_patcher as mock_register, self.assertRaises(
-            RegistrationFailed
+        with (
+            registration_patcher as mock_register,
+            self.assertRaises(RegistrationFailed),
         ):
             on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
 

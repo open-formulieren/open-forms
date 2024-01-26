@@ -1,6 +1,7 @@
 """
 Test that the demo plugin can be used to simulate endpoint responses.
 """
+
 from datetime import date
 from unittest.mock import patch
 

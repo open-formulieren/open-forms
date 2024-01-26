@@ -3,6 +3,7 @@ Production environment settings module.
 Tweaks the base settings so that caching mechanisms are used where possible,
 and HTTPS is leveraged where possible to further secure things.
 """
+
 import os
 
 os.environ.setdefault("ENVIRONMENT", "production")

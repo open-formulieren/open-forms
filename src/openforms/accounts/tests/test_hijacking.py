@@ -1,6 +1,7 @@
 """
 Assert that the hijack funtionality works even with 2FA.
 """
+
 from django.contrib.auth import SESSION_KEY
 from django.test import override_settings
 from django.urls import reverse

@@ -1,6 +1,7 @@
 """
 Implementations of description generation for a given JsonLogic operation.
 """
+
 from collections.abc import Sequence
 from functools import wraps
 from typing import TYPE_CHECKING, Protocol, cast
@@ -16,8 +17,7 @@ if TYPE_CHECKING:
 
 
 class DescriptionGeneratorProtocol(Protocol):
-    def __call__(self, operation: Operation, for_root: bool) -> str:
-        ...
+    def __call__(self, operation: Operation, for_root: bool) -> str: ...
 
 
 def _generate_description(tree: JSONLogicExpressionTree, root=False) -> str:

@@ -43,8 +43,12 @@ class ComponentNode(Node):
     depth: int = 0
     is_layout = False
     path: Path | None = None  # Path in the data (#TODO rename to data_path?)
-    json_renderer_path: Path | None = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
-    configuration_path: str = ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
+    json_renderer_path: Path | None = (
+        None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
+    )
+    configuration_path: str = (
+        ""  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
+    )
     parent_node: Node | None = None
     translate: Callable[[str], str] | None = None
 
@@ -213,9 +217,11 @@ class ComponentNode(Node):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=self.path,
-                json_renderer_path=Path(self.json_renderer_path, self.key_as_path)
-                if self.json_renderer_path
-                else Path(self.key_as_path),
+                json_renderer_path=(
+                    Path(self.json_renderer_path, self.key_as_path)
+                    if self.json_renderer_path
+                    else Path(self.key_as_path)
+                ),
                 configuration_path=configuration_path,
             )
 

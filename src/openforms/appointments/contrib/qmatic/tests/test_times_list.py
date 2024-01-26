@@ -1,6 +1,7 @@
 """
 Tests for retrieving available appointment times from Qmatic through our own API.
 """
+
 from datetime import date
 
 from django.test import TestCase

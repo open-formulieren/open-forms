@@ -1,6 +1,7 @@
 """
 VCR tests for creating an appointment with Qmatic.
 """
+
 import json
 from datetime import date
 

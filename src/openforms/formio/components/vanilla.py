@@ -4,6 +4,7 @@ Implement backend functionality for core Formio (built-in) component types.
 Custom component types (defined by us or third parties) need to be organized in the
 adjacent custom.py module.
 """
+
 from typing import TYPE_CHECKING
 
 from rest_framework.request import Request

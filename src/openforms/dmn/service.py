@@ -1,6 +1,7 @@
 """
 Public Python API for the DMN module.
 """
+
 from typing import Any
 
 from .base import BasePlugin
