@@ -1,5 +1,5 @@
 import logging
-from typing import Iterable, Optional
+from typing import Iterable
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import gettext_lazy as _
@@ -44,7 +44,7 @@ def mimetype_allowed(
 
 
 class MimeTypeValidator:
-    def __init__(self, allowed_mime_types: Optional[Iterable[str]] = None):
+    def __init__(self, allowed_mime_types: Iterable[str] | None = None):
         self.any_allowed = allowed_mime_types is None
 
         allowed_mime_types = allowed_mime_types or []

@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from django.utils.translation import gettext_lazy as _
 
@@ -19,9 +21,7 @@ class Auth(BaseStaticVariable):
     name = _("Authentication")
     data_type = FormVariableDataTypes.object
 
-    def get_initial_value(
-        self, submission: Optional["Submission"]
-    ) -> Optional["FormAuth"]:
+    def get_initial_value(self, submission: Submission | None) -> FormAuth | None:
         if not submission or not submission.is_authenticated:
             return None
 
@@ -38,7 +38,7 @@ class Auth(BaseStaticVariable):
         return auth_data
 
 
-def get_auth_value(submission: Optional["Submission"], attribute: str) -> str:
+def get_auth_value(submission: Submission | None, attribute: str) -> str:
     if not submission or not submission.is_authenticated:
         return ""
 
@@ -54,7 +54,7 @@ class AuthBSN(BaseStaticVariable):
     data_type = FormVariableDataTypes.string
 
     @staticmethod
-    def get_initial_value(submission: Optional["Submission"]) -> str:
+    def get_initial_value(submission: Submission | None) -> str:
         return get_auth_value(submission, AuthAttribute.bsn)
 
 
@@ -64,7 +64,7 @@ class AuthKvK(BaseStaticVariable):
     data_type = FormVariableDataTypes.string
 
     @staticmethod
-    def get_initial_value(submission: Optional["Submission"]) -> str:
+    def get_initial_value(submission: Submission | None) -> str:
         return get_auth_value(submission, AuthAttribute.kvk)
 
 
@@ -74,5 +74,5 @@ class AuthPseudo(BaseStaticVariable):
     data_type = FormVariableDataTypes.string
 
     @staticmethod
-    def get_initial_value(submission: Optional["Submission"]) -> str:
+    def get_initial_value(submission: Submission | None) -> str:
         return get_auth_value(submission, AuthAttribute.pseudo)

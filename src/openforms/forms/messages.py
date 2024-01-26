@@ -1,4 +1,3 @@
-from typing import Union
 from urllib.parse import quote as urlquote
 
 from django.contrib import messages
@@ -56,7 +55,7 @@ MESSAGE_TEMPLATES = {
 
 
 def add_success_message(
-    request: Union[HttpRequest, Request],
+    request: HttpRequest | Request,
     instance: models.Model,
     submit_action: str,
     is_new: bool,

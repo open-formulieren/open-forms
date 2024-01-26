@@ -1,7 +1,6 @@
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Optional
 
 from django.conf import settings
 from django.db import transaction
@@ -348,7 +347,7 @@ class SubmissionStateLogicSerializer(serializers.Serializer):
 @dataclass
 class SubmissionStateLogic:
     submission: Submission
-    step: Optional[SubmissionStep] = None
+    step: SubmissionStep | None = None
 
 
 class SubmissionCompletionSerializer(serializers.Serializer):

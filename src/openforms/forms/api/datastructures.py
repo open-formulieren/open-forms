@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from django.utils.functional import cached_property
 
@@ -14,7 +13,7 @@ class FormVariableWrapper:
     def variables(self) -> dict[str, FormVariable]:
         return {variable.key: variable for variable in self.form.formvariable_set.all()}
 
-    def get(self, key: str, default=None) -> Optional[FormVariable]:
+    def get(self, key: str, default=None) -> FormVariable | None:
         return self.variables.get(key, default)
 
     def __contains__(self, key: str) -> bool:

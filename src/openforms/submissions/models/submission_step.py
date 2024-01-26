@@ -1,6 +1,5 @@
 import uuid
 from copy import deepcopy
-from typing import Optional
 
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
@@ -221,7 +220,7 @@ class SubmissionStep(models.Model):
         return step_data
 
     @data.setter
-    def data(self, data: Optional[dict]) -> None:
+    def data(self, data: dict | None) -> None:
         if isinstance(data, DirtyData):
             self._unsaved_data = data
         else:

@@ -1,10 +1,8 @@
-from typing import Union
-
 from django import template
 
-register = template.Library()
+from openforms.typing import JSONPrimitive
 
-JSONPrimitive = Union[str, int, float, None]
+register = template.Library()
 
 
 class InvalidInput(Exception):

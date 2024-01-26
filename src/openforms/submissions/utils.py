@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Union
+from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
@@ -205,7 +205,7 @@ def persist_user_defined_variables(
 
 
 def check_form_status(
-    request: Union[HttpRequest, Request],
+    request: HttpRequest | Request,
     form: Form,
     include_safe_methods: bool = False,
 ) -> None:

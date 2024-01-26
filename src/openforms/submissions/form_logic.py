@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.utils.functional import empty
 
@@ -211,7 +211,7 @@ def evaluate_form_logic(
 
 
 def check_submission_logic(
-    submission: "Submission", unsaved_data: Optional[dict] = None
+    submission: "Submission", unsaved_data: dict | None = None
 ) -> None:
     if getattr(submission, "_form_logic_evaluated", False):
         return

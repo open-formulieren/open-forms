@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Any, Callable, Mapping, Optional, TypeAlias, Union
+from typing import Any, Callable, Mapping, TypeAlias
 
 from glom import Assign, glom
 
@@ -15,7 +15,7 @@ class FieldConf:
     attribute: str = ""
 
     # transform value (eg: dates/times etc)
-    transform: Optional[Callable[[Any], Any]] = None
+    transform: Callable[[Any], Any] | None = None
 
     # support attributes from form
     form_field: str = ""
@@ -34,7 +34,7 @@ class FieldConf:
         assert self.attribute or self.form_field or self.submission_auth_info_attribute
 
 
-MappingConfig: TypeAlias = Mapping[str, Union[str, FieldConf]]
+MappingConfig: TypeAlias = Mapping[str, str | FieldConf]
 
 
 def apply_data_mapping(
@@ -131,7 +131,7 @@ def apply_data_mapping(
 
 def get_unmapped_data(
     submission,
-    mapping_config: Mapping[str, Union[str, FieldConf]],
+    mapping_config: Mapping[str, str | FieldConf],
     component_attribute: str,
 ):
     """

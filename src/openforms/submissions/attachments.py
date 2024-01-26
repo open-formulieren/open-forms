@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Iterable, Iterator, Optional
+from typing import Iterable, Iterator
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -45,7 +45,7 @@ DEFAULT_IMAGE_MAX_SIZE = (10000, 10000)
 file_size_cast = Filesize(system=Filesize.S_BINARY)
 
 
-def temporary_upload_uuid_from_url(url: str) -> Optional[str]:
+def temporary_upload_uuid_from_url(url: str) -> str | None:
     try:
         match = resolve(urlparse(url)[2])
     except Resolver404:
@@ -57,7 +57,7 @@ def temporary_upload_uuid_from_url(url: str) -> Optional[str]:
             return None
 
 
-def temporary_upload_from_url(url: str) -> Optional[TemporaryFileUpload]:
+def temporary_upload_from_url(url: str) -> TemporaryFileUpload | None:
     uuid = temporary_upload_uuid_from_url(url)
     if not uuid:
         return None
@@ -130,7 +130,7 @@ def iter_step_uploads(
             )
 
 
-def validate_uploads(submission_step: SubmissionStep, data: Optional[dict]) -> None:
+def validate_uploads(submission_step: SubmissionStep, data: dict | None) -> None:
     """
     Validate the file uploads in the submission step data.
 

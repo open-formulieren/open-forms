@@ -5,8 +5,10 @@ The renderer is the public interface to rendering submissions in particular rend
 modes. It is aware of the intrinsic tree-like structure of a submission and associated
 printable data.
 """
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Iterator, Union
+from typing import Iterator
 
 from openforms.forms.models import Form
 from openforms.variables.rendering.nodes import VariablesNode
@@ -62,7 +64,7 @@ class Renderer:
         else:
             return True
 
-    def get_children(self) -> Iterator[Union["SubmissionStepNode", "VariablesNode"]]:
+    def get_children(self) -> Iterator[SubmissionStepNode | VariablesNode]:
         """
         Produce only the direct child nodes.
         """
@@ -96,7 +98,7 @@ class Renderer:
         variables_node = VariablesNode(renderer=self, submission=self.submission)
         yield variables_node
 
-    def __iter__(self) -> Iterator["Node"]:
+    def __iter__(self) -> Iterator[Node]:
         """
         Yield the nodes to visualize a complete submission.
         """

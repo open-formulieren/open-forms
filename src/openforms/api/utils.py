@@ -1,5 +1,5 @@
 import re
-from typing import Any, Union
+from typing import Any
 
 from django.db import models
 
@@ -12,7 +12,7 @@ from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.views import APIView
 
 
-def underscore_to_camel(input_: Union[str, int]) -> str:
+def underscore_to_camel(input_: str | int) -> str:
     """
     Convert a string from under_score to camelCase.
     """

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional
 
 from openforms.forms.models import FormVariable
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -14,10 +13,10 @@ class BaseStaticVariable(ABC, AbstractBasePlugin):
     data_type: str = field(init=False)
 
     @abstractmethod
-    def get_initial_value(self, submission: Optional[Submission] = None):
+    def get_initial_value(self, submission: Submission | None = None):
         raise NotImplementedError()
 
-    def get_static_variable(self, submission: Optional[Submission] = None):
+    def get_static_variable(self, submission: Submission | None = None):
         return FormVariable(
             name=self.name,
             key=self.identifier,

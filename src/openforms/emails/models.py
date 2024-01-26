@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -9,7 +7,7 @@ from openforms.template.validators import DjangoTemplateValidator
 
 
 class ConfirmationEmailTemplateManager(models.Manager):
-    def set_for_form(self, form: Form, data: Optional[dict]):
+    def set_for_form(self, form: Form, data: dict | None):
         # if there's *no* template data, make sure that we do indeed wipe the fields,
         # making the template not usable
         if not data:

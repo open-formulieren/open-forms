@@ -1,7 +1,7 @@
 import re
 from collections import UserDict
 from collections.abc import Hashable
-from typing import Iterator, Optional, cast
+from typing import Iterator, cast
 
 from glom import PathAccessError, assign, glom
 
@@ -25,7 +25,7 @@ class FormioConfigurationWrapper:
 
     _configuration: JSONObject
     # depth-first ordered of all components in the formio configuration tree
-    _cached_component_map: Optional[dict[str, Component]] = None
+    _cached_component_map: dict[str, Component] | None = None
     _flattened_by_path: None | dict[str, Component] = None
     _reverse_flattened: None | dict[str, str] = None
 

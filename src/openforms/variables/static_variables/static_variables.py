@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -16,7 +14,7 @@ class Now(BaseStaticVariable):
     name = _("Now")
     data_type = FormVariableDataTypes.datetime
 
-    def get_initial_value(self, submission: Optional[Submission] = None):
+    def get_initial_value(self, submission: Submission | None = None):
         return timezone.now()
 
 
@@ -25,7 +23,7 @@ class Today(BaseStaticVariable):
     name = _("Today")
     data_type = FormVariableDataTypes.date
 
-    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> str:
         now_utc = timezone.now()
         return timezone.localtime(now_utc).date()
 
@@ -35,7 +33,7 @@ class CurrentYear(BaseStaticVariable):
     name = _("Current year")
     data_type = FormVariableDataTypes.int
 
-    def get_initial_value(self, submission: Optional[Submission] = None) -> int:
+    def get_initial_value(self, submission: Submission | None = None) -> int:
         now_utc = timezone.now()
         return timezone.localtime(now_utc).year
 
@@ -45,7 +43,7 @@ class Environment(BaseStaticVariable):
     name = _("Environment")
     data_type = FormVariableDataTypes.string
 
-    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> str:
         return str(settings.ENVIRONMENT)
 
 
@@ -54,7 +52,7 @@ class FormName(BaseStaticVariable):
     name = _("Form name")
     data_type = FormVariableDataTypes.string
 
-    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> str:
         return submission.form.name if submission else ""
 
 
@@ -63,5 +61,5 @@ class FormID(BaseStaticVariable):
     name = _("Form ID")
     data_type = FormVariableDataTypes.string
 
-    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> str:
         return str(submission.form.uuid) if submission else ""

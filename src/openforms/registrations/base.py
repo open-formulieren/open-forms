@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from rest_framework import serializers
 
@@ -35,7 +35,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
     @abstractmethod
     def register_submission(
         self, submission: "Submission", options: dict
-    ) -> Optional[dict]:
+    ) -> dict | None:
         raise NotImplementedError()
 
     @abstractmethod

@@ -1,7 +1,6 @@
 from base64 import b64encode
 from hashlib import sha1
 from pathlib import Path
-from typing import Optional
 
 from digid_eherkenning.models import EherkenningConfiguration
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
@@ -18,7 +17,7 @@ def create_test_artifact(service_entity_id: str = "") -> str:
     return b64encoded.decode("ascii")
 
 
-def get_artifact_response(filepath: str, context: Optional[dict] = None) -> bytes:
+def get_artifact_response(filepath: str, context: dict | None = None) -> bytes:
     template_source = Path(filepath).read_text()
     return render_from_string(template_source, context or {}).encode("utf-8")
 

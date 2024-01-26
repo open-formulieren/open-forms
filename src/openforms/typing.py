@@ -1,7 +1,7 @@
 import datetime
 import decimal
 import uuid
-from typing import Any, NewType, Protocol, Union
+from typing import Any, NewType, Protocol, TypeAlias
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
@@ -9,15 +9,15 @@ from django.utils.functional import Promise
 
 from rest_framework.request import Request
 
-JSONPrimitive = Union[str, int, None, float, bool]
+JSONPrimitive: TypeAlias = str | int | float | bool | None
 
-JSONValue = Union[JSONPrimitive, "JSONObject", list["JSONValue"]]
+JSONValue: TypeAlias = "JSONPrimitive | JSONObject | list[JSONValue]"
 
-JSONObject = dict[str, JSONValue]
+JSONObject: TypeAlias = dict[str, JSONValue]
 
-DataMapping = dict[str, Any]  # key: value pair
+DataMapping: TypeAlias = dict[str, Any]  # key: value pair
 
-AnyRequest = Union[HttpRequest, Request]
+AnyRequest: TypeAlias = HttpRequest | Request
 
 RegistrationBackendKey = NewType("RegistrationBackendKey", str)
 
@@ -28,16 +28,7 @@ class RequestHandler(Protocol):
 
 
 # Types that `django.core.serializers.json.DjangoJSONEncoder` can handle
-DjangoJSONEncodable = Union[
-    JSONValue,
-    datetime.datetime,
-    datetime.date,
-    datetime.time,
-    datetime.timedelta,
-    decimal.Decimal,
-    uuid.UUID,
-    Promise,
-]
+DjangoJSONEncodable: TypeAlias = "JSONValue | datetime.datetime | datetime.date | datetime.time | datetime.timedelta | decimal.Decimal | uuid.UUID | Promise"
 
 
 class JSONSerializable(Protocol):
@@ -45,4 +36,4 @@ class JSONSerializable(Protocol):
         ...
 
 
-JSONEncodable = DjangoJSONEncodable | JSONSerializable
+JSONEncodable: TypeAlias = "DjangoJSONEncodable | JSONSerializable"

@@ -1,6 +1,6 @@
 import operator
 from datetime import date, datetime, time
-from typing import Any, Optional, TypedDict, cast
+from typing import Any, TypedDict, cast
 
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -18,8 +18,8 @@ NOW_VARIABLE = "now"
 
 
 class DatePickerConfig(TypedDict):
-    minDate: Optional[str]
-    maxDate: Optional[str]
+    minDate: str | None
+    maxDate: str | None
 
 
 def mutate(component: DateComponent | DatetimeComponent, data: DataMapping) -> None:
@@ -111,7 +111,7 @@ def calculate_delta(
     component: DateComponent | DatetimeComponent,
     config: DateConstraintConfiguration,
     data: DataMapping,
-) -> Optional[datetime]:
+) -> datetime | None:
     assert config["mode"] == "relativeToVariable"
 
     base_value = glom(data, config["variable"], default=None)

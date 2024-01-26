@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Iterator, Union
+from typing import Callable, Iterator
 
 from django.urls import reverse
 from django.utils.html import format_html_join
@@ -166,7 +166,7 @@ class WYSIWYGNode(ComponentNode):
         return super().is_visible
 
     @property
-    def value(self) -> Union[str, SafeString]:
+    def value(self) -> str | SafeString:
         content = self.component["html"]
         if self.as_html:
             return mark_safe(content)

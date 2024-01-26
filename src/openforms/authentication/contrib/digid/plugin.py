@@ -1,4 +1,4 @@
-from typing import Any, NoReturn, Optional
+from typing import Any, NoReturn
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
@@ -103,7 +103,7 @@ class DigidAuthentication(BasePlugin):
         required = config.get("loa") or DIGID_DEFAULT_LOA
         return loa_order(authenticated_loa) >= loa_order(required)
 
-    def get_logo(self, request) -> Optional[LoginLogo]:
+    def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
     def logout(self, request: HttpRequest):

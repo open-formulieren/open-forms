@@ -1,5 +1,4 @@
 import dataclasses
-from typing import Union
 
 
 @dataclasses.dataclass()
@@ -49,7 +48,7 @@ class OgoneRequestParams:
 
     # required
     PSPID: str  # fill here your PSPID
-    ORDERID: Union[int, str]  # fill here your REF
+    ORDERID: int | str  # fill here your REF
     AMOUNT: int  # fill here your amount * 100
     CURRENCY: str = "EUR"  # fill here your currency
     LANGUAGE: str = "nl_NL"  # fill here your Client language

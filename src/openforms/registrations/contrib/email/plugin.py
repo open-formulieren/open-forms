@@ -1,6 +1,6 @@
 import html
 from mimetypes import types_map
-from typing import Any, NoReturn, Optional, TypedDict
+from typing import Any, NoReturn, TypedDict
 
 from django.conf import settings
 from django.urls import reverse
@@ -41,8 +41,8 @@ class EmailOptions(TypedDict):
     to_emails: list[str]
     attachment_formats: list[str]
     payment_emails: list[str]
-    attach_files_to_email: Optional[bool]
-    email_subject: Optional[str]
+    attach_files_to_email: bool | None
+    email_subject: str | None
 
 
 @register(PLUGIN_ID)

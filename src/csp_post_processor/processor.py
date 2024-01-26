@@ -1,6 +1,5 @@
 import hashlib
 import logging
-from typing import Union
 
 from django.http import HttpRequest
 from django.utils.safestring import SafeString, mark_safe
@@ -104,9 +103,7 @@ def get_html_id(node):
     return str(id(node))  # CPython: memory address, so should be unique enough
 
 
-def post_process_html(
-    html: str | SafeString, request: Union[HttpRequest, Request]
-) -> str:
+def post_process_html(html: str | SafeString, request: HttpRequest | Request) -> str:
     """
     Replacing inline style attributes with an inline <style> element with nonce added.
 

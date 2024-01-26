@@ -2,7 +2,6 @@ import logging
 import mimetypes
 from io import BytesIO
 from pathlib import PurePosixPath
-from typing import Optional
 from urllib.parse import ParseResult, urljoin, urlparse
 
 from django.conf import settings
@@ -80,7 +79,7 @@ class UrlFetcher:
 
     def get_match_candidate(
         self, url: ParseResult
-    ) -> Optional[tuple[ParseResult, FileSystemStorage]]:
+    ) -> tuple[ParseResult, FileSystemStorage] | None:
         for parsed_base_url, storage, is_local_storage in self.candidates:
             if not is_local_storage:
                 continue

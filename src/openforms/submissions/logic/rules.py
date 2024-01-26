@@ -1,7 +1,7 @@
 import operator
 from dataclasses import dataclass, field
 from functools import partial
-from typing import Callable, Iterable, Iterator, Optional
+from typing import Callable, Iterable, Iterator
 
 import elasticapm
 from json_logic import jsonLogic
@@ -29,7 +29,7 @@ def _include_rule(form_steps: list[FormStep], rule: FormLogic, step_index: int) 
 
 
 def get_rules_to_evaluate(
-    submission: Submission, current_step: Optional[SubmissionStep] = None
+    submission: Submission, current_step: SubmissionStep | None = None
 ) -> Iterable[FormLogic]:
     """
     Given a submission, return the logic rules ready for evaluation.
@@ -76,7 +76,7 @@ def get_rules_to_evaluate(
     ]
 
 
-def get_current_step(submission: Submission) -> Optional[SubmissionStep]:
+def get_current_step(submission: Submission) -> SubmissionStep | None:
     """
     Obtain what the 'current step' of a submission is.
 

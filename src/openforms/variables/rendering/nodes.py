@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Iterator, Union
+from typing import Any, Iterator
 
 from django.utils.translation import gettext_lazy as _
 
@@ -84,7 +84,7 @@ class SubmissionValueVariableNode(Node):
         return self.variable.form_variable.name
 
     @property
-    def display_value(self) -> Union[str, Any]:
+    def display_value(self) -> str | Any:
         # If we are going to render in different modes, we will need to add a registry of formatters
         # like for Formio ComponentNodes
         return self.variable.value

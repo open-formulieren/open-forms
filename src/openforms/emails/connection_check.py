@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Sequence
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -18,8 +18,8 @@ class MailCheckResult:
     sender: str
     success: bool
     backend: str
-    feedback: list[Union[str, LabelValue]] = dataclasses.field(default_factory=list)
-    exception: Optional[Exception] = None
+    feedback: list[str | LabelValue] = dataclasses.field(default_factory=list)
+    exception: Exception | None = None
 
     @property
     def recipients_str(self):

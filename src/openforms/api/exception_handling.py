@@ -1,7 +1,6 @@
 import logging
 import uuid
 from collections import OrderedDict
-from typing import Union
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -14,7 +13,7 @@ from .utils import underscore_to_camel
 
 logger = logging.getLogger(__name__)
 
-ErrorSerializer = Union[ExceptionSerializer, ValidationErrorSerializer]
+ErrorSerializer = ExceptionSerializer | ValidationErrorSerializer
 
 
 def _translate_exceptions(exc):
@@ -33,7 +32,7 @@ def _translate_exceptions(exc):
 # that's used to submit formio data to the backend, which contains sub-keys set by
 # end-users and can't be automatically converted. Consequently, error messages for
 # those sub-keys should not be transformed.
-def get_validation_errors(validation_errors: Union[dict, list], camelize=True):
+def get_validation_errors(validation_errors: dict | list, camelize=True):
     if isinstance(validation_errors, list):
         for i, item in enumerate(validation_errors):
             for err in get_validation_errors(item):
@@ -179,5 +178,5 @@ class HandledException:
         return f"urn:uuid:{self._exc_id}"
 
     @property
-    def invalid_params(self) -> Union[None, list]:
+    def invalid_params(self) -> None | list:
         return [error for error in get_validation_errors(self.exc.detail)]

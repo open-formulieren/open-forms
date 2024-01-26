@@ -1,4 +1,4 @@
-from typing import Any, Generator, Optional, Protocol, TypeGuard
+from typing import Any, Generator, Protocol, TypeGuard
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
@@ -22,7 +22,7 @@ from .models import GlobalConfiguration
 from .utils import verify_clamav_connection
 
 
-def _subset_match(requested: Optional[str], checking: str) -> bool:
+def _subset_match(requested: str | None, checking: str) -> bool:
     if not requested:
         return True
     return requested == checking

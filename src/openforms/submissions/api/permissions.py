@@ -1,4 +1,3 @@
-from typing import Union
 from uuid import UUID
 
 from rest_framework import permissions
@@ -17,7 +16,7 @@ from ..tokens import (
 from .validation import is_step_unexpectedly_incomplete
 
 
-def owns_submission(request: Request, submission_uuid: Union[str, UUID]) -> bool:
+def owns_submission(request: Request, submission_uuid: str | UUID) -> bool:
     # The assumption is that auth plugin requirements like LoA
     # MUST be checked upon/before adding the submission uuid to the session
     # therefore "owning a submission" means those requirements were met.

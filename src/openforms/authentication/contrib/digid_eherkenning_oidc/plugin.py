@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
@@ -56,9 +56,7 @@ class OIDCAuthentication(BasePlugin):
         redirect_url = furl(login_url).set({"next": str(return_url)})
         return HttpResponseRedirect(str(redirect_url))
 
-    def handle_co_sign(
-        self, request: HttpRequest, form: Form
-    ) -> Optional[dict[str, Any]]:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any] | None:
         if not (claim := request.session.get(self.session_key)):
             raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
         return {
@@ -121,7 +119,7 @@ class DigiDOIDCAuthentication(OIDCAuthentication):
     def get_label(self) -> str:
         return "DigiD"
 
-    def get_logo(self, request) -> Optional[LoginLogo]:
+    def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
 
@@ -137,7 +135,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication):
     def get_label(self) -> str:
         return "eHerkenning"
 
-    def get_logo(self, request) -> Optional[LoginLogo]:
+    def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
 
@@ -169,7 +167,7 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
     def get_label(self) -> str:
         return "DigiD Machtigen"
 
-    def get_logo(self, request) -> Optional[LoginLogo]:
+    def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
 
@@ -204,5 +202,5 @@ class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
     def get_label(self) -> str:
         return "eHerkenning bewindvoering"
 
-    def get_logo(self, request) -> Optional[LoginLogo]:
+    def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))

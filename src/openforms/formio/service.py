@@ -8,7 +8,7 @@ apps/packages:
 * Keep it small! The actual implementation should be done in specialized subpackages or
   submodules and only their 'public' API should be imported and used.
 """
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 import elasticapm
 from rest_framework.request import Request
@@ -77,7 +77,7 @@ def get_dynamic_configuration(
     config_wrapper: FormioConfigurationWrapper,
     request: Request,
     submission: Submission,
-    data: Optional[DataMapping] = None,
+    data: DataMapping | None = None,
 ) -> FormioConfigurationWrapper:
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.
