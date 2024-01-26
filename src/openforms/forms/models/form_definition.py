@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, List, Tuple
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _, override
 
@@ -108,9 +107,6 @@ class FormDefinition(models.Model):
 
         super().clean()
         validate_form_definition_is_reusable(self)
-
-    def get_absolute_url(self):
-        return reverse("forms:form_definition_detail", kwargs={"slug": self.slug})
 
     def _check_configuration_integrity(self):
         if settings.DEBUG:
