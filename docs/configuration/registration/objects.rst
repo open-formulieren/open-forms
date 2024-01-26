@@ -6,11 +6,34 @@ Objects API
 
 The `Objects API`_ allows us to easily store and expose various objects
 according to the related objecttype resource in the Objecttypes API. Open Forms
-supports create objects in the Objects API when used with a specific
-*objecttype*, the so-called `ProductAanvraag objecttype`_.
+supports creating objects in the Objects API, such as the `ProductAanvraag objecttype`_.
 
-Open Forms can be configured to create an object of type ``ProductAanvraag`` to
+Open Forms can be configured to create an object (of type ``ProductAanvraag``) to
 register form submissions.
+
+What does the Open Forms administator need?
+===========================================
+
+* API resource URL of object type(s) to use for registration. Open Forms does not (yet)
+  need access to the Object Types API.
+* Access the Objects API, with write permissions for the relevant object types. Open
+  Forms creates and updates records.
+* API resource URLs of document types (informatieobjecttype) in the Catalogi API -
+  attachments are created using these document types:
+
+    - PDF summary of submitted form data
+    - CSV export of submitted form data (optional)
+    - Attachments from uploads done by the end-user through ``file`` components.
+
+* Write access to the Documenten API, some attachments/files are created there and then
+  related to the record in the Objects API.
+
+.. warning:: For forms with payment requirements, a PATCH request is made to the
+   Objects API to update the payment status. This requires a version of the Objects API
+   newer than 2.1.1, which is unreleased at the time of writing.
+
+Configuration
+=============
 
 Below is an example of the contents in the ``record.data`` attribute in the
 Objects API. The top-level has meta-data about the form submission, and the
@@ -222,6 +245,17 @@ To configure the Objects API follow these steps:
 
 The Objects API configuration is now complete and can be selected as registration backend in the form builder.
 
+Technical
+=========
+
+Open Forms requires Objects API v2 or newer.
+
+================  ==========================================
+Objects API       Test status
+================  ==========================================
+2.0.x             Manually verified
+2.1.x             Manually verified, integration tests in CI
+================  ==========================================
 
 .. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/
 .. _`ProductAanvraag objecttype`: https://github.com/open-objecten/objecttypes/tree/main/community-concepts/productaanvraag/

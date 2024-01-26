@@ -2,6 +2,20 @@
 Changelog
 =========
 
+Unreleased
+==========
+
+Warnings
+--------
+
+The Objects API registration backend can now update the payment status after registering
+an object - this depends on a version of the Objects API with the PATCH method fixes. At
+the time of writing, such a version has not been released yet.
+
+.. todo:: At release time (2.6.0), check if we need to gate this functionality behind a
+   feature flag to prevent issues.
+
+
 2.5.0 "Noaberschap" (2024-01-24)
 ================================
 
