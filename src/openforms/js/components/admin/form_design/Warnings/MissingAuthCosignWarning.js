@@ -1,30 +1,20 @@
-import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 import {FormContext} from 'components/admin/form_design/Context';
 
-const MissingAuthCosignWarning = ({cosignComponent}) => {
-  const {selectedAuthPlugins, plugins} = useContext(FormContext);
+const MissingAuthCosignWarning = () => {
+  const {selectedAuthPlugins} = useContext(FormContext);
 
-  if (selectedAuthPlugins.includes(cosignComponent.authPlugin)) return null;
-
-  const getAuthPluginLabel = pluginId => {
-    for (const plugin of plugins.availableAuthPlugins) {
-      if (plugin.id === pluginId) return plugin.label;
-    }
-
-    return pluginId;
-  };
+  if (selectedAuthPlugins.length > 0) return null;
 
   const warning = {
     level: 'warning',
     message: (
       <FormattedMessage
         description="MissingAuthCosignWarning message"
-        defaultMessage="The the co-sign component requires the {plugin} authentication plugin, but this plugin is not enabled on the form."
-        values={{plugin: getAuthPluginLabel(cosignComponent.authPlugin)}}
+        defaultMessage="The the co-sign component requires at least one authentication plugin to be enabled."
       />
     ),
   };
@@ -32,8 +22,6 @@ const MissingAuthCosignWarning = ({cosignComponent}) => {
   return <MessageList messages={[warning]} />;
 };
 
-MissingAuthCosignWarning.propTypes = {
-  cosignComponent: PropTypes.object.isRequired,
-};
+MissingAuthCosignWarning.propTypes = {};
 
 export default MissingAuthCosignWarning;
