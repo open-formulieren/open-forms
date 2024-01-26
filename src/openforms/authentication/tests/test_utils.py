@@ -6,7 +6,7 @@ from furl import furl
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..utils import get_cosign_login_info, store_auth_details, store_registrator_details
+from ..utils import get_cosign_login_url, store_auth_details, store_registrator_details
 
 
 class UtilsTests(TestCase):
@@ -28,22 +28,6 @@ class UtilsTests(TestCase):
                 {"plugin": "digid", "attribute": "WRONG", "value": "some-value"},
             )
 
-    def test_get_cosign_info_when_no_cosign_on_form(self):
-        form_step = FormStepFactory.create(
-            form_definition__configuration={
-                "components": [
-                    {"key": "textField", "label": "Not cosign", "type": "textfield"}
-                ]
-            }
-        )
-
-        factory = RequestFactory()
-        request = factory.get("/foo")
-
-        login_info = get_cosign_login_info(request=request, form=form_step.form)
-
-        self.assertIsNone(login_info)
-
     def test_get_cosign_info(self):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
@@ -62,11 +46,11 @@ class UtilsTests(TestCase):
         factory = RequestFactory()
         request = factory.get("/foo")
 
-        login_info = get_cosign_login_info(request=request, form=form_step.form)
+        login_url = get_cosign_login_url(
+            request=request, form=form_step.form, plugin_id="digid"
+        )
+        login_url = furl(login_url)
 
-        self.assertIsNotNone(login_info)
-
-        login_url = furl(login_info.url)
         submission_find_url = furl(
             login_url.args["next"]
         )  # Page where the user will look for the submission to cosign
