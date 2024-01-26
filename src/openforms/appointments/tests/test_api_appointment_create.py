@@ -2,7 +2,6 @@ from datetime import datetime, time
 from unittest.mock import patch
 
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 from hypothesis import given
