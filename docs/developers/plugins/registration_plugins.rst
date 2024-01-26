@@ -24,12 +24,10 @@ adhere to the following function signature:
 
 .. code-block:: python
 
-    from typing import Optional
-
     from openforms.submissions.models import Submission
 
 
-    def plugin(submission: Submission, options: dict) -> Optional[dict]:
+    def plugin(submission: Submission, options: dict) -> dict | None:
         # do stuff
 
 
