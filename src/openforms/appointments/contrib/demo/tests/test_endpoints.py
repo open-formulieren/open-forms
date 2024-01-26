@@ -79,4 +79,4 @@ class DemoPluginTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         components = response.json()
-        self.assertEqual(len(components), 1)
+        self.assertEqual(len(components), 2)

@@ -2,7 +2,6 @@ from datetime import datetime, time
 from unittest.mock import patch
 
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 from hypothesis import given
@@ -80,6 +79,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacy_policy_accepted": True,
         }
@@ -96,17 +96,23 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             appointment.contact_details_meta,
             [
                 {
-                    "type": "textfield",
                     "key": "lastName",
-                    "label": _("Last name"),
-                    "validate": {
-                        "required": True,
-                        "maxLength": 20,
-                    },
-                }
+                    "type": "textfield",
+                    "label": "Achternaam",
+                    "validate": {"required": True, "maxLength": 20},
+                },
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "E-mailadres",
+                    "validate": {"required": True, "maxLength": 100},
+                },
             ],
         )
-        self.assertEqual(appointment.contact_details, {"lastName": "Periwinkle"})
+        self.assertEqual(
+            appointment.contact_details,
+            {"email": "user@example.com", "lastName": "Periwinkle"},
+        )
         products = appointment.products.all()
         self.assertEqual(len(products), 1)
         self.assertEqual(products[0].product_id, "2")
@@ -135,6 +141,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacy_policy_accepted": True,
         }
@@ -169,6 +176,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacy_policy_accepted": True,
         }
@@ -185,6 +193,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             "contactDetails": {
                 "lastName": "Periwinkle",
                 "firstName": "Caro",
+                "email": "user@example.com",
             },
         }
         response = self.client.post(ENDPOINT, updated_data)
@@ -197,6 +206,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             {
                 "lastName": "Periwinkle",
                 "firstName": "Caro",
+                "email": "user@example.com",
             },
         )
 
@@ -220,6 +230,7 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacy_policy_accepted": False,
         }
@@ -320,6 +331,7 @@ class AppointmentCreateValidationErrorTests(
             "datetime": f"{TODAY.isoformat()}T13:15:00Z",
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
         }
 
@@ -355,6 +367,7 @@ class AppointmentCreateValidationErrorTests(
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacyPolicyAccepted": True,
         }
@@ -435,6 +448,7 @@ class AppointmentCreateValidationErrorTests(
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacyPolicyAccepted": True,
         }
@@ -462,6 +476,7 @@ class AppointmentCreateValidationErrorTests(
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacyPolicyAccepted": True,
         }
@@ -486,6 +501,7 @@ class AppointmentCreateValidationErrorTests(
             "datetime": appointment_datetime.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacyPolicyAccepted": True,
         }
@@ -523,6 +539,7 @@ class AppointmentCreateValidationErrorTests(
             "date": today.isoformat(),
             "contactDetails": {
                 "lastName": "Periwinkle",
+                "email": "user@example.com",
             },
             "privacyPolicyAccepted": True,
         }
@@ -597,17 +614,27 @@ class AppointmentCreateValidationErrorTests(
 
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             invalid_params = response.json()["invalidParams"]
-            self.assertEqual(len(invalid_params), 1)
+            self.assertEqual(len(invalid_params), 2)
             self.assertEqual(invalid_params[0]["name"], "contactDetails.0")
             self.assertEqual(invalid_params[0]["code"], "required")
+            self.assertEqual(invalid_params[1]["name"], "contactDetails.1")
+            self.assertEqual(invalid_params[1]["code"], "required")
 
         with self.subTest("value too long"):
-            data = {**base, "contactDetails": {"lastName": "abcd" * 6}}  # 24 > 20
+            data = {
+                **base,
+                "contactDetails": {
+                    "lastName": "abcd" * 6,
+                    "email": "user" * 23 + "@example.com",
+                },
+            }  # 24 > 20 & 112>100
 
             response = self.client.post(ENDPOINT, data)
 
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             invalid_params = response.json()["invalidParams"]
-            self.assertEqual(len(invalid_params), 1)
+            self.assertEqual(len(invalid_params), 2)
             self.assertEqual(invalid_params[0]["name"], "contactDetails.0")
             self.assertEqual(invalid_params[0]["code"], "max_length")
+            self.assertEqual(invalid_params[1]["name"], "contactDetails.1")
+            self.assertEqual(invalid_params[1]["code"], "max_length")
