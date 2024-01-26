@@ -33,7 +33,6 @@ export const FormWarningsWithoutTranslations = {
               key: 'coSignerEmail',
               type: 'cosign',
               label: 'Co-signer email',
-              authPlugin: 'digid',
             },
             {
               type: 'editgrid',
@@ -43,7 +42,6 @@ export const FormWarningsWithoutTranslations = {
                   key: 'extraCoSignerEmail',
                   type: 'cosign',
                   label: 'Extra co-signer email',
-                  authPlugin: 'demo',
                 },
               ],
             },
@@ -110,7 +108,6 @@ export const FormWarningsWithoutTranslations = {
             key: 'extraCoSignerEmail',
             type: 'cosign',
             label: 'Co-signer email',
-            authPlugin: 'demo',
           },
         ],
       },
@@ -118,7 +115,6 @@ export const FormWarningsWithoutTranslations = {
         key: 'extraCoSignerEmail',
         type: 'cosign',
         label: 'Co-signer email',
-        authPlugin: 'demo',
       },
     },
     availableAuthPlugins: [
@@ -137,19 +133,26 @@ export const FormWarningsWithoutTranslations = {
   },
 };
 
-const cosignRender = ({coSignComponent, selectedAuthPlugins}) => (
-  <MissingAuthCosignWarningComponent
-    cosignComponent={coSignComponent}
-    selectedAuthPlugins={selectedAuthPlugins}
-  />
-);
-
 export const MissingAuthCosignWarning = {
   name: 'Warning missing authentication plugin for co-sign component',
   component: MissingAuthCosignWarningComponent,
-  render: cosignRender,
   args: {
-    coSignComponent: {type: 'cosign', key: 'cosign', authPlugin: 'digid'},
+    form: {
+      selectedAuthPlugins: [],
+    },
+    availableComponents: {
+      mainPersonEmail: {
+        key: 'mainPersonEmail',
+        type: 'email',
+        label: 'Main person email',
+      },
+      coSignerEmail: {
+        key: 'coSignerEmail',
+        type: 'cosign',
+        label: 'Co-signer email',
+        authPlugin: 'digid',
+      },
+    },
     availableAuthPlugins: [
       {
         id: 'digid',
@@ -157,6 +160,5 @@ export const MissingAuthCosignWarning = {
         providesAuth: ['bsn'],
       },
     ],
-    selectedAuthPlugins: [],
   },
 };

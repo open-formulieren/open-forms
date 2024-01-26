@@ -14,8 +14,8 @@ about:
   have been translated.
 - Multiple co-sign components: currently Open Forms supports only one co-sign component per form. If
   there are multiple, any extra component will be ignored.
-- Missing authentication plugin: if the co-sign component requires an authentication plugin that is
-  not enabled on the form.
+- Missing authentication plugin: if the co-sign component is present and no authentication plugins
+  are enabled on the form.
 - Co-sign component in repeating groups: since only one co-sign component is allowed per form, it
   makes no sense to add them inside a repeating group.
 
@@ -23,8 +23,8 @@ about:
 
 ## Warning for missing authentication plugin for co-sign component
 
-This component catches situations in which the co-sign component specifies that the co-signer should
-authenticate with a particular authentication plugin, but that plugin is not enabled on the form.
+This component catches situations in which the co-sign component is present but no authentication
+plugin is enabled on the form.
 
 <Canvas of={WarningsStories.MissingAuthCosignWarning} />
 
