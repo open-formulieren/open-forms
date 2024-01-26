@@ -12,7 +12,6 @@ from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.appointments.api.serializers import AppointmentOptionsSerializer
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
-from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
 from openforms.config.api.constants import STATEMENT_CHECKBOX_SCHEMA
 from openforms.config.models import GlobalConfiguration, Theme
@@ -120,7 +119,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     )
     authentication_backend_options = serializers.DictField(required=False, default=dict)
     login_options = LoginOptionsReadOnlyField()
-    cosign_login_info = CosignLoginInfoSerializer(source="*", read_only=True)
+    cosign_login_options = LoginOptionsReadOnlyField(is_for_cosign=True)
     auto_login_authentication_backend = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -262,7 +261,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "translations",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
-            "cosign_login_info",
+            "cosign_login_options",
             "submission_statements_configuration",
             "submission_report_download_link_title",
             "brp_personen_request_options",
@@ -292,7 +291,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "appointment_options",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
-            "cosign_login_info",
+            "cosign_login_options",
             "submission_statements_configuration",
             "submission_report_download_link_title",
         )

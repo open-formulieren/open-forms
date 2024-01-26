@@ -31,9 +31,15 @@ class Registry(BaseRegistry["BasePlugin"]):
     module = "authentication"
 
     def get_options(
-        self, request: HttpRequest, form: Form | None = None
-    ) -> list[LoginInfo]:
+        self,
+        request: HttpRequest,
+        form: Form | None = None,
+        is_for_cosign: bool = False,
+    ) -> list["LoginInfo"]:
         options = list()
+        if is_for_cosign and (not form or not form.cosign_component):
+            return options
+
         for plugin_id in _iter_plugin_ids(form, self):
             if plugin_id not in self._registry:
                 logger.warning(
@@ -43,7 +49,7 @@ class Registry(BaseRegistry["BasePlugin"]):
                 )
                 continue
             plugin = self._registry[plugin_id]
-            info = plugin.get_login_info(request, form)
+            info = plugin.get_login_info(request, form, is_for_cosign)
             options.append(info)
         return options
 

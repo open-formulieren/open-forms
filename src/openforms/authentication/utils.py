@@ -7,7 +7,6 @@ from rest_framework.reverse import reverse
 from openforms.forms.models import Form
 from openforms.submissions.models import Submission
 
-from .base import LoginInfo
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
@@ -68,15 +67,12 @@ def meets_plugin_requirements(request: Request, config: dict) -> bool:
     return plugin.check_requirements(request, config.get(plugin_id, {}))
 
 
-def get_cosign_login_info(request: Request, form: Form) -> LoginInfo | None:
-    if not (co_sign_component := form.get_cosign_component()):
-        return None
-
+def get_cosign_login_url(request: Request, form: Form, plugin_id: str) -> str:
     auth_url = reverse(
         "authentication:start",
         kwargs={
             "slug": form.slug,
-            "plugin_id": co_sign_component["authPlugin"],
+            "plugin_id": plugin_id,
         },
         request=request,
     )
@@ -87,14 +83,4 @@ def get_cosign_login_info(request: Request, form: Form) -> LoginInfo | None:
     )
     auth_page = furl(auth_url)
     auth_page.args.set("next", next_url)
-
-    auth_plugin_id = co_sign_component["authPlugin"]
-    auth_plugin = auth_register[auth_plugin_id]
-
-    return LoginInfo(
-        auth_plugin.identifier,
-        auth_plugin.get_label(),
-        url=auth_page.url,
-        logo=auth_plugin.get_logo(request),
-        is_for_gemachtigde=auth_plugin.is_for_gemachtigde,
-    )
+    return auth_page.url
