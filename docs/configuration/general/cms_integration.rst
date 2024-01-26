@@ -30,7 +30,7 @@ We assume you have access to Open Forms, and have designed some forms in the
 *Admin UI*. To get these forms to show in your CMS you will need 3 things:
 
 1. Have the webmaster of your website 
-   :ref:`embed the Open Forms SDK <developers_sdk_embedding>`. For each form
+   :ref:`embed the Open Forms SDK <developers_embedding>`. For each form
    you want to integrate in the CMS, the webmaster will also need the UUID of
    the form as shown in the Open Forms *Admin UI*.
 2. Inform your Open Forms supplier of your main website domain so it can be

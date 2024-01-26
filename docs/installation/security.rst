@@ -24,7 +24,7 @@ list of configuration options and how to apply them is documented in the
 Cross-Origin Resource Sharing (CORS)
 ====================================
 
-If you want to :ref:`embed forms<developers_sdk_embedding>` on trusted third-party
+If you want to :ref:`embed forms<developers_embedding>` on trusted third-party
 domains (for example on "products and services" pages), then you need to configure
 `CORS`_ appropriately. The embedded form makes calls to the API endpoints on the domain
 where Open Forms is deployed.

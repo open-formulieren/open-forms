@@ -18,7 +18,7 @@ unsafe constructs, such inline scripts, use of ``eval`` and inline styles.
 
 This section describes the rationale behind the policies in Open Forms when Open Forms
 serves the end-user forms *and* the considerations for third parties who
-:ref:`embed <developers_sdk_embedding>` forms using the SDK.
+:ref:`embed <developers_embedding>` forms using the SDK.
 
 Basic mechanism
 ---------------
@@ -95,7 +95,7 @@ Some form design relies on WYSIWYG editors, which results in HTML blobs in API e
 resources that potentially have inline style (``<span style="...">...</span>``). The SDK
 uses React's |dangerouslySetInnerHTML|_ for this content.
 
-One of the SDK :ref:`embed options <developers_sdk_embedding_options>` is the
+One of the SDK :ref:`embed options <developers_embedding_options>` is the
 ``CSPNonce``. If embedding pages include this, then the WYSIWYG content will be
 post-processed to include an inline ``<style>`` tag with the nonce. See
 :ref:`developers_csp_wysiwyg` for a description of the mechanism involved.

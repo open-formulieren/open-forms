@@ -25,6 +25,7 @@ familiarize yourself with the design principles.
    installation
    backend/index
    frontend/index
+   embedding
    sdk/index
    plugins/index
    extending
