@@ -1,16 +1,19 @@
-.. _developers_sdk_embedding:
+.. _developers_embedding:
 
-===========================
-Embedding the SDK in a page
-===========================
+===============================
+Embed forms in an existing site
+===============================
 
-The SDK can be embedded by loading the Javascript code and stylesheet.
+The SDK can be embedded in existing sites by loading the Javascript code and stylesheet.
 
-Assuming the SDK is hosted on ``https://example.com/sdk/1.0.0/``, two resources need to be
-loaded.
+Assuming the SDK is hosted on ``https://openforms.example.com/static/sdk/``, two
+resources need to be loaded.
 
-Before you embed a particular version of the SDK, please familiarize yourself with the
-:ref:`versioning policy <developers_versioning>`.
+.. note::
+
+    The backend automatically redirects to the versioned SDK URLs. Before you
+    embed a particular version of the SDK, please familiarize yourself with the
+    :ref:`versioning policy <developers_versioning>`.
 
 Loading static assets
 =====================
@@ -19,16 +22,25 @@ Loading static assets
 
     .. code-block:: html
 
-        <link rel="stylesheet" href="https://example.com/sdk/1.0.0/open-forms-sdk.css" />
+        <link rel="stylesheet" href="https://openforms.example.com/static/sdk/open-forms-sdk.css" />
 
 2. The Javascript code
 
     .. code-block:: html
 
-        <script src="https://example.com/sdk/1.0.0/open-forms-sdk.js"></script>
+        <script src="https://openforms.example.com/static/sdk/open-forms-sdk.js"></script>
 
-Calling the SDK
-===============
+.. note::
+
+    We provide an EXPERIMENTAL npm package that you should be able to integrate in your
+    own frontend toolchain, as an alternative to loading the assets directly in a page.
+
+    .. code-block:: bash
+
+        npm install --save @open-formulieren/sdk
+
+Rendering the form
+==================
 
 Once the Javascript is loaded, the module ``OpenForms`` is available. To initialize
 a form, use the constructor and initialize the form:
@@ -39,9 +51,9 @@ a form, use the constructor and initialize the form:
     form.init();
 
 Where ``element`` is a valid DOM node and ``options`` an options Object, see
-:ref:`developers_sdk_embedding_options`.
+:ref:`developers_embedding_options`.
 
-.. _developers_sdk_embedding_options:
+.. _developers_embedding_options:
 
 Available options
 -----------------
@@ -176,23 +188,12 @@ Full example
     </body>
     </html>
 
-Deploying the SDK
-=================
+More examples
+-------------
 
-The SDK is published as container image on
-`Docker Hub <https://hub.docker.com/r/openformulieren/open-forms-sdk>`_, containing
-the static Javascript and CSS assets:
-
-* ``open-forms-sdk.js`` and
-* ``open-forms-sdk.css``
-
-When you're deploying the ``latest`` tag, these assets are available in the webroot,
-e.g. ``http://localhost:8080/open-forms-sdk.js``.
-
-When you're using a pinned version, such as ``1.0.0``, the assets are available in that
-directory: ``http://localhost:8080/1.0.0/open-forms-sdk.js``.
-
-The SDK follows semantic versioning.
+See (on Github) the directory ``docker/embedding`` README file for working examples of
+different embedding cases. These should be easy to bring up with docker-compose, provided
+you have a backend instance ready to go.
 
 Backend configuration
 =====================
@@ -240,3 +241,25 @@ value is ``strict-origin-when-cross-origin``.
 
 .. _Referrer Policy: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
 .. _MDN documentation about SameSite: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
+
+Deploying the SDK
+=================
+
+.. note:: These assets are bundled in the backend image too, so you typically do not
+   need to deploy the SDK assets separately. You can point to
+   ``https://openforms.example.com/static/sdk/`` for convenience.
+
+The SDK is published as container image on
+`Docker Hub <https://hub.docker.com/r/openformulieren/open-forms-sdk>`_, containing
+the static Javascript and CSS assets:
+
+* ``open-forms-sdk.js`` and
+* ``open-forms-sdk.css``
+
+When you're deploying the ``latest`` tag, these assets are available in the webroot,
+e.g. ``http://localhost:8080/open-forms-sdk.js``.
+
+When you're using a pinned version, such as ``1.0.0``, the assets are available in that
+directory: ``http://localhost:8080/1.0.0/open-forms-sdk.js``.
+
+The SDK follows semantic versioning.

@@ -5,7 +5,7 @@ Form hosting
 ============
 
 Forms designed with Open Forms would typically be included on some CMS via the
-:ref:`Javascript snippet <developers_sdk_embedding>`. However, if this is not possible,
+:ref:`Javascript snippet <developers_embedding>`. However, if this is not possible,
 forms can also be accessed through the UI portion of Open Forms.
 
 This section of the documentation documents the various configuration aspects available
