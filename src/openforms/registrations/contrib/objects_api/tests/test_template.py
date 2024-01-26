@@ -91,6 +91,11 @@ class JSONTemplatingTests(TestCase):
                         "pdf_url": "http://oz.nl/pdf-report",
                         "submission_id": str(submission.uuid),
                         "type": "terugbelnotitie",
+                        "payment": {
+                            "completed": False,
+                            "amount": 0,
+                            "public_order_ids": [],
+                        },
                     },
                     "startAt": "2022-09-12",
                 },

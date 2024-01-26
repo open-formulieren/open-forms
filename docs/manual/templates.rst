@@ -476,6 +476,17 @@ alle gegevens uit het formulier en de waarden ingevuld door de gebruiker.
 
    See :ref:`example_form_with_geometry` for a more detailed example.
 
+Voor formulieren die een betaling vereisen, is het ook mogelijk om informatie over de betaling toe te voegen.
+Als de gebruiker betaalt, kan de status van de betaling in de Object API bijgewerkt worden. Hier ook is de structuur van het
+``record`` veld per formulier instelbaar met een sjabloon.
+In dit sjabloon kunnen alleen de inzendingsvariabelen (``variables.<naam van variabele>``) en de ``payment`` variabele
+(zie tabel hieronder) gebruikt worden.
+
+.. note::
+
+   De ``payment.amount`` in een JSON sjabloon geeft een ``number``. Het objecttype schema zou de nauwkeurigheid van
+   het ``amount`` veld moeten vastleggen door bijvoorbeeld ``type: number, multipleOf: 0.01`` te specificeren.
+
 **Speciale instructies**
 
 Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor het
@@ -494,6 +505,9 @@ Variabele                              Beschrijving
 ``{% json_summary %}``                 JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
 ``{% uploaded_attachment_urls %}``     Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs verwijzen naar het geregistreerde document in de Documenten API.
 ``{% as_geo_json variables.map %}``    Sluit de gerefereerde variabele (`variables.map`) in als JSON.
+``{{ payment.completed }}``            Indicatie of de betaling voltooid is.
+``{{ payment.amount }}``               Bedrag dat betaald moet worden.
+``{{ payment.public_order_ids }}``     Lijst van bestelling IDs die naar de externe betaalprovider meegestuurd zijn.
 =====================================  ===========================================================================
 
 

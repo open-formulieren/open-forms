@@ -213,7 +213,10 @@ To configure the Objects API follow these steps:
    * **Submission report CSV informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission report CSV in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/2/``
    * **Attachment informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission attachments in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/3/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
-
+   * **JSON content template**: This is a template for the JSON that will be sent to the Object API nested in the
+     ``record.data`` field.
+   * **Payment status update JSON template**: This is a template for the JSON that will be sent with a PATCH request to
+     the Object API to update the payment status of a submission. This JSON will be nested in the ``record.data.payment`` field.
 
 #. Click **Opslaan**
 

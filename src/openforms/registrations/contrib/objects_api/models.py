@@ -15,6 +15,12 @@ def get_content_text() -> str:
     ).strip()
 
 
+def get_payment_status_update_text() -> str:
+    return render_to_string(
+        "registrations/contrib/objects_api/payment_status_update_json.txt"
+    ).strip()
+
+
 class ObjectsAPIConfig(SingletonModel):
     """
     global configuration and defaults
@@ -119,6 +125,20 @@ class ObjectsAPIConfig(SingletonModel):
             "This template is evaluated with the submission data and the resulting JSON is sent to the objects API."
         ),
     )
+    payment_status_update_json = models.TextField(
+        _("payment status update JSON template"),
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+        ],
+        blank=False,
+        default=get_payment_status_update_text,
+        help_text=_(
+            "This template is evaluated with the submission data and the resulting JSON is sent to the objects API "
+            "with a PATCH to update the payment field."
+        ),
+    )
 
     class Meta:
         verbose_name = _("Objects API configuration")
@@ -141,5 +161,8 @@ class ObjectsAPIConfig(SingletonModel):
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
         if not options.get("content_json", "").strip():
             options["content_json"] = self.content_json
+
+        if not options.get("payment_status_update_json", "").strip():
+            options["payment_status_update_json"] = self.payment_status_update_json
 
         options.setdefault("auteur", "Aanvrager")

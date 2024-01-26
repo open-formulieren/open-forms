@@ -1,3 +1,4 @@
+import logging
 from functools import partial
 from typing import Any, NoReturn
 
@@ -5,7 +6,9 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.clients import DocumentenClient
+from openforms.contrib.zgw.clients.utils import get_today
 from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_csv_document,
@@ -27,8 +30,11 @@ from .checks import check_config
 from .client import get_documents_client, get_objects_client
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
+from .utils import get_payment_context_data
 
 PLUGIN_IDENTIFIER = "objects_api"
+
+logger = logging.getLogger(__name__)
 
 
 def _point_coordinate(value):
@@ -135,6 +141,7 @@ class ObjectsAPIRegistration(BasePlugin):
         context = {
             "_submission": submission,
             "productaanvraag_type": options["productaanvraag_type"],
+            "payment": get_payment_context_data(submission),
             "variables": get_variables_for_context(submission),
             # Github issue #661, nested for namespacing note: other templates and context expose all submission
             # variables in the top level namespace, but that is due for refactor
@@ -186,6 +193,41 @@ class ObjectsAPIRegistration(BasePlugin):
         return [
             f"{prefix}.objects_api.json_tags",
         ]
+
+    def update_payment_status(self, submission: "Submission", options: dict) -> None:
+        config = ObjectsAPIConfig.get_solo()
+        assert isinstance(config, ObjectsAPIConfig)
+        config.apply_defaults_to(options)
+
+        if not options["payment_status_update_json"]:
+            logger.warning(
+                "Skipping payment status update because no template was configured."
+            )
+            return
+
+        context = {
+            "variables": get_variables_for_context(submission),
+            "payment": get_payment_context_data(submission),
+        }
+
+        updated_record_data = render_to_json(
+            options["payment_status_update_json"], context
+        )
+        updated_object_data = {
+            "record": {
+                "data": updated_record_data,
+                "startAt": get_today(),
+            },
+        }
+
+        object_url = submission.registration_result["url"]
+        with get_objects_client() as objects_client:
+            response = objects_client.patch(
+                url=object_url,
+                json=updated_object_data,
+                headers={"Content-Crs": "EPSG:4326"},
+            )
+            response.raise_for_status()
 
 
 def register_submission_csv(

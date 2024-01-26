@@ -20,6 +20,12 @@ export const BACKEND_OPTIONS_FORMS = {
           rows: 5,
         },
       },
+      paymentStatusUpdateJson: {
+        'ui:widget': 'textarea',
+        'ui:options': {
+          rows: 5,
+        },
+      },
     },
   },
   email: {

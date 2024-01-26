@@ -10,5 +10,10 @@
   "pdf_url": "{{ tt_openvariable }} submission.pdf_url {{ tt_closevariable }}",
   "attachments": {{ tt_openblock }} uploaded_attachment_urls {{ tt_closeblock }},
   "submission_id": "{{ tt_openvariable }} submission.kenmerk {{ tt_closevariable }}",
-  "language_code": "{{ tt_openvariable }} submission.language_code {{ tt_closevariable }}"
+  "language_code": "{{ tt_openvariable }} submission.language_code {{ tt_closevariable }}",
+  "payment": {
+    "completed": {{ tt_openblock }} if payment.completed {{ tt_closeblock }}true{{ tt_openblock }} else {{ tt_closeblock }}false{{ tt_openblock }} endif {{ tt_closeblock }},
+    "amount": {{ tt_openvariable }} payment.amount {{ tt_closevariable}},
+    "public_order_ids":  [{{ tt_openblock }} for order_id in payment.public_order_ids{{ tt_closeblock }}"{{ tt_openvariable }} order_id|escapejs {{ tt_closevariable }}"{{ tt_openblock }} if not forloop.last {{ tt_closeblock }},{{ tt_openblock }} endif {{ tt_closeblock }}{{ tt_openblock }} endfor {{ tt_closeblock }}]
+  }
 }

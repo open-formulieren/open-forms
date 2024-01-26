@@ -79,3 +79,16 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ],
         required=False,
     )
+    payment_status_update_json = serializers.CharField(
+        label=_("payment status update JSON template"),
+        help_text=_(
+            "This template is evaluated with the submission data and the resulting JSON is sent to the objects API "
+            "with a PATCH to update the payment field."
+        ),
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+        ],
+        required=False,
+    )

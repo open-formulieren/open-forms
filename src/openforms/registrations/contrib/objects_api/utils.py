@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from django.utils.html import escape
 
@@ -21,3 +21,11 @@ def html_escape_json(value: T) -> T:
         case _:
             # nothing to do, return unmodified
             return value
+
+
+def get_payment_context_data(submission) -> dict[str, Any]:
+    return {
+        "completed": submission.payment_user_has_paid,
+        "amount": str(submission.payments.sum_amount()),
+        "public_order_ids": submission.payments.get_completed_public_order_ids(),
+    }
