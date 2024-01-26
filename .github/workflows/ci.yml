@@ -43,9 +43,9 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.1
+        uses: maykinmedia/setup-django-backend@v1.2
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client gdal-bin'
           python-version: '3.10'
@@ -105,7 +105,7 @@ jobs:
         run: ./bin/generate_oas.sh openapi.yaml
 
       - name: Store generated OAS
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: open-forms-oas
           path: openapi.yaml
@@ -131,9 +131,9 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1
+        uses: maykinmedia/setup-django-backend@v1.2
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client gdal-bin'
           python-version: '3.10'
@@ -204,9 +204,9 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1
+        uses: maykinmedia/setup-django-backend@v1.2
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client gdal-bin'
           python-version: '3.10'
@@ -218,7 +218,7 @@ jobs:
       # See https://playwright.dev/python/docs/ci#caching-browsers
       - name: Cache Playwright browser
         id: cache-browser
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /home/runner/.cache/ms-playwright
           key:
@@ -275,12 +275,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: open-forms
 
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1
+        uses: maykinmedia/setup-django-backend@v1.2
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gdal-bin'
           python-version: '3.10'
@@ -310,7 +310,7 @@ jobs:
         working-directory: open-forms
 
       - name: Checkout SDK repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: 'open-formulieren/open-forms-sdk'
           ref: ${{ steps.sdk-ref.outputs.sdk_ref }}
@@ -366,7 +366,7 @@ jobs:
     steps:
       # So the scanner gets commit meta-information
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Derive version
         id: vars
@@ -381,7 +381,7 @@ jobs:
           [ "$VERSION" == "merge" ] && VERSION=latest
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
       - name: Download built image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-image-all-extensions-${{ steps.vars.outputs.version }}
       - name: Scan image with Trivy
@@ -392,7 +392,7 @@ jobs:
           output: 'trivy-results-docker.sarif'
           ignore-unfixed: true
       - name: Upload results to GH Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results-docker.sarif'
 
@@ -401,9 +401,9 @@ jobs:
     name: Check for unexepected OAS changes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download generated OAS
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: open-forms-oas
       - name: Check for OAS changes
@@ -423,13 +423,13 @@ jobs:
     name: Validate OAS
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download generated OAS
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: open-forms-oas
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Install spectral
@@ -442,13 +442,13 @@ jobs:
     name: Generate Postman collection from OAS
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download generated OAS
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: open-forms-oas
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Install dependencies
@@ -463,13 +463,13 @@ jobs:
     name: Generate SDKs from OAS
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download generated OAS
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: open-forms-oas
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Install dependencies
@@ -521,7 +521,7 @@ jobs:
             image_tag_prefix: 'all-extensions-'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Derive version
         id: vars
@@ -541,7 +541,7 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Download built image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-image-${{ matrix.target.image_tag_prefix }}${{ steps.vars.outputs.version }}
 
