@@ -1,5 +1,3 @@
-from typing import Dict
-
 from django.templatetags.static import static
 
 from digid_eherkenning.models import DigidConfiguration, EherkenningConfiguration
@@ -13,7 +11,7 @@ from openforms.config.models import CSPSetting
 from .constants import ADDITIONAL_CSP_VALUES
 
 
-def get_digid_logo(request) -> Dict[str, str]:
+def get_digid_logo(request) -> dict[str, str]:
     return {
         "image_src": request.build_absolute_uri(static("img/digid-46x46.png")),
         "href": "https://www.digid.nl/",
@@ -21,7 +19,7 @@ def get_digid_logo(request) -> Dict[str, str]:
     }
 
 
-def get_eherkenning_logo(request) -> Dict[str, str]:
+def get_eherkenning_logo(request) -> dict[str, str]:
     return {
         "image_src": request.build_absolute_uri(static("img/eherkenning.png")),
         "href": "https://www.eherkenning.nl/",

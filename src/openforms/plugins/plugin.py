@@ -1,5 +1,3 @@
-from typing import List, Tuple
-
 from django.utils.translation import gettext_lazy as _
 
 from openforms.config.models import GlobalConfiguration
@@ -45,7 +43,7 @@ class AbstractBasePlugin:
         """
         raise NotImplementedError()
 
-    def get_config_actions(self) -> List[Tuple[str, str]]:
+    def get_config_actions(self) -> list[tuple[str, str]]:
         """
         Returns a list of tuples containing the label and URL of each action
         that is related to the configuration of this plugin. This can be to

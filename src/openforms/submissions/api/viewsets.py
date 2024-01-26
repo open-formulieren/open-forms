@@ -1,6 +1,5 @@
 import contextlib
 import logging
-from typing import Tuple
 from uuid import UUID
 
 from django.db import transaction
@@ -588,7 +587,7 @@ class SubmissionStepViewSet(
 
     def _validate_step_input(
         self, request
-    ) -> Tuple[SubmissionStep, SubmissionStepSerializer]:
+    ) -> tuple[SubmissionStep, SubmissionStepSerializer]:
         instance = self.get_object()
         create = instance.pk is None
         if create:

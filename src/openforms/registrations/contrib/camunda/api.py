@@ -1,5 +1,3 @@
-from typing import List
-
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
@@ -47,7 +45,7 @@ class ProcessDefinitionListView(ListMixin, views.APIView):
     serializer_class = ProcessDefinitionSerializer
 
     @staticmethod
-    def get_objects() -> List[ProcessDefinition]:
+    def get_objects() -> list[ProcessDefinition]:
         return get_process_definitions()
 
 

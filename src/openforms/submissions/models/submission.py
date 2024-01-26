@@ -4,7 +4,7 @@ import logging
 import uuid
 from collections import OrderedDict
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
+from typing import TYPE_CHECKING, Mapping, Optional, Union
 
 from django.conf import settings
 from django.db import models, transaction
@@ -50,8 +50,8 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class SubmissionState:
-    form_steps: List[FormStep]
-    submission_steps: List["SubmissionStep"]
+    form_steps: list[FormStep]
+    submission_steps: list["SubmissionStep"]
 
     def _get_step_offset(self):
         completed_steps = sorted(
@@ -505,7 +505,7 @@ class Submission(models.Model):
 
         # build the resulting list - some SubmissionStep instances will probably not exist
         # in the database yet - this is on purpose!
-        steps: List[SubmissionStep] = []
+        steps: list[SubmissionStep] = []
         for form_step in form_steps:
             if form_step.id in submission_steps:
                 step = submission_steps[form_step.id]
@@ -553,7 +553,7 @@ class Submission(models.Model):
         }
         return render_from_string(template, context_data, backend=openforms_backend)
 
-    def render_summary_page(self) -> List[JSONObject]:
+    def render_summary_page(self) -> list[JSONObject]:
         """Use the renderer logic to decide what to display in the summary page.
 
         The values of the component are returned raw, because the frontend decides how to display them.
@@ -592,7 +592,7 @@ class Submission(models.Model):
         return summary_data
 
     @property
-    def steps(self) -> List["SubmissionStep"]:
+    def steps(self) -> list["SubmissionStep"]:
         # fetch the existing DB records for submitted form steps
         submission_state = self.load_execution_state()
         return submission_state.submission_steps
@@ -622,7 +622,7 @@ class Submission(models.Model):
 
         return ordered_data
 
-    def get_merged_appointment_data(self) -> Dict[str, Dict[str, Union[str, dict]]]:
+    def get_merged_appointment_data(self) -> dict[str, dict[str, Union[str, dict]]]:
         component_config_key_to_appointment_key = {
             "appointments.showProducts": "productIDAndName",
             "appointments.showLocations": "locationIDAndName",

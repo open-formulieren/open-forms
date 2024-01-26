@@ -1,7 +1,7 @@
 import datetime
 import decimal
 import uuid
-from typing import Any, Dict, List, NewType, Protocol, Union
+from typing import Any, NewType, Protocol, Union
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
@@ -11,11 +11,11 @@ from rest_framework.request import Request
 
 JSONPrimitive = Union[str, int, None, float, bool]
 
-JSONValue = Union[JSONPrimitive, "JSONObject", List["JSONValue"]]
+JSONValue = Union[JSONPrimitive, "JSONObject", list["JSONValue"]]
 
-JSONObject = Dict[str, JSONValue]
+JSONObject = dict[str, JSONValue]
 
-DataMapping = Dict[str, Any]  # key: value pair
+DataMapping = dict[str, Any]  # key: value pair
 
 AnyRequest = Union[HttpRequest, Request]
 

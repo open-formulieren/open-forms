@@ -1,7 +1,7 @@
 import logging
 import uuid
 from collections import OrderedDict
-from typing import List, Union
+from typing import Union
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -179,5 +179,5 @@ class HandledException:
         return f"urn:uuid:{self._exc_id}"
 
     @property
-    def invalid_params(self) -> Union[None, List]:
+    def invalid_params(self) -> Union[None, list]:
         return [error for error in get_validation_errors(self.exc.detail)]

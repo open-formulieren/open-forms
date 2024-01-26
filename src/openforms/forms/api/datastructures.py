@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Optional
 
 from django.utils.functional import cached_property
 
@@ -11,7 +11,7 @@ class FormVariableWrapper:
     form: Form
 
     @cached_property
-    def variables(self) -> Dict[str, FormVariable]:
+    def variables(self) -> dict[str, FormVariable]:
         return {variable.key: variable for variable in self.form.formvariable_set.all()}
 
     def get(self, key: str, default=None) -> Optional[FormVariable]:

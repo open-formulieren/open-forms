@@ -2,7 +2,7 @@ import logging
 import mimetypes
 from io import BytesIO
 from pathlib import PurePosixPath
-from typing import Optional, Tuple
+from typing import Optional
 from urllib.parse import ParseResult, urljoin, urlparse
 
 from django.conf import settings
@@ -80,7 +80,7 @@ class UrlFetcher:
 
     def get_match_candidate(
         self, url: ParseResult
-    ) -> Optional[Tuple[ParseResult, FileSystemStorage]]:
+    ) -> Optional[tuple[ParseResult, FileSystemStorage]]:
         for parsed_base_url, storage, is_local_storage in self.candidates:
             if not is_local_storage:
                 continue
@@ -96,7 +96,7 @@ class UrlFetcher:
         return None
 
 
-def render_to_pdf(template_name: str, context: dict) -> Tuple[str, bytes]:
+def render_to_pdf(template_name: str, context: dict) -> tuple[str, bytes]:
     """
     Render a (HTML) template to PDF with the given context.
     """

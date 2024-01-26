@@ -4,7 +4,6 @@ Implement :class:`django.db.models.FileField` related utilities.
 These utilities apply to file fields and subclasses thereof.
 """
 import logging
-from typing import List
 
 from django.db import models, transaction
 from django.db.models.base import ModelBase
@@ -13,7 +12,7 @@ from django.db.models.fields.files import FieldFile
 logger = logging.getLogger(__name__)
 
 
-def get_file_field_names(model: ModelBase) -> List[str]:
+def get_file_field_names(model: ModelBase) -> list[str]:
     """
     Collect names of :class:`django.db.models.FileField` (& subclass) model fields.
     """
@@ -51,7 +50,7 @@ class log_failed_deletes:
             return True
 
 
-def _delete_obj_files(fields: List[str], obj: models.Model) -> None:
+def _delete_obj_files(fields: list[str], obj: models.Model) -> None:
     for name in fields:
         filefield = getattr(obj, name)
         with log_failed_deletes(filefield):

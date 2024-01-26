@@ -1,4 +1,4 @@
-from typing import List, TypedDict
+from typing import TypedDict
 
 from rest_framework import serializers
 
@@ -27,6 +27,6 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         name: str
         uuid: str
 
-    def get_ancestors(self, obj) -> List[NameUUID]:
+    def get_ancestors(self, obj) -> list[NameUUID]:
         ancestors = obj.get_ancestors()
         return [{"uuid": str(n.uuid), "name": n.name} for n in ancestors]

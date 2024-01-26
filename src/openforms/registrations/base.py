@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Optional, Type
+from typing import TYPE_CHECKING, Any, Optional
 
 from rest_framework import serializers
 
@@ -9,7 +9,7 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
-SerializerCls = Type[serializers.Serializer]
+SerializerCls = type[serializers.Serializer]
 
 
 class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):

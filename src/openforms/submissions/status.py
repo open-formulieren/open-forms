@@ -2,7 +2,6 @@
 Utility to interact with the celery task status.
 """
 from dataclasses import dataclass
-from typing import List
 
 from django.urls import reverse
 
@@ -22,14 +21,14 @@ class SubmissionProcessingStatus:
     request: Request
     submission: Submission
 
-    def get_async_results(self) -> List[AsyncResult]:
+    def get_async_results(self) -> list[AsyncResult]:
         """Retrieve the results for the task scheduled ONLY when the submission was completed."""
         if not hasattr(self, "_async_result"):
             task_ids = self.submission.post_completion_task_ids
             self._async_results = [AsyncResult(task_id) for task_id in task_ids]
         return self._async_results
 
-    def get_all_async_results(self) -> List[AsyncResult]:
+    def get_all_async_results(self) -> list[AsyncResult]:
         """Retrieve the results for ALL tasks scheduled while processing a submission.
 
         This includes tasks scheduled when the submission was completed, when it was cosigned, when a payment was

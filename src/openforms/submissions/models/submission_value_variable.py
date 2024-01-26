@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime, time
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -32,19 +32,19 @@ class ValueEncoder(DjangoJSONEncoder):
 @dataclass
 class SubmissionValueVariablesState:
     submission: "Submission"
-    _variables: Optional[Dict[str, "SubmissionValueVariable"]] = field(
+    _variables: Optional[dict[str, "SubmissionValueVariable"]] = field(
         init=False, default=None
     )
-    _static_data: Optional[Dict[str, Any]] = field(init=False, default=None)
+    _static_data: Optional[dict[str, Any]] = field(init=False, default=None)
 
     @property
-    def variables(self) -> Dict[str, "SubmissionValueVariable"]:
+    def variables(self) -> dict[str, "SubmissionValueVariable"]:
         if not self._variables:
             self._variables = self.collect_variables()
         return self._variables
 
     @property
-    def saved_variables(self) -> Dict[str, "SubmissionValueVariable"]:
+    def saved_variables(self) -> dict[str, "SubmissionValueVariable"]:
         return {
             variable_key: variable
             for variable_key, variable in self.variables.items()
@@ -83,7 +83,7 @@ class SubmissionValueVariablesState:
         self,
         submission_step: "SubmissionStep",
         include_unsaved=True,
-    ) -> Dict[str, "SubmissionValueVariable"]:
+    ) -> dict[str, "SubmissionValueVariable"]:
         configuration_wrapper = (
             submission_step.form_step.form_definition.configuration_wrapper
         )
@@ -99,7 +99,7 @@ class SubmissionValueVariablesState:
             if variable.key in keys_in_step
         }
 
-    def collect_variables(self) -> Dict[str, "SubmissionValueVariable"]:
+    def collect_variables(self) -> dict[str, "SubmissionValueVariable"]:
         # leverage the (already populated) submission state to get access to form
         # steps and form definitions
         submission_state = self.submission.load_execution_state()
@@ -163,7 +163,7 @@ class SubmissionValueVariablesState:
             }
         return self._static_data
 
-    def get_prefill_variables(self) -> List["SubmissionValueVariable"]:
+    def get_prefill_variables(self) -> list["SubmissionValueVariable"]:
         prefill_vars = []
         for variable in self.variables.values():
             if not variable.is_initially_prefilled:
@@ -171,7 +171,7 @@ class SubmissionValueVariablesState:
             prefill_vars.append(variable)
         return prefill_vars
 
-    def save_prefill_data(self, data: Dict[str, Any]) -> None:
+    def save_prefill_data(self, data: dict[str, Any]) -> None:
         variables_to_prefill = self.get_prefill_variables()
         for variable in variables_to_prefill:
             if variable.key not in data:

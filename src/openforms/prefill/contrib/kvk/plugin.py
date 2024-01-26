@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -55,7 +55,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
     def get_prefill_values(
         self,
         submission: Submission,
-        attributes: List[str],
+        attributes: list[str],
         identifier_role: str = IdentifierRoles.main,
     ) -> dict[str, Any]:
         # check if submission was logged in with the identifier we're interested

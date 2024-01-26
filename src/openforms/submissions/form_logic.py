@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 from django.utils.functional import empty
 
@@ -95,7 +95,7 @@ def evaluate_form_logic(
 
     # 5. Evaluate the logic rules in order
     mutation_operations = []
-    evaluated_rules: List[EvaluatedRule] = []
+    evaluated_rules: list[EvaluatedRule] = []
 
     # 5.1 - if the action type is to set a variable, update the variable state. This
     # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed

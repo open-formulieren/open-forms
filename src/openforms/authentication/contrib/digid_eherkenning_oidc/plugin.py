@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
@@ -58,7 +58,7 @@ class OIDCAuthentication(BasePlugin):
 
     def handle_co_sign(
         self, request: HttpRequest, form: Form
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[dict[str, Any]]:
         if not (claim := request.session.get(self.session_key)):
             raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
         return {

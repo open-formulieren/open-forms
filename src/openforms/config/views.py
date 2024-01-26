@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generator, Optional, Protocol, TypeGuard
+from typing import Any, Generator, Optional, Protocol, TypeGuard
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
@@ -50,7 +50,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
         "accounts.configuration_overview",
     ]
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         sections = []
 

@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import List
 
 from django.utils import timezone
 
@@ -44,7 +43,7 @@ class SubmissionAppointmentTokenGenerator(BaseTokenGenerator):
         assert delta > timedelta(0, 0), "Expected a positive delta"
         return delta.days + 1
 
-    def get_hash_value_parts(self, submission: Submission) -> List[str]:
+    def get_hash_value_parts(self, submission: Submission) -> list[str]:
         return [
             str(submission.id),
             str(submission.uuid),

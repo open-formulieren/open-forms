@@ -3,7 +3,7 @@ import json
 import uuid
 from copy import deepcopy
 from functools import partial
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -188,7 +188,7 @@ class FormDefinition(models.Model):
             configuration=configuration, recursive=recursive, **kwargs
         )
 
-    def get_keys_for_email_confirmation(self) -> List[Tuple[str, str]]:
+    def get_keys_for_email_confirmation(self) -> list[tuple[str, str]]:
         """Return the key of fields to include in the confirmation email"""
         keys_for_email_confirmation = []
 

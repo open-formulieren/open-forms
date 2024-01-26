@@ -1,7 +1,7 @@
 import logging
 import re
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Optional
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -321,7 +321,7 @@ class StufZDSRegistration(BasePlugin):
         }
         return result
 
-    def get_reference_from_result(self, result: Dict[str, str]) -> str:
+    def get_reference_from_result(self, result: dict[str, str]) -> str:
         """
         Extract the public submission reference from the result data.
 

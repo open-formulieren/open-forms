@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -65,7 +65,7 @@ class eHerkenningAssertionConsumerServiceView(
         },
     )
 
-    def _extract_qualifiers(self, attributes: dict) -> Dict[str, str]:
+    def _extract_qualifiers(self, attributes: dict) -> dict[str, str]:
         qualifiers = {}
         expected_ids = [
             "urn:etoegang:core:ActingSubjectID",

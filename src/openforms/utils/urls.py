@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
@@ -63,7 +63,7 @@ def reverse_plus(
     args=None,
     kwargs=None,
     request: Optional[RequestType] = None,
-    query: Optional[Dict[str, Any]] = None,
+    query: Optional[dict[str, Any]] = None,
     make_absolute: bool = True,
 ):
     """

@@ -1,6 +1,6 @@
 import argparse
 import builtins
-from typing import Any, Tuple
+from typing import Any
 
 from django.core.management import BaseCommand
 
@@ -10,7 +10,7 @@ from ...registry import register
 from ...service import evaluate_dmn
 
 
-def input_variable(input_string: str) -> Tuple[str, Any]:
+def input_variable(input_string: str) -> tuple[str, Any]:
     bits = input_string.split("::")
     if len(bits) == 2:
         bits = [bits[0], "str", bits[1]]

@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Callable, Dict, Mapping, Optional, Type, TypedDict
+from typing import Any, Callable, Mapping, Optional, TypedDict
 
 from glom import assign
 from json_logic import jsonLogic
@@ -70,8 +70,8 @@ class ActionOperation:
 
     def get_action_log_data(
         self,
-        component_map: Dict[str, ComponentMeta],
-        all_variables: Dict[str, FormVariable],
+        component_map: dict[str, ComponentMeta],
+        all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> Optional[JSONObject]:
@@ -103,8 +103,8 @@ class PropertyAction(ActionOperation):
 
     def get_action_log_data(
         self,
-        component_map: Dict[str, ComponentMeta],
-        all_variables: Dict[str, FormVariable],
+        component_map: dict[str, ComponentMeta],
+        all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> JSONObject:
@@ -139,8 +139,8 @@ class DisableNextAction(ActionOperation):
 
     def get_action_log_data(
         self,
-        component_map: Dict[str, ComponentMeta],
-        all_variables: Dict[str, FormVariable],
+        component_map: dict[str, ComponentMeta],
+        all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> JSONObject:
@@ -179,8 +179,8 @@ class StepNotApplicableAction(ActionOperation):
 
     def get_action_log_data(
         self,
-        component_map: Dict[str, ComponentMeta],
-        all_variables: Dict[str, FormVariable],
+        component_map: dict[str, ComponentMeta],
+        all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> JSONObject:
@@ -215,8 +215,8 @@ class StepApplicableAction(ActionOperation):
 
     def get_action_log_data(
         self,
-        component_map: Dict[str, ComponentMeta],
-        all_variables: Dict[str, FormVariable],
+        component_map: dict[str, ComponentMeta],
+        all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> JSONObject:
@@ -249,8 +249,8 @@ class VariableAction(ActionOperation):
 
     def get_action_log_data(
         self,
-        component_map: Dict[str, ComponentMeta],
-        all_variables: Dict[str, FormVariable],
+        component_map: dict[str, ComponentMeta],
+        all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> JSONObject:
@@ -294,8 +294,8 @@ class ServiceFetchAction(ActionOperation):
 
     def get_action_log_data(
         self,
-        component_map: Dict[str, ComponentMeta],
-        all_variables: Dict[str, FormVariable],
+        component_map: dict[str, ComponentMeta],
+        all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> JSONObject:
@@ -332,7 +332,7 @@ class SetRegistrationBackendAction(ActionOperation):
         }
 
 
-ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, Type[ActionOperation]] = {
+ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, type[ActionOperation]] = {
     LogicActionTypes.property: PropertyAction,
     LogicActionTypes.disable_next: DisableNextAction,
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,

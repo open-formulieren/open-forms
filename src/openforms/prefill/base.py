@@ -1,4 +1,4 @@
-from typing import Any, Container, Dict, Iterable, List, Tuple
+from typing import Any, Container, Iterable
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -18,7 +18,7 @@ class BasePlugin(AbstractBasePlugin):
     requires_auth: AuthAttribute | None = None
     for_components: Container[str] = AllComponentTypes()
 
-    def get_available_attributes(self) -> Iterable[Tuple[str, str]]:
+    def get_available_attributes(self) -> Iterable[tuple[str, str]]:
         """
         Return a choice list of available attributes this plugin offers.
         """
@@ -29,7 +29,7 @@ class BasePlugin(AbstractBasePlugin):
     def get_prefill_values(
         self,
         submission: Submission,
-        attributes: List[str],
+        attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, JSONEncodable]:
         """
@@ -50,7 +50,7 @@ class BasePlugin(AbstractBasePlugin):
 
     def get_co_sign_values(
         self, submission: Submission, identifier: str
-    ) -> Tuple[Dict[str, Any], str]:
+    ) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 

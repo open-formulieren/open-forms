@@ -1,7 +1,7 @@
 import operator
 from dataclasses import dataclass, field
 from functools import partial
-from typing import Callable, Iterable, Iterator, List, Optional
+from typing import Callable, Iterable, Iterator, Optional
 
 import elasticapm
 from json_logic import jsonLogic
@@ -15,7 +15,7 @@ from .datastructures import DataContainer
 from .log_utils import log_errors
 
 
-def _include_rule(form_steps: List[FormStep], rule: FormLogic, step_index: int) -> bool:
+def _include_rule(form_steps: list[FormStep], rule: FormLogic, step_index: int) -> bool:
     # rules that always apply
     if not rule.trigger_from_step:
         return True

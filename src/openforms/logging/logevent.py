@@ -1,7 +1,7 @@
 import logging
 from dataclasses import asdict
 from functools import partial
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, Optional
 
 from django.db.models import Model
 from django.utils import timezone
@@ -502,7 +502,7 @@ def submission_export_list(form: "Form", user: "User"):
 
 def submission_logic_evaluated(
     submission: "Submission",
-    evaluated_rules: List["EvaluatedRule"],
+    evaluated_rules: list["EvaluatedRule"],
     initial_data: JSONObject,
     resolved_data: JSONObject,
 ):
@@ -646,7 +646,7 @@ def forms_bulk_export_downloaded(bulk_export, user):
     )
 
 
-def bulk_forms_imported(user: "User", failed_files: List[Tuple[str, str]]):
+def bulk_forms_imported(user: "User", failed_files: list[tuple[str, str]]):
     _create_log(
         user,
         "bulk_forms_imported",

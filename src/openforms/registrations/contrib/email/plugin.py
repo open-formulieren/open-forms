@@ -1,6 +1,6 @@
 import html
 from mimetypes import types_map
-from typing import Any, List, NoReturn, Optional, Tuple, TypedDict
+from typing import Any, NoReturn, Optional, TypedDict
 
 from django.conf import settings
 from django.urls import reverse
@@ -38,9 +38,9 @@ from .utils import get_registration_email_templates
 
 
 class EmailOptions(TypedDict):
-    to_emails: List[str]
-    attachment_formats: List[str]
-    payment_emails: List[str]
+    to_emails: list[str]
+    attachment_formats: list[str]
+    payment_emails: list[str]
     attach_files_to_email: Optional[bool]
     email_subject: Optional[str]
 
@@ -210,7 +210,7 @@ class EmailRegistration(BasePlugin):
     def check_config(self):
         check_config()
 
-    def get_config_actions(self) -> List[Tuple[str, str]]:
+    def get_config_actions(self) -> list[tuple[str, str]]:
         return [
             (_("Test"), reverse("admin_email_test")),
         ]

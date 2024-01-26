@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from django.forms import Textarea
 
@@ -28,7 +28,7 @@ class PluginConfigurationTextAreaReact(Textarea):
         }
         js = ("bundles/core-js.js",)
 
-    def get_context(self, name: str, value, attrs: dict) -> Dict[str, Any]:
+    def get_context(self, name: str, value, attrs: dict) -> dict[str, Any]:
         context = super().get_context(name, value, attrs)
 
         with_demos = GlobalConfiguration.get_solo().enable_demo_plugins

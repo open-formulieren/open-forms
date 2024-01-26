@@ -1,6 +1,6 @@
 import uuid
 from decimal import Decimal
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from django.db import IntegrityError, models, transaction
 from django.db.models import Max, Sum
@@ -66,7 +66,7 @@ class SubmissionPaymentQuerySet(models.QuerySet):
     def sum_amount(self) -> Decimal:
         return self.aggregate(sum_amount=Sum("amount"))["sum_amount"] or Decimal("0")
 
-    def get_completed_public_order_ids(self) -> List[int]:
+    def get_completed_public_order_ids(self) -> list[int]:
         return list(
             self.filter(
                 status__in=(PaymentStatus.registered, PaymentStatus.completed)

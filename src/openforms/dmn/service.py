@@ -1,14 +1,14 @@
 """
 Public Python API for the DMN module.
 """
-from typing import Any, Dict
+from typing import Any
 
 from .base import BasePlugin
 from .registry import register
 
 __all__ = ["evaluate_dmn", "VariablesMapping"]
 
-VariablesMapping = Dict[str, Any]
+VariablesMapping = dict[str, Any]
 
 
 def evaluate_dmn(

@@ -5,7 +5,7 @@ On top of that, it is also a realistic example of using the high-level Python AP
 the renderer to output reports.
 """
 import inspect
-from typing import List, Type, Union
+from typing import Union
 
 from django.core.management import BaseCommand
 
@@ -31,7 +31,7 @@ INDENT_SIZES = {
 INDENT = "    "
 
 
-def get_indent_level(node_cls: Union[Node, Type[Node]]) -> str:
+def get_indent_level(node_cls: Union[Node, type[Node]]) -> str:
     """
     Extract the indentation level from the node class configuration.
     """
@@ -120,7 +120,7 @@ class Command(BaseCommand):
 
         self._print_tabulate_data(tabulate_data)
 
-    def _print_tabulate_data(self, tabulate_data: List[List[str]]) -> None:
+    def _print_tabulate_data(self, tabulate_data: list[list[str]]) -> None:
         if not tabulate_data:
             return
         table = tabulate(tabulate_data)

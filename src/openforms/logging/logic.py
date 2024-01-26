@@ -4,7 +4,7 @@ Process the logic evaluation logging information.
 This relies on the datastructures used in :mod:`openforms.submissions.form_logic`.
 """
 from dataclasses import asdict
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 from json_logic.typing import JSON
 
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 def log_logic_evaluation(
     submission: Submission,
-    evaluated_rules: List["EvaluatedRule"],
+    evaluated_rules: list["EvaluatedRule"],
     initial_data: dict[str, JSON],
     resolved_data: JSONObject,
 ) -> Optional["TimelineLogProxy"]:

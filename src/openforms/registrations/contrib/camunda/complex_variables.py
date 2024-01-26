@@ -6,7 +6,7 @@ is injected and evaluated using json-logic expressions, while the remainder of t
 data may be static/hardcoded.
 """
 from dataclasses import dataclass
-from typing import Any, Dict, List, TypedDict, Union
+from typing import Any, TypedDict, Union
 
 from django_camunda.types import JSONObject, JSONValue
 from json_logic import jsonLogic
@@ -40,7 +40,7 @@ class Variable:
         cls = _source_map[kwargs["source"]]
         return cls.build(**kwargs)
 
-    def evaluate(self, data: Dict[str, Any]) -> JSONValue:
+    def evaluate(self, data: dict[str, Any]) -> JSONValue:
         raise NotImplementedError(
             "Subclass %r must implement 'def evaluate'.", type(self)
         )
@@ -59,7 +59,7 @@ class ComponentVariable(Variable):
 
 
 class CatLogicExpression(TypedDict):
-    cat: List[Union[str, VarLogicExpression]]  # JSON-logic
+    cat: list[Union[str, VarLogicExpression]]  # JSON-logic
 
 
 @dataclass
@@ -153,12 +153,12 @@ class NullVariable(ManualVariable):
 
 @dataclass
 class ObjectVariable(ManualVariable):
-    definition: Dict[str, AnyVariable]
+    definition: dict[str, AnyVariable]
 
 
 @dataclass
 class ArrayVariable(ManualVariable):
-    definition: List[AnyVariable]
+    definition: list[AnyVariable]
 
 
 @dataclass
@@ -190,8 +190,8 @@ class ComplexVariable:
 
 
 def get_complex_process_variables(
-    variables: List[dict], merged_data: dict
-) -> Dict[str, JSONObject]:
+    variables: list[dict], merged_data: dict
+) -> dict[str, JSONObject]:
     if not variables:
         return {}
 

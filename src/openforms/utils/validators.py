@@ -1,5 +1,3 @@
-from typing import List, Type
-
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
@@ -87,7 +85,7 @@ class UniqueValuesValidator:
     message = _("Values must be unique")
     code = "invalid"
 
-    def __call__(self, value: List[str]):
+    def __call__(self, value: list[str]):
         uniq = set(value)
         if len(uniq) != len(value):
             raise ValidationError(self.message, code=self.code)
@@ -116,7 +114,7 @@ class SerializerValidator:
     message = _("The data shape does not match the expected shape: {errors}")
     code = "invalid"
 
-    def __init__(self, serializer_cls: Type[serializers.Serializer], many=False):
+    def __init__(self, serializer_cls: type[serializers.Serializer], many=False):
         self.serializer_cls = serializer_cls
         self.many = many
 

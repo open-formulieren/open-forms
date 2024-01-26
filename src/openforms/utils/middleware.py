@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 from openforms.config.models import CSPSetting
 
 
@@ -13,7 +11,7 @@ class UpdateCSPMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def get_csp_update(self) -> Dict[str, List[str]]:
+    def get_csp_update(self) -> dict[str, list[str]]:
         update = dict()
 
         # dynamic admin driven
@@ -42,7 +40,7 @@ class UpdateCSPMiddleware:
         return response
 
 
-def _merge_list_values(left, right) -> List[str]:
+def _merge_list_values(left, right) -> list[str]:
     # combine strings or lists to a list with unique values
     if isinstance(left, str):
         left = [left]

@@ -4,7 +4,7 @@ import os.path
 import uuid
 from collections import defaultdict
 from datetime import date, timedelta
-from typing import TYPE_CHECKING, List, Mapping, Optional, Tuple, cast
+from typing import TYPE_CHECKING, Mapping, Optional, cast
 
 from django.core.files.base import File
 from django.db import models
@@ -74,7 +74,7 @@ class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 
-    def as_form_dict(self) -> Mapping[str, List["SubmissionFileAttachment"]]:
+    def as_form_dict(self) -> Mapping[str, list["SubmissionFileAttachment"]]:
         files = defaultdict(list)
         for file in self:
             files[file._component_configuration_path].append(file)
@@ -90,7 +90,7 @@ class SubmissionFileAttachmentManager(models.Manager):
         data_path: str,
         upload: TemporaryFileUpload,
         file_name: Optional[str] = None,
-    ) -> Tuple["SubmissionFileAttachment", bool]:
+    ) -> tuple["SubmissionFileAttachment", bool]:
         try:
             return (
                 self.get(
