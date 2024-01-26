@@ -2,7 +2,7 @@ import logging
 import uuid as _uuid
 from contextlib import suppress
 from copy import deepcopy
-from typing import Literal, Optional
+from typing import Literal
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -526,7 +526,7 @@ class Form(models.Model):
 
     @transaction.atomic
     def restore_old_version(
-        self, form_version_uuid: str, user: Optional[User] = None
+        self, form_version_uuid: str, user: User | None = None
     ) -> None:
         from ..utils import import_form_data
         from .form_version import FormVersion

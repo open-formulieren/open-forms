@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
@@ -61,7 +60,7 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
         serializers.Serializer
     )  # just to shut up some warnings in drf-spectacular
 
-    def _validate_co_sign_submission(self, plugin: BasePlugin) -> Optional[Submission]:
+    def _validate_co_sign_submission(self, plugin: BasePlugin) -> Submission | None:
         """
         Check if the flow is a co-sign flow and validate the referenced submission.
         """

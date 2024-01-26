@@ -4,7 +4,7 @@ import os.path
 import uuid
 from collections import defaultdict
 from datetime import date, timedelta
-from typing import TYPE_CHECKING, Mapping, Optional, cast
+from typing import TYPE_CHECKING, Mapping, cast
 
 from django.core.files.base import File
 from django.db import models
@@ -89,7 +89,7 @@ class SubmissionFileAttachmentManager(models.Manager):
         configuration_path: str,
         data_path: str,
         upload: TemporaryFileUpload,
-        file_name: Optional[str] = None,
+        file_name: str | None = None,
     ) -> tuple["SubmissionFileAttachment", bool]:
         try:
             return (

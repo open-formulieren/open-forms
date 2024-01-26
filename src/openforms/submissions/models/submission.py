@@ -4,7 +4,7 @@ import logging
 import uuid
 from collections import OrderedDict
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping, Optional, Union
+from typing import TYPE_CHECKING, Mapping
 
 from django.conf import settings
 from django.db import models, transaction
@@ -65,7 +65,7 @@ class SubmissionState:
         )
         return offset
 
-    def get_last_completed_step(self) -> Optional["SubmissionStep"]:
+    def get_last_completed_step(self) -> "SubmissionStep" | None:
         """
         Determine the last step that was filled out.
 
@@ -85,7 +85,7 @@ class SubmissionState:
         )
         return next(candidates, None)
 
-    def get_submission_step(self, form_step_uuid: str) -> Optional["SubmissionStep"]:
+    def get_submission_step(self, form_step_uuid: str) -> "SubmissionStep" | None:
         return next(
             (
                 step
@@ -306,7 +306,7 @@ class Submission(models.Model):
 
     objects = SubmissionManager()
 
-    _form_login_required: Optional[bool] = None  # can be set via annotation
+    _form_login_required: bool | None = None  # can be set via annotation
     _prefilled_data = None
     _total_configuration_wrapper = None
 
@@ -597,7 +597,7 @@ class Submission(models.Model):
         submission_state = self.load_execution_state()
         return submission_state.submission_steps
 
-    def get_last_completed_step(self) -> Optional["SubmissionStep"]:
+    def get_last_completed_step(self) -> "SubmissionStep" | None:
         """
         Determine which is the next step for the current submission.
         """
@@ -622,7 +622,7 @@ class Submission(models.Model):
 
         return ordered_data
 
-    def get_merged_appointment_data(self) -> dict[str, dict[str, Union[str, dict]]]:
+    def get_merged_appointment_data(self) -> dict[str, dict[str, str | dict]]:
         component_config_key_to_appointment_key = {
             "appointments.showProducts": "productIDAndName",
             "appointments.showLocations": "locationIDAndName",

@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Iterable
 
 from django.utils.translation import gettext_lazy as _
 
@@ -9,7 +9,7 @@ from rest_framework import serializers
 class ValidateQueryStringParametersMixin:
     validate_params: Iterable[OpenApiParameter] = ()
 
-    def validate_query_parameters(self) -> dict[OpenApiParameter, Optional[str]]:
+    def validate_query_parameters(self) -> dict[OpenApiParameter, str | None]:
         errors, extracted = {}, {}
 
         for param in self.validate_params:

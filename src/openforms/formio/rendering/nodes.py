@@ -1,6 +1,6 @@
 import copy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Iterator, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterator, Literal
 
 from glom import Path, assign, glom
 
@@ -32,7 +32,7 @@ class RenderConfiguration:
     landed), then fall back using the ``default``.
     """
 
-    key: Optional[str]
+    key: str | None
     default: bool
 
 
@@ -257,7 +257,7 @@ class ComponentNode(Node):
             self.component["label"] = f(self.component["label"])
 
     @property
-    def display_value(self) -> Union[str, Any]:
+    def display_value(self) -> str | Any:
         """
         Format the value according to the render mode and/or output content type.
 

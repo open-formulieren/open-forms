@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Iterator, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Iterator
 
 from django.http import HttpRequest
 
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
     from openforms.forms.models import Form
 
 
-def _iter_plugin_ids(form: Optional["Form"], registry: "Registry") -> Iterator[str]:
+def _iter_plugin_ids(form: Form | None, registry: Registry) -> Iterator[str]:
     if form is not None:
         # TODO clean this up as we support multiple backends on the form
         yield form.payment_backend
@@ -34,7 +36,7 @@ class Registry(BaseRegistry[BasePlugin]):
     #         )
 
     def get_options(
-        self, request: HttpRequest, form: Optional["Form"] = None
+        self, request: HttpRequest, form: Form | None = None
     ) -> list["APIInfo"]:
         options = []
         for plugin_id in _iter_plugin_ids(form, self):

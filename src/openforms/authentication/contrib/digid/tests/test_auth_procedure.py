@@ -1,5 +1,4 @@
 from base64 import b64decode
-from typing import Optional
 from unittest.mock import patch
 
 from django.core.files import File
@@ -35,7 +34,7 @@ def _create_test_artifact() -> str:
     return create_test_artifact(config.idp_service_entity_id)
 
 
-def _get_artifact_response(filename: str, context: Optional[dict] = None) -> bytes:
+def _get_artifact_response(filename: str, context: dict | None = None) -> bytes:
     path = str(TEST_FILES / filename)
     return get_artifact_response(path, context=context)
 

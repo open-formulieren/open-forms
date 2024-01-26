@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Callable, Mapping, Optional, TypedDict
+from typing import Any, Callable, Mapping, TypedDict
 
 from glom import assign
 from json_logic import jsonLogic
@@ -74,7 +74,7 @@ class ActionOperation:
         all_variables: dict[str, FormVariable],
         initial_data: dict,
         log_data: dict[str, JSONValue],
-    ) -> Optional[JSONObject]:
+    ) -> JSONObject | None:
         """Get action information to log"""
         return None
 

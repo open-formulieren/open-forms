@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
 from django.utils.text import get_text_list
@@ -55,7 +55,7 @@ def validate_not_deleted(form):
 
 def validate_form_definition_is_reusable(
     form_definition: "FormDefinition",
-    new_value: Optional[bool] = None,
+    new_value: bool | None = None,
 ) -> None:
     """
     Validate the integrity of the ``is_reusable`` flag.

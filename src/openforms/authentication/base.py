@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional, TypedDict
+from typing import Any, TypedDict
 
 from django.db.models import TextChoices
 from django.http import HttpRequest, HttpResponse
@@ -27,7 +27,7 @@ class LoginInfo:
     identifier: str
     label: str
     logo: LoginLogo | None = None
-    url: Optional[str] = None
+    url: str | None = None
     is_for_gemachtigde: bool = False
 
 
@@ -122,5 +122,5 @@ class BasePlugin(AbstractBasePlugin):
     def get_label(self) -> str:
         return self.verbose_name
 
-    def get_logo(self, request: HttpRequest) -> Optional[LoginLogo]:
+    def get_logo(self, request: HttpRequest) -> LoginLogo | None:
         return None

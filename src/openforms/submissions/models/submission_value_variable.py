@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime, time
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -32,31 +34,31 @@ class ValueEncoder(DjangoJSONEncoder):
 @dataclass
 class SubmissionValueVariablesState:
     submission: "Submission"
-    _variables: Optional[dict[str, "SubmissionValueVariable"]] = field(
+    _variables: dict[str, SubmissionValueVariable] | None = field(
         init=False, default=None
     )
-    _static_data: Optional[dict[str, Any]] = field(init=False, default=None)
+    _static_data: dict[str, Any] | None = field(init=False, default=None)
 
     @property
-    def variables(self) -> dict[str, "SubmissionValueVariable"]:
+    def variables(self) -> dict[str, SubmissionValueVariable]:
         if not self._variables:
             self._variables = self.collect_variables()
         return self._variables
 
     @property
-    def saved_variables(self) -> dict[str, "SubmissionValueVariable"]:
+    def saved_variables(self) -> dict[str, SubmissionValueVariable]:
         return {
             variable_key: variable
             for variable_key, variable in self.variables.items()
             if variable.pk
         }
 
-    def get_variable(self, key: str) -> "SubmissionValueVariable":
+    def get_variable(self, key: str) -> SubmissionValueVariable:
         return self.variables[key]
 
     def get_data(
         self,
-        submission_step: Optional["SubmissionStep"] = None,
+        submission_step: SubmissionStep | None = None,
         return_unchanged_data: bool = True,
     ) -> DataMapping:
         submission_variables = self.saved_variables
@@ -81,9 +83,9 @@ class SubmissionValueVariablesState:
 
     def get_variables_in_submission_step(
         self,
-        submission_step: "SubmissionStep",
+        submission_step: SubmissionStep,
         include_unsaved=True,
-    ) -> dict[str, "SubmissionValueVariable"]:
+    ) -> dict[str, SubmissionValueVariable]:
         configuration_wrapper = (
             submission_step.form_step.form_definition.configuration_wrapper
         )
@@ -99,7 +101,7 @@ class SubmissionValueVariablesState:
             if variable.key in keys_in_step
         }
 
-    def collect_variables(self) -> dict[str, "SubmissionValueVariable"]:
+    def collect_variables(self) -> dict[str, SubmissionValueVariable]:
         # leverage the (already populated) submission state to get access to form
         # steps and form definitions
         submission_state = self.submission.load_execution_state()
@@ -163,7 +165,7 @@ class SubmissionValueVariablesState:
             }
         return self._static_data
 
-    def get_prefill_variables(self) -> list["SubmissionValueVariable"]:
+    def get_prefill_variables(self) -> list[SubmissionValueVariable]:
         prefill_vars = []
         for variable in self.variables.values():
             if not variable.is_initially_prefilled:
@@ -207,8 +209,8 @@ class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(
         self,
         data: DataMapping,
-        submission: "Submission",
-        submission_step: Optional["SubmissionStep"] = None,
+        submission: Submission,
+        submission_step: SubmissionStep | None = None,
         update_missing_variables: bool = False,
     ) -> None:
         submission_value_variables_state = (

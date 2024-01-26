@@ -1,7 +1,6 @@
 import logging
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -80,9 +79,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
 @dataclass
 class PartialDate:
-    year: Optional[int] = None
-    month: Optional[int] = None
-    day: Optional[int] = None
+    year: int | None = None
+    month: int | None = None
+    day: int | None = None
 
     @property
     def indicator(self):

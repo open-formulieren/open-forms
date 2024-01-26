@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import asdict
 from functools import partial
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.db.models import Model
 from django.utils import timezone
@@ -18,12 +20,9 @@ from openforms.typing import JSONObject
 from .tasks import log_logic_evaluation
 
 if TYPE_CHECKING:
+    from openforms.payments.models import SubmissionPayment
     from openforms.submissions.logic.rules import EvaluatedRule, FormLogic
-    from openforms.submissions.models import (
-        Submission,
-        SubmissionPayment,
-        SubmissionStep,
-    )
+    from openforms.submissions.models import Submission, SubmissionStep
     from stuf.models import StufService
 
     from .models import TimelineLogProxy
@@ -34,12 +33,12 @@ logger = logging.getLogger(__name__)
 def _create_log(
     object: Model,
     event: str,
-    extra_data: Optional[dict] = None,
-    plugin: Optional["AbstractBasePlugin"] = None,
-    error: Optional[Exception] = None,
-    tags: Optional[list] = None,
-    user: Optional["User"] = None,
-) -> "TimelineLogProxy":
+    extra_data: dict | None = None,
+    plugin: AbstractBasePlugin | None = None,
+    error: Exception | None = None,
+    tags: list | None = None,
+    user: User | None = None,
+) -> TimelineLogProxy:
     # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
     from openforms.logging.models import TimelineLogProxy
 
@@ -74,7 +73,7 @@ def _create_log(
 
 
 def enabling_analytics_tool(
-    analytics_tools_configuration: "AnalyticsToolsConfiguration", analytics_tool: str
+    analytics_tools_configuration: AnalyticsToolsConfiguration, analytics_tool: str
 ):
     _create_log(
         analytics_tools_configuration,
@@ -84,7 +83,7 @@ def enabling_analytics_tool(
 
 
 def disabling_analytics_tool(
-    analytics_tools_configuration: "AnalyticsToolsConfiguration", analytics_tool: str
+    analytics_tools_configuration: AnalyticsToolsConfiguration, analytics_tool: str
 ):
     _create_log(
         analytics_tools_configuration,
@@ -96,19 +95,19 @@ def disabling_analytics_tool(
 # - - -
 
 
-def submission_start(submission: "Submission"):
+def submission_start(submission: Submission):
     _create_log(submission, "submission_start")
 
 
 def submission_auth(
-    submission: "Submission", delegated: bool = False, user: Optional[User] = None
+    submission: Submission, delegated: bool = False, user: User | None = None
 ):
     _create_log(
         submission, "submission_auth", user=user, extra_data={"delegated": delegated}
     )
 
 
-def submission_step_fill(step: "SubmissionStep"):
+def submission_step_fill(step: SubmissionStep):
     _create_log(
         step.submission,
         "submission_step_fill",
@@ -119,18 +118,18 @@ def submission_step_fill(step: "SubmissionStep"):
     )
 
 
-def form_submit_success(submission: "Submission"):
+def form_submit_success(submission: Submission):
     _create_log(submission, "form_submit_success")
 
 
 # - - -
 
 
-def pdf_generation_start(submission: "Submission"):
+def pdf_generation_start(submission: Submission):
     _create_log(submission, "pdf_generation_start")
 
 
-def pdf_generation_success(submission: "Submission", submission_report):
+def pdf_generation_success(submission: Submission, submission_report):
     _create_log(
         submission,
         "pdf_generation_success",
@@ -140,9 +139,7 @@ def pdf_generation_success(submission: "Submission", submission_report):
     )
 
 
-def pdf_generation_failure(
-    submission: "Submission", submission_report, error: Exception
-):
+def pdf_generation_failure(submission: Submission, submission_report, error: Exception):
     _create_log(
         submission,
         "pdf_generation_failure",
@@ -151,7 +148,7 @@ def pdf_generation_failure(
     )
 
 
-def pdf_generation_skip(submission: "Submission", submission_report):
+def pdf_generation_skip(submission: Submission, submission_report):
     _create_log(
         submission,
         "pdf_generation_skip",
@@ -162,7 +159,7 @@ def pdf_generation_skip(submission: "Submission", submission_report):
 # - - -
 
 
-def prefill_retrieve_success(submission: "Submission", plugin, prefill_fields):
+def prefill_retrieve_success(submission: Submission, plugin, prefill_fields):
     _create_log(
         submission,
         "prefill_retrieve_success",
@@ -172,7 +169,7 @@ def prefill_retrieve_success(submission: "Submission", plugin, prefill_fields):
     )
 
 
-def prefill_retrieve_empty(submission: "Submission", plugin, prefill_fields):
+def prefill_retrieve_empty(submission: Submission, plugin, prefill_fields):
     _create_log(
         submission,
         "prefill_retrieve_empty",
@@ -182,7 +179,7 @@ def prefill_retrieve_empty(submission: "Submission", plugin, prefill_fields):
     )
 
 
-def prefill_retrieve_failure(submission: "Submission", plugin, error: Exception):
+def prefill_retrieve_failure(submission: Submission, plugin, error: Exception):
     _create_log(
         submission,
         "prefill_retrieve_failure",
@@ -194,7 +191,7 @@ def prefill_retrieve_failure(submission: "Submission", plugin, error: Exception)
 # - - -
 
 
-def registration_start(submission: "Submission"):
+def registration_start(submission: Submission):
     _create_log(submission, "registration_start")
 
 
@@ -204,7 +201,7 @@ registration_debug.__doc__ = (
 )
 
 
-def registration_success(submission: "Submission", plugin):
+def registration_success(submission: Submission, plugin):
     _create_log(
         submission,
         "registration_success",
@@ -212,7 +209,7 @@ def registration_success(submission: "Submission", plugin):
     )
 
 
-def registration_failure(submission: "Submission", error: Exception, plugin=None):
+def registration_failure(submission: Submission, error: Exception, plugin=None):
     _create_log(
         submission,
         "registration_failure",
@@ -221,14 +218,14 @@ def registration_failure(submission: "Submission", error: Exception, plugin=None
     )
 
 
-def registration_skip(submission: "Submission"):
+def registration_skip(submission: Submission):
     _create_log(
         submission,
         "registration_skip",
     )
 
 
-def registration_attempts_limited(submission: "Submission"):
+def registration_attempts_limited(submission: Submission):
     _create_log(
         submission,
         "registration_attempts_limited",
@@ -238,42 +235,42 @@ def registration_attempts_limited(submission: "Submission"):
 # - - -
 
 
-def registration_payment_update_start(submission: "Submission", plugin):
+def registration_payment_update_start(submission: Submission, plugin):
     _create_log(submission, "registration_payment_update_start", plugin=plugin)
 
 
-def registration_payment_update_success(submission: "Submission", plugin):
+def registration_payment_update_success(submission: Submission, plugin):
     _create_log(submission, "registration_payment_update_success", plugin=plugin)
 
 
 def registration_payment_update_failure(
-    submission: "Submission", error: Exception, plugin=None
+    submission: Submission, error: Exception, plugin=None
 ):
     _create_log(
         submission, "registration_payment_update_failure", plugin=plugin, error=error
     )
 
 
-def registration_payment_update_skip(submission: "Submission"):
+def registration_payment_update_skip(submission: Submission):
     _create_log(submission, "registration_payment_update_skip")
 
 
-def registration_skipped_not_yet_paid(submission: "Submission"):
+def registration_skipped_not_yet_paid(submission: Submission):
     _create_log(submission, "registration_skipped_not_yet_paid")
 
 
 # - - -
 
 
-def confirmation_email_start(submission: "Submission"):
+def confirmation_email_start(submission: Submission):
     _create_log(submission, "confirmation_email_start")
 
 
-def confirmation_email_success(submission: "Submission"):
+def confirmation_email_success(submission: Submission):
     _create_log(submission, "confirmation_email_success")
 
 
-def confirmation_email_failure(submission: "Submission", error: Exception):
+def confirmation_email_failure(submission: Submission, error: Exception):
     _create_log(
         submission,
         "confirmation_email_failure",
@@ -281,14 +278,14 @@ def confirmation_email_failure(submission: "Submission", error: Exception):
     )
 
 
-def confirmation_email_skip(submission: "Submission"):
+def confirmation_email_skip(submission: Submission):
     _create_log(submission, "confirmation_email_skip")
 
 
 # - - -
 
 
-def payment_flow_start(payment: "SubmissionPayment", plugin):
+def payment_flow_start(payment: SubmissionPayment, plugin):
     _create_log(
         payment.submission,
         "payment_flow_start",
@@ -300,7 +297,7 @@ def payment_flow_start(payment: "SubmissionPayment", plugin):
     )
 
 
-def payment_flow_failure(payment: "SubmissionPayment", plugin, error: Exception):
+def payment_flow_failure(payment: SubmissionPayment, plugin, error: Exception):
     _create_log(
         payment.submission,
         "payment_flow_failure",
@@ -313,7 +310,7 @@ def payment_flow_failure(payment: "SubmissionPayment", plugin, error: Exception)
     )
 
 
-def payment_flow_return(payment: "SubmissionPayment", plugin):
+def payment_flow_return(payment: SubmissionPayment, plugin):
     _create_log(
         payment.submission,
         "payment_flow_return",
@@ -327,7 +324,7 @@ def payment_flow_return(payment: "SubmissionPayment", plugin):
     )
 
 
-def payment_flow_webhook(payment: "SubmissionPayment", plugin):
+def payment_flow_webhook(payment: SubmissionPayment, plugin):
     _create_log(
         payment.submission,
         "payment_flow_webhook",
@@ -344,7 +341,7 @@ def payment_flow_webhook(payment: "SubmissionPayment", plugin):
 # - - -
 
 
-def payment_register_success(payment: "SubmissionPayment", plugin):
+def payment_register_success(payment: SubmissionPayment, plugin):
     _create_log(
         payment.submission,
         "payment_register_success",
@@ -356,7 +353,7 @@ def payment_register_success(payment: "SubmissionPayment", plugin):
     )
 
 
-def payment_register_failure(payment: "SubmissionPayment", plugin, error: Exception):
+def payment_register_failure(payment: SubmissionPayment, plugin, error: Exception):
     _create_log(
         payment.submission,
         "payment_register_failure",
@@ -370,9 +367,9 @@ def payment_register_failure(payment: "SubmissionPayment", plugin, error: Except
 
 
 def payment_transfer_to_new_submission(
-    submission_payment: "SubmissionPayment",
-    old_submission: "Submission",
-    new_submission: "Submission",
+    submission_payment: SubmissionPayment,
+    old_submission: Submission,
+    new_submission: Submission,
 ):
     _create_log(
         object=old_submission,
@@ -388,7 +385,7 @@ def payment_transfer_to_new_submission(
 # - - -
 
 
-def appointment_register_start(submission: "Submission", plugin):
+def appointment_register_start(submission: Submission, plugin):
     _create_log(
         submission,
         "appointment_register_start",
@@ -396,7 +393,7 @@ def appointment_register_start(submission: "Submission", plugin):
     )
 
 
-def appointment_register_success(appointment: "AppointmentInfo", plugin):
+def appointment_register_success(appointment: AppointmentInfo, plugin):
     _create_log(
         appointment.submission,
         "appointment_register_success",
@@ -404,7 +401,7 @@ def appointment_register_success(appointment: "AppointmentInfo", plugin):
     )
 
 
-def appointment_register_failure(appointment: "AppointmentInfo", plugin, error):
+def appointment_register_failure(appointment: AppointmentInfo, plugin, error):
     _create_log(
         appointment.submission,
         "appointment_register_failure",
@@ -413,14 +410,14 @@ def appointment_register_failure(appointment: "AppointmentInfo", plugin, error):
     )
 
 
-def appointment_register_skip(submission: "Submission"):
+def appointment_register_skip(submission: Submission):
     _create_log(submission, "appointment_register_skip")
 
 
 # - - -
 
 
-def appointment_update_start(appointment: "AppointmentInfo", plugin):
+def appointment_update_start(appointment: AppointmentInfo, plugin):
     _create_log(
         appointment.submission,
         "appointment_update_start",
@@ -428,7 +425,7 @@ def appointment_update_start(appointment: "AppointmentInfo", plugin):
     )
 
 
-def appointment_update_success(appointment: "AppointmentInfo", plugin):
+def appointment_update_success(appointment: AppointmentInfo, plugin):
     _create_log(
         appointment.submission,
         "appointment_update_success",
@@ -436,7 +433,7 @@ def appointment_update_success(appointment: "AppointmentInfo", plugin):
     )
 
 
-def appointment_update_failure(appointment: "AppointmentInfo", plugin, error):
+def appointment_update_failure(appointment: AppointmentInfo, plugin, error):
     _create_log(
         appointment.submission,
         "appointment_update_failure",
@@ -448,7 +445,7 @@ def appointment_update_failure(appointment: "AppointmentInfo", plugin, error):
 # - - -
 
 
-def appointment_cancel_start(appointment: "AppointmentInfo", plugin):
+def appointment_cancel_start(appointment: AppointmentInfo, plugin):
     _create_log(
         appointment.submission,
         "appointment_cancel_start",
@@ -456,7 +453,7 @@ def appointment_cancel_start(appointment: "AppointmentInfo", plugin):
     )
 
 
-def appointment_cancel_success(appointment: "AppointmentInfo", plugin):
+def appointment_cancel_success(appointment: AppointmentInfo, plugin):
     _create_log(
         appointment.submission,
         "appointment_cancel_success",
@@ -464,7 +461,7 @@ def appointment_cancel_success(appointment: "AppointmentInfo", plugin):
     )
 
 
-def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
+def appointment_cancel_failure(appointment: AppointmentInfo, plugin, error):
     _create_log(
         appointment.submission,
         "appointment_cancel_failure",
@@ -473,7 +470,7 @@ def appointment_cancel_failure(appointment: "AppointmentInfo", plugin, error):
     )
 
 
-def submission_details_view_admin(submission: "Submission", user: "User"):
+def submission_details_view_admin(submission: Submission, user: User):
     _create_log(
         submission,
         "submission_details_view_admin",
@@ -482,7 +479,7 @@ def submission_details_view_admin(submission: "Submission", user: "User"):
     )
 
 
-def submission_details_view_api(submission: "Submission", user: "User"):
+def submission_details_view_api(submission: Submission, user: User):
     _create_log(
         submission,
         "submission_details_view_api",
@@ -491,7 +488,7 @@ def submission_details_view_api(submission: "Submission", user: "User"):
     )
 
 
-def submission_export_list(form: "Form", user: "User"):
+def submission_export_list(form: Form, user: User):
     _create_log(
         form,
         "submission_export_list",
@@ -501,8 +498,8 @@ def submission_export_list(form: "Form", user: "User"):
 
 
 def submission_logic_evaluated(
-    submission: "Submission",
-    evaluated_rules: list["EvaluatedRule"],
+    submission: Submission,
+    evaluated_rules: list[EvaluatedRule],
     initial_data: JSONObject,
     resolved_data: JSONObject,
 ):
@@ -526,7 +523,7 @@ def submission_logic_evaluated(
 
 
 def logic_evaluation_failed(
-    rule: "FormLogic",
+    rule: FormLogic,
     error: Exception,
     logic: JSONObject,
 ) -> None:
@@ -536,7 +533,7 @@ def logic_evaluation_failed(
 
 
 def form_configuration_error(
-    form: "Form",
+    form: Form,
     component: JSONObject,
     error_message: str,
 ):
@@ -550,7 +547,7 @@ def form_configuration_error(
 # - - -
 
 
-def stuf_zds_request(service: "StufService", url):
+def stuf_zds_request(service: StufService, url):
     _create_log(
         service,
         "stuf_zds_request",
@@ -558,7 +555,7 @@ def stuf_zds_request(service: "StufService", url):
     )
 
 
-def stuf_zds_success_response(service: "StufService", url):
+def stuf_zds_success_response(service: StufService, url):
     _create_log(
         service,
         "stuf_zds_success_response",
@@ -566,7 +563,7 @@ def stuf_zds_success_response(service: "StufService", url):
     )
 
 
-def stuf_zds_failure_response(service: "StufService", url):
+def stuf_zds_failure_response(service: StufService, url):
     _create_log(
         service,
         "stuf_zds_failure_response",
@@ -574,7 +571,7 @@ def stuf_zds_failure_response(service: "StufService", url):
     )
 
 
-def stuf_bg_request(service: "StufService", url):
+def stuf_bg_request(service: StufService, url):
     _create_log(
         service,
         "stuf_bg_request",
@@ -582,7 +579,7 @@ def stuf_bg_request(service: "StufService", url):
     )
 
 
-def stuf_bg_response(service: "StufService", url):
+def stuf_bg_response(service: StufService, url):
     _create_log(
         service,
         "stuf_bg_response",
@@ -646,7 +643,7 @@ def forms_bulk_export_downloaded(bulk_export, user):
     )
 
 
-def bulk_forms_imported(user: "User", failed_files: list[tuple[str, str]]):
+def bulk_forms_imported(user: User, failed_files: list[tuple[str, str]]):
     _create_log(
         user,
         "bulk_forms_imported",
@@ -658,21 +655,21 @@ def bulk_forms_imported(user: "User", failed_files: list[tuple[str, str]]):
 # - - -
 
 
-def cosigner_email_queuing_failure(submission: "Submission"):
+def cosigner_email_queuing_failure(submission: Submission):
     _create_log(
         submission,
         "cosigner_email_queuing_failure",
     )
 
 
-def cosigner_email_queuing_success(submission: "Submission"):
+def cosigner_email_queuing_success(submission: Submission):
     _create_log(
         submission,
         "cosigner_email_queuing_success",
     )
 
 
-def skipped_registration_cosign_required(submission: "Submission"):
+def skipped_registration_cosign_required(submission: Submission):
     _create_log(
         submission,
         "skipped_registration_cosign_required",
@@ -682,17 +679,17 @@ def skipped_registration_cosign_required(submission: "Submission"):
 # - - -
 
 
-def form_activated(form: "Form"):
+def form_activated(form: Form):
     _create_log(form, "form_activated")
 
 
-def form_deactivated(form: "Form"):
+def form_deactivated(form: Form):
     _create_log(form, "form_deactivated")
 
 
 # - - -
 def email_status_change(
-    submission: "Submission",
+    submission: Submission,
     event: str,
     status: int,
     status_label: str,

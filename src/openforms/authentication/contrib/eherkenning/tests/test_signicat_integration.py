@@ -1,4 +1,4 @@
-from typing import Literal, Union
+from typing import Literal, TypeAlias
 from unittest.mock import patch
 
 from django.core.files import File
@@ -621,8 +621,8 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
 # Helper functions
 
 # poor person's enum.StrEnum
-Method = Union[Literal["get"], Literal["post"]]
-Response = Union[TemplateResponse, requests.Response]
+Method: TypeAlias = Literal["get", "post"]
+Response: TypeAlias = TemplateResponse | requests.Response
 
 
 def _parse_form(response: Response) -> tuple[Method, str, dict[str, str]]:

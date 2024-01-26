@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
@@ -227,7 +225,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         qs = qs.select_related("form")
         return qs
 
-    def successfully_processed(self, obj) -> Optional[bool]:
+    def successfully_processed(self, obj) -> bool | None:
         if obj.registration_status == RegistrationStatuses.pending:
             return None
         return not obj.needs_on_completion_retry

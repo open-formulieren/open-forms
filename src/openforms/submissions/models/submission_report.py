@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.core.files.base import ContentFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _, override
@@ -83,7 +81,7 @@ class SubmissionReport(models.Model):
         self.save()
         return html_report
 
-    def get_celery_task(self) -> Optional[AsyncResult]:
+    def get_celery_task(self) -> AsyncResult | None:
         if not self.task_id:
             return
 

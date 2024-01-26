@@ -1,4 +1,4 @@
-from typing import Any, NoReturn, Optional
+from typing import Any, NoReturn
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
@@ -137,7 +137,7 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
         required = config.get("loa") or EherkenningConfiguration.get_solo().loa
         return loa_order(authenticated_loa) >= loa_order(required)
 
-    def get_logo(self, request) -> Optional[LoginLogo]:
+    def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
 
@@ -147,7 +147,7 @@ class EIDASAuthentication(AuthenticationBasePlugin):
     provides_auth = AuthAttribute.pseudo
     session_key = EIDAS_AUTH_SESSION_KEY
 
-    def get_logo(self, request) -> Optional[LoginLogo]:
+    def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(
             title=self.get_label(),
             image_src=request.build_absolute_uri(static("img/eidas.png")),

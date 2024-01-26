@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any
 
 from django import forms
 from django.http import (
@@ -53,7 +53,7 @@ class DemoBaseAuthentication(BasePlugin):
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str
-    ) -> Union[str, HttpResponse]:
+    ) -> str | HttpResponse:
         context = {
             "form_action": self.get_return_url(request, form),
             "form_url": form_url,
@@ -66,9 +66,7 @@ class DemoBaseAuthentication(BasePlugin):
         }
         return render(request, "authentication/contrib/demo/login.html", context)
 
-    def handle_co_sign(
-        self, request: HttpRequest, form: Form
-    ) -> Optional[dict[str, Any]]:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any] | None:
         submitted = self.form_class(request.POST)
         if not submitted.is_valid():
             raise InvalidCoSignData(f"Validation errors: {submitted.errors}")
@@ -78,9 +76,7 @@ class DemoBaseAuthentication(BasePlugin):
             "fields": {},
         }
 
-    def handle_return(
-        self, request: HttpRequest, form: Form
-    ) -> Union[str, HttpResponse]:
+    def handle_return(self, request: HttpRequest, form: Form) -> str | HttpResponse:
         submitted = self.form_class(request.POST)
         if not submitted.is_valid():
             return HttpResponseBadRequest("invalid data")

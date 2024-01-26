@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import logging
-from typing import TYPE_CHECKING, Iterator, Optional
+from typing import TYPE_CHECKING, Iterator
 
 from django.http import HttpRequest
 
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def _iter_plugin_ids(form: Optional["Form"], registry: "Registry") -> Iterator[str]:
+def _iter_plugin_ids(form: Form | None, registry: Registry) -> Iterator[str]:
     if form is not None:
         yield from form.authentication_backends
     else:
@@ -29,8 +31,8 @@ class Registry(BaseRegistry["BasePlugin"]):
     module = "authentication"
 
     def get_options(
-        self, request: HttpRequest, form: Optional["Form"] = None
-    ) -> list["LoginInfo"]:
+        self, request: HttpRequest, form: Form | None = None
+    ) -> list[LoginInfo]:
         options = list()
         for plugin_id in _iter_plugin_ids(form, self):
             if plugin_id not in self._registry:

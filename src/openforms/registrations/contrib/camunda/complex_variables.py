@@ -5,21 +5,15 @@ The variable schema is both a schema and an instance of the schema. Submission d
 is injected and evaluated using json-logic expressions, while the remainder of the
 data may be static/hardcoded.
 """
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, TypedDict, Union
+from typing import Any, TypeAlias, TypedDict
 
 from django_camunda.types import JSONObject, JSONValue
 from json_logic import jsonLogic
 
-AnyVariable = Union[
-    "ComponentVariable",
-    "StringVariable",
-    "NumberVariable",
-    "BooleanVariable",
-    "NullVariable",
-    "ObjectVariable",
-    "ArrayVariable",
-]
+AnyVariable: TypeAlias = "ComponentVariable | StringVariable | NumberVariable | BooleanVariable | NullVariable | ObjectVariable | ArrayVariable"
 
 
 class VarLogicExpression(TypedDict):
@@ -31,7 +25,7 @@ class Variable:
     source: str
 
     @staticmethod
-    def build(**kwargs) -> Union["ComponentVariable", "ManualVariable"]:
+    def build(**kwargs) -> ComponentVariable | ManualVariable:
         _source_map = {
             "manual": ManualVariable,
             "component": ComponentVariable,
@@ -59,7 +53,7 @@ class ComponentVariable(Variable):
 
 
 class CatLogicExpression(TypedDict):
-    cat: list[Union[str, VarLogicExpression]]  # JSON-logic
+    cat: list[str | VarLogicExpression]  # JSON-logic
 
 
 @dataclass
@@ -80,7 +74,7 @@ class ManualVariable(Variable):
     type: str
 
     @staticmethod
-    def build(**kwargs) -> "ManualVariable":
+    def build(**kwargs) -> ManualVariable:
         this_type = kwargs["type"]
         _type_map = {
             "string": StringVariable,
@@ -129,9 +123,9 @@ class StringVariable(ManualVariable):
 
 @dataclass
 class NumberVariable(ManualVariable):
-    definition: Union[float, int]
+    definition: float | int
 
-    def evaluate(self, data: dict) -> Union[float, int]:
+    def evaluate(self, data: dict) -> float | int:
         return self.definition
 
 
@@ -166,7 +160,7 @@ class ComplexVariable:
     enabled: bool
     alias: str
     type: str
-    definition: Union[ObjectVariable, ArrayVariable]
+    definition: ObjectVariable | ArrayVariable
 
     @classmethod
     def build(cls, **kwargs):

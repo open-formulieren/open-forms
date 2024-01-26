@@ -4,7 +4,6 @@ import logging
 import re
 import warnings
 from datetime import datetime
-from typing import Optional
 
 from django.utils.translation import gettext_lazy as _
 
@@ -262,7 +261,7 @@ def create_base64_qrcode(text):
     return base64.b64encode(buffer.read()).decode("ascii")
 
 
-def find_first_appointment_step(form: Form) -> Optional[FormStep]:
+def find_first_appointment_step(form: Form) -> FormStep | None:
     """
     Find the first step in a form dealing with appointments.
 

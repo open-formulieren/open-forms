@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import TypeAlias
 
 from django.conf import settings
 from django.http.response import HttpResponseBase
@@ -8,7 +8,7 @@ from django.utils.translation import get_language_info
 
 from rest_framework.response import Response
 
-ResponseType = Union[HttpResponseBase, Response]
+ResponseType: TypeAlias = HttpResponseBase | Response
 
 
 def set_language_cookie(response: ResponseType, language_code: str) -> None:

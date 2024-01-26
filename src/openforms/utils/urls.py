@@ -1,18 +1,16 @@
-from typing import Any, Optional, Union
+from typing import Any
 from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
-from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.encoding import iri_to_uri
 
 from furl import furl
-from rest_framework.request import Request
 
-RequestType = Union[HttpRequest, Request]
+from openforms.typing import AnyRequest
 
 
-def build_absolute_uri(location: str, request: Optional[RequestType] = None):
+def build_absolute_uri(location: str, request: AnyRequest | None = None):
     """
     Construct an absolutely qualified URI from a location/path.
 
@@ -62,8 +60,8 @@ def reverse_plus(
     *,
     args=None,
     kwargs=None,
-    request: Optional[RequestType] = None,
-    query: Optional[dict[str, Any]] = None,
+    request: AnyRequest | None = None,
+    query: dict[str, Any] | None = None,
     make_absolute: bool = True,
 ):
     """
@@ -99,7 +97,7 @@ def reverse_plus(
         return location
 
 
-def is_admin_request(request: RequestType) -> bool:
+def is_admin_request(request: AnyRequest) -> bool:
     """
     Checks whether a request is made from the admin
 

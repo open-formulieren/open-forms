@@ -1,4 +1,4 @@
-from typing import Literal, Optional, TypedDict
+from typing import Literal, TypedDict
 
 from furl import furl
 from rest_framework.request import Request
@@ -25,8 +25,8 @@ class BaseAuth(TypedDict):
 
 
 class FormAuth(BaseAuth):
-    machtigen: Optional[dict]
-    loa: Optional[str]
+    machtigen: dict | None
+    loa: str | None
 
 
 def store_auth_details(

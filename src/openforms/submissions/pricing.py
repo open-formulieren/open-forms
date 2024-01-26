@@ -1,6 +1,6 @@
 import logging
 from decimal import Decimal
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from json_logic import jsonLogic
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def get_submission_price(submission: "Submission") -> Optional[Decimal]:
+def get_submission_price(submission: "Submission") -> Decimal | None:
     """
     Calculate the price for a given submission.
 

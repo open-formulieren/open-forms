@@ -1,7 +1,6 @@
 """
 Implement component-specific dynamic configuration based on (submission) state.
 """
-from typing import Optional
 
 from rest_framework.request import Request
 
@@ -17,7 +16,7 @@ __all__ = ["rewrite_formio_components", "rewrite_formio_components_for_request"]
 def rewrite_formio_components(
     configuration_wrapper: FormioConfigurationWrapper,
     submission: Submission,
-    data: Optional[DataMapping] = None,
+    data: DataMapping | None = None,
 ) -> FormioConfigurationWrapper:
     """
     Loop over the formio configuration and mutate components in place.

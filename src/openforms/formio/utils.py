@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Iterator, Optional, TypeAlias, TypeGuard
+from typing import Any, Iterator, TypeAlias, TypeGuard
 
 import elasticapm
 from glom import Coalesce, Path, glom
@@ -82,7 +82,7 @@ def flatten_by_path(configuration: JSONObject) -> dict[str, Component]:
 
 
 def get_readable_path_from_configuration_path(
-    configuration: JSONObject, path: str, prefix: Optional[str] = ""
+    configuration: JSONObject, path: str, prefix: str | None = ""
 ) -> str:
     """
     Get a readable version of the configuration path.
@@ -187,7 +187,7 @@ def get_component_empty_value(component):
     return DEFAULT_INITIAL_VALUE.get(data_type, "")
 
 
-def get_component_default_value(component) -> Optional[Any]:
+def get_component_default_value(component) -> Any | None:
     # Formio has a getter for the:
     # - emptyValue: https://github.com/formio/formio.js/blob/4.13.x/src/components/textfield/TextField.js#L58
     # - defaultValue:

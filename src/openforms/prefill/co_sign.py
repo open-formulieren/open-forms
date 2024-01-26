@@ -7,7 +7,6 @@ done by amending the co-sign data on a submission when the co-sign auth event is
 received, see the :mod:`signals` module.
 """
 import logging
-from typing import Optional
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
@@ -26,7 +25,7 @@ AUTH_ATTRIBUTE_TO_CONFIG_FIELD = {
 
 def get_default_plugin_for_auth_attribute(
     auth_attribute: AuthAttribute | None,
-) -> Optional[str]:
+) -> str | None:
     if not auth_attribute or not (
         config_field := AUTH_ATTRIBUTE_TO_CONFIG_FIELD.get(auth_attribute)
     ):
