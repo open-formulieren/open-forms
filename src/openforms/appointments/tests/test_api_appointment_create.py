@@ -97,17 +97,23 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
             appointment.contact_details_meta,
             [
                 {
-                    "type": "textfield",
                     "key": "lastName",
-                    "label": _("Last name"),
-                    "validate": {
-                        "required": True,
-                        "maxLength": 20,
-                    },
-                }
+                    "type": "textfield",
+                    "label": "Achternaam",
+                    "validate": {"required": True, "maxLength": 20},
+                },
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "E-mailadres",
+                    "validate": {"required": True, "maxLength": 100},
+                },
             ],
         )
-        self.assertEqual(appointment.contact_details, {"lastName": "Periwinkle"})
+        self.assertEqual(
+            appointment.contact_details,
+            {"email": "user@example.com", "lastName": "Periwinkle"},
+        )
         products = appointment.products.all()
         self.assertEqual(len(products), 1)
         self.assertEqual(products[0].product_id, "2")
