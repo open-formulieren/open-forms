@@ -124,7 +124,11 @@ export const extractComponentLiterals = component => {
     ...ALWAYS_TRANSLATABLE_PROPERTIES,
     ...(ADDITIONAL_PROPERTIES_BY_COMPONENT_TYPE[component.type] || []),
   ];
+
+  const isDateOrDatetimeComponent = ['date', 'datetime'].includes(component.type);
   const literals = allTranslatableProperties
+    // Do not show warnings for date/datetime placeholders, they are not translatable:
+    .filter(property => (isDateOrDatetimeComponent ? property !== 'placeholder' : property))
     .filter(property => !isRegex(property))
     .map(property => get(component, property));
 
