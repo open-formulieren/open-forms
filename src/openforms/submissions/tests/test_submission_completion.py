@@ -6,6 +6,7 @@ sub-resource.
 
 The backend should perform total-form validation as part of this action.
 """
+
 from decimal import Decimal
 from unittest.mock import patch
 

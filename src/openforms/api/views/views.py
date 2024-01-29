@@ -1,6 +1,7 @@
 """
 Concrete view classes/utilities not tied to any particular app.
 """
+
 import logging
 import os
 from collections import OrderedDict

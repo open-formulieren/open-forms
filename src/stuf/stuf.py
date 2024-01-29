@@ -1,6 +1,7 @@
 """
 Model SOAP/StUF-concepts in the Python domain.
 """
+
 from dataclasses import dataclass
 from typing import Literal
 

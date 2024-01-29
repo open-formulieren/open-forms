@@ -8,6 +8,7 @@ Aspects tested:
 * relevant SOAP HTTP headers
 * request body generation via templates
 """
+
 from django.test import SimpleTestCase
 
 import requests_mock

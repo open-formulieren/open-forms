@@ -3,6 +3,7 @@ Test the Camunda-plugin specific extra API endpoints.
 
 These endpoints are only used in the form designer.
 """
+
 from unittest.mock import patch
 
 from django.test import TestCase

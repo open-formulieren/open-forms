@@ -147,12 +147,12 @@ class ArrayVariableDefinitionSerializer(serializers.Serializer):
 
 
 # recursive references, fun!
-ManualVariableSerializer.serializer_mapping[
-    str(JSONVariableTypes.object)
-] = ObjectVariableDefinitionSerializer
-ManualVariableSerializer.serializer_mapping[
-    str(JSONVariableTypes.array)
-] = ArrayVariableDefinitionSerializer
+ManualVariableSerializer.serializer_mapping[str(JSONVariableTypes.object)] = (
+    ObjectVariableDefinitionSerializer
+)
+ManualVariableSerializer.serializer_mapping[str(JSONVariableTypes.array)] = (
+    ArrayVariableDefinitionSerializer
+)
 
 
 class ComplexVariableSerializer(PolymorphicSerializer):

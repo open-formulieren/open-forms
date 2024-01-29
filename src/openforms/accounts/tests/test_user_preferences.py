@@ -1,6 +1,7 @@
 """
 Tests for managing the (admin) user preferences.
 """
+
 from django.urls import reverse, reverse_lazy
 
 from django_webtest import WebTest

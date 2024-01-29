@@ -135,11 +135,11 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                     renderer=self.renderer,
                     depth=self.depth + 1,
                     path=self.path,
-                    json_renderer_path=Path(
-                        self.json_renderer_path, self.key_as_path, index
-                    )
-                    if self.json_renderer_path
-                    else Path(self.key_as_path, index),
+                    json_renderer_path=(
+                        Path(self.json_renderer_path, self.key_as_path, index)
+                        if self.json_renderer_path
+                        else Path(self.key_as_path, index)
+                    ),
                     configuration_path=configuration_path,
                 )
 

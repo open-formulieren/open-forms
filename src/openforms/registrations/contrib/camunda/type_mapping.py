@@ -6,6 +6,7 @@ so that django-camunda can map it to the appropriate Camunda type information.
 
 The work in #1068 should eventually make this module obsolete.
 """
+
 from decimal import Decimal
 from typing import Any
 

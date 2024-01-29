@@ -1,6 +1,7 @@
 """
 Introspection of sonLogic expression, based on our json_logic.meta extension.
 """
+
 from json_logic.meta import JSONLogicExpression
 from json_logic.typing import JSON
 

@@ -13,6 +13,7 @@ Other contenders are HTTP 409 (conflict) and HTTP 410 (Gone), but the client can
 resolve the 409, and it's not the submission/step resource itself that's gone, but
 the form it belongs to.
 """
+
 from unittest.mock import patch
 
 from django.test import override_settings, tag

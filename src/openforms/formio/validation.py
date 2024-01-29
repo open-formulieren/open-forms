@@ -1,6 +1,7 @@
 """
 Server-side validation for Form.io data.
 """
+
 from typing import Any, Callable
 
 from django.core.exceptions import ValidationError as DjangoValidationError

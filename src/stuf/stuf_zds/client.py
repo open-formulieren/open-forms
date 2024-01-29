@@ -269,9 +269,9 @@ class Client(BaseClient):
 
     def set_zaak_payment(self, zaak_identificatie: str, partial: bool = False) -> dict:
         data = {
-            "betalings_indicatie": PaymentStatus.PARTIAL
-            if partial
-            else PaymentStatus.FULL,
+            "betalings_indicatie": (
+                PaymentStatus.PARTIAL if partial else PaymentStatus.FULL
+            ),
             "laatste_betaaldatum": fmt_soap_date(timezone.now()),
         }
         return self.partial_update_zaak(zaak_identificatie, data)

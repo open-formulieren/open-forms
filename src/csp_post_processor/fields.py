@@ -1,6 +1,7 @@
 """
 Django model field integration to wrap WYSIWYG library fields.
 """
+
 from django.db.models import TextField
 
 

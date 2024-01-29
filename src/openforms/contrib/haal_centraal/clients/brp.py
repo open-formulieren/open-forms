@@ -5,6 +5,7 @@ Open Forms supports v1 and v2 of the APIs.
 
 Documentation for v2: https://brp-api.github.io/Haal-Centraal-BRP-bevragen/v2/getting-started
 """
+
 import logging
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
@@ -57,8 +58,7 @@ class BRPClient(PreRequestMixin, ABC, APIClient):
         self.headers["x-gebruiker"] = gebruiker
 
     @abstractmethod
-    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
-        ...
+    def find_person(self, bsn: str, **kwargs) -> JSONObject | None: ...
 
     @abstractmethod
     def get_family_members(
@@ -70,8 +70,7 @@ class BRPClient(PreRequestMixin, ABC, APIClient):
         ...
 
     @abstractmethod
-    def make_config_test_request(self) -> None:
-        ...
+    def make_config_test_request(self) -> None: ...
 
 
 class V1Client(HALMixin, BRPClient):

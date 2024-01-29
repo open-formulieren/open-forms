@@ -23,17 +23,17 @@ RegistrationBackendKey = NewType("RegistrationBackendKey", str)
 
 
 class RequestHandler(Protocol):
-    def __call__(self, request: HttpRequest) -> HttpResponseBase:
-        ...
+    def __call__(self, request: HttpRequest) -> HttpResponseBase: ...
 
 
 # Types that `django.core.serializers.json.DjangoJSONEncoder` can handle
-DjangoJSONEncodable: TypeAlias = "JSONValue | datetime.datetime | datetime.date | datetime.time | datetime.timedelta | decimal.Decimal | uuid.UUID | Promise"
+DjangoJSONEncodable: TypeAlias = (
+    "JSONValue | datetime.datetime | datetime.date | datetime.time | datetime.timedelta | decimal.Decimal | uuid.UUID | Promise"
+)
 
 
 class JSONSerializable(Protocol):
-    def __json__(self) -> DjangoJSONEncodable:
-        ...
+    def __json__(self) -> DjangoJSONEncodable: ...
 
 
 JSONEncodable: TypeAlias = "DjangoJSONEncodable | JSONSerializable"

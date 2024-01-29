@@ -104,7 +104,7 @@ class BRKZakelijkGerechtigdeValidator(BasePlugin[AddressValue]):
         if "house_number_addition" in value:
             address_query["huisnummertoevoeging"] = value["house_number_addition"]
 
-        with (client, suppress_api_errors(self.error_messages["retrieving_error"])):
+        with client, suppress_api_errors(self.error_messages["retrieving_error"]):
             real_estate_objects_resp = client.get_real_estate_by_address(address_query)
             real_estate_objects = glom(
                 real_estate_objects_resp,

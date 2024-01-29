@@ -1,6 +1,7 @@
 """
 Test that component translations are respected in the context of a submission.
 """
+
 from copy import deepcopy
 from typing import Literal
 from unittest.mock import MagicMock, patch

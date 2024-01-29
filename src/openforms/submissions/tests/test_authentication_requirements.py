@@ -10,6 +10,7 @@ did not authenticate. This applies to:
 
 If authentication is optional, then this behaviour does not apply.
 """
+
 from django.test import override_settings, tag
 
 from rest_framework import status

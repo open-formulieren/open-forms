@@ -7,6 +7,7 @@ use our own :module:`api_client` implementation here, as the typical Dutch API/s
 requirements such as mTLS are not relevant. The service model definition also does not
 allow configuring any of those aspects.
 """
+
 import json
 import os
 from io import BytesIO

@@ -1,6 +1,7 @@
 """
 Base implementation for timestamped salted HMAC tokens.
 """
+
 from abc import ABC, abstractmethod
 from datetime import date
 

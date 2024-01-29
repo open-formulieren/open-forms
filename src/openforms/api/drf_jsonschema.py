@@ -1,6 +1,7 @@
 """
 drf_jsonschema integration - register custom converters
 """
+
 from typing import Any
 
 from django.utils.translation import gettext_lazy as _

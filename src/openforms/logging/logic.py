@@ -3,6 +3,7 @@ Process the logic evaluation logging information.
 
 This relies on the datastructures used in :mod:`openforms.submissions.form_logic`.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict

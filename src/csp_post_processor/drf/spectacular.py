@@ -1,6 +1,7 @@
 """
 API schema generation extension using drf-spectacular.
 """
+
 import logging
 
 from django.utils.translation import gettext_lazy as _

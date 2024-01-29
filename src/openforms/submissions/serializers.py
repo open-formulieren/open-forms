@@ -2,6 +2,7 @@
 Non-API related serializers, typically used to validate data-structures in ``JSONField``
 type model fields.
 """
+
 from rest_framework import serializers
 
 from openforms.authentication.constants import AuthAttribute

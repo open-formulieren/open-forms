@@ -8,6 +8,7 @@ The clients used are:
 * Catalogi API client, for displaying contextually relevant possible document types
   in the form builder
 """
+
 from openforms.contrib.objects_api.clients import ObjectsClient
 from openforms.contrib.zgw.clients import DocumentenClient
 from zgw_consumers_ext.api_client import NLXClient, build_client

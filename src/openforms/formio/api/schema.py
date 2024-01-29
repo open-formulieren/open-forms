@@ -1,6 +1,7 @@
 """
 Define some (basic) OpenAPI schema for Form.io components.
 """
+
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.plumbing import build_basic_type, build_object_type

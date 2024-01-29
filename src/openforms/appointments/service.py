@@ -4,6 +4,7 @@ Public API of the appointments module.
 The exported names here may be used in other django apps and/or Open Forms modules.
 Anything else is considered private API.
 """
+
 from openforms.submissions.models import Submission
 
 from .renderer import AppointmentRenderer

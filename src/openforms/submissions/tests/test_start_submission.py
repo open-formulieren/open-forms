@@ -13,6 +13,7 @@ Functional requirements are:
 
 See ``test_disabled_forms.py`` for more extensive tests around maintenance mode.
 """
+
 from unittest.mock import patch
 
 from django.test import override_settings

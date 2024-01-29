@@ -29,6 +29,7 @@ So, to recap:
 .. todo:: Move the public API into ``openforms.prefill.service``.
 
 """
+
 from __future__ import annotations
 
 import logging

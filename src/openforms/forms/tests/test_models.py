@@ -54,7 +54,10 @@ class FormTestCase(TestCase):
     def test_registration_backend_display_marks_misconfigs(self):
         form: Form = FormFactory.create()
         FormRegistrationBackendFactory.create(
-            form=form, key="fst", name="Backend #1", backend="😭-admin-removed-my-plugin"
+            form=form,
+            key="fst",
+            name="Backend #1",
+            backend="😭-admin-removed-my-plugin",
         )
         FormRegistrationBackendFactory.create(form=form, key="snd", name="Backend #2")
 

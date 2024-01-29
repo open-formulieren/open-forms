@@ -1,6 +1,7 @@
 """
 Test the registration hook on submissions.
 """
+
 from datetime import timedelta
 from unittest.mock import patch
 

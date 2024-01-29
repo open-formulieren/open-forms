@@ -12,6 +12,7 @@ generates some combinations with optional fields that semantically make little s
 (like setting both ``deriveStreetName`` and ``deriveCity`` to ``true`` in the textfield
 component). This shall have to be iterated on.
 """
+
 from string import ascii_letters, digits
 
 from hypothesis import strategies as st

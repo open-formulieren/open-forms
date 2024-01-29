@@ -1,6 +1,7 @@
 """
 Test the client factory from SOAPService configuration.
 """
+
 from pathlib import Path
 
 from django.test import TestCase, override_settings

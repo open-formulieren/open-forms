@@ -1,6 +1,7 @@
 """
 Assert that dev views are only acessible in DEBUG=True and superuser.
 """
+
 from django.core.exceptions import PermissionDenied
 from django.test import RequestFactory, TestCase, override_settings
 

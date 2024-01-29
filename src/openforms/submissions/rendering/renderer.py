@@ -5,6 +5,7 @@ The renderer is the public interface to rendering submissions in particular rend
 modes. It is aware of the intrinsic tree-like structure of a submission and associated
 printable data.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

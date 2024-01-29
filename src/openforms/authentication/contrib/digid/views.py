@@ -101,8 +101,8 @@ class DigiDAssertionConsumerServiceView(
         request.session[DIGID_AUTH_SESSION_KEY] = bsn
         # store the authn contexts so the plugin can check persmission when
         # accessing/creating an object
-        request.session[
-            DIGID_AUTH_SESSION_AUTHN_CONTEXTS
-        ] = response.get_authn_contexts()
+        request.session[DIGID_AUTH_SESSION_AUTHN_CONTEXTS] = (
+            response.get_authn_contexts()
+        )
 
         return HttpResponseRedirect(self.get_success_url())

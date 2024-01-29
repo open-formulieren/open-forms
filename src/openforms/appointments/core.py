@@ -4,6 +4,7 @@ Core implementation of the generic API.
 This module is the follow-up to the bulk of functionality in utils.py, which is doing
 way too much but can't be easily refactored without breaking existing functionality.
 """
+
 import logging
 
 from django.utils.translation import gettext_lazy as _

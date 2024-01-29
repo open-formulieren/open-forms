@@ -13,6 +13,7 @@ tests. Note that these tests are skipped if Camunda is not available.
 You can also point to a different host/URL and/or credentials through environment
 variables, see :mod:`openforms.contrib.camunda.tests.utils`.
 """
+
 import logging
 from functools import partial
 from unittest.mock import patch

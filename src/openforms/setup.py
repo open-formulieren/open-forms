@@ -9,6 +9,7 @@ they are available for Django settings initialization.
     do NOT import anything Django related here, as this file needs to be loaded
     before Django is initialized.
 """
+
 import logging
 import mimetypes
 import os
@@ -153,8 +154,8 @@ def monkeypatch_json_logic():
 
     from json_logic import operations
 
-    operations["in"] = (
-        lambda a, b: a in b if "__contains__" in dir(b) and a is not None else False
+    operations["in"] = lambda a, b: (
+        a in b if "__contains__" in dir(b) and a is not None else False
     )
 
     _original_get_date = operations["date"]

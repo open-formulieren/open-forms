@@ -1,6 +1,7 @@
 """
 Test the generic confirmation e-mail sending for appointment forms.
 """
+
 from datetime import date, datetime, time
 from unittest.mock import patch
 

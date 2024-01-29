@@ -7,6 +7,7 @@ sub-resource.
 The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
+
 from datetime import datetime
 from unittest.mock import patch
 from urllib.parse import urljoin
