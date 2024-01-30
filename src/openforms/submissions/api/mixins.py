@@ -27,11 +27,13 @@ class SubmissionCompletionMixin:
 
         This encapsulates the logic of what it means to 'complete' a submission,
         ensuring that the relevant metadata is set and post-completion hooks trigger,
-        such as schedulign the processing via Celery.
+        such as scheduling the processing via Celery.
         """
 
         # dispatch signal for modules to tap into
-        submission_complete.send(sender=self.__class__, request=self.request)
+        submission_complete.send(
+            sender=self.__class__, request=self.request, instance=submission
+        )
 
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()

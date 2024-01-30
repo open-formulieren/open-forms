@@ -1,7 +1,21 @@
-from . import category  # noqa
-from . import form  # noqa
-from . import form_definition  # noqa
-from . import form_logic  # noqa
-from . import form_step  # noqa
-from . import form_variable  # noqa
-from . import form_version  # noqa
+from . import (
+    category,
+    form,
+    form_definition,
+    form_logic,
+    form_statistics,
+    form_step,
+    form_variable,
+    form_version,
+)
+
+__all__ = [
+    "category",
+    "form",
+    "form_definition",
+    "form_logic",
+    "form_statistics",
+    "form_step",
+    "form_variable",
+    "form_version",
+]
