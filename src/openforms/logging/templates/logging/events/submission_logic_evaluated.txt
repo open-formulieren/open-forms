@@ -1,3 +1,4 @@
+{% comment %} This template only exists for legacy reasons, as existing TimelineLog objects may reference it. {% endcomment %}
 {% load i18n %}
 {% blocktrans trimmed with lead=log.fmt_lead submission=log.fmt_sub form=log.fmt_form %}
    {{ lead }}: logged rule of {{ submission }} for form {{ form }}

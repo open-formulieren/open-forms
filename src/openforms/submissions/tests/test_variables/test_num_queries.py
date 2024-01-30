@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import (
@@ -23,15 +21,6 @@ from ...rendering import Renderer, RenderModes
 
 
 class SubmissionVariablesPerformanceTests(APITestCase):
-    def setUp(self):
-        super().setUp()
-
-        log_logic_evaluation_patcher = patch(
-            "openforms.logging.logevent.log_logic_evaluation"
-        )
-        self.log_logic_evaluation_mock = log_logic_evaluation_patcher.start()
-        self.addCleanup(log_logic_evaluation_patcher.stop)
-
     def test_evaluate_form_logic_without_rules(self):
         form = FormFactory.create()
         form_step1 = FormStepFactory.create(
@@ -76,8 +65,6 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 3. Retrieve all logic rules related to a form
         with self.assertNumQueries(3):
             evaluate_form_logic(submission, submission_step2, data)
-
-        self.log_logic_evaluation_mock.delay.assert_called_once()
 
     def test_evaluate_form_logic_with_rules(self):
         form = FormFactory.create()
@@ -144,8 +131,6 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 9.  Delete submission values
         with self.assertNumQueries(9):
             evaluate_form_logic(submission, submission_step2, data)
-
-        self.log_logic_evaluation_mock.delay.assert_called_once()
 
     def test_update_step_data(self):
         form = FormFactory.create()

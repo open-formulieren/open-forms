@@ -3,7 +3,6 @@ import logging
 from typing import Any
 
 from openforms.forms.models import FormLogic, FormVariable
-from openforms.logging import logevent
 from openforms.typing import JSONObject, JSONValue
 
 logger = logging.getLogger(__name__)
@@ -35,4 +34,3 @@ def log_errors(logic: JSONObject, rule: FormLogic) -> Any:
         logger.error(
             "Error in rule %s: evaluation of %s failed.", rule.pk, logic, exc_info=error
         )
-        logevent.logic_evaluation_failed(rule, error, logic)

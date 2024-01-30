@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import asdict
 from functools import partial
 from typing import TYPE_CHECKING
 
 from django.db.models import Model
-from django.utils import timezone
 
 from openforms.accounts.models import User
 from openforms.analytics_tools.models import AnalyticsToolsConfiguration
@@ -17,11 +15,8 @@ from openforms.payments.constants import PaymentStatus
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import JSONObject
 
-from .tasks import log_logic_evaluation
-
 if TYPE_CHECKING:
     from openforms.payments.models import SubmissionPayment
-    from openforms.submissions.logic.rules import EvaluatedRule, FormLogic
     from openforms.submissions.models import Submission, SubmissionStep
     from stuf.models import StufService
 
@@ -494,41 +489,6 @@ def submission_export_list(form: Form, user: User):
         "submission_export_list",
         tags=[TimelineLogTags.AVG],
         user=user,
-    )
-
-
-def submission_logic_evaluated(
-    submission: Submission,
-    evaluated_rules: list[EvaluatedRule],
-    initial_data: JSONObject,
-    resolved_data: JSONObject,
-):
-    """
-    Convert into JSON-serializable data types and schedule the celery task.
-    """
-    timestamp = timezone.now().isoformat()
-    _evaluated_rules = []
-    for evaluated_rule in map(asdict, evaluated_rules):
-        evaluated_rule["rule_id"] = evaluated_rule["rule"].id
-        del evaluated_rule["rule"]
-        _evaluated_rules.append(evaluated_rule)
-
-    log_logic_evaluation.delay(
-        submission_id=submission.id,
-        timestamp=timestamp,
-        evaluated_rules=_evaluated_rules,
-        initial_data=initial_data,
-        resolved_data=resolved_data,
-    )
-
-
-def logic_evaluation_failed(
-    rule: FormLogic,
-    error: Exception,
-    logic: JSONObject,
-) -> None:
-    _create_log(
-        rule, "logic_evaluation_failed", error=error, extra_data={"logic": logic}
     )
 
 
