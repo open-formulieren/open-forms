@@ -1,36 +1,25 @@
 import json
-from pathlib import Path
 from unittest import expectedFailure
 
 from django.db import connection
 from django.test import override_settings, tag
 
-import requests_mock
-from factory.django import FileField
 from freezegun import freeze_time
-from hypothesis import assume, example, given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from zgw_consumers.constants import APITypes, AuthTypes
 
-from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
-    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.logging.models import TimelineLogProxy
-from openforms.tests.search_strategies import jsonb_values
-from openforms.typing import JSONPrimitive, JSONValue
+from openforms.typing import JSONValue
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
-from openforms.variables.constants import DataMappingTypes, FormVariableDataTypes
-from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
+from openforms.variables.constants import FormVariableDataTypes
 
-from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
@@ -995,218 +984,6 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
             },
         )
 
-    def test_evaluate_logic_log_event_triggered(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "firstname",
-                        "hidden": False,
-                        "clearOnHide": True,
-                    },
-                    {
-                        "type": "date",
-                        "key": "birthdate",
-                        "hidden": False,
-                        "clearOnHide": True,
-                    },
-                ]
-            },
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={
-                ">": [{"date": {"var": "birthdate"}}, {"date": "2022-06-20"}]
-            },
-            actions=[
-                {
-                    "component": "firstname",
-                    "formStep": "",
-                    "action": {
-                        "type": "property",
-                        "property": {"value": "disabled", "type": "bool"},
-                        "state": True,
-                    },
-                }
-            ],
-        )
-        submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={
-                "firstname": "foo",
-                "birthdate": "2022-06-21",
-            },
-        )
-
-        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-
-        logs = TimelineLogProxy.objects.all()
-        self.assertEqual(1, logs.count())
-        log = logs[0]
-        self.assertTrue(log.extra_data["evaluated_rules"][0]["trigger"])
-
-    def test_evaluate_logic_logs_setting_registration_backend(self):
-        backend = FormRegistrationBackendFactory.create(
-            key="non-default",
-            name="My weird name",
-            form__generate_minimal_setup=True,
-        )
-        FormLogicFactory.create(
-            form=backend.form,
-            json_logic_trigger=True,
-            actions=[
-                {
-                    "action": {
-                        "type": "set-registration-backend",
-                        "value": "non-default",
-                    },
-                }
-            ],
-        )
-        submission = SubmissionFactory.create(form=backend.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=backend.form.formstep_set.first(),
-            data={},
-        )
-
-        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-
-        log = TimelineLogProxy.objects.first()
-        self.assertTrue("non-default" in str(log.extra_data))
-        # TODO This would be more useful if we ever overhaul logging logic
-        # self.assertTrue("My weird name" in str(log.extra_data))
-
-    def test_evaluate_logic_log_event_not_triggered(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "firstname",
-                        "hidden": False,
-                        "clearOnHide": True,
-                    },
-                    {
-                        "type": "date",
-                        "key": "birthdate",
-                        "hidden": False,
-                        "clearOnHide": True,
-                    },
-                ]
-            },
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger={
-                ">": [{"date": {"var": "birthdate"}}, {"date": "2022-06-20"}]
-            },
-            actions=[
-                {
-                    "component": "firstname",
-                    "formStep": "",
-                    "action": {
-                        "type": "property",
-                        "property": {"value": "disabled", "type": "bool"},
-                        "state": True,
-                    },
-                }
-            ],
-        )
-        submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={
-                "firstname": "foo",
-                "birthdate": "2022-06-19",
-            },
-        )
-
-        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-
-        logs = TimelineLogProxy.objects.all()
-        self.assertEqual(1, logs.count())
-        log = logs[0]
-        self.assertFalse(log.extra_data["evaluated_rules"][0]["trigger"])
-
-    def test_evaluate_logic_log_event_can_handle_primitives(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "test",
-                        "hidden": False,
-                    },
-                ]
-            },
-        )
-
-        FormLogicFactory.create(
-            form=form,
-            json_logic_trigger=True,
-            actions=[
-                {
-                    "component": "test",
-                    "action": {
-                        "name": "Hide element",
-                        "type": "property",
-                        "property": {
-                            "type": "bool",
-                            "value": "hidden",
-                        },
-                        "state": True,
-                    },
-                }
-            ],
-        )
-        submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={
-                "firstname": "foo",
-            },
-        )
-
-        configuration = evaluate_form_logic(
-            submission, submission_step, submission.get_merged_data()
-        )
-
-        expected = {
-            "components": [
-                {
-                    "type": "textfield",
-                    "key": "test",
-                    "hidden": True,
-                }
-            ]
-        }
-        self.assertEqual(configuration, expected)
-
-        logs = TimelineLogProxy.objects.all()
-
-        self.assertEqual(1, logs.count())
-
-        log_rule = logs[0].extra_data["evaluated_rules"][0]
-
-        self.assertTrue(log_rule["trigger"])
-        self.assertTrue(log_rule["raw_logic_expression"])
-        self.assertEqual("true", log_rule["readable_rule"])
-        self.assertEqual("test", log_rule["targeted_components"][0]["key"])
-
     def test_json_logic_in_trigger_doesnt_raise_error(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -1226,7 +1003,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
             form=form,
             initial_value="",
         )
-        logic_rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=form,
             json_logic_trigger={"<": [{"var": "number1"}, {"var": "number2"}]},
             actions=[
@@ -1256,16 +1033,6 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
-        logs = TimelineLogProxy.objects.filter(
-            template="logging/events/logic_evaluation_failed.txt"
-        )
-
-        self.assertEqual(1, logs.count())
-
-        logged_rule = logs[0].content_object
-
-        self.assertEqual(logged_rule, logic_rule)
-
     def test_json_logic_in_action_doesnt_raise_error(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -1289,7 +1056,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
             form=form,
             initial_value=False,
         )
-        logic_rule = FormLogicFactory.create(
+        FormLogicFactory.create(
             form=form,
             json_logic_trigger=True,
             actions=[
@@ -1320,182 +1087,3 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
         response = self.client.get(endpoint)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-
-        logs = TimelineLogProxy.objects.filter(
-            template="logging/events/logic_evaluation_failed.txt"
-        )
-
-        self.assertEqual(1, logs.count())
-
-        logged_rule = logs[0].content_object
-
-        self.assertEqual(logged_rule, logic_rule)
-
-    @requests_mock.Mocker()
-    def test_it_logs_fetch_requests(self, m):
-        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
-
-        var = FormVariableFactory.create(
-            service_fetch_configuration=ServiceFetchConfigurationFactory.create(
-                service__api_type=APITypes.orc,
-                service__api_root="https://httpbin.org/",
-                service__auth_type=AuthTypes.no_auth,
-                service__oas_file=FileField(
-                    from_path=str(
-                        Path(__file__).parent.parent / "files" / "openapi.yaml"
-                    )
-                ),
-                path="get",
-                data_mapping_type=DataMappingTypes.jq,
-                mapping_expression=".url",
-            ),
-        )
-        FormLogicFactory.create(
-            form=var.form,
-            json_logic_trigger=True,
-            actions=[
-                {
-                    "variable": var.key,
-                    "action": {
-                        "type": LogicActionTypes.fetch_from_service,
-                        "value": var.service_fetch_configuration.id,
-                    },
-                }
-            ],
-        )
-        submission = SubmissionFactory.create(form=var.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-        )
-
-        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-
-        log_entry = TimelineLogProxy.objects.get(
-            template="logging/events/submission_logic_evaluated.txt",
-        )
-        self.assertIn("https://httpbin.org/get", str(log_entry.extra_data))
-
-    @given(jsonb_values())
-    @example({"var": "foo"})
-    @example([{"/": None}])
-    @example([])
-    @example(1.801439850948199e16)  # this is filtered out by the assume
-    def test_it_logs_setting_variable(self, new_value: JSONValue):
-        assume(is_jsonb_invariant(new_value))
-
-        var = FormVariableFactory.create(key="myKey")
-        FormLogicFactory.create(
-            form=var.form,
-            json_logic_trigger=True,
-            actions=[
-                {
-                    "variable": "myKey",
-                    "action": {
-                        "type": LogicActionTypes.variable,
-                        "value": new_value,
-                    },
-                }
-            ],
-        )
-        submission = SubmissionFactory.create(form=var.form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-        )
-
-        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-
-        # should always log
-        log_entry = TimelineLogProxy.objects.get(
-            template="logging/events/submission_logic_evaluated.txt",
-        )
-        extra_data = log_entry.extra_data
-        resolved_value = extra_data["resolved_data"]["myKey"]
-
-        if isinstance(new_value, JSONPrimitive):
-            # for primitives we know the value
-            self.assertEqual(resolved_value, new_value)
-        elif not is_valid_expression(new_value):
-            # object but invalid json logic expression
-            self.assertEqual(resolved_value, "None")
-
-        self.assertEqual(
-            extra_data["evaluated_rules"][0]["targeted_components"][0]["key"], "myKey"
-        )
-        self.assertEqual(
-            extra_data["evaluated_rules"][0]["targeted_components"][0]["type_display"],
-            "Stel de waarde van een variabele in",
-        )
-
-    def test_logging_static_variable_use_in_trigger(self):
-        submission = SubmissionFactory.create()
-        json_logic_trigger = {
-            "==": [{"var": "today"}, {"+": [{"today": []}, {"rdelta": [0, 0, 0]}]}]
-        }
-        FormLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger=json_logic_trigger,
-            actions=[],
-        )
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-        )
-
-        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-
-        log_entry = TimelineLogProxy.objects.get(
-            template="logging/events/submission_logic_evaluated.txt",
-        )
-        self.assertIn("today", log_entry.extra_data["input_data"])
-
-    def test_logging_structured_components(self):
-        # product type, composite, or nested components like selectBoxes
-        submission = SubmissionFactory.from_components(
-            components_list=[
-                {
-                    "key": "select",
-                    "data": {
-                        "values": [
-                            {"label": "a", "value": "a"},
-                            {"label": "b", "value": "b"},
-                        ]
-                    },
-                    "type": "select",
-                },
-                {
-                    "key": "selectBoxes",
-                    "values": [
-                        {"label": "a", "value": "a"},
-                        {"label": "b", "value": "b"},
-                    ],
-                    "type": "selectboxes",
-                    "defaultValue": {"a": True, "b": False},
-                },
-            ],
-            submitted_data={
-                "select": "a",
-                "selectBoxes": {"a": True, "b": True},
-            },
-        )
-
-        FormLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"var": "selectBoxes.a"},
-            actions=[],
-        )
-        FormLogicFactory.create(
-            form=submission.form,
-            json_logic_trigger={"==": [{"var": "select"}, "a"]},
-            actions=[],
-        )
-
-        submission_step = submission.steps[0]
-        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-
-        log_entry = TimelineLogProxy.objects.get(
-            template="logging/events/submission_logic_evaluated.txt",
-        )
-
-        self.assertEqual(
-            [rule["trigger"] for rule in log_entry.extra_data["evaluated_rules"]],
-            [True, True],
-        )

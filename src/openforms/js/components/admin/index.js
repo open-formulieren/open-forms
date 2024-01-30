@@ -11,7 +11,6 @@ import {TinyMceContext} from './form_design/Context';
 import {FormCreationForm} from './form_design/form-creation-form';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import './plugin_configuration';
-import './submissions/filter';
 
 const mountForm = wrapperProps => {
   const formCreationFormNodes = document.getElementsByClassName('react-form-create');

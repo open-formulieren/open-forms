@@ -11,7 +11,6 @@ from openforms.formio.service import (
     translate_function,
 )
 from openforms.formio.utils import get_component_empty_value
-from openforms.logging import logevent
 from openforms.typing import DataMapping
 
 from .logic.actions import PropertyAction
@@ -178,14 +177,6 @@ def evaluate_form_logic(
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.
-
-    # Logging the rules
-    logevent.submission_logic_evaluated(
-        submission,
-        evaluated_rules,
-        initial_data.data,
-        data_container.data,
-    )
 
     # process the output for logic checks with dirty data
     if dirty:

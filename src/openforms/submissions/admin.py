@@ -4,7 +4,6 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import Q
 from django.http import Http404
 from django.template.defaultfilters import filesizeformat
-from django.urls import path
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from privates.admin import PrivateMediaMixin
@@ -19,7 +18,6 @@ from openforms.logging.logevent import (
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
-from openforms.submissions.admin_views import LogsEvaluatedLogicView
 
 from ..utils.admin import ReadOnlyAdminMixin
 from .constants import IMAGE_COMPONENTS, PostSubmissionEvents, RegistrationStatuses
@@ -344,17 +342,6 @@ class SubmissionAdmin(admin.ModelAdmin):
     retry_processing_submissions.short_description = _(
         "Retry processing %(verbose_name_plural)s."
     )
-
-    def get_urls(self):
-        urls = super().get_urls()
-        my_urls = [
-            path(
-                "<int:submission_id>/logs/logic/",
-                LogsEvaluatedLogicView.as_view(),
-                name="logs-evaluated-logic",
-            )
-        ]
-        return my_urls + urls
 
 
 @admin.register(SubmissionReport)
