@@ -25,7 +25,7 @@ def copy_config_to_hc(apps, _):
     # only v1 was functional/supported, so we can make this explicit
     hc_config.brp_personen_service = brp_config.brp_service
     hc_config.brp_personen_version = BRPVersions.v13
-    hc_config.config()
+    hc_config.save()
 
 
 def copy_config_from_hc(apps, _):
