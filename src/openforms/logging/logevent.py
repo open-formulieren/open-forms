@@ -286,7 +286,7 @@ def payment_flow_start(payment: SubmissionPayment, plugin):
         "payment_flow_start",
         plugin=plugin,
         extra_data={
-            "payment_order_id": payment.order_id,
+            "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
         },
     )
@@ -299,7 +299,7 @@ def payment_flow_failure(payment: SubmissionPayment, plugin, error: Exception):
         plugin=plugin,
         error=error,
         extra_data={
-            "payment_order_id": payment.order_id,
+            "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
         },
     )
@@ -311,7 +311,7 @@ def payment_flow_return(payment: SubmissionPayment, plugin):
         "payment_flow_return",
         plugin=plugin,
         extra_data={
-            "payment_order_id": payment.order_id,
+            "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
             "payment_status": payment.status,
             "payment_status_label": PaymentStatus.get_label(payment.status),
@@ -325,7 +325,7 @@ def payment_flow_webhook(payment: SubmissionPayment, plugin):
         "payment_flow_webhook",
         plugin=plugin,
         extra_data={
-            "payment_order_id": payment.order_id,
+            "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
             "payment_status": payment.status,
             "payment_status_label": PaymentStatus.get_label(payment.status),
@@ -342,7 +342,7 @@ def payment_register_success(payment: SubmissionPayment, plugin):
         "payment_register_success",
         plugin=plugin,
         extra_data={
-            "payment_order_id": payment.order_id,
+            "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
         },
     )
@@ -355,7 +355,7 @@ def payment_register_failure(payment: SubmissionPayment, plugin, error: Exceptio
         plugin=plugin,
         error=error,
         extra_data={
-            "payment_order_id": payment.order_id,
+            "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
         },
     )

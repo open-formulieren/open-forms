@@ -8,12 +8,15 @@ from ..models import SubmissionPayment
 
 
 class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
-    submission = factory.SubFactory(SubmissionFactory)
+    submission = factory.SubFactory(
+        SubmissionFactory, with_public_registration_reference=True
+    )
     plugin_id = "demo"
     plugin_options = {"foo": 123}
-    order_id = factory.Sequence(lambda n: int(f"2020{n:05}"))
     amount = Decimal("10.00")
-    public_order_id = factory.LazyAttribute(lambda obj: f"ref{obj.order_id}")
+    public_order_id = factory.LazyAttributeSequence(
+        lambda obj, n: f"{obj.submission.public_registration_reference}_{n}"
+    )
 
     class Meta:
         model = SubmissionPayment

@@ -31,6 +31,7 @@ from ..models import (
     SubmissionValueVariable,
     TemporaryFileUpload,
 )
+from ..public_references import get_random_reference
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
@@ -125,6 +126,10 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 factory_related_name="submission",
                 status=PaymentStatus.registered,
             ),
+        )
+        with_public_registration_reference = factory.Trait(
+            registration_success=True,
+            public_registration_reference=factory.LazyFunction(get_random_reference),
         )
 
     @factory.post_generation
