@@ -1,6 +1,6 @@
 {
   "name": "openforms",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "description": "Open Forms",
   "main": "src/static/openforms/js/openforms.js",
   "directories": {

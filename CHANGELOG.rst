@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.4.4 (2024-01-30)
+==================
+
+Hotfix release to address an upgrade problem.
+
+* Bump packages to their latest security releases
+* [#3616] Fixed broken PDF template for appointment data.
+* Fixed a broken migration preventing upgrading to 2.4.x.
+
 2.4.3 (2024-01-12)
 ==================
 
