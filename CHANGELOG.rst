@@ -16,6 +16,24 @@ the time of writing, such a version has not been released yet.
    feature flag to prevent issues.
 
 
+2.5.1 (2024-01-30)
+==================
+
+Hotfix release to address an upgrade problem.
+
+* Included missing UI code for GovMetric analytics.
+* Fixed a broken migration preventing upgrading to 2.4.x and newer.
+* [#3616] Fixed broken PDF template for appointment data.
+
+2.4.4 (2024-01-30)
+==================
+
+Hotfix release to address an upgrade problem.
+
+* Bump packages to their latest security releases
+* [#3616] Fixed broken PDF template for appointment data.
+* Fixed a broken migration preventing upgrading to 2.4.x.
+
 2.5.0 "Noaberschap" (2024-01-24)
 ================================
 
