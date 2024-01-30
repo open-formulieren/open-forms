@@ -8088,6 +8088,7 @@ components:
             * `variable` - Set the value of a variable
             * `fetch-from-service` - Fetch the value from a service
             * `set-registration-backend` - Set the registration backend to use for the submission
+            * `evaluate-dmn` - Evaluate DMN
       required:
       - type
     LogicActionPolymorphicSharedTypeEnum:
@@ -8099,6 +8100,7 @@ components:
       - variable
       - fetch-from-service
       - set-registration-backend
+      - evaluate-dmn
       type: string
       description: |-
         * `step-not-applicable` - Mark the form step as not-applicable
@@ -8108,6 +8110,7 @@ components:
         * `variable` - Set the value of a variable
         * `fetch-from-service` - Fetch the value from a service
         * `set-registration-backend` - Set the registration backend to use for the submission
+        * `evaluate-dmn` - Evaluate DMN
     LogicComponentAction:
       type: object
       properties:
