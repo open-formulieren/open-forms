@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.5.1 (2024-01-30)
+==================
+
+Hotfix release to address an upgrade problem.
+
+* Included missing UI code for GovMetric analytics.
+* Fixed a broken migration preventing upgrading to 2.4.x and newer.
+* [#3616] Fixed broken PDF template for appointment data.
+
 2.5.0 "Noaberschap" (2024-01-24)
 ================================
 
