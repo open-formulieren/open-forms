@@ -44,9 +44,8 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
   };
 
   const buildErrorsComponent = field => {
-    return getFieldErrors(name, index, validationErrors, field)
-      ? getErrorMarkup(getFieldErrors(name, index, validationErrors, 'zaaktype'))
-      : null;
+    const rawErrors = getFieldErrors(name, index, validationErrors, field);
+    return rawErrors ? getErrorMarkup(rawErrors) : null;
   };
 
   return (
@@ -275,10 +274,10 @@ ZGWFormFields.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.number,
     organisatieRsin: PropTypes.string,
-    variablesProperties: PropTypes.arrayOf(
+    propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
         componentKey: PropTypes.string,
-        eigenshap: PropTypes.string,
+        eigenschap: PropTypes.string,
       })
     ),
     zaakVertrouwelijkheidaanduiding: PropTypes.string,
@@ -293,10 +292,10 @@ ZGWFormFields.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     organisatieRsin: PropTypes.string,
-    variablesProperties: PropTypes.arrayOf(
+    propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
         componentKey: PropTypes.string,
-        eigenshap: PropTypes.string,
+        eigenschap: PropTypes.string,
       })
     ),
     zaakVertrouwelijkheidaanduiding: PropTypes.string,

@@ -12,7 +12,6 @@ const COMPONENT_DATATYPES = {
   npFamilyMembers: 'object',
   map: 'array',
   editgrid: 'array',
-  columns: 'array',
 };
 
 const DATATYPES_CHOICES = [

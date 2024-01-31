@@ -1685,7 +1685,7 @@ class ZGWBackendTests(TestCase):
             },
         )
 
-    def test_submission_with_multiple_eigenshappen_creation(self, m):
+    def test_submission_with_multiple_eigenschappen_creation(self, m):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -1702,7 +1702,7 @@ class ZGWBackendTests(TestCase):
                 "textField2": "more data",
             },
             language_code="en",
-            form_definition_kwargs={"slug": "test-eigenshappen"},
+            form_definition_kwargs={"slug": "test-eigenschappen"},
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -1711,9 +1711,9 @@ class ZGWBackendTests(TestCase):
             organisatie_rsin="000000000",
             zaak_vertrouwelijkheidaanduiding="openbaar",
             doc_vertrouwelijkheidaanduiding="openbaar",
-            variables_properties=[
-                {"component_key": "textField1", "eigenshap": "a property name"},
-                {"component_key": "textField2", "eigenshap": "second property"},
+            property_mappings=[
+                {"component_key": "textField1", "eigenschap": "a property name"},
+                {"component_key": "textField2", "eigenschap": "second property"},
             ],
         )
         self.install_mocks(m)
@@ -1735,7 +1735,7 @@ class ZGWBackendTests(TestCase):
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -1751,7 +1751,7 @@ class ZGWBackendTests(TestCase):
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -1772,14 +1772,14 @@ class ZGWBackendTests(TestCase):
                         url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
                         uuid=1,
                         zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
+                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
                         naam="a property name",
                         waarde="some data",
                         definitie="a definition",
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -1795,14 +1795,14 @@ class ZGWBackendTests(TestCase):
                         url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
                         uuid=2,
                         zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
+                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
                         naam="second property",
                         waarde="more data",
                         definitie="a definition",
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -1824,14 +1824,14 @@ class ZGWBackendTests(TestCase):
                 "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
                 "uuid": 1,
                 "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
+                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
                 "naam": "a property name",
                 "waarde": "some data",
                 "definitie": "a definition",
                 "specificatie": {
                     "groep": "",
                     "formaat": "tekst",
-                    "lengte": "10",
+                    "lengte": "14",
                     "kardinaliteit": "1",
                     "waardenverzameling": [],
                 },
@@ -1845,14 +1845,14 @@ class ZGWBackendTests(TestCase):
                 "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
                 "uuid": 2,
                 "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
+                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
                 "naam": "second property",
                 "waarde": "more data",
                 "definitie": "a definition",
                 "specificatie": {
                     "groep": "",
                     "formaat": "tekst",
-                    "lengte": "10",
+                    "lengte": "14",
                     "kardinaliteit": "1",
                     "waardenverzameling": [],
                 },
@@ -1861,7 +1861,7 @@ class ZGWBackendTests(TestCase):
             },
         )
 
-    def test_submission_with_nested_component_columns_and_eigenshap(self, m):
+    def test_submission_with_nested_component_columns_and_eigenschap(self, m):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -1899,7 +1899,7 @@ class ZGWBackendTests(TestCase):
                 "textField3": {"blah": "a value"},
             },
             language_code="en",
-            form_definition_kwargs={"slug": "test-eigenshappen"},
+            form_definition_kwargs={"slug": "test-eigenschappen"},
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -1908,10 +1908,10 @@ class ZGWBackendTests(TestCase):
             organisatie_rsin="000000000",
             zaak_vertrouwelijkheidaanduiding="openbaar",
             doc_vertrouwelijkheidaanduiding="openbaar",
-            variables_properties=[
-                {"component_key": "textField1", "eigenshap": "a property name"},
-                {"component_key": "textField2", "eigenshap": "second property"},
-                {"component_key": "textField3.blah", "eigenshap": "third property"},
+            property_mappings=[
+                {"component_key": "textField1", "eigenschap": "a property name"},
+                {"component_key": "textField2", "eigenschap": "second property"},
+                {"component_key": "textField3.blah", "eigenschap": "third property"},
             ],
         )
         self.install_mocks(m)
@@ -1933,7 +1933,7 @@ class ZGWBackendTests(TestCase):
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -1949,7 +1949,7 @@ class ZGWBackendTests(TestCase):
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -1965,7 +1965,7 @@ class ZGWBackendTests(TestCase):
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -1986,14 +1986,14 @@ class ZGWBackendTests(TestCase):
                         url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
                         uuid=1,
                         zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
+                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/1",
                         naam="a property name",
                         waarde="data in columns",
                         definitie="a definition",
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -2009,14 +2009,14 @@ class ZGWBackendTests(TestCase):
                         url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
                         uuid=2,
                         zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
+                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/2",
                         naam="second property",
                         waarde="more data",
                         definitie="a definition",
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -2032,14 +2032,14 @@ class ZGWBackendTests(TestCase):
                         url="https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/3",
                         uuid=2,
                         zaak="https://zaken.nl/api/v1/zaken/1",
-                        eigenshap="https://zaken.nl/catalogi/api/v1/eigenschappen/3",
+                        eigenschap="https://zaken.nl/catalogi/api/v1/eigenschappen/3",
                         naam="third property",
                         waarde="a value",
                         definitie="a definition",
                         specificatie={
                             "groep": "",
                             "formaat": "tekst",
-                            "lengte": "10",
+                            "lengte": "14",
                             "kardinaliteit": "1",
                             "waardenverzameling": [],
                         },
@@ -2061,14 +2061,14 @@ class ZGWBackendTests(TestCase):
                 "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/1",
                 "uuid": 1,
                 "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
+                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/1",
                 "naam": "a property name",
                 "waarde": "data in columns",
                 "definitie": "a definition",
                 "specificatie": {
                     "groep": "",
                     "formaat": "tekst",
-                    "lengte": "10",
+                    "lengte": "14",
                     "kardinaliteit": "1",
                     "waardenverzameling": [],
                 },
@@ -2082,14 +2082,14 @@ class ZGWBackendTests(TestCase):
                 "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/2",
                 "uuid": 2,
                 "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
+                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/2",
                 "naam": "second property",
                 "waarde": "more data",
                 "definitie": "a definition",
                 "specificatie": {
                     "groep": "",
                     "formaat": "tekst",
-                    "lengte": "10",
+                    "lengte": "14",
                     "kardinaliteit": "1",
                     "waardenverzameling": [],
                 },
@@ -2103,14 +2103,14 @@ class ZGWBackendTests(TestCase):
                 "url": "https://zaken.nl/zaken/api/v1/zaken/1/zaakeigenschappen/3",
                 "uuid": 2,
                 "zaak": "https://zaken.nl/api/v1/zaken/1",
-                "eigenshap": "https://zaken.nl/catalogi/api/v1/eigenschappen/3",
+                "eigenschap": "https://zaken.nl/catalogi/api/v1/eigenschappen/3",
                 "naam": "third property",
                 "waarde": "a value",
                 "definitie": "a definition",
                 "specificatie": {
                     "groep": "",
                     "formaat": "tekst",
-                    "lengte": "10",
+                    "lengte": "14",
                     "kardinaliteit": "1",
                     "waardenverzameling": [],
                 },

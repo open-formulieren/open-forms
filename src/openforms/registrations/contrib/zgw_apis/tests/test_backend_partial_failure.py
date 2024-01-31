@@ -666,8 +666,8 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
 
 
 @requests_mock.Mocker()
-class EigenshappenPartialRegistrationFailureTests(TestCase):
-    def test_failure_after_eigenshappen_retrieval(self, m):
+class eigenschappenPartialRegistrationFailureTests(TestCase):
+    def test_failure_after_eigenschappen_retrieval(self, m):
         zgw_api_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -683,7 +683,7 @@ class EigenshappenPartialRegistrationFailureTests(TestCase):
             submitted_data={"textField1": "some data"},
             language_code="en",
             completed_not_preregistered=True,
-            form_definition_kwargs={"slug": "test-eigenshappen-failure"},
+            form_definition_kwargs={"slug": "test-eigenschappen-failure"},
             form__name="my-form",
             form__registration_backend="zgw-create-zaak",
             form__registration_backend_options={
@@ -692,8 +692,8 @@ class EigenshappenPartialRegistrationFailureTests(TestCase):
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
-                "variables_properties": [
-                    {"component_key": "textField1", "eigenshap": "a property name"}
+                "property_mappings": [
+                    {"component_key": "textField1", "eigenschap": "a property name"}
                 ],
             },
         )
@@ -848,10 +848,10 @@ class EigenshappenPartialRegistrationFailureTests(TestCase):
 
         intermediate_results = submission.registration_result["intermediate"]
 
-        zaakeigenshap = glom(intermediate_results, "eigenshap")
+        zaakeigenschap = glom(intermediate_results, "zaaktype_eigenschappen")
 
         self.assertEqual(
-            zaakeigenshap[0]["url"],
+            zaakeigenschap[0]["url"],
             "https://test.openzaak.nl/catalogi/api/v1/eigenschappen/1",
         )
         self.assertIn("traceback", submission.registration_result)

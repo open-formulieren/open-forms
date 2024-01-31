@@ -49,10 +49,10 @@ export default {
         objecttype: '',
         objecttypeVersion: '',
         organisatieRsin: '',
-        variablesProperties: [
+        propertyMappings: [
           {
             componentKey: '',
-            eigenshap: '',
+            eigenschap: '',
           },
         ],
         zaakVertrouwelijkheidaanduiding: {
@@ -63,7 +63,7 @@ export default {
       },
     },
     formData: {
-      variablesProperties: [{eigenshap: '', componentKey: ''}],
+      propertyMappings: [{eigenschap: '', componentKey: ''}],
       zaaktype: '',
     },
     availableComponents: {

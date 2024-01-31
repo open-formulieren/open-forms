@@ -143,15 +143,15 @@ class ZGWAPIGroupConfigTest(TestCase):
 
         data = {
             "zgw_api_group": zgw_group.pk,
-            "variables_properties": [
-                {"component_key": "textField", "eigenshap": "a property name"}
+            "property_mappings": [
+                {"component_key": "textField", "eigenschap": "a property name"}
             ],
         }
         serializer = ZaakOptionsSerializer(data=data)
         is_valid = serializer.is_valid()
 
         self.assertTrue(is_valid)
-        self.assertNotIn("variables_properties", serializer.errors)
+        self.assertNotIn("property_mappings", serializer.errors)
 
     @requests_mock.Mocker()
     def test_provided_variable_does_not_exist_in_specific_zaaktype(self, m):
@@ -192,16 +192,16 @@ class ZGWAPIGroupConfigTest(TestCase):
 
         data = {
             "zgw_api_group": zgw_group.pk,
-            "variables_properties": [
-                {"component_key": "textField", "eigenshap": "wrong variable"}
+            "property_mappings": [
+                {"component_key": "textField", "eigenschap": "wrong variable"}
             ],
         }
         serializer = ZaakOptionsSerializer(data=data)
         is_valid = serializer.is_valid()
 
         self.assertFalse(is_valid)
-        self.assertIn("variables_properties", serializer.errors)
+        self.assertIn("property_mappings", serializer.errors)
         self.assertEqual(
             "Could not find a property with the name 'wrong variable' related to the zaaktype.",
-            serializer.errors["variables_properties"][0],
+            serializer.errors["property_mappings"][0],
         )

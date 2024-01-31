@@ -19,28 +19,28 @@ import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tab
 import {getErrorMarkup} from './utils';
 
 const EMPTY_VARIABLE_PROPERTY = {
-  variablesProperties: [{componentKey: '', eigenshap: ''}],
+  propertyMappings: [{componentKey: '', eigenschap: ''}],
 };
 
 const HeadColumns = () => {
   const intl = useIntl();
 
   const componentText = intl.formatMessage({
-    description: 'Manage component column title',
+    description: 'Column title for variable to map to property',
     defaultMessage: 'Variable',
   });
   const componentHelp = intl.formatMessage({
-    description: 'Manage component help text',
+    description: 'Column help text for variable to map to property',
     defaultMessage: 'The value of the selected field will be the process variable value.',
   });
 
-  const eigenshapText = intl.formatMessage({
-    description: 'Manage property column title',
+  const eigenschapText = intl.formatMessage({
+    description: 'Column title for case property that a variable is mapped to',
     defaultMessage: 'Property',
   });
 
-  const eigenshapHelp = intl.formatMessage({
-    description: 'Manage property help text',
+  const eigenschapHelp = intl.formatMessage({
+    description: 'Column help text for case property that a variable is mapped to',
     defaultMessage: 'Specify a ZGW property name.',
   });
 
@@ -48,7 +48,7 @@ const HeadColumns = () => {
     <>
       <HeadColumn content="" />
       <HeadColumn content={componentText} title={componentHelp} />
-      <HeadColumn content={eigenshapText} title={eigenshapHelp} />
+      <HeadColumn content={eigenschapText} title={eigenschapHelp} />
     </>
   );
 };
@@ -56,7 +56,7 @@ const HeadColumns = () => {
 const VariableProperty = ({
   index,
   componentKey = '',
-  eigenshap = '',
+  eigenschap = '',
   componentFilterFunc,
   onChange,
   onDelete,
@@ -64,8 +64,8 @@ const VariableProperty = ({
   const intl = useIntl();
 
   const confirmDeleteMessage = intl.formatMessage({
-    description: 'ZGW properties with variables connection delete confirmation message',
-    defaultMessage: 'Are you sure you want to remove this connection?',
+    description: 'Delete confirmation message for variable mapped to case property',
+    defaultMessage: 'Are you sure you want to remove this mapping?',
   });
 
   return (
@@ -78,11 +78,11 @@ const VariableProperty = ({
         name="componentKey"
         value={componentKey}
         onChange={onChange}
-        filter={componentFilterFunc.bind(null, componentKey)}
+        filter={componentFilterFunc}
       />
       <TextInput
-        name="eigenshap"
-        value={eigenshap}
+        name="eigenschap"
+        value={eigenschap}
         onChange={onChange}
         placeholder={componentKey}
       />
@@ -93,22 +93,23 @@ const VariableProperty = ({
 VariableProperty.propTypes = {
   index: PropTypes.number.isRequired,
   componentKey: PropTypes.string,
-  eigenshap: PropTypes.string,
+  eigenschap: PropTypes.string,
   componentFilterFunc: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 
-const SelectVariablesProperties = ({variablesProperties = [], onChange, onAdd, onDelete}) => {
+const ManageVariableToPropertyMappings = ({propertyMappings = [], onChange, onAdd, onDelete}) => {
   const formContext = useContext(FormContext);
   const allComponents = formContext.components;
 
-  const usedComponents = variablesProperties
-    .filter(connection => connection.componentKey !== '')
-    .map(connection => connection.componentKey);
+  const usedComponents = propertyMappings
+    .filter(mapping => mapping.componentKey !== '')
+    .map(mapping => mapping.componentKey);
 
   const filterFunc = (componentKey, component) => {
-    const isSimpleType = !['array', 'object'].includes(getComponentDatatype(component));
+    const isSimpleType =
+      !['array', 'object'].includes(getComponentDatatype(component)) && component.key !== 'columns';
     const componentNotUsed =
       componentKey === component.key || !usedComponents.includes(component.key);
 
@@ -116,27 +117,25 @@ const SelectVariablesProperties = ({variablesProperties = [], onChange, onAdd, o
   };
 
   const getSimpleComponentsLength = () => {
-    const filteredComponents = [];
+    const filteredComponents = Object.keys(allComponents).filter(comp => {
+      const componentDataType = getComponentDatatype(allComponents[comp]);
+      return !['array', 'object'].includes(componentDataType) && comp !== 'columns';
+    });
 
-    for (const comp in allComponents) {
-      if (!['array', 'object'].includes(getComponentDatatype(allComponents[comp]))) {
-        filteredComponents.push(comp);
-      }
-    }
     return filteredComponents.length;
   };
 
   return (
     <>
       <ChangelistTableWrapper headColumns={<HeadColumns />}>
-        {variablesProperties.map((processVar, index) => (
+        {propertyMappings.map((mappedVariable, index) => (
           <VariableProperty
             key={index}
             index={index}
-            componentFilterFunc={filterFunc}
+            componentFilterFunc={filterFunc.bind(null, mappedVariable.componentKey)}
             onChange={onChange.bind(null, index)}
             onDelete={onDelete.bind(null, index)}
-            {...processVar}
+            {...mappedVariable}
           />
         ))}
       </ChangelistTableWrapper>
@@ -148,16 +147,18 @@ const SelectVariablesProperties = ({variablesProperties = [], onChange, onAdd, o
             defaultMessage="Add variable"
           />
         </ButtonContainer>
-      ) : null}
+      ) : (
+        'All simple variables are mapped to a case property.'
+      )}
     </>
   );
 };
 
-SelectVariablesProperties.propTypes = {
-  variablesProperties: PropTypes.arrayOf(
+ManageVariableToPropertyMappings.propTypes = {
+  propertyMappings: PropTypes.arrayOf(
     PropTypes.shape({
       componentKey: PropTypes.string,
-      eigenshap: PropTypes.string,
+      eigenschap: PropTypes.string,
     })
   ).isRequired,
   onChange: PropTypes.func.isRequired,
@@ -170,12 +171,12 @@ const VariablePropertyModal = ({index, name, formData, onChange}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const validationErrors = useContext(ValidationErrorContext);
 
-  const {variablesProperties = []} = formData;
+  const {propertyMappings = []} = formData;
 
   const onAddVariableProperty = () => {
     const nextFormData = produce(formData, draft => {
-      if (!draft.variablesProperties) draft.variablesProperties = [];
-      draft.variablesProperties.push(EMPTY_VARIABLE_PROPERTY);
+      if (!draft.propertyMappings) draft.propertyMappings = [];
+      draft.propertyMappings.push(EMPTY_VARIABLE_PROPERTY);
     });
     onChange(nextFormData);
   };
@@ -183,33 +184,42 @@ const VariablePropertyModal = ({index, name, formData, onChange}) => {
   const onChangeVariableProperty = (index, event) => {
     const {name, value} = event.target;
     const nextFormData = produce(formData, draft => {
-      draft.variablesProperties[index][name] = value;
+      draft.propertyMappings[index][name] = value;
     });
     onChange(nextFormData);
   };
 
   const onDeleteVariableProperty = index => {
     const nextFormData = produce(formData, draft => {
-      draft.variablesProperties.splice(index, 1);
+      draft.propertyMappings.splice(index, 1);
     });
     onChange(nextFormData);
   };
 
   /**
-   * Handle variables-properties errors and show them to the main page, not inside the modal.
+   * Handle property mappings errors and show them to the main page, not inside the modal.
    */
   const getCombinedErrors = (name, index, errors) => {
     const errorMessages = [];
 
     for (const [errorName, errorReason] of errors) {
-      if (errorName.startsWith(name + '.variablesProperties')) {
+      if (errorName.startsWith(name + '.propertyMappings')) {
         const errorNameBits = errorName.split('.');
-        if (errorNameBits[2] === String(index))
-          if (errorNameBits[errorNameBits.length - 1] === 'componentKey') {
-            errorMessages.push('Component key: ' + errorReason);
-          } else if (errorNameBits[errorNameBits.length - 1] === 'eigenshap') {
-            errorMessages.push('Property: ' + errorReason);
+        const lastNameBit = errorNameBits[errorNameBits.length - 1];
+
+        if (errorNameBits[2] === String(index)) {
+          // Custom error in validate method from the API call
+          if (lastNameBit === 'propertyMappings') {
+            errorMessages.push(errorReason);
+          } else {
+            // Errors raised from the serializer's definition
+            if (lastNameBit === 'componentKey') {
+              errorMessages.push('Component key: ' + errorReason);
+            } else if (lastNameBit === 'eigenschap') {
+              errorMessages.push('Property: ' + errorReason);
+            }
           }
+        }
       }
     }
 
@@ -230,21 +240,21 @@ const VariablePropertyModal = ({index, name, formData, onChange}) => {
       >
         <ActionButton
           text={intl.formatMessage({
-            description: 'Open connect ZGW properties with variables modal button',
-            defaultMessage: 'Connect variables with ZAAK properties',
+            description: 'Open map case properties to variables modal button',
+            defaultMessage: 'Map variables to case properties',
           })}
           type="button"
           onClick={() => setModalOpen(!modalOpen)}
         />
         &nbsp;
         <FormattedMessage
-          description="Managed connections state feedback"
+          description="Managed mappings state feedback"
           defaultMessage="{varCount, plural,
                             =0 {}
                             one {(1 variable mapped)}
                             other {({varCount} variables mapped)}
                         }"
-          values={{varCount: variablesProperties.length}}
+          values={{varCount: propertyMappings.length}}
         />
       </CustomFieldTemplate>
 
@@ -252,14 +262,14 @@ const VariablePropertyModal = ({index, name, formData, onChange}) => {
         isOpen={modalOpen}
         title={
           <FormattedMessage
-            description="ZGW properties with variables connection modal title"
-            defaultMessage="Connect variables with ZAAK properties"
+            description="Modal title for case property to variable mapping"
+            defaultMessage="Map variables to case properties"
           />
         }
         closeModal={() => setModalOpen(false)}
       >
-        <SelectVariablesProperties
-          variablesProperties={variablesProperties}
+        <ManageVariableToPropertyMappings
+          propertyMappings={propertyMappings}
           onChange={onChangeVariableProperty}
           onAdd={onAddVariableProperty}
           onDelete={onDeleteVariableProperty}
@@ -267,7 +277,7 @@ const VariablePropertyModal = ({index, name, formData, onChange}) => {
         <SubmitRow>
           <SubmitAction
             text={intl.formatMessage({
-              description: 'ZGW properties with variables connection confirm button',
+              description: 'Confirm button for case property to variable mapping',
               defaultMessage: 'Confirm',
             })}
             onClick={event => {
@@ -291,10 +301,10 @@ VariablePropertyModal.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     organisatieRsin: PropTypes.string,
-    variablesProperties: PropTypes.arrayOf(
+    propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
         componentKey: PropTypes.string,
-        eigenshap: PropTypes.string,
+        eigenschap: PropTypes.string,
       })
     ).isRequired,
     zaakVertrouwelijkheidaanduiding: PropTypes.string,

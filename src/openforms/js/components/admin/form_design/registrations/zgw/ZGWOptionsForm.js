@@ -30,10 +30,10 @@ ZGWOptionsForm.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.number,
     organisatieRsin: PropTypes.string,
-    variablesProperties: PropTypes.arrayOf(
+    propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
         componentKey: PropTypes.string,
-        eigenshap: PropTypes.string,
+        eigenschap: PropTypes.string,
       })
     ),
     zaakVertrouwelijkheidaanduiding: PropTypes.string,
@@ -47,10 +47,10 @@ ZGWOptionsForm.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     organisatieRsin: PropTypes.string,
-    variablesProperties: PropTypes.arrayOf(
+    propertyMappings: PropTypes.arrayOf(
       PropTypes.shape({
         componentKey: PropTypes.string,
-        eigenshap: PropTypes.string,
+        eigenschap: PropTypes.string,
       })
     ).isRequired,
     zaakVertrouwelijkheidaanduiding: PropTypes.string,

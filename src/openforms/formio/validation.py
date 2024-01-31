@@ -8,7 +8,9 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator as _EmailValidator,
     MaxLengthValidator as _MaxLengthValidator,
+    RegexValidator,
 )
+from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
 from glom import assign
@@ -129,3 +131,15 @@ def validate_formio_data(components, values: JSONObject) -> None:
 
     if errors:
         raise ValidationError(errors["components"])
+
+
+# Regex and message adapted from
+# https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
+variable_key_validator = RegexValidator(
+    regex=_lazy_re_compile(r"^(\w|\w[\w.\-]*\w)$"),
+    message=_(
+        "Invalid variable key. "
+        "It must only contain alphanumeric characters, underscores, "
+        "dots and dashes and should not be ended by dash or dot."
+    ),
+)
