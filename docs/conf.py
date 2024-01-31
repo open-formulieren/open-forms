@@ -74,6 +74,10 @@ intersphinx_mapping = {
         "http://docs.djangoproject.com/en/3.2/",
         "http://docs.djangoproject.com/en/3.2/_objects/",
     ),
+    "zgw_consumers": (
+        "https://zgw-consumers.readthedocs.io/en/latest/",
+        None,
+    ),
 }
 
 # -- Options for HTML output -------------------------------------------------
