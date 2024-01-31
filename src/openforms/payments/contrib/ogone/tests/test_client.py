@@ -1,14 +1,62 @@
+import os
+from pathlib import Path
+
 from django.test import TestCase
+
+import requests
+
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import OgoneClient
 from ..plugin import RETURN_ACTION_PARAM
 from .factories import OgoneMerchantFactory
 
 
-class OgoneClientTest(TestCase):
+class OgoneClientTest(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = Path(__file__).parent / "files"
+
+    def setUp(self):
+        super().setUp()
+        self.merchant = OgoneMerchantFactory(
+            pspid=os.getenv("OGONE_PSPID", "maykinmedia"),
+            sha_in_passphrase=os.getenv("OGONE_SHA_IN", "placeholder_sha_in"),
+            sha_out_passphrase=os.getenv("OGONE_SHA_OUT", "placeholder_sha_out"),
+        )
+
+    def test_payment_request_valid_order_id(self):
+        client = OgoneClient(self.merchant)
+
+        info = client.get_payment_info(
+            "xyz2024_OF-123456_987654321",
+            1000,
+            "http://foo.bar/return?bazz=buzz",
+            RETURN_ACTION_PARAM,
+        )
+
+        payment_request = requests.post(info.url, data=info.data)
+
+        self.assertNotIn("Er is een fout opgetreden", payment_request.text)
+
+    def test_payment_request_invalid_order_id(self):
+        client = OgoneClient(self.merchant)
+
+        info = client.get_payment_info(
+            "xyz2024_OF-123456_987654321THISISPROBABLYTOOLONG",
+            1000,
+            "http://foo.bar/return?bazz=buzz",
+            RETURN_ACTION_PARAM,
+        )
+
+        payment_request = requests.post(info.url, data=info.data)
+
+        self.assertIn("Er is een fout opgetreden", payment_request.text)
+
+
+class OgoneGetPaymentInfoTest(TestCase):
     maxDiff = None
 
     def test_get_payment_info(self):
+        """This test does not make any request and is here to test the ``get_payment_info`` method."""
         merchant = OgoneMerchantFactory()
         client = OgoneClient(merchant)
 
