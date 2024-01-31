@@ -7,10 +7,10 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..clients.bag import AddressResult
 from ..models import KadasterApiConfig

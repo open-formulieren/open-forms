@@ -7,6 +7,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 import requests_mock
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
@@ -16,7 +17,6 @@ from openforms.template import render_from_string
 from stuf.constants import EndpointType
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
 from ..haal_centraal import get_np_family_members_haal_centraal

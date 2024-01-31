@@ -1,9 +1,10 @@
 from typing import Any
 
+from zgw_consumers.client import build_client
+
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
-from zgw_consumers_ext.api_client import build_client
 
 from ..constants import DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER
 from ..models import BRPPersonenRequestOptions, HaalCentraalConfig

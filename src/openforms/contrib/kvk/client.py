@@ -3,9 +3,9 @@ from typing import Literal, TypedDict
 
 import elasticapm
 import requests
+from zgw_consumers.client import build_client
 
 from openforms.contrib.hal_client import HALClient
-from zgw_consumers_ext.api_client import ServiceClientFactory
 
 from .api_models.basisprofiel import BasisProfiel
 from .models import KVKConfig
@@ -22,8 +22,7 @@ def get_client() -> "KVKClient":
     assert isinstance(config, KVKConfig)
     if not (service := config.service):
         raise NoServiceConfigured("No KVK service configured!")
-    service_client_factory = ServiceClientFactory(service)
-    return KVKClient.configure_from(service_client_factory)
+    return build_client(service, client_factory=KVKClient)
 
 
 class SearchParams(TypedDict, total=False):

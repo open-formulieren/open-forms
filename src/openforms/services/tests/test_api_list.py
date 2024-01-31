@@ -1,9 +1,9 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 
 class AccessControlTests(APITestCase):

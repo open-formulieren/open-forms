@@ -3,8 +3,7 @@ from typing import TypedDict
 
 import requests
 from typing_extensions import NotRequired
-
-from zgw_consumers_ext.api_client import ServiceClientFactory
+from zgw_consumers.client import build_client
 
 from ..hal_client import HALClient
 from .models import BRKConfig
@@ -21,8 +20,7 @@ def get_client() -> "BRKClient":
     assert isinstance(config, BRKConfig)
     if not (service := config.service):
         raise NoServiceConfigured("No BRK service configured!")
-    service_client_factory = ServiceClientFactory(service)
-    return BRKClient.configure_from(service_client_factory)
+    return build_client(service, client_factory=BRKClient)
 
 
 class SearchParams(TypedDict):

@@ -8,12 +8,12 @@ import requests_mock
 import tablib
 from freezegun import freeze_time
 from zgw_consumers.constants import APITypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration

@@ -1,4 +1,4 @@
-from zgw_consumers_ext.api_client import NLXClient
+from zgw_consumers.nlx import NLXClient
 
 CRS_HEADERS = {"Content-Crs": "EPSG:4326"}
 

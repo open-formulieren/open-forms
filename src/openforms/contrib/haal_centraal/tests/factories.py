@@ -5,8 +5,7 @@ import factory
 from factory.django import DjangoModelFactory
 from simple_certmanager.constants import CertificateTypes
 from zgw_consumers.constants import AuthTypes
-
-from zgw_consumers_ext.tests.factories import ServiceFactory
+from zgw_consumers.test.factories import ServiceFactory
 
 from ..constants import BRPVersions
 from ..models import HaalCentraalConfig

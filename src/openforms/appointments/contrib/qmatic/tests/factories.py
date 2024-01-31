@@ -1,7 +1,6 @@
 import factory
 from zgw_consumers.constants import APITypes
-
-from zgw_consumers_ext.tests.factories import ServiceFactory as _ServiceFactory
+from zgw_consumers.test.factories import ServiceFactory as _ServiceFactory
 
 from ..models import QmaticConfig
 

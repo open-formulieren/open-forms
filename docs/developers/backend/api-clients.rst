@@ -50,7 +50,7 @@ Such a factory must implemented the :class:`ape_pie.ConfigAdapter` protocol.
 
 Some examples that can serve as a reference:
 
-* :class:`zgw_consumers_ext.ape_pie.ServiceClientFactory`
+* :class:`zgw_consumers.client.ServiceConfigAdapter`
 * :class:`soap.client.session_factory.SessionFactory`
 * :class:`stuf.service_client_factory.ServiceClientFactory`
 
@@ -61,8 +61,9 @@ Reference
 ZGW-consumers (JSON-based/RESTful services)
 -------------------------------------------
 
-.. automodule:: zgw_consumers_ext.api_client
-    :members:
+See the `zgw-consumers`_ documentation.
+
+.. _zgw-consumers: https://zgw-consumers.readthedocs.io/en/latest/
 
 Zeep (SOAP client)
 ------------------

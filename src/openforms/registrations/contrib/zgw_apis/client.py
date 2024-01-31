@@ -9,8 +9,9 @@ The clients used are:
   in the form builder
 """
 
+from zgw_consumers.client import build_client
+
 from openforms.contrib.zgw.clients import CatalogiClient, DocumentenClient, ZakenClient
-from zgw_consumers_ext.api_client import build_client
 
 from .models import ZGWApiGroupConfig
 

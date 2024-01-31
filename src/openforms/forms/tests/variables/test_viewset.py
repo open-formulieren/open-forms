@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from zgw_consumers.constants import APITypes, AuthTypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import (
     StaffUserFactory,
@@ -29,7 +30,6 @@ from openforms.variables.constants import (
 )
 from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 
 @override_settings(LANGUAGE_CODE="en")

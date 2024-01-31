@@ -488,7 +488,7 @@ oauthlib==3.2.2
     # via
     #   -r requirements/base.txt
     #   requests-oauthlib
-open-forms-ext-haalcentraal-hr==0.2.0
+open-forms-ext-haalcentraal-hr==0.3.0
     # via -r requirements/extensions.in
 open-forms-ext-token-exchange==0.4.0
     # via -r requirements/extensions.in
