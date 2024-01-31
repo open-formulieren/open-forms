@@ -44,6 +44,11 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
 
     @staticmethod
     def create_public_order_id_for(payment: SubmissionPayment) -> str:
+        """Create a public order ID to be sent to the payment provider."""
+
+        # TODO it isn't really clear what the required format/max length is
+        # for payment providers. Ogone seems to allow up to 40 characters or so,
+        # So this might fail at some point.
         config = GlobalConfiguration.get_solo()
         prefix = config.payment_order_id_prefix.format(year=payment.created.year)
         if prefix:
@@ -82,7 +87,7 @@ class SubmissionPayment(models.Model):
     # TODO Django 5.2 Update to a `GeneratedField`
     public_order_id = models.CharField(
         _("Order ID"),
-        max_length=255,
+        max_length=32,
         blank=True,
         help_text=_(
             "The order ID to be sent to the payment provider. This ID is built by "

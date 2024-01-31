@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 blank=True,
                 help_text="The order ID to be sent to the payment provider. This ID is built by concatenating an optional global prefix, the submission public reference and a unique incrementing ID.",
-                max_length=255,
+                max_length=32,
                 verbose_name="Order ID",
             ),
         ),
