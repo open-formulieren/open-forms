@@ -484,9 +484,9 @@ class ZGWRegistration(BasePlugin):
                     "titel": titel,
                 }
                 if vertrouwelijkheidaanduiding:
-                    doc_options[
-                        "doc_vertrouwelijkheidaanduiding"
-                    ] = vertrouwelijkheidaanduiding
+                    doc_options["doc_vertrouwelijkheidaanduiding"] = (
+                        vertrouwelijkheidaanduiding
+                    )
 
                 attachment_document = execute_unless_result_exists(
                     partial(
