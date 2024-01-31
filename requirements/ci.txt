@@ -423,8 +423,11 @@ factory-boy==3.0.1
     # via
     #   -r requirements/test-tools.in
     #   django-simple-certmanager
+    #   zgw-consumers
 faker==7.0.1
-    # via factory-boy
+    # via
+    #   factory-boy
+    #   zgw-consumers
 flake8==6.0.0
     # via -r requirements/test-tools.in
 flower==1.2.0
@@ -812,7 +815,9 @@ requests-file==1.5.1
     #   -r requirements/base.txt
     #   zeep
 requests-mock==1.8.0
-    # via -r requirements/test-tools.in
+    # via
+    #   -r requirements/test-tools.in
+    #   zgw-consumers
 requests-oauthlib==1.3.0
     # via
     #   -c requirements/base.txt
@@ -1036,10 +1041,11 @@ zeep==4.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.28.0
+zgw-consumers[testutils]==0.28.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   -r requirements/test-tools.in
 zopfli==0.2.3
     # via
     #   -c requirements/base.txt

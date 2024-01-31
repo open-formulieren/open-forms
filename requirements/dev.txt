@@ -469,11 +469,13 @@ factory-boy==3.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-simple-certmanager
+    #   zgw-consumers
 faker==7.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   factory-boy
+    #   zgw-consumers
 flake8==6.0.0
     # via
     #   -c requirements/ci.txt
@@ -947,6 +949,7 @@ requests-mock==1.8.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   ddt-api-calls
+    #   zgw-consumers
 requests-oauthlib==1.3.0
     # via
     #   -c requirements/ci.txt
@@ -1237,10 +1240,11 @@ zeep==4.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==0.28.0
+zgw-consumers[testutils]==0.28.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   zgw-consumers
 zopfli==0.2.3
     # via
     #   -c requirements/ci.txt

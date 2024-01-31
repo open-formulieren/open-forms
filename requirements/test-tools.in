@@ -16,6 +16,7 @@ pep8
 pytest  # documentation tests
 hypothesis  # property-based testing
 vcrpy  # record HTTP fixtures
+zgw-consumers[testutils]
 
 # Code formatting
 black
