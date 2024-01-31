@@ -1,13 +1,13 @@
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from zgw_consumers.client import build_client
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.registrations.contrib.zgw_apis.client import get_catalogi_client
 from openforms.registrations.contrib.zgw_apis.models import ZGWApiGroupConfig, ZgwConfig
-from zgw_consumers_ext.api_client import build_client
 
 from ..registry import register
 

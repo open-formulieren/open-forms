@@ -3,9 +3,9 @@ from unittest.mock import patch
 from django.test import SimpleTestCase
 
 import requests_mock
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..config_check import BAGCheck, LocatieServerCheck
 from ..models import KadasterApiConfig

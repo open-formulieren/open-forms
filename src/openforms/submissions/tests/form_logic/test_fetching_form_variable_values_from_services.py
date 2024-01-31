@@ -11,13 +11,13 @@ from factory.django import FileField
 from furl import furl
 from hypothesis import assume, example, given, strategies as st
 from zgw_consumers.constants import APITypes, AuthTypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
 from openforms.variables.constants import DataMappingTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ...logic.service_fetching import perform_service_fetch
 

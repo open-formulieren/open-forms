@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from glom import glom
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
@@ -11,7 +12,6 @@ from openforms.contrib.haal_centraal.tests.utils import load_json_mock
 from openforms.pre_requests.base import PreRequestHookBase
 from openforms.pre_requests.registry import Registry
 from openforms.submissions.tests.factories import SubmissionFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....constants import IdentifierRoles
 from ..constants import AttributesV1 as DefaultAttributes

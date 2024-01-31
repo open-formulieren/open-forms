@@ -4,12 +4,12 @@ from django.test import SimpleTestCase
 from django.utils.translation import gettext as _
 
 import requests_mock
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....registry import register
 

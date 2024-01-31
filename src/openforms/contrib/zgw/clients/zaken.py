@@ -2,7 +2,7 @@ import logging
 
 from django.utils import timezone
 
-from zgw_consumers_ext.api_client import NLXClient
+from zgw_consumers.nlx import NLXClient
 
 from .catalogi import CatalogiClient
 from .utils import get_today

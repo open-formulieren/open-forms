@@ -4,9 +4,8 @@ from typing import TypedDict
 import pytz
 from ape_pie.client import APIClient
 from dateutil.parser import isoparse
+from zgw_consumers.client import build_client
 from zgw_consumers.models import Service
-
-from zgw_consumers_ext.api_client import ServiceClientFactory
 
 from .exceptions import QmaticException
 from .models import QmaticConfig
@@ -79,8 +78,7 @@ def QmaticClient() -> "Client":
     if (service := config.service) is None:
         raise NoServiceConfigured("No Qmatic service defined, aborting!")
     assert isinstance(service, Service)
-    service_client_factory = ServiceClientFactory(service)
-    return Client.configure_from(service_client_factory)
+    return build_client(service, client_factory=Client)
 
 
 def startswith_version(url: str) -> bool:

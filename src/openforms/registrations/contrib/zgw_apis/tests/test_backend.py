@@ -13,6 +13,7 @@ from glom import glom
 from privates.test import temp_private_root
 from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
@@ -23,7 +24,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed

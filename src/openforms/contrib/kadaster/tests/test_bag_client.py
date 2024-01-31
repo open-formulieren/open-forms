@@ -6,8 +6,7 @@ from django.test import SimpleTestCase
 
 import requests
 import requests_mock
-
-from zgw_consumers_ext.tests.factories import ServiceFactory
+from zgw_consumers.test.factories import ServiceFactory
 
 from ..clients import get_bag_client
 from ..models import KadasterApiConfig

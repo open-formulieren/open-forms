@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.test import RequestFactory, TestCase, TransactionTestCase
 
 import requests_mock
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
@@ -18,7 +19,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from .. import prefill_variables
 

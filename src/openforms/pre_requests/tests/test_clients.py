@@ -3,12 +3,12 @@ from unittest.mock import patch
 from django.test import SimpleTestCase
 
 import requests_mock
+from zgw_consumers.client import build_client
+from zgw_consumers.nlx import NLXClient
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
-from zgw_consumers_ext.api_client import build_client
-from zgw_consumers_ext.nlx import NLXClient
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..base import PreRequestHookBase
 from ..clients import PreRequestClientContext, PreRequestMixin
@@ -25,7 +25,7 @@ class PreRequestHooksTest(DisableNLXRewritingMixin, SimpleTestCase):
 
         @register("test-hook")
         class PreRequestHook(PreRequestHookBase):
-            def __call__(self, url, method, kwargs, context):
+            def __call__(self, url, method, kwargs, context=None):
                 kwargs.setdefault("headers", {})
                 kwargs["headers"].update({"test": "test"})
 

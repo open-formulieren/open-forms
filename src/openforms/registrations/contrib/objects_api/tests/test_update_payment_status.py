@@ -6,11 +6,11 @@ from django.test import TestCase
 import requests_mock
 from freezegun import freeze_time
 from zgw_consumers.constants import APITypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration

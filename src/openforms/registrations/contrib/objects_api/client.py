@@ -9,9 +9,11 @@ The clients used are:
   in the form builder
 """
 
+from zgw_consumers.client import build_client
+from zgw_consumers.nlx import NLXClient
+
 from openforms.contrib.objects_api.clients import ObjectsClient
 from openforms.contrib.zgw.clients import DocumentenClient
-from zgw_consumers_ext.api_client import NLXClient, build_client
 
 from .models import ObjectsAPIConfig
 

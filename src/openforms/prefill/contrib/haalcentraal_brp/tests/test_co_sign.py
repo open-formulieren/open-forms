@@ -3,12 +3,12 @@ from unittest.mock import patch
 from django.test import TestCase
 
 import requests_mock
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.haal_centraal.constants import BRPVersions
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.haal_centraal.tests.utils import load_json_mock
 from openforms.submissions.tests.factories import SubmissionFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....co_sign import add_co_sign_representation
 from ....models import PrefillConfig

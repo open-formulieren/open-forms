@@ -3,6 +3,7 @@ from django.urls import reverse
 from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import expect
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
@@ -13,7 +14,6 @@ from openforms.forms.tests.factories import (
 )
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 
 class ServiceFetchConfigTests(E2ETestCase):

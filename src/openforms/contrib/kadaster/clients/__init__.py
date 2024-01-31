@@ -1,4 +1,4 @@
-from zgw_consumers_ext.api_client import ServiceClientFactory
+from zgw_consumers.client import build_client
 
 from ..models import KadasterApiConfig
 from .bag import BAGClient
@@ -14,8 +14,7 @@ def get_locatieserver_client() -> LocatieServerClient:
     assert isinstance(config, KadasterApiConfig)
     # model field is not nullable because a default is configured
     assert (service := config.search_service)
-    service_client_factory = ServiceClientFactory(service)
-    return LocatieServerClient.configure_from(service_client_factory)
+    return build_client(service, client_factory=LocatieServerClient)
 
 
 def get_bag_client() -> BAGClient:
@@ -23,5 +22,4 @@ def get_bag_client() -> BAGClient:
     assert isinstance(config, KadasterApiConfig)
     if not (service := config.bag_service):
         raise NoServiceConfigured("No BAG service configured!")
-    service_client_factory = ServiceClientFactory(service)
-    return BAGClient.configure_from(service_client_factory)
+    return build_client(service, client_factory=BAGClient)

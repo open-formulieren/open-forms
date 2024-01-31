@@ -7,10 +7,10 @@ import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..models import KadasterApiConfig
 

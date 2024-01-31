@@ -6,11 +6,11 @@ from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
 import jq
 from json_logic import jsonLogic
+from zgw_consumers.client import build_client
 
 from openforms.forms.models import FormVariable
 from openforms.typing import DataMapping, JSONObject, JSONValue
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
-from zgw_consumers_ext.api_client import build_client
 
 
 @dataclass

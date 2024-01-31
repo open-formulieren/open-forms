@@ -6,10 +6,10 @@ from django.test import SimpleTestCase
 import requests
 import requests_mock
 from zgw_consumers.constants import APITypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.utils.tests.nlx import DisableNLXRewritingMixin
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration

@@ -4,12 +4,12 @@ from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from glom import glom
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.utils import store_registrator_details
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ..clients import get_brp_client
 from ..constants import DEFAULT_HC_BRP_PERSONEN_GEBRUIKER_HEADER, BRPVersions

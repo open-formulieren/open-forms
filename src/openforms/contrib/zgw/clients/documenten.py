@@ -3,7 +3,7 @@ from typing import BinaryIO, Literal, TypeAlias
 
 from django.core.files.base import ContentFile
 
-from zgw_consumers_ext.api_client import NLXClient
+from zgw_consumers.nlx import NLXClient
 
 from .utils import get_today
 

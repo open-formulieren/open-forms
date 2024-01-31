@@ -8,6 +8,7 @@ from django_webtest import WebTest
 from furl import furl
 from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.models import User
 from openforms.authentication.constants import (
@@ -21,7 +22,6 @@ from openforms.forms.tests.factories import FormStepFactory
 from openforms.prefill.contrib.haalcentraal_brp.constants import AttributesV1
 from openforms.submissions.models import Submission
 from openforms.utils.urls import reverse_plus
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 CONFIGURATION = {
     "display": "form",

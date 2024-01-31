@@ -11,8 +11,8 @@ class DisableNLXRewritingMixin:
 
     def setUp(self):
         patchers = (
-            patch("zgw_consumers_ext.nlx.Rewriter._rewrite", new=lambda *args: None),
-            patch("zgw_consumers_ext.nlx.Rewriter.reverse_rewrites", new=[]),
+            patch("zgw_consumers.nlx.Rewriter._rewrite", new=lambda *args: None),
+            patch("zgw_consumers.nlx.Rewriter.reverse_rewrites", new=[]),
         )
         for patcher in patchers:
             patcher.start()

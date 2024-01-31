@@ -7,6 +7,7 @@ from django.test import TestCase, override_settings
 import requests_mock
 from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -14,7 +15,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 from ....constants import RegistrationAttribute
 from ....service import NoSubmissionReference, extract_submission_reference

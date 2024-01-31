@@ -3,9 +3,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 from zgw_consumers.constants import APITypes, AuthTypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.brk.models import BRKConfig
-from zgw_consumers_ext.tests.factories import ServiceFactory
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"
 BRK_API_KEY = os.getenv("BRK_API_KEY", "placeholder_key")
