@@ -5266,7 +5266,7 @@ paths:
   /api/v2/validation/plugins:
     get:
       operationId: validation_plugins_list
-      description: List all prefill plugins that have been registered.
+      description: List available validation plugins that have been registered.
       summary: List available validation plugins
       parameters:
       - in: query
