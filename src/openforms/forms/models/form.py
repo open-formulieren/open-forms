@@ -37,6 +37,8 @@ from .utils import literal_getter
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
+_sentinel = object()
+
 
 class FormQuerySet(models.QuerySet):
     def live(self):
@@ -417,7 +419,7 @@ class Form(models.Model):
         "authentication backend(s)"
     )
 
-    _cosign_component = None
+    _cosign_component = _sentinel
 
     def get_cosign_component(self) -> Component | None:
         for component in self.iter_components():
@@ -426,7 +428,7 @@ class Form(models.Model):
 
     @property
     def cosign_component(self) -> Component | None:
-        if not self._cosign_component:
+        if self._cosign_component is _sentinel:
             self._cosign_component = self.get_cosign_component()
         return self._cosign_component
 

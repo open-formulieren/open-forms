@@ -7061,10 +7061,16 @@ components:
         hideNonApplicableSteps:
           type: boolean
           readOnly: true
+        cosignLoginOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginOption'
+          readOnly: true
         cosignLoginInfo:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
+          deprecated: true
         submissionStatementsConfiguration:
           type: array
           items:
@@ -7102,6 +7108,7 @@ components:
           nullable: true
       required:
       - cosignLoginInfo
+      - cosignLoginOptions
       - hideNonApplicableSteps
       - loginOptions
       - loginRequired
@@ -8619,10 +8626,16 @@ components:
         hideNonApplicableSteps:
           type: boolean
           readOnly: true
+        cosignLoginOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginOption'
+          readOnly: true
         cosignLoginInfo:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
+          deprecated: true
         submissionStatementsConfiguration:
           type: array
           items:
