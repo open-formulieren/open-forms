@@ -29,6 +29,7 @@ export const FormDecorator = (Story, {args}) => (
       plugins: {
         availableAuthPlugins: args.availableAuthPlugins || [],
         availablePrefillPlugins: args.availablePrefillPlugins || [],
+        availableDMNPlugins: args.availableDMNPlugins || [],
       },
       components: args.availableComponents || {},
     }}
