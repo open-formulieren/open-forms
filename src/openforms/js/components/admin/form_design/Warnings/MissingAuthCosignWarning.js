@@ -14,7 +14,7 @@ const MissingAuthCosignWarning = () => {
     message: (
       <FormattedMessage
         description="MissingAuthCosignWarning message"
-        defaultMessage="The the co-sign component requires at least one authentication plugin to be enabled."
+        defaultMessage="The co-sign component requires at least one authentication plugin to be enabled."
       />
     ),
   };
