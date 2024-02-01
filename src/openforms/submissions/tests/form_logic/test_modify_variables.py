@@ -462,7 +462,7 @@ class VariableModificationTests(TestCase):
                 {
                     "action": {
                         "type": LogicActionTypes.evaluate_dmn,
-                        "value": {
+                        "config": {
                             "input_mapping": {
                                 "age": "ageDMN",
                                 "income": "incomeDMN",
@@ -569,7 +569,7 @@ class VariableModificationTests(TestCase):
                 {
                     "action": {
                         "type": LogicActionTypes.evaluate_dmn,
-                        "value": {
+                        "config": {
                             "input_mapping": {
                                 "age": "ageDMN",
                                 "income": "incomeDMN",

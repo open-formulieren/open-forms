@@ -1,10 +1,11 @@
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, Mapping, TypedDict
 
-from glom import assign, glom
+from glom import assign
 from json_logic import jsonLogic
 
 from openforms.dmn.service import evaluate_dmn
+from openforms.formio.datastructures import FormioData
 from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormVariable
@@ -23,6 +24,7 @@ class ActionDetails(TypedDict):
     property: dict
     state: Any
     value: Any
+    config: dict
 
 
 class ActionDict(TypedDict):
@@ -327,7 +329,7 @@ class EvaluateDMNAction(ActionOperation):
 
     @classmethod
     def from_action(cls, action: ActionDict) -> "ActionOperation":
-        dmn_config: DMNConfig = action["action"]["value"]
+        dmn_config: DMNConfig = action["action"]["config"]
 
         return cls(**dmn_config)
 
@@ -338,9 +340,9 @@ class EvaluateDMNAction(ActionOperation):
         submission: Submission,
     ) -> DataMapping | None:
         # Mapping from form variables to DMN inputs
+        data = FormioData(context)
         dmn_inputs = {
-            key_dmn: glom(context, key_form)
-            for key_form, key_dmn in self.input_mapping.items()
+            key_dmn: data[key_form] for key_form, key_dmn in self.input_mapping.items()
         }
 
         # Perform DMN call
