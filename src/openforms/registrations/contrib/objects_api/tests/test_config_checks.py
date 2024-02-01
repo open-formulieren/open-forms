@@ -23,6 +23,9 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
             objects_service=ServiceFactory.build(
                 api_root="https://objects.example.com/api/v1/",
             ),
+            objecttypes_service=ServiceFactory.build(
+                api_root="https://objecttypes.example.com/api/v1/",
+            ),
             drc_service=ServiceFactory.build(
                 api_root="https://documents.example.com/api/v1/",
                 api_type=APITypes.drc,
@@ -41,7 +44,11 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
 
     def _mockForValidServiceConfiguration(self, m: requests_mock.Mocker) -> None:
         m.get(
-            "https://objects.example.com/api/v1/objects",
+            "https://objects.example.com/api/v1/objects?pageSize=1",
+            json={"results": []},
+        )
+        m.get(
+            "https://objecttypes.example.com/api/v1/objecttypes?pageSize=1",
             json={"results": []},
         )
         m.get(
@@ -59,7 +66,7 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_objects_service_misconfigured(self, m):
         m.get(
-            "https://objects.example.com/api/v1/objects",
+            "https://objects.example.com/api/v1/objects?pageSize=1",
             exc=requests.ConnectionError,
         )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -71,7 +78,11 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
     def test_no_documents_service_configured(self, m):
         self.config.drc_service = None
         m.get(
-            "https://objects.example.com/api/v1/objects",
+            "https://objects.example.com/api/v1/objects?pageSize=1",
+            json={"results": []},
+        )
+        m.get(
+            "https://objecttypes.example.com/api/v1/objecttypes?pageSize=1",
             json={"results": []},
         )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)

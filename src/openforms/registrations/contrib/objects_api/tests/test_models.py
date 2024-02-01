@@ -2,8 +2,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from zgw_consumers.constants import APITypes
-
-from zgw_consumers_ext.tests.factories import ServiceFactory
+from zgw_consumers.test.factories import ServiceFactory
 
 from ..models import ObjectsAPIConfig
 

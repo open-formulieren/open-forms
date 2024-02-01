@@ -4,13 +4,23 @@ import requests
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from .client import NoServiceConfigured, get_documents_client, get_objects_client
+from .client import (
+    NoServiceConfigured,
+    get_documents_client,
+    get_objects_client,
+    get_objecttypes_client,
+)
 from .models import ObjectsAPIConfig
 
 
 def check_objects_service():
     with get_objects_client() as client:
-        client.get("objects")
+        client.get("objects", params={"pageSize": 1})
+
+
+def check_objecttypes_service():
+    with get_objecttypes_client() as client:
+        client.get("objecttypes", params={"pageSize": 1})
 
 
 def check_documents_service():
@@ -22,6 +32,7 @@ def check_config():
     # First, check that the necessary services are configured correctly.
     services = (
         (check_objects_service, "objects_service"),
+        (check_objecttypes_service, "objecttypes_service"),
         (check_documents_service, "drc_service"),
     )
 
