@@ -20,10 +20,10 @@ export default {
       {id: 'some-other-engine', label: 'Some other engine'},
     ],
     availableFormVariables: [
-      {type: 'textfield', key: 'name', label: 'Name'},
-      {type: 'textfield', key: 'surname', label: 'Surname'},
-      {type: 'number', key: 'income', label: 'Income'},
-      {type: 'checkbox', key: 'canApply', label: 'Can apply?'},
+      {type: 'textfield', key: 'name', name: 'Name'},
+      {type: 'textfield', key: 'surname', name: 'Surname'},
+      {type: 'number', key: 'income', name: 'Income'},
+      {type: 'checkbox', key: 'canApply', name: 'Can apply?'},
     ],
   },
   parameters: {

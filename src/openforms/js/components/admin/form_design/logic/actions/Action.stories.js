@@ -2,6 +2,10 @@ import {useArgs} from '@storybook/client-api';
 import {produce} from 'immer';
 import set from 'lodash/set';
 
+import {
+  mockDMNDecisionDefinitionVersionsGet,
+  mockDMNDecisionDefinitionsGet,
+} from 'components/admin/form_design/mocks';
 import {FormDecorator, FormLogicDecorator} from 'components/admin/form_design/story-decorators';
 
 import Action from './Action';
@@ -138,5 +142,58 @@ export const ServiceFetch = {
         key: 'bar',
       },
     ],
+  },
+};
+
+export const EvaluateDMN = {
+  render,
+  name: 'Evaluate DMN',
+  args: {
+    prefixText: 'Action',
+
+    action: {
+      component: '',
+      variable: 'bar',
+      formStep: '',
+      formStepUuid: '',
+
+      action: {
+        config: {},
+        type: 'evaluate-dmn',
+        value: '',
+      },
+    },
+    availableDMNPlugins: [
+      {id: 'camunda7', label: 'Camunda 7'},
+      {id: 'some-other-engine', label: 'Some other engine'},
+    ],
+    availableFormVariables: [
+      {type: 'textfield', key: 'name', name: 'Name'},
+      {type: 'textfield', key: 'surname', name: 'Surname'},
+      {type: 'number', key: 'income', name: 'Income'},
+      {type: 'checkbox', key: 'canApply', name: 'Can apply?'},
+    ],
+  },
+  decorators: [FormDecorator],
+
+  parameters: {
+    msw: {
+      handlers: [
+        mockDMNDecisionDefinitionsGet({
+          camunda7: [
+            {
+              id: 'approve-payment',
+              label: 'Approve payment',
+            },
+            {
+              id: 'invoiceClassification',
+              label: 'Invoice Classification',
+            },
+          ],
+          'some-other-engine': [{id: 'some-definition-id', label: 'Some definition id'}],
+        }),
+        mockDMNDecisionDefinitionVersionsGet,
+      ],
+    },
   },
 };
