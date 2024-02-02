@@ -52,9 +52,11 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
         config = GlobalConfiguration.get_solo()
         prefix = config.payment_order_id_prefix.format(year=payment.created.year)
         if prefix:
-            prefix = f"{prefix}_"
+            prefix = f"{prefix}/"
+
+        assert payment.submission.public_registration_reference
         return (
-            f"{prefix}{payment.submission.public_registration_reference}_{payment.pk}"
+            f"{prefix}{payment.submission.public_registration_reference}/{payment.pk}"
         )
 
 

@@ -15,9 +15,10 @@ from .factories import OgoneMerchantFactory
 class OgoneClientTest(OFVCRMixin, TestCase):
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
-    def setUp(self):
-        super().setUp()
-        self.merchant = OgoneMerchantFactory(
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.merchant = OgoneMerchantFactory.build(
             pspid=os.getenv("OGONE_PSPID", "maykinmedia"),
             sha_in_passphrase=os.getenv("OGONE_SHA_IN", "placeholder_sha_in"),
             sha_out_passphrase=os.getenv("OGONE_SHA_OUT", "placeholder_sha_out"),
@@ -27,7 +28,7 @@ class OgoneClientTest(OFVCRMixin, TestCase):
         client = OgoneClient(self.merchant)
 
         info = client.get_payment_info(
-            "xyz2024_OF-123456_987654321",
+            "xyz2024/OF-123456/987654321",
             1000,
             "http://foo.bar/return?bazz=buzz",
             RETURN_ACTION_PARAM,
@@ -35,13 +36,14 @@ class OgoneClientTest(OFVCRMixin, TestCase):
 
         payment_request = requests.post(info.url, data=info.data)
 
+        # Response is always a 200, so we assert on the content instead
         self.assertNotIn("Er is een fout opgetreden", payment_request.text)
 
     def test_payment_request_invalid_order_id(self):
         client = OgoneClient(self.merchant)
 
         info = client.get_payment_info(
-            "xyz2024_OF-123456_987654321THISISPROBABLYTOOLONG",
+            "xyz2024/OF-123456/987654321THISISPROBABLYTOOLONG",
             1000,
             "http://foo.bar/return?bazz=buzz",
             RETURN_ACTION_PARAM,
