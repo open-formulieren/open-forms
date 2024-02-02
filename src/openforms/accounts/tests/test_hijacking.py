@@ -7,12 +7,14 @@ from django.test import TestCase, override_settings, tag
 from django.urls import NoReverseMatch, reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import get_valid_totp_token
 
 from openforms.logging.models import TimelineLogProxy
 
 from .factories import StaffUserFactory, SuperUserFactory
 
 
+@override_settings(MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[])  # enforce MFA
 class HijackTests(WebTest):
     csrf_checks = False
 
@@ -23,10 +25,20 @@ class HijackTests(WebTest):
         )
         return response
 
+    def _login_with_mfa(self, user):
+        login_page = self.app.get(reverse("admin:login"))
+        login_page.form["auth-username"] = user.username
+        login_page.form["auth-password"] = "secret"
+        token_page = login_page.form.submit()
+
+        token_page.form["token-otp_token"] = get_valid_totp_token(user)
+        token_page.form.submit().follow()
+
     def test_can_hijack_and_release_with_2fa(self):
-        staff_user = StaffUserFactory.create()
-        superuser = SuperUserFactory.create()
+        staff_user = StaffUserFactory.create(with_totp_device=True)
+        superuser = SuperUserFactory.create(with_totp_device=True)
         admin_dashboard_url = reverse("admin:index")
+        self._login_with_mfa(superuser)
 
         with self.subTest("superuser admin index page"):
             admin_dashboard = self.app.get(admin_dashboard_url, user=superuser)
@@ -70,8 +82,9 @@ class HijackTests(WebTest):
             )
 
     def test_auditlog_entries_on_hijack_and_release(self):
-        staff_user = StaffUserFactory.create()
-        superuser = SuperUserFactory.create()
+        staff_user = StaffUserFactory.create(with_totp_device=True)
+        superuser = SuperUserFactory.create(with_totp_device=True)
+        self._login_with_mfa(superuser)
 
         with self.subTest("hijack user"):
             self.app.get(reverse("admin:index"), user=superuser)
@@ -121,13 +134,13 @@ class HijackTests(WebTest):
             )
 
 
-@override_settings(MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[])
+@override_settings(MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[])  # enforce MFA
 class HijackSecurityTests(TestCase):
 
     @tag("security-28", "CVE-2024-24771")
     def test_cannot_hijack_without_second_factor(self):
-        staff_user = StaffUserFactory.create()
-        superuser = SuperUserFactory.create()
+        staff_user = StaffUserFactory.create(with_totp_device=True)
+        superuser = SuperUserFactory.create(with_totp_device=True)
         superuser.totpdevice_set.create()
         self.client.force_login(superuser)
 

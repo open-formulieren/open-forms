@@ -1,8 +1,13 @@
+"""
+TODO: move this code to maykin-2fa.
+"""
+
 from django.dispatch import receiver
 
 from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from hijack.signals import hijack_ended, hijack_started
+from two_factor.utils import default_device
 
 from openforms.logging import logevent
 
@@ -32,6 +37,10 @@ def handle_hijack_end(sender, hijacker, hijacked, request, **kwargs):
     """
     1. Remove any dummy OTP devices for the hijacked user.
     2. Restore the original OTP device for the hijacker.
+
+    This is tricky, we can not just store a reference to the original device in the
+    session, because releasing the user calls django's `login`, which flushes the
+    session so we lose that information *before* the ``hijack_ended`` signal fires.
     """
     # add hijack actions to audit log - malicious actors can then not hijack another
     # user and view potentially sensitive data causing them to show up in the audit log
@@ -39,8 +48,8 @@ def handle_hijack_end(sender, hijacker, hijacked, request, **kwargs):
 
     TOTPDevice.objects.filter(user=hijacked, name="hijack_device").delete()
 
-    try:
-        device = TOTPDevice.objects.get(user=hijacker)
-        _set_session_device(request, device)
-    except TOTPDevice.DoesNotExist:
-        pass
+    # restore original device
+    original_device = default_device(hijacker)
+    hijacker.otp_device = original_device
+    if original_device:
+        _set_session_device(request, original_device)

@@ -1,11 +1,32 @@
 from django.contrib.auth.models import Group, Permission
 
 import factory
+from django_otp.util import random_hex
+
+
+class TOTPDeviceFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory("openforms.accounts.tests.factories.UserFactory")
+    key = factory.LazyAttribute(lambda o: random_hex())
+
+    class Meta:
+        model = "otp_totp.TOTPDevice"
 
 
 class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Sequence(lambda n: f"user-{n}")
     password = factory.PostGenerationMethodCall("set_password", "secret")
+
+    class Meta:
+        model = "accounts.User"
+
+    class Params:
+        with_totp_device = factory.Trait(
+            device=factory.RelatedFactory(
+                TOTPDeviceFactory,
+                "user",
+                name="default",
+            )
+        )
 
     @factory.post_generation
     def user_permissions(self, create, extracted, **kwargs):
@@ -27,9 +48,6 @@ class UserFactory(factory.django.DjangoModelFactory):
 
                     permission = Permission.objects.get(**filters)
                 self.user_permissions.add(permission)
-
-    class Meta:
-        model = "accounts.User"
 
 
 class StaffUserFactory(UserFactory):
