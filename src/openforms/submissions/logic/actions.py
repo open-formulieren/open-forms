@@ -1,16 +1,18 @@
-from dataclasses import asdict, dataclass
-from typing import Any, Callable, Mapping, TypedDict
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Mapping, TypedDict
 
 from glom import assign
 from json_logic import jsonLogic
+from typing_extensions import Self
 
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.datastructures import FormioData
 from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormVariable
-from openforms.typing import DataMapping, JSONObject, JSONValue
-from openforms.utils.json_logic import ComponentMeta
+from openforms.typing import DataMapping, JSONObject
 from openforms.variables.models import ServiceFetchConfiguration
 
 from ..models import Submission, SubmissionStep
@@ -35,7 +37,7 @@ class ActionDict(TypedDict):
     action: ActionDetails
 
 
-def compile_action_operation(action: ActionDict) -> "ActionOperation":
+def compile_action_operation(action: ActionDict) -> ActionOperation:
     action_type = action["action"]["type"]
     cls = ACTION_TYPE_MAPPING[action_type]
     return cls.from_action(action)
@@ -45,7 +47,7 @@ class ActionOperation:
     rule: FormLogic
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "ActionOperation":
+    def from_action(cls, action: ActionDict) -> Self:
         """
         Constructor from an ActionDict
         """
@@ -62,7 +64,6 @@ class ActionOperation:
     def eval(
         self,
         context: DataMapping,
-        log: Callable[[JSONValue], None],
         submission: Submission,
     ) -> DataMapping | None:
         """
@@ -70,16 +71,6 @@ class ActionOperation:
         applied to the context.
         """
         pass
-
-    def get_action_log_data(
-        self,
-        component_map: dict[str, ComponentMeta],
-        all_variables: dict[str, FormVariable],
-        initial_data: dict,
-        log_data: dict[str, JSONValue],
-    ) -> JSONObject | None:
-        """Get action information to log"""
-        return None
 
 
 @dataclass
@@ -89,7 +80,7 @@ class PropertyAction(ActionOperation):
     value: Any
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "PropertyAction":
+    def from_action(cls, action: ActionDict) -> Self:
         return cls(
             component=action["component"],
             property=action["action"]["property"]["value"],
@@ -104,35 +95,10 @@ class PropertyAction(ActionOperation):
         component = configuration[self.component]
         assign(component, self.property, self.value, missing=dict)
 
-    def get_action_log_data(
-        self,
-        component_map: dict[str, ComponentMeta],
-        all_variables: dict[str, FormVariable],
-        initial_data: dict,
-        log_data: dict[str, JSONValue],
-    ) -> JSONObject:
-        component_meta = component_map.get(self.component)
-
-        # figure out the best possible label
-        # 1. fall back to component label if there is a label, else empty string
-        # 2. if there is a variable, use the name if it's set, else fall back to
-        # component label
-        label = component_meta.component.get("label", "") if component_meta else ""
-        if self.component in all_variables:
-            label = all_variables[self.component].name or label
-
-        return {
-            "key": self.component,
-            "type_display": LogicActionTypes.get_label(LogicActionTypes.property),
-            "value": self.property,
-            "state": self.value,
-            "label": label,
-        }
-
 
 class DisableNextAction(ActionOperation):
     @classmethod
-    def from_action(cls, action: ActionDict) -> "DisableNextAction":
+    def from_action(cls, action: ActionDict) -> Self:
         return cls()
 
     def apply(
@@ -140,24 +106,13 @@ class DisableNextAction(ActionOperation):
     ) -> None:
         step._can_submit = False
 
-    def get_action_log_data(
-        self,
-        component_map: dict[str, ComponentMeta],
-        all_variables: dict[str, FormVariable],
-        initial_data: dict,
-        log_data: dict[str, JSONValue],
-    ) -> JSONObject:
-        return {
-            "type_display": LogicActionTypes.get_label(LogicActionTypes.disable_next),
-        }
-
 
 @dataclass
 class StepNotApplicableAction(ActionOperation):
     form_step_identifier: str
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "StepNotApplicableAction":
+    def from_action(cls, action: ActionDict) -> Self:
         return cls(
             form_step_identifier=action["form_step_uuid"],
         )
@@ -180,27 +135,13 @@ class StepNotApplicableAction(ActionOperation):
             step.is_applicable = False
             step.data = DirtyData({})
 
-    def get_action_log_data(
-        self,
-        component_map: dict[str, ComponentMeta],
-        all_variables: dict[str, FormVariable],
-        initial_data: dict,
-        log_data: dict[str, JSONValue],
-    ) -> JSONObject:
-        return {
-            "type_display": LogicActionTypes.get_label(
-                LogicActionTypes.step_not_applicable
-            ),
-            "step_name": self.form_step_identifier,
-        }
-
 
 @dataclass
 class StepApplicableAction(ActionOperation):
     form_step_identifier: str
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "StepApplicableAction":
+    def from_action(cls, action: ActionDict) -> Self:
         return cls(
             form_step_identifier=action["form_step_uuid"],
         )
@@ -216,20 +157,6 @@ class StepApplicableAction(ActionOperation):
         )
         submission_step_to_modify.is_applicable = True
 
-    def get_action_log_data(
-        self,
-        component_map: dict[str, ComponentMeta],
-        all_variables: dict[str, FormVariable],
-        initial_data: dict,
-        log_data: dict[str, JSONValue],
-    ) -> JSONObject:
-        return {
-            "type_display": LogicActionTypes.get_label(
-                LogicActionTypes.step_applicable
-            ),
-            "step_name": self.form_step_identifier,
-        }
-
 
 @dataclass
 class VariableAction(ActionOperation):
@@ -237,31 +164,16 @@ class VariableAction(ActionOperation):
     value: JSONObject
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "VariableAction":
+    def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"], value=action["action"]["value"])
 
     def eval(
         self,
         context: DataMapping,
-        log: Callable[[JSONValue], None],
         submission: Submission,
     ) -> DataMapping:
         with log_errors(self.value, self.rule):
-            log({"value": (value := jsonLogic(self.value, context))})
-            return {self.variable: value}
-
-    def get_action_log_data(
-        self,
-        component_map: dict[str, ComponentMeta],
-        all_variables: dict[str, FormVariable],
-        initial_data: dict,
-        log_data: dict[str, JSONValue],
-    ) -> JSONObject:
-        return {
-            "key": self.variable,
-            "type_display": LogicActionTypes.get_label(LogicActionTypes.variable),
-            "value": log_data.get("value", ""),  # error caught by log_errors in `eval`
-        }
+            return {self.variable: jsonLogic(self.value, context)}
 
 
 @dataclass
@@ -270,13 +182,12 @@ class ServiceFetchAction(ActionOperation):
     fetch_config: int
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "ServiceFetchAction":
+    def from_action(cls, action: ActionDict) -> Self:
         return cls(variable=action["variable"], fetch_config=action["action"]["value"])
 
     def eval(
         self,
         context: DataMapping,
-        log: Callable[[JSONValue], None],
         submission: Submission,
     ) -> DataMapping:
         # FIXME
@@ -292,23 +203,7 @@ class ServiceFetchAction(ActionOperation):
             var = self.rule.form.formvariable_set.get(key=self.variable)
         with log_errors({}, self.rule):  # TODO proper error handling
             result = perform_service_fetch(var, context, str(submission.uuid))
-            log(asdict(result))
             return {var.key: result.value}
-
-    def get_action_log_data(
-        self,
-        component_map: dict[str, ComponentMeta],
-        all_variables: dict[str, FormVariable],
-        initial_data: dict,
-        log_data: dict[str, JSONValue],
-    ) -> JSONObject:
-        return {
-            "key": self.variable,
-            "type_display": LogicActionTypes.get_label(
-                LogicActionTypes.fetch_from_service
-            ),
-            "value": repr(log_data),
-        }
 
 
 class DMNConfig(TypedDict):
@@ -328,7 +223,7 @@ class EvaluateDMNAction(ActionOperation):
     definition_version: str = ""
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "ActionOperation":
+    def from_action(cls, action: ActionDict) -> Self:
         dmn_config: DMNConfig = action["action"]["config"]
 
         return cls(**dmn_config)
@@ -336,7 +231,6 @@ class EvaluateDMNAction(ActionOperation):
     def eval(
         self,
         context: DataMapping,
-        log: Callable[[JSONValue], None],
         submission: Submission,
     ) -> DataMapping | None:
         # Mapping from form variables to DMN inputs
@@ -353,8 +247,6 @@ class EvaluateDMNAction(ActionOperation):
             plugin_id=self.plugin_id,
         )
 
-        log({"dmn_inputs": dmn_inputs, "dmn_outputs": dmn_outputs})
-
         # Map DMN output to form variables
         return {
             key_form: dmn_outputs[key_dmn]
@@ -367,7 +259,7 @@ class SetRegistrationBackendAction(ActionOperation):
     registration_backend_key: str
 
     @classmethod
-    def from_action(cls, action: ActionDict) -> "SetRegistrationBackendAction":
+    def from_action(cls, action: ActionDict) -> Self:
         return cls(registration_backend_key=action["action"]["value"])
 
     def apply(
@@ -376,14 +268,6 @@ class SetRegistrationBackendAction(ActionOperation):
         step.submission.finalised_registration_backend_key = (
             self.registration_backend_key
         )
-
-    def get_action_log_data(self, *args, **kwargs) -> JSONObject:
-        return {
-            "type_display": LogicActionTypes.get_label(
-                LogicActionTypes.set_registration_backend
-            ),
-            "registration_backend_key": self.registration_backend_key,
-        }
 
 
 ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, type[ActionOperation]] = {

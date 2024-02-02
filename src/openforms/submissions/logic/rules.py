@@ -1,13 +1,10 @@
-import operator
-from dataclasses import dataclass, field
-from functools import partial
+from dataclasses import dataclass
 from typing import Callable, Iterable, Iterator
 
 import elasticapm
 from json_logic import jsonLogic
 
 from openforms.forms.models import FormLogic, FormStep
-from openforms.typing import JSONValue
 
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation
@@ -114,9 +111,6 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
 class EvaluatedRule:
     rule: FormLogic
     triggered: bool
-    # MutableMapping of ActionOperation index => meta data required for logging
-    # This is a mapping, not a sequence, because operations may not log data.
-    action_log_data: dict[int, JSONValue] = field(default_factory=dict)
 
 
 def iter_evaluate_rules(
@@ -161,9 +155,8 @@ def iter_evaluate_rules(
                 continue
 
             for i, operation in enumerate(rule.action_operations):
-                log = partial(operator.setitem, evaluated_rule.action_log_data, i)
                 if mutations := operation.eval(
-                    data_container.data, log=log, submission=submission
+                    data_container.data, submission=submission
                 ):
                     data_container.update(mutations)
                 yield operation
