@@ -55,16 +55,16 @@ def get_property_mappings_from_submission(
     property_mappings = {}
 
     # dict of {componentKey: eigenschap} mapping
-    simple_mappings = {conn["component_key"]: conn["eigenschap"] for conn in mappings}
+    simple_mappings = {
+        mapping["component_key"]: mapping["eigenschap"] for mapping in mappings
+    }
 
-    merged_data = dict(
-        submission.submissionvaluevariable_set.filter(
-            key__in=[conn["component_key"] for conn in mappings]
-        ).values_list("key", "value")
-    )
+    variable_values = submission.submissionvaluevariable_set.filter(
+        key__in=simple_mappings
+    ).values_list("key", "value")
 
-    for key, form_value in merged_data.items():
-        eigenschap = simple_mappings.get(key)
+    for key, form_value in variable_values:
+        eigenschap = simple_mappings[key]
         property_mappings[eigenschap] = form_value
 
     return property_mappings
@@ -74,13 +74,14 @@ class MappedVariablePropertySerializer(serializers.Serializer):
     component_key = serializers.CharField(
         label=_("Component key"),
         validators=[variable_key_validator],
-        help_text=_("Key of the Formio.js component to take the value from."),
+        help_text=_("Key of the form variable to take the value from."),
     )
     eigenschap = serializers.CharField(
         label=_("Property"),
         max_length=20,
         help_text=_(
-            "This is the name of the property with which the variable will be connected."
+            "Name of the property on the case type to which the variable will be "
+            "mapped."
         ),
     )
 
@@ -152,7 +153,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     # Eigenschappen
     property_mappings = MappedVariablePropertySerializer(
         many=True,
-        label=_("Mapped properties variables"),
+        label=_("Variable-to-property mappings"),
         required=False,
     )
 
@@ -186,12 +187,13 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 }
 
                 errors = []
-                for conn in mappings:
-                    if conn["eigenschap"] not in retrieved_eigenschappen:
+                for mapping in mappings:
+                    if mapping["eigenschap"] not in retrieved_eigenschappen:
                         errors.append(
                             _(
-                                "Could not find a property with the name '{property_name}' related to the zaaktype."
-                            ).format(property_name=conn["eigenschap"])
+                                "Could not find a property with the name "
+                                "'{property_name}' related to the zaaktype."
+                            ).format(property_name=mapping["eigenschap"])
                         )
 
                 if errors:
@@ -543,7 +545,7 @@ class ZGWRegistration(BasePlugin):
                 "intermediate.objects_api_zaakobject",
             )
 
-        # Map variables to case eigenschappen (if a connection has been used in ZGW registration)
+        # Map variables to case eigenschappen (if mappings are defined)
         if variables_properties := options.get("property_mappings"):
             property_mappings = get_property_mappings_from_submission(
                 submission, variables_properties

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import TypedDict
 
 from django.utils import timezone
@@ -10,8 +10,8 @@ TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
 
 
 def get_today() -> str:
-    now_in_ams = timezone.make_naive(timezone.now(), timezone=TIMEZONE_AMS)
-    return now_in_ams.date().isoformat()
+    now = datetime_in_amsterdam(timezone.now())
+    return now.date().isoformat()
 
 
 def datetime_in_amsterdam(value: datetime) -> datetime:

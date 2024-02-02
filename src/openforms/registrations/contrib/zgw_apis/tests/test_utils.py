@@ -1,8 +1,4 @@
-from datetime import datetime
-
 from django.test import SimpleTestCase
-
-from openforms.contrib.zgw.clients.utils import TIMEZONE_AMS
 
 from ..utils import process_according_to_eigenschap_format
 
@@ -32,12 +28,7 @@ class UtilsTests(SimpleTestCase):
         sample = "2024-01-31T16:24:00+00:00"
         processed_value = process_according_to_eigenschap_format(specificatie, sample)
 
-        self.assertEqual(
-            processed_value,
-            datetime.fromisoformat(sample)
-            .astimezone(TIMEZONE_AMS)
-            .strftime("%Y%m%d%H%M%S"),
-        )
+        self.assertEqual(processed_value, "20240131172400")
 
     def test_no_date_or_datetime(self):
         samples = ["simple string", "2"]
