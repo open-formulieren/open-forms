@@ -6,10 +6,12 @@ from django.urls import reverse, reverse_lazy
 
 from django_webtest import WebTest
 from furl import furl
+from maykin_2fa.test import disable_admin_mfa
 
 from .factories import StaffUserFactory, SuperUserFactory, UserFactory
 
 
+@disable_admin_mfa()
 class AccessControlTests(WebTest):
     admin_url = reverse_lazy("admin:accounts_userpreferences_change")
 
@@ -63,6 +65,7 @@ class AccessControlTests(WebTest):
         self.assertEqual(response.status_code, 403)
 
 
+@disable_admin_mfa()
 class UserPreferencesTests(WebTest):
     admin_url = reverse_lazy("admin:accounts_userpreferences_change")
 

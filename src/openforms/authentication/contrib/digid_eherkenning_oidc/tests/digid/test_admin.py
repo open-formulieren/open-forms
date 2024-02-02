@@ -4,6 +4,7 @@ from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from digid_eherkenning_oidc_generics.models import OpenIDConnectPublicConfig
 from openforms.accounts.tests.factories import SuperUserFactory
@@ -23,6 +24,7 @@ default_config = dict(
 )
 
 
+@disable_admin_mfa()
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
 class DigiDOIDCFormAdminTests(WebTest):
     def setUp(self):

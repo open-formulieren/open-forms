@@ -2,6 +2,7 @@ from django.test import override_settings, tag
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import SuperUserFactory
@@ -9,6 +10,7 @@ from openforms.accounts.tests.factories import SuperUserFactory
 from .factories import SubmissionFileAttachmentFactory, TemporaryFileUploadFactory
 
 
+@disable_admin_mfa()
 @temp_private_root()
 class TemporaryFileUploadsAdmin(WebTest):
     @tag("CVE-2022-36359")
@@ -56,6 +58,7 @@ class TemporaryFileUploadsAdmin(WebTest):
                 )
 
 
+@disable_admin_mfa()
 @temp_private_root()
 class SubmissionAttachmensAdmin(WebTest):
     @tag("CVE-2022-36359")

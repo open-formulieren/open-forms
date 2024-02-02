@@ -8,6 +8,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import (
@@ -21,6 +22,7 @@ from openforms.forms.tests.factories import FormFactory
 from openforms.utils.urls import build_absolute_uri
 
 
+@disable_admin_mfa()
 @override_settings(LANGUAGE_CODE="en")
 class TestExportFormsView(WebTest):
     def test_not_staff_cant_access(self):
@@ -98,6 +100,7 @@ class TestExportFormsView(WebTest):
         self.assertEqual(messages[0].tags, "success")
 
 
+@disable_admin_mfa()
 @temp_private_root()
 class TestDownloadExportFormView(TestCase):
     def test_not_logged_in_cant_access(self):
@@ -184,6 +187,7 @@ class TestDownloadExportFormView(TestCase):
         self.assertEqual(404, response.status_code)
 
 
+@disable_admin_mfa()
 @temp_private_root()
 @override_settings(LANGUAGE_CODE="en")
 class TestImportView(WebTest):

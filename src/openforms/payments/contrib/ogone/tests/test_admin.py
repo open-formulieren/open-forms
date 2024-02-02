@@ -3,10 +3,12 @@ from django.urls import reverse
 
 from django_webtest import WebTest
 from furl import furl
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 
 
+@disable_admin_mfa()
 class OgoneMerchantAdminTest(WebTest):
     @override_settings(BASE_URL="https://example.com/foo")
     def test_add_ogone_merchant(self):

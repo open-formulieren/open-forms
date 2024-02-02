@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import FormFactory
@@ -9,6 +10,7 @@ from openforms.forms.tests.factories import FormFactory
 from .factories import ThemeFactory
 
 
+@disable_admin_mfa()
 class ThemePreviewTests(WebTest):
     def test_can_preview_theme_via_admin_list(self):
         user = SuperUserFactory.create()

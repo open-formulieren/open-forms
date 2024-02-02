@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.config.models import GlobalConfiguration
@@ -16,6 +17,7 @@ class PrefillConfigTests(WebTest):
 
         self.assertEqual(str(instance), PrefillConfig._meta.verbose_name)
 
+    @disable_admin_mfa()
     @patch(
         "openforms.plugins.registry.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(
