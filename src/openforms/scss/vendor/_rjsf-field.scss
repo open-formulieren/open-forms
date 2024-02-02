@@ -5,7 +5,9 @@
 
   // reset default error color
   @at-root .form-row.errors & {
-    input {
+    input,
+    select,
+    textarea {
       border-color: #ccc;
     }
   }

@@ -100,7 +100,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="ZGW API's")
-                await page.get_by_label("ZGW API set").select_option(label="Group 1")
+                await page.get_by_label("ZGW API group").select_option(label="Group 1")
 
             with phase("Configure upload component"):
                 await page.get_by_role("tab", name="Steps and fields").click()
@@ -114,7 +114,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="ZGW API's")
-                await page.get_by_label("ZGW API set").select_option(label="Group 2")
+                await page.get_by_label("ZGW API group").select_option(label="Group 2")
 
             with phase("Reopen the upload component"):
                 await page.get_by_role("tab", name="Steps and fields").click()

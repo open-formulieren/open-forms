@@ -96,6 +96,24 @@ const handleAppointmentForm = draft => {
 };
 
 /**
+ * Options for ZGW registration backend can be empty strings but the serializer does not allow them.
+ * This is the way the regular forms treat options, they don't send data for the field when empty str.
+ */
+const handleZgwRegistrationOptions = draft => {
+  if (draft.form?.registrationBackends) {
+    draft.form.registrationBackends.forEach(backend => {
+      if (backend?.backend === 'zgw-create-zaak') {
+        for (const key in backend?.options) {
+          if (backend.options[key] === '') {
+            delete backend.options[key];
+          }
+        }
+      }
+    });
+  }
+};
+
+/**
  * Save the form itself without any related objects.
  */
 const saveForm = async (state, csrftoken) => {
@@ -112,6 +130,7 @@ const saveForm = async (state, csrftoken) => {
     normalizeLimit(draft, 'allSubmissionsRemovalLimit');
     normalizeEmptyStrField(draft, 'activateOn');
     normalizeEmptyStrField(draft, 'deactivateOn');
+    handleZgwRegistrationOptions(draft);
     handleAppointmentForm(draft);
   });
 

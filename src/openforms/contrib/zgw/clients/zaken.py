@@ -2,6 +2,7 @@ import logging
 
 from django.utils import timezone
 
+from furl import furl
 from zgw_consumers.nlx import NLXClient
 
 from .catalogi import CatalogiClient
@@ -146,6 +147,19 @@ class ZakenClient(NLXClient):
         }
 
         response = self.post("zaakobjecten", json=data)
+        response.raise_for_status()
+
+        return response.json()
+
+    def create_zaakeigenschap(self, zaak: dict, eigenschap_data: dict) -> dict:
+        zaak_url = zaak["url"]
+        data = {
+            **eigenschap_data,
+            "zaak": zaak_url,
+        }
+        endpoint = furl(zaak_url) / "zaakeigenschappen"
+
+        response = self.post(endpoint, json=data)
         response.raise_for_status()
 
         return response.json()

@@ -1,0 +1,21 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import ZGWOptionsFormFields from './ZGWOptionsFormFields';
+import * as ZGWFormFieldsStories from './ZGWOptionsFormFields.stories';
+
+<Meta of={ZGWFormFieldsStories} />
+
+# ZGW Registration
+
+Here we can set up the registration backend for ZGW APIs. This can be done in combination with
+creating an object in Objects API and a connection to the ZAAK properties as well.
+
+<Canvas of={ZGWFormFieldsStories.Default} />
+
+## Props
+
+<ArgTypes of={ZGWOptionsFormFields} />
+
+**Warning**: this component requires the following contexts:
+
+- `FormContext`, for available components

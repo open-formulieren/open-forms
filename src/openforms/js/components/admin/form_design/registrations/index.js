@@ -2,6 +2,7 @@ import {WysiwygWidget} from 'components/admin/RJSFWrapper';
 
 import CamundaOptionsForm from './camunda';
 import {onStepEdit} from './handlers';
+import ZGWOptionsForm from './zgw';
 
 /**
  * A map of backend ID to components for the (advanced) option forms.
@@ -40,13 +41,7 @@ export const BACKEND_OPTIONS_FORMS = {
     },
   },
   'zgw-create-zaak': {
-    uiSchema: {
-      contentJson: {
-        'ui:widget': 'textarea',
-        'ui:options': {
-          rows: 5,
-        },
-      },
-    },
+    form: ZGWOptionsForm,
+    onStepEdit: onStepEdit,
   },
 };

@@ -1,12 +1,13 @@
 import logging
 from functools import partial, wraps
-from typing import Any
+from typing import Any, TypedDict
 
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
 from furl import furl
+from glom import assign
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
@@ -18,6 +19,7 @@ from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
+from openforms.formio.validators import variable_key_validator
 from openforms.registrations.contrib.objects_api.client import get_objects_client
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
@@ -34,8 +36,54 @@ from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
 from .models import ZGWApiGroupConfig, ZgwConfig
+from .utils import process_according_to_eigenschap_format
 
 logger = logging.getLogger(__name__)
+
+
+class VariablesProperties(TypedDict):
+    component_key: str
+    eigenschap: str
+
+
+def get_property_mappings_from_submission(
+    submission: Submission, mappings: list[VariablesProperties]
+) -> dict[str, Any]:
+    """
+    Extract the values from the submission and map onto the provided properties (eigenschappen).
+    """
+    property_mappings = {}
+
+    # dict of {componentKey: eigenschap} mapping
+    simple_mappings = {
+        mapping["component_key"]: mapping["eigenschap"] for mapping in mappings
+    }
+
+    variable_values = submission.submissionvaluevariable_set.filter(
+        key__in=simple_mappings
+    ).values_list("key", "value")
+
+    for key, form_value in variable_values:
+        eigenschap = simple_mappings[key]
+        property_mappings[eigenschap] = form_value
+
+    return property_mappings
+
+
+class MappedVariablePropertySerializer(serializers.Serializer):
+    component_key = serializers.CharField(
+        label=_("Component key"),
+        validators=[variable_key_validator],
+        help_text=_("Key of the form variable to take the value from."),
+    )
+    eigenschap = serializers.CharField(
+        label=_("Property"),
+        max_length=20,
+        help_text=_(
+            "Name of the property on the case type to which the variable will be "
+            "mapped."
+        ),
+    )
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -102,6 +150,13 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
     )
 
+    # Eigenschappen
+    property_mappings = MappedVariablePropertySerializer(
+        many=True,
+        label=_("Variable-to-property mappings"),
+        required=False,
+    )
+
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         # First checking that a ZGWApiGroupConfig is available:
         if attrs.get("zgw_api_group") is None:
@@ -117,11 +172,37 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                     code="invalid",
                 )
 
-        if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
-            return attrs
-
         # We know it exists thanks to the previous check
         group_config = ZGWRegistration.get_zgw_config(attrs)
+
+        # Make sure the property (eigenschap) related to the zaaktype exists
+        if mappings := attrs.get("property_mappings"):
+            with get_catalogi_client(group_config) as client:
+                eigenschappen = client.list_eigenschappen(
+                    zaaktype=attrs.get("zaaktype") or group_config.zaaktype
+                )
+                retrieved_eigenschappen = {
+                    eigenschap["naam"]: eigenschap["url"]
+                    for eigenschap in eigenschappen
+                }
+
+                errors = []
+                for mapping in mappings:
+                    if mapping["eigenschap"] not in retrieved_eigenschappen:
+                        errors.append(
+                            _(
+                                "Could not find a property with the name "
+                                "'{property_name}' related to the zaaktype."
+                            ).format(property_name=mapping["eigenschap"])
+                        )
+
+                if errors:
+                    raise serializers.ValidationError(
+                        {"property_mappings": errors}, code="invalid"
+                    )
+
+        if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
+            return attrs
 
         with get_catalogi_client(group_config) as client:
             roltypen = client.list_roltypen(
@@ -463,6 +544,55 @@ class ZGWRegistration(BasePlugin):
                 submission,
                 "intermediate.objects_api_zaakobject",
             )
+
+        # Map variables to case eigenschappen (if mappings are defined)
+        if variables_properties := options.get("property_mappings"):
+            property_mappings = get_property_mappings_from_submission(
+                submission, variables_properties
+            )
+
+            eigenschappen = execute_unless_result_exists(
+                partial(catalogi_client.list_eigenschappen, options["zaaktype"]),
+                submission,
+                "intermediate.zaaktype_eigenschappen",
+            )
+
+            retrieved_eigenschappen = {
+                eigenschap["naam"]: {
+                    "url": eigenschap["url"],
+                    "specificatie": eigenschap["specificatie"],
+                }
+                for eigenschap in eigenschappen
+            }
+
+            for key, value in property_mappings.items():
+                if key in retrieved_eigenschappen:
+                    processed_value = process_according_to_eigenschap_format(
+                        retrieved_eigenschappen[key]["specificatie"], value
+                    )
+
+                    eigenschap_url = furl(retrieved_eigenschappen[key].get("url"))
+                    eigenschap_uuid = eigenschap_url.path.segments[-1]
+
+                    created_zaakeigenschap = execute_unless_result_exists(
+                        partial(
+                            zaken_client.create_zaakeigenschap,
+                            zaak,
+                            {
+                                "eigenschap": eigenschap_url.url,
+                                "waarde": processed_value,
+                            },
+                        ),
+                        submission,
+                        f"intermediate.zaakeigenschap.{eigenschap_uuid}",
+                    )
+
+                    assign(
+                        result,
+                        f"zaakeigenschappen.{eigenschap_uuid}",
+                        created_zaakeigenschap,
+                        missing=dict,
+                    )
 
         submission.registration_result = result
         submission.save()
