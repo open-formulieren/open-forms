@@ -18,6 +18,7 @@ class LogicActionTypes(models.TextChoices):
     set_registration_backend = "set-registration-backend", _(
         "Set the registration backend to use for the submission"
     )
+    evaluate_dmn = "evaluate-dmn", _("Evaluate DMN")
 
     @classmethod
     def get_label(cls, value: str) -> str:

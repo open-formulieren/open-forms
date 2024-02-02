@@ -4,6 +4,8 @@ from typing import Any, Callable, Mapping, TypedDict
 from glom import assign
 from json_logic import jsonLogic
 
+from openforms.dmn.service import evaluate_dmn
+from openforms.formio.datastructures import FormioData
 from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormVariable
@@ -22,6 +24,7 @@ class ActionDetails(TypedDict):
     property: dict
     state: Any
     value: Any
+    config: dict
 
 
 class ActionDict(TypedDict):
@@ -308,6 +311,57 @@ class ServiceFetchAction(ActionOperation):
         }
 
 
+class DMNConfig(TypedDict):
+    plugin_id: str
+    input_mapping: dict[str, str]
+    output_mapping: dict[str, str]
+    definition_id: str
+    definition_version: str
+
+
+@dataclass
+class EvaluateDMNAction(ActionOperation):
+    input_mapping: dict[str, str]
+    output_mapping: dict[str, str]
+    definition_id: str
+    plugin_id: str
+    definition_version: str = ""
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> "ActionOperation":
+        dmn_config: DMNConfig = action["action"]["config"]
+
+        return cls(**dmn_config)
+
+    def eval(
+        self,
+        context: DataMapping,
+        log: Callable[[JSONValue], None],
+        submission: Submission,
+    ) -> DataMapping | None:
+        # Mapping from form variables to DMN inputs
+        data = FormioData(context)
+        dmn_inputs = {
+            key_dmn: data[key_form] for key_form, key_dmn in self.input_mapping.items()
+        }
+
+        # Perform DMN call
+        dmn_outputs = evaluate_dmn(
+            definition_id=self.definition_id,
+            version=self.definition_version,
+            input_values=dmn_inputs,
+            plugin_id=self.plugin_id,
+        )
+
+        log({"dmn_inputs": dmn_inputs, "dmn_outputs": dmn_outputs})
+
+        # Map DMN output to form variables
+        return {
+            key_form: dmn_outputs[key_dmn]
+            for key_form, key_dmn in self.output_mapping.items()
+        }
+
+
 @dataclass
 class SetRegistrationBackendAction(ActionOperation):
     registration_backend_key: str
@@ -339,5 +393,6 @@ ACTION_TYPE_MAPPING: Mapping[LogicActionTypes, type[ActionOperation]] = {
     LogicActionTypes.step_applicable: StepApplicableAction,
     LogicActionTypes.variable: VariableAction,
     LogicActionTypes.fetch_from_service: ServiceFetchAction,
+    LogicActionTypes.evaluate_dmn: EvaluateDMNAction,
     LogicActionTypes.set_registration_backend: SetRegistrationBackendAction,
 }
