@@ -1489,26 +1489,6 @@
                 "timelinelog"
             ],
             [
-                "add_phonedevice",
-                "two_factor",
-                "phonedevice"
-            ],
-            [
-                "change_phonedevice",
-                "two_factor",
-                "phonedevice"
-            ],
-            [
-                "delete_phonedevice",
-                "two_factor",
-                "phonedevice"
-            ],
-            [
-                "view_phonedevice",
-                "two_factor",
-                "phonedevice"
-            ],
-            [
                 "add_zgwconfig",
                 "zgw_apis",
                 "zgwconfig"

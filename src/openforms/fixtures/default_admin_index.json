@@ -41,10 +41,6 @@
             [
                 "otp_totp",
                 "totpdevice"
-            ],
-            [
-                "two_factor",
-                "phonedevice"
             ]
         ]
     }
