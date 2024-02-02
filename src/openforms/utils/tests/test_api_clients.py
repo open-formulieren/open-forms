@@ -3,7 +3,7 @@ from unittest import TestCase
 import requests_mock
 from ape_pie import APIClient
 
-from ..clients.utils import pagination_helper
+from ..api_clients import pagination_helper
 
 
 class PaginationTests(TestCase):

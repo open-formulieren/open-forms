@@ -2,7 +2,7 @@ from typing import Callable
 
 from zgw_consumers.nlx import NLXClient
 
-from .utils import pagination_helper
+from openforms.utils.api_clients import pagination_helper
 
 
 def noop_matcher(roltypen: list) -> list:
