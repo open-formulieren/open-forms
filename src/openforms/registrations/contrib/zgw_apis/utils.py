@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-import pytz
+from openforms.contrib.zgw.clients.utils import datetime_in_amsterdam
 
 
 def process_according_to_eigenschap_format(specificatie: dict, value: str):
@@ -13,24 +13,11 @@ def process_according_to_eigenschap_format(specificatie: dict, value: str):
         return value
 
     if format == "datum":
-        try:
-            valid_date = date.fromisoformat(value)
-        except ValueError as exc:
-            raise exc
-
+        valid_date = date.fromisoformat(value)
         processed_value = valid_date.strftime("%Y%m%d")
-
     elif format == "datum_tijd":
-        try:
-            valid_datetime = datetime.fromisoformat(value)
-        except ValueError as exc:
-            raise exc
-
-        amsterdam_timezone = pytz.timezone("Europe/Amsterdam")
-        localized_datetime = valid_datetime.replace(tzinfo=pytz.UTC).astimezone(
-            amsterdam_timezone
-        )
-
+        valid_datetime = datetime.fromisoformat(value)
+        localized_datetime = datetime_in_amsterdam(valid_datetime)
         processed_value = localized_datetime.strftime("%Y%m%d%H%M%S")
 
     return processed_value

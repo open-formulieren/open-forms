@@ -1,3 +1,4 @@
+import datetime
 from typing import TypedDict
 
 from django.utils import timezone
@@ -11,6 +12,10 @@ TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
 def get_today() -> str:
     now_in_ams = timezone.make_naive(timezone.now(), timezone=TIMEZONE_AMS)
     return now_in_ams.date().isoformat()
+
+
+def datetime_in_amsterdam(value: datetime) -> datetime:
+    return timezone.make_naive(value, timezone=TIMEZONE_AMS)
 
 
 class PaginatedResponseData(TypedDict):

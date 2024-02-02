@@ -19,7 +19,7 @@ from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
-from openforms.formio.validation import variable_key_validator
+from openforms.formio.validators import variable_key_validator
 from openforms.registrations.contrib.objects_api.client import get_objects_client
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
@@ -47,7 +47,7 @@ class VariablesProperties(TypedDict):
 
 
 def get_property_mappings_from_submission(
-    submission: Submission, connections: list[VariablesProperties]
+    submission: Submission, mappings: list[VariablesProperties]
 ) -> dict[str, Any]:
     """
     Extract the values from the submission and map onto the provided properties (eigenschappen).
@@ -55,20 +55,15 @@ def get_property_mappings_from_submission(
     property_mappings = {}
 
     # dict of {componentKey: eigenschap} mapping
-    simple_mappings = {
-        conn["component_key"]: conn["eigenschap"] for conn in connections
-    }
+    simple_mappings = {conn["component_key"]: conn["eigenschap"] for conn in mappings}
 
     merged_data = dict(
         submission.submissionvaluevariable_set.filter(
-            key__in=[conn["component_key"] for conn in connections]
+            key__in=[conn["component_key"] for conn in mappings]
         ).values_list("key", "value")
     )
 
     for key, form_value in merged_data.items():
-        if key not in simple_mappings:
-            continue
-
         eigenschap = simple_mappings.get(key)
         property_mappings[eigenschap] = form_value
 
@@ -180,7 +175,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         group_config = ZGWRegistration.get_zgw_config(attrs)
 
         # Make sure the property (eigenschap) related to the zaaktype exists
-        if connections := attrs.get("property_mappings"):
+        if mappings := attrs.get("property_mappings"):
             with get_catalogi_client(group_config) as client:
                 eigenschappen = client.list_eigenschappen(
                     zaaktype=attrs.get("zaaktype") or group_config.zaaktype
@@ -191,7 +186,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 }
 
                 errors = []
-                for conn in connections:
+                for conn in mappings:
                     if conn["eigenschap"] not in retrieved_eigenschappen:
                         errors.append(
                             _(
@@ -571,7 +566,7 @@ class ZGWRegistration(BasePlugin):
             for key, value in property_mappings.items():
                 if key in retrieved_eigenschappen:
                     processed_value = process_according_to_eigenschap_format(
-                        retrieved_eigenschappen[key].get("specificatie"), value
+                        retrieved_eigenschappen[key]["specificatie"], value
                     )
 
                     eigenschap_url = furl(retrieved_eigenschappen[key].get("url"))

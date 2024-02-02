@@ -113,7 +113,7 @@ Configuration
    * **Objects API - Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API. *For example:* ``1``
 
 #. You can map a form variable with a Zaak property (eigenschap) by clicking the related button (*Map variables to case properties*). 
-   A modal will open where you have to choose the variable along with providing a valid property name. Both fields should be provided in order to create a connection.
+   A modal will open where you have to choose the variable along with providing a valid property name. Both fields must be provided in order to create a mapping.
 
 #. Click **Opslaan**
 

@@ -1,9 +1,13 @@
-from django.test import TestCase
+from datetime import datetime
+
+from django.test import SimpleTestCase
+
+from openforms.contrib.zgw.clients.utils import TIMEZONE_AMS
 
 from ..utils import process_according_to_eigenschap_format
 
 
-class UtilsTests(TestCase):
+class UtilsTests(SimpleTestCase):
     def test_valid_date_is_successfully_processed(self):
         specificatie = {
             "groep": "",
@@ -25,10 +29,15 @@ class UtilsTests(TestCase):
             "kardinaliteit": "1",
             "waardenverzameling": [],
         }
-        sample = "2024-01-31T12:07:00+01:00"
+        sample = "2024-01-31T16:24:00+00:00"
         processed_value = process_according_to_eigenschap_format(specificatie, sample)
 
-        self.assertEqual(processed_value, "20240131130700")
+        self.assertEqual(
+            processed_value,
+            datetime.fromisoformat(sample)
+            .astimezone(TIMEZONE_AMS)
+            .strftime("%Y%m%d%H%M%S"),
+        )
 
     def test_no_date_or_datetime(self):
         samples = ["simple string", "2"]

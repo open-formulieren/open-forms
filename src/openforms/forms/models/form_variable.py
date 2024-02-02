@@ -13,7 +13,7 @@ from openforms.formio.utils import (
     is_layout_component,
     iter_components,
 )
-from openforms.formio.validation import variable_key_validator
+from openforms.formio.validators import variable_key_validator
 from openforms.prefill.constants import IdentifierRoles
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.utils import check_initial_value

@@ -143,12 +143,15 @@ const ManageVariableToPropertyMappings = ({propertyMappings = [], onChange, onAd
       {usedComponents.length < getSimpleComponentsLength() ? (
         <ButtonContainer onClick={onAdd}>
           <FormattedMessage
-            description="Add process variable button"
+            description="Add zaakeigenschap (mapping) button"
             defaultMessage="Add variable"
           />
         </ButtonContainer>
       ) : (
-        'All simple variables are mapped to a case property.'
+        <FormattedMessage
+          description="Warning that all simple variables are mapped"
+          defaultMessage="All simple variables are mapped to a case property."
+        />
       )}
     </>
   );
