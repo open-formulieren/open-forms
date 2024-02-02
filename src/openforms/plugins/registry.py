@@ -9,10 +9,13 @@ if TYPE_CHECKING:
     from .plugin import AbstractBasePlugin  # noqa: F401
 
 
-PluginType_co = TypeVar("PluginType_co", bound="AbstractBasePlugin", covariant=True)
+PluginT_co = TypeVar("PluginT_co", bound="AbstractBasePlugin", covariant=True)
+
+# Ideally, this should be bound to "type[PluginT_co]", but is not possible as of today.
+PluginTypeT = TypeVar("PluginTypeT", bound="type[AbstractBasePlugin]")
 
 
-class BaseRegistry(Generic[PluginType_co]):
+class BaseRegistry(Generic[PluginT_co]):
     """
     Base registry class for plugin modules.
     """
@@ -24,15 +27,15 @@ class BaseRegistry(Generic[PluginType_co]):
     The module is the logical group of extra functionality in Open Forms on top of the
     core functionality.
     """
-    _registry: dict[str, PluginType_co]
+    _registry: dict[str, PluginT_co]
 
     def __init__(self):
         self._registry = {}
 
     def __call__(
         self, unique_identifier: str, *args, **kwargs
-    ) -> Callable[[type[PluginType_co]], type[PluginType_co]]:
-        def decorator(plugin_cls: type[PluginType_co]) -> type[PluginType_co]:
+    ) -> Callable[[PluginTypeT], PluginTypeT]:
+        def decorator(plugin_cls: PluginTypeT) -> PluginTypeT:
             if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
                 raise ValueError(
                     f"The unique identifier '{unique_identifier}' is longer than {UNIQUE_ID_MAX_LENGTH} characters."
@@ -50,20 +53,20 @@ class BaseRegistry(Generic[PluginType_co]):
 
         return decorator
 
-    def check_plugin(self, plugin: PluginType_co):
+    def check_plugin(self, plugin: PluginT_co):
         # validation hook
         pass
 
     def __iter__(self):
         return iter(self._registry.values())
 
-    def __getitem__(self, key: str):
+    def __getitem__(self, key: str) -> PluginT_co:
         return self._registry[key]
 
-    def __contains__(self, key: str):
+    def __contains__(self, key: str) -> bool:
         return key in self._registry
 
-    def iter_enabled_plugins(self) -> Iterator[PluginType_co]:
+    def iter_enabled_plugins(self) -> Iterator[PluginT_co]:
         try:
             config = GlobalConfiguration.get_solo()
             assert isinstance(config, GlobalConfiguration)
