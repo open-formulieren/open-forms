@@ -153,6 +153,9 @@ if DISABLE_CSP_RATELIMITING:
 
 CSP_EXCLUDE_URL_PREFIXES += ("/dev/",)
 
+# None of the authentication backends require two-factor authentication.
+if config("DISABLE_2FA", default=False):
+    MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = AUTHENTICATION_BACKENDS
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(

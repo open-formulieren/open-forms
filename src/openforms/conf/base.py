@@ -141,11 +141,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
-    # Admin auth
+    # Two-factor authentication in the Django admin, enforced.
     "django_otp",
     "django_otp.plugins.otp_static",
     "django_otp.plugins.otp_totp",
     "two_factor",
+    "two_factor.plugins.webauthn",  # USB key/hardware token support
+    "maykin_2fa",
     # Optional applications.
     "ordered_model",
     "django_admin_index",
@@ -269,7 +271,7 @@ MIDDLEWARE = [
     "hijack.middleware.HijackUserMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",
     "mozilla_django_oidc_db.middleware.SessionRefresh",
-    "django_otp.middleware.OTPMiddleware",
+    "maykin_2fa.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
@@ -657,10 +659,25 @@ IPWARE_META_PRECEDENCE_ORDER = (
 )
 
 #
-# Maykin fork of DJANGO-TWO-FACTOR-AUTH
+# MAYKIN-2FA
 #
-TWO_FACTOR_FORCE_OTP_ADMIN = config("TWO_FACTOR_FORCE_OTP_ADMIN", default=not DEBUG)
-TWO_FACTOR_PATCH_ADMIN = config("TWO_FACTOR_PATCH_ADMIN", default=True)
+# Uses django-two-factor-auth under the hood, so relevant upstream package settings
+# apply too.
+#
+
+# we run the admin site monkeypatch instead.
+TWO_FACTOR_PATCH_ADMIN = False
+# Relying Party name for WebAuthn (hardware tokens)
+TWO_FACTOR_WEBAUTHN_RP_NAME = "Open Formulieren - admin"
+# use platform for fingerprint readers etc., or remove the setting to allow any.
+# cross-platform would limit the options to devices like phones/yubikeys
+TWO_FACTOR_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = "cross-platform"
+# add entries from AUTHENTICATION_BACKENDS that already enforce their own two-factor
+# auth, avoiding having some set up MFA again in the project.
+MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = [
+    "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
+    "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend",
+]
 
 #
 # CELERY - async task queue

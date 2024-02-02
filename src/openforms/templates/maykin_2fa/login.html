@@ -1,0 +1,23 @@
+{% extends "maykin_2fa/login.html" %}
+{% load solo_tags i18n %}
+
+{% block extra_login_options %}
+    {% get_solo 'mozilla_django_oidc_db.OpenIDConnectConfig' as oidc_config %}
+    {% if oidc_config.enabled %}
+        <div class="admin-login-option">{% trans "or" %}</div>
+        <div class="admin-login-option">
+            <a href="{% url 'oidc_authentication_init' %}">{% trans "Login with organization account" %}</a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_recovery_options %}
+<li>
+    {% trans 'Contact support to start the account recovery process' %}
+</li>
+{% endblock extra_recovery_options %}
+
+{# Do not show any version information #}
+{% block footer %}
+    <div id="footer"></div>
+{% endblock %}
