@@ -11,10 +11,13 @@ class LoginOptionsReadOnlyField(serializers.ListField):
     there is no write-mode support because this data is not writable
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, is_for_cosign: bool = False, *args, **kwargs) -> None:
         kwargs.setdefault("child", LoginOptionSerializer())
         kwargs["read_only"] = True
         kwargs["source"] = "*"
+
+        self.is_for_cosign = is_for_cosign
+
         super().__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
@@ -22,5 +25,5 @@ class LoginOptionsReadOnlyField(serializers.ListField):
 
     def to_representation(self, form):
         request = self.context["request"]
-        temp = auth_register.get_options(request, form)
+        temp = auth_register.get_options(request, form, self.is_for_cosign)
         return super().to_representation(temp)

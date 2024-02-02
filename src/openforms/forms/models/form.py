@@ -22,7 +22,7 @@ from openforms.authentication.fields import AuthenticationBackendMultiSelectFiel
 from openforms.authentication.registry import register as authentication_register
 from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
-from openforms.formio.typing import CosignComponent
+from openforms.formio.typing import Component
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -36,6 +36,8 @@ from .utils import literal_getter
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
+
+_sentinel = object()
 
 
 class FormQuerySet(models.QuerySet):
@@ -417,10 +419,18 @@ class Form(models.Model):
         "authentication backend(s)"
     )
 
-    def get_cosign_component(self) -> CosignComponent | None:
+    _cosign_component = _sentinel
+
+    def get_cosign_component(self) -> Component | None:
         for component in self.iter_components():
             if component["type"] == "cosign":
                 return component
+
+    @property
+    def cosign_component(self) -> Component | None:
+        if self._cosign_component is _sentinel:
+            self._cosign_component = self.get_cosign_component()
+        return self._cosign_component
 
     @property
     def cosigning_required(self) -> bool:

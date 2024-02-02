@@ -30,9 +30,7 @@ const FormWarnings = ({form}) => {
         <MissingTranslationsWarning form={form} formSteps={formSteps} />
       ) : null}
       <MultipleCosignComponentsWarning cosignComponents={cosignComponentsWithoutPath} />
-      {cosignComponentsWithoutPath.length === 1 && (
-        <MissingAuthCosignWarning cosignComponent={cosignComponentsWithoutPath[0]} />
-      )}
+      {cosignComponentsWithoutPath.length === 1 && <MissingAuthCosignWarning />}
       <CosignInRepeatingGroupWarning
         cosignComponents={cosignComponentsWithPath}
         availableComponents={components}

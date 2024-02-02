@@ -127,13 +127,13 @@ class FormSerializerTest(TestCase):
     def test_form_with_cosign(self):
         form_step = FormStepFactory.create(
             form__slug="form-with-cosign",
+            form__authentication_backends=["digid"],
             form_definition__configuration={
                 "components": [
                     {
                         "key": "cosignField",
                         "label": "Cosign",
                         "type": "cosign",
-                        "authPlugin": "digid",
                     }
                 ]
             },
@@ -146,13 +146,18 @@ class FormSerializerTest(TestCase):
         serializer = FormSerializer(
             instance=form_step.form, context={"request": request}
         )
+        cosign_login_options = serializer.data["cosign_login_options"]
         cosign_login_info = serializer.data["cosign_login_info"]
 
+        self.assertEqual(len(cosign_login_options), 1)
+        self.assertEqual(cosign_login_options[0]["identifier"], "digid")
         self.assertIsNotNone(cosign_login_info)
+        self.assertEqual(cosign_login_info["identifier"], "digid")
 
     def test_form_without_cosign(self):
         form_step = FormStepFactory.create(
             form__slug="form-without-cosign",
+            form__authentication_backends=["digid"],
             form_definition__configuration={
                 "components": [
                     {
@@ -171,8 +176,10 @@ class FormSerializerTest(TestCase):
         serializer = FormSerializer(
             instance=form_step.form, context={"request": request}
         )
+        cosign_login_options = serializer.data["cosign_login_options"]
         cosign_login_info = serializer.data["cosign_login_info"]
 
+        self.assertEqual(cosign_login_options, [])
         self.assertIsNone(cosign_login_info)
 
     def test_patching_registrations_deleting_the_first(self):

@@ -12,6 +12,7 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import AnyRequest
 
 from .constants import AuthAttribute
+from .utils import get_cosign_login_url
 
 
 @dataclass()
@@ -98,11 +99,18 @@ class BasePlugin(AbstractBasePlugin):
         """
         pass
 
-    def get_login_info(self, request: HttpRequest, form: Form | None) -> LoginInfo:
+    def get_login_info(
+        self, request: HttpRequest, form: Form | None, is_for_cosign: bool = False
+    ) -> LoginInfo:
+        if is_for_cosign:
+            login_url = get_cosign_login_url(request, form, self.identifier)
+        else:
+            login_url = self.get_start_url(request, form) if form else ""
+
         info = LoginInfo(
             self.identifier,
             self.get_label(),
-            url=self.get_start_url(request, form) if form else "",
+            url=login_url,
             logo=self.get_logo(request),
             is_for_gemachtigde=self.is_for_gemachtigde,
         )

@@ -96,7 +96,11 @@ class FormRegistrationBackendSerializer(serializers.ModelSerializer):
 
 
 @extend_schema_serializer(
-    deprecate_fields=["registration_backend", "registration_backend_options"]
+    deprecate_fields=[
+        "registration_backend",
+        "registration_backend_options",
+        "cosign_login_info",
+    ]
 )
 class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
@@ -120,6 +124,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     )
     authentication_backend_options = serializers.DictField(required=False, default=dict)
     login_options = LoginOptionsReadOnlyField()
+    cosign_login_options = LoginOptionsReadOnlyField(is_for_cosign=True)
+    # TODO: deprecated, remove in 3.0.0
     cosign_login_info = CosignLoginInfoSerializer(source="*", read_only=True)
     auto_login_authentication_backend = serializers.CharField(
         required=False,
@@ -262,6 +268,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "translations",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
+            "cosign_login_options",
             "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
@@ -292,6 +299,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "appointment_options",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
+            "cosign_login_options",
             "cosign_login_info",
             "submission_statements_configuration",
             "submission_report_download_link_title",
