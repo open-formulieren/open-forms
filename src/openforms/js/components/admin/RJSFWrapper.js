@@ -63,6 +63,11 @@ CustomFieldTemplate.propTypes = {
   hidden: PropTypes.bool,
   required: PropTypes.bool,
   displayLabel: PropTypes.bool,
+  /*
+  Schema prop is deliberately ignored as it doesn't seem to do anything.
+  This will be revisited when/if we upgrade to a newer version.
+  Relevant discussion: https://github.com/open-formulieren/open-forms/pull/3740#discussion_r1475756728
+  */
   schema: PropTypes.object.isRequired,
 };
 
