@@ -1,5 +1,5 @@
 import {expect} from '@storybook/jest';
-import {userEvent, waitFor, within} from '@storybook/testing-library';
+import {fireEvent, userEvent, waitFor, within} from '@storybook/testing-library';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,
@@ -150,6 +150,8 @@ export const withInitialValues = {
   },
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
+    const originalConfirm = window.confirm;
+    window.confirm = () => true;
 
     const pluginDropdown = canvas.getByLabelText('Plugin ID');
 
@@ -178,5 +180,33 @@ export const withInitialValues = {
     await expect(textFields[0].value).toBe('dmnName');
     await expect(textFields[1].value).toBe('dmnSurname');
     await expect(textFields[2].value).toBe('dmnCanApply');
+
+    window.confirm = originalConfirm;
+  },
+};
+
+export const InvalidEmptyFields = {
+  args: {
+    initialValues: {
+      pluginId: '',
+      decisionDefinitionId: '',
+      decisionDefinitionVersion: '',
+      inputMapping: [],
+      outputMapping: [],
+    },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const saveButton = within(document.querySelector('.submit-row')).getByRole('button');
+
+    await waitFor(async () => {
+      // userEvent.click not working in Firefox here :( https://github.com/testing-library/user-event/issues/1149
+      fireEvent.click(saveButton);
+
+      const errorMessages = canvas.getAllByRole('listitem');
+
+      await expect(errorMessages.length).toBe(2);
+    });
   },
 };
