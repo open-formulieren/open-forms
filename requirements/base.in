@@ -15,7 +15,6 @@ html5lib
 --no-binary lxml
 lxml
 O365  # microsoft graph
-phonenumbers
 Pillow  # handle images
 portalocker[redis]
 psycopg2  # database driver
@@ -62,7 +61,7 @@ django-tinymce
 django-treebeard
 django-yubin
 mozilla-django-oidc-db
-maykin-django-two-factor-auth[phonenumbers]
+maykin-2fa
 django-timeline-logger
 django-csp
 django-csp-reports
