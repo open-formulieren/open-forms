@@ -39,47 +39,43 @@ def create_objecttypes_api_service(
 
     # If no default objecttypes URL was configured, get it from form registration backends:
     if not objecttypes_url:
-        form_registration_urls: set[str] = set()
+        form_registration_bases_urls: set[str] = set()
 
         FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
         for form_registration_backend in FormRegistrationBackend.objects.filter(
             backend=OBJECTS_API_PLUGIN_IDENTIFIER
         ).iterator():
             if url := form_registration_backend.options.get("objecttype"):
-                form_registration_urls.add(url)
+                index = url.find("/api/")
+                if index != -1:
+                    objecttypes_url = url
+                    form_registration_bases_urls.add(url[:index])
 
-        if len(form_registration_urls) >= 2:
+        if len(form_registration_bases_urls) >= 2:
             logger.warning(
                 "Found %d different Objecttypes URLs in form registration backend options",
-                len(form_registration_urls),
+                len(form_registration_bases_urls),
             )
-
-        if form_registration_urls:
-            objecttypes_url = form_registration_urls.pop()
 
     if objecttypes_url:
         Service = apps.get_model("zgw_consumers", "Service")
 
-        root_url = furl(objecttypes_url).remove(fragment=True, query=True)
-        path_segments = root_url.path.segments
+        try:
+            base, _ = re.split(r"api/v\d", objecttypes_url, 1)
+        except ValueError:
+            logger.warning(
+                "URL %s is not compliant, skipping migration", objecttypes_url
+            )
+            return
 
-        # Keep the relevant part of the path,
-        # e.g. /path/v2/other/path/api/v2/objecttypes/uuid -> /path/v2/other/path/api/v2/
-        for i, path in enumerate(reversed(path_segments)):
-            if re.match(r"v\d", path):
-                root_url.set(path=path_segments[: len(path_segments) - i])
-                break
+        api_version = re.search(r"/api/v(\d)", objecttypes_url).group(1)
+        base += f"api/v{api_version}/"
 
-        # This "path normalization" is normally done in the `Service.save` method,
-        # but we are dealing with "fake" models during migrations.
-        if not root_url.path.isdir:
-            root_url.path.segments.append("")  # Empty string means leading '/'
-
-        objects_api_config.objecttypes_service = Service.objects.create(
-            api_type=APITypes.orc,
-            api_root=str(root_url),
-            oas=str(root_url / "schema/openapi.yaml"),
+        service, _ = Service.objects.get_or_create(
+            api_root=base,
+            defaults={"api_type": APITypes.orc, "oas": f"{base}schema/openapi.yaml"},
         )
+        objects_api_config.objecttypes_service = service
 
         objects_api_config.save()
 
@@ -88,6 +84,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("registrations_objects_api", "0010_objectsapiconfig_objecttypes_service"),
+        ("forms", "0104_allow_invalid_input_datetime"),
     ]
 
     operations = [

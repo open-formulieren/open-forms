@@ -17,7 +17,7 @@ class ObjecttypesServiceFromDefaultUrlMigrationTests(TestMigrations):
         )
 
         ObjectsAPIConfig.objects.create(
-            objecttype="https://objecttypen.nl/unrelated/version/v4/api/v1/objecttypes/2c66dabf-a967-4057-9969-0700320d23a2",
+            objecttype="https://objecttypen.nl/path/api/v1/objecttypes/2c66dabf-a967-4057-9969-0700320d23a2",
         )
 
     def test_migration_sets_service_from_default_url(self):
@@ -29,13 +29,35 @@ class ObjecttypesServiceFromDefaultUrlMigrationTests(TestMigrations):
 
         self.assertEqual(
             objects_api_config.objecttypes_service.api_root,
-            "https://objecttypen.nl/unrelated/version/v4/api/v1/",
+            "https://objecttypen.nl/path/api/v1/",
         )
 
         self.assertEqual(
             objects_api_config.objecttypes_service.oas,
-            "https://objecttypen.nl/unrelated/version/v4/api/v1/schema/openapi.yaml",
+            "https://objecttypen.nl/path/api/v1/schema/openapi.yaml",
         )
+
+
+class ObjecttypesServiceInvalidUrlMigrationTests(TestMigrations):
+    app = "registrations_objects_api"
+    migrate_from = "0010_objectsapiconfig_objecttypes_service"
+    migrate_to = "0011_create_objecttypesypes_service_from_url"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        ObjectsAPIConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+
+        ObjectsAPIConfig.objects.create(
+            objecttype="https://objecttypen.nl/bad/url",
+        )
+
+    def test_migration_skips_invalid_url(self):
+        ObjectsAPIConfig = self.apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+        objects_api_config = ObjectsAPIConfig.objects.get()
+        self.assertIsNone(objects_api_config.objecttypes_service)
 
 
 class ObjecttypesServiceFromFormMigrationTests(TestMigrations):

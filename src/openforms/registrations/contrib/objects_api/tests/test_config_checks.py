@@ -64,6 +64,19 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
             plugin.check_config()
 
     @requests_mock.Mocker()
+    def test_no_objecttypes_service_configured(self, m: requests_mock.Mocker):
+        # Objects API needs to be set up as services are checked in a certain order
+        m.get(
+            "https://objects.example.com/api/v1/objects?pageSize=1",
+            json={"results": []},
+        )
+        self.config.objecttypes_service = None
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    @requests_mock.Mocker()
     def test_objects_service_misconfigured(self, m):
         m.get(
             "https://objects.example.com/api/v1/objects?pageSize=1",

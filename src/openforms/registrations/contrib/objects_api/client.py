@@ -33,7 +33,7 @@ def get_objecttypes_client() -> ObjecttypesClient:
     config = ObjectsAPIConfig.get_solo()
     assert isinstance(config, ObjectsAPIConfig)
     if not (service := config.objecttypes_service):
-        raise NoServiceConfigured("No Objects API service configured!")
+        raise NoServiceConfigured("No Objecttypes API service configured!")
     return build_client(service, client_factory=ObjecttypesClient)
 
 
