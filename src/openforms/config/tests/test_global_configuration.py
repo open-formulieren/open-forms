@@ -11,10 +11,11 @@ from django.utils.translation import gettext as _
 
 import clamd
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 from webtest import Form as WebTestForm
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.tests.utils import NOOP_CACHES, disable_2fa
+from openforms.tests.utils import NOOP_CACHES
 
 from ..models import GlobalConfiguration
 
@@ -31,7 +32,7 @@ def _ensure_arrayfields(form: WebTestForm, config: GlobalConfiguration | None = 
     form["recipients_email_digest"] = json.dumps(config.recipients_email_digest)
 
 
-@disable_2fa
+@disable_admin_mfa()
 @override_settings(
     CACHES=NOOP_CACHES,
     MEDIA_ROOT=tempfile.mkdtemp(),

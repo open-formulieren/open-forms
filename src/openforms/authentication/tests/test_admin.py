@@ -2,15 +2,15 @@ from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import UserFactory
 
-from ...tests.utils import disable_2fa
 from ..constants import AuthAttribute
 from .factories import AuthInfoFactory, RegistratorInfoFactory
 
 
-@disable_2fa
+@disable_admin_mfa()
 class AuthInfoAdminValidationTest(WebTest):
     @classmethod
     def setUpTestData(cls):
@@ -56,7 +56,7 @@ class AuthInfoAdminValidationTest(WebTest):
         )
 
 
-@disable_2fa
+@disable_admin_mfa()
 class RegistratorInfoAdminValidationTest(WebTest):
     @classmethod
     def setUpTestData(cls):

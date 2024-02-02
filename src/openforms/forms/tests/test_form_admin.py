@@ -2,11 +2,11 @@ from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 from rest_framework.serializers import Serializer
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.registrations.registry import Registry
-from openforms.tests.utils import disable_2fa
 
 from ...registrations.base import BasePlugin
 from ..models import Form
@@ -32,7 +32,7 @@ class Plugin(BasePlugin):
         return "foo"
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormAdminTests(FormListAjaxMixin, WebTest):
     @classmethod
     def setUpTestData(cls):

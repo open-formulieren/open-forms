@@ -4,15 +4,15 @@ from django.utils.translation import gettext as _
 import requests
 import requests_mock
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.tests.utils import disable_2fa
 
 from .factories import ZGWApiGroupConfigFactory
 
 
-@disable_2fa
+@disable_admin_mfa()
 class ZGWApiGroupConfigAdminTests(WebTest):
     @requests_mock.Mocker()
     def test_admin_while_services_are_down(self, m):

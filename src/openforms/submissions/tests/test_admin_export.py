@@ -72,7 +72,7 @@ class TestSubmissionExportAdmin(WebTest):
 
     def setUp(self):
         super().setUp()
-        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
+        self.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     def test_export_csv_successfully_exports_csv_file(self):
         response = self.app.get(

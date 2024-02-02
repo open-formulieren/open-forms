@@ -11,12 +11,12 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration, RichTextColor
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormLogicFactory
-from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
 
 from ...admin.form import FormAdmin
@@ -65,7 +65,7 @@ class FormListAjaxMixin:
         return response
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormAdminImportExportTests(WebTest):
     @classmethod
     def setUpTestData(cls):
@@ -501,7 +501,7 @@ class FormAdminImportExportTests(WebTest):
         self.assertEqual(form.name_nl, "Form 000")
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormAdminCopyTests(TestCase):
     def test_form_admin_copy(self):
         user = UserFactory.create(is_superuser=True, is_staff=True)
@@ -570,12 +570,12 @@ class FormAdminCopyTests(TestCase):
         self.assertEqual(copied_logic.trigger_from_step, copied_step)
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormAdminActionsTests(FormListAjaxMixin, WebTest):
     def setUp(self) -> None:
         super().setUp()
         self.form = FormFactory.create(internal_name="foo")
-        self.user = SuperUserFactory.create(app=self.app)
+        self.user = SuperUserFactory.create()
 
     def test_make_copies_action_makes_copy_of_a_form(self):
         logic = FormLogicFactory.create(
@@ -675,7 +675,7 @@ class FormAdminActionsTests(FormListAjaxMixin, WebTest):
         )
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormEditTests(WebTest):
     """
     Test admin behaviour when creating or editing forms via the React UI.
@@ -973,7 +973,7 @@ class FormEditTests(WebTest):
             self.assertRegex(node["color"], r"^#[0-9a-f]{6}$")
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormChangeTests(WebTest):
     @classmethod
     def setUpTestData(cls):
@@ -996,7 +996,7 @@ class FormChangeTests(WebTest):
         self.addCleanup(patcher.stop)
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormDeleteTests(FormListAjaxMixin, WebTest):
     @classmethod
     def setUpTestData(cls):

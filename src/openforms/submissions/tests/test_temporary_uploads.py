@@ -5,6 +5,7 @@ from datetime import timedelta
 from django.test import RequestFactory, tag
 
 from freezegun import freeze_time
+from maykin_2fa.test import disable_admin_mfa
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -31,7 +32,6 @@ from openforms.submissions.utils import (
     remove_from_session_list,
     remove_upload_from_session,
 )
-from openforms.tests.utils import disable_2fa
 
 
 @temp_private_root()
@@ -229,7 +229,7 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         # expect the unclaimed & older uploads to be deleted
         self.assertEqual(actual, [keep_1, keep_2, keep_3])
 
-    @disable_2fa
+    @disable_admin_mfa()
     def test_upload_retrieve_requires_permission(self):
         upload = TemporaryFileUploadFactory.create()
         url = reverse(

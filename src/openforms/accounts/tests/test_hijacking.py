@@ -13,10 +13,6 @@ from openforms.logging.models import TimelineLogProxy
 from .factories import StaffUserFactory, SuperUserFactory
 
 
-@override_settings(
-    TWO_FACTOR_PATCH_ADMIN=True,
-    TWO_FACTOR_FORCE_OTP_ADMIN=True,
-)
 class HijackTests(WebTest):
     csrf_checks = False
 
@@ -28,8 +24,8 @@ class HijackTests(WebTest):
         return response
 
     def test_can_hijack_and_release_with_2fa(self):
-        staff_user = StaffUserFactory.create(app=self.app)
-        superuser = SuperUserFactory.create(app=self.app)
+        staff_user = StaffUserFactory.create()
+        superuser = SuperUserFactory.create()
         admin_dashboard_url = reverse("admin:index")
 
         with self.subTest("superuser admin index page"):
@@ -74,8 +70,8 @@ class HijackTests(WebTest):
             )
 
     def test_auditlog_entries_on_hijack_and_release(self):
-        staff_user = StaffUserFactory.create(app=self.app)
-        superuser = SuperUserFactory.create(app=self.app)
+        staff_user = StaffUserFactory.create()
+        superuser = SuperUserFactory.create()
 
         with self.subTest("hijack user"):
             self.app.get(reverse("admin:index"), user=superuser)
@@ -125,10 +121,7 @@ class HijackTests(WebTest):
             )
 
 
-@override_settings(
-    TWO_FACTOR_PATCH_ADMIN=True,
-    TWO_FACTOR_FORCE_OTP_ADMIN=True,
-)
+@override_settings(MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[])
 class HijackSecurityTests(TestCase):
 
     @tag("security-28", "CVE-2024-24771")

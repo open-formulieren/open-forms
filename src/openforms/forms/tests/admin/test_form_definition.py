@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.models import FormDefinition
@@ -10,10 +11,9 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
 )
-from openforms.tests.utils import disable_2fa
 
 
-@disable_2fa
+@disable_admin_mfa()
 class TestFormDefinitionAdmin(WebTest):
     def setUp(self) -> None:
         super().setUp()
@@ -24,7 +24,7 @@ class TestFormDefinitionAdmin(WebTest):
             kwargs={"object_id": self.form.pk},
         )
         FormStepFactory.create(form=self.form, form_definition=self.form_definition)
-        self.user = SuperUserFactory.create(app=self.app)
+        self.user = SuperUserFactory.create()
         self.app.set_user(self.user)
 
     def test_used_in_forms_shown_in_list_response(self):

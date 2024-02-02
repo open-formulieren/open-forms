@@ -1,13 +1,13 @@
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import CategoryFactory, FormFactory
-from openforms.tests.utils import disable_2fa
 
 
-@disable_2fa
+@disable_admin_mfa()
 class TestCategoryAdmin(WebTest):
     @classmethod
     def setUpTestData(cls):

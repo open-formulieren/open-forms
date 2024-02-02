@@ -28,7 +28,7 @@ class eHerkenningOIDCFormAdminTests(WebTest):
     def setUp(self):
         super().setUp()
 
-        self.user = SuperUserFactory.create(app=self.app)
+        self.user = SuperUserFactory.create()
         self.app.set_user(self.user)
 
     def test_eherkenning_oidc_disable_allowed(self):
