@@ -25,7 +25,7 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
     <FieldArray
       name={mappingName}
       render={arrayHelpers => (
-        <>
+        <div className="mappings__mapping-table">
           <table>
             <thead>
               <tr>
@@ -55,7 +55,7 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
                       <Select
                         id={`${mappingName}.${index}.formVar`}
                         allowBlank={true}
-                        choices={formVariables.map(variable => [variable.key, variable.label])}
+                        choices={formVariables.map(variable => [variable.key, variable.name])}
                         {...getFieldProps(`${mappingName}.${index}.formVar`)}
                       />
                     </Field>
@@ -88,7 +88,7 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
           >
             <FormattedMessage description="Add variable button" defaultMessage="Add variable" />
           </ButtonContainer>
-        </>
+        </div>
       )}
     />
   );
