@@ -1,7 +1,7 @@
-import {Field, Form, Formik, useFormikContext} from 'formik';
+import {Form, Formik, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, defineMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import {FormContext} from 'components/admin/form_design/Context';
@@ -9,14 +9,22 @@ import {
   DMN_DECISION_DEFINITIONS_LIST,
   DMN_DECISION_DEFINITIONS_VERSIONS_LIST,
 } from 'components/admin/form_design/constants';
+import Field from 'components/admin/forms/Field';
+import Select from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
 import VariableMapping from './VariableMapping';
-import {EMPTY_OPTION} from './constants';
 import {inputValuesType} from './types';
 
+const ERRORS = {
+  required: defineMessage({
+    description: 'Required error message',
+    defaultMessage: 'This field is required.',
+  }),
+};
+
 const DecisionDefinitionIdField = () => {
-  const {values, setFieldValue} = useFormikContext();
+  const {values, setFieldValue, getFieldProps, errors, touched} = useFormikContext();
   const [decisionDefinitions, setDecisionDefinitions] = useState([]);
 
   useAsync(async () => {
@@ -43,22 +51,29 @@ const DecisionDefinitionIdField = () => {
   }, [values.pluginId, setFieldValue]);
 
   return (
-    <>
-      <label htmlFor="decisionDefinitionId">
+    <Field
+      name="decisionDefinitionId"
+      htmlFor="decisionDefinitionId"
+      label={
         <FormattedMessage
           defaultMessage="Decision definition ID"
           description="Decision definition ID label"
         />
-      </label>
-      <Field name="decisionDefinitionId" id="decisionDefinitionId" as="select">
-        {EMPTY_OPTION}
-        {decisionDefinitions.map(choice => (
-          <option key={choice[0]} value={choice[0]}>
-            {choice[1]}
-          </option>
-        ))}
-      </Field>
-    </>
+      }
+      errors={
+        touched.decisionDefinitionId && errors.decisionDefinitionId
+          ? [ERRORS[errors.decisionDefinitionId]]
+          : []
+      }
+    >
+      <Select
+        id="decisionDefinitionId"
+        name="decisionDefinitionId"
+        allowBlank={true}
+        choices={decisionDefinitions}
+        {...getFieldProps('decisionDefinitionId')}
+      />
+    </Field>
   );
 };
 
@@ -66,6 +81,7 @@ const DecisionDefinitionVersionField = () => {
   const {
     values: {pluginId, decisionDefinitionId},
     setFieldValue,
+    getFieldProps,
   } = useFormikContext();
   const [decisionDefinitionVersions, setDecisionDefinitionVersions] = useState([]);
 
@@ -95,45 +111,70 @@ const DecisionDefinitionVersionField = () => {
   }, [pluginId, decisionDefinitionId, setFieldValue]);
 
   return (
-    <>
-      <label htmlFor="decisionDefinitionVersion">
+    <Field
+      name="decisionDefinitionVersion"
+      htmlFor="decisionDefinitionVersion"
+      label={
         <FormattedMessage
           defaultMessage="Decision definition version"
           description="Decision definition version label"
         />
-      </label>
-      <Field name="decisionDefinitionVersion" id="decisionDefinitionVersion" as="select">
-        {EMPTY_OPTION}
-        {decisionDefinitionVersions.map(choice => (
-          <option key={choice[0]} value={choice[0]}>
-            {choice[1]}
-          </option>
-        ))}
-      </Field>
-    </>
+      }
+    >
+      <Select
+        id="decisionDefinitionVersion"
+        name="decisionDefinitionVersion"
+        allowBlank={true}
+        choices={decisionDefinitionVersions}
+        {...getFieldProps('decisionDefinitionVersion')}
+      />
+    </Field>
   );
 };
 
 const DMNActionConfig = ({initialValues, onSave}) => {
   const {formVariables, plugins} = useContext(FormContext);
 
+  const validate = values => {
+    const errors = {};
+
+    if (values.pluginId === '') {
+      errors.pluginId = 'required';
+    }
+
+    if (values.decisionDefinitionId === '') {
+      errors.decisionDefinitionId = 'required';
+    }
+
+    return errors;
+  };
+
   return (
     <div className="dmn-action-config">
-      <Formik initialValues={initialValues} onSubmit={values => onSave(values)}>
-        {({values}) => (
+      <Formik initialValues={initialValues} onSubmit={values => onSave(values)} validate={validate}>
+        {formik => (
           <Form>
             <fieldset className="aligned">
               <div className="form-row">
-                <label htmlFor="pluginId">
-                  <FormattedMessage defaultMessage="Plugin ID" description="Plugin ID label" />
-                </label>
-                <Field name="pluginId" id="pluginId" as="select">
-                  {plugins.availableDMNPlugins.map(choice => (
-                    <option key={choice.id} value={choice.id}>
-                      {choice.label}
-                    </option>
-                  ))}
-                  {EMPTY_OPTION}
+                <Field
+                  name="pluginId"
+                  htmlFor="pluginId"
+                  label={
+                    <FormattedMessage defaultMessage="Plugin ID" description="Plugin ID label" />
+                  }
+                  errors={
+                    formik.touched.pluginId && formik.errors.pluginId
+                      ? [ERRORS[formik.errors.pluginId]]
+                      : []
+                  }
+                >
+                  <Select
+                    id="pluginId"
+                    name="pluginId"
+                    allowBlank={true}
+                    choices={plugins.availableDMNPlugins.map(choice => [choice.id, choice.label])}
+                    {...formik.getFieldProps('pluginId')}
+                  />
                 </Field>
               </div>
               <div className="form-row">
@@ -154,7 +195,7 @@ const DMNActionConfig = ({initialValues, onSave}) => {
                 </h1>
                 <VariableMapping
                   mappingName="inputMapping"
-                  values={values}
+                  values={formik.values}
                   formVariables={formVariables}
                 />
               </div>
@@ -167,7 +208,7 @@ const DMNActionConfig = ({initialValues, onSave}) => {
                 </h1>
                 <VariableMapping
                   mappingName="outputMapping"
-                  values={values}
+                  values={formik.values}
                   formVariables={formVariables}
                 />
               </div>
