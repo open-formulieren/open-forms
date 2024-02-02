@@ -1,4 +1,4 @@
-import {Field, FieldArray} from 'formik';
+import {FieldArray, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -6,12 +6,15 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import DeleteIcon from 'components/admin/DeleteIcon';
 import Variable from 'components/admin/form_design/variables/types';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import Field from 'components/admin/forms/Field';
+import {TextInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
 
-import {EMPTY_OPTION} from './constants';
 import {inputValuesType} from './types';
 
 const VariableMapping = ({mappingName, values, formVariables}) => {
   const intl = useIntl();
+  const {getFieldProps} = useFormikContext();
 
   const confirmationMessage = intl.formatMessage({
     description: 'Confirmation message to remove a mapping',
@@ -43,26 +46,32 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
             </thead>
             <tbody>
               {values[mappingName].map((pair, index) => (
-                <tr>
-                  <td key={index}>
+                <tr key={index}>
+                  <td>
                     <Field
-                      id={`${mappingName}.${index}.formVar`}
                       name={`${mappingName}.${index}.formVar`}
-                      as="select"
+                      htmlFor={`${mappingName}.${index}.formVar`}
                     >
-                      {EMPTY_OPTION}
-                      {formVariables.map(variable => (
-                        <option key={variable.id} value={variable.key}>
-                          {variable.label}
-                        </option>
-                      ))}
+                      <Select
+                        id={`${mappingName}.${index}.formVar`}
+                        name={`${mappingName}.${index}.formVar`}
+                        allowBlank={true}
+                        choices={formVariables.map(variable => [variable.key, variable.label])}
+                        {...getFieldProps(`${mappingName}.${index}.formVar`)}
+                      />
                     </Field>
                   </td>
                   <td>
                     <Field
-                      id={`${mappingName}.${index}.dmnVar`}
+                      htmlFor={`${mappingName}.${index}.dmnVar`}
                       name={`${mappingName}.${index}.dmnVar`}
-                    ></Field>
+                    >
+                      <TextInput
+                        id={`${mappingName}.${index}.dmnVar`}
+                        name={`${mappingName}.${index}.dmnVar`}
+                        {...getFieldProps(`${mappingName}.${index}.dmnVar`)}
+                      />
+                    </Field>
                   </td>
                   <td>
                     <DeleteIcon
