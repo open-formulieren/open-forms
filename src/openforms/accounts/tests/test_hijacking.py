@@ -3,7 +3,7 @@ Assert that the hijack funtionality works even with 2FA.
 """
 
 from django.contrib.auth import SESSION_KEY
-from django.test import override_settings
+from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -123,3 +123,46 @@ class HijackTests(WebTest):
                     "username": staff_user.username,
                 },
             )
+
+
+@override_settings(
+    TWO_FACTOR_PATCH_ADMIN=True,
+    TWO_FACTOR_FORCE_OTP_ADMIN=True,
+)
+class HijackSecurityTests(TestCase):
+
+    @tag("security-28", "CVE-2024-24771")
+    def test_cannot_hijack_without_second_factor(self):
+        staff_user = StaffUserFactory.create()
+        superuser = SuperUserFactory.create()
+        superuser.totpdevice_set.create()
+        self.client.force_login(superuser)
+
+        # sanity check - MFA is being enforced
+        admin_index_response = self.client.get(reverse("admin:index"))
+        assert (
+            admin_index_response.status_code == 302
+        ), "Non-verified user unexpected has access to the admin"
+
+        # try the hijack
+        acquire = self.client.post(
+            reverse("hijack:acquire"),
+            data={"user_pk": staff_user.pk},
+        )
+
+        with self.subTest("hijack blocked"):
+            # bad request due to SuspiciousOperation or 403 from PermissionDenied
+            self.assertIn(acquire.status_code, [400, 403])
+
+        with self.subTest("release does not allow gaining verified state"):
+            # release the user
+            release = self.client.post(reverse("hijack:release"))
+
+            with self.subTest("release blocked due to hijack not being acquired"):
+                self.assertEqual(release.status_code, 403)
+
+            with self.subTest("no access to admin gained"):
+                # due to bypass via release action which sets up a device
+                admin_response = self.client.get(reverse("admin:index"))
+
+                self.assertNotEqual(admin_response.status_code, 200)
