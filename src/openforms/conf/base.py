@@ -1178,6 +1178,7 @@ with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
 #
 # Django Hijack
 #
+HIJACK_PERMISSION_CHECK = "openforms.accounts.hijack.verified_superusers_only"
 HIJACK_INSERT_BEFORE = (
     '<div class="content">'  # note that this only applies to the admin
 )
