@@ -92,10 +92,6 @@ urlpatterns = [
         decorator_include(
             never_cache,
             [
-                path(
-                    "api-auth",
-                    include("rest_framework.urls", namespace="rest_framework"),
-                ),
                 path("ping", PingView.as_view(), name="ping"),
                 path("submissions/", include("openforms.submissions.api.urls")),
                 path("config/", include("openforms.config.api.urls")),
