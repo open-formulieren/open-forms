@@ -10,9 +10,8 @@ The clients used are:
 """
 
 from zgw_consumers.client import build_client
-from zgw_consumers.nlx import NLXClient
 
-from openforms.contrib.objects_api.clients import ObjectsClient
+from openforms.contrib.objects_api.clients import ObjectsClient, ObjecttypesClient
 from openforms.contrib.zgw.clients import DocumentenClient
 
 from .models import ObjectsAPIConfig
@@ -22,12 +21,20 @@ class NoServiceConfigured(RuntimeError):
     pass
 
 
-def get_objects_client() -> NLXClient:
+def get_objects_client() -> ObjectsClient:
     config = ObjectsAPIConfig.get_solo()
     assert isinstance(config, ObjectsAPIConfig)
     if not (service := config.objects_service):
         raise NoServiceConfigured("No Objects API service configured!")
     return build_client(service, client_factory=ObjectsClient)
+
+
+def get_objecttypes_client() -> ObjecttypesClient:
+    config = ObjectsAPIConfig.get_solo()
+    assert isinstance(config, ObjectsAPIConfig)
+    if not (service := config.objecttypes_service):
+        raise NoServiceConfigured("No Objecttypes API service configured!")
+    return build_client(service, client_factory=ObjecttypesClient)
 
 
 def get_documents_client() -> DocumentenClient:

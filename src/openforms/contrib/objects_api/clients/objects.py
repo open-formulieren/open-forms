@@ -9,3 +9,7 @@ class ObjectsClient(NLXClient):
         response.raise_for_status()
 
         return response.json()
+
+
+class ObjecttypesClient(NLXClient):
+    pass

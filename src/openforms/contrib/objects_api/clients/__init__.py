@@ -1,3 +1,3 @@
-from .objects import ObjectsClient
+from .objects import ObjectsClient, ObjecttypesClient
 
-__all__ = ["ObjectsClient"]
+__all__ = ["ObjectsClient", "ObjecttypesClient"]
