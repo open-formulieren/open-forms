@@ -16,7 +16,6 @@ import elasticapm
 from django_jsonform.models.fields import ArrayField
 from furl import furl
 from glom import glom
-from json_logic import jsonLogic
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
@@ -712,33 +711,7 @@ class Submission(models.Model):
         if not self.form.payment_required:
             return False
 
-        # test the rules one by one, if relevant
-        price_rules = self.form.formpricelogic_set.all()
-        for rule in price_rules:
-            # logic does not match, no point in bothering
-            if not jsonLogic(rule.json_logic_trigger, self.data):
-                continue
-            logger.debug(
-                "Price for submission %s calculated using logic trigger %d: %r",
-                self.uuid,
-                rule.id,
-                rule.json_logic_trigger,
-            )
-            # first logic match wins
-            # TODO: validate on API/backend/frontend that logic triggers must be unique for
-            # a form
-            self.price = rule.price
-            if self.price:
-                return True
-            return False
-
-        # no price rules or no match found -> use linked product
-        logger.debug(
-            "Falling back to product price for submission %s after trying %d price rules",
-            self.uuid,
-            len(price_rules),
-        )
-        self.price = self.form.product.price
+        self.calculate_price()
         if self.price:
             return True
         return False

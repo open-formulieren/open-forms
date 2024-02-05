@@ -24,12 +24,6 @@ def get_submission_price(submission: "Submission") -> Decimal | None:
     :return: the calculated price, or ``None`` if no payment is required.
     """
     logger.debug("Calculating submission %s price", submission.uuid)
-    if not submission.payment_required:
-        logger.debug(
-            "Submission %s does not require payment, skipping price calculation",
-            submission.uuid,
-        )
-        return None
 
     assert (
         submission.form

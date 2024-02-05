@@ -1,5 +1,7 @@
 import uuid as _uuid
+from decimal import Decimal
 
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -20,7 +22,12 @@ class Product(models.Model):
         unique=True,
     )
     name = models.CharField(_("name"), max_length=50)
-    price = models.DecimalField(_("price"), max_digits=10, decimal_places=2)
+    price = models.DecimalField(
+        _("price"),
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
 
     information = CSPPostProcessedWYSIWYGField(
         HTMLField(
