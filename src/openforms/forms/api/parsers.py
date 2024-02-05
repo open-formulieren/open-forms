@@ -45,6 +45,16 @@ class IgnoreConfigurationFieldCamelCaseJSONRenderer(CamelCaseJSONRenderer):
     json_underscoreize = {"ignore_fields": ("configuration", "component_translations")}
 
 
+class FormLogicRuleJSONParser(CamelCaseJSONParser):
+    # In the config field of the DMN Evaluate logic action, the mapping of the form variables to the DMN variables should
+    # not be changed by the parser
+    json_underscoreize = {"ignore_fields": ("input_mapping", "output_mapping")}
+
+
+class FormLogicRuleJSONRenderer(CamelCaseJSONRenderer):
+    json_underscoreize = {"ignore_fields": ("input_mapping", "output_mapping")}
+
+
 class FormCamelCaseJSONParser(FormCamelCaseMixin, CamelCaseJSONParser):
     """
     Parser for Form resource.

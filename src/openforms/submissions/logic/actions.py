@@ -210,17 +210,17 @@ class DMNConfig(TypedDict):
     plugin_id: str
     input_mapping: dict[str, str]
     output_mapping: dict[str, str]
-    definition_id: str
-    definition_version: str
+    decision_definition_id: str
+    decision_definition_version: str
 
 
 @dataclass
 class EvaluateDMNAction(ActionOperation):
     input_mapping: dict[str, str]
     output_mapping: dict[str, str]
-    definition_id: str
+    decision_definition_id: str
     plugin_id: str
-    definition_version: str = ""
+    decision_definition_version: str = ""
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -241,8 +241,8 @@ class EvaluateDMNAction(ActionOperation):
 
         # Perform DMN call
         dmn_outputs = evaluate_dmn(
-            definition_id=self.definition_id,
-            version=self.definition_version,
+            definition_id=self.decision_definition_id,
+            version=self.decision_definition_version,
             input_values=dmn_inputs,
             plugin_id=self.plugin_id,
         )
@@ -251,6 +251,7 @@ class EvaluateDMNAction(ActionOperation):
         return {
             key_form: dmn_outputs[key_dmn]
             for key_form, key_dmn in self.output_mapping.items()
+            if key_dmn in dmn_outputs
         }
 
 

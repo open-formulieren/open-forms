@@ -34,6 +34,8 @@ from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
+    FormLogicRuleJSONParser,
+    FormLogicRuleJSONRenderer,
     FormVariableJSONParser,
     FormVariableJSONRenderer,
     IgnoreConfigurationFieldCamelCaseJSONParser,
@@ -599,6 +601,8 @@ class FormViewSet(viewsets.ModelViewSet):
         methods=["put"],
         url_path="logic-rules",
         url_name="logic-rules",
+        parser_classes=[FormLogicRuleJSONParser],
+        renderer_classes=[FormLogicRuleJSONRenderer],
     )
     @transaction.atomic
     def logic_rules_bulk_update(self, request, *args, **kwargs):
