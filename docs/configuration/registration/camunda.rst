@@ -11,8 +11,8 @@ Camunda_ is a process engine using BPM models. Open Forms supports Camunda 7.x
     This service requires a connection to an external Camunda instance, offered
     or maintained by a service provider.
 
-What does the Open Forms administator need?
-===========================================
+What does the Open Forms administrator need?
+============================================
 
 The values for these parameters should be provided to the Open Forms administrator by
 the service provider.

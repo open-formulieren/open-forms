@@ -22,3 +22,4 @@ configuration topics that come with Open Forms by default.
    registration/index
    appointment/index
    validation/index
+   dmn/index
