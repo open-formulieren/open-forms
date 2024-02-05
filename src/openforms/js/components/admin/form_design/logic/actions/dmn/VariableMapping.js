@@ -54,7 +54,6 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
                     >
                       <Select
                         id={`${mappingName}.${index}.formVar`}
-                        name={`${mappingName}.${index}.formVar`}
                         allowBlank={true}
                         choices={formVariables.map(variable => [variable.key, variable.label])}
                         {...getFieldProps(`${mappingName}.${index}.formVar`)}
@@ -68,7 +67,6 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
                     >
                       <TextInput
                         id={`${mappingName}.${index}.dmnVar`}
-                        name={`${mappingName}.${index}.dmnVar`}
                         {...getFieldProps(`${mappingName}.${index}.dmnVar`)}
                       />
                     </Field>

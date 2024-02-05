@@ -1,4 +1,4 @@
-import {Form, Formik, useFormikContext} from 'formik';
+import {Form, Formik, useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, defineMessage} from 'react-intl';
@@ -25,6 +25,7 @@ const ERRORS = {
 
 const DecisionDefinitionIdField = () => {
   const {values, setFieldValue, getFieldProps, errors, touched} = useFormikContext();
+  const [field] = useField('decisionDefinitionId');
   const [decisionDefinitions, setDecisionDefinitions] = useState([]);
 
   useAsync(async () => {
@@ -67,10 +68,9 @@ const DecisionDefinitionIdField = () => {
       }
     >
       <Select
-        id="decisionDefinitionId"
-        name="decisionDefinitionId"
         allowBlank={true}
         choices={decisionDefinitions}
+        {...field}
         {...getFieldProps('decisionDefinitionId')}
       />
     </Field>
@@ -83,6 +83,7 @@ const DecisionDefinitionVersionField = () => {
     setFieldValue,
     getFieldProps,
   } = useFormikContext();
+  const [field] = useField('decisionDefinitionVersion');
   const [decisionDefinitionVersions, setDecisionDefinitionVersions] = useState([]);
 
   useAsync(async () => {
@@ -122,10 +123,9 @@ const DecisionDefinitionVersionField = () => {
       }
     >
       <Select
-        id="decisionDefinitionVersion"
-        name="decisionDefinitionVersion"
         allowBlank={true}
         choices={decisionDefinitionVersions}
+        {...field}
         {...getFieldProps('decisionDefinitionVersion')}
       />
     </Field>
