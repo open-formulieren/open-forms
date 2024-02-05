@@ -31,7 +31,7 @@ from ..registry import register
 )
 class ValidatorsListView(ListMixin, APIView):
     """
-    List all prefill plugins that have been registered.
+    List available validation plugins that have been registered.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
