@@ -43,7 +43,9 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
         return payment
 
     @staticmethod
-    def create_public_order_id_for(payment: SubmissionPayment) -> str:
+    def create_public_order_id_for(
+        payment: SubmissionPayment, pk: int | None = None
+    ) -> str:
         """Create a public order ID to be sent to the payment provider."""
 
         # TODO it isn't really clear what the required format/max length is
@@ -54,10 +56,17 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
         if prefix:
             prefix = f"{prefix}/"
 
-        assert payment.submission.public_registration_reference
-        return (
-            f"{prefix}{payment.submission.public_registration_reference}/{payment.pk}"
-        )
+        reference = payment.submission.public_registration_reference
+        if not reference and config.wait_for_payment_to_register:
+            from openforms.submissions.public_references import (  # circ. ref
+                set_submission_reference,
+            )
+
+            reference = set_submission_reference(payment.submission)
+
+        pk = pk if pk is not None else payment.pk
+
+        return f"{prefix}{payment.submission.public_registration_reference}/{pk}"
 
 
 class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):

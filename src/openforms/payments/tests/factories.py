@@ -1,22 +1,42 @@
+from datetime import datetime
 from decimal import Decimal
+from typing import Any
+from unittest.mock import patch
 
 import factory
 
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..models import SubmissionPayment
+from ..models import SubmissionPayment, SubmissionPaymentManager
+
+
+def mocked_create_public_order_id_for(
+    payment: SubmissionPayment, create: bool, extracted: str | None, **kwargs: Any
+) -> None:
+    if extracted is not None:
+        payment.public_order_id = extracted
+        return
+
+    with patch(
+        "openforms.payments.models.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(),
+    ):
+        pk = factory.Faker("random_int").generate() if not create else None
+        payment.public_order_id = SubmissionPaymentManager.create_public_order_id_for(
+            payment, pk=pk
+        )
 
 
 class SubmissionPaymentFactory(factory.django.DjangoModelFactory):
+    created = datetime.now()
     submission = factory.SubFactory(
         SubmissionFactory, with_public_registration_reference=True
     )
     plugin_id = "demo"
     plugin_options = {"foo": 123}
     amount = Decimal("10.00")
-    public_order_id = factory.LazyAttributeSequence(
-        lambda obj, n: f"{obj.submission.public_registration_reference}_{n}"
-    )
+    public_order_id = factory.PostGeneration(mocked_create_public_order_id_for)
 
     class Meta:
         model = SubmissionPayment

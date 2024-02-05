@@ -1,5 +1,7 @@
 import copy
 from datetime import timedelta
+from decimal import Decimal
+from typing import Any
 
 from django.conf import settings
 from django.utils import timezone
@@ -34,6 +36,16 @@ from ..models import (
 from ..public_references import get_random_reference
 
 
+def _calculate_price(
+    submission: Submission, create: bool, extracted: Decimal | None, **kwargs: Any
+):
+    if extracted is not None:
+        submission.price = extracted
+        return
+
+    submission.calculate_price(save=create)
+
+
 class SubmissionFactory(factory.django.DjangoModelFactory):
 
     # this repeats the default of the Charfield LazyAttribute evaluation needs;
@@ -57,7 +69,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 lambda s: s.completed_on - timedelta(hours=4)
             ),
             pre_registration_completed=True,
-            price=factory.PostGenerationMethodCall("calculate_price"),
+            price=factory.PostGeneration(_calculate_price),
             metadata=factory.RelatedFactory(
                 "openforms.submissions.tests.factories.PostCompletionMetadataFactory",
                 factory_related_name="submission",
@@ -70,7 +82,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             created_on=factory.LazyAttribute(
                 lambda s: s.completed_on - timedelta(hours=4)
             ),
-            price=factory.PostGenerationMethodCall("calculate_price"),
+            price=factory.PostGeneration(_calculate_price),
         )
         suspended = factory.Trait(
             suspended_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
