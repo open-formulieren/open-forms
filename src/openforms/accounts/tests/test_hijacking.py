@@ -4,7 +4,7 @@ Assert that the hijack funtionality works even with 2FA.
 
 from django.contrib.auth import SESSION_KEY
 from django.test import TestCase, override_settings, tag
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 
 from django_webtest import WebTest
 
@@ -166,3 +166,14 @@ class HijackSecurityTests(TestCase):
                 admin_response = self.client.get(reverse("admin:index"))
 
                 self.assertNotEqual(admin_response.status_code, 200)
+
+    def test_drf_login_url_not_enabled(self):
+        """
+        The DRF login view may not be enabled, as this bypasses MFA.
+        """
+        try:
+            reverse("rest_framework:login")
+        except NoReverseMatch:
+            pass
+        else:
+            self.fail("The DRF login view is exposed, which bypasses MFA!")
