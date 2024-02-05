@@ -32,6 +32,7 @@
     "@open-formulieren/formio-builder": "^0.15.1",
     "@open-formulieren/leaflet-tools": "^1.0.0",
     "@rjsf/core": "^4.2.1",
+    "@storybook/jest": "^0.2.3",
     "@tinymce/tinymce-react": "^4.3.2",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "babel-jest": "^29.3.1",

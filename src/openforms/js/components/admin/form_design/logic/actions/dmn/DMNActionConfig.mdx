@@ -1,0 +1,16 @@
+import {ArgTypes, Canvas, Meta, Story} from '@storybook/blocks';
+
+import DMNActionConfig from './DMNActionConfig';
+import * as DMNActionConfigStories from './DMNActionConfig.stories';
+
+<Meta of={DMNActionConfigStories} />
+
+# Configuration for the DMN evaluation action
+
+<Canvas>
+  <Story of={DMNActionConfigStories.withInitialValues} />
+</Canvas>
+
+## Props
+
+<ArgTypes of={DMNActionConfig} />
