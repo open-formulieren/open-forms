@@ -15,6 +15,54 @@ the time of writing, such a version has not been released yet.
 .. todo:: At release time (2.6.0), check if we need to gate this functionality behind a
    feature flag to prevent issues.
 
+2.5.2 (2024-02-06)
+==================
+
+Bugfix release
+
+This release addresses a security weakness. We believe there was no way to actually
+exploit it.
+
+* [CVE-2024-24771] Fixed (non-exploitable) multi-factor authentication weakness.
+* [SDK#642] Fixed DigiD error message via SDK patch release.
+* [#3774] Fixed dark-mode support in new form builder.
+* Upgraded dependencies to their latest available security releases.
+
+2.4.5 (2024-02-06)
+==================
+
+Bugfix release
+
+This release addresses a security weakness. We believe there was no way to actually
+exploit it.
+
+* [CVE-2024-24771] Fixed (non-exploitable) multi-factor authentication weakness.
+* [SDK#642] Fixed DigiD error message via SDK patch release.
+* Upgraded dependencies to their latest available security releases.
+
+2.3.7 (2024-02-06)
+==================
+
+Bugfix release
+
+This release addresses a security weakness. We believe there was no way to actually
+exploit it.
+
+* [CVE-2024-24771] Fixed (non-exploitable) multi-factor authentication weakness.
+* [SDK#642] Fixed DigiD error message via SDK patch release.
+* Upgraded dependencies to their latest available security releases.
+
+2.2.9 (2024-02-06)
+==================
+
+Bugfix release
+
+This release addresses a security weakness. We believe there was no way to actually
+exploit it.
+
+* [CVE-2024-24771] Fixed (non-exploitable) multi-factor authentication weakness.
+* [SDK#642] Fixed DigiD error message via SDK patch release.
+* Upgraded dependencies to their latest available security releases.
 
 2.5.1 (2024-01-30)
 ==================
