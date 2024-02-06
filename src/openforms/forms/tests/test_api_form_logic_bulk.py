@@ -5,7 +5,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
+from ..constants import LogicActionTypes
 from ..models import FormLogic
 from .factories import (
     FormFactory,
@@ -1286,3 +1288,166 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(FormLogic.objects.count(), 2)
+
+    def test_create_rule_with_evaluate_dmn_action(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    },
+                    {
+                        "type": "number",
+                        "key": "income",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            source=FormVariableSources.user_defined,
+            key="canApply",
+            data_type=FormVariableDataTypes.boolean,
+        )
+
+        form_logic_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "is_advanced": True,
+                "json_logic_trigger": True,
+                "actions": [
+                    {
+                        "action": {
+                            "type": LogicActionTypes.evaluate_dmn,
+                            "config": {
+                                "plugin_id": "camunda7",
+                                "decision_definition_id": "some-id",
+                                "decision_definition_version": "1",
+                                "input_mapping": {
+                                    "age": "ageDMN",
+                                    "income": "incomeDMN",
+                                },
+                                "output_mapping": {"canApply": "canApplyDMN"},
+                            },
+                        },
+                    }
+                ],
+            }
+        ]
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        new_rule = FormLogic.objects.get(form=form, order=0)
+
+        self.assertEqual(
+            new_rule.actions[0]["action"]["type"], LogicActionTypes.evaluate_dmn
+        )
+        self.assertEqual(
+            new_rule.actions[0]["action"]["config"],
+            {
+                "plugin_id": "camunda7",
+                "decision_definition_id": "some-id",
+                "decision_definition_version": "1",
+                "input_mapping": {"age": "ageDMN", "income": "incomeDMN"},
+                "output_mapping": {"canApply": "canApplyDMN"},
+            },
+        )
+
+    def test_create_rule_with_evaluate_dmn_action_empty_config(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    },
+                    {
+                        "type": "number",
+                        "key": "income",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            source=FormVariableSources.user_defined,
+            key="canApply",
+            data_type=FormVariableDataTypes.boolean,
+        )
+
+        form_logic_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "is_advanced": True,
+                "json_logic_trigger": True,
+                "actions": [
+                    {
+                        "action": {
+                            "type": LogicActionTypes.evaluate_dmn,
+                            "config": {},
+                        },
+                    },
+                    {
+                        "action": {
+                            "type": LogicActionTypes.evaluate_dmn,
+                            "config": {
+                                "plugin_id": "",
+                                "decision_definition_id": "",
+                                "decision_definition_version": "",
+                                "input_mapping": {},
+                                "output_mapping": {},
+                            },
+                        },
+                    },
+                    {
+                        "action": {
+                            "type": LogicActionTypes.evaluate_dmn,
+                        },
+                    },
+                ],
+            }
+        ]
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(data["invalidParams"][0]["code"], "required")
+        self.assertEqual(
+            data["invalidParams"][0]["name"], "0.actions.0.action.config.pluginId"
+        )
+        self.assertEqual(data["invalidParams"][1]["code"], "required")
+        self.assertEqual(
+            data["invalidParams"][1]["name"],
+            "0.actions.0.action.config.decisionDefinitionId",
+        )
+
+        self.assertEqual(data["invalidParams"][2]["code"], "blank")
+        self.assertEqual(
+            data["invalidParams"][2]["name"], "0.actions.1.action.config.pluginId"
+        )
+        self.assertEqual(data["invalidParams"][3]["code"], "blank")
+        self.assertEqual(
+            data["invalidParams"][3]["name"],
+            "0.actions.1.action.config.decisionDefinitionId",
+        )
+
+        self.assertEqual(data["invalidParams"][4]["code"], "required")
+        self.assertEqual(data["invalidParams"][4]["name"], "0.actions.2.action.config")

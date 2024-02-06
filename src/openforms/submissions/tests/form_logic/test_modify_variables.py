@@ -431,9 +431,7 @@ class VariableModificationTests(TestCase):
         )
         m.post(
             "https://camunda.example.com/engine-rest/decision-definition/determine-can-apply:1:06152ee5-bf59-11ee-830a-0242ac110003/evaluate",
-            json=[
-                {"canApplyDMN": {"type": "Boolean", "value": False, "valueInfo": {}}}
-            ],
+            json=[{"canApplyDMN": {"type": "Boolean", "value": True, "valueInfo": {}}}],
         )
 
         form = FormFactory.create(
@@ -470,8 +468,8 @@ class VariableModificationTests(TestCase):
                             "output_mapping": {
                                 "canApply": "canApplyDMN",
                             },
-                            "definition_id": "determine-can-apply",
-                            "definition_version": "1",
+                            "decision_definition_id": "determine-can-apply",
+                            "decision_definition_version": "1",
                             "plugin_id": "camunda7",
                         },
                     },
@@ -497,7 +495,7 @@ class VariableModificationTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state()
 
-        self.assertFalse(variables_state.variables["canApply"].value)
+        self.assertTrue(variables_state.variables["canApply"].value)
 
     @requests_mock.Mocker()
     def test_evaluate_dmn_with_nested_variables(self, m):
@@ -577,8 +575,8 @@ class VariableModificationTests(TestCase):
                             "output_mapping": {
                                 "yo.im.nested.canApply": "canApplyDMN",
                             },
-                            "definition_id": "determine-can-apply",
-                            "definition_version": "1",
+                            "decision_definition_id": "determine-can-apply",
+                            "decision_definition_version": "1",
                             "plugin_id": "camunda7",
                         },
                     },
@@ -605,3 +603,96 @@ class VariableModificationTests(TestCase):
         variables_state = submission.load_submission_value_variables_state()
 
         self.assertFalse(variables_state.variables["yo.im.nested.canApply"].value)
+
+    @requests_mock.Mocker()
+    def test_evaluate_dmn_action_returns_empty_data(self, m):
+        m.get(
+            "https://camunda.example.com/engine-rest/decision-definition?key=determine-can-apply&version=1",
+            json=[
+                {
+                    "id": "determine-can-apply:1:06152ee5-bf59-11ee-830a-0242ac110003",
+                    "key": "determine-can-apply",
+                    "category": "http://camunda.org/schema/1.0/dmn",
+                    "name": "Determine if can apply",
+                    "version": 1,
+                    "resource": "table-determine-can-apply.dmn",
+                    "deploymentId": "06135a22-bf59-11ee-830a-0242ac110003",
+                    "tenantId": None,
+                    "decisionRequirementsDefinitionId": None,
+                    "decisionRequirementsDefinitionKey": None,
+                    "historyTimeToLive": 1,
+                    "versionTag": None,
+                }
+            ],
+        )
+        # If the data doesn't match any of the rules in the decision table, then an empty array is returned.
+        m.post(
+            "https://camunda.example.com/engine-rest/decision-definition/determine-can-apply:1:06152ee5-bf59-11ee-830a-0242ac110003/evaluate",
+            json=[],
+        )
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "age",
+                    },
+                    {
+                        "type": "number",
+                        "key": "income",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            source=FormVariableSources.user_defined,
+            key="canApply",
+            data_type=FormVariableDataTypes.boolean,
+            initial_value=True,
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.evaluate_dmn,
+                        "config": {
+                            "input_mapping": {
+                                "age": "ageDMN",
+                                "income": "incomeDMN",
+                            },
+                            "output_mapping": {
+                                "canApply": "canApplyDMN",
+                            },
+                            "decision_definition_id": "determine-can-apply",
+                            "decision_definition_version": "1",
+                            "plugin_id": "camunda7",
+                        },
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            data={"age": 29, "income": 40000},
+        )
+
+        with patch(
+            "openforms.dmn.contrib.camunda.checks.CamundaConfig.get_solo",
+            return_value=CamundaConfig(
+                enabled=True,
+                root_url="https://camunda.example.com",
+                rest_api_path="engine-rest/",
+            ),
+        ):
+            evaluate_form_logic(submission, submission_step, submission.data)
+
+        variables_state = submission.load_submission_value_variables_state()
+
+        self.assertTrue(variables_state.variables["canApply"].value)
