@@ -129,7 +129,6 @@ class HijackTests(WebTest):
     TWO_FACTOR_FORCE_OTP_ADMIN=True,
 )
 class HijackSecurityTests(TestCase):
-
     @tag("security-28", "CVE-2024-24771")
     def test_cannot_hijack_without_second_factor(self):
         staff_user = StaffUserFactory.create()
