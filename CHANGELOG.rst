@@ -2,6 +2,18 @@
 Changelog
 =========
 
+2.2.9 (2024-02-06)
+==================
+
+Bugfix release
+
+This release addresses a security weakness. We believe there was no way to actually
+exploit it.
+
+* [CVE-2024-24771] Fixed (non-exploitable) multi-factor authentication weakness.
+* [SDK#642] Fixed DigiD error message via SDK patch release.
+* Upgraded dependencies to their latest available security releases.
+
 2.2.8 (2024-01-12)
 ==================
 
