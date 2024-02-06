@@ -6720,6 +6720,32 @@ components:
       - label
       - logo
       - url
+    DMNEvaluateAction:
+      type: object
+      properties:
+        config:
+          allOf:
+          - $ref: '#/components/schemas/DMNEvaluateActionConfig'
+          title: Configuration
+      required:
+      - config
+    DMNEvaluateActionConfig:
+      type: object
+      properties:
+        pluginId:
+          type: string
+        decisionDefinitionId:
+          type: string
+        decisionDefinitionVersion:
+          type: string
+          default: ''
+        inputMapping:
+          default: {}
+        outputMapping:
+          default: {}
+      required:
+      - decisionDefinitionId
+      - pluginId
     DataMappingTypeEnum:
       enum:
       - JsonLogic
@@ -8030,6 +8056,7 @@ components:
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
+      - $ref: '#/components/schemas/LogicActionPolymorphicDMNEvaluateAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
       discriminator:
         propertyName: type
@@ -8040,7 +8067,12 @@ components:
           step-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
           variable: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
           fetch-from-service: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
+          evaluate-dmn: '#/components/schemas/LogicActionPolymorphicDMNEvaluateAction'
           set-registration-backend: '#/components/schemas/LogicActionPolymorphicLogicSetRegistrationBackendAction'
+    LogicActionPolymorphicDMNEvaluateAction:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/DMNEvaluateAction'
     LogicActionPolymorphicGenericObject:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'

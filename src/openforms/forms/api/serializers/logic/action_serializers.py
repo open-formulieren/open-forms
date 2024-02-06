@@ -72,6 +72,31 @@ class LogicFetchActionSerializer(serializers.Serializer):
     )
 
 
+class DMNEvaluateActionConfigSerializer(serializers.Serializer):
+    plugin_id = serializers.CharField(
+        label=_("Plugin ID"), required=True, allow_blank=False
+    )
+    decision_definition_id = serializers.CharField(
+        label=_("Decision definition ID"), required=True, allow_blank=False
+    )
+    decision_definition_version = serializers.CharField(
+        label=_("Decision definition version"),
+        required=False,
+        allow_blank=True,
+        default="",
+    )
+    input_mapping = serializers.JSONField(
+        label=_("Input mapping"), required=False, default={}
+    )
+    output_mapping = serializers.JSONField(
+        label=_("Output mapping"), required=False, default={}
+    )
+
+
+class DMNEvaluateActionSerializer(serializers.Serializer):
+    config = DMNEvaluateActionConfigSerializer(label=_("Configuration"))
+
+
 class LogicSetRegistrationBackendActionSerializer(serializers.Serializer):
     value = serializers.CharField(
         label=_("registration_backend_key"),
@@ -94,6 +119,7 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         str(LogicActionTypes.step_applicable): DummySerializer,
         str(LogicActionTypes.variable): LogicValueActionSerializer,
         str(LogicActionTypes.fetch_from_service): LogicFetchActionSerializer,
+        str(LogicActionTypes.evaluate_dmn): DMNEvaluateActionSerializer,
         str(
             LogicActionTypes.set_registration_backend
         ): LogicSetRegistrationBackendActionSerializer,
