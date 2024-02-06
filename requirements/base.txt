@@ -72,7 +72,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==41.0.7
+cryptography==42.0.2
     # via
     #   django-simple-certmanager
     #   josepy
@@ -86,7 +86,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.23
+django==3.2.24
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -358,7 +358,7 @@ pydyf==0.8.0
     # via weasyprint
 pyjwt==2.6.0
     # via gemma-zds-client
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via
     #   django-simple-certmanager
     #   josepy

@@ -155,7 +155,7 @@ coverage==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==41.0.7
+cryptography==42.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -182,7 +182,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.23
+django==3.2.24
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -824,7 +824,7 @@ pyjwt==2.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   gemma-zds-client
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
