@@ -33,7 +33,7 @@ cairocffi==1.2.0
     # via
     #   cairosvg
     #   weasyprint
-cairosvg==2.7.0
+cairosvg==2.7.1
     # via weasyprint
 celery==5.2.7
     # via
@@ -73,7 +73,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==41.0.4
+cryptography==42.0.0
     # via
     #   django-simple-certmanager
     #   josepy
@@ -90,7 +90,7 @@ defusedxml==0.7.1
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.22
+django==3.2.24
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -355,7 +355,7 @@ pycparser==2.20
     # via cffi
 pyjwt==2.6.0
     # via gemma-zds-client
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via
     #   django-simple-certmanager
     #   josepy
@@ -485,7 +485,7 @@ urllib3==1.26.18
     #   elastic-apm
     #   requests
     #   sentry-sdk
-uwsgi==2.0.21
+uwsgi==2.0.23
     # via -r requirements/base.in
 vine==5.0.0
     # via
