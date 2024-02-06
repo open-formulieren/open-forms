@@ -105,6 +105,10 @@ if settings.DEBUG:  # pragma: nocover
 
     urlpatterns += [
         path(
+            "api/drf-auth/",
+            include("rest_framework.urls", namespace="rest_framework"),
+        ),
+        path(
             "dev/email/wrapper",
             EmailWrapperTestView.as_view(),
             name="dev-email-wrapper",
