@@ -27,6 +27,9 @@ def get_submission_price(submission: "Submission") -> Decimal:
         submission.form
     ), "Price cannot be calculated on a submission without the form relation set"
     assert submission.form.product, "Form must have a related product"
+    assert (
+        submission.form.product.price
+    ), "get_submission_price' may only be called for forms that require payment"
 
     form = submission.form
     data = submission.data
