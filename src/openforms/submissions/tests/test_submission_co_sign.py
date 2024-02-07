@@ -95,9 +95,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
     def test_submission_must_be_completed(self):
         submission = SubmissionFactory.from_components(
-            components_list=[
-                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
-            ],
+            components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
             },
@@ -118,20 +116,19 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    def test_user_must_have_authenticated_with_right_plugin(self):
+    def test_user_must_have_authenticated_with_allowed_plugin(self):
         submission = SubmissionFactory.from_components(
-            components_list=[
-                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
-            ],
+            form__authentication_backends=["eherkenning"],
+            components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
             },
-            completed=False,
+            completed=True,
         )
 
         session = self.client.session
         session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": "NOT-digid",
+            "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
         }
@@ -145,6 +142,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
     def test_cosign_happy_flow_calls_on_cosign_task(self):
         submission = SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
             components_list=[
                 {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
             ],
@@ -203,9 +201,8 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_cosign_did_not_accept_privacy_policy(self):
         submission = SubmissionFactory.from_components(
-            components_list=[
-                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
-            ],
+            form__authentication_backends=["digid"],
+            components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
             },
@@ -238,9 +235,8 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_cosign_did_not_accept_truth_declaration(self):
         submission = SubmissionFactory.from_components(
-            components_list=[
-                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
-            ],
+            form__authentication_backends=["digid"],
+            components_list=[{"type": "cosign", "key": "cosign"}],
             submitted_data={
                 "cosign": "test@example.com",
             },

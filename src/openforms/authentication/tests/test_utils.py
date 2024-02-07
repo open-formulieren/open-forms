@@ -37,7 +37,6 @@ class UtilsTests(TestCase):
                         "key": "cosignField",
                         "label": "Cosign",
                         "type": "cosign",
-                        "authPlugin": "digid",
                     }
                 ]
             },

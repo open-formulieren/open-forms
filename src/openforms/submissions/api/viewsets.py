@@ -20,7 +20,7 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
-from openforms.authentication.service import is_authenticated_with_plugin
+from openforms.authentication.service import is_authenticated_with_an_allowed_plugin
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
@@ -225,11 +225,12 @@ class SubmissionViewSet(
                 _("The submission must be completed before being able to co-sign it.")
             )
 
-        cosign_component = submission.form.get_cosign_component()
-        if not is_authenticated_with_plugin(request, cosign_component["authPlugin"]):
+        if not is_authenticated_with_an_allowed_plugin(
+            request, submission.form.authentication_backends
+        ):
             raise PermissionDenied(
-                _("You need to be logged in with {auth_plugin}").format(
-                    auth_plugin=cosign_component["authPlugin"]
+                _(
+                    "You need to be logged in with one of the allowed authentication backends to co-sign the submission."
                 )
             )
 

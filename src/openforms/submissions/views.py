@@ -17,6 +17,7 @@ from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.utils import (
+    is_authenticated_with_an_allowed_plugin,
     is_authenticated_with_plugin,
     meets_plugin_requirements,
 )
@@ -259,13 +260,11 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
 
     def test_func(self):
         """
-        The user should have authenticated with the auth plugin specified on the form for the co-sign component
+        The user should have authenticated with one of the auth plugin specified on the form
         """
         self.form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
-        cosign_component = self.form.get_cosign_component()
-        expected_auth_plugin = cosign_component["authPlugin"]
-        return is_authenticated_with_plugin(
-            self.request, expected_auth_plugin
+        return is_authenticated_with_an_allowed_plugin(
+            self.request, self.form.authentication_backends
         ) and meets_plugin_requirements(
             self.request, self.form.authentication_backend_options
         )
