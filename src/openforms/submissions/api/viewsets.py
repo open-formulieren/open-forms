@@ -20,7 +20,10 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
-from openforms.authentication.service import is_authenticated_with_an_allowed_plugin
+from openforms.authentication.service import (
+    cosigner_matches_requested_bsn,
+    is_authenticated_with_an_allowed_plugin,
+)
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
@@ -232,6 +235,14 @@ class SubmissionViewSet(
                 _(
                     "You need to be logged in with one of the allowed authentication backends to co-sign the submission."
                 )
+            )
+
+        cosign_component = submission.form.get_cosign_component()
+        if cosign_component.get(
+            "checkBsn", False
+        ) and not cosigner_matches_requested_bsn(request, submission.cosigner_bsn):
+            raise PermissionDenied(
+                _("The cosigner's BSN does not match the expected BSN.")
             )
 
         serializer = CosignValidationSerializer(

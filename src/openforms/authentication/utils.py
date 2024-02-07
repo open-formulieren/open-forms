@@ -69,6 +69,13 @@ def is_authenticated_with_an_allowed_plugin(
         return False
 
 
+def cosigner_matches_requested_bsn(request: Request, bsn: str) -> bool:
+    return (
+        request.session[FORM_AUTH_SESSION_KEY]["attribute"] == AuthAttribute.bsn
+        and request.session[FORM_AUTH_SESSION_KEY]["value"] == bsn
+    )
+
+
 def meets_plugin_requirements(request: Request, config: dict) -> bool:
     # called after is_authenticated_with_plugin so this is correct
     plugin_id = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
