@@ -19,13 +19,13 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
 
     def test_successfully_submit_form(self):
         submission = SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
             components_list=[
                 {
                     "key": "cosign",
                     "type": "cosign",
                     "label": "Cosign component",
                     "validate": {"required": True},
-                    "authPlugin": "digid",
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},
@@ -92,13 +92,13 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
 
     def test_user_has_authenticated_with_wrong_plugin(self):
         SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
             components_list=[
                 {
                     "key": "cosign",
                     "type": "cosign",
                     "label": "Cosign component",
                     "validate": {"required": True},
-                    "authPlugin": "digid",
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},
@@ -109,7 +109,7 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
         )
         session = self.app.session
         session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": "wrong-plugin",
+            "plugin": "not-digid",
             "attribute": "bsn",
             "value": "123456782",
         }
@@ -131,7 +131,6 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
                     "type": "cosign",
                     "label": "Cosign component",
                     "validate": {"required": True},
-                    "authPlugin": "digid",
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},
@@ -160,13 +159,13 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
     @override_settings(LANGUAGE_CODE="en")
     def test_wrong_submission_reference_gives_error(self):
         SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
             components_list=[
                 {
                     "key": "cosign",
                     "type": "cosign",
                     "label": "Cosign component",
                     "validate": {"required": True},
-                    "authPlugin": "digid",
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},
@@ -206,13 +205,13 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
 
     def test_submission_already_cosigned_raises_error(self):
         submission = SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
             components_list=[
                 {
                     "key": "cosign",
                     "type": "cosign",
                     "label": "Cosign component",
                     "validate": {"required": True},
-                    "authPlugin": "digid",
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},
@@ -253,13 +252,13 @@ class SearchSubmissionForCosignView(FrontendRedirectMixin, WebTest):
     @override_settings(LANGUAGE_CODE="en")
     def test_logout_button(self):
         SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
             components_list=[
                 {
                     "key": "cosign",
                     "type": "cosign",
                     "label": "Cosign component",
                     "validate": {"required": True},
-                    "authPlugin": "digid",
                 },
             ],
             submitted_data={"cosign": "test@test.nl"},

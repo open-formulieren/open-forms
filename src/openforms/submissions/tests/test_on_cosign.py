@@ -16,7 +16,7 @@ class OnCosignTests(TestCase):
     def test_submission_on_cosign(self):
         submission = SubmissionFactory.from_components(
             components_list=[
-                {"key": "cosignerEmail", "type": "cosign", "authPlugin": "digid"},
+                {"key": "cosignerEmail", "type": "cosign"},
                 {"key": "mainEmail", "type": "email", "confirmationRecipient": True},
             ],
             co_sign_data={
