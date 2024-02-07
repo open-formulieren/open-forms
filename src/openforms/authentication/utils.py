@@ -60,6 +60,15 @@ def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool
         return False
 
 
+def is_authenticated_with_an_allowed_plugin(
+    request: Request, allowed_plugins: list[str]
+) -> bool:
+    try:
+        return request.session[FORM_AUTH_SESSION_KEY]["plugin"] in allowed_plugins
+    except KeyError:
+        return False
+
+
 def meets_plugin_requirements(request: Request, config: dict) -> bool:
     # called after is_authenticated_with_plugin so this is correct
     plugin_id = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
