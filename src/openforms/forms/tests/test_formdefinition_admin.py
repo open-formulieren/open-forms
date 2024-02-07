@@ -2,15 +2,15 @@ from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
-from openforms.tests.utils import disable_2fa
 
 from ..models.form_definition import FormDefinition
 from .factories import FormDefinitionFactory
 
 
-@disable_2fa
+@disable_admin_mfa()
 class FormDefinitionAdminTests(WebTest):
     @classmethod
     def setUpTestData(cls):

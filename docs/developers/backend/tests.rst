@@ -83,12 +83,7 @@ After installing the dependencies, install the browsers locally:
 
 .. code-block:: bash
 
-    TWO_FACTOR_PATCH_ADMIN=no python src/manage.py test src --tag=e2e
-
-.. note:: When the admin is monkeypatched to enable 2FA behaviour, it's been observed
-   that the end to end tests fail to run/complete properly. Disabling this via your
-   local settings or the environment variable ``TWO_FACTOR_PATCH_ADMIN=no`` mitigates
-   this.
+    python src/manage.py test src --tag=e2e
 
 **Configuration**
 

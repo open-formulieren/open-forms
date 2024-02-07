@@ -8,8 +8,6 @@ DB_USER=open-forms
 DB_PASSWORD=""
 DB_HOST=""
 
-TWO_FACTOR_PATCH_ADMIN=no
-TWO_FACTOR_FORCE_OTP_ADMIN=no
 # LANGUAGE_CODE=nl
 #CORS_ALLOW_ALL_ORIGINS=yes
 # CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
@@ -32,3 +30,6 @@ TWO_FACTOR_FORCE_OTP_ADMIN=no
 # Recording Suwinet VCR cassettes
 # SUWINET_CLIENT_KEY=/path/to/privatekey.pem
 # SUWINET_BASE_URL=https://url/of/gateway/suwiml
+
+# Applies to dev settings module only!
+DISABLE_2FA=yes

@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
 from openforms.logging import logevent
@@ -13,6 +14,7 @@ from openforms.prefill.registry import register
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
+@disable_admin_mfa()
 class AVGAuditLogListViewTests(WebTest):
     def test_view(self):
         url = reverse("admin:logging_avgtimelinelogproxy_changelist")

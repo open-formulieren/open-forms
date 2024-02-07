@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from asgiref.sync import sync_to_async
 from furl import furl
+from maykin_2fa.test import disable_admin_mfa
 from playwright.async_api import BrowserType, Page, async_playwright
 
 from openforms.accounts.tests.factories import SuperUserFactory
@@ -49,17 +50,8 @@ async def browser_page():
             await browser.close()
 
 
-# The @disable_2fa decorator doesn't seem to work with these tests, so you msut specify
-# the envvar TWO_FACTOR_PATCH_ADMIN=no for the end-to-end tests to work as part of your
-# test command.
-#
-# Presumably this is because Django's doing some sync_to_async/async_to_sync magic and
-# the process memory/state gets copied with the monkepatched admin... If that's the
-# case, it's yet another reason why this monkeypatching approach in
-# maykin-django-two-factor is... questionable.
-
-
 @tag("e2e")
+@disable_admin_mfa()
 @override_settings(ALLOWED_HOSTS=["*"])
 class E2ETestCase(StaticLiveServerTestCase):
     async def _admin_login(self, page: Page) -> None:

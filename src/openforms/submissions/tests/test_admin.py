@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from django_webtest import WebTest
 from furl import furl
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.models import FormVariable
@@ -15,6 +16,7 @@ from ..constants import PostSubmissionEvents, RegistrationStatuses
 from .factories import SubmissionFactory, SubmissionValueVariableFactory
 
 
+@disable_admin_mfa()
 class TestSubmissionAdmin(WebTest):
     @classmethod
     def setUpTestData(cls):
@@ -38,7 +40,7 @@ class TestSubmissionAdmin(WebTest):
 
     def setUp(self):
         super().setUp()
-        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
+        self.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     def test_displaying_merged_data_formio_formatters(self):
         response = self.app.get(

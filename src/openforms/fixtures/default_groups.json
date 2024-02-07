@@ -1184,6 +1184,26 @@
                 "totpdevice"
             ],
             [
+                "add_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
+                "change_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
+                "delete_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
+                "view_webauthndevice",
+                "two_factor_webauthn",
+                "webauthndevice"
+            ],
+            [
                 "add_submissionpayment",
                 "payments",
                 "submissionpayment"
@@ -1487,26 +1507,6 @@
                 "view_timelinelog",
                 "timeline_logger",
                 "timelinelog"
-            ],
-            [
-                "add_phonedevice",
-                "two_factor",
-                "phonedevice"
-            ],
-            [
-                "change_phonedevice",
-                "two_factor",
-                "phonedevice"
-            ],
-            [
-                "delete_phonedevice",
-                "two_factor",
-                "phonedevice"
-            ],
-            [
-                "view_phonedevice",
-                "two_factor",
-                "phonedevice"
             ],
             [
                 "add_zgwconfig",

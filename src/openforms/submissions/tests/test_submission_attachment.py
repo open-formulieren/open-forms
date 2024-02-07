@@ -5,6 +5,7 @@ from django.core.files import File
 from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 
+from maykin_2fa.test import disable_admin_mfa
 from PIL import Image, UnidentifiedImageError
 from privates.test import temp_private_root
 from rest_framework.exceptions import ValidationError
@@ -13,7 +14,6 @@ from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
-from openforms.tests.utils import disable_2fa
 
 from ..attachments import (
     append_file_num_postfix,
@@ -1399,7 +1399,7 @@ class SubmissionAttachmentTest(TestCase):
         validation_error = err_context.exception.get_full_details()
         self.assertEqual(len(validation_error["my_file"]), 1)
 
-    @disable_2fa
+    @disable_admin_mfa()
     def test_attachment_retrieve_view_requires_permission(self):
         attachment = SubmissionFileAttachmentFactory.create()
         url = reverse(

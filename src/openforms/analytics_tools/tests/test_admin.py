@@ -1,10 +1,12 @@
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 
 
+@disable_admin_mfa()
 class AnalyticsConfigAdminTests(WebTest):
     def test_urls_cannot_have_trailing_slashes(self):
         superuser = SuperUserFactory.create()

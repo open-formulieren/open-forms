@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.config.models import CSPSetting
@@ -32,6 +33,7 @@ class TestCSPAdmin(TestCase):
         self.assertEqual(link, expected_link)
 
 
+@disable_admin_mfa()
 class ColorAdminTests(WebTest):
     def test_color_changelist(self):
         RichTextColorFactory.create_batch(9)

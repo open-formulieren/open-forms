@@ -15,6 +15,11 @@ the time of writing, such a version has not been released yet.
 .. todo:: At release time (2.6.0), check if we need to gate this functionality behind a
    feature flag to prevent issues.
 
+The ``TWO_FACTOR_FORCE_OTP_ADMIN`` and ``TWO_FACTOR_PATCH_ADMIN`` environment variables
+are removed. Disabling MFA in the admin is no longer possible. Note that the OIDC
+login backends do not require (additional) MFA in the admin and we've added support for
+hardware tokens (like the YubiKey) which make MFA less of a nuisance.
+
 2.5.2 (2024-02-06)
 ==================
 

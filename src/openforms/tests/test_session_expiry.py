@@ -17,6 +17,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
+from maykin_2fa.test import disable_admin_mfa
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -27,7 +28,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..accounts.tests.factories import SuperUserFactory
-from .utils import NOOP_CACHES, disable_2fa
+from .utils import NOOP_CACHES
 
 SESSION_CACHES = deepcopy(NOOP_CACHES)
 SESSION_CACHES["session"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
@@ -189,7 +190,7 @@ class FormUserSessionExpiryTests(APITestCase):
         )  # 5 minutes * 60s = 300s
 
 
-@disable_2fa
+@disable_admin_mfa()
 @override_settings(
     CACHES=SESSION_CACHES,
     SESSION_CACHE_ALIAS="session",

@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 import requests
 import requests_mock
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.appointments.contrib.qmatic.models import QmaticConfig
@@ -15,6 +16,7 @@ from ..constants import CustomerFields
 from .factories import ServiceFactory
 
 
+@disable_admin_mfa()
 class QmaticConfigAdminTests(WebTest):
     def setUp(self):
         super().setUp()
@@ -35,6 +37,7 @@ class QmaticConfigAdminTests(WebTest):
                 self.assertIn(value, CustomerFields)
 
 
+@disable_admin_mfa()
 @disable_logging()
 class ApointmentConfigAdminTests(WebTest):
     def setUp(self):

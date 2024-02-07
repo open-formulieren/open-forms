@@ -43,8 +43,8 @@
                 "totpdevice"
             ],
             [
-                "two_factor",
-                "phonedevice"
+                "two_factor_webauthn",
+                "webauthndevice"
             ]
         ]
     }

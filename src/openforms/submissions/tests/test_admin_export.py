@@ -4,6 +4,7 @@ from django.utils import timezone
 import tablib
 from django_webtest import WebTest
 from lxml import etree
+from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormDefinitionFactory, FormStepFactory
@@ -15,6 +16,7 @@ from openforms.submissions.tests.factories import (
 )
 
 
+@disable_admin_mfa()
 class TestSubmissionExportAdmin(WebTest):
     @classmethod
     def setUpTestData(cls):
@@ -72,7 +74,7 @@ class TestSubmissionExportAdmin(WebTest):
 
     def setUp(self):
         super().setUp()
-        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
+        self.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     def test_export_csv_successfully_exports_csv_file(self):
         response = self.app.get(

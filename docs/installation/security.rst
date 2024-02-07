@@ -191,17 +191,11 @@ The internal URLs are:
 Two-factor auth
 ===============
 
-By default, the admin interface requires two-factor authentication using OTP. We only
-encourage disabling this when you are using single-sign-on via OIDC instead of username
-+ password authentication.
-
-The recommended settings are:
-
-.. code-block:: bash
-
-    TWO_FACTOR_FORCE_OTP_ADMIN=True
-    TWO_FACTOR_PATCH_ADMIN=True
-
+The admin interface requires two-factor authentication using OTP (using Microsoft or
+Google's Authenticator app) or hardware tokens such as YubiKeys. If you use a single
+sign on solution (e.g. Keycloak OIDC, Azure AD OIDC...), it is assumed that the second
+factor is enforced on those products and staff users do not need to provide an
+additional second factor in Open Forms.
 
 .. _installation_config_webserver:
 

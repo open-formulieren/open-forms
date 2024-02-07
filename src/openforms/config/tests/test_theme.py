@@ -7,18 +7,18 @@ from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
+from maykin_2fa.test import disable_admin_mfa
 from webtest import Upload
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import FormFactory
-from openforms.tests.utils import disable_2fa
 
 from .factories import ThemeFactory
 
 LOGO_FILE = Path(settings.BASE_DIR) / "docs" / "logo.svg"
 
 
-@disable_2fa
+@disable_admin_mfa()
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class AdminTests(WebTest):
     @classmethod
