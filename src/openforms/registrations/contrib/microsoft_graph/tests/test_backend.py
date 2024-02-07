@@ -149,9 +149,20 @@ class MSGraphRegistrationBackendTests(TestCase):
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_update_payment_status(self, upload_mock):
-        data = {"foo": "bar", "some_list": ["value1", "value2"]}
-
-        submission = SubmissionFactory.create(
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "textfield", "key": "foo", "label": "Foo"},
+                {
+                    "type": "textfield",
+                    "key": "some_list",
+                    "label": "Some list",
+                    "multiple": True,
+                },
+            ],
+            submitted_data={
+                "foo": "bar",
+                "some_list": ["value1", "value2"],
+            },
             form__name="MyName",
             form__internal_name="MyInternalName",
             form__registration_backend="microsoft-graph",
@@ -160,9 +171,6 @@ class MSGraphRegistrationBackendTests(TestCase):
             public_registration_reference="abc123",
             registration_success=True,
         )
-        SubmissionStepFactory.create(submission=submission, data=data)
-        submission.save()
-
         SubmissionPaymentFactory.for_submission(
             submission, status=PaymentStatus.completed
         )
