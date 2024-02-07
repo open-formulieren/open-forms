@@ -944,3 +944,33 @@ class DatetimeAllowInvalidInputTests(TestMigrations):
         self.assertNotIn(
             "customOptions", self.form_definition.configuration["components"][1]
         )
+
+
+class UpdateCosignComponentTests(TestMigrations):
+    app = "forms"
+    migrate_from = "0092_formstatistics"
+    migrate_to = "0093_add_bsn_check_cosign"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        self.form_definition = FormDefinition.objects.create(
+            name="Cosign",
+            slug="cosign",
+            configuration={
+                "components": [
+                    {"key": "cosignComponent", "type": "cosign", "defaultValue": ""},
+                ]
+            },
+        )
+
+    def test_updated_cosign_component(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertEqual(
+            self.form_definition.configuration["components"][0]["defaultValue"],
+            {"bsn": "", "email": ""},
+        )
+        self.assertFalse(
+            self.form_definition.configuration["components"][0]["checkBsn"]
+        )
