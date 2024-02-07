@@ -105,6 +105,13 @@ const ACTION_TYPES = [
       defaultMessage: 'Set the registration backend to use for the submission',
     }),
   ],
+  [
+    'evaluate-dmn',
+    defineMessage({
+      description: 'action type "evaluate-dmn" label',
+      defaultMessage: 'Evaluate DMN',
+    }),
+  ],
 ];
 
 // Action types that once they are selected need further configurations.

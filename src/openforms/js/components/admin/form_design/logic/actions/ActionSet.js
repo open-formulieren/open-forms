@@ -13,6 +13,7 @@ import {ActionError} from './types';
 const EMPTY_ACTION = {
   component: '',
   formStep: '',
+  config: {},
   action: {
     type: '',
     property: {type: '', value: ''},
@@ -26,6 +27,7 @@ const ACTION_SELECTION_ORDER = [
   'formStep',
   'component',
   'variable',
+  'config',
   'action.property',
   'action.state',
   'action.value',

@@ -186,26 +186,26 @@ const DMNActionConfig = ({initialValues, onSave}) => {
             </fieldset>
 
             <div className="mappings">
-              <div className="form-row">
-                <h1>
+              <div className="mappings__mapping">
+                <h3 className="react-modal__title">
                   <FormattedMessage
                     defaultMessage="Input mapping"
                     description="Input mapping title"
                   />
-                </h1>
+                </h3>
                 <VariableMapping
                   mappingName="inputMapping"
                   values={formik.values}
                   formVariables={formVariables}
                 />
               </div>
-              <div className="form-row">
-                <h1>
+              <div className="mappings__mapping">
+                <h3 className="react-modal__title">
                   <FormattedMessage
                     defaultMessage="Output mapping"
                     description="Output mapping title"
                   />
-                </h1>
+                </h3>
                 <VariableMapping
                   mappingName="outputMapping"
                   values={formik.values}

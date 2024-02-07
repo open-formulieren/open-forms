@@ -1328,11 +1328,19 @@ class FormLogicAPITests(APITestCase):
                                 "plugin_id": "camunda7",
                                 "decision_definition_id": "some-id",
                                 "decision_definition_version": "1",
-                                "input_mapping": {
-                                    "age": "ageDMN",
-                                    "income": "incomeDMN",
-                                },
-                                "output_mapping": {"canApply": "canApplyDMN"},
+                                "input_mapping": [
+                                    {"form_variable": "age", "dmn_variable": "ageDMN"},
+                                    {
+                                        "form_variable": "income",
+                                        "dmn_variable": "incomeDMN",
+                                    },
+                                ],
+                                "output_mapping": [
+                                    {
+                                        "form_variable": "canApply",
+                                        "dmn_variable": "canApplyDMN",
+                                    }
+                                ],
                             },
                         },
                     }
@@ -1357,8 +1365,16 @@ class FormLogicAPITests(APITestCase):
                 "plugin_id": "camunda7",
                 "decision_definition_id": "some-id",
                 "decision_definition_version": "1",
-                "input_mapping": {"age": "ageDMN", "income": "incomeDMN"},
-                "output_mapping": {"canApply": "canApplyDMN"},
+                "input_mapping": [
+                    {"form_variable": "age", "dmn_variable": "ageDMN"},
+                    {
+                        "form_variable": "income",
+                        "dmn_variable": "incomeDMN",
+                    },
+                ],
+                "output_mapping": [
+                    {"form_variable": "canApply", "dmn_variable": "canApplyDMN"}
+                ],
             },
         )
 
@@ -1407,8 +1423,8 @@ class FormLogicAPITests(APITestCase):
                                 "plugin_id": "",
                                 "decision_definition_id": "",
                                 "decision_definition_version": "",
-                                "input_mapping": {},
-                                "output_mapping": {},
+                                "input_mapping": [],
+                                "output_mapping": [],
                             },
                         },
                     },
@@ -1438,16 +1454,27 @@ class FormLogicAPITests(APITestCase):
             data["invalidParams"][1]["name"],
             "0.actions.0.action.config.decisionDefinitionId",
         )
-
-        self.assertEqual(data["invalidParams"][2]["code"], "blank")
+        self.assertEqual(data["invalidParams"][2]["code"], "required")
         self.assertEqual(
-            data["invalidParams"][2]["name"], "0.actions.1.action.config.pluginId"
+            data["invalidParams"][2]["name"],
+            "0.actions.0.action.config.inputMapping",
         )
-        self.assertEqual(data["invalidParams"][3]["code"], "blank")
+        self.assertEqual(data["invalidParams"][3]["code"], "required")
         self.assertEqual(
             data["invalidParams"][3]["name"],
+            "0.actions.0.action.config.outputMapping",
+        )
+
+        self.assertEqual(data["invalidParams"][4]["code"], "blank")
+        self.assertEqual(
+            data["invalidParams"][4]["name"], "0.actions.1.action.config.pluginId"
+        )
+
+        self.assertEqual(data["invalidParams"][5]["code"], "blank")
+        self.assertEqual(
+            data["invalidParams"][5]["name"],
             "0.actions.1.action.config.decisionDefinitionId",
         )
 
-        self.assertEqual(data["invalidParams"][4]["code"], "required")
-        self.assertEqual(data["invalidParams"][4]["name"], "0.actions.2.action.config")
+        self.assertEqual(data["invalidParams"][6]["code"], "required")
+        self.assertEqual(data["invalidParams"][6]["name"], "0.actions.2.action.config")

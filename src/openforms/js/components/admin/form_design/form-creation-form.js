@@ -45,6 +45,8 @@ import {FormWarnings} from './Warnings';
 import {
   AUTH_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
+  DMN_DECISION_DEFINITIONS_LIST,
+  DMN_PLUGINS_ENDPOINT,
   FORM_DEFINITIONS_ENDPOINT,
   LANGUAGE_INFO_ENDPOINT,
   PAYMENT_PLUGINS_ENDPOINT,
@@ -126,6 +128,7 @@ const initialFormState = {
   availableRegistrationBackends: [],
   availableAuthPlugins: [],
   availablePrefillPlugins: [],
+  availableDMNPlugins: [],
   selectedAuthPlugins: [],
   availablePaymentBackends: [],
   availableCategories: [],
@@ -985,6 +988,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: THEMES_ENDPOINT, stateVar: 'availableThemes'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
+    {endpoint: DMN_PLUGINS_ENDPOINT, stateVar: 'availableDMNPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
 
@@ -1242,6 +1246,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             availableAuthPlugins: state.availableAuthPlugins,
             selectedAuthPlugins: state.selectedAuthPlugins,
             availablePrefillPlugins: state.availablePrefillPlugins,
+            availableDMNPlugins: state.availableDMNPlugins,
           },
           languages: state.languageInfo.languages,
           translationEnabled: state.form.translationEnabled,

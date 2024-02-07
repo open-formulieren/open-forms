@@ -20,6 +20,7 @@ import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 import Modal from 'components/admin/modals/Modal';
 
+import DMNActionConfig from './dmn/DMNActionConfig';
 import {ActionError, Action as ActionType} from './types';
 
 const ActionProperty = ({action, errors, onChange}) => {
@@ -225,6 +226,72 @@ const ActionSetRegistrationBackend = ({action, errors, onChange}) => {
   );
 };
 
+const ActionEvaluateDMN = ({action, errors, onChange}) => {
+  const intl = useIntl();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const onConfigSave = values => {
+    onChange({target: {name: 'action.config', value: values}});
+
+    setIsModalOpen(false);
+  };
+
+  const config = {
+    pluginId: '',
+    decisionDefinitionId: '',
+    decisionDefinitionVersion: '',
+    inputMapping: [],
+    outputMapping: [],
+    ...(action?.action?.config || {}),
+  };
+
+  return (
+    <>
+      <DSLEditorNode errors={errors.action?.value}>
+        <label className="required" htmlFor="dmn_config_button">
+          <FormattedMessage
+            description="Configuration button DMN label"
+            defaultMessage="DMN configuration:"
+          />
+        </label>
+        {config.pluginId ||
+          intl.formatMessage({
+            description: 'DMN evaluation not configured yet message',
+            defaultMessage: '(not configured yet)',
+          })}
+        <ActionButton
+          id="dmn_config_button"
+          name="dmn_config_button"
+          onClick={event => {
+            event.preventDefault();
+            setIsModalOpen(true);
+          }}
+          text={intl.formatMessage({
+            description: 'Button to open DMN configuration modal',
+            defaultMessage: 'Configure',
+          })}
+        />
+      </DSLEditorNode>
+
+      <Modal
+        isOpen={isModalOpen}
+        closeModal={event => {
+          setIsModalOpen(false);
+        }}
+        title={
+          <FormattedMessage
+            description="DMN configuration selection modal title"
+            defaultMessage="DMN configuration"
+          />
+        }
+        contentModifiers={['with-form', 'large']}
+      >
+        <DMNActionConfig initialValues={config} onSave={onConfigSave} />
+      </Modal>
+    </>
+  );
+};
+
 const ActionComponent = ({action, errors, onChange}) => {
   let Component;
   switch (action.action.type) {
@@ -256,6 +323,10 @@ const ActionComponent = ({action, errors, onChange}) => {
       Component = ActionSetRegistrationBackend;
       break;
     }
+    case 'evaluate-dmn': {
+      Component = ActionEvaluateDMN;
+      break;
+    }
     default: {
       throw new Error(`Unknown action type: ${action.action.type}`);
     }
@@ -269,6 +340,7 @@ ActionComponent.propTypes =
   ActionVariableValue.propTypes =
   ActionFetchFromService.propTypes =
   ActionStepNotApplicable.propTypes =
+  ActionEvaluateDMN.propTypes =
     {
       action: ActionType.isRequired,
       errors: ActionError,
