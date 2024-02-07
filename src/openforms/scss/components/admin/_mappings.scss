@@ -1,5 +1,7 @@
+@use 'microscope-sass/lib/bem';
+
 .mappings {
-  &__mapping {
+  @include bem.element('mapping') {
     display: flex;
     flex-direction: column;
     gap: 20px;

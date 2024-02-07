@@ -230,49 +230,19 @@ const ActionEvaluateDMN = ({action, errors, onChange}) => {
   const intl = useIntl();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const convertMappingForward = mapping => {
-    if (!mapping) return [];
-
-    return Object.entries(mapping).map(([formVarKey, dmnVarKey]) => ({
-      formVar: formVarKey,
-      dmnVar: dmnVarKey,
-    }));
-  };
-
-  const convertMappingBackwards = mapping => {
-    if (!mapping) return {};
-
-    let convertedMapping = {};
-    mapping.map(item => {
-      convertedMapping[item.formVar] = item.dmnVar;
-    });
-    return convertedMapping;
-  };
-
   const onConfigSave = values => {
-    const updatedConfig = {
-      ...values,
-      inputMapping: convertMappingBackwards(values.inputMapping),
-      outputMapping: convertMappingBackwards(values.outputMapping),
-    };
-
-    onChange({target: {name: 'action.config', value: updatedConfig}});
+    onChange({target: {name: 'action.config', value: values}});
 
     setIsModalOpen(false);
   };
 
-  const config = action?.action?.config || {
+  const config = {
     pluginId: '',
     decisionDefinitionId: '',
     decisionDefinitionVersion: '',
     inputMapping: [],
     outputMapping: [],
-  };
-
-  const initialValues = {
-    ...config,
-    inputMapping: convertMappingForward(config.inputMapping),
-    outputMapping: convertMappingForward(config.outputMapping),
+    ...(action?.action?.config || {}),
   };
 
   return (
@@ -284,7 +254,7 @@ const ActionEvaluateDMN = ({action, errors, onChange}) => {
             defaultMessage="DMN configuration:"
           />
         </label>
-        {action?.action?.config?.pluginId ||
+        {config.pluginId ||
           intl.formatMessage({
             description: 'DMN evaluation not configured yet message',
             defaultMessage: '(not configured yet)',
@@ -316,7 +286,7 @@ const ActionEvaluateDMN = ({action, errors, onChange}) => {
         }
         contentModifiers={['with-form', 'large']}
       >
-        <DMNActionConfig initialValues={initialValues} onSave={onConfigSave} />
+        <DMNActionConfig initialValues={config} onSave={onConfigSave} />
       </Modal>
     </>
   );

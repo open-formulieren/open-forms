@@ -6740,11 +6740,17 @@ components:
           type: string
           default: ''
         inputMapping:
-          default: {}
+          type: array
+          items:
+            $ref: '#/components/schemas/VariableMapping'
         outputMapping:
-          default: {}
+          type: array
+          items:
+            $ref: '#/components/schemas/VariableMapping'
       required:
       - decisionDefinitionId
+      - inputMapping
+      - outputMapping
       - pluginId
     DataMappingTypeEnum:
       enum:
@@ -9654,6 +9660,19 @@ components:
       required:
       - isValid
       - messages
+    VariableMapping:
+      type: object
+      properties:
+        formVariable:
+          type: string
+          title: Key of the form variable.
+          pattern: ^(\w|\w[\w.\-]*\w)$
+        dmnVariable:
+          type: string
+          title: DMN input parameter name.
+      required:
+      - dmnVariable
+      - formVariable
     _AppointmentProduct:
       type: object
       properties:

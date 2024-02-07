@@ -45,7 +45,7 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
               </tr>
             </thead>
             <tbody>
-              {values[mappingName].map((pair, index) => (
+              {values[mappingName].map((item, index) => (
                 <tr key={index}>
                   <td>
                     <Field
