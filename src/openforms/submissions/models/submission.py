@@ -702,6 +702,14 @@ class Submission(models.Model):
         """
         Calculate and save the price of this particular submission.
         """
+        logger.debug("Calculating submission %s price", self.uuid)
+        if not self.payment_required:
+            logger.debug(
+                "Submission %s does not require payment, skipping price calculation",
+                self.uuid,
+            )
+            return None
+
         self.price = get_submission_price(self)
         if save:
             self.save(update_fields=["price"])
@@ -711,10 +719,7 @@ class Submission(models.Model):
         if not self.form.payment_required:
             return False
 
-        self.calculate_price()
-        if self.price:
-            return True
-        return False
+        return bool(get_submission_price(self))
 
     @property
     def payment_user_has_paid(self) -> bool:

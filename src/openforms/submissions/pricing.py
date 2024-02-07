@@ -12,19 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_submission_price(submission: "Submission") -> Decimal | None:
-    """
-    Calculate the price for a given submission.
-
-    If payment is required, the price logic rules are evaluated if present. If no
-    pricing logic rules exist or there is no match, the linked product price is
-    returned.
-
-    :param submission: the :class:`openforms.submissions.models.Submission: instance
-      to calculate the price for.
-    :return: the calculated price, or ``None`` if no payment is required.
-    """
-    logger.debug("Calculating submission %s price", submission.uuid)
-
     assert (
         submission.form
     ), "Price cannot be calculated on a submission without the form relation set"
