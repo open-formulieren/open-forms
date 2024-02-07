@@ -83,4 +83,4 @@ Formulier invullen
 ==================
 
 Vul het formulier in met leeftijd 30 en inkomen 50000. De knop om naar de volgende stap te gaan is niet meer actief.
-Verander de inkomen naar 20000. Nu is de knop weer actief.
+Verander het inkomen naar 20000. Nu is de knop weer actief.
