@@ -23,6 +23,7 @@ Voorbeelden
    service_fetch
    suwinet
    form_with_geometry
+   camunda7
 
 ======================
 Verouderde voorbeelden
