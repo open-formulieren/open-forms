@@ -70,8 +70,6 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_LOGLEVEL=DEBUG
       - OPENFORMS_LOCATION_CLIENT=${OPENFORMS_LOCATION_CLIENT:-openforms.contrib.bag.client.BAGClient}
-      - TWO_FACTOR_FORCE_OTP_ADMIN=0
-      - TWO_FACTOR_PATCH_ADMIN=0
       - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-true}
       - EMAIL_HOST=smtp
       # Needed for Celery Flower to match the TIME_ZONE configured in the

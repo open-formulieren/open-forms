@@ -316,12 +316,6 @@ Other settings
   `upstream documentation <https://www.django-rest-framework.org/api-guide/settings/#num_proxies>`_
   for more context. Defaults to ``1``.
 
-* ``TWO_FACTOR_FORCE_OTP_ADMIN``: Enforce 2 Factor Authentication in the admin or not.
-  Default ``True``. You'll probably want to disable this when using OIDC.
-
-* ``TWO_FACTOR_PATCH_ADMIN``: Whether to use the 2 Factor Authentication login flow for
-  the admin or not. Default ``True``. You'll probably want to disable this when using OIDC.
-
 * ``FORMS_EXPORT_REMOVED_AFTER_DAYS``: The number of days after which zip files of exported forms should be deleted.
   Defaults to 7 days.
 
