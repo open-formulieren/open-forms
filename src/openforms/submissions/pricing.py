@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def get_submission_price(submission: "Submission") -> Decimal | None:
+def get_submission_price(submission: "Submission") -> Decimal:
     """
     Calculate the price for a given submission.
 
@@ -21,20 +21,15 @@ def get_submission_price(submission: "Submission") -> Decimal | None:
 
     :param submission: the :class:`openforms.submissions.models.Submission: instance
       to calculate the price for.
-    :return: the calculated price, or ``None`` if no payment is required.
+    :return: the calculated price.
     """
-    logger.debug("Calculating submission %s price", submission.uuid)
-    if not submission.payment_required:
-        logger.debug(
-            "Submission %s does not require payment, skipping price calculation",
-            submission.uuid,
-        )
-        return None
-
     assert (
         submission.form
     ), "Price cannot be calculated on a submission without the form relation set"
     assert submission.form.product, "Form must have a related product"
+    assert (
+        submission.form.product.price
+    ), "get_submission_price' may only be called for forms that require payment"
 
     form = submission.form
     data = submission.data
