@@ -592,12 +592,12 @@ maykin-python3-saml==1.14.0.post0
     #   django-digid-eherkenning
 mccabe==0.7.0
     # via flake8
-mozilla-django-oidc==3.0.0
+mozilla-django-oidc==4.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.14.1
+mozilla-django-oidc-db==0.15.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
