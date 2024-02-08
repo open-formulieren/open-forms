@@ -140,7 +140,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             ),
         )
         with_public_registration_reference = factory.Trait(
-            registration_success=True,
+            completed=True,
             public_registration_reference=factory.LazyFunction(get_random_reference),
         )
 

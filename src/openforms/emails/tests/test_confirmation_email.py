@@ -432,7 +432,7 @@ class PaymentConfirmationEmailTests(TestCase):
     def test_email_payment_completed(self):
         email = ConfirmationEmailTemplate(content="test {% payment_information %}")
         submission = SubmissionFactory.create(
-            completed=True,
+            with_public_registration_reference=True,
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
         )

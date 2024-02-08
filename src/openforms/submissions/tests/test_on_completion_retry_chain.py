@@ -35,7 +35,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         # set up a complex submission, with an appointment and payment required.
         submission = SubmissionFactory.create(
-            completed=True,
+            with_public_registration_reference=True,
             # set by :func:`openforms.payments.tasks.update_submission_payment_status`
             needs_on_completion_retry=True,
             registration_success=True,

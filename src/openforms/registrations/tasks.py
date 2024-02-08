@@ -122,7 +122,6 @@ def register_submission(submission_id: int, event: PostSubmissionEvents) -> None
     submission = Submission.objects.select_related("auth_info", "form").get(
         id=submission_id
     )
-
     logger.debug("Register submission '%s'", submission)
 
     if submission.registration_status == RegistrationStatuses.success:

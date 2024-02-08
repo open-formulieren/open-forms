@@ -90,7 +90,7 @@ class EscapeHTMLTests(TestCase):
         self.assertEqual("3.14", context_data["amount"])
 
     def test_multiple_public_order_ids(self):
-        submission = SubmissionFactory.create()
+        submission = SubmissionFactory.create(with_public_registration_reference=True)
         payment1, payment2 = SubmissionPaymentFactory.create_batch(
             2, submission=submission, status=PaymentStatus.completed, amount=10
         )
