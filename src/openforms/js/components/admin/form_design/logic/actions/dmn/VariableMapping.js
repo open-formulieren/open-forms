@@ -49,25 +49,25 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
                 <tr key={index}>
                   <td>
                     <Field
-                      name={`${mappingName}.${index}.formVar`}
-                      htmlFor={`${mappingName}.${index}.formVar`}
+                      name={`${mappingName}.${index}.formVariable`}
+                      htmlFor={`${mappingName}.${index}.formVariable`}
                     >
                       <Select
-                        id={`${mappingName}.${index}.formVar`}
+                        id={`${mappingName}.${index}.formVariable`}
                         allowBlank={true}
                         choices={formVariables.map(variable => [variable.key, variable.name])}
-                        {...getFieldProps(`${mappingName}.${index}.formVar`)}
+                        {...getFieldProps(`${mappingName}.${index}.formVariable`)}
                       />
                     </Field>
                   </td>
                   <td>
                     <Field
-                      htmlFor={`${mappingName}.${index}.dmnVar`}
-                      name={`${mappingName}.${index}.dmnVar`}
+                      htmlFor={`${mappingName}.${index}.dmnVariable`}
+                      name={`${mappingName}.${index}.dmnVariable`}
                     >
                       <TextInput
-                        id={`${mappingName}.${index}.dmnVar`}
-                        {...getFieldProps(`${mappingName}.${index}.dmnVar`)}
+                        id={`${mappingName}.${index}.dmnVariable`}
+                        {...getFieldProps(`${mappingName}.${index}.dmnVariable`)}
                       />
                     </Field>
                   </td>
@@ -83,7 +83,7 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
           </table>
           <ButtonContainer
             onClick={() =>
-              arrayHelpers.insert(values[mappingName].length, {formVar: '', dmnVar: ''})
+              arrayHelpers.insert(values[mappingName].length, {formVariable: '', dmnVariable: ''})
             }
           >
             <FormattedMessage description="Add variable button" defaultMessage="Add variable" />

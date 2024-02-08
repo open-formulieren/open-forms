@@ -206,18 +206,23 @@ class ServiceFetchAction(ActionOperation):
             return {var.key: result.value}
 
 
+class DMNVariableMapping(TypedDict):
+    form_variable: str
+    dmn_variable: str
+
+
 class DMNConfig(TypedDict):
     plugin_id: str
-    input_mapping: dict[str, str]
-    output_mapping: dict[str, str]
+    input_mapping: list[DMNVariableMapping]
+    output_mapping: list[DMNVariableMapping]
     decision_definition_id: str
     decision_definition_version: str
 
 
 @dataclass
 class EvaluateDMNAction(ActionOperation):
-    input_mapping: dict[str, str]
-    output_mapping: dict[str, str]
+    input_mapping: list[DMNVariableMapping]
+    output_mapping: list[DMNVariableMapping]
     decision_definition_id: str
     plugin_id: str
     decision_definition_version: str = ""
@@ -236,7 +241,8 @@ class EvaluateDMNAction(ActionOperation):
         # Mapping from form variables to DMN inputs
         data = FormioData(context)
         dmn_inputs = {
-            key_dmn: data[key_form] for key_form, key_dmn in self.input_mapping.items()
+            item["dmn_variable"]: data[item["form_variable"]]
+            for item in self.input_mapping
         }
 
         # Perform DMN call
@@ -249,9 +255,9 @@ class EvaluateDMNAction(ActionOperation):
 
         # Map DMN output to form variables
         return {
-            key_form: dmn_outputs[key_dmn]
-            for key_form, key_dmn in self.output_mapping.items()
-            if key_dmn in dmn_outputs
+            item["form_variable"]: dmn_outputs[item["dmn_variable"]]
+            for item in self.output_mapping
+            if item["dmn_variable"] in dmn_outputs
         }
 
 
