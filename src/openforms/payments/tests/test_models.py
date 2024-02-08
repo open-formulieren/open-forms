@@ -86,38 +86,6 @@ class SubmissionPaymentTests(TransactionTestCase):
         )
         self.assertEqual(payment.public_order_id, "xyz2020/OF-123456/4")
 
-    @patch(
-        "openforms.payments.models.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(
-            payment_order_id_prefix="", wait_for_payment_to_register=True
-        ),
-    )
-    @patch(
-        "openforms.submissions.public_references.get_random_reference",
-        return_value="OF-123456",
-    )
-    def test_create_for_no_registration(self, m1: MagicMock, m2: MagicMock):
-        amount = Decimal("11.25")
-        options = {
-            "foo": 123,
-        }
-
-        submission = SubmissionFactory.create(completed_not_preregistered=True)
-        # create some pre-existing records
-        SubmissionPaymentFactory.create_batch(size=2)
-
-        # create payment with auto-generated order_id
-        payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount
-        )
-
-        self.assertEqual(payment.public_order_id, "OF-123456/3")
-
-        payment = SubmissionPayment.objects.create_for(
-            submission, "plugin1", options, amount
-        )
-        self.assertEqual(payment.public_order_id, "OF-123456/4")
-
     def test_queryset_sum_amount(self):
         self.assertEqual(0, SubmissionPayment.objects.none().sum_amount())
 

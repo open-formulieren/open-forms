@@ -23,7 +23,7 @@ class DemoPaymentTests(TestCase):
 
     def test_payment(self):
         submission = SubmissionFactory.create(
-            completed=True,
+            with_public_registration_reference=True,
             form__slug="myform",
             form__payment_backend="demo",
             form__product__price=Decimal("11.35"),

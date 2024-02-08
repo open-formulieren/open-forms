@@ -48,7 +48,7 @@ class ViewsTests(TestCase):
         self.addCleanup(registry_mock.stop)
 
         submission = SubmissionFactory.create(
-            completed=True,
+            with_public_registration_reference=True,
             form__product__price=Decimal("11.25"),
             form__payment_backend="plugin1",
             form_url="http://allowed.foo/my-form",
@@ -191,7 +191,7 @@ class ViewsTests(TestCase):
         registry_mock.start()
         self.addCleanup(registry_mock.stop)
         submission = SubmissionFactory.create(
-            completed=True,
+            with_public_registration_reference=True,
             form__product__price=Decimal("11.25"),
             form__payment_backend="plugin1",
             form_url="http://allowed.foo/my-form",
