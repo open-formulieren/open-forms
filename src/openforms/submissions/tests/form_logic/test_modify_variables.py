@@ -461,13 +461,19 @@ class VariableModificationTests(TestCase):
                     "action": {
                         "type": LogicActionTypes.evaluate_dmn,
                         "config": {
-                            "input_mapping": {
-                                "age": "ageDMN",
-                                "income": "incomeDMN",
-                            },
-                            "output_mapping": {
-                                "canApply": "canApplyDMN",
-                            },
+                            "input_mapping": [
+                                {"form_variable": "age", "dmn_variable": "ageDMN"},
+                                {
+                                    "form_variable": "income",
+                                    "dmn_variable": "incomeDMN",
+                                },
+                            ],
+                            "output_mapping": [
+                                {
+                                    "form_variable": "canApply",
+                                    "dmn_variable": "canApplyDMN",
+                                }
+                            ],
                             "decision_definition_id": "determine-can-apply",
                             "decision_definition_version": "1",
                             "plugin_id": "camunda7",
@@ -568,13 +574,19 @@ class VariableModificationTests(TestCase):
                     "action": {
                         "type": LogicActionTypes.evaluate_dmn,
                         "config": {
-                            "input_mapping": {
-                                "age": "ageDMN",
-                                "income": "incomeDMN",
-                            },
-                            "output_mapping": {
-                                "yo.im.nested.canApply": "canApplyDMN",
-                            },
+                            "input_mapping": [
+                                {"form_variable": "age", "dmn_variable": "ageDMN"},
+                                {
+                                    "form_variable": "income",
+                                    "dmn_variable": "incomeDMN",
+                                },
+                            ],
+                            "output_mapping": [
+                                {
+                                    "form_variable": "yo.im.nested.canApply",
+                                    "dmn_variable": "canApplyDMN",
+                                },
+                            ],
                             "decision_definition_id": "determine-can-apply",
                             "decision_definition_version": "1",
                             "plugin_id": "camunda7",
@@ -661,13 +673,19 @@ class VariableModificationTests(TestCase):
                     "action": {
                         "type": LogicActionTypes.evaluate_dmn,
                         "config": {
-                            "input_mapping": {
-                                "age": "ageDMN",
-                                "income": "incomeDMN",
-                            },
-                            "output_mapping": {
-                                "canApply": "canApplyDMN",
-                            },
+                            "input_mapping": [
+                                {"form_variable": "age", "dmn_variable": "ageDMN"},
+                                {
+                                    "form_variable": "income",
+                                    "dmn_variable": "incomeDMN",
+                                },
+                            ],
+                            "output_mapping": [
+                                {
+                                    "form_variable": "canApply",
+                                    "dmn_variable": "canApplyDMN",
+                                },
+                            ],
                             "decision_definition_id": "determine-can-apply",
                             "decision_definition_version": "1",
                             "plugin_id": "camunda7",

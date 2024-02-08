@@ -142,10 +142,10 @@ export const withInitialValues = {
       decisionDefinitionId: 'approve-payment',
       decisionDefinitionVersion: '1',
       inputMapping: [
-        {formVar: 'name', dmnVar: 'dmnName'},
-        {formVar: 'surname', dmnVar: 'dmnSurname'},
+        {formVariable: 'name', dmnVariable: 'dmnName'},
+        {formVariable: 'surname', dmnVariable: 'dmnSurname'},
       ],
-      outputMapping: [{formVar: 'canApply', dmnVar: 'dmnCanApply'}],
+      outputMapping: [{formVariable: 'canApply', dmnVariable: 'dmnCanApply'}],
     },
   },
   play: async ({canvasElement}) => {
