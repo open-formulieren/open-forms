@@ -70,6 +70,7 @@ class ObjecttypesAPIEndpointsTests(APITestCase):
                         "uuid": "2c77babf-a967-4057-9969-0200320d23f1",
                         "name": "Tree",
                         "namePlural": "Trees",
+                        "dataClassification": "open",
                     }
                 ],
             },
@@ -89,6 +90,7 @@ class ObjecttypesAPIEndpointsTests(APITestCase):
                     "uuid": "2c77babf-a967-4057-9969-0200320d23f1",
                     "name": "Tree",
                     "namePlural": "Trees",
+                    "dataClassification": "open",
                 }
             ],
         )

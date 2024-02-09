@@ -13,6 +13,9 @@ class ObjecttypeSerializer(serializers.Serializer):
     uuid = serializers.UUIDField(label=_("Unique identifier (UUID4)."))
     name = serializers.CharField(label=_("Name of the object type."))
     namePlural = serializers.CharField(label=_("Plural name of the object type."))
+    dataClassification = serializers.CharField(
+        label=_("Confidential level of the object type.")
+    )
 
 
 class ObjecttypeVersionSerializer(serializers.Serializer):
