@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from django.test import SimpleTestCase, override_settings
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -17,15 +17,15 @@ request_factory = APIRequestFactory()
 
 
 @override_settings(TIME_ZONE="Europe/Amsterdam")
-class DynamicDatetimeConfigurationTests(SimpleTestCase):
+class DynamicDatetimeConfigurationTests(TestCase):
     @staticmethod
     def _get_dynamic_config(
         component: DatetimeComponent, variables: dict[str, Any]
     ) -> DatetimeComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
         request = request_factory.get("/irrelevant")
-        submission = SubmissionFactory.build()
-        static_vars = get_static_variables(submission=None)  # don't do queries
+        submission = SubmissionFactory.create()
+        static_vars = get_static_variables(submission=submission)  # don't do queries
         variables.update({var.key: var.initial_value for var in static_vars})
         config_wrapper = get_dynamic_configuration(
             config_wrapper, request=request, submission=submission, data=variables
@@ -171,7 +171,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         }
         # Amsterdam time
         some_date = timezone.make_aware(datetime(2022, 10, 14, 15, 0, 0))
-        assert some_date.tzinfo.zone == "Europe/Amsterdam"
+        assert some_date.tzinfo.key == "Europe/Amsterdam"
 
         new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 
@@ -197,7 +197,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         }
         # Amsterdam time
         some_date = timezone.make_aware(datetime(2022, 10, 14, 15, 0, 0))
-        assert some_date.tzinfo.zone == "Europe/Amsterdam"
+        assert some_date.tzinfo.key == "Europe/Amsterdam"
 
         new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 

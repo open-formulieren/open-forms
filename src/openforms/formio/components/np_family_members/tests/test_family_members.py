@@ -12,6 +12,7 @@ from zgw_consumers.test.factories import ServiceFactory
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import get_dynamic_configuration
+from openforms.logging.tests.utils import disable_timelinelog
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.template import render_from_string
 from stuf.constants import EndpointType
@@ -26,6 +27,7 @@ from ..stuf_bg import get_np_family_members_stuf_bg
 TEST_FILES = Path(__file__).parent.resolve() / "responses"
 
 
+@disable_timelinelog()
 class FamilyMembersCustomFieldTypeTest(TestCase):
     @patch(
         "openforms.formio.components.custom.get_np_family_members_haal_centraal",

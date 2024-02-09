@@ -4,6 +4,7 @@ import logging
 from functools import partial
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.db.models import Model
 
 from openforms.accounts.models import User
@@ -33,7 +34,10 @@ def _create_log(
     error: Exception | None = None,
     tags: list | None = None,
     user: User | None = None,
-) -> TimelineLogProxy:
+) -> TimelineLogProxy | None:
+    if getattr(settings, "AUDITLOG_DISABLED", False):
+        return
+
     # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
     from openforms.logging.models import TimelineLogProxy
 

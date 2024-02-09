@@ -2,12 +2,13 @@ from unittest import skipIf
 from unittest.mock import patch
 
 from django.template.loader import render_to_string
-from django.test import TestCase, tag
+from django.test import SimpleTestCase, TestCase, tag
 
 import requests_mock
 from simple_certmanager.constants import CertificateTypes
 from simple_certmanager.test.factories import CertificateFactory
 
+from openforms.logging.tests.utils import disable_timelinelog
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.tests.utils import can_connect
 
@@ -122,7 +123,8 @@ class StufZdsClientTest(TestCase):
         self.assertIsNone(request_with_tls.cert)
 
 
-class StufZdsRegressionTests(TestCase):
+@disable_timelinelog()
+class StufZdsRegressionTests(SimpleTestCase):
     @tag("gh-1731")
     @skipIf(not can_connect("example.com:443"), "Need real socket/connection for test")
     def test_non_latin1_characters(self):

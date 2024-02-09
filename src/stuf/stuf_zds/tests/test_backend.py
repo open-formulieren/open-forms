@@ -32,7 +32,7 @@ class StufZDSClientTests(StUFZDSTestBase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.service = StufServiceFactory.build(
+        cls.service = StufServiceFactory.create(
             zender_organisatie="ZenOrg",
             zender_applicatie="ZenApp",
             zender_administratie="ZenAdmin",

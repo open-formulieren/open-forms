@@ -273,13 +273,14 @@ class FormSerializerTest(TestCase):
         # deprecated case
         context = {"request": None}
         data = FormSerializer(context=context).to_representation(
-            instance=FormFactory.build()
+            instance=FormFactory.create(slug="unicorn-slug")
         )
         # not a v3 call
         del data["registration_backends"]
         # options v2 are nullable
         data["registration_backend"] = "nullable-unicorn"
         data["registration_backend_options"] = None
+        data["slug"] = "another-slug"
 
         mock_register = RegistrationPluginRegistry()
 
