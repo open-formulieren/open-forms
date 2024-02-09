@@ -29,7 +29,7 @@ class CSPMixin:
         self.setUpMocks()
 
     def setUpNonce(self):
-        middleware = CSPMiddleware()
+        middleware = CSPMiddleware(get_response=lambda req: None)
         factory = APIRequestFactory()
         request = factory.get("/irrelevant")
         middleware._make_nonce(request)
