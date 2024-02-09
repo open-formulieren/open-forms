@@ -99,11 +99,19 @@ wysiwyg_css_properties.append(
 wysiwyg_svg_properties = list(css_sanitizer.ALLOWED_SVG_PROPERTIES)
 
 
+class SafeStringWrapper(SafeString):
+    # Django 4.2 added slots to the SafeString class (https://docs.djangoproject.com/en/4.2/_modules/django/utils/safestring/#SafeString)
+    # So we cannot set the _csp_post_processed attribute. This wrapper is a workaround
+    _csp_post_processed = False
+
+
 def get_html_id(node):
     return str(id(node))  # CPython: memory address, so should be unique enough
 
 
-def post_process_html(html: str | SafeString, request: HttpRequest | Request) -> str:
+def post_process_html(
+    html: str | SafeStringWrapper, request: HttpRequest | Request
+) -> str:
     """
     Replacing inline style attributes with an inline <style> element with nonce added.
 
@@ -198,7 +206,7 @@ def post_process_html(html: str | SafeString, request: HttpRequest | Request) ->
     # run bleach on non-style part
     modified_html = bleach_wysiwyg_content(modified_html)
 
-    result = mark_safe(f"{style_markup}{modified_html}")
+    result = SafeStringWrapper(mark_safe(f"{style_markup}{modified_html}"))
 
     # mark result as processed to avoid multiple calls
     result._csp_post_processed = True  # type: ignore
