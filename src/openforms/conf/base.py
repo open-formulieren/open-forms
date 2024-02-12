@@ -380,7 +380,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "%(asctime)s %(levelname)s %(name)s %(module)s %(process)d %(thread)d  %(message)s"
+            "format": "%(asctime)s %(levelname)s %(name)s %(module)s P%(process)d/T%(thread)d |  %(message)s"
         },
         "timestamped": {"format": "%(asctime)s %(levelname)s %(name)s  %(message)s"},
         "simple": {"format": "%(levelname)s  %(message)s"},
@@ -405,7 +405,7 @@ LOGGING = {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "timestamped",
+            "formatter": config("LOG_FORMAT_CONSOLE", default="timestamped"),
         },
         "django": {
             "level": "DEBUG",
