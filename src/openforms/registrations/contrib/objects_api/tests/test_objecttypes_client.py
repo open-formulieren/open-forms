@@ -11,10 +11,19 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ..client import get_objecttypes_client
 from ..models import ObjectsAPIConfig
 
-OBJECTTYPES_API_BASE_URL = "http://localhost:8001/api/v2/"
 
-# The value is the API key loaded in the docker service:
-OBJECTTYPES_API_KEY = "171be5abaf41e7856b423ad513df1ef8f867ff48"
+def get_test_config() -> ObjectsAPIConfig:
+    """Returns a preconfigured ``ObjectsAPIConfig`` instance matching the docker compose configuration."""
+    return ObjectsAPIConfig(
+        objecttypes_service=Service(
+            api_root="http://localhost:8001/api/v2/",
+            api_type=APITypes.orc,
+            oas="https://example.com/",
+            header_key="Authorization",
+            header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+            auth_type=AuthTypes.api_key,
+        )
+    )
 
 
 class ObjecttypesClientTest(OFVCRMixin, TestCase):
@@ -26,16 +35,7 @@ class ObjecttypesClientTest(OFVCRMixin, TestCase):
 
         patcher = patch(
             "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=ObjectsAPIConfig(
-                objecttypes_service=Service(
-                    api_root=OBJECTTYPES_API_BASE_URL,
-                    api_type=APITypes.orc,
-                    oas="https://example.com/",
-                    header_key="Authorization",
-                    header_value=f"Token {OBJECTTYPES_API_KEY}",
-                    auth_type=AuthTypes.api_key,
-                )
-            ),
+            return_value=get_test_config(),
         )
 
         self.config_mock = patcher.start()
