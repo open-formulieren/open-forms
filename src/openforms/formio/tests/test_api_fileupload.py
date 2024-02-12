@@ -1,8 +1,10 @@
 import os
 import tempfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, tag
 from django.utils.translation import gettext as _
@@ -11,7 +13,7 @@ import clamd
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APITransactionTestCase
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
@@ -344,3 +346,53 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         tmpdir_contents = os.listdir(tmpdir)
 
         self.assertEqual(0, len(tmpdir_contents))
+
+
+@override_settings(
+    # Deliberately set to cache backend to not fall in the trap of using DB row-level
+    # locking. This also reflects how we deploy in prod.
+    SESSION_ENGINE="django.contrib.sessions.backends.cache",
+    SESSION_CACHE_ALIAS="session",
+    CACHES={
+        **settings.CACHES,
+        "session": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    },
+)
+class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
+
+    @tag("gh-3858")
+    def test_concurrent_file_uploads(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "file",
+                    "label": "Some upload",
+                    "multiple": True,
+                }
+            ]
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:formio:temporary-file-upload")
+
+        def do_upload() -> str:
+            file = SimpleUploadedFile(
+                "my-file.txt", b"my content", content_type="text/plain"
+            )
+            response = self.client.post(endpoint, {"file": file}, format="multipart")
+            assert response.status_code == status.HTTP_200_OK
+            resp_data = response.json()
+            return resp_data["url"]
+
+        # do both uploads in parallel in their own thread
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            futures = [executor.submit(do_upload) for _ in range(0, 2)]
+            urls = [future.result() for future in as_completed(futures)]
+
+        uuids = {
+            url.removeprefix("http://testserver/api/v2/submissions/files/")
+            for url in urls
+        }
+
+        session_uuids = set(self.client.session[UPLOADS_SESSION_KEY])
+        self.assertEqual(session_uuids, uuids)
