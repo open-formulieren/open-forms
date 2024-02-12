@@ -13,11 +13,13 @@ from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.constants import ProcessingStatuses
 from openforms.submissions.models import Submission
 from openforms.tests.e2e.base import E2ETestCase, browser_page
+from openforms.tests.e2e.database_sync_to_async import database_sync_to_async
 
 factory = APIRequestFactory()
 
 
 class PaymentFlowTests(E2ETestCase):
+
     @sync_to_async
     def get_form_url(self):
         # set up a form
@@ -33,7 +35,7 @@ class PaymentFlowTests(E2ETestCase):
 
         return form
 
-    @sync_to_async
+    @database_sync_to_async
     def set_submission_reference(self) -> None:
         # Required as payment will use the submission ref.
         submission = Submission.objects.last()
