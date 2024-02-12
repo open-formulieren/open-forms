@@ -1,5 +1,7 @@
 from django.db.migrations.state import StateApps
 
+from zgw_consumers.constants import AuthTypes
+
 from openforms.registrations.contrib.objects_api.plugin import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
@@ -26,6 +28,11 @@ class ObjecttypesServiceFromDefaultUrlMigrationTests(TestMigrations):
         )
 
         objects_api_config = ObjectsAPIConfig.objects.get()
+
+        self.assertEqual(
+            objects_api_config.objecttypes_service.auth_type,
+            AuthTypes.api_key,
+        )
 
         self.assertEqual(
             objects_api_config.objecttypes_service.api_root,

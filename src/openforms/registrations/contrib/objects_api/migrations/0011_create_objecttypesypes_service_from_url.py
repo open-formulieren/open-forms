@@ -11,7 +11,7 @@ from openforms.registrations.contrib.objects_api.plugin import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
 
-from zgw_consumers.constants import APITypes
+from zgw_consumers.constants import APITypes, AuthTypes
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,11 @@ def create_objecttypes_api_service(
 
         service, _ = Service.objects.get_or_create(
             api_root=base,
-            defaults={"api_type": APITypes.orc, "oas": f"{base}schema/openapi.yaml"},
+            defaults={
+                "api_type": APITypes.orc,
+                "auth_type": AuthTypes.api_key,
+                "oas": f"{base}schema/openapi.yaml",
+            },
         )
         objects_api_config.objecttypes_service = service
 
