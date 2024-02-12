@@ -359,7 +359,6 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     },
 )
 class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
-
     @tag("gh-3858")
     def test_concurrent_file_uploads(self):
         submission = SubmissionFactory.from_components(
