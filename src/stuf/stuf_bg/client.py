@@ -69,6 +69,7 @@ class Client(BaseClient):
                 response_data,
                 process_namespaces=True,
                 namespaces=NAMESPACE_REPLACEMENTS,
+                force_list=["inp.heeftAlsEchtgenootPartner", "inp.heeftAlsKinderen"],
             )
         )
 
