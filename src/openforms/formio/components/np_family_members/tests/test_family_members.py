@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
@@ -149,6 +149,29 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             self.assertEqual(2, len(partners_choices))
             self.assertEqual(("123123123", "Belly van Doe"), partners_choices[0])
             self.assertEqual(("456456456", "Bully van Doe"), partners_choices[1])
+
+    @tag("gh-3864")
+    @patch("stuf.stuf_bg.client.StufBGConfig.get_solo")
+    def test_get_single_partner_stuf_bg(self, mock_stufbg_config_get_solo):
+        stuf_bg_service = StufServiceFactory.build()
+        mock_stufbg_config_get_solo.return_value = StufBGConfig(service=stuf_bg_service)
+        soap_response_template = (TEST_FILES / "stuf_bg_one_partner.xml").read_text()
+        response_content = render_from_string(soap_response_template, {}).encode(
+            "utf-8"
+        )
+
+        with requests_mock.Mocker() as m:
+            m.post(
+                stuf_bg_service.get_endpoint(type=EndpointType.vrije_berichten),
+                content=response_content,
+            )
+
+            partners_choices = get_np_family_members_stuf_bg(
+                bsn="111222333", include_children=False, include_partners=True
+            )
+
+            self.assertEqual(1, len(partners_choices))
+            self.assertEqual(("123123123", "Belly van Doe"), partners_choices[0])
 
     @patch("stuf.stuf_bg.client.StufBGConfig.get_solo")
     def test_get_family_memebers_stuf_bg(self, mock_stufbg_config_get_solo):
