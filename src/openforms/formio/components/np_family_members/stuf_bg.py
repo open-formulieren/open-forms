@@ -8,15 +8,15 @@ def get_np_family_members_stuf_bg(
     include_partners: bool,
     submission: Submission | None = None,
 ) -> list[tuple[str, str]]:
-    values = []
+    attributes: list[str] = []
     if include_children:
-        values.append("inp.heeftAlsKinderen")
+        attributes.append("inp.heeftAlsKinderen")
 
     if include_partners:
-        values.append("inp.heeftAlsEchtgenootPartner")
+        attributes.append("inp.heeftAlsEchtgenootPartner")
 
     with get_client() as client:
-        data = client.get_values(bsn, values)
+        data = client.get_values(bsn, attributes)
 
     # Kids
     family_members = []
