@@ -1,18 +1,19 @@
+from pathlib import Path
 from unittest.mock import patch
 
-import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
-from zgw_consumers.models import Service
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig
+from .test_objecttypes_client import get_test_config
 
 
-@requests_mock.Mocker()
-class ObjecttypesAPIEndpointsTests(APITestCase):
+class ObjecttypesAPIEndpointsTests(OFVCRMixin, APITestCase):
+
+    VCR_TEST_FILES = Path(__file__).parent / "files"
 
     def setUp(self) -> None:
         super().setUp()
@@ -21,25 +22,18 @@ class ObjecttypesAPIEndpointsTests(APITestCase):
 
         patcher = patch(
             "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=ObjectsAPIConfig(
-                objecttypes_service=Service(api_root="https://objecttypen.nl/api/v2/")
-            ),
+            return_value=get_test_config(),
         )
 
         self.config_mock = patcher.start()
         self.addCleanup(patcher.stop)
 
-    def test_auth_required(self, m):
+    def test_auth_required(self):
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_staff_user_required(self, m: requests_mock.Mocker):
-        m.get(
-            "https://objecttypen.nl/api/v2/objecttypes",
-            json={"count": 0, "next": None, "previous": None, "results": []},
-        )
-
+    def test_staff_user_required(self):
         user = UserFactory.create()
         staff_user = StaffUserFactory.create()
 
@@ -57,25 +51,7 @@ class ObjecttypesAPIEndpointsTests(APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_list_objecttypes(self, m: requests_mock.Mocker):
-        m.get(
-            "https://objecttypen.nl/api/v2/objecttypes",
-            json={
-                "count": 1,
-                "next": None,
-                "previous": None,
-                "results": [
-                    {
-                        "url": "https://objecttypen.nl/api/v2/objecttypes/2c77babf-a967-4057-9969-0200320d23f1",
-                        "uuid": "2c77babf-a967-4057-9969-0200320d23f1",
-                        "name": "Tree",
-                        "namePlural": "Trees",
-                        "dataClassification": "open",
-                    }
-                ],
-            },
-        )
-
+    def test_list_objecttypes(self):
         staff_user = StaffUserFactory.create()
         self.client.force_authenticate(user=staff_user)
 
@@ -86,47 +62,48 @@ class ObjecttypesAPIEndpointsTests(APITestCase):
             response.json(),
             [
                 {
-                    "url": "https://objecttypen.nl/api/v2/objecttypes/2c77babf-a967-4057-9969-0200320d23f1",
-                    "uuid": "2c77babf-a967-4057-9969-0200320d23f1",
+                    "dataClassification": "confidential",
                     "name": "Tree",
                     "namePlural": "Trees",
+                    "url": "http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                    "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                },
+                {
                     "dataClassification": "open",
-                }
+                    "name": "Person",
+                    "namePlural": "Persons",
+                    "url": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                    "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                },
             ],
         )
 
 
-@requests_mock.Mocker()
-class ObjecttypeVersionsAPIEndpointsTests(APITestCase):
+class ObjecttypeVersionsAPIEndpointsTests(OFVCRMixin, APITestCase):
+
+    VCR_TEST_FILES = Path(__file__).parent / "files"
 
     def setUp(self) -> None:
         super().setUp()
-        self.objecttype_uuid = "2c77babf-a967-4057-9969-0200320d23f1"
+        self.objecttype_uuid = "3edfdaf7-f469-470b-a391-bb7ea015bd6f"
         self.endpoint = reverse_lazy(
             "api:objects_api:object-type-versions", args=[self.objecttype_uuid]
         )
 
         patcher = patch(
             "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=ObjectsAPIConfig(
-                objecttypes_service=Service(api_root="https://objecttypen.nl/api/v2/")
-            ),
+            return_value=get_test_config(),
         )
 
         self.config_mock = patcher.start()
         self.addCleanup(patcher.stop)
 
-    def test_auth_required(self, m):
+    def test_auth_required(self):
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_staff_user_required(self, m: requests_mock.Mocker):
-        m.get(
-            f"https://objecttypen.nl/api/v2/objecttypes/{self.objecttype_uuid}/versions",
-            json={"count": 0, "next": None, "previous": None, "results": []},
-        )
-
+    def test_staff_user_required(self):
         user = UserFactory.create()
         staff_user = StaffUserFactory.create()
 
@@ -144,35 +121,26 @@ class ObjecttypeVersionsAPIEndpointsTests(APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_list_objecttype_versions(self, m: requests_mock.Mocker):
-        m.get(
-            f"https://objecttypen.nl/api/v2/objecttypes/{self.objecttype_uuid}/versions",
-            json={
-                "count": 1,
-                "next": None,
-                "previous": None,
-                "results": [
-                    {
-                        "url": f"https://objecttypen.nl/api/v2/objecttypes/{self.objecttype_uuid}/versions",
-                        "version": 1,
-                        "status": "published",
-                    }
-                ],
-            },
-        )
-
+    def test_list_objecttype_versions(self):
         staff_user = StaffUserFactory.create()
         self.client.force_authenticate(user=staff_user)
 
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.json(),
-            [
-                {
-                    "version": 1,
-                    "status": "published",
-                }
-            ],
+        self.assertEqual(response.json(), [{"status": "published", "version": 1}])
+
+    def test_list_objecttype_verions_unknown_objecttype(self):
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
+
+        # This UUID doesn't exist:
+        response = self.client.get(
+            reverse_lazy(
+                "api:objects_api:object-type-versions",
+                args=["39da819c-ac6c-4037-ae2b-6bfc39f6564b"],
+            )
         )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), [])
