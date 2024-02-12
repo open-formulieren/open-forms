@@ -12,7 +12,7 @@ ape-pie==0.1.0
     # via
     #   -r requirements/base.in
     #   zgw-consumers
-asgiref==3.5.0
+asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via webauthn
@@ -478,7 +478,9 @@ tinycss2==1.1.0
 tornado==6.3.3
     # via flower
 typing-extensions==4.9.0
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   asgiref
 tzdata==2023.3
     # via pytz-deprecation-shim
 tzlocal==4.3.1
