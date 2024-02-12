@@ -803,7 +803,7 @@ class VerifyChangeAppointmentLinkViewTests(FrontendRedirectMixin, TestCase):
 
     def test_change_appointment_details_after_payment(self):
         submission = SubmissionFactory.from_components(
-            completed=True,
+            with_public_registration_reference=True,
             components_list=[
                 {
                     "key": "product",

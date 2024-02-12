@@ -25,7 +25,6 @@ class SubmissionPaymentAdmin(admin.ModelAdmin):
         "submission",
         "plugin_id",
         "plugin_options",
-        "order_id",
         "public_order_id",
         "amount",
         "status",

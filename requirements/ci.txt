@@ -18,7 +18,7 @@ ape-pie==0.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-asgiref==3.5.0
+asgiref==3.7.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -976,6 +976,7 @@ typing-extensions==4.9.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   asgiref
     #   black
     #   pyee
 tzdata==2023.3

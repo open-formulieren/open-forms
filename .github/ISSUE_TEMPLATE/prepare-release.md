@@ -15,6 +15,7 @@ assignees: sergei-maertens
   - [ ] Haal Centraal BRP Personen bevragen
   - [ ] `src.soap.tests.test_client`
   - [ ] BRK (Kadaster)
+  - [ ] Ogone
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations

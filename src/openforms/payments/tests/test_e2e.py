@@ -6,17 +6,20 @@ from django.urls import resolve, reverse
 
 from asgiref.sync import sync_to_async
 from furl import furl
-from playwright.async_api import expect
+from playwright.async_api import Route, expect
 from rest_framework.test import APIRequestFactory
 
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.constants import ProcessingStatuses
+from openforms.submissions.models import Submission
 from openforms.tests.e2e.base import E2ETestCase, browser_page
+from openforms.tests.e2e.database_sync_to_async import database_sync_to_async
 
 factory = APIRequestFactory()
 
 
 class PaymentFlowTests(E2ETestCase):
+
     @sync_to_async
     def get_form_url(self):
         # set up a form
@@ -32,9 +35,18 @@ class PaymentFlowTests(E2ETestCase):
 
         return form
 
-    async def mock_status_url(self, route):
+    @database_sync_to_async
+    def set_submission_reference(self) -> None:
+        # Required as payment will use the submission ref.
+        submission = Submission.objects.last()
+        submission.public_registration_reference = "OF-123456"
+        submission.save()
+
+    async def mock_status_url(self, route: Route):
         response = await route.fetch()
         json = await response.json()
+        await self.set_submission_reference()
+
         json["status"] = ProcessingStatuses.done
         submission_uuid = resolve(furl(route.request.url).path).kwargs["uuid"]
         json["paymentUrl"] = str(

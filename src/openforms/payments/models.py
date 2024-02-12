@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import uuid
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from django.db import IntegrityError, models, transaction
-from django.db.models import Max, Sum
+from django.db import models, transaction
+from django.db.models import Sum
 from django.utils.translation import gettext_lazy as _
 
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -14,18 +16,15 @@ from .constants import PaymentStatus
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
-ORDER_ID_START = 100
-ORDER_ID_PAD_LENGTH = 6
 
-
-class SubmissionPaymentManager(models.Manager):
+class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
     def create_for(
         self,
-        submission: "Submission",
+        submission: Submission,
         plugin_id: str,
         plugin_options: dict,
         amount: Decimal,
-    ):
+    ) -> SubmissionPayment:
         assert isinstance(amount, Decimal)
 
         # first create without order_id
@@ -36,37 +35,41 @@ class SubmissionPaymentManager(models.Manager):
             amount=amount,
         )
         # then update with a unique order_id
-        while True:
-            try:
-                with transaction.atomic():
-                    payment.order_id = self.get_next_order_id()
-                    payment.public_order_id = self.create_public_order_id_for(payment)
-                    payment.save(update_fields=("order_id", "public_order_id"))
-                    break
-            except IntegrityError:
-                # race condition on unique order_id
-                continue
+
+        with transaction.atomic():
+            payment.public_order_id = self.create_public_order_id_for(payment)
+            payment.save(update_fields=("public_order_id",))
+
         return payment
 
-    def get_next_order_id(self) -> int:
-        agg = self.aggregate(Max("order_id"))
-        max_order_id = agg["order_id__max"] or ORDER_ID_START
-        return max_order_id + 1
-
     @staticmethod
-    def create_public_order_id_for(payment: "SubmissionPayment") -> str:
+    def create_public_order_id_for(
+        payment: SubmissionPayment, pk: int | None = None
+    ) -> str:
+        """Create a public order ID to be sent to the payment provider."""
+
+        # TODO it isn't really clear what the required format/max length is
+        # for payment providers. Ogone seems to allow up to 40 characters or so,
+        # So this might fail at some point.
         config = GlobalConfiguration.get_solo()
-        prefix = config.payment_order_id_prefix
-        prefix = prefix.replace("{year}", str(payment.created.year))
-        order_id = str(payment.order_id).rjust(ORDER_ID_PAD_LENGTH, "0")
-        return prefix + order_id
+        prefix = config.payment_order_id_prefix.format(year=payment.created.year)
+        if prefix:
+            prefix = f"{prefix}/"
+
+        assert payment.submission.public_registration_reference
+
+        pk = pk if pk is not None else payment.pk
+
+        return (
+            f"{prefix}{payment.submission.public_registration_reference}/{payment.pk}"
+        )
 
 
-class SubmissionPaymentQuerySet(models.QuerySet):
+class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):
     def sum_amount(self) -> Decimal:
         return self.aggregate(sum_amount=Sum("amount"))["sum_amount"] or Decimal("0")
 
-    def get_completed_public_order_ids(self) -> list[int]:
+    def get_completed_public_order_ids(self) -> list[str]:
         return list(
             self.filter(
                 status__in=(PaymentStatus.registered, PaymentStatus.completed)
@@ -88,17 +91,16 @@ class SubmissionPayment(models.Model):
         null=True,
         help_text=_("Copy of payment options at time of initializing payment."),
     )
-    order_id = models.BigIntegerField(
-        _("Order ID (internal)"),
-        unique=True,
-        null=True,
-        help_text=_("Unique tracking across backend"),
-    )
+    # TODO Django 5.2 Update to a `GeneratedField`
     public_order_id = models.CharField(
         _("Order ID"),
         max_length=32,
         blank=True,
-        help_text=_("Order ID stored with payment provider."),
+        help_text=_(
+            "The order ID to be sent to the payment provider. This ID is built by "
+            "concatenating an optional global prefix, the submission public reference "
+            "and a unique incrementing ID."
+        ),
     )
     amount = models.DecimalField(
         _("payment amount"),
@@ -114,7 +116,9 @@ class SubmissionPayment(models.Model):
         default=PaymentStatus.started,
         help_text=_("Status of the payment process in the configured backend."),
     )
-    objects = SubmissionPaymentManager.from_queryset(SubmissionPaymentQuerySet)()
+    objects: SubmissionPaymentManager = SubmissionPaymentManager.from_queryset(
+        SubmissionPaymentQuerySet
+    )()
 
     class Meta:
         verbose_name = _("submission payment details")
@@ -127,8 +131,8 @@ class SubmissionPayment(models.Model):
             )
         ]
 
-    def __str__(self):
-        return f"#{self.order_id} '{self.get_status_display()}' {self.amount}"
+    def __str__(self) -> str:
+        return f"#{self.public_order_id} '{self.get_status_display()}' {self.amount}"
 
     @property
     def form(self):

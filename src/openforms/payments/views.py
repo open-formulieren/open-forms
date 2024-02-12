@@ -99,11 +99,13 @@ class PaymentFlowBaseView(APIView):
 class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
     lookup_field = "uuid"
     lookup_url_kwarg = "uuid"
-    queryset = Submission.objects.all()
+    queryset = Submission.objects.exclude(completed_on__isnull=True)
     serializer_class = PaymentInfoSerializer
 
     def post(self, request, uuid: str, plugin_id: str):
-        submission = self.get_object()
+        submission: Submission = self.get_object()
+        assert submission.public_registration_reference
+
         try:
             plugin = register[plugin_id]
         except KeyError:

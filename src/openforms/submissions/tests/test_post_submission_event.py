@@ -198,9 +198,6 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             subject="Confirmation of your {{ form_name }} submission",
             content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
-        SubmissionPaymentFactory.create(
-            submission=submission, amount=10, status=PaymentStatus.started
-        )
 
         with (
             patch(
@@ -221,6 +218,11 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
         submission.refresh_from_db()
+
+        # We then create the submission payment, as it requires a public reference
+        SubmissionPaymentFactory.create(
+            submission=submission, amount=10, status=PaymentStatus.started
+        )
 
         self.assertEqual(submission.public_registration_reference, "OF-TEST!")
         self.assertTrue(SubmissionReport.objects.filter(submission=submission).exists())
@@ -283,9 +285,6 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             subject="Confirmation of your {{ form_name }} submission",
             content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
-        SubmissionPaymentFactory.create(
-            submission=submission, amount=10, status=PaymentStatus.started
-        )
 
         with (
             patch(
@@ -302,6 +301,11 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
 
         submission.refresh_from_db()
+
+        # We then create the submission payment, as it requires a public reference
+        SubmissionPaymentFactory.create(
+            submission=submission, amount=10, status=PaymentStatus.started
+        )
 
         self.assertEqual(submission.public_registration_reference, "OF-TEST!")
         self.assertTrue(SubmissionReport.objects.filter(submission=submission).exists())
@@ -424,7 +428,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 },
             ],
             submitted_data={"email": "test@test.nl", "cosign": "cosign@test.nl"},
-            completed=True,
+            with_public_registration_reference=True,
             cosign_request_email_sent=True,
             cosign_complete=True,
             confirmation_email_sent=True,
@@ -509,7 +513,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 },
             ],
             submitted_data={"email": "test@test.nl", "cosign": "cosign@test.nl"},
-            completed=True,
+            with_public_registration_reference=True,
             cosign_request_email_sent=True,
             cosign_complete=True,
             confirmation_email_sent=True,
@@ -584,7 +588,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 },
             ],
             submitted_data={"email": "test@test.nl"},
-            completed=True,
+            with_public_registration_reference=True,
             confirmation_email_sent=True,
             form__registration_backend="email",
             form__registration_backend_options={"to_emails": ["test@registration.nl"]},
@@ -663,7 +667,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 },
             ],
             submitted_data={"email": "test@test.nl", "cosign": "cosign@test.nl"},
-            completed=True,
+            with_public_registration_reference=True,
             cosign_request_email_sent=True,
             cosign_complete=False,
             cosign_confirmation_email_sent=False,
@@ -753,6 +757,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             auth_info__value="111222333",
             needs_on_completion_retry=True,
             registration_failed=True,
+            with_public_registration_reference=True,
             with_completed_payment=True,
         )
 
@@ -809,6 +814,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             auth_info__value="111222333",
             needs_on_completion_retry=True,
             with_completed_payment=True,
+            with_public_registration_reference=True,
         )
 
         with (
@@ -1000,7 +1006,7 @@ class PaymentFlowTests(TestCase):
                     "confirmationRecipient": True,
                 }
             ],
-            completed=True,
+            with_public_registration_reference=True,
             form__registration_backend="email",
             form__registration_backend_options={"to_emails": ["test@registration.nl"]},
             form__product__price=10,
@@ -1051,7 +1057,7 @@ class PaymentFlowTests(TestCase):
             form__registration_backend_options={"to_emails": ["test@registration.nl"]},
             form__product__price=10,
             form__payment_backend="demo",
-            completed=True,
+            with_public_registration_reference=True,
             with_completed_payment=True,
         )
 
@@ -1085,7 +1091,7 @@ class PaymentFlowTests(TestCase):
             form__registration_backend_options={"to_emails": ["test@registration.nl"]},
             form__product__price=10,
             form__payment_backend="demo",
-            completed=True,
+            with_public_registration_reference=True,
             with_completed_payment=True,
         )
 
