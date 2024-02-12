@@ -112,6 +112,8 @@ CACHES = {
             "IGNORE_EXCEPTIONS": True,
         },
     },
+    # TODO: rename to 'redis-locks' and get rid of portalocker in favour of plain
+    # redis locks?
     "portalocker": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{config('CACHE_PORTALOCKER', 'localhost:6379/0')}",
@@ -380,7 +382,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "%(asctime)s %(levelname)s %(name)s %(module)s %(process)d %(thread)d  %(message)s"
+            "format": "%(asctime)s %(levelname)s %(name)s %(module)s P%(process)d/T%(thread)d |  %(message)s"
         },
         "timestamped": {"format": "%(asctime)s %(levelname)s %(name)s  %(message)s"},
         "simple": {"format": "%(levelname)s  %(message)s"},
@@ -405,7 +407,7 @@ LOGGING = {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "timestamped",
+            "formatter": config("LOG_FORMAT_CONSOLE", default="timestamped"),
         },
         "django": {
             "level": "DEBUG",
