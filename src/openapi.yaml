@@ -8493,7 +8493,11 @@ components:
         namePlural:
           type: string
           title: Plural name of the object type.
+        dataClassification:
+          type: string
+          title: Confidential level of the object type.
       required:
+      - dataClassification
       - name
       - namePlural
       - url
