@@ -172,7 +172,6 @@ class SubmissionViewSet(
 
         # store the submission ID in the session, so that only the session owner can
         # mutate/view the submission
-        # note: possible race condition with concurrent requests
         add_submmission_to_session(serializer.instance, self.request.session)
 
         logevent.submission_start(serializer.instance)

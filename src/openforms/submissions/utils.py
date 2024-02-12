@@ -1,8 +1,10 @@
 import logging
+from contextlib import contextmanager
 from typing import Any, Union
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
+from django.core.cache import caches
 from django.http import HttpRequest
 from django.utils import translation
 
@@ -37,23 +39,109 @@ from .tokens import submission_report_token_generator
 
 logger = logging.getLogger(__name__)
 
+# with the interval of 0.1s, this gives us 2.0 / 0.1 = 20 concurrent requests,
+# which is far above the typical browser concurrency mode (~6-8 requests).
+SESSION_LOCK_TIMEOUT_SECONDS = 2.0
+
+
+@contextmanager
+def _session_lock(session: SessionBase, key: str):
+    """
+    Helper to manage session data mutations for the specified key.
+
+    Concurrent session updates see stale data from when the request initially
+    got processed, so any added items from parallel requests is not taken into
+    account. This context manager refreshes the session data just-in-time and uses
+    a Redis distributed lock to synchronize access.
+
+    .. note:: this is pretty deep in Django internals, there doesn't appear to be a
+       public API for things like these :(
+    """
+    # only existing session have an existing key. If this is a new session, it hasn't
+    # been persisted to the backend yet, so there is also no possible race condition.
+    is_new = session.session_key is None
+    if is_new:
+        yield
+        return
+
+    # See TODO in settings about renaming this cache
+    redis_cache = caches["portalocker"]
+
+    # make the lock tied to the session itself, so that we don't affect other people's
+    # sessions.
+    cache_key = f"django:session-update:{session.session_key}"
+
+    # this is... tricky. To ensure we aren't still operating on stale data, we refresh
+    # the session data after acquiring a lock so that we're the only one that will be
+    # writing to it.
+    #
+    # For the locking interface, see redis-py :meth:`redis.client.Redis.lock`
+
+    logger.debug("Acquiring session lock for session %s", session.session_key)
+    with redis_cache.lock(
+        cache_key,
+        # max lifetime for the lock itself, must always be provided in case something
+        # crashes and we fail to call release
+        timeout=SESSION_LOCK_TIMEOUT_SECONDS,
+        # wait rather than failing immediately, we are trying to handle parallel
+        # requests here. Can't explicitly specify this, see
+        # https://github.com/jazzband/django-redis/issues/596. redis-py default is True.
+        # blocking=True,
+        # how long we can try to acquire the lock
+        blocking_timeout=SESSION_LOCK_TIMEOUT_SECONDS,
+    ):
+        logger.debug("Got session lock for session %s", session.session_key)
+        # nasty bit... the session itself can already be modified with *other*
+        # information that isn't relevant. So, we load the data from the storage again
+        # and only look at the provided key. If that one is different, we update our
+        # local data. We can not just reset to the result of session.load(), as that
+        # would discard modifications that should be persisted.
+        persisted_data = session.load()
+        if (data_slice := persisted_data.get(key)) != (current := session.get(key)):
+            logger.debug(
+                "Data from storage is different than what we currently have. "
+                "Session %s, key '%s' - in storage: %s, our view: %s",
+                session.session_key,
+                key,
+                data_slice,
+                current,
+            )
+            session[key] = data_slice
+            logger.debug(
+                "Updated key '%s' from storage for session %s", key, session.session_key
+            )
+
+        # execute the calling code and exit, clearing the lock.
+        yield
+
+        logger.debug(
+            "New session data for session %s is: %s",
+            session.session_key,
+            session._session,
+        )
+
+        # ensure we save in-between to persist the modifications, before the request
+        # may even be finished
+        session.save()
+        logger.debug("Saved session data for session %s", session.session_key)
+
 
 def append_to_session_list(session: SessionBase, session_key: str, value: Any) -> None:
-    # note: possible race condition with concurrent requests
-    active = session.get(session_key, [])
-    if value not in active:
-        active.append(value)
-        session[session_key] = active
+    with _session_lock(session, session_key):
+        active = session.get(session_key, [])
+        if value not in active:
+            active.append(value)
+            session[session_key] = active
 
 
 def remove_from_session_list(
     session: SessionBase, session_key: str, value: Any
 ) -> None:
-    # note: possible race condition with concurrent requests
-    active = session.get(session_key, [])
-    if value in active:
-        active.remove(value)
-        session[session_key] = active
+    with _session_lock(session, session_key):
+        active = session.get(session_key, [])
+        if value in active:
+            active.remove(value)
+            session[session_key] = active
 
 
 def add_submmission_to_session(submission: Submission, session: SessionBase) -> None:
