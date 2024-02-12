@@ -88,6 +88,15 @@
             {% if gemeenteVanInschrijving %}
                 <ns:inp.gemeenteVanInschrijving xsi:nil="true"/>
             {% endif %}
+            {% if inp_heeftAlsEchtgenootPartner %}
+                <ns:inp.heeftAlsEchtgenootPartner StUF:entiteittype="NPSNPSHUW">
+                    <ns:gerelateerde StUF:entiteittype="NPS">
+                        <ns:inp.bsn xsi:nil="true" />
+                        <ns:voornamenAanschrijving xsi:nil="true" />
+                        <ns:geslachtsnaamAanschrijving xsi:nil="true" />
+                    </ns:gerelateerde>
+                </ns:inp.heeftAlsEchtgenootPartner>
+            {% endif %}
             {% if inp_heeftAlsKinderen %}
                 <ns:inp.heeftAlsKinderen StUF:entiteittype="NPSNPSKND">
                     <ns:gerelateerde StUF:entiteittype="NPS">
@@ -97,15 +106,6 @@
                         <ns:voornamen xsi:nil="true" />
                     </ns:gerelateerde>
                </ns:inp.heeftAlsKinderen>
-            {% endif %}
-            {% if inp_heeftAlsEchtgenootPartner %}
-                <ns:inp.heeftAlsEchtgenootPartner StUF:entiteittype="NPSNPSHUW">
-                    <ns:gerelateerde StUF:entiteittype="NPS">
-                        <ns:inp.bsn xsi:nil="true" />
-                        <ns:voornamenAanschrijving xsi:nil="true" />
-                        <ns:geslachtsnaamAanschrijving xsi:nil="true" />
-                    </ns:gerelateerde>
-                </ns:inp.heeftAlsEchtgenootPartner>
             {% endif %}
         </ns:object>
     </ns:scope>
