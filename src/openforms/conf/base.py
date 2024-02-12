@@ -112,6 +112,8 @@ CACHES = {
             "IGNORE_EXCEPTIONS": True,
         },
     },
+    # TODO: rename to 'redis-locks' and get rid of portalocker in favour of plain
+    # redis locks?
     "portalocker": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{config('CACHE_PORTALOCKER', 'localhost:6379/0')}",
