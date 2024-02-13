@@ -180,9 +180,14 @@ class DynamicDatetimeConfigurationTests(TestCase):
         assert "datePicker" in new_component
         assert new_component["datePicker"] is not None
         assert "minDate" in new_component["datePicker"]
+        # DST ended on Oct 30, so we go from UTC+2 to UTC+1 (clock goes backwards one hour)
+        # On Django 3.2, this hour backwards was calculated in, but on 4.2 the local time
+        # (15:00) stays identical. You can argue for both of those cases that they're the
+        # correct behaviour...
+        # At least the zoneinfo variant ends up with the correct final timezone...
         self.assertEqual(
             new_component["datePicker"]["minDate"],
-            "2022-11-04T14:00:00+01:00",  # Nov. 4th Amsterdam time, where DST has ended
+            "2022-11-04T15:00:00+01:00",  # Nov. 4th Amsterdam time, where DST has ended
         )
 
     def test_relative_to_variable_subtract_delta(self):
