@@ -8,6 +8,46 @@ from openforms.registrations.contrib.objects_api.plugin import (
 from openforms.utils.tests.test_migrations import TestMigrations
 
 
+class SetRequiredObjectsAPIOptionsFields(TestMigrations):
+    app = "registrations_objects_api"
+    migrate_from = "0011_create_objecttypesypes_service_from_url"
+    migrate_to = "0012_fill_required_fields"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        ObjectsAPIConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+        ObjectsAPIConfig.objects.create(
+            objecttype="https://objecttypen.nl/path/api/v1/objecttypes/2c66dabf-a967-4057-9969-0700320d23a2",
+            objecttype_version=1,
+        )
+
+        Form = apps.get_model("forms", "Form")
+        form = Form.objects.create(name="test form")
+
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="dummy",
+            name="dummy",
+            backend=OBJECTS_API_PLUGIN_IDENTIFIER,
+            options={},
+        )
+
+    def test_migration_sets_required_fields(self):
+        FormRegistrationBackend = self.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+
+        form_registration_backend = FormRegistrationBackend.objects.first()
+
+        self.assertEqual(
+            form_registration_backend.options["objecttype"],
+            "https://objecttypen.nl/path/api/v1/objecttypes/2c66dabf-a967-4057-9969-0700320d23a2",
+        )
+        self.assertEqual(form_registration_backend.options["objecttype_version"], 1)
+
+
 class ObjecttypesServiceFromDefaultUrlMigrationTests(TestMigrations):
     app = "registrations_objects_api"
     migrate_from = "0010_objectsapiconfig_objecttypes_service"
