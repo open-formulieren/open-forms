@@ -437,12 +437,12 @@ face==20.1.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   glom
-factory-boy==3.0.1
+factory-boy==3.3.0
     # via
     #   -r requirements/test-tools.in
     #   django-simple-certmanager
     #   zgw-consumers
-faker==7.0.1
+faker==23.1.0
     # via
     #   factory-boy
     #   zgw-consumers
@@ -954,8 +954,6 @@ tblib==1.7.0
     # via -r requirements/test-tools.in
 testfixtures==6.17.1
     # via -r requirements/test-tools.in
-text-unidecode==1.3
-    # via faker
 tinycss2==1.1.0
     # via
     #   -c requirements/base.txt
