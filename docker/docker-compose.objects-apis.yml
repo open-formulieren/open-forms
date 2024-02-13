@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:${PG_VERSION:-14}
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./objects-apis/docker-init-objecttypes-api-db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - objects-apis-db:/var/lib/postgresql/data
+    networks:
+      - open-forms-dev
+
+  objecttypes-web:
+    image: maykinmedia/objecttypes-api:${OBJECTTYPES_VERSION:-2.1.1}
+    environment:
+      - DJANGO_SETTINGS_MODULE=objecttypes.conf.docker
+      - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
+      - ALLOWED_HOSTS=*
+    ports:
+      - 8001:8000
+    depends_on:
+      - db
+    networks:
+      - open-forms-dev
+
+volumes:
+  objects-apis-db:
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
