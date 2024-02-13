@@ -1,4 +1,5 @@
 import random
+from functools import partial
 from typing import Any
 
 from django.utils.crypto import get_random_string
@@ -12,7 +13,7 @@ from .constants import Attributes
 
 CALLBACKS = {
     Attributes.random_number: lambda: random.randint(1000, 10_000),
-    Attributes.random_string: get_random_string,
+    Attributes.random_string: partial(get_random_string, length=10),
 }
 
 

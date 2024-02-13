@@ -49,16 +49,17 @@ class MSGraphRegistrationBackendTests(TestCase):
         )
         cls.options = dict(folder_path="/open-forms/")
 
-    @classmethod
-    def addClassCleanup(cls):
-        # clear the config from cache
-        clear_caches()
-
     def setUp(self):
         super().setUp()
 
         self.msgraph_config_patcher.start()
         self.addCleanup(self.msgraph_config_patcher.stop)
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.addClassCleanup(clear_caches)
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_submission(self, upload_mock):
@@ -212,16 +213,17 @@ class MSGraphRegistrationOptionsTests(TestCase):
             ),
         )
 
-    @classmethod
-    def addClassCleanup(cls):
-        # clear the config from cache
-        clear_caches()
-
     def setUp(self):
         super().setUp()
 
         self.msgraph_config_patcher.start()
         self.addCleanup(self.msgraph_config_patcher.stop)
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.addClassCleanup(clear_caches)
 
     def test_folder_path(self, upload_mock):
         submission = SubmissionFactory.from_components(
