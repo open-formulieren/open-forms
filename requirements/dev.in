@@ -10,6 +10,5 @@ django-rosetta
 
 # Debug tooling
 django-debug-toolbar
-ddt-api-calls
 django-extensions
 django-silk
