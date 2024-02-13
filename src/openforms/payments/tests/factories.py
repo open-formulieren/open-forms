@@ -4,6 +4,7 @@ from typing import Any
 from unittest.mock import patch
 
 import factory
+import faker
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -18,11 +19,13 @@ def mocked_create_public_order_id_for(
         payment.public_order_id = extracted
         return
 
+    fake = faker.Faker()
+
     with patch(
         "openforms.payments.models.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(),
     ):
-        pk = factory.Faker("random_int").generate() if not create else None
+        pk = fake.random_int() if not create else None
         payment.public_order_id = SubmissionPaymentManager.create_public_order_id_for(
             payment, pk=pk
         )

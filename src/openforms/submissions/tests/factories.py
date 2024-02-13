@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.translation import get_language
 
 import factory
+import faker
 import magic
 from glom import PathAccessError, glom
 
@@ -336,7 +337,8 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
 
         # this is no longer a field on the model, but we still want to use the form/sub-variable generating machinery below
         if form_key is None:
-            form_key = factory.Faker("slug").generate()
+            fake = faker.Faker()
+            form_key = fake.slug()
 
         submission = file_attachment.submission_step.submission
         form_variable = submission.form.formvariable_set.filter(key=form_key).first()

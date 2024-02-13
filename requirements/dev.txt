@@ -479,13 +479,13 @@ face==20.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   glom
-factory-boy==3.0.1
+factory-boy==3.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-simple-certmanager
     #   zgw-consumers
-faker==7.0.1
+faker==23.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1120,11 +1120,6 @@ testfixtures==6.17.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-text-unidecode==1.3
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   faker
 tinycss2==1.1.0
     # via
     #   -c requirements/ci.txt
