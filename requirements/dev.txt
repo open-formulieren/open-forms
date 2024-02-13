@@ -286,7 +286,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-debug-toolbar==3.2.1
+django-debug-toolbar==4.3.0
     # via -r requirements/dev.in
 django-decorator-include==3.0
     # via
