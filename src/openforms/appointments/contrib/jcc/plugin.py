@@ -11,7 +11,6 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-import pytz
 from requests.exceptions import RequestException
 from zeep.client import Client
 from zeep.exceptions import Error as ZeepError
@@ -19,6 +18,7 @@ from zgw_consumers.concurrent import parallel
 
 from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam
 
 from ...base import (
     AppointmentDetails,
@@ -41,8 +41,6 @@ from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
 logger = logging.getLogger(__name__)
-
-TIMEZONE_AMS = pytz.timezone("Europe/Amsterdam")
 
 
 def squash_ids(products: list[Product]):
@@ -183,7 +181,7 @@ class JccAppointment(BasePlugin[CustomerFields]):
     ) -> list[date]:
         client = get_client()
         product_ids = squash_ids(products)
-        now_in_ams = timezone.make_naive(timezone.now(), timezone=TIMEZONE_AMS)
+        now_in_ams = datetime_in_amsterdam(timezone.now())
         start_at = start_at or now_in_ams.today()
 
         with log_soap_errors(

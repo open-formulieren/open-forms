@@ -4,11 +4,11 @@ from django.test import SimpleTestCase, TestCase
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-import pytz
 import requests_mock
 from hypothesis import given, strategies as st
 
 from openforms.formio.validation import build_validation_chain
+from openforms.utils.date import TIMEZONE_AMS
 from openforms.utils.tests.logging import disable_logging
 
 from ....base import AppointmentDetails, Customer, Location, Product
@@ -183,9 +183,7 @@ class PluginTests(MockConfigMixin, TestCase):
         self.assertEqual(len(times), 16)
         self.assertEqual(
             times[0],
-            datetime(2016, 12, 6, 9, 0, 0).astimezone(
-                pytz.timezone("Europe/Amsterdam")
-            ),
+            datetime(2016, 12, 6, 9, 0, 0).astimezone(TIMEZONE_AMS),
         )
 
     def test_get_required_customer_fields(self):

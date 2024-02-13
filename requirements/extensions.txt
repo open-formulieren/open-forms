@@ -619,7 +619,6 @@ python-magic==0.4.27
     #   -r requirements/base.txt
 pytz==2022.2.1
     # via
-    #   -c requirements/base.in
     #   -r requirements/base.txt
     #   celery
     #   django-yubin
