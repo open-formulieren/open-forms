@@ -1,3 +1,4 @@
+import zoneinfo
 from datetime import datetime
 from typing import Any
 
@@ -154,7 +155,7 @@ class DynamicDatetimeConfigurationTests(TestCase):
         )
 
     def test_relative_to_variable_add_delta(self):
-        component = {
+        component: DatetimeComponent = {
             "type": "datetime",
             "key": "aDatetime",
             "openForms": {
@@ -171,10 +172,14 @@ class DynamicDatetimeConfigurationTests(TestCase):
         }
         # Amsterdam time
         some_date = timezone.make_aware(datetime(2022, 10, 14, 15, 0, 0))
+        assert isinstance(some_date.tzinfo, zoneinfo.ZoneInfo)
         assert some_date.tzinfo.key == "Europe/Amsterdam"
 
         new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 
+        assert "datePicker" in new_component
+        assert new_component["datePicker"] is not None
+        assert "minDate" in new_component["datePicker"]
         self.assertEqual(
             new_component["datePicker"]["minDate"],
             "2022-11-04T14:00:00+01:00",  # Nov. 4th Amsterdam time, where DST has ended

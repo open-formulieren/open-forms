@@ -4,19 +4,21 @@ Types for our date/datetime validation extension.
 
 from typing import Literal, TypedDict
 
+from typing_extensions import NotRequired
+
 
 class DateConstraintDelta(TypedDict):
-    years: int | None
-    months: int | None
-    days: int | None
+    years: NotRequired[int | None]
+    months: NotRequired[int | None]
+    days: NotRequired[int | None]
 
 
 class DateConstraintConfiguration(TypedDict):
     mode: Literal["", "fixedValue", "future", "past", "relativeToVariable"]
-    includeToday: bool | None
-    variable: str | None
-    delta: DateConstraintDelta | None
-    operator: Literal["add", "subtract"] | None
+    includeToday: NotRequired[bool | None]
+    variable: NotRequired[str | None]
+    delta: NotRequired[DateConstraintDelta | None]
+    operator: NotRequired[Literal["add", "subtract"] | None]
 
 
 class DatePickerConfig(TypedDict):

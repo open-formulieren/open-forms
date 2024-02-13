@@ -1,5 +1,7 @@
 from typing import Literal, TypedDict
 
+from typing_extensions import NotRequired
+
 from .base import Component, OptionDict
 from .dates import DatePickerConfig
 
@@ -37,7 +39,7 @@ class ContentComponent(Component):
 
 
 class DatetimeComponent(Component):
-    datePicker: DatePickerConfig | None
+    datePicker: NotRequired[DatePickerConfig | None]
 
 
 class Column(TypedDict):
