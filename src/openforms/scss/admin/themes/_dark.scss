@@ -1,0 +1,93 @@
+/**
+ * Dark theme implementation.
+ *
+ * Use this as:
+ *
+ *   @use './themes/dark' as dark-theme;
+ *
+ *   @include dark-theme.styles;
+ */
+
+/**
+ * Define the CSS properties overriding default admin theme.
+ */
+@mixin variables {
+  --primary: #037383 !important;
+  --secondary: #037383 !important;
+
+  --breadcrumbs-fg: #2fc0ec;
+  --breadcrumbs-link-hover: #888;
+  --breadcrumbs-bg: #333;
+
+  --link-fg: #04a5bb;
+  --link-hover-color: #b2cddf;
+
+  --hairline-color: #686868;
+
+  --button-hover-bg: #04a5bb;
+  --default-button-bg: #04a5bb;
+  --default-button-hover-bg: #888;
+
+  --form-input-bg: #232222;
+  --react-tab-border-color: var(--hairline-color);
+  --list-item-active-bg: #333;
+  --list-item-active-fg: #2fc0ec;
+  --edit-panel-title-bg: #333;
+  --edit-panel-title-fg: var(--body-fg);
+  --input-group-text-bg: #333;
+  --input-group-text-fg: var(--body-fg);
+  --formio-dropdown-highlighted-bg: #333;
+}
+
+@mixin djai-variables {
+  --djai-tab-bg--hover: #04a5bb;
+  --djai-tab-fg--active: #fff;
+  --djai-dropdown-bg--hover: #04a5bb;
+
+  --of-djai-border-bottom-color: #333;
+}
+
+/**
+ * Custom CSS needed for dark theme which can't be solved just with variables.
+ */
+@mixin custom-css {
+  input[type='text'],
+  input[type='password'],
+  input[type='email'],
+  input[type='url'],
+  input[type='number'],
+  input[type='tel'],
+  textarea,
+  select,
+  .vTextField {
+    background-color: var(--form-input-bg);
+  }
+
+  input[type='checkbox'],
+  input[type='radio'] {
+    color-scheme: dark;
+  }
+
+  body #toolbar {
+    background: var(--body-bg);
+  }
+}
+
+/**
+ * Aggregate the bits and pieces to define the dark theme style rules.
+ */
+@mixin styles {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      @include variables;
+    }
+
+    @include custom-css;
+
+    // use a more specific selector so that the dark theme overrides the default,
+    // less specific selector.
+    .djai-dropdown-menu {
+      @include djai-variables;
+    }
+  }
+}

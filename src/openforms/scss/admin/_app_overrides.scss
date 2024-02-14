@@ -6,32 +6,12 @@
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/util';
 
-@import '../vars';
-
 /**
  * DJANGO ADMIN INDEX
  */
-body {
-  --djai-tab-bg: var(--primary); // no fallback to default admin vars
-  --djai-tab-bg--active: var(--breadcrumbs-bg);
-  --djai-tab-bg--hover: #{$color-primary-dark};
-  --djai-tab-fg--active: var(--secondary);
-  --djai-dropdown-bg--active: #{$color-primary-dark};
-  --djai-dropdown-bg--hover: #{$color-primary-dark};
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    --djai-tab-bg--hover: #{$color-primary};
-    --djai-tab-fg--active: #{$color-lightest};
-    --djai-dropdown-bg--hover: #{$color-primary};
-  }
-}
-
 $djai-padding: 40px;
 $djai-padding--mobile: 15px;
 $djai-padding--tablet: 30px;
-$djai-border-width: 8px;
 
 .djai-dropdown-menu {
   // by default, the header has 40px padding on both sides. To make the border stretch
@@ -54,7 +34,7 @@ $djai-border-width: 8px;
   width: 100%;
 
   /* Added to attach to body/breadcrumbs */
-  border-bottom: $djai-border-width solid $color_secondary;
+  border-bottom: var(--of-djai-border-bottom-width) solid var(--of-djai-border-bottom-color);
 
   & &__drop {
     min-width: 250px !important;
@@ -66,7 +46,7 @@ $djai-border-width: 8px;
 
     // remove the border height from the breadcrumbs padding
     & + .breadcrumbs {
-      padding-top: 10px - $djai-border-width; // 10px is original django value
+      padding-top: calc(10px - var(--of-djai-border-bottom-width)); // 10px is original django value
     }
 
     // overwrite admin '#header a:link' rule which is otherwise more specific

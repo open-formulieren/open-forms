@@ -6,110 +6,15 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 @use 'sass:list' as list;
 @use 'sass:selector' as selector;
 
+@use './themes/dark' as dark-theme;
+@use './themes/light' as light-theme;
+
 @import 'microscope-sass/lib/bem';
 
 @import '../vars';
 
-// override django CSS variables
-// see admin/static/admin/css/base.css for a reference
-:root {
-  --primary: #{$color_primary} !important;
-  --accent: #{$color_secondary};
-  --secondary: #{$color_primary} !important;
-  --primary-fg: #{$color_lightest};
-
-  --header-color: #{$color_secondary_light};
-
-  --breadcrumbs-fg: #{$color_primary};
-  --breadcrumbs-link-fg: var(--body-fg);
-  --breadcrumbs-link-hover: #{$color-darkest}; // not in the core django vars
-  --breadcrumbs-bg: #{$color_secondary};
-
-  --link-fg: #{$color_link};
-  --link-hover-color: #{$color_link_hover};
-  --link-selected-fg: #5b80b2;
-
-  // #748 client requested increased contrast for form-row borders
-  // here we override a django admin style
-  --hairline-color: #e5e5e5;
-
-  // --button-bg: var(--primary);
-  --button-fg: #{$color_lightest};
-  --button-hover-bg: #{$color_primary_dark};
-  --default-button-bg: #{$color_primary_dark};
-  --default-button-hover-bg: #{$color_darkest};
-  --close-button-bg: #{$color_dark_light};
-  --close-button-hover-bg: #{$color_dark};
-
-  --object-tools-bg: #888;
-  --object-tools-hover-bg: #{$color_dark};
-
-  // custom variables
-  --form-input-bg: var(--body-bg);
-  --react-tab-border-color: #{$color-secondary-dark};
-  --list-item-active-bg: #{$color-secondary};
-  --list-item-active-fg: var(--primary);
-  --edit-panel-title-bg: #{$color-secondary-dark};
-  --edit-panel-title-fg: #{$color-dark};
-  --input-group-text-bg: #{$color-secondary-dark};
-  --input-group-text-fg: #{$color-dark};
-  --formio-dropdown-highlighted-bg: #f2f2f2;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #037383 !important;
-    --secondary: #037383 !important;
-
-    --breadcrumbs-fg: #2fc0ec;
-    --breadcrumbs-link-hover: #{$color-dark-light};
-    --breadcrumbs-bg: #{$color-dark};
-
-    --link-fg: #04a5bb;
-    --link-hover-color: #b2cddf;
-
-    --hairline-color: #686868;
-
-    --button-hover-bg: #{$color-primary};
-    --default-button-bg: #{$color-primary};
-    --default-button-hover-bg: #{$color-dark-light};
-
-    --form-input-bg: #232222;
-    --react-tab-border-color: var(--hairline-color);
-    --list-item-active-bg: #{$color-dark};
-    --list-item-active-fg: #2fc0ec;
-    --edit-panel-title-bg: #{$color-dark};
-    --edit-panel-title-fg: var(--body-fg);
-    --input-group-text-bg: #{$color-dark};
-    --input-group-text-fg: var(--body-fg);
-    --formio-dropdown-highlighted-bg: #{$color-dark};
-  }
-
-  .djai-dropdown-menu {
-    border-bottom-color: $color-dark !important;
-  }
-
-  input[type='text'],
-  input[type='password'],
-  input[type='email'],
-  input[type='url'],
-  input[type='number'],
-  input[type='tel'],
-  textarea,
-  select,
-  .vTextField {
-    background-color: var(--form-input-bg);
-  }
-
-  input[type='checkbox'],
-  input[type='radio'] {
-    color-scheme: dark;
-  }
-
-  body #toolbar {
-    background: var(--body-bg);
-  }
-}
+@include light-theme.styles;
+@include dark-theme.styles;
 
 /* Overrides */
 body {

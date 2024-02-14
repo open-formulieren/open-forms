@@ -1,0 +1,91 @@
+/**
+ * Light/default theme implementation.
+ *
+ * Use this as:
+ *
+ *   @use './themes/light' as light-theme;
+ *
+ *   @include light-theme.styles;
+ */
+
+/**
+ * Define the CSS properties overriding default admin theme.
+ *
+ * @todo - check if the !important's are still needed?
+ *
+ * See `admin/static/admin/css/base.css` for a reference of available variables.
+ */
+@mixin variables {
+  --primary: #04a5bb !important;
+  --accent: #f3f3f3;
+  --secondary: #04a5bb !important;
+  --primary-fg: #fff;
+
+  --header-color: #fff;
+
+  --breadcrumbs-fg: #04a5bb;
+  --breadcrumbs-link-fg: var(--body-fg);
+  --breadcrumbs-link-hover: #000; // not in the core django vars
+  --breadcrumbs-bg: #f3f3f3;
+
+  --link-fg: #017092;
+  --link-hover-color: #051f31;
+  --link-selected-fg: #5b80b2;
+
+  // #748 client requested increased contrast for form-row borders
+  // here we override a django admin style
+  --hairline-color: #e5e5e5;
+
+  // --button-bg: var(--primary);
+  --button-fg: #fff;
+  --button-hover-bg: #017092;
+  --default-button-bg: #017092;
+  --default-button-hover-bg: #000;
+  --close-button-bg: #888;
+  --close-button-hover-bg: #333;
+
+  --object-tools-bg: #888;
+  --object-tools-hover-bg: #333;
+
+  // custom variables
+  --form-input-bg: var(--body-bg);
+  --react-tab-border-color: #ddd;
+  --list-item-active-bg: #f3f3f3;
+  --list-item-active-fg: var(--primary);
+  --edit-panel-title-bg: #ddd;
+  --edit-panel-title-fg: #333;
+  --input-group-text-bg: #ddd;
+  --input-group-text-fg: #333;
+  --formio-dropdown-highlighted-bg: #f2f2f2;
+}
+
+@mixin djai-variables {
+  --djai-tab-bg: var(--primary); // no fallback to default admin vars
+  --djai-tab-bg--active: var(--breadcrumbs-bg);
+  --djai-tab-bg--hover: #017092;
+  --djai-tab-fg--active: var(--secondary);
+  --djai-dropdown-bg--active: #017092;
+  --djai-dropdown-bg--hover: #017092;
+
+  // custom properties
+  --of-djai-border-bottom-width: 8px;
+  --of-djai-border-bottom-color: #f3f3f3;
+}
+
+/**
+ * Aggregate the bits and pieces to define the light theme style rules.
+ *
+ * The light theme styles are not guarded by a media query to make sure they're the
+ * default that is applied.
+ */
+@mixin styles {
+  :root {
+    @include variables;
+  }
+
+  // generic selector to be more specific than the library itself, but less specific
+  // than the dark theme styles
+  body {
+    @include djai-variables;
+  }
+}
