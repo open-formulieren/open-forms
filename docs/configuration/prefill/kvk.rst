@@ -52,7 +52,7 @@ Configuration
 
    * **Label**: *Fill in a human readable label*, for example: ``My KvK Zoeken API``
    * **Type**: ORC (Overige)
-   * **API root URL**: *The API URL provided by KvK but typically:* ``https://api.kvk.nl/api/v1/zoeken/``
+   * **API root URL**: *The API URL provided by KvK but typically:* ``https://api.kvk.nl/api/v2/zoeken/``
    * **Authorization type**: API key
    * **Header key**: ``apikey``
    * **Header value**: *The KvK API key obtained in step 1 (same as for KvK API Basisprofiel)*
@@ -73,5 +73,5 @@ Technical
 API               Supported versions
 ================  ===================
 Basisprofiel API  1.3
-Zoeken API        1.3
+Zoeken API        2.0
 ================  ===================

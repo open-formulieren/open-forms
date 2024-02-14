@@ -5,7 +5,7 @@ interactions:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
@@ -18,23 +18,26 @@ interactions:
     uri: https://api.kvk.nl/test/api/v1/basisprofielen/12345678
   response:
     body:
-      string: '{"fout":[{"code":"IPD9999","omschrijving":"Algemene technische fout."}]}'
+      string: '{"fout":[{"code":"IPD0005","omschrijving":"Op basis van het KVK-nummer
+        12345678 kan het product niet worden geleverd."}]}'
     headers:
       Connection:
-      - close
+      - keep-alive
       Content-Encoding:
       - gzip
       Content-Length:
-      - '86'
+      - '132'
       Content-Type:
       - application/json
       Date:
-      - Wed, 04 Oct 2023 09:57:14 GMT
+      - Wed, 14 Feb 2024 13:38:16 GMT
+      Keep-Alive:
+      - timeout=60
       Server:
       - unknown
       strict-transport-security:
       - max-age=157680000 ; includeSubDomains
     status:
-      code: 500
+      code: 404
       message: ''
 version: 1

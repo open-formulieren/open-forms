@@ -67,7 +67,7 @@ class ConfigCheckTests(SimpleTestCase):
     @requests_mock.Mocker()
     def test_valid_kvk_configuration(self, m):
         m.get(
-            "https://api.kvk.nl/test/api/v1/zoeken?kvkNummer=68750110",
+            "https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=68750110",
             json={"resultaten": [{"kvkNummer": "68750110"}]},
         )
 

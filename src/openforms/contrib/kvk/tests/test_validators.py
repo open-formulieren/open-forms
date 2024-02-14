@@ -54,16 +54,16 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_kvkNumber_validator(self, m):
         m.get(
-            f"{self.api_root}v1/zoeken?kvkNummer=69599084",
+            f"{self.api_root}v2/zoeken?kvkNummer=69599084",
             status_code=200,
             json=load_json_mock("zoeken_response.json"),
         )
         m.get(
-            f"{self.api_root}v1/zoeken?kvkNummer=90004760",
+            f"{self.api_root}v2/zoeken?kvkNummer=90004760",
             status_code=404,
         )
         m.get(
-            f"{self.api_root}v1/zoeken?kvkNummer=68750110",
+            f"{self.api_root}v2/zoeken?kvkNummer=68750110",
             status_code=500,
         )
 
@@ -101,7 +101,7 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
         for response_json in bad_responses:
             with self.subTest(response_json=response_json):
                 m.get(
-                    f"{self.api_root}v1/zoeken?kvkNummer=69599084",
+                    f"{self.api_root}v2/zoeken?kvkNummer=69599084",
                     json=response_json,
                 )
 
@@ -111,12 +111,12 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_rsin_validator(self, m):
         m.get(
-            f"{self.api_root}v1/zoeken?rsin=111222333",
+            f"{self.api_root}v2/zoeken?rsin=111222333",
             status_code=200,
             json=load_json_mock("zoeken_response.json"),
         )
         m.get(
-            f"{self.api_root}v1/zoeken?rsin=063308836",
+            f"{self.api_root}v2/zoeken?rsin=063308836",
             status_code=404,
         )
 
@@ -142,12 +142,12 @@ class KvKRemoteValidatorTestCase(KVKTestMixin, SimpleTestCase):
     @requests_mock.Mocker()
     def test_branchNumber_validator(self, m):
         m.get(
-            f"{self.api_root}v1/zoeken?vestigingsnummer=112233445566",
+            f"{self.api_root}v2/zoeken?vestigingsnummer=112233445566",
             status_code=200,
             json=load_json_mock("zoeken_response.json"),
         )
         m.get(
-            f"{self.api_root}v1/zoeken?vestigingsnummer=665544332211",
+            f"{self.api_root}v2/zoeken?vestigingsnummer=665544332211",
             status_code=404,
         )
 

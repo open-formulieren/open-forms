@@ -1,45 +1,54 @@
 {
   "pagina": 1,
-  "aantal": 10,
+  "resultatenPerPagina": 10,
   "totaal": 2,
   "resultaten": [
     {
       "kvkNummer": "69599084",
-      "vestigingsnummer": "000038509520",
-      "handelsnaam": "Test EMZ Nevenvestiging Govert",
-      "straatnaam": "Geneinde",
-      "plaats": "Maastricht",
-      "type": "nevenvestiging",
-      "rsin": "123456789",
-      "links": [
-        {
-          "rel": "basisprofiel",
+      "vestigingsnummer": "000038509504",
+      "naam": "Test EMZ Dagobert",
+      "adres": {
+        "binnenlandsAdres": {
+          "type": "bezoekadres",
+          "straatnaam": "Abebe Bikilalaan",
+          "plaats": "Amsterdam"
+        }
+      },
+      "type": "hoofdvestiging",
+      "_links": {
+        "basisprofiel": {
           "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084"
         },
-        {
-          "rel": "vestigingsprofiel",
-          "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"
+        "vestigingsprofiel": {
+          "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"
         }
-      ]
+      }
     },
     {
       "kvkNummer": "69599084",
-      "vestigingsnummer": "000038509504",
-      "handelsnaam": "Test EMZ Dagobert",
-      "straatnaam": "Abebe Bikilalaan",
-      "plaats": "Amsterdam",
-      "type": "hoofdvestiging",
-      "rsin": "123456789",
-      "links": [
-        {
-          "rel": "basisprofiel",
+      "vestigingsnummer": "000038509520",
+      "naam": "Test EMZ Nevenvestiging Govert",
+      "adres": {
+        "binnenlandsAdres": {
+          "type": "bezoekadres",
+          "straatnaam": "Geneinde",
+          "plaats": "Maastricht"
+        }
+      },
+      "type": "nevenvestiging",
+      "_links": {
+        "basisprofiel": {
           "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084"
         },
-        {
-          "rel": "vestigingsprofiel",
-          "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"
+        "vestigingsprofiel": {
+          "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"
         }
-      ]
+      }
     }
-  ]
+  ],
+  "_links": {
+    "self": {
+      "href": "https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"
+    }
+  }
 }

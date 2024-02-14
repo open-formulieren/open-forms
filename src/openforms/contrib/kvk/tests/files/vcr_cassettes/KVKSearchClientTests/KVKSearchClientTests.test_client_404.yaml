@@ -5,7 +5,7 @@ interactions:
       Accept:
       - application/hal+json
       Accept-Encoding:
-      - gzip, deflate
+      - gzip, deflate, br
       Connection:
       - keep-alive
       Content-Type:
@@ -15,7 +15,7 @@ interactions:
       apikey:
       - l7xx1f2691f2520d487b902f4e0b57a0b197
     method: GET
-    uri: https://api.kvk.nl/test/api/v1/zoeken?kvkNummer=12345678
+    uri: https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=12345678
   response:
     body:
       string: '{"fout":[{"code":"IPD5200","omschrijving":"Er zijn geen gegevens gevonden
@@ -30,7 +30,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 04 Oct 2023 09:57:16 GMT
+      - Wed, 14 Feb 2024 13:38:17 GMT
       Keep-Alive:
       - timeout=60
       Server:
