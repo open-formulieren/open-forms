@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from django_camunda.dmn.datastructures import DMNIntrospectionResult
+from django_camunda.dmn.types import DMNInputParameter, DMNOutputParameter
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -27,6 +29,41 @@ class TestPlugin(BasePlugin):
             DecisionDefinitionVersion(id="v1", label="v1"),
             DecisionDefinitionVersion(id="v2", label="Version 3"),
         ]
+
+    @staticmethod
+    def get_decision_definition_parameters(
+        self, definition_id: str, version: str = ""
+    ) -> DMNIntrospectionResult:
+        return DMNIntrospectionResult(
+            inputs=[
+                DMNInputParameter(
+                    id="clause1",
+                    label="Invoice Amount",
+                    expression="amount",
+                    type_ref="double",
+                ),
+                DMNInputParameter(
+                    id="InputClause_15qmk0v",
+                    label="Invoice Category",
+                    expression="invoiceCategory",
+                    type_ref="string",
+                ),
+            ],
+            outputs=[
+                DMNOutputParameter(
+                    id="clause3",
+                    label="Classification",
+                    name="invoiceClassification",
+                    type_ref="string",
+                ),
+                DMNOutputParameter(
+                    id="OutputClause_1cthd0w",
+                    label="Approver Group",
+                    name="result",
+                    type_ref="string",
+                ),
+            ],
+        )
 
     @staticmethod
     def evaluate(
@@ -233,6 +270,61 @@ class DefinitionEndpointTests(APITestAssertions, MockRegistryMixin, APITestCase)
                     {"id": "v1", "label": "v1"},
                     {"id": "v2", "label": "Version 3"},
                 ],
+            )
+
+    def test_get_input_outputs(self):
+        endpoint = reverse("api:dmn-definition-inputs-outputs")
+        self.client.force_authenticate(user=self.user)
+
+        with self.subTest("Engine param is required"):
+            response = self.client.get(endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertValidationErrorCode(response, "engine", "required")
+
+        with self.subTest("definition param is required"):
+            response = self.client.get(endpoint, {"engine": "test"})
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertValidationErrorCode(response, "definition", "required")
+
+        with self.subTest("happy flow"):
+            response = self.client.get(
+                endpoint, {"engine": "test", "definition": "test-1"}
+            )
+
+            self.assertEqual(
+                response.json(),
+                {
+                    "inputs": [
+                        {
+                            "id": "clause1",
+                            "label": "Invoice Amount",
+                            "expression": "amount",
+                            "typeRef": "double",
+                        },
+                        {
+                            "id": "InputClause_15qmk0v",
+                            "label": "Invoice Category",
+                            "expression": "invoiceCategory",
+                            "typeRef": "string",
+                        },
+                    ],
+                    "outputs": [
+                        {
+                            "id": "clause3",
+                            "label": "Classification",
+                            "name": "invoiceClassification",
+                            "typeRef": "string",
+                        },
+                        {
+                            "id": "OutputClause_1cthd0w",
+                            "label": "Approver Group",
+                            "name": "result",
+                            "typeRef": "string",
+                        },
+                    ],
+                },
             )
 
 
