@@ -6,6 +6,8 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 @use 'sass:list' as list;
 @use 'sass:selector' as selector;
 
+@use './themes/dark' as dark-theme;
+
 @import 'microscope-sass/lib/bem';
 
 @import '../vars';
@@ -56,60 +58,7 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
   --formio-dropdown-highlighted-bg: #f2f2f2;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #037383 !important;
-    --secondary: #037383 !important;
-
-    --breadcrumbs-fg: #2fc0ec;
-    --breadcrumbs-link-hover: #{$color-dark-light};
-    --breadcrumbs-bg: #{$color-dark};
-
-    --link-fg: #04a5bb;
-    --link-hover-color: #b2cddf;
-
-    --hairline-color: #686868;
-
-    --button-hover-bg: #{$color-primary};
-    --default-button-bg: #{$color-primary};
-    --default-button-hover-bg: #{$color-dark-light};
-
-    --form-input-bg: #232222;
-    --react-tab-border-color: var(--hairline-color);
-    --list-item-active-bg: #{$color-dark};
-    --list-item-active-fg: #2fc0ec;
-    --edit-panel-title-bg: #{$color-dark};
-    --edit-panel-title-fg: var(--body-fg);
-    --input-group-text-bg: #{$color-dark};
-    --input-group-text-fg: var(--body-fg);
-    --formio-dropdown-highlighted-bg: #{$color-dark};
-  }
-
-  .djai-dropdown-menu {
-    border-bottom-color: $color-dark !important;
-  }
-
-  input[type='text'],
-  input[type='password'],
-  input[type='email'],
-  input[type='url'],
-  input[type='number'],
-  input[type='tel'],
-  textarea,
-  select,
-  .vTextField {
-    background-color: var(--form-input-bg);
-  }
-
-  input[type='checkbox'],
-  input[type='radio'] {
-    color-scheme: dark;
-  }
-
-  body #toolbar {
-    background: var(--body-bg);
-  }
-}
+@include dark-theme.styles;
 
 /* Overrides */
 body {
