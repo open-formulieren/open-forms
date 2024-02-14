@@ -6,24 +6,9 @@
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/util';
 
-@import '../vars';
-
 /**
  * DJANGO ADMIN INDEX
  */
-body {
-  --djai-tab-bg: var(--primary); // no fallback to default admin vars
-  --djai-tab-bg--active: var(--breadcrumbs-bg);
-  --djai-tab-bg--hover: #{$color-primary-dark};
-  --djai-tab-fg--active: var(--secondary);
-  --djai-dropdown-bg--active: #{$color-primary-dark};
-  --djai-dropdown-bg--hover: #{$color-primary-dark};
-
-  // custom properties
-  --of-djai-border-bottom-width: 8px;
-  --of-djai-border-bottom-color: #f3f3f3;
-}
-
 $djai-padding: 40px;
 $djai-padding--mobile: 15px;
 $djai-padding--tablet: 30px;

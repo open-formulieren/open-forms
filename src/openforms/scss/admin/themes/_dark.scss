@@ -82,6 +82,8 @@
       @include variables;
     }
 
+    @include custom-css;
+
     // use a more specific selector so that the dark theme overrides the default,
     // less specific selector.
     .djai-dropdown-menu {
