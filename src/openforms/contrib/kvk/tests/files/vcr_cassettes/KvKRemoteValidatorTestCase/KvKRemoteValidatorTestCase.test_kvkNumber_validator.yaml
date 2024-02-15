@@ -1,0 +1,88 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/hal+json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/hal+json
+      User-Agent:
+      - python-requests/2.31.0
+      apikey:
+      - l7xx1f2691f2520d487b902f4e0b57a0b197
+    method: GET
+    uri: https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=69599084
+  response:
+    body:
+      string: '{"pagina":1,"resultatenPerPagina":10,"totaal":2,"resultaten":[{"kvkNummer":"69599084","vestigingsnummer":"000038509504","naam":"Test
+        EMZ Dagobert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Abebe
+        Bikilalaan","plaats":"Amsterdam"}},"type":"hoofdvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}}},{"kvkNummer":"69599084","vestigingsnummer":"000038509520","naam":"Test
+        EMZ Nevenvestiging Govert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht"}},"type":"nevenvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}}}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"}}}'
+    headers:
+      API-Version:
+      - 2.0.0
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '357'
+      Content-Type:
+      - application/hal+json
+      Date:
+      - Thu, 15 Feb 2024 12:53:18 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - unknown
+      strict-transport-security:
+      - max-age=157680000 ; includeSubDomains
+    status:
+      code: 200
+      message: ''
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/hal+json
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/hal+json
+      User-Agent:
+      - python-requests/2.31.0
+      apikey:
+      - l7xx1f2691f2520d487b902f4e0b57a0b197
+    method: GET
+    uri: https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=90004333
+  response:
+    body:
+      string: '{"fout":[{"code":"IPD5200","omschrijving":"Er zijn geen gegevens gevonden
+        die voldoen aan de opgegeven zoekparameters."}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '127'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 15 Feb 2024 12:53:18 GMT
+      Keep-Alive:
+      - timeout=60
+      Server:
+      - unknown
+      strict-transport-security:
+      - max-age=157680000 ; includeSubDomains
+    status:
+      code: 404
+      message: ''
+version: 1
