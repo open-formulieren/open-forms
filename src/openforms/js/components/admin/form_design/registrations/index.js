@@ -2,6 +2,7 @@ import {WysiwygWidget} from 'components/admin/RJSFWrapper';
 
 import CamundaOptionsForm from './camunda';
 import {onStepEdit} from './handlers';
+import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ZGWOptionsForm from './zgw';
 
 /**
@@ -28,6 +29,7 @@ export const BACKEND_OPTIONS_FORMS = {
         },
       },
     },
+    summaryHandler: ObjectsApiSummaryHandler,
   },
   email: {
     uiSchema: {

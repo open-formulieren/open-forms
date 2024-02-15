@@ -15,6 +15,7 @@ import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {get} from 'utils/fetch';
 
 import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
+import RegistrationsSummary from './registration';
 import Variable from './types';
 import {variableHasErrors} from './utils';
 
@@ -68,7 +69,9 @@ Td.propTypes = {
 const VariableRow = ({index, variable}) => {
   const intl = useIntl();
   const formContext = useContext(FormContext);
+
   const formSteps = formContext.formSteps;
+  const registrationBackends = formContext.registrationBackends;
 
   const getFormDefinitionName = formDefinition => {
     for (const step of formSteps) {
@@ -95,6 +98,12 @@ const VariableRow = ({index, variable}) => {
           IDENTIFIER_ROLE_CHOICES[variable.prefillIdentifierRole] || IDENTIFIER_ROLE_CHOICES.main
         )}
       </td>
+      <td>
+        <RegistrationsSummary
+          variableKey={variable.key}
+          registrationBackends={registrationBackends}
+        />
+      </td>
       <td>{variable.dataType}</td>
       <td>
         <SensitiveData isSensitive={variable.isSensitiveData} />
@@ -113,6 +122,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
 
   const formContext = useContext(FormContext);
 
+  const registrationBackends = formContext.registrationBackends;
   const {availablePrefillPlugins} = formContext.plugins;
   const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
   const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
@@ -206,6 +216,12 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
+        <RegistrationsSummary
+          variableKey={variable.key}
+          registrationBackends={registrationBackends}
+        />
+      </td>
+      <td>
         <Field name="dataType" errors={variable.errors?.dataType}>
           <Select
             name="dataType"
@@ -284,6 +300,14 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
           <FormattedMessage
             defaultMessage="Prefill identifier role"
             description="Variable table identifier role attribute title"
+          />
+        }
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Registration"
+            description="Variable table registration title"
           />
         }
       />
