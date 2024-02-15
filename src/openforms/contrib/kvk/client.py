@@ -29,16 +29,18 @@ class SearchParams(TypedDict, total=False):
     kvkNummer: str
     rsin: str
     vestigingsnummer: str
-    handelsnaam: str
+    naam: str
     straatnaam: str
     plaats: str
     postcode: str
-    huisnummer: str
+    huisnummer: int
+    huisletter: str
+    postbusnummer: int
     huisnummerToevoeging: str
-    type: str
-    InclusiefInactieveRegistraties: Literal["true", "false"]
+    type: list[str]
+    inclusiefInactieveRegistraties: Literal["true", "false"]
     pagina: int  # [1, 1000]
-    aantal: int  # [1, 100]
+    resultatenPerPagina: int  # [1, 100] - default is 10
 
 
 class KVKClient(HALClient):
@@ -74,7 +76,7 @@ class KVKClient(HALClient):
         assert query_params, "You must provide at least one query parameter"
         try:
             response = self.get(
-                "v1/zoeken",
+                "v2/zoeken",
                 params=query_params,  # type: ignore
             )
             response.raise_for_status()
