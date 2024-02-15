@@ -371,7 +371,7 @@ pyopenssl==24.0.0
     #   maykin-python3-saml
     #   webauthn
     #   zgw-consumers
-pyphen==0.10.0
+pyphen==0.14.0
     # via weasyprint
 pyrsistent==0.17.3
     # via jsonschema
@@ -380,7 +380,7 @@ python-dateutil==2.8.1
     #   django-camunda
     #   django-relativedelta
     #   o365
-python-decouple==3.3
+python-decouple==3.8
     # via -r requirements/base.in
 python-dotenv==0.14.0
     # via -r requirements/base.in

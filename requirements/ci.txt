@@ -734,7 +734,7 @@ pyopenssl==24.0.0
     #   maykin-python3-saml
     #   webauthn
     #   zgw-consumers
-pyphen==0.10.0
+pyphen==0.14.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -757,7 +757,7 @@ python-dateutil==2.8.1
     #   faker
     #   freezegun
     #   o365
-python-decouple==3.3
+python-decouple==3.8
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
