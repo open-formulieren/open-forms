@@ -70,6 +70,11 @@ class ObjecttypesServiceFromDefaultUrlMigrationTests(TestMigrations):
         objects_api_config = ObjectsAPIConfig.objects.get()
 
         self.assertEqual(
+            objects_api_config.objecttypes_service.label,
+            "Objecttypes",
+        )
+
+        self.assertEqual(
             objects_api_config.objecttypes_service.auth_type,
             AuthTypes.api_key,
         )
