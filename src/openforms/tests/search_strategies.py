@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 
 from hypothesis import strategies as st
 
-from openforms.forms.models.form_variable import variable_key_validator
+from openforms.formio.validators import variable_key_validator
 from openforms.typing import JSONPrimitive, JSONValue
 
 language_code = st.sampled_from(["nl", "en", "fy"])
