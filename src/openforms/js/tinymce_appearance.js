@@ -1,4 +1,4 @@
-import {THEMES, detectTheme} from 'utils/theme';
+import {THEMES} from 'utils/theme';
 
 const APPEARANCE = {
   [THEMES.light]: {
@@ -11,7 +11,7 @@ const APPEARANCE = {
   },
 };
 
-const getTinyMCEAppearance = (theme = detectTheme()) => {
+const getTinyMCEAppearance = theme => {
   return APPEARANCE[theme];
 };
 

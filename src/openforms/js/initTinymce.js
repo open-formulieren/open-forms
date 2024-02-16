@@ -1,5 +1,7 @@
 // Taken from https://github.com/jazzband/django-tinymce/blob/master/tinymce/static/django_tinymce/init_tinymce.js
-// Updated to add dark theme detection (L3, L8, L38, L67)
+// Updated to handle dark/light mode
+import {currentTheme} from 'utils/theme';
+
 import getTinyMCEAppearance from './tinymce_appearance';
 
 ('use strict');
@@ -64,7 +66,6 @@ import getTinyMCEAppearance from './tinymce_appearance';
   }
 
   function initializeTinyMCE(element, formsetName) {
-    appearance = getTinyMCEAppearance();
     Array.from(element.querySelectorAll('.tinymce')).forEach(area => initTinyMCE(area));
   }
 
@@ -75,6 +76,7 @@ import getTinyMCEAppearance from './tinymce_appearance';
       return;
       // throw 'tinyMCE is not loaded. If you customized TINYMCE_JS_URL, double-check its content.';
     }
+    handleThemes();
     // initialize the TinyMCE editors on load
     initializeTinyMCE(document);
 
@@ -91,4 +93,21 @@ import getTinyMCEAppearance from './tinymce_appearance';
       });
     }
   });
+
+  // taken from the tinymce react package for inspiration:
+  // https://github.com/tinymce/tinymce-react/blob/e2b1907eadb751f81e01d8239fdf876e77430d43/src/main/ts/components/Editor.tsx#L139
+  const resetEditor = el => {
+    const editor = window.tinyMCE.get(el.id);
+    editor.remove();
+    initTinyMCE(el);
+  };
+
+  const handleThemes = () => {
+    appearance = getTinyMCEAppearance(currentTheme.getValue());
+
+    currentTheme.subscribe(newTheme => {
+      appearance = getTinyMCEAppearance(newTheme);
+      document.querySelectorAll('.tinymce').forEach(resetEditor);
+    });
+  };
 }
