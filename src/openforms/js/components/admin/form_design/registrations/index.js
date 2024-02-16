@@ -6,8 +6,15 @@ import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ZGWOptionsForm from './zgw';
 
 /**
+ * @typedef {{
+ *   form?: React.FC,
+ *   uiSchema?: Object,
+ *   configurableFromVariables?: boolean | (options: Object) => boolean,
+ *   formVariableConfigured: (variableKey: string, options: Object) => boolean,
+ *   summaryHandler?: React.FC
+ * }} BackendInfo
  * A map of backend ID to components for the (advanced) option forms.
- * @type {Object}
+ * @type {{[key: string]: BackendInfo}}
  */
 export const BACKEND_OPTIONS_FORMS = {
   camunda: {
@@ -29,6 +36,9 @@ export const BACKEND_OPTIONS_FORMS = {
         },
       },
     },
+    configurableFromVariables: options => options.version === 2,
+    formVariableConfigured: (variableKey, options) =>
+      options.variablesMapping.some(mapping => mapping.variableKey === variableKey),
     summaryHandler: ObjectsApiSummaryHandler,
   },
   email: {

@@ -75,6 +75,16 @@ export default {
           ],
         },
       },
+      {
+        key: 'objects_api',
+        name: "Shouldn't display!",
+        options: {
+          version: 1,
+          objecttype:
+            'https://objecttypen.nl/api/v1/objecttypes/209e0341-834d-4060-bd19-a3419d19ed74',
+          objecttypeVersion: 2,
+        },
+      },
     ],
   },
   argTypes: {
