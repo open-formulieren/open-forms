@@ -112,5 +112,5 @@ linkcheck_ignore = [
     r"https://www\.omg\.org/*",  # incredibly unstable domain...
     r"https://www\.jccsoftware\.nl/.*",  # looks like the requests user agent is blocked...
     r"https://hub\.docker\.com/r/.*",  # HTTP 429, presumably docker hub is blocking/limiting Github CI runners
-    r"https://stackoverflow\.com/a/48391751/7146757",  # SO 403s when running on github actions :/
+    r"https://stackoverflow\.com/.*",  # SO 403s when running on github actions :/
 ]
