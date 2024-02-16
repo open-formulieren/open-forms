@@ -10,8 +10,8 @@ from furl import furl
 from json_logic.typing import Primitive
 from rest_framework import serializers
 
-from openforms.api.fields import FormioVariableKeyField
 from openforms.api.serializers import DummySerializer
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
 

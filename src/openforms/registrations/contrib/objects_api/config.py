@@ -7,16 +7,16 @@ from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from openforms.api.fields import FormioVariableKeyField
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 
 class VersionChoices(models.IntegerChoices):
-    V1 = 1
-    V2 = 2
+    V1 = 1, _("v1, template based")
+    V2 = 2, _("v2, variables mapping")
 
 
 @extend_schema_serializer(
@@ -179,7 +179,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                             for k in v2_forbidden_fields
                         }
                     )
-            case _:
+            case _:  # pragma: no cover
                 raise ValidationError(
                     {"version": _("Unknown version: {version}").format(version=version)}
                 )

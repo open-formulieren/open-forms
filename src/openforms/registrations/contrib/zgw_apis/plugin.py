@@ -11,7 +11,7 @@ from glom import assign
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
-from openforms.api.fields import FormioVariableKeyField, PrimaryKeyRelatedAsChoicesField
+from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.config.data import Action
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.zgw.clients.catalogi import omschrijving_matcher
@@ -19,6 +19,7 @@ from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.registrations.contrib.objects_api.client import get_objects_client
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
