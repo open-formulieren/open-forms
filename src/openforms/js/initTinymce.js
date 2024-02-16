@@ -1,9 +1,12 @@
 // Taken from https://github.com/jazzband/django-tinymce/blob/master/tinymce/static/django_tinymce/init_tinymce.js
-// Updated to add dark theme detection (L35-44)
+// Updated to add dark theme detection (L3, L8, L38, L67)
+import getTinyMCEAppearance from './tinymce_appearance';
 
-'use strict';
+('use strict');
 
 {
+  let appearance = {};
+
   function initTinyMCE(el) {
     if (el.closest('.empty-form') === null) {
       // Don't do empty inlines
@@ -32,16 +35,7 @@
         }
       });
 
-      // TODO Django 4.2: use explicit theme names rather than the media query approach:
-      // https://github.com/django/django/blob/main/django/contrib/admin/static/admin/css/dark_mode.css#L36
-      const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      mce_conf = {
-        ...mce_conf,
-        ...{
-          skin: useDarkMode ? 'oxide-dark' : 'oxide',
-          content_css: useDarkMode ? 'dark' : 'default',
-        },
-      };
+      mce_conf = {...mce_conf, ...appearance};
 
       // replace default prefix of 'empty-form' if used in selector
       if (mce_conf.selector && mce_conf.selector.includes('__prefix__')) {
@@ -70,6 +64,7 @@
   }
 
   function initializeTinyMCE(element, formsetName) {
+    appearance = getTinyMCEAppearance();
     Array.from(element.querySelectorAll('.tinymce')).forEach(area => initTinyMCE(area));
   }
 

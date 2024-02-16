@@ -1,6 +1,7 @@
 import {Editor} from '@tinymce/tinymce-react';
 import React, {useContext, useRef} from 'react';
 import {useIntl} from 'react-intl';
+import getTinyMCEAppearance from 'tinymce_appearance';
 
 import tinyMceConfig from '../../../../conf/tinymce_config.json';
 import {TinyMceContext} from './Context';
@@ -9,21 +10,22 @@ const TinyMCEEditor = ({content, onEditorChange}) => {
   const editorRef = useRef(null);
   const tinyMceUrl = useContext(TinyMceContext);
   const intl = useIntl();
-  // TODO Django 4.2: use explicit theme names rather than the media query approach:
-  // https://github.com/django/django/blob/main/django/contrib/admin/static/admin/css/dark_mode.css#L36
-  const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+  const appearance = getTinyMCEAppearance();
+  // when appearance changes, the key changes, which re-initializes the editor. tinymce
+  // does not have a built-in way to change the skin/content_css on the fly.
+  const key = `${appearance.skin}/${appearance.content_css}`;
   return (
     <>
       <Editor
+        key={key}
         tinymceScriptSrc={tinyMceUrl}
         onInit={(evt, editor) => (editorRef.current = editor)}
         value={content}
         init={{
           ...tinyMceConfig,
           language: intl.locale,
-          skin: useDarkMode ? 'oxide-dark' : 'oxide',
-          content_css: useDarkMode ? 'dark' : 'default',
+          ...appearance,
         }}
         onEditorChange={onEditorChange}
       />
