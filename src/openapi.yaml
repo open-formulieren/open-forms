@@ -3801,6 +3801,71 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/objects-api/object-types:
+    get:
+      operationId: registration_plugins_objects_api_object_types_list
+      description: |-
+        List the available Objecttypes.
+
+        Note that the response data is essentially proxied from the configured Objecttypes API.
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Objecttype'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/objects-api/object-types/{submission_uuid}/versions:
+    get:
+      operationId: registration_plugins_objects_api_object_types_versions_list
+      description: |-
+        List the available versions for an Objecttype.
+
+        Note that the response data is essentially proxied from the configured Objecttypes API.
+      parameters:
+      - in: path
+        name: submission_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ObjecttypeVersion'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/service-fetch-configurations:
     get:
       operationId: service_fetch_configurations_list
@@ -8410,6 +8475,45 @@ components:
       - isApplicable
       - name
       - url
+    Objecttype:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          title: URL reference to this object. This is the unique identification and
+            location of this object.
+        uuid:
+          type: string
+          format: uuid
+          title: Unique identifier (UUID4).
+        name:
+          type: string
+          title: Name of the object type.
+        namePlural:
+          type: string
+          title: Plural name of the object type.
+        dataClassification:
+          type: string
+          title: Confidential level of the object type.
+      required:
+      - dataClassification
+      - name
+      - namePlural
+      - url
+      - uuid
+    ObjecttypeVersion:
+      type: object
+      properties:
+        version:
+          type: integer
+          title: Integer version of the Objecttype.
+        status:
+          type: string
+          title: Status of the object type version
+      required:
+      - status
+      - version
     PaginatedFormDefinitionList:
       type: object
       properties:
