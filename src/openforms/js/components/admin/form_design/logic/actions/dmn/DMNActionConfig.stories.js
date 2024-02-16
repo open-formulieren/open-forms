@@ -4,6 +4,7 @@ import {fireEvent, userEvent, waitFor, within} from '@storybook/testing-library'
 import {
   mockDMNDecisionDefinitionVersionsGet,
   mockDMNDecisionDefinitionsGet,
+  mockDMNParametersGet,
 } from 'components/admin/form_design/mocks';
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 
@@ -43,6 +44,81 @@ export default {
           'some-other-engine': [{id: 'some-definition-id', label: 'Some definition id'}],
         }),
         mockDMNDecisionDefinitionVersionsGet,
+        mockDMNParametersGet({
+          'some-definition-id': {
+            inputs: [],
+            outputs: [],
+          },
+          'approve-payment': {
+            inputs: [
+              {
+                label: 'Direction',
+                id: 'Input_1',
+                type_ref: 'string',
+                expression: 'direction',
+                input_variable: '',
+              },
+              {
+                label: 'Port number',
+                id: 'InputClause_1cn8gp3',
+                type_ref: 'integer',
+                expression: 'port',
+                input_variable: '',
+              },
+              {
+                label: 'Camunda variable',
+                id: 'InputClause_1f09wt8',
+                type_ref: 'string',
+                expression: '',
+                input_variable: 'someVar',
+              },
+            ],
+            outputs: [
+              {
+                id: 'Output_1',
+                label: 'Policy',
+                type_ref: 'string',
+                name: 'policy',
+              },
+              {
+                id: 'OutputClause_0lzmnio',
+                label: 'Reason',
+                type_ref: 'string',
+                name: 'reason',
+              },
+            ],
+          },
+          invoiceClassification: {
+            inputs: [
+              {
+                id: 'clause1',
+                label: 'Invoice Amount',
+                expression: 'amount',
+                type_ref: 'double',
+              },
+              {
+                id: 'InputClause_15qmk0v',
+                label: 'Invoice Category',
+                expression: 'invoiceCategory',
+                type_ref: 'string',
+              },
+            ],
+            outputs: [
+              {
+                id: 'clause3',
+                label: 'Classification',
+                name: 'invoiceClassification',
+                type_ref: 'string',
+              },
+              {
+                id: 'OutputClause_1cthd0w',
+                label: 'Approver Group',
+                name: 'result',
+                type_ref: 'string',
+              },
+            ],
+          },
+        }),
       ],
     },
   },
