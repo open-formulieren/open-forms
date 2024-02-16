@@ -40,11 +40,15 @@
 }
 
 @mixin djai-variables {
-  --djai-tab-bg--hover: #04a5bb;
-  --djai-tab-fg--active: #fff;
-  --djai-dropdown-bg--hover: #04a5bb;
+  // use a more specific selector so that the dark theme overrides the default,
+  // less specific selector.
+  .djai-dropdown-menu {
+    --djai-tab-bg--hover: #04a5bb;
+    --djai-tab-fg--active: #fff;
+    --djai-dropdown-bg--hover: #04a5bb;
 
-  --of-djai-border-bottom-color: #333;
+    --of-djai-border-bottom-color: #333;
+  }
 }
 
 /**
@@ -77,17 +81,26 @@
  * Aggregate the bits and pieces to define the dark theme style rules.
  */
 @mixin styles {
+  // Include the relevant variables
   @media (prefers-color-scheme: dark) {
+    // This either gets overridden by the more specific light theme selector, or applies
+    // in auto mode through the media query.
     :root {
       @include variables;
     }
 
-    @include custom-css;
-
-    // use a more specific selector so that the dark theme overrides the default,
-    // less specific selector.
-    .djai-dropdown-menu {
+    // only apply based on browser preferences if the theme is not explicitly set to
+    // light or dark
+    html[data-theme='auto'] {
       @include djai-variables;
+      @include custom-css;
     }
+  }
+
+  // explicit dark-mode -> apply all relevant styles
+  html[data-theme='dark'] {
+    @include variables;
+    @include djai-variables;
+    @include custom-css;
   }
 }

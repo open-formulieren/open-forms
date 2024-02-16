@@ -79,6 +79,7 @@
  * default that is applied.
  */
 @mixin styles {
+  html[data-theme='light'],
   :root {
     @include variables;
   }
