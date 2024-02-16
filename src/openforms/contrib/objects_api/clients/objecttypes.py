@@ -52,3 +52,12 @@ class ObjecttypesClient(NLXClient):
         return self._get_paginated(
             f"objecttypes/{objecttype_uuid}/versions", page=page, page_size=page_size
         )
+
+    def get_objecttype_version(
+        self,
+        objecttype_uuid: str | UUID,
+        version: int,
+    ) -> dict[str, Any]:
+        response = self.get(f"objecttypes/{objecttype_uuid}/versions/{version}")
+        response.raise_for_status()
+        return response.json()
