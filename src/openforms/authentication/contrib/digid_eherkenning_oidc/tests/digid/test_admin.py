@@ -50,6 +50,7 @@ class DigiDOIDCFormAdminTests(WebTest):
         form["enabled"] = False
         # set the value manually, normally this is done through JS
         form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
+        form["oidc_exempt_urls"] = json.dumps(config.oidc_exempt_urls)
         response = form.submit()
 
         self.assertEqual(response.status_code, 302)
@@ -72,6 +73,7 @@ class DigiDOIDCFormAdminTests(WebTest):
         form["enabled"] = False
         # set the value manually, normally this is done through JS
         form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
+        form["oidc_exempt_urls"] = json.dumps(config.oidc_exempt_urls)
         response = form.submit()
 
         self.assertEqual(response.status_code, 200)
