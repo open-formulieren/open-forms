@@ -67,7 +67,7 @@ class HijackTests(WebTest):
             djhj_message = admin_dashboard.pyquery(".djhj")
             self.assertEqual(len(djhj_message), 1)
 
-            release_form = admin_dashboard.form
+            release_form = admin_dashboard.forms["hijack-release"]
 
             response = release_form.submit()
             self.assertRedirects(
@@ -111,7 +111,7 @@ class HijackTests(WebTest):
             )
 
         with self.subTest("release user"):
-            release_form = admin_dashboard.form
+            release_form = admin_dashboard.forms["hijack-release"]
             release_form.submit()
 
             self.assertEqual(TimelineLogProxy.objects.count(), 2)

@@ -18,7 +18,7 @@ class AnalyticsConfigAdminTests(WebTest):
         for field in fields:
             with self.subTest(field=field):
                 change_page = self.app.get(admin_url, user=superuser)
-                form = change_page.form
+                form = change_page.forms["analyticstoolsconfiguration_form"]
                 form[field] = "https://example.com/"
 
                 response = form.submit()
@@ -38,7 +38,7 @@ class AnalyticsConfigAdminTests(WebTest):
         for field in fields:
             with self.subTest(field=field):
                 change_page = self.app.get(admin_url, user=superuser)
-                form = change_page.form
+                form = change_page.forms["analyticstoolsconfiguration_form"]
                 form[field] = "https://example.com"
 
                 response = form.submit()

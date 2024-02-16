@@ -8,7 +8,7 @@
           You are currently working on behalf of <em>{{ user }}</em>.
         {% endblocktrans %}
       </div>
-      <form action="{% url 'hijack:release' %}" method="post" class="djhj-actions">
+      <form id="hijack-release" action="{% url 'hijack:release' %}" method="post" class="djhj-actions">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.path }}">
         {# TODO: CSP - this will break if CSP is enforced in the admin #}

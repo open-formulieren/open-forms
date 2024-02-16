@@ -643,7 +643,8 @@ class FormAdminActionsTests(FormListAjaxMixin, WebTest):
 
         self.assertEqual(200, response.status_code)
 
-        forms_uuids = response.form["forms_uuids"].value.split(",")
+        html_form = response.forms[1]
+        forms_uuids = html_form["forms_uuids"].value.split(",")
 
         self.assertEqual(2, len(forms_uuids))
         self.assertIn(str(form2.uuid), forms_uuids)
@@ -1015,7 +1016,8 @@ class FormDeleteTests(FormListAjaxMixin, WebTest):
         html_form["action"] = "delete_selected"
         html_form["_selected_action"] = [form.pk]
         confirm_page = html_form.submit(name="index")
-        confirm_page.form.submit()
+        confirm_form = confirm_page.forms[1]
+        confirm_form.submit()
 
         # check that the form is soft deleted
         form.refresh_from_db()
@@ -1036,7 +1038,8 @@ class FormDeleteTests(FormListAjaxMixin, WebTest):
         html_form["action"] = "delete_selected"
         html_form["_selected_action"] = [form.pk]
         confirm_page = html_form.submit(name="index")
-        confirm_page.form.submit()
+        confirm_form = confirm_page.forms[1]
+        confirm_form.submit()
 
         self.assertFalse(Form.objects.exists())
         # delete cascades - steps are deleted, and single-use form definitions are
@@ -1063,7 +1066,8 @@ class FormDeleteTests(FormListAjaxMixin, WebTest):
         html_form["action"] = "delete_selected"
         html_form["_selected_action"] = [form.pk]
         confirm_page = html_form.submit(name="index")
-        confirm_page.form.submit()
+        confirm_form = confirm_page.forms[1]
+        confirm_form.submit()
 
         self.assertFalse(Form.objects.exists())
         self.assertFalse(FormStep.objects.exists())
@@ -1079,7 +1083,8 @@ class FormDeleteTests(FormListAjaxMixin, WebTest):
             reverse("admin:forms_form_delete", args=(form.pk,)),
             user=self.user,
         )
-        delete_page.form.submit()
+        delete_form = delete_page.forms[1]
+        delete_form.submit()
 
         # check that the form is soft deleted
         form.refresh_from_db()
@@ -1099,7 +1104,8 @@ class FormDeleteTests(FormListAjaxMixin, WebTest):
             reverse("admin:forms_form_delete", args=(form.pk,)),
             user=self.user,
         )
-        delete_page.form.submit()
+        delete_form = delete_page.forms[1]
+        delete_form.submit()
 
         # check that the form/form variables are hard deleted and reusable form definitions are kept
         self.assertFalse(Form.objects.exists())

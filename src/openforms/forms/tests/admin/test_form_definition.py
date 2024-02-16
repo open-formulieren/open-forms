@@ -1,5 +1,5 @@
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
@@ -107,8 +107,9 @@ class TestFormDefinitionAdmin(WebTest):
                 kwargs={"object_id": step.form_definition.pk},
             ),
         )
-        response.form["is_reusable"] = False
-        response = response.form.submit()
+        form = response.forms["formdefinition_form"]
+        form["is_reusable"] = False
+        response = form.submit()
 
         self.assertInHTML(
             _(
@@ -134,10 +135,11 @@ class TestFormDefinitionAdmin(WebTest):
         change_page = self.app.get(
             reverse("admin:forms_formdefinition_change", kwargs={"object_id": fd.pk}),
         )
-        assert "{% bad tag and syntax %}" in change_page.form["configuration"].value
+        form = change_page.forms["formdefinition_form"]
+        assert "{% bad tag and syntax %}" in form["configuration"].value
 
         # submit the form, which throws validation errors
-        submit_response = change_page.form.submit()
+        submit_response = form.submit()
 
         self.assertEqual(submit_response.status_code, 200)
         errors = submit_response.context["adminform"].errors
