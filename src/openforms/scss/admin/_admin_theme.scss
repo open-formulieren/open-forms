@@ -35,6 +35,20 @@ div#header {
   line-height: normal;
 }
 
+#logout-form {
+  // ensure the button is styled like the links
+  button {
+    border-bottom: none;
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      color: var(--header-link-color);
+      text-decoration: none;
+    }
+  }
+}
+
 #user-tools {
   // fixme - hardcoded magic numbers, because of the domain switcher that may or may not be there
   height: 32px;
