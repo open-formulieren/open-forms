@@ -13,7 +13,7 @@ import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
-import VariableMapping from './VariableMapping';
+import DMNParametersForm from './DMNParametersForm';
 import {inputValuesType} from './types';
 
 const ERRORS = {
@@ -133,7 +133,7 @@ const DecisionDefinitionVersionField = () => {
 };
 
 const DMNActionConfig = ({initialValues, onSave}) => {
-  const {formVariables, plugins} = useContext(FormContext);
+  const {plugins} = useContext(FormContext);
 
   const validate = values => {
     const errors = {};
@@ -185,34 +185,7 @@ const DMNActionConfig = ({initialValues, onSave}) => {
               </div>
             </fieldset>
 
-            <div className="mappings">
-              <div className="mappings__mapping">
-                <h3 className="react-modal__title">
-                  <FormattedMessage
-                    defaultMessage="Input mapping"
-                    description="Input mapping title"
-                  />
-                </h3>
-                <VariableMapping
-                  mappingName="inputMapping"
-                  values={formik.values}
-                  formVariables={formVariables}
-                />
-              </div>
-              <div className="mappings__mapping">
-                <h3 className="react-modal__title">
-                  <FormattedMessage
-                    defaultMessage="Output mapping"
-                    description="Output mapping title"
-                  />
-                </h3>
-                <VariableMapping
-                  mappingName="outputMapping"
-                  values={formik.values}
-                  formVariables={formVariables}
-                />
-              </div>
-            </div>
+            <DMNParametersForm />
 
             <div className="submit-row">
               <input type="submit" name="_save" value="Save" />

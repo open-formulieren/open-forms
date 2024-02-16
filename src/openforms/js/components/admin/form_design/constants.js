@@ -17,3 +17,5 @@ export const SERVICES_ENDPOINT = '/api/v2/services';
 export const SERVICE_FETCH_CONFIG_ENDPOINT = '/api/v2/service-fetch-configurations';
 export const DMN_DECISION_DEFINITIONS_LIST = '/api/v2/dmn/decision-definitions';
 export const DMN_DECISION_DEFINITIONS_VERSIONS_LIST = '/api/v2/dmn/decision-definitions/versions';
+export const DMN_DECISION_DEFINITIONS_PARAMS_LIST =
+  '/api/v2/dmn/decision-definitions/inputs-outputs';
