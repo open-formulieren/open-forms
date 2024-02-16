@@ -43,7 +43,7 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
         child=serializers.CharField(label=_("Segment of a JSON path")),
         label=_("target path"),
         help_text=_(
-            "Representation of the JSON target location as a list of string 'bits'."
+            "Representation of the JSON target location as a list of string segments."
         ),
     )
 
