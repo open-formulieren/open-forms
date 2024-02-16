@@ -86,9 +86,7 @@ cryptography==42.0.2
 cssselect2==0.7.0
     # via weasyprint
 defusedxml==0.7.1
-    # via
-    #   -r requirements/base.in
-    #   django-camunda
+    # via -r requirements/base.in
 django==3.2.24
     # via
     #   -r requirements/base.in
@@ -142,7 +140,7 @@ django-autoslug==1.9.9
     # via -r requirements/base.in
 django-axes[ipware]==6.0.5
     # via -r requirements/base.in
-django-camunda==0.13.0
+django-camunda==0.14.0
     # via -r requirements/base.in
 django-capture-tag==1.0
     # via -r requirements/base.in
@@ -300,6 +298,7 @@ lazy-object-proxy==1.9.0
 lxml==4.9.1
     # via
     #   -r requirements/base.in
+    #   django-camunda
     #   django-digid-eherkenning
     #   mail-cleaner
     #   maykin-python3-saml

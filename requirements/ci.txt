@@ -165,7 +165,6 @@ defusedxml==0.7.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   django-camunda
 django==3.2.24
     # via
     #   -c requirements/base.txt
@@ -230,7 +229,7 @@ django-axes[ipware]==6.0.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-axes
-django-camunda==0.13.0
+django-camunda==0.14.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -556,6 +555,7 @@ lxml==4.9.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-camunda
     #   django-digid-eherkenning
     #   mail-cleaner
     #   maykin-python3-saml
