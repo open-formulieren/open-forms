@@ -1,7 +1,20 @@
-from rest_framework import relations, serializers
+from rest_framework import fields, relations
+
+from openforms.formio.validators import variable_key_validator
 
 
-class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
+class FormioVariableKeyField(fields.CharField):
+    """A ``CharField`` that will validate values are valid Formio variable keys.
+
+    It must only contain alphanumeric characters, underscores, dots and dashes and should not be ended by dash or dot.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validators.append(variable_key_validator)
+
+
+class PrimaryKeyRelatedAsChoicesField(relations.PrimaryKeyRelatedField):
     """
     Custom subclass to register a custom drf-jsonschema-serializer converter.
     """
