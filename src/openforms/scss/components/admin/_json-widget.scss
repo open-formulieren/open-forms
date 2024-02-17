@@ -4,7 +4,7 @@
 
 .json-widget {
   textarea {
-    width: $input-field-size;
+    width: var(--of-admin-input-field-size);
   }
 
   @include bem.modifier('collapsed') {

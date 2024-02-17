@@ -96,6 +96,44 @@ div.breadcrumbs {
   }
 }
 
+/**
+ * Properly align inputs and labels
+ */
+.flex-container {
+  // otherwise long labels vertically stretch the input boxes
+  align-items: flex-start;
+}
+
+.checkbox-row {
+  gap: var(--of-admin-checkbox-gap);
+  align-items: center;
+
+  input[type='checkbox'] {
+    margin: 0;
+  }
+
+  @at-root .aligned & label {
+    width: auto;
+    vertical-align: unset !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .vCheckboxLabel {
+    vertical-align: unset !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+.aligned label:has(input[type='checkbox']) {
+  display: flex;
+  align-items: center;
+  gap: var(--of-admin-checkbox-gap);
+  margin: 0;
+  padding: 0;
+}
+
 /* Calendar & time widget */
 .calendarbox,
 .clockbox {
@@ -222,7 +260,7 @@ div.breadcrumbs {
  */
 .change-form {
   .vTextField {
-    width: $input-field-size;
+    width: var(--of-admin-input-field-size);
   }
 }
 
@@ -300,7 +338,7 @@ body.popup {
  */
 .rjf-form-wrapper {
   .rjf-form-group {
-    max-inline-size: calc($input-field-size + 72px + 0.5rem);
+    max-inline-size: calc(var(--of-admin-input-field-size) + 72px + 0.5rem);
   }
 
   .rjf-form-group-inner {
@@ -317,7 +355,7 @@ body.popup {
     padding: 0;
 
     input {
-      inline-size: $input-field-size;
+      inline-size: var(--of-admin-input-field-size);
       max-inline-size: 100%;
       margin-block-start: 2px !important;
       margin-block-end: 2px !important;
@@ -330,7 +368,7 @@ body.popup {
 
   @at-root div[data-django-jsonform-container] {
     display: inline-block;
-    inline-size: calc($input-field-size + 72px + 0.5rem);
+    inline-size: calc(var(--of-admin-input-field-size) + 72px + 0.5rem);
 
     & ~ .help {
       background-position-y: 7px;

@@ -18,6 +18,7 @@ const PluginConfig = ({module, plugin, label, enabled = true, onChange}) => {
         }
         checked={enabled}
         onChange={() => onChange(!enabled)}
+        noVCheckbox
       />
     </>
   );

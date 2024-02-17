@@ -24,15 +24,15 @@ const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, e
     );
 
     return (
-      <li key={plugin.id}>
-        <Checkbox
-          name={plugin.label}
-          value={plugin.id}
-          label={label}
-          onChange={onChange}
-          checked={selectedAuthPlugins.includes(plugin.id)}
-        />
-      </li>
+      <Checkbox
+        key={plugin.id}
+        name={plugin.label}
+        value={plugin.id}
+        label={label}
+        onChange={onChange}
+        checked={selectedAuthPlugins.includes(plugin.id)}
+        noVCheckbox
+      />
     );
   });
 
@@ -51,7 +51,7 @@ const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, e
       errors={errors}
       required
     >
-      <ul>{authCheckboxes}</ul>
+      <div>{authCheckboxes}</div>
     </Field>
   );
 };

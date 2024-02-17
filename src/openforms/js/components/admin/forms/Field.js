@@ -69,13 +69,21 @@ const Field = ({
             {formattedErrors}
           </ErrorList>
         ) : null}
-        {label && (
-          <label className={required ? 'required' : ''} htmlFor={htmlFor}>
-            {label}
-          </label>
-        )}
-        {modifiedChildren}
-        {helpText ? <div className="help">{helpText}</div> : null}
+
+        <div className="flex-container">
+          {label && (
+            <label className={required ? 'required' : ''} htmlFor={htmlFor}>
+              {label}
+            </label>
+          )}
+          {modifiedChildren}
+        </div>
+
+        {helpText ? (
+          <div className="help" id={`id_${name}_helptext`}>
+            {helpText}
+          </div>
+        ) : null}
       </div>
     </>
   );

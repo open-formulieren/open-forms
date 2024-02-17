@@ -1754,7 +1754,7 @@
     "originalDefault": "years"
   },
   "iq0ppL": {
-    "defaultMessage": "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie.",
+    "defaultMessage": "Bij het inschakelen van de afsprakenmodus doorloopt de gebruiker een vaste flow.",
     "description": "Form appointment enabled field help text",
     "originalDefault": "Experimental mode. Indicates whether appointments are enabled for this form."
   },

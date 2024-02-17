@@ -24,5 +24,8 @@ $color-tooltip-border: #f7f071;
 $color-tooltip-text: #000;
 $django-hijack-yellow: #ffe761;
 
-/* Dimensions */
-$input-field-size: 40em; // original: 20em;
+:root {
+  /* Dimensions */
+  --of-admin-input-field-size: 40em; // original: 20em;
+  --of-admin-checkbox-gap: 5px;
+}
