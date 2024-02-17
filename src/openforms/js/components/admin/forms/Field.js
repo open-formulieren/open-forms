@@ -81,7 +81,7 @@ const Field = ({
 
         {helpText ? (
           <div className="help" id={`id_${name}_helptext`}>
-            {helpText}
+            <div>{helpText}</div>
           </div>
         ) : null}
       </div>

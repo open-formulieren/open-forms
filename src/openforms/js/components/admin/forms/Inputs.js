@@ -109,7 +109,11 @@ const Checkbox = ({name, label, helpText, noVCheckbox = false, ...extraProps}) =
       <label className={classNames('inline', {vCheckboxLabel: !noVCheckbox})} htmlFor={idFor}>
         {label}
       </label>
-      {helpText ? <div className="help">{helpText}</div> : null}
+      {helpText ? (
+        <div className="help">
+          <div>{helpText}</div>
+        </div>
+      ) : null}
     </div>
   );
 };
