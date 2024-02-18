@@ -94,6 +94,7 @@ jobs:
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
+          DEBUG: 'true'
 
       - name: Run JS tests
         run: npm test
@@ -175,6 +176,7 @@ jobs:
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
+          DEBUG: 'true'
 
   e2etests:
     runs-on: ubuntu-latest
