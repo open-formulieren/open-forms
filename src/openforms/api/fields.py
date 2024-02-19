@@ -1,7 +1,7 @@
-from rest_framework import relations
+from rest_framework import serializers
 
 
-class PrimaryKeyRelatedAsChoicesField(relations.PrimaryKeyRelatedField):
+class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
     """
     Custom subclass to register a custom drf-jsonschema-serializer converter.
     """
@@ -9,7 +9,7 @@ class PrimaryKeyRelatedAsChoicesField(relations.PrimaryKeyRelatedField):
     pass
 
 
-class RelatedFieldFromContext(relations.HyperlinkedRelatedField):
+class RelatedFieldFromContext(serializers.HyperlinkedRelatedField):
     """
     Look up the object in the serializer context.
     """

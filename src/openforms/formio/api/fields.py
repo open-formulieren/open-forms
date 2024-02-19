@@ -1,9 +1,9 @@
-from rest_framework import fields
+from rest_framework import serializers
 
 from ..validators import variable_key_validator
 
 
-class FormioVariableKeyField(fields.CharField):
+class FormioVariableKeyField(serializers.CharField):
     """A ``CharField`` that will validate values are valid Formio variable keys.
 
     It must only contain alphanumeric characters, underscores, dots and dashes and should not be ended by dash or dot.
