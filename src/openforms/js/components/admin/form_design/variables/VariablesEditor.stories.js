@@ -61,7 +61,7 @@ export default {
       },
       {
         key: 'objects_api',
-        name: 'Other Objects API reg.',
+        name: 'Other Objects API registration with a long name',
         options: {
           version: 2,
           objecttype:

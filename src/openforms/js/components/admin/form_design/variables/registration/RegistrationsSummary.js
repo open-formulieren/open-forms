@@ -17,18 +17,22 @@ const RegistrationSummary = ({name, registrationSummary}) => {
 
   return (
     <>
-      <span>{name}</span>
-      <span>
-        <FAIcon
-          icon="edit"
-          title={intl.formatMessage({
-            defaultMessage: 'Edit variable registration',
-            description: "'Edit variable registration' icon label",
-          })}
-          extraClassname="fa-lg actions__action"
-          onClick={() => {}}
-        />
-      </span>
+      <div style={{display: 'flex', justifyContent: 'space-between'}}>
+        <div style={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+          <span>{name}</span>
+        </div>
+        <span>
+          <FAIcon
+            icon="edit"
+            title={intl.formatMessage({
+              defaultMessage: 'Edit variable registration',
+              description: "'Edit variable registration' icon label",
+            })}
+            extraClassname="fa-lg actions__action"
+            onClick={() => {}}
+          />
+        </span>
+      </div>
       <div>{registrationSummary}</div>
     </>
   );
