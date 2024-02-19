@@ -7,6 +7,7 @@ from django.test import TestCase
 from ..base import BasePlugin, DecisionDefinition, DecisionDefinitionVersion
 from ..management.commands.dmn_evaluate import input_variable
 from ..registry import Registry
+from ..types import DMNInputOutput, GenericInputOutput
 
 register = Registry()
 
@@ -20,6 +21,12 @@ class Plugin1(BasePlugin):
     @staticmethod
     def evaluate(*args, **kwargs):
         pass
+
+    @staticmethod
+    def get_decision_definition_parameters(
+        definition_id: str, version: str = ""
+    ) -> DMNInputOutput:
+        return GenericInputOutput(inputs=[], outputs=[])
 
 
 @register("plugin2")
@@ -39,6 +46,12 @@ class Plugin2(BasePlugin):
 
     @staticmethod
     def evaluate(*args, **kwargs):
+        pass
+
+    @staticmethod
+    def get_decision_definition_parameters(
+        definition_id: str, version: str = ""
+    ) -> DMNInputOutput:
         pass
 
 

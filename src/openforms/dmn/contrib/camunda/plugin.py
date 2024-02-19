@@ -7,9 +7,8 @@ from django.utils.translation import gettext_lazy as _
 import requests
 import simplejson  # dependency pulled in via mail-parser...
 from django_camunda.client import Camunda, get_client
-from django_camunda.dmn import evaluate_dmn
+from django_camunda.dmn import evaluate_dmn, get_dmn_parser
 from django_camunda.dmn.datastructures import DMNIntrospectionResult
-from django_camunda.dmn.parser import Parser
 
 from ...base import BasePlugin, DecisionDefinition, DecisionDefinitionVersion
 from ...registry import register
@@ -128,8 +127,9 @@ class Plugin(BasePlugin):
     def get_decision_definition_parameters(
         self, definition_id: str, version: str = ""
     ) -> DMNIntrospectionResult:
-        xml_doc = self.get_definition_xml(definition_id, version)
-
-        parser = Parser(xml=xml_doc.encode("utf-8"))
-
+        with get_client() as client:
+            camunda_id = _get_decision_definition_id(client, definition_id, version)
+            parser = get_dmn_parser(
+                dmn_key=definition_id, dmn_id=camunda_id, client=client
+            )
         return parser.extract_parameters(definition_id)

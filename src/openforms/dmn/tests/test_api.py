@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-from django_camunda.dmn.datastructures import DMNIntrospectionResult
-from django_camunda.dmn.types import DMNInputParameter, DMNOutputParameter
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -11,6 +9,7 @@ from openforms.api.tests.utils import APITestAssertions
 
 from ..base import BasePlugin, DecisionDefinition, DecisionDefinitionVersion
 from ..registry import Registry
+from ..types import DMNInputOutput
 
 register = Registry()
 
@@ -33,37 +32,37 @@ class TestPlugin(BasePlugin):
     @staticmethod
     def get_decision_definition_parameters(
         self, definition_id: str, version: str = ""
-    ) -> DMNIntrospectionResult:
-        return DMNIntrospectionResult(
-            inputs=[
-                DMNInputParameter(
-                    id="clause1",
-                    label="Invoice Amount",
-                    expression="amount",
-                    type_ref="double",
-                ),
-                DMNInputParameter(
-                    id="InputClause_15qmk0v",
-                    label="Invoice Category",
-                    expression="invoiceCategory",
-                    type_ref="string",
-                ),
+    ) -> DMNInputOutput:
+        return {
+            "inputs": [
+                {
+                    "id": "clause1",
+                    "label": "Invoice Amount",
+                    "expression": "amount",
+                    "type_ref": "double",
+                },
+                {
+                    "id": "InputClause_15qmk0v",
+                    "label": "Invoice Category",
+                    "expression": "invoiceCategory",
+                    "type_ref": "string",
+                },
             ],
-            outputs=[
-                DMNOutputParameter(
-                    id="clause3",
-                    label="Classification",
-                    name="invoiceClassification",
-                    type_ref="string",
-                ),
-                DMNOutputParameter(
-                    id="OutputClause_1cthd0w",
-                    label="Approver Group",
-                    name="result",
-                    type_ref="string",
-                ),
+            "outputs": [
+                {
+                    "id": "clause3",
+                    "label": "Classification",
+                    "name": "invoiceClassification",
+                    "type_ref": "string",
+                },
+                {
+                    "id": "OutputClause_1cthd0w",
+                    "label": "Approver Group",
+                    "name": "result",
+                    "type_ref": "string",
+                },
             ],
-        )
+        }
 
     @staticmethod
     def evaluate(

@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 
-from django_camunda.dmn.datastructures import DMNIntrospectionResult
-
 from openforms.plugins.plugin import AbstractBasePlugin
+
+from .types import DMNInputOutput
 
 
 @dataclass
@@ -68,9 +68,10 @@ class BasePlugin(ABC, AbstractBasePlugin):
         """
         return ""
 
+    @abstractmethod
     def get_decision_definition_parameters(
         self, definition_id: str, version: str = ""
-    ) -> DMNIntrospectionResult | None:
+    ) -> DMNInputOutput:
         """
         Return the input/output clauses for a given decision definition (version).
 
@@ -79,4 +80,4 @@ class BasePlugin(ABC, AbstractBasePlugin):
         An output clause defines the id, label, name and type of a decision table output. It is represented by an
         output element inside a decisionTable XML element.
         """
-        return None
+        ...
