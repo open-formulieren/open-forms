@@ -1,7 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
-
 const TextField = Formio.Components.components.textfield;
 
 class IbanField extends TextField {
@@ -25,10 +23,6 @@ class IbanField extends TextField {
       weight: 10,
       schema: IbanField.schema(),
     };
-  }
-
-  static editForm() {
-    return {components: [DEFAULT_SENSITIVE_TABS]};
   }
 
   get defaultSchema() {

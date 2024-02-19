@@ -1,14 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {MULTIPLE} from './edit/options';
-import {
-  ADVANCED,
-  CHOICES_BASIC,
-  DEFAULT_CHOICES_TABS,
-  REGISTRATION,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
 const RadioFormio = Formio.Components.components.radio;
@@ -38,26 +29,6 @@ class RadioField extends RadioFormio {
       weight: 80,
       documentation: '/userguide/forms/form-components#radio',
       schema: RadioField.schema(),
-    };
-  }
-
-  static editForm() {
-    return {
-      components: [
-        {
-          ...DEFAULT_CHOICES_TABS,
-          components: [
-            {
-              ...CHOICES_BASIC,
-              components: CHOICES_BASIC.components.filter(option => option.key !== MULTIPLE.key),
-            },
-            ADVANCED,
-            VALIDATION,
-            REGISTRATION,
-            TRANSLATIONS,
-          ],
-        },
-      ],
     };
   }
 

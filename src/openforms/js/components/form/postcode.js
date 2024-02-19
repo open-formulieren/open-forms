@@ -1,11 +1,3 @@
-import {
-  ADVANCED,
-  PREFILL,
-  REGISTRATION,
-  SENSITIVE_READ_ONLY,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
 import TextField from './textfield';
 
 // NB: this component will become deprecated due to preset autocomplete components
@@ -41,15 +33,6 @@ class PostcodeField extends TextField {
       weight: 10,
       schema: PostcodeField.schema(),
     };
-  }
-
-  static editForm() {
-    const tabs = {
-      type: 'tabs',
-      key: 'tabs',
-      components: [SENSITIVE_READ_ONLY, ADVANCED, VALIDATION, REGISTRATION, PREFILL, TRANSLATIONS],
-    };
-    return {components: [tabs]};
   }
 
   get defaultSchema() {

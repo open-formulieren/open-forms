@@ -1,15 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {getMinMaxValidationEditForm} from './edit/date-edit-form';
-import {
-  ADVANCED,
-  DEFAULT_TABS,
-  PREFILL,
-  REGISTRATION,
-  SENSITIVE_READ_ONLY,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
 const DateTimeFormio = Formio.Components.components.datetime;
@@ -83,29 +73,6 @@ class DateTimeField extends DateTimeFormio {
       weight: 10,
       schema: DateTimeField.schema(),
     };
-  }
-
-  static editForm() {
-    const VALIDATION_TAB = {
-      ...VALIDATION,
-      components: [
-        ...VALIDATION.components,
-        getMinMaxValidationEditForm('minDate', 'datetime'),
-        getMinMaxValidationEditForm('maxDate', 'datetime'),
-      ],
-    };
-    const TABS = {
-      ...DEFAULT_TABS,
-      components: [
-        SENSITIVE_READ_ONLY,
-        ADVANCED,
-        VALIDATION_TAB,
-        REGISTRATION,
-        PREFILL,
-        TRANSLATIONS,
-      ],
-    };
-    return {components: [TABS]};
   }
 
   get suffix() {
