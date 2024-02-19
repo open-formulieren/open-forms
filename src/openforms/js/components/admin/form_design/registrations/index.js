@@ -42,6 +42,7 @@ export const BACKEND_OPTIONS_FORMS = {
   },
   'zgw-create-zaak': {
     form: ZGWOptionsForm,
-    onStepEdit: onStepEdit,
+    // TODO -> update eigenschap mappings
+    // onStepEdit: ...,
   },
 };
