@@ -10,8 +10,6 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files.storage import FileSystemStorage, default_storage
 from django.template.loader import render_to_string
 
-import weasyprint
-
 logger = logging.getLogger(__name__)
 
 
@@ -44,6 +42,8 @@ class UrlFetcher:
         return urlparse(fully_qualified_url)
 
     def __call__(self, url: str) -> dict:
+        import weasyprint  # heavy import
+
         orig_url = url
         parsed_url = urlparse(url)
 
@@ -98,6 +98,8 @@ def render_to_pdf(template_name: str, context: dict) -> tuple[str, bytes]:
     """
     Render a (HTML) template to PDF with the given context.
     """
+    import weasyprint  # heavy import
+
     rendered_html = render_to_string(template_name, context=context)
     html_object = weasyprint.HTML(
         string=rendered_html,
