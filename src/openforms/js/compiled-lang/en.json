@@ -1125,12 +1125,6 @@
       "value": "Form"
     }
   ],
-  "BVuE94": [
-    {
-      "type": 0,
-      "value": "If specified, the user must check at least this many options."
-    }
-  ],
   "BcuXrg": [
     {
       "type": 0,
@@ -3121,12 +3115,6 @@
       "value": "Products Component"
     }
   ],
-  "aWwaAq": [
-    {
-      "type": 0,
-      "value": "Maximum selected checkboxes"
-    }
-  ],
   "aXJpiI": [
     {
       "type": 0,
@@ -3421,12 +3409,6 @@
     {
       "type": 0,
       "value": "Label is a required field."
-    }
-  ],
-  "dbAJfK": [
-    {
-      "type": 0,
-      "value": "Minimum selected checkboxes"
     }
   ],
   "ddDA6+": [
@@ -4571,12 +4553,6 @@
     {
       "type": 0,
       "value": "Whether to send a confirmation email to the end-user who submitted the form."
-    }
-  ],
-  "sR9GVQ": [
-    {
-      "type": 0,
-      "value": "If specified, the user must check at most this many options."
     }
   ],
   "sU/n0S": [

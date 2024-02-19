@@ -1129,12 +1129,6 @@
       "value": "Formulier"
     }
   ],
-  "BVuE94": [
-    {
-      "type": 0,
-      "value": "If specified, the user must check at least this many options."
-    }
-  ],
   "BcuXrg": [
     {
       "type": 0,
@@ -3122,12 +3116,6 @@
       "value": "Product veld"
     }
   ],
-  "aWwaAq": [
-    {
-      "type": 0,
-      "value": "Maximum selected checkboxes"
-    }
-  ],
   "aXJpiI": [
     {
       "type": 0,
@@ -3422,12 +3410,6 @@
     {
       "type": 0,
       "value": "Het verplichte veld Label is niet ingevuld."
-    }
-  ],
-  "dbAJfK": [
-    {
-      "type": 0,
-      "value": "Minimum selected checkboxes"
     }
   ],
   "ddDA6+": [
@@ -4573,12 +4555,6 @@
     {
       "type": 0,
       "value": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier."
-    }
-  ],
-  "sR9GVQ": [
-    {
-      "type": 0,
-      "value": "If specified, the user must check at most this many options."
     }
   ],
   "sU/n0S": [
