@@ -159,7 +159,6 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                 "fields": (
                     "display_sdk_information",
                     "enable_demo_plugins",
-                    "enable_react_formio_builder",
                     "allow_empty_initiator",
                     "payment_order_id_prefix",
                 ),

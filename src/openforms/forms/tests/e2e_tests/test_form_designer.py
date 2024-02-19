@@ -7,7 +7,6 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import Page, expect
 
-from openforms.config.models import GlobalConfiguration
 from openforms.products.tests.factories import ProductFactory
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.utils.tests.cache import clear_caches
@@ -49,519 +48,11 @@ async def drag_and_drop_component(page: Page, component: str):
 
 
 class FormDesignerComponentTranslationTests(E2ETestCase):
-    # TODO: once the form builder has been replaced completely with our react-based
-    # implemenation, these shims need to be removed.
-    translation_map = {}
-    translations_data_path = "data[openForms.translations.{locale}]"
-    translations_literal_suffix = ""
-    translations_translation_suffix = "[translation]"
-    is_translations_order_fixed = False
 
     def setUp(self):
         super().setUp()
 
         self.addCleanup(clear_caches)
-        config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
-        config.enable_react_formio_builder = False
-        config.save()
-
-    def _translate(self, text: str) -> str:
-        return self.translation_map.get(text, text)
-
-    async def test_editing_translatable_properties(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Playwright test",
-                name_nl="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright test",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "field1",
-                            "label": "Field 1",
-                            "description": "Description 1",
-                            "tooltip": "Tooltip 1",
-                        },
-                        {
-                            "type": "select",
-                            "key": "field2",
-                            "label": "Field 2",
-                            "description": "Description 2",
-                            "tooltip": "Tooltip 2",
-                            "data": {
-                                "values": [
-                                    {"value": "option1", "label": "Option 1"},
-                                    {"value": "option2", "label": "Option 2"},
-                                ]
-                            },
-                        },
-                    ],
-                },
-            )
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await page.get_by_role("tab", name="Steps and fields").click()
-
-            with phase("Textfield component checks"):
-                await open_component_options_modal(page, "Field 1")
-
-                # find and click translations tab
-                await page.get_by_role(
-                    "link", name=self._translate("Vertalingen")
-                ).click()
-
-                _translations_data_path = self.translations_data_path.format(
-                    locale="nl"
-                )
-                # check the values of the translation inputs
-                literal1 = page.locator(f'css=[name="{_translations_data_path}[0]"]')
-                translation1 = page.locator(
-                    f'css=[name="{_translations_data_path}[0][translation]"]'
-                )
-                literal2 = page.locator(f'css=[name="{_translations_data_path}[1]"]')
-                translation2 = page.locator(
-                    f'css=[name="{_translations_data_path}[1][translation]"]'
-                )
-                literal3 = page.locator(f'css=[name="{_translations_data_path}[2]"]')
-                translation3 = page.locator(
-                    f'css=[name="{_translations_data_path}[2][translation]"]'
-                )
-
-                await expect(literal1).to_have_value("Field 1")
-                await expect(translation1).to_have_value("")
-                await expect(literal2).to_have_value("Description 1")
-                await expect(translation2).to_have_value("")
-                await expect(literal3).to_have_value("Tooltip 1")
-                await expect(translation3).to_have_value("")
-
-                # edit textfield label literal
-                await page.get_by_role("link", name=self._translate("Basis")).click()
-                await page.get_by_label("Label").fill("Field label")
-
-                # translations tab needs to be updated - note that the react-base builder
-                # preserves the order of literals/translations
-                await page.get_by_role(
-                    "link", name=self._translate("Vertalingen")
-                ).click()
-
-                label_literal = literal3
-                label_translation = translation3
-                description_literal = literal1
-                description_translation = translation1
-                tooltip_literal = literal2
-                tooltip_translation = translation2
-
-                await expect(label_literal).to_have_value("Field label")
-                await expect(label_translation).to_have_value("")
-                await expect(description_literal).to_have_value("Description 1")
-                await expect(description_translation).to_have_value("")
-                await expect(tooltip_literal).to_have_value("Tooltip 1")
-                await expect(tooltip_translation).to_have_value("")
-
-                # enter translations and save
-                await label_translation.fill("Veldlabel")
-                await close_modal(page, self._translate("Opslaan"), exact=True)
-
-            with phase("Select component checks"):
-                await open_component_options_modal(page, "Field 2")
-                # find and click translations tab
-                await page.get_by_role("link", name="Vertalingen").click()
-
-                expected_literals = [
-                    "Field 2",
-                    "Description 2",
-                    "Tooltip 2",
-                    "Option 1",
-                    "Option 2",
-                ]
-                for index, literal in enumerate(expected_literals):
-                    with self.subTest(literal=literal, index=index):
-                        literal_loc = page.locator(
-                            f'css=[name="data[openForms.translations.nl][{index}]"]'
-                        )
-                        await expect(literal_loc).to_have_value(literal)
-
-                await close_modal(page, self._translate("Annuleren"))
-
-            with phase("save form changes to backend"):
-                await page.get_by_role("button", name="Save", exact=True).click()
-                changelist_url = str(
-                    furl(self.live_server_url) / reverse("admin:forms_form_changelist")
-                )
-                await expect(page).to_have_url(changelist_url)
-
-        @sync_to_async
-        def assertState():
-            translations = (
-                form.formstep_set.get().form_definition.component_translations
-            )
-            self.assertEqual(
-                translations,
-                {
-                    "nl": {"Field label": "Veldlabel"},
-                    "en": {},
-                },
-            )
-
-        await assertState()
-
-    @tag("gh-2800")
-    async def test_editing_translatable_properties_remembers_translations(self):
-        """
-        Assert that entering translations and then changing the source string keeps the translation.
-        """
-        await create_superuser()
-        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await add_new_step(page)
-            await drag_and_drop_component(page, "Tekstveld")
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-            label_locator = page.get_by_label("Label", exact=True)
-            await label_locator.clear()
-            await label_locator.fill("Test")
-
-            # Set an initial translation
-            await page.get_by_role("link", name=self._translate("Vertalingen")).click()
-
-            _translations_data_path = self.translations_data_path.format(locale="nl")
-
-            literal = page.locator(
-                f'css=[name="{_translations_data_path}[0]{self.translations_literal_suffix}"]'
-            )
-            translation = page.locator(
-                f'css=[name="{_translations_data_path}[0]{self.translations_translation_suffix}"]'
-            )
-            await expect(literal).to_have_value("Test")
-            await expect(translation).to_have_value("")
-
-            await translation.click()
-            await translation.fill("Vertaald label")
-
-            # Now change the source string & check the translations are still in place
-            await page.get_by_role("link", name=self._translate("Basis")).click()
-            await page.get_by_label("Label", exact=True).fill("Test 2")
-
-            await page.get_by_role("link", name=self._translate("Vertalingen")).click()
-            await expect(literal).to_have_value("Test 2")
-            await expect(translation).to_have_value("Vertaald label")
-
-    async def test_regex_validation_key(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Playwright test",
-                name_nl="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright test",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "someField",
-                            "label": "Some Field",
-                        }
-                    ],
-                },
-            )
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await page.get_by_role("tab", name="Steps and fields").click()
-            await open_component_options_modal(page, "Some Field")
-
-            # fill the component key field with an invalid value to trigger validation
-            key_input = page.get_by_label(self._translate("Eigenschapnaam"))
-            await key_input.click()
-            await key_input.fill(" +?!")
-            await key_input.blur()
-            parent = key_input.locator("xpath=../..")
-            await expect(parent).to_have_class(re.compile(r"has-error"))
-            # await expect(parent).to_have_class(re.compile(r"has-message"))
-            error_message = self._translate(
-                "De eigenschapsnaam mag alleen alfanumerieke tekens, "
-                "onderstrepingstekens, punten en streepjes bevatten en mag niet "
-                "worden afgesloten met een streepje of punt."
-            )
-            await expect(parent).to_contain_text(error_message)
-
-    async def test_key_automatically_updated_for_files(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Playwright test",
-                name_nl="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright test",
-                formstep__form_definition__configuration={
-                    "components": [],
-                },
-            )
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await page.get_by_role("tab", name="Steps and fields").click()
-
-            # Drag and drop a component
-            await drag_and_drop_component(page, "Bestandsupload")
-
-            # Check that the modal is open
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-
-            # Check the key before modifying the label
-            key_input = page.get_by_label(self._translate("Eigenschapnaam"))
-            await expect(key_input).to_have_value(self._translate("file"))
-
-            # Modify the component label
-            label_input = page.get_by_label("Label")
-            await label_input.click()
-            await label_input.fill("Test")
-
-            # Test that the key also changed
-            await expect(key_input).to_have_value("test")
-
-            # Check file name mentions templating
-            await page.get_by_role("link", name=self._translate("Bestand")).click()
-            await expect(
-                page.locator("label").filter(
-                    has_text=self._translate("Bestandsnaamsjabloon")
-                )
-            ).to_be_visible()
-
-    async def test_key_unique_across_steps(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form with 2 steps
-            form = FormFactory.create(
-                name="Playwright test",
-                name_nl="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="First step",
-                formstep__form_definition__configuration={
-                    "components": [{"key": "textField", "type": "textfield"}],
-                },
-            )
-            form_def = FormDefinitionFactory.create(
-                name_nl="Second step",
-                configuration={
-                    "components": [],
-                },
-            )
-            FormStepFactory.create(form=form, form_definition=form_def)
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await page.get_by_role("tab", name="Steps and fields").click()
-
-            # Go to the second form step
-            await page.get_by_text("Second step").click()
-            await drag_and_drop_component(page, "Tekstveld")
-
-            # Check that the modal is open
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-
-            # Check that the key has been made unique (textField1 vs textField)
-            key_input = page.get_by_label(self._translate("Eigenschapnaam"))
-            await expect(key_input).to_have_value("textField1")
-
-    @tag("gh-2805")
-    async def test_enable_translations_and_create_new_step(self):
-        await create_superuser()
-        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-
-            # missing translations warning may not crash the form builder
-            await page.get_by_label("Translation enabled").check()
-            # there should be a warning displayed about missing translations
-            await expect(
-                page.get_by_text(
-                    re.compile(
-                        r"Form has translation enabled, but is missing [0-9]+ translations"
-                    )
-                )
-            ).to_be_visible()
-
-            await add_new_step(page)
-            await page.get_by_text("Verouderd").click()
-            await drag_and_drop_component(page, "Wachtwoord")
-            # save with the defaults
-            await close_modal(page, self._translate("Opslaan"), exact=True)
-
-    @tag("gh-2800")
-    async def test_key_automatically_generated_for_select_options(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Playwright test",
-                name_nl="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright test",
-                formstep__form_definition__configuration={
-                    "components": [],
-                },
-            )
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await page.get_by_role("tab", name="Steps and fields").click()
-
-            # Drag and drop a component
-            await drag_and_drop_component(page, "Keuzelijst")
-
-            # Check that the modal is open
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-
-            # Update the label
-            value_label_input = page.locator('css=[name="data[data.values][0][label]"]')
-            await value_label_input.click()
-            await value_label_input.fill("Test")
-
-            # Check that the key has been updated
-            value_key_input = page.locator('css=[name="data[data.values][0][value]"]')
-            await expect(value_key_input).to_have_value("test")
-
-    @tag("gh-2820")
-    async def test_editing_content_translations_are_saved(self):
-        """
-        Assert that entering translations and then changing the source string keeps the translation.
-        """
-        await create_superuser()
-        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await add_new_step(page)
-
-            # Open the menu for the layout components
-            await page.get_by_text("Opmaak").click()
-            await drag_and_drop_component(page, "Vrije tekst")
-
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-
-            default_string = page.locator("css=.ck-editor__editable").nth(0)
-            await default_string.click()
-            await default_string.fill("This is the default")
-
-            dutch_translation = page.locator("css=.ck-editor__editable").nth(1)
-            await dutch_translation.click()
-            await expect(dutch_translation).to_be_focused()
-            await dutch_translation.fill("This is the translation")
-
-            await expect(dutch_translation).to_contain_text("This is the translation")
-
-            # Save the component
-            await page.get_by_role("button", name="Opslaan").click()
-
-            await open_component_options_modal(page, "This is the default")
-            dutch_translation = page.locator("css=.ck-editor__editable").nth(1)
-
-            await expect(dutch_translation).to_contain_text("This is the translation")
-
-
-class NewFormBuilderFormDesignerComponentTranslationTests(
-    FormDesignerComponentTranslationTests
-):
-    """
-    Run all the same tests as FormDesignerComponentTranslationTests, except with the
-    new React based form builder enabled.
-
-    # TODO: once the form builder has been replaced completely with our react-based
-    # implemenation, this entire subclass has no right to exist anymore -> remove it
-    """
-
-    # required because the react based builder takes into account the browser locale,
-    # while the form.io builder is hardcoded to NL
-    translation_map = {
-        "Eigenschapnaam": "Property Name",
-        "Basis": "Basic",
-        "Vertalingen": "Translations",
-        "Opslaan": "Save",
-        "Annuleren": "Cancel",
-        (
-            "De eigenschapsnaam mag alleen alfanumerieke tekens, "
-            "onderstrepingstekens, punten en streepjes bevatten en mag niet "
-            "worden afgesloten met een streepje of punt."
-        ): (
-            "The property name must only contain alphanumeric characters, underscores, "
-            "dots and dashes and should not be ended by dash or dot."
-        ),
-        "file": "fileUpload",  # label is File Upload -> derived key is fileUpload
-        "Bestand": "File",
-        "Bestandsnaamsjabloon": "File name template",
-    }
-    translations_data_path = "openForms.translations.{locale}"
-    translations_literal_suffix = ".literal"
-    translations_translation_suffix = ".translation"
-    is_translations_order_fixed = True
-
-    def setUp(self):
-        super().setUp()
-
-        self.addCleanup(clear_caches)
-        config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
-        config.enable_react_formio_builder = True
-        config.save()
 
     @staticmethod
     async def _check_translation(
@@ -650,9 +141,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
                 await open_component_options_modal(page, "Field 1")
 
                 # find and click translations tab
-                await page.get_by_role(
-                    "link", name=self._translate("Vertalingen")
-                ).click()
+                await page.get_by_role("link", name="Translations").click()
 
                 # check the values of the translation inputs
                 await self._check_translation(page, "label", "Label", "Field 1", "")
@@ -664,14 +153,12 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
                 )
 
                 # edit textfield label literal
-                await page.get_by_role("link", name=self._translate("Basis")).click()
+                await page.get_by_role("link", name="Basic").click()
                 await page.get_by_label("Label").fill("Field label")
 
                 # translations tab needs to be updated - note that the react-base builder
                 # preserves the order of literals/translations
-                await page.get_by_role(
-                    "link", name=self._translate("Vertalingen")
-                ).click()
+                await page.get_by_role("link", name="Translations").click()
 
                 # React-based form builder has a more accessible translations table
                 label_translation = await self._check_translation(
@@ -686,7 +173,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
 
                 # enter translations and save
                 await label_translation.fill("Veldlabel")
-                await close_modal(page, self._translate("Opslaan"), exact=True)
+                await close_modal(page, "Save", exact=True)
 
             # TODO: this still uses the old translation mechanism, will follow in a later
             # version of @open-formulieren/formio-builder npm package.
@@ -694,9 +181,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
                 await open_component_options_modal(page, "Field 2")
 
                 # find and click translations tab
-                await page.get_by_role(
-                    "link", name=self._translate("Vertalingen")
-                ).click()
+                await page.get_by_role("link", name="Translations").click()
 
                 # check the values of the translation inputs
                 await self._check_translation(page, "label", "Label", "Field 2", "")
@@ -759,7 +244,7 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
             await label_locator.fill("Test")
 
             # Set an initial translation
-            await page.get_by_role("link", name=self._translate("Vertalingen")).click()
+            await page.get_by_role("link", name="Translations").click()
 
             translation = await self._check_translation(
                 page, "label", "Label", expected_literal="Test", expected_translation=""
@@ -768,10 +253,10 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
             await translation.fill("Vertaald label")
 
             # Now change the source string & check the translations are still in place
-            await page.get_by_role("link", name=self._translate("Basis")).click()
+            await page.get_by_role("link", name="Basic").click()
             await page.get_by_label("Label", exact=True).fill("Test 2")
 
-            await page.get_by_role("link", name=self._translate("Vertalingen")).click()
+            await page.get_by_role("link", name="Translations").click()
             await self._check_translation(
                 page,
                 "label",
@@ -779,6 +264,219 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
                 expected_literal="Test 2",
                 expected_translation="Vertaald label",
             )
+
+    async def test_regex_validation_key(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "someField",
+                            "label": "Some Field",
+                        }
+                    ],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await open_component_options_modal(page, "Some Field")
+
+            # fill the component key field with an invalid value to trigger validation
+            key_input = page.get_by_label("Property Name")
+            await key_input.click()
+            await key_input.fill(" +?!")
+            await key_input.blur()
+            parent = key_input.locator("xpath=../..")
+            await expect(parent).to_have_class(re.compile(r"has-error"))
+            # await expect(parent).to_have_class(re.compile(r"has-message"))
+            error_message = (
+                "The property name must only contain alphanumeric characters, "
+                "underscores, dots and dashes and should not be ended by dash or dot."
+            )
+            await expect(parent).to_contain_text(error_message)
+
+    async def test_key_automatically_updated_for_files(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Drag and drop a component
+            await drag_and_drop_component(page, "Bestandsupload")
+
+            # Check that the modal is open
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            # Check the key before modifying the label
+            key_input = page.get_by_label("Property Name")
+            await expect(key_input).to_have_value("fileUpload")
+
+            # Modify the component label
+            label_input = page.get_by_label("Label")
+            await label_input.click()
+            await label_input.fill("Test")
+
+            # Test that the key also changed
+            await expect(key_input).to_have_value("test")
+
+            # Check file name mentions templating
+            await page.get_by_role("link", name="File").click()
+            await expect(
+                page.locator("label").filter(has_text="File name template")
+            ).to_be_visible()
+
+    async def test_key_unique_across_steps(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form with 2 steps
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="First step",
+                formstep__form_definition__configuration={
+                    "components": [{"key": "textField", "type": "textfield"}],
+                },
+            )
+            form_def = FormDefinitionFactory.create(
+                name_nl="Second step",
+                configuration={
+                    "components": [],
+                },
+            )
+            FormStepFactory.create(form=form, form_definition=form_def)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Go to the second form step
+            await page.get_by_text("Second step").click()
+            await drag_and_drop_component(page, "Tekstveld")
+
+            # Check that the modal is open
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            # Check that the key has been made unique (textField1 vs textField)
+            key_input = page.get_by_label("Property Name")
+            await expect(key_input).to_have_value("textField1")
+
+    @tag("gh-2805")
+    async def test_enable_translations_and_create_new_step(self):
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            # missing translations warning may not crash the form builder
+            await page.get_by_label("Translation enabled").check()
+            # there should be a warning displayed about missing translations
+            await expect(
+                page.get_by_text(
+                    re.compile(
+                        r"Form has translation enabled, but is missing [0-9]+ translations"
+                    )
+                )
+            ).to_be_visible()
+
+            await add_new_step(page)
+            await page.get_by_text("Verouderd").click()
+            await drag_and_drop_component(page, "Wachtwoord")
+            # save with the defaults
+            await close_modal(page, "Save", exact=True)
+
+    @tag("gh-2800")
+    async def test_key_automatically_generated_for_select_options(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Drag and drop a component
+            await drag_and_drop_component(page, "Keuzelijst")
+
+            # Check that the modal is open
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            # Update the label
+            value_label_input = page.get_by_label("Option label")
+            await value_label_input.click()
+            await value_label_input.fill("Test")
+
+            # Check that the key has been updated
+            value_key_input = page.get_by_label("Option value")
+            await expect(value_key_input).to_have_value("test")
 
     @tag("gh-2820")
     async def test_editing_content_translations_are_saved(self):
@@ -831,49 +529,6 @@ class NewFormBuilderFormDesignerComponentTranslationTests(
             await expect(wysiwyg_en_2).to_contain_text(
                 "This is the English translation."
             )
-
-    @tag("gh-2800")
-    async def test_key_automatically_generated_for_select_options(self):
-        @sync_to_async
-        def setUpTestData():
-            # set up a form
-            form = FormFactory.create(
-                name="Playwright test",
-                name_nl="Playwright test",
-                generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Playwright test",
-                formstep__form_definition__configuration={
-                    "components": [],
-                },
-            )
-            return form
-
-        await create_superuser()
-        form = await setUpTestData()
-        admin_url = str(
-            furl(self.live_server_url)
-            / reverse("admin:forms_form_change", args=(form.pk,))
-        )
-
-        async with browser_page() as page:
-            await self._admin_login(page)
-            await page.goto(str(admin_url))
-            await page.get_by_role("tab", name="Steps and fields").click()
-
-            # Drag and drop a component
-            await drag_and_drop_component(page, "Keuzelijst")
-
-            # Check that the modal is open
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-
-            # Update the label
-            value_label_input = page.get_by_label("Option label")
-            await value_label_input.click()
-            await value_label_input.fill("Test")
-
-            # Check that the key has been updated
-            value_key_input = page.get_by_label("Option value")
-            await expect(value_key_input).to_have_value("test")
 
 
 class FormDesignerRegressionTests(E2ETestCase):
