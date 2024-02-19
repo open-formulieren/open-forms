@@ -116,7 +116,7 @@ CACHES = {
     # redis locks?
     "portalocker": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('CACHE_PORTALOCKER', 'localhost:6379/0')}",
+        "LOCATION": f"redis://{config('CACHE_PORTALOCKER', 'localhost:6379/4')}",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": False,
