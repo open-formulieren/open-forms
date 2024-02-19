@@ -32,6 +32,7 @@ export const FormDecorator = (Story, {args}) => (
         availableDMNPlugins: args.availableDMNPlugins || [],
       },
       components: args.availableComponents || {},
+      registrationBackends: args.registrationBackends || [],
     }}
   >
     <Story />
