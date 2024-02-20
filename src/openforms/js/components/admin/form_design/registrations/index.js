@@ -4,6 +4,7 @@ import CamundaOptionsForm from './camunda';
 import {onCamundaStepEdit, onZGWStepEdit} from './handlers';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
+import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
 import ZGWOptionsForm from './zgw';
 
 /**
@@ -11,7 +12,7 @@ import ZGWOptionsForm from './zgw';
  *   form?: React.FC,
  *   uiSchema?: Object,
  *   configurableFromVariables?: boolean | (options: Object) => boolean,
- *   formVariableConfigured: (variableKey: string, options: Object) => boolean,
+ *   formVariableConfigured: (variable: Object, options: Object) => boolean,
  *   summaryHandler?: React.FC
  * }} BackendInfo
  * A map of backend ID to components for the (advanced) option forms.
@@ -26,9 +27,10 @@ export const BACKEND_OPTIONS_FORMS = {
     form: ObjectsApiOptionsForm,
     onStepEdit: null,
     configurableFromVariables: options => options.version === 2,
-    formVariableConfigured: (variableKey, options) =>
-      options.variablesMapping.some(mapping => mapping.variableKey === variableKey),
+    formVariableConfigured: (variable, options) =>
+      options.variablesMapping.some(mapping => mapping.variableKey === variable.key),
     summaryHandler: ObjectsApiSummaryHandler,
+    variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },
   email: {
     uiSchema: {
