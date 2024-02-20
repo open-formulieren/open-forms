@@ -99,10 +99,7 @@ const VariableRow = ({index, variable}) => {
         )}
       </td>
       <td>
-        <RegistrationsSummary
-          variableKey={variable.key}
-          registrationBackends={registrationBackends}
-        />
+        <RegistrationsSummary variable={variable} registrationBackends={registrationBackends} />
       </td>
       <td>{variable.dataType}</td>
       <td>
@@ -216,10 +213,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <RegistrationsSummary
-          variableKey={variable.key}
-          registrationBackends={registrationBackends}
-        />
+        <RegistrationsSummary variable={variable} registrationBackends={registrationBackends} />
       </td>
       <td>
         <Field name="dataType" errors={variable.errors?.dataType}>
