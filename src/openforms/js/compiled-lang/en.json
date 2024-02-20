@@ -119,6 +119,12 @@
       "value": "Whether to show this value in the confirmation PDF"
     }
   ],
+  "0M2B7B": [
+    {
+      "type": 0,
+      "value": "DMN variable"
+    }
+  ],
   "0OP7ho": [
     {
       "type": 0,
@@ -173,6 +179,12 @@
       "value": "Edit component JSON"
     }
   ],
+  "0h7gYQ": [
+    {
+      "type": 0,
+      "value": "Specify a ZGW property name."
+    }
+  ],
   "10KWbo": [
     {
       "type": 0,
@@ -183,6 +195,12 @@
     {
       "type": 0,
       "value": "Confirm"
+    }
+  ],
+  "1I9Slb": [
+    {
+      "type": 0,
+      "value": "DMN configuration:"
     }
   ],
   "1Vvryq": [
@@ -201,6 +219,18 @@
     {
       "type": 0,
       "value": "Incomplete Submissions Removal Method"
+    }
+  ],
+  "1iwlXs": [
+    {
+      "type": 0,
+      "value": "Add variable"
+    }
+  ],
+  "1lMaOI": [
+    {
+      "type": 0,
+      "value": "Open Forms variable"
     }
   ],
   "1pC7IP": [
@@ -361,6 +391,12 @@
       "value": "Location"
     }
   ],
+  "41hfj4": [
+    {
+      "type": 0,
+      "value": "Which ZGW API group to use."
+    }
+  ],
   "45IQhq": [
     {
       "type": 0,
@@ -409,6 +445,12 @@
       "value": " files to upload."
     }
   ],
+  "4XnRWO": [
+    {
+      "type": 0,
+      "value": "Map variables to case properties"
+    }
+  ],
   "4iGsG1": [
     {
       "type": 0,
@@ -455,6 +497,12 @@
       "value": "Show a live count of the number of characters."
     }
   ],
+  "5MiyLE": [
+    {
+      "type": 0,
+      "value": "Configure"
+    }
+  ],
   "5OXIff": [
     {
       "type": 0,
@@ -471,6 +519,12 @@
     {
       "type": 0,
       "value": "Add another value"
+    }
+  ],
+  "5QVVXM": [
+    {
+      "type": 0,
+      "value": "Objects API - objecttype version"
     }
   ],
   "5XOrxo": [
@@ -723,6 +777,12 @@
       "value": "is less than or equal to"
     }
   ],
+  "7gZkW/": [
+    {
+      "type": 0,
+      "value": "Registration"
+    }
+  ],
   "7qqbU9": [
     {
       "type": 1,
@@ -733,10 +793,22 @@
       "value": " 1"
     }
   ],
+  "833GAg": [
+    {
+      "type": 0,
+      "value": "Input mapping"
+    }
+  ],
   "89fqYz": [
     {
       "type": 0,
       "value": "Is reusable?"
+    }
+  ],
+  "8BjiJI": [
+    {
+      "type": 0,
+      "value": "Map variables to case properties"
     }
   ],
   "8LLxRg": [
@@ -1053,6 +1125,12 @@
       "value": "Form"
     }
   ],
+  "BVuE94": [
+    {
+      "type": 0,
+      "value": "If specified, the user must check at least this many options."
+    }
+  ],
   "BcuXrg": [
     {
       "type": 0,
@@ -1259,6 +1337,12 @@
       "value": "Basic"
     }
   ],
+  "Dog4vX": [
+    {
+      "type": 0,
+      "value": "This field is required."
+    }
+  ],
   "DqG0YS": [
     {
       "type": 0,
@@ -1387,6 +1471,12 @@
       "value": "Save as new"
     }
   ],
+  "EoyaLh": [
+    {
+      "type": 0,
+      "value": "RSIN of organization, which creates the ZAAK."
+    }
+  ],
   "ErwGIQ": [
     {
       "type": 0,
@@ -1417,6 +1507,12 @@
       "value": "This form version was created in an application version different from the current version. There may be missing configuration after restoring."
     }
   ],
+  "FH9/HC": [
+    {
+      "type": 0,
+      "value": "The co-sign component requires at least one authentication plugin to be enabled."
+    }
+  ],
   "FOlQaP": [
     {
       "type": 0,
@@ -1433,6 +1529,12 @@
     {
       "type": 0,
       "value": "Simple"
+    }
+  ],
+  "FbvIpr": [
+    {
+      "type": 0,
+      "value": "URL of the ZAAKTYPE in the Catalogi API."
     }
   ],
   "Fc/emc": [
@@ -1581,6 +1683,12 @@
       "value": "If enabled, the user will have to agree to the privacy policy before submitting a form."
     }
   ],
+  "HDsHI8": [
+    {
+      "type": 0,
+      "value": "DMN configuration"
+    }
+  ],
   "HEg854": [
     {
       "type": 0,
@@ -1667,6 +1775,12 @@
       "value": "Remove"
     }
   ],
+  "IhIqdj": [
+    {
+      "type": 0,
+      "value": "Decision definition ID"
+    }
+  ],
   "Ika4IH": [
     {
       "type": 0,
@@ -1713,6 +1827,12 @@
     {
       "type": 0,
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
+    }
+  ],
+  "JN1BvY": [
+    {
+      "type": 0,
+      "value": "Add another"
     }
   ],
   "JRGs/Q": [
@@ -1939,10 +2059,22 @@
       "value": "Disable adding or removing groups"
     }
   ],
+  "MUfBmP": [
+    {
+      "type": 0,
+      "value": "The value of the selected field will be the process variable value."
+    }
+  ],
   "MXKqVO": [
     {
       "type": 0,
       "value": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
+    }
+  ],
+  "MnfzL3": [
+    {
+      "type": 0,
+      "value": "Plugin ID"
     }
   ],
   "Mv8yjC": [
@@ -1967,6 +2099,12 @@
     {
       "type": 0,
       "value": "Your session has expired."
+    }
+  ],
+  "NY6h3i": [
+    {
+      "type": 0,
+      "value": "All simple variables are mapped to a case property."
     }
   ],
   "Nsifca": [
@@ -2151,6 +2289,12 @@
       "value": "Authorised person"
     }
   ],
+  "Q8WgtE": [
+    {
+      "type": 0,
+      "value": "Output mapping"
+    }
+  ],
   "QAbqb6": [
     {
       "type": 0,
@@ -2203,6 +2347,12 @@
     {
       "type": 0,
       "value": "You need to configure both longitude and latitude."
+    }
+  ],
+  "R78GMf": [
+    {
+      "type": 0,
+      "value": "Confidentiality"
     }
   ],
   "RN628y": [
@@ -2329,6 +2479,12 @@
       "value": "change a property of a component."
     }
   ],
+  "SjbNyf": [
+    {
+      "type": 0,
+      "value": "Add variable"
+    }
+  ],
   "Su4nqf": [
     {
       "type": 0,
@@ -2383,6 +2539,12 @@
       "value": "the path should not have a leading slash"
     }
   ],
+  "TIraO3": [
+    {
+      "type": 0,
+      "value": "Objects API - objecttype"
+    }
+  ],
   "TR5xSY": [
     {
       "type": 0,
@@ -2435,6 +2597,12 @@
     {
       "type": 0,
       "value": "Select the plugin(s) to use for the validation functionality."
+    }
+  ],
+  "UHlGZJ": [
+    {
+      "type": 0,
+      "value": "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
     }
   ],
   "UJTIZU": [
@@ -2695,6 +2863,12 @@
       "value": "Invalid JSON logic expression"
     }
   ],
+  "XPLnIL": [
+    {
+      "type": 0,
+      "value": "Edit variable registration"
+    }
+  ],
   "XUW6Gx": [
     {
       "type": 0,
@@ -2725,10 +2899,28 @@
       "value": "Remove"
     }
   ],
+  "XqTjf+": [
+    {
+      "type": 0,
+      "value": "JSON template for the content of the request sent to the Objects API."
+    }
+  ],
+  "Y2d0q4": [
+    {
+      "type": 0,
+      "value": "URL of the INFORMATIEOBJECTTYPE in the Catalogi API."
+    }
+  ],
   "Y4oNhH": [
     {
       "type": 0,
       "value": "Maximum width"
+    }
+  ],
+  "Y7s6RB": [
+    {
+      "type": 0,
+      "value": "Version of the object type in the Object Types API."
     }
   ],
   "Y8cmP1": [
@@ -2795,6 +2987,12 @@
     {
       "type": 1,
       "value": "error"
+    }
+  ],
+  "YdHbH9": [
+    {
+      "type": 0,
+      "value": "Decision definition version"
     }
   ],
   "YdIu8k": [
@@ -2923,6 +3121,12 @@
       "value": "Products Component"
     }
   ],
+  "aWwaAq": [
+    {
+      "type": 0,
+      "value": "Maximum selected checkboxes"
+    }
+  ],
   "aXJpiI": [
     {
       "type": 0,
@@ -2957,6 +3161,12 @@
     {
       "type": 0,
       "value": "Warning"
+    }
+  ],
+  "b+ekU/": [
+    {
+      "type": 0,
+      "value": "Evaluate DMN"
     }
   ],
   "b/AHC/": [
@@ -3213,6 +3423,12 @@
       "value": "Label is a required field."
     }
   ],
+  "dbAJfK": [
+    {
+      "type": 0,
+      "value": "Minimum selected checkboxes"
+    }
+  ],
   "ddDA6+": [
     {
       "type": 0,
@@ -3295,6 +3511,12 @@
     {
       "type": 0,
       "value": "Advanced options"
+    }
+  ],
+  "eU7+uS": [
+    {
+      "type": 0,
+      "value": "Confirm"
     }
   ],
   "eUowhH": [
@@ -3451,6 +3673,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "gUl3mu": [
+    {
+      "type": 0,
+      "value": "Are you sure that you want to remove this mapping?"
     }
   ],
   "gr7edY": [
@@ -3671,6 +3899,12 @@
     {
       "type": 0,
       "value": "This will make the text area auto expand its height as the user is typing into the area."
+    }
+  ],
+  "jYFS/i": [
+    {
+      "type": 0,
+      "value": "Variable"
     }
   ],
   "jZIu+e": [
@@ -3947,6 +4181,12 @@
       "value": "Whether to add children information to the component."
     }
   ],
+  "nDPXSj": [
+    {
+      "type": 0,
+      "value": "Zaaktype"
+    }
+  ],
   "nFXYHB": [
     {
       "type": 0,
@@ -3993,6 +4233,12 @@
     {
       "type": 0,
       "value": "Tooltip"
+    }
+  ],
+  "o+PhWW": [
+    {
+      "type": 0,
+      "value": "Organisatie rsin"
     }
   ],
   "o5Mfn3": [
@@ -4173,6 +4419,12 @@
       "value": "Select registration backend"
     }
   ],
+  "plld71": [
+    {
+      "type": 0,
+      "value": "Objects API - JSON content field"
+    }
+  ],
   "poZZD9": [
     {
       "type": 0,
@@ -4209,6 +4461,12 @@
       "value": "Product & payment"
     }
   ],
+  "qXbHf5": [
+    {
+      "type": 0,
+      "value": "Property"
+    }
+  ],
   "qYZ81s": [
     {
       "type": 0,
@@ -4225,6 +4483,12 @@
     {
       "type": 0,
       "value": "Export"
+    }
+  ],
+  "qpFDF5": [
+    {
+      "type": 0,
+      "value": "Medewerker roltype"
     }
   ],
   "qzISfx": [
@@ -4291,16 +4555,72 @@
       "value": "'Add another' text"
     }
   ],
+  "rzGuvz": [
+    {
+      "type": 0,
+      "value": "(not configured yet)"
+    }
+  ],
+  "s4xyn5": [
+    {
+      "type": 0,
+      "value": "Informatieobjecttype"
+    }
+  ],
   "sFHD3/": [
     {
       "type": 0,
       "value": "Whether to send a confirmation email to the end-user who submitted the form."
     }
   ],
+  "sR9GVQ": [
+    {
+      "type": 0,
+      "value": "If specified, the user must check at most this many options."
+    }
+  ],
   "sU/n0S": [
     {
       "type": 0,
       "value": "Manually fill in"
+    }
+  ],
+  "sbtZya": [
+    {
+      "offset": 0,
+      "options": {
+        "=0": {
+          "value": [
+          ]
+        },
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(1 variable mapped)"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "("
+            },
+            {
+              "type": 1,
+              "value": "varCount"
+            },
+            {
+              "type": 0,
+              "value": " variables mapped)"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "varCount"
     }
   ],
   "sgmcmf": [
@@ -4317,6 +4637,12 @@
     {
       "type": 0,
       "value": " 3"
+    }
+  ],
+  "t9+e9k": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to remove this mapping?"
     }
   ],
   "t99ynC": [
@@ -4631,10 +4957,28 @@
       "value": "Edit JSON"
     }
   ],
+  "xrmpmN": [
+    {
+      "type": 0,
+      "value": "Medewerker roltype"
+    }
+  ],
+  "xwBVzh": [
+    {
+      "type": 0,
+      "value": "ZGW API group"
+    }
+  ],
   "xxVNeU": [
     {
       "type": 0,
       "value": "Zoom level"
+    }
+  ],
+  "y2I3Eu": [
+    {
+      "type": 0,
+      "value": "Objects API - objecttype"
     }
   ],
   "yCogwi": [
@@ -4695,20 +5039,6 @@
     {
       "type": 0,
       "value": "Maximum height"
-    }
-  ],
-  "z+kWUh": [
-    {
-      "type": 0,
-      "value": "The co-sign component requires the "
-    },
-    {
-      "type": 1,
-      "value": "plugin"
-    },
-    {
-      "type": 0,
-      "value": " authentication plugin, but this plugin is not enabled on the form."
     }
   ],
   "z0FW+t": [

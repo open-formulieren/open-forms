@@ -175,8 +175,8 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
             'Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company',
         })}
         rawDescription={intl.formatMessage({
-          description: 'Medewerker roltype',
-          defaultMessage:
+          defaultMessage: 'Medewerker roltype',
+          description:
             'Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company.',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'medewerkerRoltype')}
@@ -199,8 +199,8 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
             'URL to the OBJECT TYPE for the "Product Request" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the "Product Request") 3) data (submitted form data)',
         })}
         rawDescription={intl.formatMessage({
-          description: 'Objects API - objecttype',
-          defaultMessage:
+          defaultMessage: 'Objects API - objecttype',
+          description:
             'URL to the OBJECT TYPE for the "Product Request" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the "Product Request") 3) data (submitted form data).',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttype')}
