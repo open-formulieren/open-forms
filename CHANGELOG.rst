@@ -2,11 +2,15 @@
 Changelog
 =========
 
-Unreleased
-==========
+2.6.0-alpha.0 (2023-02-20)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
 
 Warnings
 --------
+
+**Objects API**
 
 The Objects API registration backend can now update the payment status after registering
 an object - this depends on a version of the Objects API with the PATCH method fixes. At
@@ -15,10 +19,68 @@ the time of writing, such a version has not been released yet.
 .. todo:: At release time (2.6.0), check if we need to gate this functionality behind a
    feature flag to prevent issues.
 
+**Two factor authentication**
+
 The ``TWO_FACTOR_FORCE_OTP_ADMIN`` and ``TWO_FACTOR_PATCH_ADMIN`` environment variables
-are removed. Disabling MFA in the admin is no longer possible. Note that the OIDC
-login backends do not require (additional) MFA in the admin and we've added support for
-hardware tokens (like the YubiKey) which make MFA less of a nuisance.
+are removed. Disabling MFA in the admin is no longer possible. Note that the OpenID
+Connect login backends do not require (additional) MFA in the admin and we've added
+support for hardware tokens (like the YubiKey) which make MFA less of a nuisance.
+
+Detailed changes
+----------------
+
+**New features**
+
+* [#713] Added JSON-template support for payment status update in the Objects API.
+* [#3783] Added minimal statistics for form submissions in the admin.
+* [#3793] Reworked the payment reference number generation to include the submission
+  reference.
+* [#3680] Removed extraneous authentication plugin configuration on cosign V2 component.
+* [#3688] Added plumbing for improved objects API configuration to enforce data-constracts
+  through json-schema validation. This is very work-in-progress.
+* [#3730] Added DMN-capabilities to our logic engine. You can now evaluate a Camunda
+  decision definition and use the outputs for further form logic control.
+* [#3600] Added support for mapping form variables to case properties in the ZGW API's
+  registration backend.
+* [#3049] Reworked the two-factor solution. You can now enforce 2FA for username/password
+  accounts while not requiring this when authenticating through OpenID Connect.
+* Added support for WebAuthn-compatible 2FA hardware tokens.
+* [#2617] Reworked the payment flow to only enter payment mode if the price is not zero.
+* [#3727] Added validation for minimum/maximum number of checked options in the selectboxes
+  component.
+* [#3853] Added support for the KVK-Zoeken API v2.0. V1 is deprecated and will be shut
+  down this year.
+
+**Bugfixes**
+
+* [#3809] Fixed a crash when viewing a non-existing submission via the admin.
+* [#3616] Fixed broken PDF template for appointment data.
+* [#3774] Fixed dark-mode support in new form builder.
+* [#3382] Fixed translation warnings for date and datetime placeholders in the form
+  builder.
+* [CVE-2024-24771] Fixed (non-exploitable) multi-factor authentication weakness.
+* [#3623] Fixed some OpenID Connect compatibility issues with certain providers.
+* [#3863] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [#3864] Fixed handling of StUF-BG responses where one partner is returned.
+* [#3858] Fixed a race condition that would manifest during parallel file uploads,
+  leading to permission errors.
+* [#3822] Fixed searching in form versions admin.
+
+**Project maintenance**
+
+* Updated to Python 3.10+ typing syntax
+* Update contributing documentation regarding type annotations.
+* [#3806] Added email field to customer detail fields for demo appointments plugin.
+* Updated CI action versions to use the latest NodeJS version.
+* [#3798] Removed unused ``get_absolute_url`` in the form definition model.
+* Updated to black version 2024.
+* [#3049] More preparations to upgrade to Django 4.2 LTS.
+* [#3616] Added docker-compose setup for testing SDK embedding.
+* [#3709] Improved documentation for embedding forms.
+* [#3239] Removed logic rule evaluation logging as it was incomplete and not very usable.
+* Cleaned up some test helpers after moving them into libraries.
+* Upgraded external librariesto their newest (security) releases.
+
 
 2.5.2 (2024-02-06)
 ==================
