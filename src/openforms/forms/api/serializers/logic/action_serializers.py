@@ -11,7 +11,7 @@ from json_logic.typing import Primitive
 from rest_framework import serializers
 
 from openforms.api.serializers import DummySerializer
-from openforms.formio.validators import variable_key_validator
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -74,9 +74,8 @@ class LogicFetchActionSerializer(serializers.Serializer):
 
 
 class VariableMappingSerializer(serializers.Serializer):
-    form_variable = serializers.CharField(
+    form_variable = FormioVariableKeyField(
         required=True,
-        validators=[variable_key_validator],
         label=_("Key of the form variable."),
     )
     dmn_variable = serializers.CharField(

@@ -1,13 +1,63 @@
+from typing import Any
+
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
+from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 
+class VersionChoices(models.IntegerChoices):
+    V1 = 1, _("v1, template based")
+    V2 = 2, _("v2, variables mapping")
+
+
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            name="Variable mapping example",
+            value={
+                "variable_key": "a_component_variable",
+                "target_path": ["path", "to.the", "target"],
+            },
+        )
+    ]
+)
+class ObjecttypeVariableMappingSerializer(serializers.Serializer):
+    """A mapping between a form variable key and the corresponding Objecttype JSON location."""
+
+    variable_key = FormioVariableKeyField(
+        label=_("variable key"),
+        help_text=_(
+            "The 'dotted' path to a form variable key. The format should comply to how Formio handles nested component keys."
+        ),
+    )
+    target_path = serializers.ListField(
+        child=serializers.CharField(label=_("Segment of a JSON path")),
+        label=_("target path"),
+        help_text=_(
+            "Representation of the JSON target location as a list of string segments."
+        ),
+    )
+
+
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+
+    version = serializers.ChoiceField(
+        label=_("options version"),
+        help_text=_(
+            "The schema version of the objects API Options. Not to be confused with the objecttype version."
+        ),
+        choices=VersionChoices.choices,
+        default=1,
+    )
     objecttype = serializers.URLField(
         label=_("objecttype"),
         help_text=_(
@@ -17,12 +67,10 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "2) type (the type of productaanvraag); "
             "3) data (the submitted form data)"
         ),
-        required=False,
     )
     objecttype_version = serializers.IntegerField(
         label=_("objecttype version"),
         help_text=_("Version of the objecttype in the Objecttypes API"),
-        required=False,
     )
     productaanvraag_type = serializers.CharField(
         label=_("productaanvraag type"),
@@ -63,10 +111,12 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
     organisatie_rsin = serializers.CharField(
         label=_("organisation RSIN"),
-        required=False,
         validators=[validate_rsin],
         help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT"),
+        required=False,
     )
+
+    # V1 only fields:
     content_json = serializers.CharField(
         label=_("JSON content field"),
         help_text=_(
@@ -92,3 +142,46 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ],
         required=False,
     )
+
+    # V2 only fields:
+    variables_mapping = ObjecttypeVariableMappingSerializer(
+        label=_("variables mapping"),
+        many=True,
+        required=False,
+    )
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        v1_only_fields = {"content_json", "payment_status_update_json"}
+        v2_only_fields = {"variables_mapping"}
+
+        version = get_from_serializer_data_or_instance("version", attrs, self)
+
+        match version:
+            case VersionChoices.V1:
+                v1_forbidden_fields = v2_only_fields.intersection(attrs)
+                if v1_forbidden_fields:
+                    raise ValidationError(
+                        {
+                            k: _(
+                                "{field_name} shouldn't be provided when version is 1"
+                            ).format(field_name=k)
+                            for k in v1_forbidden_fields
+                        }
+                    )
+            case VersionChoices.V2:
+                v2_forbidden_fields = v1_only_fields.intersection(attrs)
+                if v2_forbidden_fields:
+                    raise ValidationError(
+                        {
+                            k: _(
+                                "{field_name} shouldn't be provided when version is 2"
+                            ).format(field_name=k)
+                            for k in v2_forbidden_fields
+                        }
+                    )
+            case _:  # pragma: no cover
+                raise ValidationError(
+                    {"version": _("Unknown version: {version}").format(version=version)}
+                )
+
+        return attrs

@@ -1,4 +1,4 @@
-from rest_framework import relations, serializers
+from rest_framework import serializers
 
 
 class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
@@ -9,7 +9,7 @@ class PrimaryKeyRelatedAsChoicesField(serializers.PrimaryKeyRelatedField):
     pass
 
 
-class RelatedFieldFromContext(relations.HyperlinkedRelatedField):
+class RelatedFieldFromContext(serializers.HyperlinkedRelatedField):
     """
     Look up the object in the serializer context.
     """

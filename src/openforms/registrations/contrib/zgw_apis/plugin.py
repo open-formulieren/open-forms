@@ -19,7 +19,7 @@ from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
 )
-from openforms.formio.validators import variable_key_validator
+from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.registrations.contrib.objects_api.client import get_objects_client
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
@@ -71,9 +71,8 @@ def get_property_mappings_from_submission(
 
 
 class MappedVariablePropertySerializer(serializers.Serializer):
-    component_key = serializers.CharField(
+    component_key = FormioVariableKeyField(
         label=_("Component key"),
-        validators=[variable_key_validator],
         help_text=_("Key of the form variable to take the value from."),
     )
     eigenschap = serializers.CharField(
