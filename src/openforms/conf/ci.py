@@ -11,6 +11,9 @@ import warnings
 # preventing flakiness in hypothesis tests that hit this code path.
 import idna  # noqa: F401
 
+# Heavy imports, can interfere with some tests making use of hypothesis' deadline:
+import weasyprint  # noqa: F401
+
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SECRET_KEY", "dummy")
 # Do not log requests in CI/tests:

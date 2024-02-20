@@ -640,7 +640,7 @@ class PDFSubmissionReportTests(HypothesisTestCase):
             alphabet=st.characters(blacklist_characters="\x00", codec="utf-8"),
         )
     )
-    @settings(deadline=500)
+    @settings(deadline=2000)
     def test_names_do_not_break_pdf_saving_to_disk(self, form_name):
         report = SubmissionReportFactory.create(submission__form__name=form_name)
         report.generate_submission_report_pdf()
