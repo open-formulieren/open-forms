@@ -84,7 +84,7 @@ jobs:
           --concurrency=multiprocessing \
           --parallel-mode \
           src/manage.py test src \
-            --parallel 2 \
+            --parallel 4 \
             --exclude-tag=e2e \
             --verbosity 2
           coverage combine
@@ -167,7 +167,7 @@ jobs:
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
           src/manage.py test src \
-            --parallel 2 \
+            --parallel 4 \
             --exclude-tag=e2e \
             --reverse
 
