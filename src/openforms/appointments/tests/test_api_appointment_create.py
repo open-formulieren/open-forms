@@ -2,6 +2,7 @@ from datetime import datetime, time
 from unittest.mock import patch
 
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 from hypothesis import given
@@ -98,13 +99,13 @@ class AppointmentCreateSuccessTests(ConfigPatchMixin, SubmissionsMixin, APITestC
                 {
                     "key": "lastName",
                     "type": "textfield",
-                    "label": "Achternaam",
+                    "label": _("Last name"),
                     "validate": {"required": True, "maxLength": 20},
                 },
                 {
                     "key": "email",
                     "type": "email",
-                    "label": "E-mailadres",
+                    "label": _("Email"),
                     "validate": {"required": True, "maxLength": 100},
                 },
             ],
