@@ -122,8 +122,6 @@ defusedxml==0.7.1
     #   -c requirements/base.in
     #   -r requirements/base.txt
     #   django-camunda
-    #   django-digid-eherkenning
-    #   maykin-python3-saml
 django==3.2.24
     # via
     #   -c requirements/base.in
@@ -219,7 +217,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-digid-eherkenning==0.10.0
+django-digid-eherkenning==0.11.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -468,7 +466,7 @@ maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-maykin-python3-saml==1.14.0.post0
+maykin-python3-saml==1.16.0.post1
     # via
     #   -r requirements/base.txt
     #   django-digid-eherkenning
