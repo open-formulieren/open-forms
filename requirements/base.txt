@@ -90,8 +90,6 @@ defusedxml==0.7.1
     #   -r requirements/base.in
     #   cairosvg
     #   django-camunda
-    #   django-digid-eherkenning
-    #   maykin-python3-saml
 django==3.2.24
     # via
     #   -r requirements/base.in
@@ -163,7 +161,7 @@ django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
-django-digid-eherkenning==0.9.0
+django-digid-eherkenning==0.11.0
     # via -r requirements/base.in
 django-filter==23.2
     # via -r requirements/base.in
@@ -310,7 +308,7 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via -r requirements/base.in
 maykin-json-logic-py==0.13.0
     # via -r requirements/base.in
-maykin-python3-saml==1.14.0.post0
+maykin-python3-saml==1.16.0.post1
     # via django-digid-eherkenning
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
