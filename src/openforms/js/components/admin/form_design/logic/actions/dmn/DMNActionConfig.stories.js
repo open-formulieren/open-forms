@@ -210,3 +210,23 @@ export const InvalidEmptyFields = {
     });
   },
 };
+
+export const OnePluginAvailable = {
+  args: {
+    availableDMNPlugins: [{id: 'camunda7', label: 'Camunda 7'}],
+    initialValues: {
+      pluginId: '',
+      decisionDefinitionId: '',
+      decisionDefinitionVersion: '',
+      inputMapping: [],
+      outputMapping: [],
+    },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const pluginDropdown = canvas.getByLabelText('Plugin');
+
+    await expect(pluginDropdown.value).toBe('camunda7');
+  },
+};
