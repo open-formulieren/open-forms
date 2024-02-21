@@ -3,19 +3,6 @@ import {Formio} from 'formiojs';
 import {AUTH_PLUGINS_ENDPOINT} from 'components/admin/form_design/constants.js';
 import {get} from 'utils/fetch';
 
-import {
-  AUTOCOMPLETE,
-  CLEAR_ON_HIDE,
-  DEFAULT_VALUE,
-  DESCRIPTION,
-  HIDDEN,
-  IS_SENSITIVE_DATA,
-  KEY,
-  LABEL_REQUIRED,
-  PRESENTATION,
-  TOOLTIP,
-} from './edit/options';
-import DEFAULT_TABS, {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
 export const getAvailableAuthPlugins = async () => {
@@ -57,30 +44,6 @@ class CoSignField extends FormioEmail {
       icon: 'pen-nib',
       schema: CoSignField.schema(),
     };
-  }
-
-  static editForm() {
-    const BASIC_TAB = {
-      key: 'basic',
-      label: 'Basic',
-      components: [
-        LABEL_REQUIRED,
-        KEY,
-        DESCRIPTION,
-        TOOLTIP,
-        PRESENTATION,
-        HIDDEN,
-        CLEAR_ON_HIDE,
-        {...IS_SENSITIVE_DATA, defaultValue: true},
-        DEFAULT_VALUE,
-        {...AUTOCOMPLETE, placeholder: 'email'},
-      ],
-    };
-    const TABS = {
-      ...DEFAULT_TABS,
-      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
-    };
-    return {components: [TABS]};
   }
 }
 

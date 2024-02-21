@@ -1,14 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {MAXIMUM_TIME, MIMINUM_TIME} from './edit/options';
-import DEFAULT_TABS, {
-  ADVANCED,
-  REGISTRATION,
-  SENSITIVE_BASIC,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
-import {getValidationEditForm} from './edit/validationEditFormUtils';
 import {localiseSchema} from './i18n';
 
 const Time = Formio.Components.components.time;
@@ -43,18 +34,6 @@ class TimeField extends Time {
       weight: 10,
       schema: TimeField.schema(),
     };
-  }
-
-  static editForm() {
-    const VALIDATION_TAB = getValidationEditForm({
-      ...VALIDATION,
-      components: [...VALIDATION.components, MIMINUM_TIME, MAXIMUM_TIME],
-    });
-    const TABS = {
-      ...DEFAULT_TABS,
-      components: [SENSITIVE_BASIC, ADVANCED, VALIDATION_TAB, REGISTRATION, TRANSLATIONS],
-    };
-    return {components: [TABS]};
   }
 
   get defaultSchema() {

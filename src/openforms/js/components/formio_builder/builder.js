@@ -253,55 +253,6 @@ const getBuilderOptions = () => {
       serverUploadLimit: maxFileUploadSize,
       requiredDefault: formFieldsRequiredDefault,
     },
-    editors: {
-      ckeditor: {
-        settings: {
-          toolbar: {
-            items: [
-              'heading',
-              'fontFamily',
-              'fontSize',
-              'fontColor',
-              '|',
-              'bold',
-              'italic',
-              'link',
-              'bulletedList',
-              'numberedList',
-              '|',
-              'indent',
-              'outdent',
-              '|',
-              'imageUpload',
-              'blockQuote',
-              'insertTable',
-              'mediaEmbed',
-              'alignment:left',
-              'alignment:right',
-              'alignment:center',
-              'undo',
-              'redo',
-            ],
-          },
-          link: {
-            decorators: {
-              openInNewTab: {
-                mode: 'manual',
-                label: 'Open in a new tab',
-                defaultValue: true, // This option will be selected by default.
-                attributes: {
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                },
-              },
-            },
-          },
-          fontColor: {
-            colors: jsonScriptToVar('config-RICH_TEXT_COLORS'),
-          },
-        },
-      },
-    },
   };
 };
 

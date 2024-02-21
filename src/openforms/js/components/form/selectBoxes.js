@@ -1,6 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {CHOICES_BASIC, DEFAULT_CHOICES_TABS, TRANSLATIONS} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
 const SelectBoxes = Formio.Components.components.selectboxes;
@@ -23,19 +22,6 @@ class SelectBoxesField extends SelectBoxes {
       ...SelectBoxes.builderInfo,
       schema: SelectBoxesField.schema(),
     };
-  }
-  static editForm() {
-    const choicesBasic = {
-      key: 'basic',
-      label: 'Basic',
-      components: [...CHOICES_BASIC.components.filter(component => component.key !== 'multiple')],
-    };
-    let defaultChoicesTabs = {...DEFAULT_CHOICES_TABS};
-    defaultChoicesTabs.components[0] = choicesBasic;
-    if (!defaultChoicesTabs.components.includes(TRANSLATIONS))
-      defaultChoicesTabs.components.push(TRANSLATIONS);
-
-    return {components: [defaultChoicesTabs]};
   }
 
   constructor(...args) {

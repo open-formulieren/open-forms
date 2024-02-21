@@ -14,18 +14,13 @@ import {useImmerReducer} from 'use-immer';
 import Loader from 'components/admin/Loader';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
-import {
-  clearObsoleteLiterals,
-  isNewBuilderComponent,
-  persistComponentTranslations,
-} from 'components/formio_builder/translation';
 import {APIError, NotAuthenticatedError} from 'utils/exception';
 import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';
 
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
-import {APIContext, FeatureFlagsContext, FormContext} from './Context';
+import {APIContext, FormContext} from './Context';
 import DataRemoval from './DataRemoval';
 import FormAdvancedConfiguration from './FormAdvancedConfiguration';
 import FormConfigurationFields from './FormConfigurationFields';
@@ -436,8 +431,7 @@ function reducer(draft, action) {
       break;
     }
     case 'EDIT_STEP_COMPONENT_MUTATED': {
-      const {mutationType, schema, args, formDefinition, reactFormioBuilderEnabled} =
-        action.payload;
+      const {mutationType, schema, args, formDefinition} = action.payload;
 
       let originalComp;
       let isNew;
@@ -482,19 +476,6 @@ function reducer(draft, action) {
 
       // TODO: This could break if a reusable definition is used multiple times in a form
       const step = getFormStep(formDefinition, draft.formSteps, true);
-
-      // FormIOBuilder.onBuilderFormChange ensures that only the relevant translations
-      // are included. This means we can safely merge the component translations into
-      // the step component translations container, and then using the full form
-      // configuration, we can remove the translations for literals that are no longer
-      // present/used.
-      if (!reactFormioBuilderEnabled || !isNewBuilderComponent(schema)) {
-        persistComponentTranslations(step.componentTranslations, schema);
-        step.componentTranslations = clearObsoleteLiterals(
-          step.componentTranslations,
-          configuration
-        );
-      }
 
       if (!isNew) {
         // In the case the component was removed, originalComp is null
@@ -968,7 +949,6 @@ StepsFieldSet.propTypes = {
  */
 const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   const {csrftoken} = useContext(APIContext);
-  const {react_formio_builder_enabled = false} = useContext(FeatureFlagsContext);
   const initialState = {
     ...initialFormState,
     form: {
@@ -1093,7 +1073,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
         schema,
         formDefinition,
         args: rest,
-        reactFormioBuilderEnabled: react_formio_builder_enabled,
       },
     });
   };

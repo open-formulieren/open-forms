@@ -1,11 +1,3 @@
-import {
-  ADVANCED,
-  PREFILL,
-  REGISTRATION,
-  SENSITIVE_READ_ONLY,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
 import TextField from './textfield';
 
 class BsnField extends TextField {
@@ -30,15 +22,6 @@ class BsnField extends TextField {
       weight: 10,
       schema: BsnField.schema(),
     };
-  }
-
-  static editForm() {
-    const tabs = {
-      type: 'tabs',
-      key: 'tabs',
-      components: [SENSITIVE_READ_ONLY, ADVANCED, VALIDATION, REGISTRATION, PREFILL, TRANSLATIONS],
-    };
-    return {components: [tabs]};
   }
 
   get defaultSchema() {

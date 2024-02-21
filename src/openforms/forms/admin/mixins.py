@@ -30,9 +30,7 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in UploadFileType.choices
                 ],
-                "feature_flags": {
-                    "react_formio_builder_enabled": config.enable_react_formio_builder,
-                },
+                "feature_flags": {},
                 "confidentiality_levels": [
                     {"label": label, "value": value}
                     for value, label in VertrouwelijkheidsAanduidingen.choices

@@ -1,6 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
 const TextField = Formio.Components.components.textfield;
@@ -33,10 +32,6 @@ class LicensePlate extends TextField {
       weight: 10,
       schema: LicensePlate.schema(),
     };
-  }
-
-  static editForm() {
-    return {components: [DEFAULT_SENSITIVE_TABS]};
   }
 
   get defaultSchema() {

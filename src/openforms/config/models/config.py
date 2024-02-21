@@ -397,12 +397,6 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("If enabled, the admin allows selection of demo backend plugins."),
     )
 
-    enable_react_formio_builder = models.BooleanField(
-        _("enable new formio builder"),
-        default=True,
-        help_text=_("Use the new Form.io component builder implementation."),
-    )
-
     display_sdk_information = models.BooleanField(
         _("display SDK information"),
         default=False,
