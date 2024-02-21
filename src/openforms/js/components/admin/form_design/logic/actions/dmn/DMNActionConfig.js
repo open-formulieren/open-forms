@@ -151,7 +151,17 @@ const DMNActionConfig = ({initialValues, onSave}) => {
 
   return (
     <div className="dmn-action-config">
-      <Formik initialValues={initialValues} onSubmit={values => onSave(values)} validate={validate}>
+      <Formik
+        initialValues={{
+          ...initialValues,
+          pluginId:
+            plugins.availableDMNPlugins.length === 1
+              ? plugins.availableDMNPlugins[0].id
+              : initialValues.pluginId,
+        }}
+        onSubmit={values => onSave(values)}
+        validate={validate}
+      >
         {formik => (
           <Form>
             <fieldset className="aligned">
