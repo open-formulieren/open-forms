@@ -77,6 +77,48 @@
   }
 }
 
+@mixin bootstrap {
+  .card-header {
+    background-color: #333;
+  }
+
+  .btn,
+  .btn:hover {
+    color: var(--body-fg);
+  }
+
+  .formio-dialog {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--body-fg);
+  }
+
+  .formio-dialog.formio-dialog-theme-default {
+    .formio-dialog-content {
+      background: var(--body-bg);
+    }
+  }
+
+  .nav-tabs {
+    .nav-link.active {
+      color: var(--body-fg);
+      background-color: var(--body-bg);
+      border-color: var(--border-color) var(--border-color) var(--body-bg);
+    }
+
+    .nav-link {
+      &:focus,
+      &:hover {
+        color: var(--body-fg);
+        border-color: var(--hairline-color) var(--hairline-color) var(--body-bg);
+      }
+    }
+  }
+
+  .formio-button-add-another {
+    color: var(--body-fg) !important;
+  }
+}
+
 @mixin tinymce {
   .tox {
     .tox-toolbar__primary,
@@ -108,6 +150,27 @@
   }
 }
 
+@mixin ckeditor-variables {
+  // TODO: CKeditor uses CSS vars internally, so we can sort this out properly in the
+  // future.
+  // // See https://ckeditor.com/docs/ckeditor5/latest/examples/framework/theme-customization.html
+  // // > View the editor CSS tyle listing
+  // --ck-custom-background: var(--form-input-bg);
+
+  // --ck-color-base-background: var(--form-input-bg);
+  // --ck-color-base-foreground: var(--body-fg);
+
+  // --ck-color-button-default-background: var(--ck-custom-background);
+}
+
+@mixin ckeditor {
+  .ck-editor__main {
+    // TODO: Formio uses CKEditor5, but using their dark theme seems more complex than for the tinymce.
+    // So for now we keep the default theme, but ensure that the text in the editor is dark and not light.
+    color: #333;
+  }
+}
+
 /**
  * Aggregate the bits and pieces to define the dark theme style rules.
  */
@@ -118,6 +181,7 @@
     // in auto mode through the media query.
     :root {
       @include variables;
+      @include ckeditor-variables;
     }
 
     // only apply based on browser preferences if the theme is not explicitly set to
@@ -125,7 +189,9 @@
     html[data-theme='auto'] {
       @include djai-variables;
       @include custom-css;
+      @include bootstrap;
       @include tinymce;
+      @include ckeditor;
     }
   }
 
@@ -134,6 +200,9 @@
     @include variables;
     @include djai-variables;
     @include custom-css;
+    @include bootstrap;
     @include tinymce;
+    @include ckeditor;
+    @include ckeditor-variables;
   }
 }

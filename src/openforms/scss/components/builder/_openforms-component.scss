@@ -28,12 +28,4 @@
       opacity: 0.9;
     }
   }
-
-  .ck-editor__main {
-    // TODO: Formio uses CKEditor5, but using their dark theme seems more complex than for the tinymce.
-    // So for now we keep the default theme, but ensure that the text in the editor is dark and not light.
-    @media (prefers-color-scheme: dark) {
-      color: $color-dark;
-    }
-  }
 }
