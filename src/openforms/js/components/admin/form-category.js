@@ -18,6 +18,27 @@ const init = async () => {
   }
 };
 
+const saveCollapsedState = () => {
+  const collapsedState = {};
+  document.querySelectorAll('.form-category').forEach(category => {
+    const categoryId = category.getAttribute('data-id');
+    const isCollapsed = category.classList.contains('form-category--collapsed');
+    if (isCollapsed) collapsedState[categoryId] = isCollapsed;
+  });
+  localStorage.setItem('collapsedState', JSON.stringify(collapsedState));
+};
+
+const restoreCollapsedState = () => {
+  const collapsedState = JSON.parse(localStorage.getItem('collapsedState'));
+  if (collapsedState) {
+    document.querySelectorAll('.form-category').forEach(category => {
+      if (collapsedState[category.getAttribute('data-id')]) {
+        category.classList.add('form-category--collapsed');
+      }
+    });
+  }
+};
+
 const loadFormsForCategory = async (node, GETParams) => {
   // node is a table row, after which we have to inject the forms.
   const {id, depth: _depth} = node.dataset;
@@ -28,10 +49,12 @@ const loadFormsForCategory = async (node, GETParams) => {
     _async: 1,
     category: id,
   };
+  restoreCollapsedState();
 
   node.addEventListener('click', event => {
     event.preventDefault();
     node.classList.toggle('form-category--collapsed');
+    saveCollapsedState();
 
     // check the siblings and extract the rows that are children of the current node
     let tableBody = node.parentNode.nextElementSibling;
