@@ -71,7 +71,6 @@ const VariableRow = ({index, variable}) => {
   const formContext = useContext(FormContext);
 
   const formSteps = formContext.formSteps;
-  const registrationBackends = formContext.registrationBackends;
 
   const getFormDefinitionName = formDefinition => {
     for (const step of formSteps) {
@@ -99,7 +98,7 @@ const VariableRow = ({index, variable}) => {
         )}
       </td>
       <td>
-        <RegistrationsSummary variable={variable} registrationBackends={registrationBackends} />
+        <RegistrationsSummary variable={variable} />
       </td>
       <td>{variable.dataType}</td>
       <td>
@@ -119,7 +118,6 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
 
   const formContext = useContext(FormContext);
 
-  const registrationBackends = formContext.registrationBackends;
   const {availablePrefillPlugins} = formContext.plugins;
   const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
   const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
@@ -213,7 +211,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <RegistrationsSummary variable={variable} registrationBackends={registrationBackends} />
+        <RegistrationsSummary variable={variable} />
       </td>
       <td>
         <Field name="dataType" errors={variable.errors?.dataType}>
