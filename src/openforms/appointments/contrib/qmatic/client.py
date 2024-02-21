@@ -1,7 +1,7 @@
 from datetime import date, datetime, time
 from typing import TypedDict
+from zoneinfo import ZoneInfo
 
-import pytz
 from ape_pie.client import APIClient
 from dateutil.parser import isoparse
 from zgw_consumers.client import build_client
@@ -179,7 +179,7 @@ class Client(APIClient):
 
         # get the branch detail so we can interpret the timezone correctly
         branch = self.get_branch(location_id)
-        branch_timezone = pytz.timezone(branch["timeZone"])
+        branch_timezone = ZoneInfo(branch["timeZone"])
 
         # get the dates
         endpoint = f"v2/branches/{location_id}/dates;{serializedParams}"
@@ -217,7 +217,7 @@ class Client(APIClient):
 
         # get the branch detail so we can correctly apply the timezone
         branch = self.get_branch(location_id)
-        branch_timezone = pytz.timezone(branch["timeZone"])
+        branch_timezone = ZoneInfo(branch["timeZone"])
 
         # get the times
         endpoint = f"v2/branches/{location_id}/dates/{day.isoformat()}/times;{serializedParams}"

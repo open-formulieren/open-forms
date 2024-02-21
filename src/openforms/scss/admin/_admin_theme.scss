@@ -8,6 +8,7 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 
 @use './themes/dark' as dark-theme;
 @use './themes/light' as light-theme;
+@use './tooltip';
 
 @import 'microscope-sass/lib/bem';
 
@@ -33,6 +34,20 @@ div#header {
   }
 
   line-height: normal;
+}
+
+#logout-form {
+  // ensure the button is styled like the links
+  button {
+    border-bottom: none;
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      color: var(--header-link-color);
+      text-decoration: none;
+    }
+  }
 }
 
 #user-tools {
@@ -80,6 +95,44 @@ div.breadcrumbs {
       color: var(--primary) !important;
     }
   }
+}
+
+/**
+ * Properly align inputs and labels
+ */
+.flex-container {
+  // otherwise long labels vertically stretch the input boxes
+  align-items: flex-start;
+}
+
+.checkbox-row {
+  gap: var(--of-admin-checkbox-gap);
+  align-items: center;
+
+  input[type='checkbox'] {
+    margin: 0;
+  }
+
+  @at-root .aligned & label {
+    width: auto;
+    vertical-align: unset !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .vCheckboxLabel {
+    vertical-align: unset !important;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+.aligned label:has(input[type='checkbox']) {
+  display: flex;
+  align-items: center;
+  gap: var(--of-admin-checkbox-gap);
+  margin: 0;
+  padding: 0;
 }
 
 /* Calendar & time widget */
@@ -208,7 +261,7 @@ div.breadcrumbs {
  */
 .change-form {
   .vTextField {
-    width: $input-field-size;
+    width: var(--of-admin-input-field-size);
   }
 }
 
@@ -286,7 +339,7 @@ body.popup {
  */
 .rjf-form-wrapper {
   .rjf-form-group {
-    max-inline-size: calc($input-field-size + 72px + 0.5rem);
+    max-inline-size: calc(var(--of-admin-input-field-size) + 72px + 0.5rem);
   }
 
   .rjf-form-group-inner {
@@ -303,7 +356,7 @@ body.popup {
     padding: 0;
 
     input {
-      inline-size: $input-field-size;
+      inline-size: var(--of-admin-input-field-size);
       max-inline-size: 100%;
       margin-block-start: 2px !important;
       margin-block-end: 2px !important;
@@ -316,7 +369,7 @@ body.popup {
 
   @at-root div[data-django-jsonform-container] {
     display: inline-block;
-    inline-size: calc($input-field-size + 72px + 0.5rem);
+    inline-size: calc(var(--of-admin-input-field-size) + 72px + 0.5rem);
 
     & ~ .help {
       background-position-y: 7px;
@@ -344,41 +397,6 @@ body.popup {
 /**
  * Help text mouseover
  */
-div.help:hover {
-  text-indent: inherit;
-  width: auto;
-  background-image: none;
-  background-color: $color-tooltip-background;
-  border: 1px solid $color-tooltip-border;
-  color: $color-tooltip-text;
-  padding: 5px 5px 3px 5px !important;
-  max-width: 300px;
-  height: auto !important;
-  z-index: 10;
-}
-
-div.help {
-  cursor: help;
-  width: 16px;
-  height: 16px;
-  background-image: url(../admin/img/icon-unknown.svg);
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-size: 14px;
-  margin-left: 2px !important;
-  position: absolute;
-  text-indent: -9999px;
-}
-
-/* Overrides default Django CSS */
-.aligned label + p,
-.aligned label + div.readonly {
-  display: inline-block;
-  margin-left: inherit !important;
-}
-.aligned label + div.help {
-  margin-left: 2px !important;
-}
 
 /* Additional components seem to need the same behaviour */
 /* TODO: TinyMCE is different... */

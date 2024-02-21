@@ -21,6 +21,9 @@
 
 {% block branding %}
     <h1 id="site-name"><a href="{% url 'admin:index' %}">{{ settings.PROJECT_NAME }} {% trans 'Administration' %}</a></h1>
+    {% if user.is_anonymous %}
+      {% include "admin/color_theme_toggle.html" %}
+    {% endif %}
 {% endblock %}
 
 {# part of block usertools #}
@@ -43,9 +46,14 @@
         <a href="{{ 2fa_account_security_url }}">{% trans "Account security" %}</a> /
     {% endif %}
 
-    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+    <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+        {% csrf_token %}
+        <button type="submit">{% translate 'Log out' %}</button>
+    </form>
 
     {% multidomain_switcher %}
+
+    {% include "admin/color_theme_toggle.html" %}
 {% endblock %}
 
 {# end block usertools #}

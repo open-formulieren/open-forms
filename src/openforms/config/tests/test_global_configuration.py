@@ -98,10 +98,11 @@ class AdminTests(WebTest):
 
         change_page = self.app.get(url)
 
-        change_page.form["save_form_email_subject_nl"] = "Subject {{form_name}}"
-        change_page.form["save_form_email_content_nl"] = "Content {{form_name}}"
-        _ensure_arrayfields(change_page.form, config=config)
-        change_page.form.submit()
+        form = change_page.forms["globalconfiguration_form"]
+        form["save_form_email_subject_nl"] = "Subject {{form_name}}"
+        form["save_form_email_content_nl"] = "Content {{form_name}}"
+        _ensure_arrayfields(form, config=config)
+        form.submit()
 
         config.refresh_from_db()
         self.assertEqual(config.save_form_email_subject, "Subject {{form_name}}")
@@ -113,9 +114,10 @@ class AdminTests(WebTest):
 
         change_page = self.app.get(url)
 
-        change_page.form["enable_virus_scan"] = True
-        _ensure_arrayfields(change_page.form)
-        response = change_page.form.submit()
+        form = change_page.forms["globalconfiguration_form"]
+        form["enable_virus_scan"] = True
+        _ensure_arrayfields(form)
+        response = form.submit()
 
         self.assertEqual(200, response.status_code)
 
@@ -138,17 +140,18 @@ class AdminTests(WebTest):
 
         change_page = self.app.get(url)
 
-        change_page.form["enable_virus_scan"] = True
-        change_page.form["clamav_host"] = "clamav.bla"
-        change_page.form["clamav_port"] = 3310
+        form = change_page.forms["globalconfiguration_form"]
+        form["enable_virus_scan"] = True
+        form["clamav_host"] = "clamav.bla"
+        form["clamav_port"] = 3310
 
         with patch.object(
             clamd.ClamdNetworkSocket,
             "ping",
             side_effect=clamd.ConnectionError("Cannot connect!"),
         ):
-            _ensure_arrayfields(change_page.form)
-            response = change_page.form.submit()
+            _ensure_arrayfields(form)
+            response = form.submit()
 
         self.assertEqual(200, response.status_code)
 

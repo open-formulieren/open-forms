@@ -44,11 +44,6 @@ $djai-padding--tablet: 30px;
   @at-root #header {
     padding-bottom: 0 !important;
 
-    // remove the border height from the breadcrumbs padding
-    & + .breadcrumbs {
-      padding-top: calc(10px - var(--of-djai-border-bottom-width)); // 10px is original django value
-    }
-
     // overwrite admin '#header a:link' rule which is otherwise more specific
     .djai-dropdown-menu .djai-dropdown-menu__item--active:link,
     .djai-dropdown-menu .djai-dropdown-menu__item--active:visited {
@@ -58,6 +53,10 @@ $djai-padding--tablet: 30px;
         color: var(--djai-tab-fg--hover);
       }
     }
+  }
+  // remove the border height from the breadcrumbs padding
+  @at-root div.breadcrumbs {
+    padding-top: calc(10px - var(--of-djai-border-bottom-width)); // 10px is original django value
   }
 
   @at-root body.login #header {

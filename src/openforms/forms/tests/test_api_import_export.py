@@ -140,6 +140,7 @@ class ImportExportAPITests(APITestCase):
         self.user.save()
 
         form1 = FormFactory.create(send_confirmation_email=True)
+        original_registration_backends = form1.registration_backends.order_by("id")
         form2 = FormFactory.create()
         FormRegistrationBackendFactory.create_batch(2, form=form1, backend="demo")
         form_definition1, form_definition2 = FormDefinitionFactory.create_batch(2)
@@ -188,7 +189,7 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(imported_form.active, False)
         for imported, original in zip(
             imported_form.registration_backends.order_by("id"),
-            form1.registration_backends.order_by("id"),
+            original_registration_backends,
         ):
             self.assertEqual(imported.key, original.key)
             self.assertEqual(imported.name, original.name)

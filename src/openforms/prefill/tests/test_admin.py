@@ -43,5 +43,6 @@ class PrefillConfigTests(WebTest):
         response = self.app.get(url, user=user)
 
         # check that it's a dropdown-like widget with options/choices
-        self.assertGreater(len(response.form["default_person_plugin"].options), 1)
-        self.assertGreater(len(response.form["default_company_plugin"].options), 1)
+        form = response.forms["prefillconfig_form"]
+        self.assertGreater(len(form["default_person_plugin"].options), 1)
+        self.assertGreater(len(form["default_company_plugin"].options), 1)

@@ -1,5 +1,6 @@
 import logging
 from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
 
 from django.utils import timezone
 from django.utils.dateparse import (
@@ -8,6 +9,9 @@ from django.utils.dateparse import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+TIMEZONE_AMS = ZoneInfo("Europe/Amsterdam")
 
 
 def format_date_value(date_value: str) -> str:
@@ -67,3 +71,7 @@ def parse_time(value: str) -> None | time:
         return
 
     return time_value
+
+
+def datetime_in_amsterdam(value: datetime) -> datetime:
+    return timezone.make_naive(value, timezone=TIMEZONE_AMS)

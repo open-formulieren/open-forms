@@ -120,7 +120,7 @@ class FormSerializerTests(APITestCase):
             ask_statement_of_truth=True,
             statement_of_truth_label="I am honest",
         )
-        form = FormFactory.build()
+        form = FormFactory.create()
         with patch(
             "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
             return_value=config,
@@ -155,7 +155,7 @@ class FormSerializerTests(APITestCase):
         config = GlobalConfiguration(
             ask_privacy_consent=False, ask_statement_of_truth=False
         )
-        form = FormFactory.build(
+        form = FormFactory.create(
             ask_privacy_consent=StatementCheckboxChoices.required,
             ask_statement_of_truth=StatementCheckboxChoices.required,
         )
@@ -184,7 +184,7 @@ class FormSerializerTests(APITestCase):
         config = GlobalConfiguration(
             ask_privacy_consent=True, ask_statement_of_truth=True
         )
-        form = FormFactory.build(
+        form = FormFactory.create(
             ask_privacy_consent=StatementCheckboxChoices.disabled,
             ask_statement_of_truth=StatementCheckboxChoices.disabled,
         )

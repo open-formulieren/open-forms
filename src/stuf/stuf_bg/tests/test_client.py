@@ -14,6 +14,7 @@ from glom import T as GlomTarget, glom
 from lxml import etree
 
 from openforms.logging.models import TimelineLogProxy
+from openforms.logging.tests.utils import disable_timelinelog
 from openforms.prefill.contrib.stufbg.plugin import ATTRIBUTES_TO_STUF_BG_MAPPING
 from soap.constants import SOAP_VERSION_CONTENT_TYPES, SOAPVersion
 from stuf.models import StufService
@@ -88,8 +89,8 @@ class StufBGConfigTests(SimpleTestCase):
                 self.assert_(glom_target, f"unmapped attribute: {attribute}")
 
 
-# not SimpleTestCase because of openforms.logging.logevent usage
-class StufBGClientTests(TestCase):
+@disable_timelinelog()
+class StufBGClientTests(SimpleTestCase):
     def setUp(self):
         super().setUp()
         self.stuf_service = StufServiceFactory.build(soap_service__soap_version="1.1")
@@ -134,17 +135,6 @@ class StufBGClientTests(TestCase):
             m.last_request.headers["SOAPAction"],
             "http://www.egem.nl/StUF/sector/bg/0310/npsLv01",
         )
-
-    def test_soap_request_gets_logged(self):
-        test_bsn = "999992314"
-
-        with requests_mock.Mocker() as m:
-            m.post(self.stuf_service.soap_service.url)
-            # perform request
-            self.stufbg_client.get_values_for_attributes(test_bsn, FieldChoices.values)
-
-        logged_events = TimelineLogProxy.objects.filter_event("stuf_bg_request")
-        self.assertTrue(logged_events.exists(), "StUF-BG request wasn't logged.")
 
     def test_getting_request_data_returns_valid_data(self):
         available_attributes = FieldChoices.values
@@ -253,6 +243,22 @@ class StufBGClientTests(TestCase):
 
         value = glom(data_dict, GlomTarget["inp.heeftAlsKinderen"], default=missing)
         self.assertNotEqual(value, missing)
+
+
+# not SimpleTestCase because of openforms.logging.logevent usage
+class StufBGClientLoggingTests(TestCase):
+    def test_soap_request_gets_logged(self):
+        stuf_service = StufServiceFactory.create(soap_service__soap_version="1.1")
+        stufbg_client = StufBGClient(service=stuf_service)
+        test_bsn = "999992314"
+
+        with requests_mock.Mocker() as m:
+            m.post(stuf_service.soap_service.url)
+            # perform request
+            stufbg_client.get_values_for_attributes(test_bsn, FieldChoices.values)
+
+        logged_events = TimelineLogProxy.objects.filter_event("stuf_bg_request")
+        self.assertTrue(logged_events.exists(), "StUF-BG request wasn't logged.")
 
 
 def _contains_nils(d: dict):

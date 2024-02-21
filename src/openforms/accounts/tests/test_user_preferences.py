@@ -74,16 +74,18 @@ class UserPreferencesTests(WebTest):
         non_model_fields = {"csrfmiddlewaretoken", "_save"}
 
         change_page = self.app.get(self.admin_url, user=staff_user)
+        form = change_page.forms["userpreferences_form"]
 
-        form_fields = set(change_page.form.fields.keys())
+        form_fields = set(form.fields.keys())
         self.assertEqual(form_fields, {"ui_language"} | non_model_fields)
 
     def test_can_update_language_preference(self):
         staff_user = StaffUserFactory.create(ui_language="")
         change_page = self.app.get(self.admin_url, user=staff_user)
+        form = change_page.forms["userpreferences_form"]
 
-        change_page.form["ui_language"].select("en")
-        change_page.form.submit(name="_save")
+        form["ui_language"].select("en")
+        form.submit(name="_save")
 
         staff_user.refresh_from_db()
         self.assertEqual(staff_user.ui_language, "en")

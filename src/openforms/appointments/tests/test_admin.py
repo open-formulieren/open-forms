@@ -170,7 +170,7 @@ class AppointmentsConfigAdminTests(WebTest):
 
         self.assertEqual(response.status_code, 200)
 
-        form = response.form
+        form = response.forms["appointmentsconfig_form"]
         plugin_options = form["plugin"].options
 
         self.assertEqual([p[0] for p in plugin_options], ["", "test1", "test2"])
@@ -190,7 +190,7 @@ class AppointmentsConfigAdminTests(WebTest):
                 response = self.app.get(url, user=self.user)
 
                 self.assertEqual(response.status_code, 200)
-                form = response.form
+                form = response.forms["appointmentsconfig_form"]
 
                 self.assertEqual(form["plugin"].value, "")
                 location = form["limit_to_location"]
@@ -210,7 +210,7 @@ class AppointmentsConfigAdminTests(WebTest):
                 response = self.app.get(url, user=self.user)
 
                 self.assertEqual(response.status_code, 200)
-                form = response.form
+                form = response.forms["appointmentsconfig_form"]
 
                 self.assertEqual(form["plugin"].value, "test")
                 location = form["limit_to_location"]
@@ -227,7 +227,7 @@ class AppointmentsConfigAdminTests(WebTest):
 
                 response = self.app.get(url, user=self.user)
 
-                form = response.form
+                form = response.forms["appointmentsconfig_form"]
                 form["plugin"].select("")
 
                 form.submit(name="_save")

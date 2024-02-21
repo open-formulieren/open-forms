@@ -3,8 +3,8 @@ from typing import Literal, TypedDict
 
 from typing_extensions import NotRequired
 
-from openforms.contrib.zgw.clients.utils import datetime_in_amsterdam
 from openforms.typing import JSONValue
+from openforms.utils.date import datetime_in_amsterdam
 
 
 class EigenschapSpecificatie(TypedDict):

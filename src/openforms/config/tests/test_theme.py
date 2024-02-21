@@ -51,8 +51,9 @@ class AdminTests(WebTest):
             with open(LOGO_FILE, "rb") as infile:
                 upload = Upload("logo.svg", infile.read(), "image/svg+xml")
 
-            change_page.form["logo"] = upload
-            response = change_page.form.submit()
+            form = change_page.forms["theme_form"]
+            form["logo"] = upload
+            response = form.submit()
 
             self.assertEqual(response.status_code, 302)
             theme.refresh_from_db()
@@ -86,8 +87,9 @@ class AdminTests(WebTest):
         with open(logo, "rb") as infile:
             upload = Upload("digid.png", infile.read(), "image/png")
 
-        change_page.form["logo"] = upload
-        response = change_page.form.submit()
+        form = change_page.forms["theme_form"]
+        form["logo"] = upload
+        response = form.submit()
 
         self.assertEqual(response.status_code, 302)
         theme.refresh_from_db()
@@ -99,7 +101,8 @@ class AdminTests(WebTest):
         url = reverse("admin:config_theme_change", args=(theme.pk,))
         change_page = self.app.get(url)
 
-        response = change_page.form.submit()
+        form = change_page.forms["theme_form"]
+        response = form.submit()
 
         self.assertEqual(response.status_code, 302)
         theme.refresh_from_db()
@@ -112,8 +115,9 @@ class AdminTests(WebTest):
 
         change_page = self.app.get(url)
 
-        change_page.form["stylesheet_file"] = upload
-        response = change_page.form.submit()
+        form = change_page.forms["theme_form"]
+        form["stylesheet_file"] = upload
+        response = form.submit()
 
         self.assertEqual(response.status_code, 302)
         theme.refresh_from_db()

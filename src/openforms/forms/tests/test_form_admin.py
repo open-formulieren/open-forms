@@ -77,7 +77,8 @@ class FormAdminTests(FormListAjaxMixin, WebTest):
         response = form.submit(status=200)
 
         # deletion confirmation
-        response.form.submit()
+        delete_confirmation_form = response.forms[1]
+        delete_confirmation_form.submit()
 
         form_delete.refresh_from_db()
         form_keep.refresh_from_db()
@@ -99,7 +100,8 @@ class FormAdminTests(FormListAjaxMixin, WebTest):
         response = self.app.get(url, user=self.superuser)
 
         # deletion confirmation
-        response.form.submit()
+        delete_confirmation_form = response.forms[1]
+        delete_confirmation_form.submit()
 
         form.refresh_from_db()
         self.assertTrue(form._is_deleted)

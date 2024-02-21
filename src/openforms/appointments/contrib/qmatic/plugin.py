@@ -6,13 +6,13 @@ from contextlib import contextmanager
 from datetime import date, datetime
 from functools import wraps
 from typing import Callable, ParamSpec, TypeVar
+from zoneinfo import ZoneInfo
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-import pytz
 from dateutil.parser import isoparse
 from requests.exceptions import RequestException
 
@@ -341,7 +341,7 @@ class QmaticAppointment(BasePlugin[CustomerFields]):
         with QmaticClient() as api_client:
             # Ensure that we get the appointment time in the timezone of the branch we're booking for
             branch = api_client.get_branch(location_id)
-            branch_timezone = pytz.timezone(branch["timeZone"])
+            branch_timezone = ZoneInfo(branch["timeZone"])
             if not timezone.is_naive(start_at):
                 start_at = timezone.make_naive(start_at, timezone=branch_timezone)
 

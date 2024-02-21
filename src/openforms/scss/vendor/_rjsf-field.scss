@@ -18,7 +18,7 @@
 
     input[type='url'],
     input[type='text'] {
-      width: $input-field-size;
+      width: var(--of-admin-input-field-size);
     }
   }
 
@@ -30,7 +30,7 @@
 
   &__input {
     input[type='email'] {
-      width: $input-field-size; // override from admin/rjsf default
+      width: var(--of-admin-input-field-size); // override from admin/rjsf default
     }
 
     textarea {

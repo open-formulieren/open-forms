@@ -13,7 +13,7 @@ from log_outgoing_requests.formatters import HttpFormatter
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 
-from .utils import Filesize, config, get_sentry_integrations, strip_protocol_from_origin
+from .utils import Filesize, config, get_sentry_integrations
 
 # Build paths inside the project, so further paths can be defined relative to
 # the code root.
@@ -795,7 +795,7 @@ CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
     split=True,
-    default=[strip_protocol_from_origin(origin) for origin in CORS_ALLOWED_ORIGINS],
+    default=CORS_ALLOWED_ORIGINS,
 )
 #
 # SENTRY - error monitoring
@@ -1096,7 +1096,7 @@ with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
 #
 HIJACK_PERMISSION_CHECK = "openforms.accounts.hijack.verified_superusers_only"
 HIJACK_INSERT_BEFORE = (
-    '<div class="content">'  # note that this only applies to the admin
+    '<div id="content" class="colMS">'  # note that this only applies to the admin
 )
 
 #

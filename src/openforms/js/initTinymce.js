@@ -1,9 +1,14 @@
 // Taken from https://github.com/jazzband/django-tinymce/blob/master/tinymce/static/django_tinymce/init_tinymce.js
-// Updated to add dark theme detection (L35-44)
+// Updated to handle dark/light mode
+import {currentTheme} from 'utils/theme';
 
-'use strict';
+import getTinyMCEAppearance from './tinymce_appearance';
+
+('use strict');
 
 {
+  let appearance = {};
+
   function initTinyMCE(el) {
     if (el.closest('.empty-form') === null) {
       // Don't do empty inlines
@@ -32,16 +37,7 @@
         }
       });
 
-      // TODO Django 4.2: use explicit theme names rather than the media query approach:
-      // https://github.com/django/django/blob/main/django/contrib/admin/static/admin/css/dark_mode.css#L36
-      const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      mce_conf = {
-        ...mce_conf,
-        ...{
-          skin: useDarkMode ? 'oxide-dark' : 'oxide',
-          content_css: useDarkMode ? 'dark' : 'default',
-        },
-      };
+      mce_conf = {...mce_conf, ...appearance};
 
       // replace default prefix of 'empty-form' if used in selector
       if (mce_conf.selector && mce_conf.selector.includes('__prefix__')) {
@@ -80,6 +76,7 @@
       return;
       // throw 'tinyMCE is not loaded. If you customized TINYMCE_JS_URL, double-check its content.';
     }
+    handleThemes();
     // initialize the TinyMCE editors on load
     initializeTinyMCE(document);
 
@@ -96,4 +93,21 @@
       });
     }
   });
+
+  // taken from the tinymce react package for inspiration:
+  // https://github.com/tinymce/tinymce-react/blob/e2b1907eadb751f81e01d8239fdf876e77430d43/src/main/ts/components/Editor.tsx#L139
+  const resetEditor = el => {
+    const editor = window.tinyMCE.get(el.id);
+    editor.remove();
+    initTinyMCE(el);
+  };
+
+  const handleThemes = () => {
+    appearance = getTinyMCEAppearance(currentTheme.getValue());
+
+    currentTheme.subscribe(newTheme => {
+      appearance = getTinyMCEAppearance(newTheme);
+      document.querySelectorAll('.tinymce').forEach(resetEditor);
+    });
+  };
 }

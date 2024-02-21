@@ -1,7 +1,8 @@
+import zoneinfo
 from datetime import datetime
 from typing import Any
 
-from django.test import SimpleTestCase, override_settings
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -17,15 +18,15 @@ request_factory = APIRequestFactory()
 
 
 @override_settings(TIME_ZONE="Europe/Amsterdam")
-class DynamicDatetimeConfigurationTests(SimpleTestCase):
+class DynamicDatetimeConfigurationTests(TestCase):
     @staticmethod
     def _get_dynamic_config(
         component: DatetimeComponent, variables: dict[str, Any]
     ) -> DatetimeComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
         request = request_factory.get("/irrelevant")
-        submission = SubmissionFactory.build()
-        static_vars = get_static_variables(submission=None)  # don't do queries
+        submission = SubmissionFactory.create()
+        static_vars = get_static_variables(submission=submission)  # don't do queries
         variables.update({var.key: var.initial_value for var in static_vars})
         config_wrapper = get_dynamic_configuration(
             config_wrapper, request=request, submission=submission, data=variables
@@ -154,7 +155,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         )
 
     def test_relative_to_variable_add_delta(self):
-        component = {
+        component: DatetimeComponent = {
             "type": "datetime",
             "key": "aDatetime",
             "openForms": {
@@ -171,13 +172,22 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         }
         # Amsterdam time
         some_date = timezone.make_aware(datetime(2022, 10, 14, 15, 0, 0))
-        assert some_date.tzinfo.zone == "Europe/Amsterdam"
+        assert isinstance(some_date.tzinfo, zoneinfo.ZoneInfo)
+        assert some_date.tzinfo.key == "Europe/Amsterdam"
 
         new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 
+        assert "datePicker" in new_component
+        assert new_component["datePicker"] is not None
+        assert "minDate" in new_component["datePicker"]
+        # DST ended on Oct 30, so we go from UTC+2 to UTC+1 (clock goes backwards one hour)
+        # On Django 3.2, this hour backwards was calculated in, but on 4.2 the local time
+        # (15:00) stays identical. You can argue for both of those cases that they're the
+        # correct behaviour...
+        # At least the zoneinfo variant ends up with the correct final timezone...
         self.assertEqual(
             new_component["datePicker"]["minDate"],
-            "2022-11-04T14:00:00+01:00",  # Nov. 4th Amsterdam time, where DST has ended
+            "2022-11-04T15:00:00+01:00",  # Nov. 4th Amsterdam time, where DST has ended
         )
 
     def test_relative_to_variable_subtract_delta(self):
@@ -197,7 +207,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         }
         # Amsterdam time
         some_date = timezone.make_aware(datetime(2022, 10, 14, 15, 0, 0))
-        assert some_date.tzinfo.zone == "Europe/Amsterdam"
+        assert some_date.tzinfo.key == "Europe/Amsterdam"
 
         new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 

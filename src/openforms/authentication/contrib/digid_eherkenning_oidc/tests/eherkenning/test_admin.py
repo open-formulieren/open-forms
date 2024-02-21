@@ -46,7 +46,7 @@ class eHerkenningOIDCFormAdminTests(WebTest):
             )
         )
 
-        form = response.form
+        form = response.forms["openidconnecteherkenningconfig_form"]
         form["enabled"] = False
         # set the value manually, normally this is done through JS
         form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
@@ -69,7 +69,7 @@ class eHerkenningOIDCFormAdminTests(WebTest):
             )
         )
 
-        form = response.form
+        form = response.forms["openidconnecteherkenningconfig_form"]
         form["enabled"] = False
         # set the value manually, normally this is done through JS
         form["oidc_rp_scopes_list"] = json.dumps(config.oidc_rp_scopes_list)
