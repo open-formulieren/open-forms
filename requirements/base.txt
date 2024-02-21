@@ -37,7 +37,7 @@ boltons==21.0.0
     #   glom
 brotli==1.1.0
     # via fonttools
-cbor2==5.6.1
+cbor2==5.6.2
     # via webauthn
 celery==5.2.7
     # via
