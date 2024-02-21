@@ -36,13 +36,14 @@ async-timeout==4.0.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   redis
-attrs==20.3.0
+attrs==23.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   glom
     #   hypothesis
     #   jsonschema
+    #   referencing
     #   zeep
 autopep8==1.5.7
     # via django-silk
@@ -599,20 +600,25 @@ jq==1.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-jsonschema==4.17.3
+jsonschema==4.21.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-jsonschema-serializer
     #   drf-spectacular
-    #   jsonschema-spec
     #   openapi-schema-validator
     #   openapi-spec-validator
-jsonschema-spec==0.1.6
+jsonschema-spec==0.2.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-spec-validator
+jsonschema-specifications==2023.7.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   jsonschema
+    #   openapi-schema-validator
 kombu==5.2.4
     # via
     #   -c requirements/ci.txt
@@ -699,17 +705,17 @@ oauthlib==3.2.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   requests-oauthlib
-openapi-schema-validator==0.4.4
+openapi-schema-validator==0.6.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-spec-validator
-openapi-spec-validator==0.5.5
+openapi-spec-validator==0.6.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi3-parser
-openapi3-parser==1.1.11
+openapi3-parser==1.1.16
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -862,11 +868,6 @@ pyquery==1.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pyrsistent==0.17.3
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   jsonschema
 pytest==7.4.0
     # via
     #   -c requirements/ci.txt
@@ -931,6 +932,13 @@ redis==4.5.4
     #   celery-once
     #   django-redis
     #   portalocker
+referencing==0.30.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   jsonschema
+    #   jsonschema-spec
+    #   jsonschema-specifications
 requests==2.31.0
     # via
     #   -c requirements/ci.txt
@@ -977,6 +985,12 @@ rfc3339-validator==0.1.4
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-schema-validator
+rpds-py==0.18.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   jsonschema
+    #   referencing
 ruamel-yaml==0.17.32
     # via
     #   -c requirements/ci.txt
