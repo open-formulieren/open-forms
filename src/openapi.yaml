@@ -690,6 +690,80 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/dmn/decision-definitions/inputs-outputs:
+    get:
+      operationId: dmn_decision_definitions_inputs_outputs_retrieve
+      summary: Retrieve the decision definition input/output clauses
+      parameters:
+      - in: query
+        name: definition
+        schema:
+          type: string
+        description: Identifier of the definition to retrieve available versions for.
+        required: true
+      - in: query
+        name: engine
+        schema:
+          type: string
+          enum:
+          - camunda7
+        description: Identifier of the decision engine to query. Note that some engines
+          may be disabled at runtime.
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: string
+      tags:
+      - dmn
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionDefinitionIntrospectionResult'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/decision-definitions/versions:
     get:
       operationId: dmn_decision_definitions_versions_list
@@ -6868,6 +6942,79 @@ components:
       required:
       - id
       - label
+    DecisionDefinitionInput:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the decision table input.
+        label:
+          type: string
+          description: Short description of the input.
+        expression:
+          type: string
+          description: Specifies how the value of the input clause is generated. It
+            usually simple references a variable which is available during the evaluation.
+        typeRef:
+          allOf:
+          - $ref: '#/components/schemas/TypeRefEnum'
+          description: |-
+            The type of the input expression after being evaluated.
+
+            * `string` - string
+            * `integer` - integer
+            * `long` - long
+            * `boolean` - boolean
+            * `date` - date
+            * `double` - double
+      required:
+      - expression
+      - id
+      - label
+      - typeRef
+    DecisionDefinitionIntrospectionResult:
+      type: object
+      properties:
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DecisionDefinitionInput'
+        outputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DecisionDefinitionOutput'
+      required:
+      - inputs
+      - outputs
+    DecisionDefinitionOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the decision table output.
+        label:
+          type: string
+          description: Short description of the output.
+        name:
+          type: string
+          description: Used to reference the value of the output.
+        typeRef:
+          allOf:
+          - $ref: '#/components/schemas/TypeRefEnum'
+          description: |-
+            The type of the output clause.
+
+            * `string` - string
+            * `integer` - integer
+            * `long` - long
+            * `boolean` - boolean
+            * `date` - date
+            * `double` - double
+      required:
+      - id
+      - label
+      - name
+      - typeRef
     DecisionDefinitionVersion:
       type: object
       properties:
@@ -9636,6 +9783,22 @@ components:
           format: date-time
       required:
       - time
+    TypeRefEnum:
+      enum:
+      - string
+      - integer
+      - long
+      - boolean
+      - date
+      - double
+      type: string
+      description: |-
+        * `string` - string
+        * `integer` - integer
+        * `long` - long
+        * `boolean` - boolean
+        * `date` - date
+        * `double` - double
     UsedInForm:
       type: object
       properties:

@@ -1,7 +1,9 @@
 from django.utils.translation import gettext_lazy as _
 
+from django_camunda.dmn.datastructures import DMNIntrospectionResult
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -13,6 +15,7 @@ from openforms.api.views import ListMixin
 from ..base import DecisionDefinition
 from ..registry import register
 from .serializers import (
+    DecisionDefinitionIntrospectionResultSerializer,
     DecisionDefinitionSerializer,
     DecisionDefinitionVersionSerializer,
     DecisionDefinitionXMLSerializer,
@@ -169,3 +172,36 @@ class DecisionDefinitionXMLView(ValidateQueryStringParametersMixin, APIView):
         xml = plugin.get_definition_xml(definition_id, version=version) or ""
         serializer = DecisionDefinitionXMLSerializer(instance={"xml": xml})
         return Response(serializer.data)
+
+
+@extend_schema_view(
+    get=extend_schema(
+        summary=_("Retrieve the decision definition input/output clauses"),
+        parameters=[
+            ENGINE_PARAMETER,
+            DEFINITION_PARAMETER,
+            VERSION_PARAMETER,
+        ],
+        responses={
+            200: DecisionDefinitionIntrospectionResultSerializer,
+            400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
+        },
+    ),
+)
+class DecisionDefinitionInputOutputView(
+    ValidateQueryStringParametersMixin, RetrieveAPIView
+):
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    validate_params = (ENGINE_PARAMETER, DEFINITION_PARAMETER, VERSION_PARAMETER)
+    serializer_class = DecisionDefinitionIntrospectionResultSerializer
+
+    def get_object(self) -> DMNIntrospectionResult:
+        query_params = self.validate_query_parameters()
+        engine = query_params[ENGINE_PARAMETER]
+        definition_id = query_params[DEFINITION_PARAMETER]
+        plugin = register[engine]
+        version = query_params[VERSION_PARAMETER]
+
+        return plugin.get_decision_definition_parameters(definition_id, version)

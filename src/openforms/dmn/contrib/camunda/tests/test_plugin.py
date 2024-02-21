@@ -150,3 +150,40 @@ class CamundaDMNTests(TestCase):
                 capture.records[1].msg,
                 "Could not decode JSON data in error response body",
             )
+
+    def test_get_inputs_outputs(self):
+        params = plugin.get_decision_definition_parameters(
+            "invoiceClassification", version="1"
+        )
+
+        inputs = params.inputs
+        outputs = params.outputs
+
+        self.assertEqual(len(inputs), 2)
+        self.assertEqual(inputs[0]["label"], "Invoice Amount")
+        self.assertEqual(inputs[0]["expression"], "amount")
+        self.assertEqual(inputs[1]["label"], "Invoice Category")
+        self.assertEqual(inputs[1]["expression"], "invoiceCategory")
+
+        self.assertEqual(len(outputs), 1)
+        self.assertEqual(outputs[0]["label"], "Classification")
+        self.assertEqual(outputs[0]["name"], "invoiceClassification")
+
+    def test_get_inputs_outputs_table_with_dependency(self):
+        # This decision ID depends on the invoiceClassification table
+        params = plugin.get_decision_definition_parameters(
+            "invoice-assign-approver", version="1"
+        )
+
+        inputs = params.inputs
+        outputs = params.outputs
+
+        self.assertEqual(len(inputs), 2)
+        self.assertEqual(inputs[0]["label"], "Invoice Amount")
+        self.assertEqual(inputs[0]["expression"], "amount")
+        self.assertEqual(inputs[1]["label"], "Invoice Category")
+        self.assertEqual(inputs[1]["expression"], "invoiceCategory")
+
+        self.assertEqual(len(outputs), 1)
+        self.assertEqual(outputs[0]["label"], "Approver Group")
+        self.assertEqual(outputs[0]["name"], "result")

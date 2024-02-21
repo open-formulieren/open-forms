@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    DecisionDefinitionInputOutputView,
     DecisionDefinitionListView,
     DecisionDefinitionVersionListView,
     DecisionDefinitionXMLView,
@@ -23,5 +24,10 @@ urlpatterns = [
         "decision-definitions/xml",
         DecisionDefinitionXMLView.as_view(),
         name="dmn-definition-xml",
+    ),
+    path(
+        "decision-definitions/inputs-outputs",
+        DecisionDefinitionInputOutputView.as_view(),
+        name="dmn-definition-inputs-outputs",
     ),
 ]

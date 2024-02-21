@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from ..base import BasePlugin, DecisionDefinition
 from ..registry import Registry
+from ..types import DMNInputOutput, GenericInputOutput
 
 register = Registry()
 
@@ -17,6 +18,12 @@ class TestPlugin(BasePlugin):
         definition_id, *, version: str = "", input_values: dict[str, int]
     ) -> dict[str, int]:
         return {"sum": sum([input_values["a"], input_values["b"]])}
+
+    @staticmethod
+    def get_decision_definition_parameters(
+        definition_id: str, version: str = ""
+    ) -> DMNInputOutput:
+        return GenericInputOutput(inputs=[], outputs=[])
 
 
 class RegistryTests(TestCase):
