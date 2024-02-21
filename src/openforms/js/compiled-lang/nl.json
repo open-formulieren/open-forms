@@ -83,6 +83,12 @@
       "value": "Locatie veld"
     }
   ],
+  "/fAEsY": [
+    {
+      "type": 0,
+      "value": "Submission report CSV informatieobjecttype"
+    }
+  ],
   "/gcLcC": [
     {
       "type": 0,
@@ -477,6 +483,12 @@
     {
       "type": 0,
       "value": "Naam"
+    }
+  ],
+  "51k2La": [
+    {
+      "type": 0,
+      "value": "JSON content field"
     }
   ],
   "5AC1+x": [
@@ -965,6 +977,12 @@
       "value": "Bewaartermijn voor niet voltooide inzendingen inzendingen"
     }
   ],
+  "A/vedA": [
+    {
+      "type": 0,
+      "value": "JSON template for the body of the request sent to the Objects API."
+    }
+  ],
   "A1tDIH": [
     {
       "type": 0,
@@ -1127,12 +1145,6 @@
     {
       "type": 0,
       "value": "Formulier"
-    }
-  ],
-  "BVuE94": [
-    {
-      "type": 0,
-      "value": "If specified, the user must check at least this many options."
     }
   ],
   "BcuXrg": [
@@ -1705,6 +1717,12 @@
       "value": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "HKA7Ic": [
+    {
+      "type": 0,
+      "value": "Productaanvraag type"
+    }
+  ],
   "HNoGb8": [
     {
       "type": 0,
@@ -2129,6 +2147,12 @@
       "value": "Veld waar beschikbare locaties voor een afspraak komen te staan"
     }
   ],
+  "NwxORf": [
+    {
+      "type": 0,
+      "value": "Upload submission CSV"
+    }
+  ],
   "O/wKJh": [
     {
       "type": 0,
@@ -2391,6 +2415,12 @@
       "value": "Beginwaarde"
     }
   ],
+  "RrjozJ": [
+    {
+      "type": 0,
+      "value": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
+    }
+  ],
   "RuAQwk": [
     {
       "type": 0,
@@ -2585,6 +2615,12 @@
     {
       "type": 0,
       "value": "De placeholder-tekst die verschijnt als dit veld leeg is."
+    }
+  ],
+  "U/t6b+": [
+    {
+      "type": 0,
+      "value": "Variables Mapping"
     }
   ],
   "UCGSib": [
@@ -2833,6 +2869,12 @@
       "value": "Indien meerdere unieke identificaties beschikbaar zijn (bijvoorbeeld bij eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
     }
   ],
+  "WnKF/i": [
+    {
+      "type": 0,
+      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
+    }
+  ],
   "Wz5QZo": [
     {
       "type": 0,
@@ -2861,6 +2903,12 @@
     {
       "type": 0,
       "value": "Ongeldige JSON-logic expressie. Zie https://jsonlogic.com/operations.html voor beschikbare operaties."
+    }
+  ],
+  "XPEv9r": [
+    {
+      "type": 0,
+      "value": "Legacy"
     }
   ],
   "XPLnIL": [
@@ -3007,6 +3055,12 @@
       "value": "Selecteer de plugin om te gebruiken voor prefill."
     }
   ],
+  "Yyvvx1": [
+    {
+      "type": 0,
+      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
+    }
+  ],
   "YzLSHY": [
     {
       "type": 0,
@@ -3120,12 +3174,6 @@
     {
       "type": 0,
       "value": "Product veld"
-    }
-  ],
-  "aWwaAq": [
-    {
-      "type": 0,
-      "value": "Maximum selected checkboxes"
     }
   ],
   "aXJpiI": [
@@ -3424,12 +3472,6 @@
       "value": "Het verplichte veld Label is niet ingevuld."
     }
   ],
-  "dbAJfK": [
-    {
-      "type": 0,
-      "value": "Minimum selected checkboxes"
-    }
-  ],
   "ddDA6+": [
     {
       "type": 0,
@@ -3490,6 +3532,12 @@
       "value": "configured"
     }
   ],
+  "dwkDsV": [
+    {
+      "type": 0,
+      "value": "Version of the objecttype in the Objecttypes API"
+    }
+  ],
   "e6SsfR": [
     {
       "type": 0,
@@ -3502,6 +3550,12 @@
       "value": "Beheer procesvariabelen"
     }
   ],
+  "eBtStW": [
+    {
+      "type": 0,
+      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -3512,6 +3566,12 @@
     {
       "type": 0,
       "value": "Geavanceerde opties"
+    }
+  ],
+  "eR8wGd": [
+    {
+      "type": 0,
+      "value": "RSIN of organization, which creates the INFORMATIEOBJECT"
     }
   ],
   "eU7+uS": [
@@ -3596,6 +3656,12 @@
     {
       "type": 0,
       "value": "Sla de waarde op onder het geselecteerde attribuut in de geselecteerde registratieplugin."
+    }
+  ],
+  "fVNaJK": [
+    {
+      "type": 0,
+      "value": "Objecttype version"
     }
   ],
   "fWcg7I": [
@@ -3778,6 +3844,12 @@
       "value": "Configureren"
     }
   ],
+  "hwD3q9": [
+    {
+      "type": 0,
+      "value": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag"
+    }
+  ],
   "hwsnj9": [
     {
       "type": 0,
@@ -3794,6 +3866,18 @@
     {
       "type": 0,
       "value": "Tabnaam"
+    }
+  ],
+  "iHpAYZ": [
+    {
+      "type": 0,
+      "value": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field."
+    }
+  ],
+  "iNmPDd": [
+    {
+      "type": 0,
+      "value": "Attachment informatieobjecttype"
     }
   ],
   "iOADkJ": [
@@ -3872,10 +3956,22 @@
       "value": "Waarden"
     }
   ],
+  "j7rEgn": [
+    {
+      "type": 0,
+      "value": "Submission report PDF informatieobjecttype"
+    }
+  ],
   "jARYB7": [
     {
       "type": 0,
       "value": "(Herbruikbare) stapgegevens"
+    }
+  ],
+  "jCUorM": [
+    {
+      "type": 0,
+      "value": "Something went wrong when fectching the available Objecttypes and versions"
     }
   ],
   "jLg5l6": [
@@ -3986,6 +4082,12 @@
       "value": "uitgeschakeld"
     }
   ],
+  "kQtrKX": [
+    {
+      "type": 0,
+      "value": "The type of ProductAanvraag"
+    }
+  ],
   "kg/eh1": [
     {
       "type": 0,
@@ -4030,6 +4132,12 @@
       ],
       "type": 8,
       "value": "code"
+    }
+  ],
+  "l/mtou": [
+    {
+      "type": 0,
+      "value": "Payment status update JSON template"
     }
   ],
   "l1fi1t": [
@@ -4529,6 +4637,12 @@
       "value": "Datatype"
     }
   ],
+  "rJTe9U": [
+    {
+      "type": 0,
+      "value": "Objecttype"
+    }
+  ],
   "rTafvA": [
     {
       "type": 0,
@@ -4573,12 +4687,6 @@
     {
       "type": 0,
       "value": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier."
-    }
-  ],
-  "sR9GVQ": [
-    {
-      "type": 0,
-      "value": "If specified, the user must check at most this many options."
     }
   ],
   "sU/n0S": [
@@ -4639,6 +4747,12 @@
     {
       "type": 0,
       "value": " 3"
+    }
+  ],
+  "sptpzv": [
+    {
+      "type": 0,
+      "value": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
     }
   ],
   "t9+e9k": [
@@ -5065,6 +5179,12 @@
     {
       "type": 0,
       "value": "Gebruik algemene kaartinstellingen"
+    }
+  ],
+  "zF8YEc": [
+    {
+      "type": 0,
+      "value": "Organisation RSIN"
     }
   ],
   "zGMQ75": [
