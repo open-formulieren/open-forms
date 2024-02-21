@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import FAIcon from 'components/admin/FAIcon';
+import {FormContext} from 'components/admin/form_design/Context';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
@@ -72,10 +73,14 @@ const RegistrationSummary = ({
  *
  * @param {Object} p
  * @param {Object} p.variable - The current variable
- * @param {RegistrationBackend[]} p.registrationBackends - The form's registration backends
  * @returns {JSX.Element} - A <ul> list of summaries
  */
-const RegistrationsSummary = ({variable, registrationBackends}) => {
+const RegistrationsSummary = ({variable}) => {
+  const formContext = useContext(FormContext);
+
+  /** @type {RegistrationBackend[]} */
+  const registrationBackends = formContext.registrationBackends;
+
   const summaries = [];
   let canConfigureBackend = false;
 
@@ -105,8 +110,9 @@ const RegistrationsSummary = ({variable, registrationBackends}) => {
         registrationSummary: (
           <SummaryHandler variable={variable} backendOptions={backend.options} />
         ),
+        // TODO 'backend' for all others?
         variableConfigurationEditor: (
-          <VariableConfigurationEditor variable={variable} backendOptions={backend.options} />
+          <VariableConfigurationEditor variable={variable} backend={backend} />
         ),
       });
     } else {

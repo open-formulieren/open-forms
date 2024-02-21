@@ -22,6 +22,7 @@ export const FormLogicDecorator = (Story, {args}) => (
 export const FormDecorator = (Story, {args}) => (
   <FormContext.Provider
     value={{
+      form: args.form || {},
       formSteps: args.availableFormSteps || [],
       staticVariables: args.availableStaticVariables || [],
       formVariables: args.availableFormVariables || [],
