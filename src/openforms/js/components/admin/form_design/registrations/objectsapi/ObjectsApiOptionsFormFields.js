@@ -39,8 +39,8 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
     onChange(
       produce(formData, draft => {
         draft.version = index + 1;
-        draft.contentJson = '';
-        draft.paymentStatusUpdateJson = '';
+        delete draft.contentJson;
+        delete draft.paymentStatusUpdateJson;
       })
     );
   };
