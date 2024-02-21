@@ -1,0 +1,21 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
+import * as ObjectsApiOptionsFormFieldsStories from './ObjectsApiOptionsFormFields.stories';
+
+<Meta of={ObjectsApiOptionsFormFieldsStories} />
+
+# Objects API Registration
+
+Here we can set up the registration backend for Objects APIs. The Objecttype and corresponding
+versions are fetched from the API.
+
+<Canvas of={ObjectsApiOptionsFormFieldsStories.Default} />
+
+## Props
+
+<ArgTypes of={ObjectsApiOptionsFormFields} />
+
+**Warning**: this component requires the following contexts:
+
+- `ValidationErrorContext`, for validation errors
