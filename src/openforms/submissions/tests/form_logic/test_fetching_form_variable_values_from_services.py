@@ -125,12 +125,12 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
     def test_it_can_construct_simple_path_parameters_from_any_input(self, field_value):
         assume(field_value != ".")  # request_mock eats the single dot :pacman:
         # https://swagger.io/docs/specification/describing-parameters/#path-parameters
-        context = {"seconds": field_value}
+        context = {"late": {"seconds": field_value}}
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
-                path="delay/{{seconds}}",  # this is not defined as number in the OAS
+                path="delay/{{late.seconds}}",  # this is not defined as number in the OAS
             )
         )
 
@@ -216,13 +216,13 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         self, some_text, some_value
     ):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
-        context = {"url": some_text, "code": some_value}
+        context = {"url": some_text, "code": [{"foo": some_value}]}
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="redirect-to",
-                query_params={"status_code": ["{{code}}"], "url": ["{{url}}"]},
+                query_params={"status_code": ["{{code.0.foo}}"], "url": ["{{url}}"]},
             )
         )
 
@@ -279,13 +279,13 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
     def test_it_can_construct_simple_header_parameters(self):
         """Assert a happy path"""
         # https://swagger.io/docs/specification/describing-parameters/#header-parameters
-        context = {"some_value": "x"}
+        context = {"some": [{"nested_value": "x"}]}
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="cache",
                 # our OAS spec doesn't care what ETags look like.
-                headers={"If-None-Match": "{{some_value}}"},
+                headers={"If-None-Match": "{{some.0.nested_value}}"},
             )
         )
         with requests_mock.Mocker(case_sensitive=True) as m:
