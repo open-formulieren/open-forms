@@ -21,7 +21,7 @@ const init = async () => {
 const saveCollapsedState = () => {
   const collapsedState = {};
   document.querySelectorAll('.form-category').forEach(category => {
-    const categoryId = category.getAttribute('data-id');
+    const categoryId = category.dataset.id;
     const isCollapsed = category.classList.contains('form-category--collapsed');
     if (isCollapsed) collapsedState[categoryId] = isCollapsed;
   });
@@ -32,7 +32,7 @@ const restoreCollapsedState = () => {
   const collapsedState = JSON.parse(localStorage.getItem('collapsedState'));
   if (collapsedState) {
     document.querySelectorAll('.form-category').forEach(category => {
-      if (collapsedState[category.getAttribute('data-id')]) {
+      if (collapsedState[category.dataset.id]) {
         category.classList.add('form-category--collapsed');
       }
     });
