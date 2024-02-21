@@ -49,12 +49,9 @@ const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => 
 };
 
 ObjectTypeSelect.propTypes = {
-  /**
-   * URL to the objecttype in the Object types API.
-   */
+  availableObjectTypesState: PropTypes.object.isRequired,
   objecttype: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  onLoadingError: PropTypes.func.isRequired,
 };
 
 export default ObjectTypeSelect;

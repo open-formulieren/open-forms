@@ -1,4 +1,5 @@
 import {produce} from 'immer';
+import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
@@ -30,15 +31,15 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
 
   const {version = 1} = formData;
 
-  const changeVersion = index => {
-    if (index === 1) {
+  const changeVersion = v => {
+    if (v === 1) {
       const confirmV2Switch = window.confirm(v2SwitchMessage);
       if (!confirmV2Switch) return;
     }
 
     onChange(
       produce(formData, draft => {
-        draft.version = index + 1;
+        draft.version = v + 1;
         delete draft.contentJson;
         delete draft.paymentStatusUpdateJson;
       })
@@ -97,6 +98,26 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
       </Tabs>
     </>
   );
+};
+
+ObjectsApiOptionsFormFields.propTypes = {
+  index: PropTypes.number,
+  name: PropTypes.string,
+  schema: PropTypes.any,
+  formData: PropTypes.shape({
+    version: PropTypes.number,
+    objecttype: PropTypes.string,
+    objecttypeVersion: PropTypes.string,
+    productaanvraagType: PropTypes.string,
+    informatieobjecttypeSubmissionReport: PropTypes.string,
+    uploadSubmissionCsv: PropTypes.string,
+    informatieobjecttypeSubmissionCsv: PropTypes.string,
+    informatieobjecttypeAttachment: PropTypes.string,
+    organisatieRsin: PropTypes.string,
+    contentJson: PropTypes.string,
+    paymentStatusUpdateJson: PropTypes.string,
+  }),
+  onChange: PropTypes.func.isRequired,
 };
 
 export default ObjectsApiOptionsFormFields;

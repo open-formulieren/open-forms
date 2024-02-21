@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {useIntl} from 'react-intl';
 
@@ -261,6 +262,25 @@ const LegacyConfigFields = ({index, name, formData, onChange}) => {
       </CustomFieldTemplate>
     </>
   );
+};
+
+LegacyConfigFields.propTypes = {
+  index: PropTypes.number,
+  name: PropTypes.string,
+  formData: PropTypes.shape({
+    version: PropTypes.number,
+    objecttype: PropTypes.string,
+    objecttypeVersion: PropTypes.string,
+    productaanvraagType: PropTypes.string,
+    informatieobjecttypeSubmissionReport: PropTypes.string,
+    uploadSubmissionCsv: PropTypes.string,
+    informatieobjecttypeSubmissionCsv: PropTypes.string,
+    informatieobjecttypeAttachment: PropTypes.string,
+    organisatieRsin: PropTypes.string,
+    contentJson: PropTypes.string,
+    paymentStatusUpdateJson: PropTypes.string,
+  }),
+  onChange: PropTypes.func.isRequired,
 };
 
 export default LegacyConfigFields;

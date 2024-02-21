@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
@@ -244,7 +244,22 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
 };
 
 V2ConfigFields.propTypes = {
-  index: PropTypes.number.isRequired,
+  index: PropTypes.number,
+  name: PropTypes.string,
+  formData: PropTypes.shape({
+    version: PropTypes.number,
+    objecttype: PropTypes.string,
+    objecttypeVersion: PropTypes.string,
+    productaanvraagType: PropTypes.string,
+    informatieobjecttypeSubmissionReport: PropTypes.string,
+    uploadSubmissionCsv: PropTypes.string,
+    informatieobjecttypeSubmissionCsv: PropTypes.string,
+    informatieobjecttypeAttachment: PropTypes.string,
+    organisatieRsin: PropTypes.string,
+    contentJson: PropTypes.string,
+    paymentStatusUpdateJson: PropTypes.string,
+  }),
+  onChange: PropTypes.func.isRequired,
 };
 
 export default V2ConfigFields;

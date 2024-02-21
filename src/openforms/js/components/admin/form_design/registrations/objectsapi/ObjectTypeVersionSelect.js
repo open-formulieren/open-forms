@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -29,7 +30,7 @@ const ObjectTypeVersionSelect = ({
     value: availableVersions = [],
     error,
   } = useAsync(async () => {
-    const objecttype = availableObjecttypes.find(ot => ot.url == selectedObjecttype);
+    const objecttype = availableObjecttypes.find(ot => ot.url === selectedObjecttype);
     // no match -> no versions to retrieve;
     if (!objecttype) return [];
 
@@ -53,7 +54,7 @@ const ObjectTypeVersionSelect = ({
   // synchronize the UI state back to the form state)
   useEffect(() => {
     // do nothing if no options have been loaded
-    if (loading || availableVersions.length == 0) return;
+    if (loading || availableVersions.length === 0) return;
 
     // check if a valid option is selected, if this is the case -> do nothing
     const isOptionPresent = availableVersions.find(
@@ -67,16 +68,21 @@ const ObjectTypeVersionSelect = ({
   });
 
   return (
-    <>
-      <Select
-        id="root_objecttypeVersion"
-        name="objecttypeVersion"
-        choices={choices}
-        value={selectedVersion ?? ''}
-        onChange={onChange}
-      />
-    </>
+    <Select
+      id="root_objecttypeVersion"
+      name="objecttypeVersion"
+      choices={choices}
+      value={selectedVersion ?? ''}
+      onChange={onChange}
+    />
   );
+};
+
+ObjectTypeVersionSelect.propTypes = {
+  availableObjecttypes: PropTypes.array,
+  selectedObjecttype: PropTypes.string.isRequired,
+  selectedVersion: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default ObjectTypeVersionSelect;
