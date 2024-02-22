@@ -2,6 +2,15 @@
 Changelog
 =========
 
+Unreleased
+==========
+
+Upgrade procedure
+-----------------
+
+* ⚠️ The ``CSRF_TRUSTED_ORIGINS`` setting now requires items to have a scheme. If you
+  specify this setting, update your infrastructure code.
+
 2.6.0-alpha.0 (2023-02-20)
 ==========================
 
