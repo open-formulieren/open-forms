@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.formio.service import recursive_apply
 from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import DataMapping
 
@@ -126,12 +127,14 @@ class ServiceFetchConfiguration(models.Model):
         #
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
+        # Explicitly cast values to strings to avoid localization
+        ctx = recursive_apply(context, str, transform_leaf=True)
+
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
             header: render_from_string(
                 value,
-                # Explicitly cast values to strings to avoid localization
-                {k: str(v) for k, v in context.items()},
+                ctx,
                 backend=sandbox_backend,
                 disable_autoescape=True,
             )
@@ -145,14 +148,15 @@ class ServiceFetchConfiguration(models.Model):
         # this catches faults requests doesn't: https://github.com/psf/requests/issues/6359
         HeaderValidator()(headers)
 
-        escaped_for_path = {k: quote(str(v), safe="") for k, v in context.items()}
+        escaped_for_path = recursive_apply(
+            context, lambda v: quote(str(v), safe=""), transform_leaf=True
+        )
 
         query_params = {
             param: [
                 render_from_string(
                     value,
-                    # Explicitly cast values to strings to avoid localization
-                    {k: str(v) for k, v in context.items()},
+                    ctx,
                     backend=sandbox_backend,
                     disable_autoescape=True,
                 )

@@ -27,7 +27,7 @@ from .dynamic_config import (
 )
 from .registry import register
 from .typing import Component
-from .utils import iter_components, iterate_data_with_components
+from .utils import iter_components, iterate_data_with_components, recursive_apply
 from .validation import validate_formio_data
 from .variables import inject_variables
 
@@ -41,6 +41,7 @@ __all__ = [
     "FormioData",
     "iterate_data_with_components",
     "validate_formio_data",
+    "recursive_apply",
 ]
 
 

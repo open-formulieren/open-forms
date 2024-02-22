@@ -8,7 +8,7 @@ from openforms.typing import DataMapping, JSONObject, JSONValue
 
 from .datastructures import FormioConfigurationWrapper
 from .typing import Component
-from .utils import flatten_by_path
+from .utils import flatten_by_path, recursive_apply
 
 logger = logging.getLogger(__name__)
 
@@ -27,42 +27,8 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
 )
 
 
-def _recursive_apply(formio_bit: JSONValue, func: Callable, *args, **kwargs):
-    """
-    Take a formio property value and recursively apply ``func`` to it.
-
-    The ``formio_bit`` may be a string to be used as template, another JSON primitive
-    that we can't pass through the template engine or a complex JSON object to
-    recursively render.
-
-    Returns the same datatype as the input datatype, which should be ready for
-    JSON serialization.
-    """
-    # string primitive - we can throw it into the template engine
-    if isinstance(formio_bit, str):
-        return func(formio_bit, *args, **kwargs)
-
-    # collection - map every item recursively
-    if isinstance(formio_bit, list):
-        return [
-            _recursive_apply(nested_bit, func, *args, **kwargs)
-            for nested_bit in formio_bit
-        ]
-
-    # mapping - map every key/value pair recursively
-    if isinstance(formio_bit, dict):
-        return {
-            key: _recursive_apply(nested_bit, func, *args, **kwargs)
-            for key, nested_bit in formio_bit.items()
-        }
-
-    # other primitive or complex object - we can't template this out, so return it
-    # unmodified.
-    return formio_bit
-
-
 def render(formio_bit: JSONValue, context: dict) -> JSONValue:
-    return _recursive_apply(formio_bit, render_from_string, context=context)
+    return recursive_apply(formio_bit, render_from_string, context=context)
 
 
 def iter_template_properties(component: Component) -> Iterator[tuple[str, JSONValue]]:
@@ -89,7 +55,7 @@ def validate_configuration(configuration: JSONObject) -> dict[str, str]:
     for path, component in flattened_components.items():
         for property_name, property_value in iter_template_properties(component):
             try:
-                _recursive_apply(property_value, parse)
+                recursive_apply(property_value, parse)
             except TemplateSyntaxError:
                 errored_components[component["key"]] = f"{path}.{property_name}"
     return errored_components
