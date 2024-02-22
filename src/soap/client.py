@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from ape_pie.client import APIClient as SessionBase, is_base_url
 from zeep.client import Client
 from zeep.transports import Transport
@@ -26,10 +24,10 @@ def build_client(
     session = SOAPSession.configure_from(session_factory)
     transport = transport_factory(
         session=session,
-        timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
+        timeout=service.timeout,
         # operation_timeout gets passed as a parameter on all requests, overriding any
         # monkeypatched requests.Session defaults
-        operation_timeout=settings.DEFAULT_TIMEOUT_REQUESTS,
+        operation_timeout=service.timeout,
     )
     kwargs.setdefault("wsdl", service.url)
     client = client_factory(

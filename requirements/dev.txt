@@ -1253,7 +1253,7 @@ zeep==4.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers[testutils]==0.28.0
+zgw-consumers[testutils]==0.30.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
