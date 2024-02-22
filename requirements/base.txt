@@ -64,7 +64,7 @@ charset-normalizer==2.0.2
     # via requests
 clamd==1.0.2
     # via -r requirements/base.in
-click==8.0.3
+click==8.1.7
     # via
     #   celery
     #   click-didyoumean
@@ -207,7 +207,7 @@ django-solo==2.1.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-timeline-logger==3.0.0
+django-timeline-logger==4.0.0
     # via -r requirements/base.in
 django-tinymce==3.6.1
     # via -r requirements/base.in
@@ -291,7 +291,7 @@ jsonschema==4.17.3
     #   openapi-spec-validator
 jsonschema-spec==0.1.6
     # via openapi-spec-validator
-kombu==5.2.3
+kombu==5.2.4
     # via celery
 lazy-object-proxy==1.9.0
     # via openapi-spec-validator
@@ -374,7 +374,7 @@ pypng==0.20220715.0
     # via qrcode
 pyrsistent==0.17.3
     # via jsonschema
-python-dateutil==2.8.1
+python-dateutil==2.8.2
     # via
     #   django-camunda
     #   django-relativedelta
