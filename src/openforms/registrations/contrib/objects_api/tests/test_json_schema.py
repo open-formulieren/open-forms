@@ -2,7 +2,7 @@ from django.test import SimpleTestCase
 
 from referencing.exceptions import Unresolvable
 
-from ..json_schema import InvalidReference, iter_json_schema
+from ..json_schema import get_missing_required_paths, iter_json_schema_paths
 
 JSON_SCHEMA_NO_REFS = {
     "$id": "noise-complaint.schema",
@@ -94,16 +94,47 @@ JSON_SCHEMA_EXTERNAL_REF = {
     },
 }
 
+JSON_SCHEMA_REQUIRED_PATHS = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "a": {"type": "string"},
+        "b": {
+            "type": "object",
+            "properties": {
+                "c": {"type": "string"},
+                "d": {
+                    "type": "object",
+                    "properties": {
+                        "e": {"type": "string"},
+                        "f": {"type": "string"},
+                    },
+                    "required": ["e"],
+                },
+            },
+            "required": ["c", "d"],
+        },
+    },
+    "required": ["a", "b"],
+}
+
 
 class IterJsonSchemaTests(SimpleTestCase):
+    """Test cases to assert the JSON Schemas are correctly iterated over.
+
+    The first path element being the root one, it is not included as it could
+    simply be tested as ``([], CURRENT_SCHEMA_TESTED)``.
+    """
 
     def test_iter_json_schema_no_refs(self):
-        paths_list = list(iter_json_schema(JSON_SCHEMA_NO_REFS))
+        paths_list = [
+            (path.segments, schema)
+            for path, schema in iter_json_schema_paths(JSON_SCHEMA_NO_REFS)
+        ]
 
         self.assertListEqual(
-            paths_list,
+            paths_list[1:],
             [
-                ([], JSON_SCHEMA_NO_REFS),
                 (["complaintDescription"], {"type": "string"}),
                 (["measuredDecibels"], {"type": "array", "items": {"type": "number"}}),
                 (
@@ -122,12 +153,14 @@ class IterJsonSchemaTests(SimpleTestCase):
         )
 
     def test_iter_json_schema_refs(self):
-        paths_list = list(iter_json_schema(JSON_SCHEMA_REFS))
+        paths_list = [
+            (path.segments, schema)
+            for path, schema in iter_json_schema_paths(JSON_SCHEMA_REFS)
+        ]
 
         self.assertListEqual(
-            paths_list,
+            paths_list[1:],
             [
-                ([], JSON_SCHEMA_REFS),
                 (
                     ["complainant"],
                     {
@@ -154,12 +187,14 @@ class IterJsonSchemaTests(SimpleTestCase):
         )
 
     def test_iter_json_schema_nested_refs(self):
-        paths_list = list(iter_json_schema(JSON_SCHEMA_NESTED_REFS))
+        paths_list = [
+            (path.segments, schema)
+            for path, schema in iter_json_schema_paths(JSON_SCHEMA_NESTED_REFS)
+        ]
 
         self.assertListEqual(
-            paths_list,
+            paths_list[1:],
             [
-                ([], JSON_SCHEMA_NESTED_REFS),
                 (
                     ["complainant"],
                     {
@@ -178,34 +213,107 @@ class IterJsonSchemaTests(SimpleTestCase):
     def test_iter_json_schema_unknown_ref(self):
         self.assertRaises(
             Unresolvable,
-            lambda: list(iter_json_schema(JSON_SCHEMA_UNKOWN_REF, fail_fast=True)),
+            lambda: list(
+                iter_json_schema_paths(JSON_SCHEMA_UNKOWN_REF, fail_fast=True)
+            ),
         )
 
-        paths_list = list(iter_json_schema(JSON_SCHEMA_UNKOWN_REF, fail_fast=False))
+        paths_list = [
+            (path.segments, schema)
+            for path, schema in iter_json_schema_paths(
+                JSON_SCHEMA_UNKOWN_REF, fail_fast=False
+            )
+        ]
 
-        self.assertEqual(
-            paths_list,
-            [
-                ([], JSON_SCHEMA_UNKOWN_REF),
-                (["invalid"], InvalidReference("#/invalidref")),
-            ],
-        )
+        self.assertListEqual(paths_list[1][0], ["invalid"])
+        self.assertEqual(paths_list[1][1].uri, "#/invalidref")
 
     def test_iter_json_schema_external_ref(self):
         self.assertRaises(
             Unresolvable,
-            lambda: list(iter_json_schema(JSON_SCHEMA_EXTERNAL_REF, fail_fast=True)),
+            lambda: list(
+                iter_json_schema_paths(JSON_SCHEMA_EXTERNAL_REF, fail_fast=True)
+            ),
         )
 
-        paths_list = list(iter_json_schema(JSON_SCHEMA_EXTERNAL_REF, fail_fast=False))
+        paths_list = [
+            (path.segments, schema)
+            for path, schema in iter_json_schema_paths(
+                JSON_SCHEMA_EXTERNAL_REF, fail_fast=False
+            )
+        ]
 
+        self.assertListEqual(paths_list[1][0], ["external"])
         self.assertEqual(
-            paths_list,
-            [
-                ([], JSON_SCHEMA_EXTERNAL_REF),
-                (
-                    ["external"],
-                    InvalidReference("http://example.com/external-schema.json"),
-                ),
-            ],
+            paths_list[1][1].uri, "http://example.com/external-schema.json"
         )
+
+
+class RequiredJsonSchemaPathsTests(SimpleTestCase):
+    """Test cases to assert required paths are correctly picked up when iterating over JSON Schemas
+
+    (``IterJsonSchemaTests`` only made assertions on the returned paths).
+    """
+
+    def test_required_json_schema_paths(self):
+        required_paths = [
+            path.segments
+            for path, _ in iter_json_schema_paths(JSON_SCHEMA_REQUIRED_PATHS)
+            if path.required
+        ]
+
+        self.assertListEqual(
+            required_paths, [["a"], ["b"], ["b", "c"], ["b", "d"], ["b", "d", "e"]]
+        )
+
+
+class MissingRequiredPathsTests(SimpleTestCase):
+    """Test cases to assert missing required paths are picked up."""
+
+    def test_no_missing_required_paths(self):
+
+        with self.subTest("top level"):
+            missing_paths = get_missing_required_paths(
+                JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b"]]
+            )
+
+            self.assertListEqual(missing_paths, [])
+
+        with self.subTest("nested paths"):
+            missing_paths = get_missing_required_paths(
+                JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b", "c"], ["b", "d", "e"]]
+            )
+
+            self.assertListEqual(missing_paths, [])
+
+    def test_missing_required_paths(self):
+
+        with self.subTest("Missing 'a'"):
+            missing_paths = get_missing_required_paths(
+                JSON_SCHEMA_REQUIRED_PATHS, [["b"]]
+            )
+
+            self.assertListEqual(missing_paths, [["a"]])
+
+        with self.subTest("Missing 'b'"):
+            missing_paths = get_missing_required_paths(
+                JSON_SCHEMA_REQUIRED_PATHS, [["a"]]
+            )
+
+            self.assertListEqual(
+                missing_paths, [["b"], ["b", "c"], ["b", "d"], ["b", "d", "e"]]
+            )
+
+        with self.subTest("Missing 'c'"):
+            missing_paths = get_missing_required_paths(
+                JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b", "d"]]
+            )
+
+            self.assertListEqual(missing_paths, [["b", "c"]])
+
+        with self.subTest("Missing 'e'"):
+            missing_paths = get_missing_required_paths(
+                JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b", "c"], ["b", "d", "f"]]
+            )
+
+            self.assertListEqual(missing_paths, [["b", "d", "e"]])
