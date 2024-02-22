@@ -1,14 +1,12 @@
 import {Form, Formik} from 'formik';
+import isEqual from 'lodash/isEqual';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import {FormContext} from 'components/admin/form_design/Context';
-import Select from 'components/admin/forms/Select';
+import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
-
-// TODO: properly translate this
-const LOADING_OPTION = [['...', 'loading...']];
 
 /**
  * Returns the Objects API Configuration editor modal for a specific variable. This only applies to V2 Options
@@ -36,31 +34,45 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend}) => {
     loading,
     value: targetPaths,
     error,
-  } = useAsync(async () => {
-    const response = await get('/api/v2/registration/plugins/objects-api/target-paths', {
-      backendKey: backend.key,
-      formUuid: uuid,
-      variableKey: variable.key,
-    });
+  } = useAsync(
+    async () => {
+      const response = await get('/api/v2/registration/plugins/objects-api/target-paths', {
+        backendKey: backend.key,
+        formUuid: uuid,
+        variableKey: variable.key,
+      });
 
-    if (!response.ok) {
-      throw new Error('Loading available target paths failed');
-    }
+      if (!response.ok) {
+        throw new Error('Loading available target paths failed');
+      }
 
-    return response.data;
-  }, []);
+      return response.data;
+    },
+    // Load only once:
+    []
+  );
+
+  const getTargetPath = pathSegment =>
+    targetPaths.find(t => isEqual(t.targetPath, JSON.parse(pathSegment)));
 
   const choices =
     loading || error
       ? LOADING_OPTION
-      : targetPaths.map(t => [t.targetPath, t.targetPath.join(' > ')]);
+      : targetPaths.map(t => [
+          JSON.stringify(t.targetPath),
+          `${t.targetPath.join(' > ')}${t.required ? ' (required)' : ''}`,
+        ]);
 
   return (
     <Formik
       initialValues={{
-        targetPath:
-          backend.options.variablesMapping.find(mapping => mapping.variableKey === variable.key)
-            .targetPath || '',
+        targetPath: JSON.stringify(
+          (
+            backend.options.variablesMapping.find(
+              mapping => mapping.variableKey === variable.key
+            ) || backend.options.variablesMapping[0]
+          ).targetPath
+        ),
       }}
     >
       {formik => (
@@ -107,7 +119,11 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend}) => {
                   />
                 </td>
                 <td>
-                  <pre>{JSON.stringify({}, null, 2)}</pre>
+                  <pre>
+                    {loading
+                      ? 'N/A'
+                      : JSON.stringify(getTargetPath(formik.values.targetPath).jsonSchema, null, 2)}
+                  </pre>
                 </td>
               </tr>
             </tbody>
