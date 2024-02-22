@@ -1065,7 +1065,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers[testutils]==0.28.0
+zgw-consumers[testutils]==0.30.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

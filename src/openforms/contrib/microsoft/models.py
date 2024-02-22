@@ -29,6 +29,11 @@ class MSGraphService(models.Model):
         max_length=64,
         help_text=_("Secret for this Client ID"),
     )
+    timeout = models.PositiveSmallIntegerField(
+        _("timeout"),
+        help_text=_("Timeout (in seconds) for HTTP calls."),
+        default=10,
+    )
 
     class Meta:
         verbose_name = _("Microsoft Graph service")

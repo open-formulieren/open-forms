@@ -18,7 +18,7 @@ class SoapServiceAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("label", "url", "soap_version"),
+                "fields": ("label", "url", "soap_version", "timeout"),
             },
         ),
         (

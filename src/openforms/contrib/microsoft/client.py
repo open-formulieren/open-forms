@@ -38,6 +38,9 @@ class MSGraphClient:
             (self.service.client_id, self.service.secret),
             auth_flow_type="credentials",
             tenant_id=self.service.tenant_id,
+            # We are passing timeout through the Account instance and then to the
+            # Connection instance which handles the timeout parameter in the __init__
+            timeout=self.service.timeout,
         )
         if force_auth or not self.account.is_authenticated:
             if not self.account.authenticate(scopes=self.scopes):

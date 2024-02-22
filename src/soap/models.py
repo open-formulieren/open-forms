@@ -32,6 +32,11 @@ class SoapService(models.Model):
         choices=SOAPVersion.choices,
         help_text=_("The SOAP version to use for the message envelope."),
     )
+    timeout = models.PositiveSmallIntegerField(
+        _("timeout"),
+        help_text=_("Timeout (in seconds) for HTTP calls."),
+        default=10,
+    )
 
     endpoint_security = models.CharField(
         _("Security"),

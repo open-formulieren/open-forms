@@ -4,7 +4,7 @@ Test the client factory from SOAPService configuration.
 
 from pathlib import Path
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 import requests_mock
 from ape_pie import InvalidURLError
@@ -241,13 +241,13 @@ class ClientTransportTests(OFVCRMixin, TestCase):
 
 
 class ClientTransportTimeoutTests(TestCase):
-    @override_settings(DEFAULT_TIMEOUT_REQUESTS=1)
     def test_the_client_obeys_timeout_requests(self):
         "We don't want an unresponsive service DoS us."
         service = SoapServiceFactory.build(
             # this service acts like some slow lorris, will eventually
             # respond with something that's not a wsdl
-            url="https://httpstat.us/200?sleep=3000"
+            url="https://httpstat.us/200?sleep=3000",
+            timeout=1,
         )
 
         with self.assertRaises(RequestException):
@@ -255,5 +255,5 @@ class ClientTransportTimeoutTests(TestCase):
                 # zeep will try to read the "wsdl"
                 build_client(service)
             except XMLSyntaxError:
-                # DEFAULT_TIMOUT_REQUESTS time has passed and we're trying
-                self.fail("DEFAULT_TIMEOUT_REQUESTS not honoured by SOAP client")
+                # timeout time has passed and we're trying
+                self.fail("timeout not honoured by SOAP client")

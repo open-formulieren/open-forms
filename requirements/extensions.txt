@@ -818,7 +818,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-zgw-consumers==0.28.0
+zgw-consumers==0.30.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
