@@ -22,5 +22,5 @@ export const mockObjecttypesError = () =>
 
 export const mockTargetPathsGet = paths =>
   rest.get(`${BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`, (req, res, ctx) => {
-    return res(ctx.json(paths.map(path => ({targetPath: path}))));
+    return res(ctx.json(paths));
   });

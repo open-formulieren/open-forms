@@ -108,8 +108,16 @@ export const WithObjectsAPIRegistrationBackends = {
     msw: {
       handlers: [
         mockTargetPathsGet([
-          ['path', 'to.the', 'target'],
-          ['other', 'path'],
+          {
+            targetPath: ['path', 'to.the', 'target'],
+            required: true,
+            jsonSchema: {type: 'string'},
+          },
+          {
+            targetPath: ['other', 'path'],
+            required: false,
+            jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
+          },
         ]),
       ],
     },

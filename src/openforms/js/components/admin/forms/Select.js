@@ -1,10 +1,16 @@
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
-import {useIntl} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import {PrefixContext} from './Context';
 
-const BLANK_OPTION = ['', '------'];
+const BLANK_OPTION = [['', '------']];
+export const LOADING_OPTION = [
+  [
+    '...',
+    <FormattedMessage defaultMessage="loading..." description="Loading select option label" />,
+  ],
+];
 
 const Select = ({
   name = 'select',
@@ -25,7 +31,7 @@ const Select = ({
 
   const prefix = useContext(PrefixContext);
   name = prefix ? `${prefix}-${name}` : name;
-  const options = allowBlank ? [BLANK_OPTION].concat(choices) : choices;
+  const options = allowBlank ? BLANK_OPTION.concat(choices) : choices;
 
   extraProps.value = extraProps.value || '';
 
