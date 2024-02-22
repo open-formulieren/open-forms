@@ -16,22 +16,6 @@ import openforms.template.validators
 import openforms.utils.fields
 import openforms.utils.translations
 
-from ._design_tokens import (
-    update_button_design_token_values,
-    update_layout_design_token_values,
-)
-
-
-def create_csp_form_action_configs(apps, schema_editor):
-    call_command("create_csp_form_action_directives_from_config")
-
-
-def set_theme_uuid(apps, _):
-    Theme = apps.get_model("config", "Theme")
-    for theme in Theme.objects.all():
-        theme.uuid = uuid.uuid4()
-        theme.save()
-
 
 class Migration(migrations.Migration):
 
@@ -331,18 +315,7 @@ class Migration(migrations.Migration):
                 help_text="CSP header value", max_length=255, verbose_name="value"
             ),
         ),
-        migrations.RunPython(
-            code=update_button_design_token_values,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=create_csp_form_action_configs,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=update_layout_design_token_values,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
+        # RunPython operations are removed, they were executed as part of the 2.5.0 upgrade.
         migrations.AlterField(
             model_name="cspsetting",
             name="directive",
@@ -519,10 +492,7 @@ class Migration(migrations.Migration):
                 default=uuid.uuid4, editable=False, verbose_name="UUID"
             ),
         ),
-        migrations.RunPython(
-            code=set_theme_uuid,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
+        # RunPython operations are removed, they were executed as part of the 2.5.0 upgrade.
         migrations.AlterField(
             model_name="theme",
             name="uuid",
