@@ -131,7 +131,7 @@ clamd==1.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-click==8.0.3
+click==8.1.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -390,7 +390,7 @@ django-solo==2.1.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-timeline-logger==3.0.0
+django-timeline-logger==4.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -613,7 +613,7 @@ jsonschema-spec==0.1.6
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-spec-validator
-kombu==5.2.3
+kombu==5.2.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -871,7 +871,7 @@ pytest==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-python-dateutil==2.8.1
+python-dateutil==2.8.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

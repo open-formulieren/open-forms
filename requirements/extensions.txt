@@ -95,7 +95,7 @@ clamd==1.0.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-click==8.0.3
+click==8.1.7
     # via
     #   -r requirements/base.txt
     #   celery
@@ -308,7 +308,7 @@ django-solo==2.1.0
     #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-timeline-logger==3.0.0
+django-timeline-logger==4.0.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -446,7 +446,7 @@ jsonschema-spec==0.1.6
     # via
     #   -r requirements/base.txt
     #   openapi-spec-validator
-kombu==5.2.3
+kombu==5.2.4
     # via
     #   -r requirements/base.txt
     #   celery
@@ -599,7 +599,7 @@ pyrsistent==0.17.3
     # via
     #   -r requirements/base.txt
     #   jsonschema
-python-dateutil==2.8.1
+python-dateutil==2.8.2
     # via
     #   -r requirements/base.txt
     #   django-camunda
