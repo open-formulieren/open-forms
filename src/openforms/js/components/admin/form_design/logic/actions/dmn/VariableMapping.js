@@ -4,17 +4,13 @@ import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
-import Variable from 'components/admin/form_design/variables/types';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
-import {TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 
-import {inputValuesType} from './types';
-
-const VariableMapping = ({mappingName, values, formVariables}) => {
+const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) => {
   const intl = useIntl();
-  const {getFieldProps} = useFormikContext();
+  const {getFieldProps, values} = useFormikContext();
 
   const confirmationMessage = intl.formatMessage({
     description: 'Confirmation message to remove a mapping',
@@ -54,8 +50,8 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
                     >
                       <Select
                         id={`${mappingName}.${index}.formVariable`}
-                        allowBlank={true}
-                        choices={formVariables.map(variable => [variable.key, variable.name])}
+                        allowBlank
+                        choices={formVariables}
                         {...getFieldProps(`${mappingName}.${index}.formVariable`)}
                       />
                     </Field>
@@ -65,8 +61,11 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
                       htmlFor={`${mappingName}.${index}.dmnVariable`}
                       name={`${mappingName}.${index}.dmnVariable`}
                     >
-                      <TextInput
+                      <Select
                         id={`${mappingName}.${index}.dmnVariable`}
+                        allowBlank
+                        disabled={loading}
+                        choices={dmnVariables}
                         {...getFieldProps(`${mappingName}.${index}.dmnVariable`)}
                       />
                     </Field>
@@ -95,9 +94,10 @@ const VariableMapping = ({mappingName, values, formVariables}) => {
 };
 
 VariableMapping.propTypes = {
+  loading: PropTypes.bool,
   mappingName: PropTypes.string,
-  values: inputValuesType,
-  formVariables: PropTypes.arrayOf(Variable),
+  formVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  dmnVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
 };
 
 export default VariableMapping;

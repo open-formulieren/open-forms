@@ -2,6 +2,7 @@ import {rest} from 'msw';
 
 import {
   DMN_DECISION_DEFINITIONS_LIST,
+  DMN_DECISION_DEFINITIONS_PARAMS_LIST,
   DMN_DECISION_DEFINITIONS_VERSIONS_LIST,
   SERVICES_ENDPOINT,
 } from './constants';
@@ -42,3 +43,9 @@ export const mockDMNDecisionDefinitionVersionsGet = rest.get(
     );
   }
 );
+
+export const mockDMNParametersGet = definitionsParams =>
+  rest.get(`${BASE_URL}${DMN_DECISION_DEFINITIONS_PARAMS_LIST}`, (req, res, ctx) => {
+    const definition = req.url.searchParams.get('definition');
+    return res(ctx.json(definitionsParams[definition]));
+  });
