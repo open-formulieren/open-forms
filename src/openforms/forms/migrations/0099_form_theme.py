@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("config", "0064_auto_20231206_0921"),
+        ("config", "0053_v230_to_v250"),
         ("forms", "0098_update_default_value_components_prefill"),
     ]
 

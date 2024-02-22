@@ -8,7 +8,6 @@ import django.db.migrations.operations.special
 import django.db.models.deletion
 from django.core.management import call_command
 from django.db import migrations, models
-from django.utils.module_loading import import_string
 
 import django_jsonform.models.fields
 import tinymce.models
@@ -20,15 +19,6 @@ import openforms.utils.translations
 from ._design_tokens import (
     update_button_design_token_values,
     update_layout_design_token_values,
-)
-
-global_theme_config_to_dedicated_model = import_string(
-    "openforms.config.migrations.0064_auto_20231206_0921."
-    "global_theme_config_to_dedicated_model"
-)
-dedicated_model_to_global_configuration = import_string(
-    "openforms.config.migrations.0064_auto_20231206_0921."
-    "dedicated_model_to_global_configuration"
 )
 
 
@@ -44,25 +34,6 @@ def set_theme_uuid(apps, _):
 
 
 class Migration(migrations.Migration):
-
-    replaces = [
-        ("config", "0053_auto_20230830_1432"),
-        ("config", "0054_auto_20230908_1046"),
-        ("config", "0055_auto_20230911_2131"),
-        ("config", "0056_globalconfiguration_show_form_link_in_cosign_email"),
-        ("config", "0057_globalconfiguration_recipients_email_digest"),
-        ("config", "0058_auto_20231026_1525"),
-        ("config", "0059_convert_button_design_tokens"),
-        ("config", "0060_create_csp_form_action_configs"),
-        ("config", "0061_convert_container_layout_design_tokens"),
-        ("config", "0062_cspsetting_identifier"),
-        ("config", "0063_auto_20231122_1816"),
-        ("config", "0064_auto_20231206_0921"),
-        ("config", "0065_theme_uuid"),
-        ("config", "0066_globalconfiguration_wait_for_payment_to_register"),
-        ("config", "0067_alter_globalconfiguration_enable_react_formio_builder"),
-        ("config", "0068_globalconfiguration_organization_oin"),
-    ]
 
     dependencies = [
         ("payments_ogone", "0002_auto_20210902_2120"),
@@ -519,10 +490,8 @@ class Migration(migrations.Migration):
                 verbose_name="default theme",
             ),
         ),
-        migrations.RunPython(
-            code=global_theme_config_to_dedicated_model,
-            reverse_code=dedicated_model_to_global_configuration,
-        ),
+        # Data migration removed - users must upgrade to 2.5 first, which guarantees
+        # this one to be executed.
         migrations.RemoveField(
             model_name="globalconfiguration",
             name="design_token_values",
