@@ -10,23 +10,6 @@ import openforms.forms.migration_operations
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("forms", "0091_auto_20230831_1152"),
-        ("forms", "0092_more_time_custom_errors"),
-        ("forms", "0093_date_component_settings"),
-        ("forms", "0094_update_config_family"),
-        ("forms", "0095_formstep_form_form_definition_unique_together"),
-        ("forms", "0096_move_time_component_validators"),
-        ("forms", "0097_formstep_is_applicable"),
-        ("forms", "0098_update_default_value_components_prefill"),
-        ("forms", "0099_form_theme"),
-        ("forms", "0100_ensure_datasrc_property"),
-        ("forms", "0101_update_action_property"),
-        ("forms", "0102_convert_formio_translations"),
-        ("forms", "0103_fix_component_problems"),
-        ("forms", "0104_allow_invalid_input_datetime"),
-    ]
-
     dependencies = [
         ("forms", "0046_squashed_to_openforms_v230"),
         ("config", "0053_v230_to_v250"),

@@ -3,14 +3,14 @@ import logging
 import re
 
 from django.db import migrations
-from django.db.migrations.state import StateApps
 from django.db.backends.base.schema import BaseDatabaseSchemaEditor
+from django.db.migrations.state import StateApps
+
+from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.registrations.contrib.objects_api.plugin import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
 )
-
-from zgw_consumers.constants import APITypes, AuthTypes
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("registrations_objects_api", "0010_objectsapiconfig_objecttypes_service"),
-        ("forms", "0104_allow_invalid_input_datetime"),
+        ("forms", "0091_v230_to_v250"),
     ]
 
     operations = [
