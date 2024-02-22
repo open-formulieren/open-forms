@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any, Mapping, TypedDict
+
+from django.core.cache import cache
+from django.core.serializers.json import DjangoJSONEncoder
 
 from glom import assign
 from json_logic import jsonLogic
@@ -245,13 +249,24 @@ class EvaluateDMNAction(ActionOperation):
             for item in self.input_mapping
         }
 
-        # Perform DMN call
-        dmn_outputs = evaluate_dmn(
-            definition_id=self.decision_definition_id,
-            version=self.decision_definition_version,
-            input_values=dmn_inputs,
-            plugin_id=self.plugin_id,
+        def _evaluate_dmn():
+            return evaluate_dmn(
+                definition_id=self.decision_definition_id,
+                version=self.decision_definition_version,
+                input_values=dmn_inputs,
+                plugin_id=self.plugin_id,
+            )
+
+        # Perform DMN call or retrieve result from cache
+        inputs = json.dumps(dmn_inputs, cls=DjangoJSONEncoder, sort_keys=True)
+        cache_key = hash(
+            str(submission.uuid)
+            + self.decision_definition_id
+            + self.decision_definition_version
+            + self.plugin_id
+            + inputs
         )
+        dmn_outputs = cache.get_or_set(cache_key, default=_evaluate_dmn)
 
         # Map DMN output to form variables
         return {
