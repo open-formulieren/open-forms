@@ -462,10 +462,7 @@ def recursive_apply(
                 for key, nested_bit in input.items()
             }
 
-        # other primitive or complex object - we can't template this out, so return it
-        # unmodified.
         case _:
-            if transform_leaf:
-                return func(input)
-
-            return input
+            # other primitive or complex object - we can't template this out, so return it
+            # unmodified unless the transformation is explicitly requested
+            return func(input, *args, **kwargs) if transform_leaf else input

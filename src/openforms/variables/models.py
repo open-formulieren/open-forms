@@ -127,6 +127,7 @@ class ServiceFetchConfiguration(models.Model):
         #
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
+        # Explicitly cast values to strings to avoid localization
         ctx = recursive_apply(context, str, transform_leaf=True)
 
         headers = {
