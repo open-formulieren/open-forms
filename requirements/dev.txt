@@ -165,7 +165,7 @@ coverage==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==42.0.2
+cryptography==42.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

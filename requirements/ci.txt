@@ -145,7 +145,7 @@ commonmark==0.9.1
     # via recommonmark
 coverage==7.4.0
     # via -r requirements/test-tools.in
-cryptography==42.0.2
+cryptography==42.0.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
