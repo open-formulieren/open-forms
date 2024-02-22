@@ -9,18 +9,17 @@ import {get} from 'utils/fetch';
 
 import VariableMapping from './VariableMapping';
 
+const EMPTY_DMN_PARAMS = {inputs: [], outputs: []};
+
 const DMNParametersForm = () => {
   const {
     values: {pluginId, decisionDefinitionId, decisionDefinitionVersion},
   } = useFormikContext();
   const {formVariables} = useContext(FormContext);
 
-  const [dmnParams, setDmnParams] = useState({inputs: [], outputs: []});
-
-  const {loading} = useAsync(async () => {
+  const {loading, value: dmnParams = EMPTY_DMN_PARAMS} = useAsync(async () => {
     if (!pluginId || !decisionDefinitionId) {
-      setDmnParams({inputs: [], outputs: []});
-      return;
+      return EMPTY_DMN_PARAMS;
     }
 
     const queryParams = {
@@ -34,10 +33,10 @@ const DMNParametersForm = () => {
 
     const response = await get(DMN_DECISION_DEFINITIONS_PARAMS_LIST, queryParams);
 
-    setDmnParams({
+    return {
       inputs: response.data.inputs.map(inputParam => [inputParam.expression, inputParam.label]),
       outputs: response.data.outputs.map(outputParam => [outputParam.name, outputParam.label]),
-    });
+    };
   }, [pluginId, decisionDefinitionId, decisionDefinitionVersion]);
 
   const variablesChoices = formVariables.map(variable => [variable.key, variable.name]);

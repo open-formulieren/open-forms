@@ -50,7 +50,7 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
                     >
                       <Select
                         id={`${mappingName}.${index}.formVariable`}
-                        allowBlank={true}
+                        allowBlank
                         choices={formVariables}
                         {...getFieldProps(`${mappingName}.${index}.formVariable`)}
                       />
@@ -63,7 +63,7 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
                     >
                       <Select
                         id={`${mappingName}.${index}.dmnVariable`}
-                        allowBlank={true}
+                        allowBlank
                         disabled={loading}
                         choices={dmnVariables}
                         {...getFieldProps(`${mappingName}.${index}.dmnVariable`)}
