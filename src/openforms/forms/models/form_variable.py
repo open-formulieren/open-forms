@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
@@ -223,6 +223,9 @@ class FormVariable(models.Model):
 
     def __str__(self):
         return _("Form variable '{key}'").format(key=self.key)
+
+    def matches_json_schema(self, json_schema: dict[str, Any]) -> bool:
+        pass
 
     def get_initial_value(self):
         return self.initial_value
