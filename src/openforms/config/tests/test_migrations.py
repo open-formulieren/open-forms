@@ -3,7 +3,7 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 class EnableNewBuilderMigrationTests(TestMigrations):
     app = "config"
-    migrate_from = "0053_v230_to_v250"
+    migrate_from = "0001_initial_to_v250"
     migrate_to = "0054_enable_new_builder"
 
     def setUpBeforeMigration(self, apps):
