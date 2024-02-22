@@ -132,7 +132,7 @@ class IterJsonSchemaTests(SimpleTestCase):
             for path, schema in iter_json_schema_paths(JSON_SCHEMA_NO_REFS)
         ]
 
-        self.assertListEqual(
+        self.assertEqual(
             paths_list[1:],
             [
                 (["complaintDescription"], {"type": "string"}),
@@ -158,7 +158,7 @@ class IterJsonSchemaTests(SimpleTestCase):
             for path, schema in iter_json_schema_paths(JSON_SCHEMA_REFS)
         ]
 
-        self.assertListEqual(
+        self.assertEqual(
             paths_list[1:],
             [
                 (
@@ -192,7 +192,7 @@ class IterJsonSchemaTests(SimpleTestCase):
             for path, schema in iter_json_schema_paths(JSON_SCHEMA_NESTED_REFS)
         ]
 
-        self.assertListEqual(
+        self.assertEqual(
             paths_list[1:],
             [
                 (
@@ -211,12 +211,8 @@ class IterJsonSchemaTests(SimpleTestCase):
         )
 
     def test_iter_json_schema_unknown_ref(self):
-        self.assertRaises(
-            Unresolvable,
-            lambda: list(
-                iter_json_schema_paths(JSON_SCHEMA_UNKOWN_REF, fail_fast=True)
-            ),
-        )
+        with self.assertRaises(Unresolvable):
+            list(iter_json_schema_paths(JSON_SCHEMA_UNKOWN_REF, fail_fast=True))
 
         paths_list = [
             (path.segments, schema)
@@ -225,16 +221,12 @@ class IterJsonSchemaTests(SimpleTestCase):
             )
         ]
 
-        self.assertListEqual(paths_list[1][0], ["invalid"])
+        self.assertEqual(paths_list[1][0], ["invalid"])
         self.assertEqual(paths_list[1][1].uri, "#/invalidref")
 
     def test_iter_json_schema_external_ref(self):
-        self.assertRaises(
-            Unresolvable,
-            lambda: list(
-                iter_json_schema_paths(JSON_SCHEMA_EXTERNAL_REF, fail_fast=True)
-            ),
-        )
+        with self.assertRaises(Unresolvable):
+            list(iter_json_schema_paths(JSON_SCHEMA_EXTERNAL_REF, fail_fast=True))
 
         paths_list = [
             (path.segments, schema)
@@ -243,7 +235,7 @@ class IterJsonSchemaTests(SimpleTestCase):
             )
         ]
 
-        self.assertListEqual(paths_list[1][0], ["external"])
+        self.assertEqual(paths_list[1][0], ["external"])
         self.assertEqual(
             paths_list[1][1].uri, "http://example.com/external-schema.json"
         )
@@ -262,7 +254,7 @@ class RequiredJsonSchemaPathsTests(SimpleTestCase):
             if path.required
         ]
 
-        self.assertListEqual(
+        self.assertEqual(
             required_paths, [["a"], ["b"], ["b", "c"], ["b", "d"], ["b", "d", "e"]]
         )
 
@@ -277,14 +269,14 @@ class MissingRequiredPathsTests(SimpleTestCase):
                 JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b"]]
             )
 
-            self.assertListEqual(missing_paths, [])
+            self.assertEqual(missing_paths, [])
 
         with self.subTest("nested paths"):
             missing_paths = get_missing_required_paths(
                 JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b", "c"], ["b", "d", "e"]]
             )
 
-            self.assertListEqual(missing_paths, [])
+            self.assertEqual(missing_paths, [])
 
     def test_missing_required_paths(self):
 
@@ -293,14 +285,14 @@ class MissingRequiredPathsTests(SimpleTestCase):
                 JSON_SCHEMA_REQUIRED_PATHS, [["b"]]
             )
 
-            self.assertListEqual(missing_paths, [["a"]])
+            self.assertEqual(missing_paths, [["a"]])
 
         with self.subTest("Missing 'b'"):
             missing_paths = get_missing_required_paths(
                 JSON_SCHEMA_REQUIRED_PATHS, [["a"]]
             )
 
-            self.assertListEqual(
+            self.assertEqual(
                 missing_paths, [["b"], ["b", "c"], ["b", "d"], ["b", "d", "e"]]
             )
 
@@ -309,11 +301,11 @@ class MissingRequiredPathsTests(SimpleTestCase):
                 JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b", "d"]]
             )
 
-            self.assertListEqual(missing_paths, [["b", "c"]])
+            self.assertEqual(missing_paths, [["b", "c"]])
 
         with self.subTest("Missing 'e'"):
             missing_paths = get_missing_required_paths(
                 JSON_SCHEMA_REQUIRED_PATHS, [["a"], ["b", "c"], ["b", "d", "f"]]
             )
 
-            self.assertListEqual(missing_paths, [["b", "d", "e"]])
+            self.assertEqual(missing_paths, [["b", "d", "e"]])

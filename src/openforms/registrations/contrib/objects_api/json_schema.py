@@ -18,7 +18,7 @@ class InvalidReference:
     """The URI of the unknown reference."""
 
     exc: Unresolvable
-    """The ``referencing`` catched exception."""
+    """The ``referencing`` caught exception."""
 
 
 @dataclass(eq=True)
@@ -108,7 +108,7 @@ def iter_json_schema_paths(
 def get_missing_required_paths(
     json_schema: ObjectSchema, paths: list[list[str]]
 ) -> list[list[str]]:
-    """Return a list of required ``JsonSchemaPath`` instances not covered by the provided paths.
+    """Return a list of required path segments from the JSON Schema not covered by the provided paths.
 
     .. code-block:: pycon
 
@@ -127,17 +127,25 @@ def get_missing_required_paths(
         ...     "required": ["a", "b"],
         ... }
         >>> get_missing_required_paths(json_schema, [["a"], ["b", "c"]])
-        [JsonSchemaPath(segments=['b', 'd'], required=True)]
+        [['b', 'd']]
     """
+    missing_paths: list[list[str]] = []
 
-    return [
-        r_path.segments
-        for r_path, _ in iter_json_schema_paths(json_schema)
-        if r_path.required
-        # If a child key is provided (e.g. "a.b"), any parent required key is dismissed (e.g. "a"):
-        if not any(JsonSchemaPath(path).startswith(r_path) for path in paths)
-        # If a parent key is provided (e.g. "a"), any child required key is dismissed (e.g. "a.b")
-        # (this one assumes the provided "a" value is valid with respect to the required children keys.
-        # We are dealing with path segments, so we can't really make any assumptions on the provided value):
-        if not any(r_path.startswith(path) for path in paths)
-    ]
+    for r_path, _ in iter_json_schema_paths(json_schema):
+        if not r_path.required:
+            continue
+
+        # If a child key is provided (e.g. "a.b"), any required parent key is dismissed (e.g. "a").
+        if any(JsonSchemaPath(path).startswith(r_path) for path in paths):
+            continue
+
+        # If a parent key is provided (e.g. "a"), any required child key is dismissed (e.g. "a.b").
+        # This one assumes the provided value for "a" is valid with respect to the required children keys.
+        # The JSON Schema could specify "a" as an object with some required keys, but we are dealing with
+        # path segments, so we can't really make any assumptions on the provided value.
+        if any(r_path.startswith(path) for path in paths):
+            continue
+
+        missing_paths.append(r_path.segments)
+
+    return missing_paths
