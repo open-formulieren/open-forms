@@ -225,7 +225,29 @@ class FormVariable(models.Model):
         return _("Form variable '{key}'").format(key=self.key)
 
     def matches_json_schema(self, json_schema: dict[str, Any]) -> bool:
-        pass
+        """Determine whether the provided JSON Schema matches the form variable."""
+
+        match json_schema:
+            case {"type": "string"}:
+                return self.data_type in {
+                    FormVariableDataTypes.string,
+                    FormVariableDataTypes.datetime,
+                    FormVariableDataTypes.date,
+                    FormVariableDataTypes.time,
+                }
+            case {"type": "boolean"}:
+                return self.data_type is FormVariableDataTypes.boolean
+            case {"type": "number"}:
+                return self.data_type in {
+                    FormVariableDataTypes.float,
+                    FormVariableDataTypes.int,
+                }
+            case {"type": "integer"}:
+                return self.data_type in {FormVariableDataTypes.int}
+            case {"type": "object"}:
+                return self.data_type is FormVariableDataTypes.object
+            case {"type": "array"}:
+                return self.data_type is FormVariableDataTypes.array
 
     def get_initial_value(self):
         return self.initial_value
