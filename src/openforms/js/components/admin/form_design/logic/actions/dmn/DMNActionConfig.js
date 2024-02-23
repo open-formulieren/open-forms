@@ -1,6 +1,6 @@
 import {Form, Formik, useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {FormattedMessage, defineMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
@@ -11,6 +11,7 @@ import {
 } from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
+import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {get} from 'utils/fetch';
 
 import DMNParametersForm from './DMNParametersForm';
@@ -24,32 +25,40 @@ const ERRORS = {
 };
 
 const DecisionDefinitionIdField = () => {
-  const {values, setFieldValue, getFieldProps, errors, touched} = useFormikContext();
+  const {
+    values: {pluginId},
+    setFieldValue,
+    getFieldProps,
+    errors,
+    touched,
+    setFieldTouched,
+    handleChange,
+  } = useFormikContext();
   const [field] = useField('decisionDefinitionId');
-  const [decisionDefinitions, setDecisionDefinitions] = useState([]);
 
-  useAsync(async () => {
-    if (!values.pluginId) {
+  const {error, value: decisionDefinitions = []} = useAsync(async () => {
+    if (!pluginId) return [];
+
+    const response = await get(DMN_DECISION_DEFINITIONS_LIST, {
+      engine: pluginId,
+    });
+
+    return response.data.map(item => [item.id, item.label]);
+  }, [pluginId]);
+
+  useEffect(() => {
+    if (!touched.pluginId) return;
+
+    if (!pluginId) {
       setFieldValue('decisionDefinitionId', '');
-      setDecisionDefinitions([]);
       return;
     }
 
-    const response = await get(DMN_DECISION_DEFINITIONS_LIST, {
-      engine: values.pluginId,
-    });
-
-    const definitionChoices = response.data.map(item => [item.id, item.label]);
-    setDecisionDefinitions(definitionChoices);
-
     // If pluginId has changed, reset the value of the definition
-    if (
-      values.decisionDefinitionId !== '' &&
-      !definitionChoices.find(item => item[0] === values.decisionDefinitionId)
-    ) {
-      setFieldValue('decisionDefinitionId', '');
-    }
-  }, [values.pluginId, setFieldValue]);
+    setFieldValue('decisionDefinitionId', '');
+  }, [pluginId, setFieldValue]);
+
+  if (error) throw error;
 
   return (
     <Field
@@ -68,10 +77,15 @@ const DecisionDefinitionIdField = () => {
       }
     >
       <Select
-        allowBlank={true}
+        allowBlank
         choices={decisionDefinitions}
         {...field}
         {...getFieldProps('decisionDefinitionId')}
+        onChange={(...args) => {
+          // Otherwise the field is set as 'touched' only on the blur event
+          setFieldTouched('decisionDefinitionId');
+          handleChange(...args);
+        }}
       />
     </Field>
   );
@@ -82,34 +96,36 @@ const DecisionDefinitionVersionField = () => {
     values: {pluginId, decisionDefinitionId},
     setFieldValue,
     getFieldProps,
+    touched,
+    setFieldTouched,
+    handleChange,
   } = useFormikContext();
   const [field] = useField('decisionDefinitionVersion');
-  const [decisionDefinitionVersions, setDecisionDefinitionVersions] = useState([]);
 
-  useAsync(async () => {
-    if (!pluginId || !decisionDefinitionId) {
-      setFieldValue('decisionDefinitionVersion', '');
-      setDecisionDefinitionVersions([]);
-      return;
-    }
+  const {error, value: decisionDefinitionVersions = []} = useAsync(async () => {
+    if (!pluginId || !decisionDefinitionId) return [];
 
     const response = await get(DMN_DECISION_DEFINITIONS_VERSIONS_LIST, {
       engine: pluginId,
       definition: decisionDefinitionId,
     });
 
-    const versionChoices = response.data.map(item => [item.id, item.label]);
-    setDecisionDefinitionVersions(versionChoices);
+    return response.data.map(item => [item.id, item.label]);
+  }, [pluginId, decisionDefinitionId]);
 
-    // If decisionDefinitionId has changed, reset the value of the definition version if the new decision definition
-    // does not have that version
-    if (
-      values.decisionDefinitionVersion !== '' &&
-      !versionChoices.find(item => item[0] === values.decisionDefinitionVersion)
-    ) {
+  useEffect(() => {
+    if (!touched.pluginId && !touched.decisionDefinitionId) return;
+
+    if (!pluginId || !decisionDefinitionId) {
       setFieldValue('decisionDefinitionVersion', '');
+      return;
     }
+
+    // If decisionDefinitionId has changed, reset the value of the definition version
+    setFieldValue('decisionDefinitionVersion', '');
   }, [pluginId, decisionDefinitionId, setFieldValue]);
+
+  if (error) throw error;
 
   return (
     <Field
@@ -123,10 +139,15 @@ const DecisionDefinitionVersionField = () => {
       }
     >
       <Select
-        allowBlank={true}
+        allowBlank
         choices={decisionDefinitionVersions}
         {...field}
         {...getFieldProps('decisionDefinitionVersion')}
+        onChange={(...args) => {
+          // Otherwise the field is set as 'touched' only on the blur event
+          setFieldTouched('decisionDefinitionVersion');
+          handleChange(...args);
+        }}
       />
     </Field>
   );
@@ -165,7 +186,7 @@ const DMNActionConfig = ({initialValues, onSave}) => {
         {formik => (
           <Form>
             <fieldset className="aligned">
-              <div className="form-row">
+              <div className="form-row form-row--no-bottom-line">
                 <Field
                   name="pluginId"
                   htmlFor="pluginId"
@@ -184,19 +205,35 @@ const DMNActionConfig = ({initialValues, onSave}) => {
                     allowBlank={true}
                     choices={plugins.availableDMNPlugins.map(choice => [choice.id, choice.label])}
                     {...formik.getFieldProps('pluginId')}
+                    onChange={(...args) => {
+                      // Otherwise the field is set as 'touched' only on the blur event
+                      formik.setFieldTouched('pluginId');
+                      formik.handleChange(...args);
+                    }}
                   />
                 </Field>
               </div>
-              <div className="form-row">
-                <DecisionDefinitionIdField />
-              </div>
-              <div className="form-row">
-                <DecisionDefinitionVersionField />
-              </div>
             </fieldset>
 
-            <DMNParametersForm />
+            <ErrorBoundary
+              errorMessage={
+                <FormattedMessage
+                  description="Admin error for API error when configuring Camunda actions"
+                  defaultMessage="Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+                />
+              }
+            >
+              <fieldset className="aligned">
+                <div className="form-row">
+                  <DecisionDefinitionIdField />
+                </div>
+                <div className="form-row">
+                  <DecisionDefinitionVersionField />
+                </div>
+              </fieldset>
 
+              <DMNParametersForm />
+            </ErrorBoundary>
             <div className="submit-row">
               <input type="submit" name="_save" value="Save" />
             </div>

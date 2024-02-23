@@ -1,3 +1,5 @@
+@use 'microscope-sass/lib/bem';
+
 @import '@fortawesome/fontawesome-free/scss/fontawesome';
 @import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
 @import '@fortawesome/fontawesome-free/scss/brands';
@@ -224,5 +226,9 @@ div.flatpickr-calendar.open {
 .form-row {
   .form-builder__container {
     color: var(--body-fg);
+  }
+
+  @include bem.modifier('no-bottom-line') {
+    border-bottom: 0;
   }
 }
