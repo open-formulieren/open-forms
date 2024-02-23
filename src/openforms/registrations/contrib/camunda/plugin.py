@@ -7,7 +7,7 @@ See the `documentation <_variables>` to learn more about Camunda variable types.
 """
 
 import logging
-from typing import Any, NoReturn
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -19,10 +19,9 @@ from django_camunda.tasks import start_process
 from django_camunda.utils import serialize_variables
 
 from openforms.submissions.models import Submission
-from openforms.submissions.public_references import set_submission_reference
 
 from ...base import BasePlugin
-from ...exceptions import NoSubmissionReference, RegistrationFailed
+from ...exceptions import RegistrationFailed
 from ...registry import register
 from .checks import check_config
 from .complex_variables import get_complex_process_variables
@@ -144,16 +143,6 @@ class CamundaRegistration(BasePlugin):
             }
         }
 
-    def get_reference_from_result(self, result: dict[str, str]) -> NoReturn:
-        """
-        Extract the public submission reference from the result data.
-
-        We never return, as the Camunda API response does not contain anything useful
-        and readable for the end-user and we cannot make assumptions about the process
-        model. The instance ID is a UUID, which is not suitable for end users.
-        """
-        raise NoSubmissionReference("Deferred to Open Forms itself")
-
     def update_payment_status(self, submission: "Submission", options: dict):
         # TODO: we could ask for a BPMN message to be specified so we can signal the
         # process instance? This needs to be documented properly for the modellers
@@ -173,6 +162,3 @@ class CamundaRegistration(BasePlugin):
                 ),
             ),
         ]
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        set_submission_reference(submission)

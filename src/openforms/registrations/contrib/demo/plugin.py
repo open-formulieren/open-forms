@@ -3,10 +3,9 @@ from typing import NoReturn
 from django.utils.translation import gettext_lazy as _
 
 from openforms.submissions.models import Submission
-from openforms.submissions.public_references import set_submission_reference
 
 from ...base import BasePlugin
-from ...exceptions import NoSubmissionReference, RegistrationFailed
+from ...exceptions import RegistrationFailed
 from ...registry import register
 from .config import DemoOptionsSerializer
 
@@ -22,9 +21,6 @@ class DemoRegistration(BasePlugin):
         if options.get("extra_line"):
             print(options["extra_line"])
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
-        raise NoSubmissionReference("Demo plugin does not emit a reference")
-
     def update_payment_status(self, submission: "Submission", options: dict):
         print(submission)
 
@@ -33,9 +29,6 @@ class DemoRegistration(BasePlugin):
         Demo config is always valid.
         """
         pass
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        set_submission_reference(submission)
 
 
 @register("failing-demo")
@@ -47,9 +40,6 @@ class DemoFailRegistration(BasePlugin):
     def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise RegistrationFailed("Demo failing registration")
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
-        raise NoSubmissionReference("Demo plugin does not emit a reference")
-
     def update_payment_status(self, submission: "Submission", options: dict):
         pass
 
@@ -58,9 +48,6 @@ class DemoFailRegistration(BasePlugin):
         Demo config is always valid.
         """
         pass
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        set_submission_reference(submission)
 
 
 @register("exception-demo")
@@ -72,9 +59,6 @@ class DemoExceptionRegistration(BasePlugin):
     def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise Exception("Demo exception registration")
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
-        raise NoSubmissionReference("Demo plugin does not emit a reference")
-
     def update_payment_status(self, submission: "Submission", options: dict):
         pass
 
@@ -83,6 +67,3 @@ class DemoExceptionRegistration(BasePlugin):
         Demo config is always valid.
         """
         pass
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        set_submission_reference(submission)

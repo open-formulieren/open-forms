@@ -80,7 +80,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             submission.save()
 
     try:
-        registration_plugin.pre_register_submission(
+        result = registration_plugin.pre_register_submission(
             submission, options_serializer.validated_data
         )
     except Exception as exc:
@@ -92,6 +92,16 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
         if event == PostSubmissionEvents.on_retry:
             raise exc
         return
+
+    if result.reference is None:
+        set_submission_reference(submission)
+    else:
+        submission.public_registration_reference = result.reference
+
+    if result.data is not None:
+        if not submission.registration_result:
+            submission.registration_result = {}
+        submission.registration_result.update(result.data)
 
     submission.pre_registration_completed = True
     submission.save()
