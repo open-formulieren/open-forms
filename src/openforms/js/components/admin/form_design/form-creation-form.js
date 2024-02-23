@@ -1435,6 +1435,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
                     payload: {key, propertyName, propertyValue},
                   })
                 }
+                onFieldChange={onFieldChange}
               />
             </TabPanel>
           )}

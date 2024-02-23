@@ -103,6 +103,9 @@ export const WithObjectsAPIRegistrationBackends = {
         },
       },
     ],
+    onFieldChange: data => {
+      console.log(data);
+    },
   },
   parameters: {
     msw: {

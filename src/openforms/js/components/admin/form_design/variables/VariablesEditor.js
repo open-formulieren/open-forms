@@ -11,7 +11,7 @@ import VariablesTable from './VariablesTable';
 import {VARIABLE_SOURCES} from './constants';
 import {variableHasErrors} from './utils';
 
-const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
+const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) => {
   const userDefinedVariables = variables.filter(
     variable => variable.source === VARIABLE_SOURCES.userDefined
   );
@@ -51,7 +51,7 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
           </TabList>
 
           <TabPanel>
-            <VariablesTable variables={componentVariables} />
+            <VariablesTable variables={componentVariables} onFieldChange={onFieldChange} />
           </TabPanel>
           <TabPanel>
             <UserDefinedVariables
@@ -59,6 +59,7 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
               onAdd={onAdd}
               onDelete={onDelete}
               onChange={onChange}
+              onFieldChange={onFieldChange}
             />
           </TabPanel>
           <TabPanel>
