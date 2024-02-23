@@ -289,9 +289,6 @@ class FormSerializerTest(TestCase):
             # This doesn't pass registry.check_plugin
             # configuration_options = None
 
-            def get_reference_from_result(self, *args, **kwargs):
-                pass
-
             def register_submission(self, *args, **kwargs):
                 pass
 

@@ -313,7 +313,14 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+
+        submission.public_registration_reference = pre_registration_result.reference
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
         plugin.register_submission(submission, zgw_form_options)
 
         history = m.request_history
@@ -343,7 +350,14 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+
+        submission.public_registration_reference = pre_registration_result.reference
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
         plugin.register_submission(submission, zgw_form_options)
 
         self.assertEqual(len(m.request_history), 9)
@@ -423,7 +437,14 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+
+        submission.public_registration_reference = pre_registration_result.reference
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
         plugin.register_submission(submission, zgw_form_options)
 
         self.assertEqual(len(m.request_history), 9)

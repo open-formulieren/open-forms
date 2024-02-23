@@ -17,9 +17,6 @@ class TestPlugin(BasePlugin):
     def register_submission(self, submission, options):
         pass
 
-    def get_reference_from_result(self, result: dict) -> None:
-        pass
-
     def get_custom_templatetags_libraries(self) -> list[str]:
         return ["openforms.template.tests.templatetags.a_test_tag"]
 

@@ -24,7 +24,6 @@ from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_hi
 from stuf.tests.factories import StufServiceFactory
 
 from ....constants import RegistrationAttribute
-from ....service import extract_submission_reference
 from ..plugin import PartialDate, StufZDSRegistration
 
 
@@ -1906,22 +1905,12 @@ class StufZDSPluginTests(StUFZDSTestBase):
         submission = SubmissionFactory.from_components(
             registration_in_progress=True,
             needs_on_completion_retry=True,
-            public_registration_reference="OF-1234",
+            public_registration_reference="foo-zaak",
             pre_registration_completed=False,
             registration_result={"temporary_internal_reference": "OF-1234"},
             components_list=[{"key": "dummy"}],
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -1956,7 +1945,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         serializer = plugin.configuration_options(data=form_options)
         self.assertTrue(serializer.is_valid())
 
-        plugin.pre_register_submission(submission, serializer.validated_data)
         result = plugin.register_submission(submission, serializer.validated_data)
         self.assertEqual(
             result,
@@ -1966,7 +1954,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 1)
+        xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2557,18 +2545,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             5,
         )
 
-    def test_reference_can_be_extracted(self, m):
-        submission = SubmissionFactory.create(
-            form__registration_backend="stuf-zds-create-zaak",
-            completed=True,
-            registration_success=True,
-            registration_result={"zaak": "abcd1234"},
-        )
-
-        reference = extract_submission_reference(submission)
-
-        self.assertEqual("abcd1234", reference)
-
     def test_pre_registration_goes_wrong_sets_internal_reference(self, m):
         submission = SubmissionFactory.from_components(
             [],
@@ -2604,7 +2580,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         serializer.is_valid()
 
         with patch(
-            "openforms.submissions.public_references.get_reference_for_submission",
+            "openforms.submissions.public_references.generate_unique_submission_reference",
             return_value="OF-TEST!",
         ):
             pre_registration(submission.id, PostSubmissionEvents.on_completion)
@@ -2618,6 +2594,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         submission = SubmissionFactory.from_components(
             [],
             public_registration_reference="OF-TEMP",
+            completed=True,
             pre_registration_completed=False,
             registration_result={"temporary_internal_reference": "OF-TEMP"},
             submitted_data={
@@ -2626,6 +2603,14 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "coordinaat": [52.36673378967122, 4.893164274470299],
             },
             kvk="12345678",
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_zaaktype_omschrijving": "zt-omschrijving",
+                "zds_zaaktype_status_code": "123",
+                "zds_zaaktype_status_omschrijving": "aaabbc",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
         )
 
         m.post(
@@ -2639,18 +2624,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
 
-        form_options = {
-            "zds_zaaktype_code": "zt-code",
-            "zds_zaaktype_omschrijving": "zt-omschrijving",
-            "zds_zaaktype_status_code": "123",
-            "zds_zaaktype_status_omschrijving": "aaabbc",
-            "zds_documenttype_omschrijving_inzending": "aaabbc",
-        }
-        plugin = StufZDSRegistration("stuf")
-        serializer = plugin.configuration_options(data=form_options)
-        serializer.is_valid()
-
-        plugin.pre_register_submission(submission, serializer.validated_data)
+        pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
         submission.refresh_from_db()
 
