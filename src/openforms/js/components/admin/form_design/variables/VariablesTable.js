@@ -66,10 +66,9 @@ Td.propTypes = {
   fieldName: PropTypes.string.isRequired,
 };
 
-const VariableRow = ({index, variable}) => {
+const VariableRow = ({index, variable, onFieldChange}) => {
   const intl = useIntl();
   const formContext = useContext(FormContext);
-
   const formSteps = formContext.formSteps;
 
   const getFormDefinitionName = formDefinition => {
@@ -98,7 +97,7 @@ const VariableRow = ({index, variable}) => {
         )}
       </td>
       <td>
-        <RegistrationsSummary variable={variable} />
+        <RegistrationsSummary variable={variable} onFieldChange={onFieldChange} />
       </td>
       <td>{variable.dataType}</td>
       <td>
@@ -109,7 +108,7 @@ const VariableRow = ({index, variable}) => {
   );
 };
 
-const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
+const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange}) => {
   const intl = useIntl();
   const deleteConfirmMessage = intl.formatMessage({
     description: 'User defined variable deletion confirm message',
@@ -211,7 +210,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <RegistrationsSummary variable={variable} />
+        <RegistrationsSummary variable={variable} onFieldChange={onFieldChange} />
       </td>
       <td>
         <Field name="dataType" errors={variable.errors?.dataType}>
@@ -251,7 +250,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
   );
 };
 
-const VariablesTable = ({variables, editable, onChange, onDelete}) => {
+const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}) => {
   const headColumns = (
     <>
       <HeadColumn content="" />
@@ -339,11 +338,17 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
               key={`${variable.key}-${index}`}
               index={index}
               variable={variable}
-              onChange={onChange}
               onDelete={onDelete}
+              onChange={onChange}
+              onFieldChange={onFieldChange}
             />
           ) : (
-            <VariableRow key={`${variable.key}-${index}`} index={index} variable={variable} />
+            <VariableRow
+              key={`${variable.key}-${index}`}
+              index={index}
+              variable={variable}
+              onFieldChange={onFieldChange}
+            />
           )
         )}
       </ChangelistTableWrapper>

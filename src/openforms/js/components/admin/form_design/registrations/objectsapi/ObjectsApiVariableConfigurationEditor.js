@@ -1,10 +1,11 @@
 import {Form, Formik} from 'formik';
 import isEqual from 'lodash/isEqual';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
 import {FormContext} from 'components/admin/form_design/Context';
+import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
@@ -23,12 +24,21 @@ import {get} from 'utils/fetch';
  * @param {Object} p
  * @param {Object} p.variable - The current variable
  * @param {ObjectsAPIRegistrationBackend} p.backend - The Objects API registration backend (options guaranteed to be v2)
+ * @param {ObjectsAPIRegistrationBackend} p.setGetOptions - A callback to register the function that will return the edited options
  * @returns {JSX.Element} - The summary, represented as a the parts of the target path separated by '>'
  */
-const ObjectsApiVariableConfigurationEditor = ({variable, backend}) => {
+const ObjectsApiVariableConfigurationEditor = ({variable, backend, setGetOptions}) => {
   const {
     form: {uuid},
   } = useContext(FormContext);
+
+  const getOptions = () => {
+    return backend.options;
+  };
+
+  useEffect(() => {
+    setGetOptions(() => getOptions);
+  }, []);
 
   const {
     loading,
@@ -36,7 +46,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend}) => {
     error,
   } = useAsync(
     async () => {
-      const response = await get('/api/v2/registration/plugins/objects-api/target-paths', {
+      const response = await get(REGISTRATION_OBJECTS_TARGET_PATHS, {
         backendKey: backend.key,
         formUuid: uuid,
         variableKey: variable.key,

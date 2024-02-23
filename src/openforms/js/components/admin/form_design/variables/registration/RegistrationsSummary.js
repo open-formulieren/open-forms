@@ -1,3 +1,4 @@
+import {produce} from 'immer';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
@@ -14,18 +15,39 @@ import {FormModal} from 'components/admin/modals';
  * @param {Object} p
  * @param {string} p.name - The name of the current registration backend
  * @param {Object} p.variable - The current variable
+ * @param {Object} p.backend - The current backend
+ * @param {number} p.backendIndex - The current backend index (used to update the base state)
  * @param {JSX.Element} p.registrationSummary - The rendered summary of the registration backend for the current variable
  * @param {JSX.Element} p.variableConfigurationEditor - The rendered configuration editor for the current variable
+ * @param {() => Object} p.getOptions - The function returing the new backend options. It is provided by the configuration editor
+ * @param {(_: Object) => void} p.onChange - The base onChange function to update the base state
  * @returns {JSX.Element} - The rendered summary, containing the backend name, summary and edit icon
  */
 const RegistrationSummary = ({
   name,
   variable,
+  backend,
+  backendIndex,
   registrationSummary,
   variableConfigurationEditor,
+  getOptions,
+  onChange,
 }) => {
   const intl = useIntl();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const onRegistrationOptionsChange = formData => {
+    onChange({target: `form.registrationBackend.${backendIndex}`, value: formData});
+  };
+
+  const saveRegistrationOptions = () => {
+    const newOptions = getOptions();
+    onRegistrationOptionsChange(
+      produce(backend, draft => {
+        draft.options = newOptions;
+      })
+    );
+  };
 
   return (
     <>
@@ -54,11 +76,11 @@ const RegistrationSummary = ({
         {variableConfigurationEditor}
         <SubmitRow>
           <SubmitAction
-            text={intl.formatMessage({
-              defaultMessage: 'Save',
-              description: "Variable registration configuration editor 'Save' button label",
-            })}
-            onClick={() => {}}
+            onClick={event => {
+              event.preventDefault();
+              saveRegistrationOptions();
+              setModalOpen(false);
+            }}
           />
         </SubmitRow>
       </FormModal>
@@ -75,7 +97,7 @@ const RegistrationSummary = ({
  * @param {Object} p.variable - The current variable
  * @returns {JSX.Element} - A <ul> list of summaries
  */
-const RegistrationsSummary = ({variable}) => {
+const RegistrationsSummary = ({variable, onFieldChange}) => {
   const formContext = useContext(FormContext);
 
   /** @type {RegistrationBackend[]} */
@@ -84,7 +106,7 @@ const RegistrationsSummary = ({variable}) => {
   const summaries = [];
   let canConfigureBackend = false;
 
-  for (const backend of registrationBackends) {
+  for (const [backendIndex, backend] of registrationBackends.entries()) {
     const backendInfo = BACKEND_OPTIONS_FORMS[backend.key];
 
     // Check if the registration backend can be configured from the variables tab...
@@ -104,16 +126,25 @@ const RegistrationsSummary = ({variable}) => {
       const VariableConfigurationEditor =
         BACKEND_OPTIONS_FORMS[backend.key].variableConfigurationEditor;
 
+      const [getOptions, setGetOptions] = useState();
+
       summaries.push({
         name: backend.name,
         variable,
+        backend,
+        backendIndex,
         registrationSummary: (
           <SummaryHandler variable={variable} backendOptions={backend.options} />
         ),
-        // TODO 'backend' for all others?
         variableConfigurationEditor: (
-          <VariableConfigurationEditor variable={variable} backend={backend} />
+          <VariableConfigurationEditor
+            variable={variable}
+            backend={backend}
+            setGetOptions={setGetOptions}
+          />
         ),
+        getOptions,
+        onChange: onFieldChange,
       });
     } else {
       canConfigureBackend = true;
