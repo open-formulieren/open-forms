@@ -12,7 +12,6 @@ import ZGWOptionsForm from './zgw';
  *   form?: React.FC,
  *   uiSchema?: Object,
  *   configurableFromVariables?: boolean | (options: Object) => boolean,
- *   formVariableConfigured: (variable: Object, options: Object) => boolean,
  *   summaryHandler?: React.FC
  * }} BackendInfo
  * A map of backend ID to components for the (advanced) option forms.
@@ -27,8 +26,6 @@ export const BACKEND_OPTIONS_FORMS = {
     form: ObjectsApiOptionsForm,
     onStepEdit: null,
     configurableFromVariables: options => options.version === 2,
-    formVariableConfigured: (variable, options) =>
-      options.variablesMapping.some(mapping => mapping.variableKey === variable.key),
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
   },
