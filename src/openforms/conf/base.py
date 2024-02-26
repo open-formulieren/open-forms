@@ -513,6 +513,9 @@ LOGIN_URL = reverse_lazy("admin:login")
 LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
 LOGOUT_REDIRECT_URL = reverse_lazy("admin:index")
 
+# Custom setting
+USE_OIDC_FOR_ADMIN_LOGIN = config("USE_OIDC_FOR_ADMIN_LOGIN", default=False)
+
 #
 # SECURITY settings
 #

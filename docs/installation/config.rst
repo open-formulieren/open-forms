@@ -260,6 +260,11 @@ Other settings
   Docker images. The value is used to know which SDK JS/CSS files to include on the form
   detail page.
 
+* ``USE_OIDC_FOR_ADMIN_LOGIN``: If enabled, the admin login page will automatically
+  redirect to the OpenID Connect provider. You typically want to enable this if you
+  enable :ref:`Organization accounts <configuration_authentication_oidc>`. Defaults
+  to ``False``.
+
 * ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: Controls if sessions expire at browser close.
   This applies to both the session of end-users filling out forms and staff using the
   administrative interface. Enabling this forces users to log in every time they open
