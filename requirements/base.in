@@ -7,6 +7,8 @@ defusedxml
 furl
 glom
 maykin-json-logic-py
+jsonschema
+jsonschema_specifications
 jq
 html5lib
 # see https://github.com/onelogin/python3-saml/issues/292 and
@@ -24,6 +26,7 @@ python-magic
 tablib[xlsx]
 tinycss2
 xmltodict
+referencing
 self-certifi
 semantic-version
 tabulate
