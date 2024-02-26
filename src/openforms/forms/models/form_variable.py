@@ -15,7 +15,11 @@ from openforms.formio.utils import (
 )
 from openforms.formio.validators import variable_key_validator
 from openforms.prefill.constants import IdentifierRoles
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.constants import (
+    COMPATIBLE_JSON_SCHEMA_TYPES,
+    FormVariableDataTypes,
+    FormVariableSources,
+)
 from openforms.variables.utils import check_initial_value
 
 from .form_definition import FormDefinition
@@ -227,27 +231,20 @@ class FormVariable(models.Model):
     def matches_json_schema(self, json_schema: dict[str, Any]) -> bool:
         """Determine whether the provided JSON Schema matches the form variable."""
 
-        match json_schema:
-            case {"type": "string"}:
-                return self.data_type in {
-                    FormVariableDataTypes.string,
-                    FormVariableDataTypes.datetime,
-                    FormVariableDataTypes.date,
-                    FormVariableDataTypes.time,
-                }
-            case {"type": "boolean"}:
-                return self.data_type is FormVariableDataTypes.boolean
-            case {"type": "number"}:
-                return self.data_type in {
-                    FormVariableDataTypes.float,
-                    FormVariableDataTypes.int,
-                }
-            case {"type": "integer"}:
-                return self.data_type in {FormVariableDataTypes.int}
-            case {"type": "object"}:
-                return self.data_type is FormVariableDataTypes.object
-            case {"type": "array"}:
-                return self.data_type is FormVariableDataTypes.array
+        if "type" not in json_schema:
+            return True
+
+        type_list: str | list[str] = json_schema["type"]
+        if not isinstance(type_list, list):
+            type_list = [type_list]
+
+        compatible_data_types = {
+            data_type
+            for type_ in type_list
+            for data_type in COMPATIBLE_JSON_SCHEMA_TYPES.get(type_, set())
+        }
+
+        return self.data_type in compatible_data_types
 
     def get_initial_value(self):
         return self.initial_value
