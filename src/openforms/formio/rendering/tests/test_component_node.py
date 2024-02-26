@@ -323,6 +323,46 @@ class FormNodeTests(TestCase):
             self.assertEqual(len(nodelist), 1)
             self.assertEqual(nodelist[0].label, "A container without visible children")
 
+    def test_explicitly_hidden_component_not_skipped_when_registration(self):
+        # we always need a renderer instance
+        renderer = Renderer(
+            self.submission, mode=RenderModes.registration, as_html=False
+        )
+
+        with self.subTest("Simple hidden leaf component"):
+            component = self.step.form_step.form_definition.configuration["components"][
+                1
+            ]
+            assert component["key"] == "input2"
+            assert component["hidden"]
+
+            component_node = ComponentNode.build_node(
+                step_data=self.step.data, component=component, renderer=renderer
+            )
+
+            nodelist = list(component_node)
+
+            self.assertEqual(len(nodelist), 1)
+
+        with self.subTest("Nested hidden component"):
+            fieldset = self.step.form_step.form_definition.configuration["components"][
+                7
+            ]
+            assert not fieldset["hidden"]
+
+            # set up mock registry and component class for test
+            register = Registry()
+
+            with patch("openforms.formio.rendering.registry.register", new=register):
+                component_node = ComponentNode.build_node(
+                    step_data=self.step.data, component=fieldset, renderer=renderer
+                )
+
+                nodelist = list(component_node)
+
+            self.assertEqual(len(nodelist), 2)
+            self.assertEqual(nodelist[0].label, "A container without visible children")
+
     def test_export_always_emits_all_nodes(self):
         renderer = Renderer(self.submission, mode=RenderModes.export, as_html=False)
 
