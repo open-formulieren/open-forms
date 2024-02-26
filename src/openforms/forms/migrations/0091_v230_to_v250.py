@@ -7,49 +7,12 @@ from django.utils.module_loading import import_string
 
 import openforms.forms.migration_operations
 
-add_more_time_custom_errors = import_string(
-    "openforms.forms.migrations.0092_more_time_custom_errors."
-    "add_more_time_custom_errors"
-)
-add_date_component_settings = import_string(
-    "openforms.forms.migrations.0093_date_component_settings."
-    "add_date_component_settings"
-)
-add_configuration_to_family_component = import_string(
-    "openforms.forms.migrations.0094_update_config_family."
-    "add_configuration_to_family_component"
-)
-update_component_action = import_string(
-    "openforms.forms.migrations.0101_update_action_property." "update_component_action"
-)
-migrate_fd_translations = import_string(
-    "openforms.forms.migrations.0102_convert_formio_translations."
-    "migrate_fd_translations"
-)
-
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("forms", "0091_auto_20230831_1152"),
-        ("forms", "0092_more_time_custom_errors"),
-        ("forms", "0093_date_component_settings"),
-        ("forms", "0094_update_config_family"),
-        ("forms", "0095_formstep_form_form_definition_unique_together"),
-        ("forms", "0096_move_time_component_validators"),
-        ("forms", "0097_formstep_is_applicable"),
-        ("forms", "0098_update_default_value_components_prefill"),
-        ("forms", "0099_form_theme"),
-        ("forms", "0100_ensure_datasrc_property"),
-        ("forms", "0101_update_action_property"),
-        ("forms", "0102_convert_formio_translations"),
-        ("forms", "0103_fix_component_problems"),
-        ("forms", "0104_allow_invalid_input_datetime"),
-    ]
-
     dependencies = [
         ("forms", "0046_squashed_to_openforms_v230"),
-        ("config", "0064_auto_20231206_0921"),
+        ("config", "0053_v230_to_v250"),
     ]
 
     operations = [
@@ -73,18 +36,7 @@ class Migration(migrations.Migration):
                 verbose_name="deactivate on",
             ),
         ),
-        migrations.RunPython(
-            code=add_more_time_custom_errors,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=add_date_component_settings,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=add_configuration_to_family_component,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
+        # RunPython operations are removed, they were executed as part of the 2.5.0 upgrade.
         migrations.AddConstraint(
             model_name="formstep",
             constraint=models.UniqueConstraint(
@@ -140,14 +92,7 @@ class Migration(migrations.Migration):
         openforms.forms.migration_operations.ConvertComponentsOperation(
             "selectboxes", "set_openforms_datasrc"
         ),
-        migrations.RunPython(
-            code=update_component_action,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=migrate_fd_translations,
-            reverse_code=django.db.migrations.operations.special.RunPython.noop,
-        ),
+        # RunPython operations are removed, they were executed as part of the 2.5.0 upgrade.
         openforms.forms.migration_operations.ConvertComponentsOperation(
             "columns", "fix_column_sizes"
         ),
