@@ -230,7 +230,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         return not obj.needs_on_completion_retry
 
     successfully_processed.boolean = True
-    successfully_processed.short_description = _("Succesfully processed")
+    successfully_processed.short_description = _("Successfully processed")
 
     def get_registration_backend(self, obj):
         return obj.form.registration_backend
