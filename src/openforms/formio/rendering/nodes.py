@@ -143,7 +143,9 @@ class ComponentNode(Node):
                 self.component, artificial_repeating_group_data
             ):
                 return False
-        elif not is_visible_in_frontend(self.component, self.step_data):
+        elif self.mode != RenderModes.registration and not is_visible_in_frontend(
+            self.component, self.step_data
+        ):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
