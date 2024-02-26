@@ -281,3 +281,25 @@ class PreRegistrationTests(TestCase):
             "Skipping pre-registration for submission '%s' because it retried and failed too many times.",
             logs.records[-1].msg,
         )
+
+    def test_update_registration_result_after_pre_registration(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            completed_not_preregistered=True,
+        )
+
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            return_value=PreRegistrationResult(
+                reference="ZAAK-TRALALA", data={"zaak": {"ohlalla": "a property!"}}
+            ),
+        ):
+            pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.public_registration_reference, "ZAAK-TRALALA")
+        self.assertEqual(
+            submission.registration_result, {"zaak": {"ohlalla": "a property!"}}
+        )
