@@ -1,7 +1,8 @@
+from decimal import Decimal
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.utils.translation import gettext_lazy as _
 
 from privates.test import temp_private_root
@@ -981,6 +982,39 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
         self.assertTrue(submission.cosign_request_email_sent)
         self.assertTrue(submission.confirmation_email_sent)
         self.assertEqual(submission.auth_info.value, "111222333")
+
+    @tag("gh-3924")
+    def test_payment_complete_does_not_set_retry_flag(self):
+        submission = SubmissionFactory.create(
+            form__payment_backend="demo",
+            form__product__price=Decimal("11.35"),
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+            form__name="Pretty Form",
+            with_public_registration_reference=True,
+            with_completed_payment=True,
+        )
+
+        with (
+            patch(
+                "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+            ),
+            patch(
+                "openforms.registrations.contrib.email.plugin.EmailRegistration.update_payment_status"
+            ),
+            patch(
+                "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+            ),
+        ):
+            with self.captureOnCommitCallbacks(execute=True):
+                on_post_submission_event(
+                    submission.id, PostSubmissionEvents.on_payment_complete
+                )
+
+            submission.refresh_from_db()
+
+            self.assertFalse(submission.needs_on_completion_retry)
 
 
 @temp_private_root()
