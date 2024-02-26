@@ -1,12 +1,11 @@
 import {produce} from 'immer';
 import React, {useContext, useState} from 'react';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {useIntl} from 'react-intl';
 
 import FAIcon from 'components/admin/FAIcon';
 import {FormContext} from 'components/admin/form_design/Context';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {SubmitAction} from 'components/admin/forms/ActionButton';
-import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import {FormModal} from 'components/admin/modals';
 
@@ -104,7 +103,6 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
   const registrationBackends = formContext.registrationBackends;
 
   const summaries = [];
-  let canConfigureBackend = false;
 
   for (const [backendIndex, backend] of registrationBackends.entries()) {
     const backendInfo = BACKEND_OPTIONS_FORMS[backend.key];
@@ -118,37 +116,29 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
     )
       continue;
 
-    // ... if it is the case, check if the variable is already configured:
-    const formVariableConfigured = backendInfo.formVariableConfigured(variable, backend.options);
-    if (formVariableConfigured) {
-      // These components are guaranteed to exist if `configurableFromVariables` is true:
-      const SummaryHandler = BACKEND_OPTIONS_FORMS[backend.key].summaryHandler;
-      const VariableConfigurationEditor =
-        BACKEND_OPTIONS_FORMS[backend.key].variableConfigurationEditor;
+    // These components are guaranteed to exist if `configurableFromVariables` is true:
+    const SummaryHandler = BACKEND_OPTIONS_FORMS[backend.key].summaryHandler;
+    const VariableConfigurationEditor =
+      BACKEND_OPTIONS_FORMS[backend.key].variableConfigurationEditor;
 
-      const [getOptions, setGetOptions] = useState();
+    const [getOptions, setGetOptions] = useState();
 
-      summaries.push({
-        name: backend.name,
-        variable,
-        backend,
-        backendIndex,
-        registrationSummary: (
-          <SummaryHandler variable={variable} backendOptions={backend.options} />
-        ),
-        variableConfigurationEditor: (
-          <VariableConfigurationEditor
-            variable={variable}
-            backend={backend}
-            setGetOptions={setGetOptions}
-          />
-        ),
-        getOptions,
-        onChange: onFieldChange,
-      });
-    } else {
-      canConfigureBackend = true;
-    }
+    summaries.push({
+      name: backend.name,
+      variable,
+      backend,
+      backendIndex,
+      registrationSummary: <SummaryHandler variable={variable} backendOptions={backend.options} />,
+      variableConfigurationEditor: (
+        <VariableConfigurationEditor
+          variable={variable}
+          backend={backend}
+          setGetOptions={setGetOptions}
+        />
+      ),
+      getOptions,
+      onChange: onFieldChange,
+    });
   }
 
   return (
@@ -160,14 +150,6 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
           </li>
         ))}
       </ul>
-      {canConfigureBackend && (
-        <ButtonContainer>
-          <FormattedMessage
-            defaultMessage="Add another"
-            description="Registrations column 'Add another' label"
-          />
-        </ButtonContainer>
-      )}
     </>
   );
 };
