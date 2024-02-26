@@ -6,12 +6,11 @@ from django.urls import include, path
 from decorator_include import decorator_include
 from maykin_2fa import monkeypatch_admin
 from maykin_2fa.urls import urlpatterns, webauthn_urlpatterns
-from maykin_2fa.views import AdminLoginView
 from mozilla_django_oidc_db.views import AdminLoginFailure
 
 from openforms.emails.admin import EmailTestAdminView
 
-from .views import AdminLoginRedirectView
+from .views import AdminLoginRedirectView, ClassicAdminLoginView
 
 # Configure admin
 monkeypatch_admin()
@@ -43,7 +42,7 @@ urlpatterns = [
     # Custom views on top of maykin-2fa even for OIDC redirect if staff users are not
     # authenticated.
     path("login/", AdminLoginRedirectView.as_view()),  # dispatcher
-    path("classic-login/", AdminLoginView.as_view(), name="admin-mfa-login"),
+    path("classic-login/", ClassicAdminLoginView.as_view(), name="admin-mfa-login"),
     # Use custom login views for the admin + support hardware tokens
     path("", include((urlpatterns, "maykin_2fa"))),
     path("", include((webauthn_urlpatterns, "two_factor"))),

@@ -7,6 +7,16 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import RedirectView
 
+from maykin_2fa.views import AdminLoginView
+
+
+class ClassicAdminLoginView(AdminLoginView):
+    def get_context_data(self, form, **kwargs):
+        context = super().get_context_data(form, **kwargs)
+        redirect_to = self.request.GET.get(self.redirect_field_name, "")
+        context.setdefault(self.redirect_field_name, redirect_to)
+        return context
+
 
 class AdminLoginRedirectView(RedirectView):
     permanent = False
