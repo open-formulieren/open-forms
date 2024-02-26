@@ -178,7 +178,7 @@ class PermissionTests(AuthAssertMixin, WebTest):
 
         response = self.app.get(url)
 
-        self.assertLoginRequired(response, url)
+        self.assertLoginRequired(response, str(url), target_status_code=302)
 
     def test_insufficient_permissions(self):
         submission_file_attachment = SubmissionFileAttachmentFactory.create(

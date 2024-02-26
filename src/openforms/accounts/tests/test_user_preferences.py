@@ -21,7 +21,7 @@ class AccessControlTests(WebTest):
         expected_redirect = furl(reverse("admin:login")).set(
             {"next": str(self.admin_url)}
         )
-        self.assertRedirects(response, str(expected_redirect))
+        self.assertRedirects(response, str(expected_redirect), target_status_code=302)
 
     def test_non_staff_user(self):
         user = UserFactory.create(is_staff=False, is_superuser=False)
@@ -31,7 +31,7 @@ class AccessControlTests(WebTest):
         expected_redirect = furl(reverse("admin:login")).set(
             {"next": str(self.admin_url)}
         )
-        self.assertRedirects(response, str(expected_redirect))
+        self.assertRedirects(response, str(expected_redirect), target_status_code=302)
 
     def test_superuser_but_not_staff(self):
         user = SuperUserFactory.create(is_staff=False)
@@ -41,7 +41,7 @@ class AccessControlTests(WebTest):
         expected_redirect = furl(reverse("admin:login")).set(
             {"next": str(self.admin_url)}
         )
-        self.assertRedirects(response, str(expected_redirect))
+        self.assertRedirects(response, str(expected_redirect), target_status_code=302)
 
     def test_staff_users(self):
         for is_superuser in (False, True):
