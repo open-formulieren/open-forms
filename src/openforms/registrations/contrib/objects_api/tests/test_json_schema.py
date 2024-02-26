@@ -17,6 +17,9 @@ JSON_SCHEMA_NO_REFS = {
             "properties": {
                 "first.name": {"type": "string"},
                 "last.name": {"type": "string"},
+                "two_types": {
+                    "type": ["string", "number"],
+                },
             },
         },
     },
@@ -30,6 +33,7 @@ JSON_SCHEMA_REFS = {
     "properties": {
         "complainant": {"$ref": "#/definitions/person"},
         "noisyAddress": {"$ref": "#/definitions/address"},
+        "phoneNumber": {"$ref": "#/definitions/phoneNumber"},
     },
     "definitions": {
         "person": {
@@ -44,6 +48,9 @@ JSON_SCHEMA_REFS = {
             "properties": {
                 "street": {"type": "string"},
             },
+        },
+        "phoneNumber": {
+            "type": "number",
         },
     },
 }
@@ -143,12 +150,14 @@ class IterJsonSchemaTests(SimpleTestCase):
                         "properties": {
                             "first.name": {"type": "string"},
                             "last.name": {"type": "string"},
+                            "two_types": {"type": ["string", "number"]},
                         },
                         "type": "object",
                     },
                 ),
                 (["complainant", "first.name"], {"type": "string"}),
                 (["complainant", "last.name"], {"type": "string"}),
+                (["complainant", "two_types"], {"type": ["string", "number"]}),
             ],
         )
 
@@ -183,6 +192,7 @@ class IterJsonSchemaTests(SimpleTestCase):
                     },
                 ),
                 (["noisyAddress", "street"], {"type": "string"}),
+                (["phoneNumber"], {"type": "number"}),
             ],
         )
 

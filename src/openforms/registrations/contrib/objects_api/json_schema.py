@@ -76,31 +76,35 @@ def iter_json_schema_paths(
     def _iter_json_schema(
         json_schema: ObjectSchema, parent_json_path: JsonSchemaPath
     ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema | InvalidReference]]:
-        assert json_schema.get("type") == "object"
 
         yield parent_json_path, json_schema
 
-        required = json_schema.get("required", [])
+        type_list: str | list[str] = json_schema.get("type", [])
+        if not isinstance(type_list, list):
+            type_list = [type_list]
 
-        k: str
-        for k, v in json_schema["properties"].items():
-            json_path = parent_json_path / k
-            json_path.required = k in required
+        if "object" in type_list and "properties" in json_schema:
+            required = json_schema.get("required", [])
 
-            match v:
-                case {"type": "object"}:
-                    yield from _iter_json_schema(v, json_path)
-                case {"$ref": str(uri)}:
-                    try:
-                        resolved = resolver.lookup(uri)
-                    except Unresolvable as exc:
-                        if fail_fast:
-                            raise
-                        yield json_path, InvalidReference(uri, exc)
-                    else:
-                        yield from _iter_json_schema(resolved.contents, json_path)
-                case {}:
-                    yield json_path, v
+            k: str
+            for k, v in json_schema["properties"].items():
+                json_path = parent_json_path / k
+                json_path.required = k in required
+
+                match v:
+                    case {"type": "object"}:
+                        yield from _iter_json_schema(v, json_path)
+                    case {"$ref": str(uri)}:
+                        try:
+                            resolved = resolver.lookup(uri)
+                        except Unresolvable as exc:
+                            if fail_fast:
+                                raise
+                            yield json_path, InvalidReference(uri, exc)
+                        else:
+                            yield from _iter_json_schema(resolved.contents, json_path)
+                    case {}:
+                        yield json_path, v
 
     yield from _iter_json_schema(json_schema, parent_json_path)
 
