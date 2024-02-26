@@ -2,10 +2,13 @@ import {Form, Formik} from 'formik';
 import isEqual from 'lodash/isEqual';
 import React, {useContext, useEffect} from 'react';
 import {FormattedMessage} from 'react-intl';
-import {useAsync} from 'react-use';
+import {useAsync, useToggle} from 'react-use';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
@@ -31,6 +34,8 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend, setGetOptions
   const {
     form: {uuid},
   } = useContext(FormContext);
+
+  const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
 
   const getOptions = () => {
     return backend.options;
@@ -87,57 +92,56 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend, setGetOptions
     >
       {formik => (
         <Form>
-          <table>
-            <thead>
-              <tr>
-                <th>
+          <Fieldset>
+            <FormRow>
+              <Field
+                name="name"
+                label={
                   <FormattedMessage
-                    defaultMessage="Variable name"
-                    description="'Variable name' label"
-                  />
-                </th>
-                <th>
-                  <FormattedMessage
-                    defaultMessage="Variable key"
                     description="'Variable key' label"
+                    defaultMessage="Variable key"
                   />
-                </th>
-                <th>
+                }
+              >
+                <div className="readonly">{variable.key}</div>
+              </Field>
+            </FormRow>
+            <FormRow>
+              <Field
+                name="targetPath"
+                htmlFor="targetPath"
+                label={
                   <FormattedMessage
                     defaultMessage="JSON Schema target"
                     description="'JSON Schema target' label"
                   />
-                </th>
-                <th>
-                  <FormattedMessage
-                    defaultMessage="JSON Schema info"
-                    description="'JSON Schema info' label"
-                  />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{variable.name}</td>
-                <td>{variable.key}</td>
-                <td>
-                  <Select
-                    id="targetPath"
-                    name="targetPath"
-                    choices={choices}
-                    {...formik.getFieldProps('targetPath')}
-                  />
-                </td>
-                <td>
-                  <pre>
-                    {loading
-                      ? 'N/A'
-                      : JSON.stringify(getTargetPath(formik.values.targetPath).jsonSchema, null, 2)}
-                  </pre>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                }
+              >
+                <Select
+                  id="targetPath"
+                  name="targetPath"
+                  allowBlank
+                  choices={choices}
+                  {...formik.getFieldProps('targetPath')}
+                />
+              </Field>
+            </FormRow>
+            <div style={{marginTop: '1em'}}>
+              <a href="#" onClick={e => e.preventDefault() || toggleJsonSchemaVisible()}>
+                <FormattedMessage
+                  description="Objects API variable configuration editor JSON Schema visibility toggle"
+                  defaultMessage="Toggle JSON Schema"
+                />
+              </a>
+              {jsonSchemaVisible && (
+                <pre>
+                  {loading || !formik.values.targetPath
+                    ? 'N/A'
+                    : JSON.stringify(getTargetPath(formik.values.targetPath).jsonSchema, null, 2)}
+                </pre>
+              )}
+            </div>
+          </Fieldset>
         </Form>
       )}
     </Formik>
