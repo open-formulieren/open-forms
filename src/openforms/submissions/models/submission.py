@@ -750,7 +750,7 @@ class Submission(models.Model):
         return self._prefilled_data
 
     @cached_property
-    def cosigner_email(self) -> str | None:
+    def cosigner_data(self) -> str | dict | None:
         from openforms.formio.service import iterate_data_with_components
 
         for form_step in self.form.formstep_set.select_related("form_definition"):
@@ -761,6 +761,23 @@ class Submission(models.Model):
                     return glom(
                         self.data, component_with_data_item.data_path, default=None
                     )
+
+    @property
+    def cosigner_email(self) -> str | None:
+        cosign_data = self.cosigner_data
+        if not cosign_data:
+            return
+
+        if isinstance(cosign_data, str):
+            return cosign_data
+        return cosign_data["email"]
+
+    @property
+    def cosigner_bsn(self) -> str | None:
+        cosign_data = self.cosigner_data
+        if not cosign_data or isinstance(cosign_data, str):
+            return
+        return cosign_data["bsn"]
 
     @property
     def waiting_on_cosign(self) -> bool:

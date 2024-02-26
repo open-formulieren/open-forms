@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.test import override_settings
 from django.urls import resolve
+from django.utils.translation import gettext_lazy as _
 
 from furl import furl
 from rest_framework import status
@@ -140,14 +141,111 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
+    def test_user_must_have_the_right_bsn_if_bsn_check_enabled(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
+            components_list=[
+                {
+                    "type": "cosign",
+                    "key": "cosign",
+                    "checkBsn": True,
+                }
+            ],
+            submitted_data={
+                "cosign": {"email": "test@example.com", "bsn": "123456782"},
+            },
+            registration_success=True,
+        )
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "000000000",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+
+        with patch(
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                ask_statement_of_truth=True, ask_privacy_consent=True
+            ),
+        ):
+            response = self.client.post(
+                endpoint,
+                data={
+                    "privacy_policy_accepted": True,
+                    "statement_of_truth_accepted": True,
+                },
+            )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(
+            data["detail"], _("The cosigner's BSN does not match the expected BSN.")
+        )
+
+    def test_user_bsn_not_checked_if_check_not_enabled(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
+            components_list=[
+                {
+                    "type": "cosign",
+                    "key": "cosign",
+                    "checkBsn": False,
+                }
+            ],
+            submitted_data={
+                "cosign": {"email": "test@example.com", "bsn": "123456782"},
+            },
+            registration_success=True,
+        )
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "000000000",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+
+        with patch(
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                ask_statement_of_truth=True, ask_privacy_consent=True
+            ),
+        ):
+            response = self.client.post(
+                endpoint,
+                data={
+                    "privacy_policy_accepted": True,
+                    "statement_of_truth_accepted": True,
+                },
+            )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
     def test_cosign_happy_flow_calls_on_cosign_task(self):
         submission = SubmissionFactory.from_components(
             form__authentication_backends=["digid"],
             components_list=[
-                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+                {
+                    "type": "cosign",
+                    "key": "cosign",
+                    "authPlugin": "digid",
+                    "checkBsn": True,
+                }
             ],
             submitted_data={
-                "cosign": "test@example.com",
+                "cosign": {"email": "test@example.com", "bsn": "123456782"},
             },
             registration_success=True,
         )
@@ -197,6 +295,48 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         ids = session.get(SUBMISSIONS_SESSION_KEY, [])
 
         self.assertNotIn(submission.uuid, ids)
+
+    def test_cosign_happy_flow_calls_on_cosign_task_with_old_cosign_data_format(self):
+        submission = SubmissionFactory.from_components(
+            form__authentication_backends=["digid"],
+            components_list=[
+                {
+                    "type": "cosign",
+                    "key": "cosign",
+                }
+            ],
+            submitted_data={
+                "cosign": "test@example.com",  # Now the data is nested. Before, only the email was provided (#3257).
+            },
+            registration_success=True,
+        )
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+
+        with patch(
+            "openforms.forms.models.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                ask_statement_of_truth=True, ask_privacy_consent=True
+            ),
+        ):
+            response = self.client.post(
+                endpoint,
+                data={
+                    "privacy_policy_accepted": True,
+                    "statement_of_truth_accepted": True,
+                },
+            )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     @override_settings(LANGUAGE_CODE="en")
     def test_cosign_did_not_accept_privacy_policy(self):

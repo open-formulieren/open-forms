@@ -149,6 +149,21 @@ def prevent_datetime_components_from_emptying_invalid_values(
     return True
 
 
+def update_cosign_to_include_bsn(component: Component) -> bool:
+    if "checkBsn" in component and isinstance(component["defaultValue"], dict):
+        return False
+
+    component.setdefault("checkBsn", False)
+
+    if isinstance(component["defaultValue"], str):
+        component["defaultValue"] = {
+            "email": "",  # If we set it to component["defaultValue"], the designers can't update it without directly changing the JSON
+            "bsn": "",
+        }
+
+    return True
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
@@ -181,6 +196,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
     },
+    "cosign": {"update_cosign_to_include_bsn": update_cosign_to_include_bsn},
     # Layout components
     "columns": {
         "fix_column_sizes": fix_column_sizes,
