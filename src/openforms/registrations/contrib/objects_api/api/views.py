@@ -16,6 +16,7 @@ from ..json_schema import InvalidReference, iter_json_schema_paths
 from .serializers import (
     ObjecttypeSerializer,
     ObjecttypeVersionSerializer,
+    TargetPathsInputSerializer,
     TargetPathsSerializer,
 )
 
@@ -101,15 +102,18 @@ class TargetPathsListView(ListMixin, views.APIView):
 
     def get_objects(self) -> list[dict[str, Any]]:
 
-        form_uuid = self.request.query_params["form_uuid"]
+        serializer = TargetPathsInputSerializer(data=self.request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        form_uuid = serializer.validated_data["form_uuid"]
 
         registration_backend = get_object_or_404(
             FormRegistrationBackend,
             form__uuid=form_uuid,
-            key=self.request.query_params["backend_key"],
+            key=serializer.validated_data["backend_key"],
             options__version=2,
         )
-        variable_key = self.request.query_params["variable_key"]
+        variable_key = serializer.validated_data["variable_key"]
         form_variable = get_object_or_404(
             FormVariable,
             form__uuid=form_uuid,
@@ -131,7 +135,7 @@ class TargetPathsListView(ListMixin, views.APIView):
             {
                 "target_path": json_path.segments,
                 "required": json_path.required,
-                json_schema: json_schema,
+                "json_schema": json_schema,
             }
             for json_path, json_schema in iter_json_schema_paths(
                 json_schema, fail_fast=False

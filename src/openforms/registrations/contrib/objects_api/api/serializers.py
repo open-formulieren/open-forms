@@ -41,3 +41,15 @@ class TargetPathsSerializer(serializers.Serializer):
         label=_("json schema"),
         help_text=_("Corresponding (sub) JSON Schema of the target path."),
     )
+
+
+class TargetPathsInputSerializer(serializers.Serializer):
+    form_uuid = serializers.CharField(
+        label=_("form_uuid"), help_text=_("UUID of the form")
+    )
+    backend_key = serializers.CharField(
+        label=_("backend_key"), help_text=_("Key of the registration backend")
+    )
+    variable_key = serializers.CharField(
+        label=_("variable_key"), help_text=_("Key of the variable")
+    )

@@ -6,12 +6,18 @@ from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.forms.tests.factories import (
+    FormRegistrationBackendFactory,
+    FormVariableFactory,
+)
 from openforms.utils.tests.vcr import OFVCRMixin
+from openforms.variables.constants import FormVariableDataTypes
 
+from ..plugin import PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER
 from .test_objecttypes_client import get_test_config
 
 
-class ObjecttypesAPIEndpointsTests(OFVCRMixin, APITestCase):
+class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
@@ -79,7 +85,7 @@ class ObjecttypesAPIEndpointsTests(OFVCRMixin, APITestCase):
         )
 
 
-class ObjecttypeVersionsAPIEndpointsTests(OFVCRMixin, APITestCase):
+class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
@@ -144,3 +150,104 @@ class ObjecttypeVersionsAPIEndpointsTests(OFVCRMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [])
+
+
+class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
+
+    VCR_TEST_FILES = Path(__file__).parent / "files"
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.user = UserFactory.create()
+        self.staff_user = StaffUserFactory.create()
+
+        self.endpoint = reverse_lazy("api:objects_api:target-paths")
+
+        patcher = patch(
+            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
+            return_value=get_test_config(),
+        )
+
+        self.config_mock = patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_auth_required(self):
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_staff_user_required(self):
+
+        with self.subTest(staff=False):
+            self.client.force_authenticate(user=self.user)
+
+            response = self.client.get(self.endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        with self.subTest(staff=True):
+            self.client.force_authenticate(user=self.staff_user)
+
+            response = self.client.get(self.endpoint)
+
+            # Should be a 400 as permissions are ok but missing query params
+            # (but this is tested in `test_missing_query_params` and not relevant for this test)
+            self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_missing_query_params(self):
+        self.client.force_authenticate(user=self.staff_user)
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_list_target_paths(self):
+        form_registration_backend = FormRegistrationBackendFactory.create(
+            backend=OBJECTS_API_PLUGIN_IDENTIFIER,
+            options={
+                "version": 2,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 1,
+            },
+            key="test_backend",
+        )
+        form_variable = FormVariableFactory.create(
+            form=form_registration_backend.form,
+            key="test_key",
+            data_type=FormVariableDataTypes.string,
+        )
+        self.client.force_authenticate(user=self.staff_user)
+
+        response = self.client.get(
+            self.endpoint,
+            data={
+                "form_uuid": form_registration_backend.form.uuid,
+                "backend_key": form_registration_backend.key,
+                "variable_key": form_variable.key,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # The list of targets is constructed from a JSON mapping, which isn't guaranteed
+        # to be ordered. So `assertCountEqual` is used
+        self.assertCountEqual(
+            response.json(),
+            [
+                {
+                    "targetPath": ["firstName"],
+                    "required": False,
+                    "jsonSchema": {
+                        "type": "string",
+                        "description": "The person's first name.",
+                    },
+                },
+                {
+                    "targetPath": ["lastName"],
+                    "required": False,
+                    "jsonSchema": {
+                        "type": "string",
+                        "description": "The person's last name.",
+                    },
+                },
+            ],
+        )
