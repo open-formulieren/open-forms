@@ -1,6 +1,6 @@
 import {produce} from 'immer';
 import React, {useContext, useState} from 'react';
-import {useIntl} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import FAIcon from 'components/admin/FAIcon';
 import {FormContext} from 'components/admin/form_design/Context';
@@ -139,6 +139,15 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
       getOptions,
       onChange: onFieldChange,
     });
+  }
+
+  if (!summaries.length) {
+    return (
+      <FormattedMessage
+        description="Registration summary no registration backend fallback message"
+        defaultMessage="No compatible registration backend configured."
+      />
+    );
   }
 
   return (

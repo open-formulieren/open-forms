@@ -63,7 +63,7 @@ const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) 
             />
           </TabPanel>
           <TabPanel>
-            <StaticData />
+            <StaticData onFieldChange={onFieldChange} />
           </TabPanel>
         </Tabs>
       </div>
