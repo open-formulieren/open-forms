@@ -1,4 +1,5 @@
 import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import {FormLogicContext} from './Context';
 
@@ -37,4 +38,10 @@ export const FormDecorator = (Story, {args}) => (
   >
     <Story />
   </FormContext.Provider>
+);
+
+export const ValidationErrorsDecorator = (Story, {args}) => (
+  <ValidationErrorContext.Provider value={args.validationErrors || []}>
+    <Story />
+  </ValidationErrorContext.Provider>
 );

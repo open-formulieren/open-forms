@@ -2,7 +2,10 @@ import {useArgs} from '@storybook/client-api';
 import {expect, jest} from '@storybook/jest';
 import {userEvent, within} from '@storybook/testing-library';
 
-import {FormDecorator} from 'components/admin/form_design/story-decorators';
+import {
+  FormDecorator,
+  ValidationErrorsDecorator,
+} from 'components/admin/form_design/story-decorators';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -183,5 +186,19 @@ export const APIFetchError = {
     );
 
     expect(errorMessage).toBeVisible();
+  },
+};
+
+export const MissingRequiredJSONSchemaTargets = {
+  decorators: [FormDecorator, ValidationErrorsDecorator],
+  args: {
+    name: 'form.registrationBackends.0.options',
+    index: 0,
+    validationErrors: [
+      [
+        'form.registrationBackends.0.options.variablesMapping',
+        "The following required properties of the JSON Schema aren't mapped to any form variable:\n- some > target > path\n-other > path",
+      ],
+    ],
   },
 };
