@@ -19,6 +19,7 @@ from openforms.payments.tests.factories import SubmissionPaymentFactory
 
 from ..constants import PostSubmissionEvents
 from ..models import SubmissionReport
+from ..public_references import get_random_reference
 from ..tasks import on_post_submission_event
 from .factories import SubmissionFactory
 
@@ -991,7 +992,8 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             form__registration_backend="email",
             form__registration_backend_options={"to_emails": ["test@registration.nl"]},
             form__name="Pretty Form",
-            with_public_registration_reference=True,
+            completed=True,
+            public_registration_reference=get_random_reference(),
             with_completed_payment=True,
         )
 
