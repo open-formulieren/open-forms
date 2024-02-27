@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.2.10 (2024-02-27)
+==================
+
+Final release in the 2.2.x series.
+
+* [#3863] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [#3858] Fixed a race condition that would manifest during parallel file uploads,
+  leading to permission errors.
+
 2.2.9 (2024-02-06)
 ==================
 
