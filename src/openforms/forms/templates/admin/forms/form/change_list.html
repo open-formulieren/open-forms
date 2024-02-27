@@ -55,7 +55,7 @@
             {% for category in categories %}
                 <tbody>
                     <tr
-                        class="form-category {% if not category.is_leaf or category.form_count %}form-category--has-children{% endif %} {% if category.is_leaf %}form-category--leaf{% endif %} {% if category.is_leaf and category.depth > 1 %}form-category--collapsed{% endif %}"
+                        class="form-category {% if not category.is_leaf or category.form_count %}form-category--has-children{% endif %} {% if category.is_leaf %}form-category--leaf{% endif %}"
                         data-id="{{ category.id }}"
                         data-parent-id="{{ category.get_parent.id }}"
                         data-depth="{{ category.get_depth }}">
