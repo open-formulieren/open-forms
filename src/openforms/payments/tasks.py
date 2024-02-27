@@ -40,7 +40,7 @@ def update_submission_payment_status(
     )
     if should_skip:
         logevent.registration_payment_update_skip(submission)
-        logger.info("Skippping payment update for submission %d.", submission_id)
+        logger.info("Skipping payment update for submission %d.", submission_id)
         return
 
     try:
