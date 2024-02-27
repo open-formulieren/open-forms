@@ -1,5 +1,6 @@
 {
-    "supportedTags": [
+    "supportedTags":
+    [
         {
             "gitRef": "master",
             "tag": "latest",
@@ -19,14 +20,10 @@
             "gitRef": "stable/2.3.x",
             "tag": null,
             "hasExtensionsVariant": true
-        },
-        {
-            "gitRef": "stable/2.2.x",
-            "tag": null,
-            "hasExtensionsVariant": true
         }
     ],
-    "availableExtensions": [
+    "availableExtensions":
+    [
         {
             "name": "Token Exchange",
             "repo": "open-forms-ext-token-exchange"
