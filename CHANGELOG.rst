@@ -11,6 +11,16 @@ Upgrade procedure
 * ⚠️ The ``CSRF_TRUSTED_ORIGINS`` setting now requires items to have a scheme. If you
   specify this setting, update your infrastructure code.
 
+
+2.2.10 (2024-02-27)
+===================
+
+Final release in the 2.2.x series.
+
+* [#3863] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [#3858] Fixed a race condition that would manifest during parallel file uploads,
+  leading to permission errors.
+
 2.6.0-alpha.0 (2023-02-20)
 ==========================
 
