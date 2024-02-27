@@ -14,7 +14,10 @@ from openforms.logging.models import TimelineLogProxy
 from .factories import StaffUserFactory, SuperUserFactory
 
 
-@override_settings(MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[])  # enforce MFA
+@override_settings(
+    USE_OIDC_FOR_ADMIN_LOGIN=False,
+    MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS=[],  # enforce MFA
+)
 class HijackTests(WebTest):
     csrf_checks = False
 
@@ -26,7 +29,7 @@ class HijackTests(WebTest):
         return response
 
     def _login_with_mfa(self, user):
-        login_page = self.app.get(reverse("admin:login"))
+        login_page = self.app.get(reverse("admin:login"), auto_follow=True)
         login_page.form["auth-username"] = user.username
         login_page.form["auth-password"] = "secret"
         token_page = login_page.form.submit()

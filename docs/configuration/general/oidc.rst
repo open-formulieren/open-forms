@@ -86,3 +86,6 @@ Klik tot slot rechtsonder op **Opslaan**.
 Je kan vervolgens het makkelijkst testen of alles werkt door in een incognitoscherm
 naar ``https://open-formulieren.gemeente.nl/admin/`` te navigeren en op 
 *Inloggen met organisatieaccount* te klikken.
+
+.. note:: We raden aan om Open Formulieren te deployen met de ``USE_OIDC_FOR_ADMIN_LOGIN=1``
+   environment variabele zodat je meteen omgeleid wordt naar de OpenID Connect Provider.

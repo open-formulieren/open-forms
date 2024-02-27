@@ -154,7 +154,7 @@ class IsAdminRequestTest(TestCase):
         Test for requests directly hitting admin URLs.
         """
         factory = RequestFactory()
-        request = factory.get(reverse("admin:login"))
+        request = factory.get(reverse("admin-mfa-login"))
 
         result = is_admin_request(request)
 

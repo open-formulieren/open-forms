@@ -179,13 +179,13 @@ class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
 
         with self.subTest("anon"):
             response = self.app.get(url, status=302)  # to login
-            self.assertRedirects(response, redirect_url)
+            self.assertRedirects(response, redirect_url, target_status_code=302)
 
         with self.subTest("user"):
             user = UserFactory()
             self.app.set_user(user)
             response = self.app.get(url, status=302)  # to login
-            self.assertRedirects(response, redirect_url)
+            self.assertRedirects(response, redirect_url, target_status_code=302)
 
         with self.subTest("staff"):
             user = StaffUserFactory()

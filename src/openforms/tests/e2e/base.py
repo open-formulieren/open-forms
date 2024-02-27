@@ -55,7 +55,7 @@ async def browser_page():
 @override_settings(ALLOWED_HOSTS=["*"])
 class E2ETestCase(StaticLiveServerTestCase):
     async def _admin_login(self, page: Page) -> None:
-        login_url = furl(self.live_server_url) / reverse("admin:login")
+        login_url = furl(self.live_server_url) / reverse("admin-mfa-login")
         await page.goto(str(login_url))
         await page.get_by_label("Username").fill("admin")
         await page.get_by_label("Password").fill("e2tests")

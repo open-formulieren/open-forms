@@ -17,7 +17,7 @@ class OIDCLoginButtonTestCase(WebTest):
         return_value=OpenIDConnectConfig(enabled=False),
     )
     def test_oidc_button_disabled(self, mock_get_solo):
-        response = self.app.get(reverse("admin:login"))
+        response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
             "a", string=_("Login with organization account")
@@ -36,7 +36,7 @@ class OIDCLoginButtonTestCase(WebTest):
         ),
     )
     def test_oidc_button_enabled(self, mock_get_solo):
-        response = self.app.get(reverse("admin:login"))
+        response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
             "a", string=_("Login with organization account")
