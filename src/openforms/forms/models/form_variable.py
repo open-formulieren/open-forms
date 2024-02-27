@@ -81,13 +81,15 @@ class FormVariableManager(models.Manager):
                         Path("prefill", "plugin"),
                         default="",
                         skip_exc=KeyError,
-                    ),
+                    )
+                    or "",
                     prefill_attribute=glom(
                         component,
                         Path("prefill", "attribute"),
                         default="",
                         skip_exc=KeyError,
-                    ),
+                    )
+                    or "",
                     prefill_identifier_role=glom(
                         component,
                         Path("prefill", "identifierRole"),
