@@ -25,6 +25,16 @@ JSON_SCHEMA_NO_REFS = {
     },
 }
 
+JSON_SCHEMA_NO_TYPE = {
+    "$id": "noise-complaint.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": False,
+    "properties": {
+        "complaintDescription": {"type": "string"},
+    },
+}
+
+
 JSON_SCHEMA_REFS = {
     "$id": "noise-complaint.schema",
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -125,6 +135,22 @@ JSON_SCHEMA_REQUIRED_PATHS = {
     "required": ["a", "b"],
 }
 
+# "a" not required, but "a.b" is:
+JSON_SCHEMA_DEEP_REQUIRED = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "a": {
+            "type": "object",
+            "required": ["b"],
+            "properties": {
+                "b": {"type": "string"},
+                "c": {"type": "string"},
+            },
+        }
+    },
+}
+
 
 class IterJsonSchemaTests(SimpleTestCase):
     """Test cases to assert the JSON Schemas are correctly iterated over.
@@ -158,6 +184,19 @@ class IterJsonSchemaTests(SimpleTestCase):
                 (["complainant", "first.name"], {"type": "string"}),
                 (["complainant", "last.name"], {"type": "string"}),
                 (["complainant", "two_types"], {"type": ["string", "number"]}),
+            ],
+        )
+
+    def test_iter_json_schema_no_type(self):
+        paths_list = [
+            (path.segments, schema)
+            for path, schema in iter_json_schema_paths(JSON_SCHEMA_NO_TYPE)
+        ]
+
+        self.assertEqual(
+            paths_list[1:],
+            [
+                (["complaintDescription"], {"type": "string"}),
             ],
         )
 
@@ -319,3 +358,9 @@ class MissingRequiredPathsTests(SimpleTestCase):
             )
 
             self.assertEqual(missing_paths, [["b", "d", "e"]])
+
+    def test_required_path_deep(self):
+        """Test that "a.b" is not marked as required if "a" is not provided."""
+
+        missing_paths = get_missing_required_paths(JSON_SCHEMA_DEEP_REQUIRED, [])
+        self.assertEqual(missing_paths, [])
