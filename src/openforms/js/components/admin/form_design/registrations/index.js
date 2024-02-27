@@ -1,7 +1,7 @@
 import {WysiwygWidget} from 'components/admin/RJSFWrapper';
 
 import CamundaOptionsForm from './camunda';
-import {onStepEdit} from './handlers';
+import {onCamundaStepEdit, onZGWStepEdit} from './handlers';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ZGWOptionsForm from './zgw';
@@ -20,7 +20,7 @@ import ZGWOptionsForm from './zgw';
 export const BACKEND_OPTIONS_FORMS = {
   camunda: {
     form: CamundaOptionsForm,
-    onStepEdit: onStepEdit,
+    onStepEdit: onCamundaStepEdit,
   },
   objects_api: {
     form: ObjectsApiOptionsForm,
@@ -43,7 +43,6 @@ export const BACKEND_OPTIONS_FORMS = {
   },
   'zgw-create-zaak': {
     form: ZGWOptionsForm,
-    // TODO -> update eigenschap mappings
-    // onStepEdit: ...,
+    onStepEdit: onZGWStepEdit,
   },
 };
