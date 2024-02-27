@@ -1,6 +1,9 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.utils.translation import gettext as _
+
+from hypothesis import given, strategies as st
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
@@ -273,6 +276,37 @@ class FormTestCase(TestCase):
         ]
 
         self.assertEqual(actual, expected)
+
+
+class RegressionTests(HypothesisTestCase):
+    @given(
+        component_type=st.sampled_from(
+            ["textfield", "bsn", "date", "datetime", "postcode"]
+        )
+    )
+    @tag("gh-3922")
+    def test_copy_form_with_corrupt_prefill(self, component_type):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": component_type,
+                        "key": "field",
+                        "label": "Field",
+                        "prefill": {
+                            "plugin": None,
+                            "attribute": None,
+                            "identifierRole": "main",
+                        },
+                    }
+                ]
+            },
+        )
+
+        form.copy()
+
+        self.assertEqual(Form.objects.count(), 2)
 
 
 class FormQuerysetTestCase(TestCase):
