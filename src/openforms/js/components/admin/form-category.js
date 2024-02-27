@@ -18,6 +18,50 @@ const init = async () => {
   }
 };
 
+const checkSiblings = (node, depth) => {
+  const collapsedState = JSON.parse(localStorage.getItem('collapsedState')) || {};
+  let nodeIsCollapsed = false;
+  if (collapsedState && (nodeIsCollapsed = node.classList.contains('form-category--collapsed')))
+    collapsedState[node.dataset.id] = nodeIsCollapsed;
+
+  // check the siblings and extract the rows that are children of the current node
+  let tableBody = node.parentNode.nextElementSibling;
+
+  // loop over all next table bodies and check the form category rows for their depth.
+  // as soon as the depth value falls below our own depth value, we are done collapsing
+  // child nodes.
+  while (tableBody) {
+    const categoryRow = tableBody.querySelector('.form-category');
+    if (parseInt(categoryRow.dataset.depth) <= depth) break;
+
+    const parent = document.querySelector(`[data-id="${categoryRow.dataset.parentId}"]`);
+    categoryRow.classList.toggle(
+      'form-category--hidden',
+      nodeIsCollapsed || parent.classList.contains('form-category--collapsed')
+    );
+    categoryRow.classList.add('form-category--collapsed');
+    tableBody = tableBody.nextElementSibling;
+  }
+};
+
+const saveCollapsedState = (node, depth) => {
+  const collapsedState = {};
+  document.querySelectorAll('.form-category').forEach(category => {
+    const categoryId = category.dataset.id;
+    if (category.classList.contains('form-category--collapsed')) collapsedState[categoryId] = true;
+  });
+  localStorage.setItem('collapsedState', JSON.stringify(collapsedState));
+  checkSiblings(node, depth);
+};
+
+const restoreCollapsedState = (node, depth) => {
+  const collapsedState = JSON.parse(localStorage.getItem('collapsedState')) || {};
+  if (collapsedState[node.dataset.id]) {
+    node.classList.add('form-category--collapsed');
+    checkSiblings(node, depth);
+  }
+};
+
 const loadFormsForCategory = async (node, GETParams) => {
   // node is a table row, after which we have to inject the forms.
   const {id, depth: _depth} = node.dataset;
@@ -28,26 +72,12 @@ const loadFormsForCategory = async (node, GETParams) => {
     _async: 1,
     category: id,
   };
+  restoreCollapsedState(node, depth);
 
   node.addEventListener('click', event => {
     event.preventDefault();
     node.classList.toggle('form-category--collapsed');
-
-    // check the siblings and extract the rows that are children of the current node
-    let tableBody = node.parentNode.nextElementSibling;
-
-    // loop over all next table bodies and check the form category rows for their depth.
-    // as soon as the depth value falls below our own depth value, we are done collapsing
-    // child nodes.
-    while (tableBody) {
-      const categoryRow = tableBody.querySelector('.form-category');
-      if (parseInt(categoryRow.dataset.depth) <= depth) {
-        break;
-      }
-      categoryRow.classList.toggle('form-category--hidden');
-      categoryRow.classList.add('form-category--collapsed');
-      tableBody = tableBody.nextElementSibling;
-    }
+    saveCollapsedState(node, depth);
   });
 
   // TODO: handle pagination
