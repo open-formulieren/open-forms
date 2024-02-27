@@ -4,7 +4,9 @@ import {FormattedMessage} from 'react-intl';
 import {FormContext} from 'components/admin/form_design/Context';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 
-const StaticData = () => {
+import RegistrationsSummary from './registration';
+
+const StaticData = ({onFieldChange}) => {
   const formContext = useContext(FormContext);
   const staticData = formContext.staticVariables;
 
@@ -16,6 +18,14 @@ const StaticData = () => {
       />
       <HeadColumn
         content={<FormattedMessage defaultMessage="Key" description="Variable table key title" />}
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Registration"
+            description="Variable table registration title"
+          />
+        }
       />
       <HeadColumn
         content={
@@ -37,6 +47,9 @@ const StaticData = () => {
               <td />
               <td>{item.name}</td>
               <td>{item.key}</td>
+              <td>
+                <RegistrationsSummary variable={item} onFieldChange={onFieldChange} />
+              </td>
               <td>{item.dataType}</td>
             </tr>
           );

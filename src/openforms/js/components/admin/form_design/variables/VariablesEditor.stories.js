@@ -43,6 +43,23 @@ export default {
         initialValue: [],
       },
     ],
+    availableStaticVariables: [
+      {
+        form: null,
+        formDefinition: null,
+        name: 'Now',
+        key: 'now',
+        source: '',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'datetime',
+        dataFormat: '',
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '2024-02-27T16:44:22.170405Z',
+      },
+    ],
   },
   argTypes: {
     onChange: {action: true},
