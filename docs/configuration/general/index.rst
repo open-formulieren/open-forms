@@ -10,6 +10,7 @@ General configuration
    analytics
    cookies
    oidc
+   external_services
    cms_integration
    virus_scan
    payment_flow
