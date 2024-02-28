@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass, field, replace
 from typing import Iterator, Literal, overload
 
@@ -76,31 +77,37 @@ def iter_json_schema_paths(
     def _iter_json_schema(
         json_schema: ObjectSchema, parent_json_path: JsonSchemaPath
     ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema | InvalidReference]]:
-        assert json_schema.get("type") == "object"
 
         yield parent_json_path, json_schema
 
-        required = json_schema.get("required", [])
+        if "properties" in json_schema:
+            required = json_schema.get("required", [])
 
-        k: str
-        for k, v in json_schema["properties"].items():
-            json_path = parent_json_path / k
-            json_path.required = k in required
+            k: str
+            for k, v in json_schema["properties"].items():
+                json_path = parent_json_path / k
+                json_path.required = k in required
 
-            match v:
-                case {"type": "object"}:
-                    yield from _iter_json_schema(v, json_path)
-                case {"$ref": str(uri)}:
-                    try:
-                        resolved = resolver.lookup(uri)
-                    except Unresolvable as exc:
-                        if fail_fast:
-                            raise
-                        yield json_path, InvalidReference(uri, exc)
-                    else:
-                        yield from _iter_json_schema(resolved.contents, json_path)
-                case {}:
-                    yield json_path, v
+                match v:
+                    case {"properties": dict()}:
+                        # `type` is not required. But if provided, we want to make sure
+                        # it is 'object' (or a list of allowed types where 'object' is allowed).
+                        type_ = v.get("type", "object")
+                        assert isinstance(type_, (str, list))
+                        assert type_ == "object" or "object" in type_
+
+                        yield from _iter_json_schema(v, json_path)
+                    case {"$ref": str(uri)}:
+                        try:
+                            resolved = resolver.lookup(uri)
+                        except Unresolvable as exc:
+                            if fail_fast:
+                                raise
+                            yield json_path, InvalidReference(uri, exc)
+                        else:
+                            yield from _iter_json_schema(resolved.contents, json_path)
+                    case {}:
+                        yield json_path, v
 
     yield from _iter_json_schema(json_schema, parent_json_path)
 
@@ -131,9 +138,11 @@ def get_missing_required_paths(
     """
     missing_paths: list[list[str]] = []
 
-    for r_path, _ in iter_json_schema_paths(json_schema):
-        if not r_path.required:
-            continue
+    required_paths = [
+        r_path for r_path, _ in iter_json_schema_paths(json_schema) if r_path.required
+    ]
+
+    for r_path in required_paths:
 
         # If a child key is provided (e.g. "a.b"), any required parent key is dismissed (e.g. "a").
         if any(JsonSchemaPath(path).startswith(r_path) for path in paths):
@@ -144,6 +153,16 @@ def get_missing_required_paths(
         # The JSON Schema could specify "a" as an object with some required keys, but we are dealing with
         # path segments, so we can't really make any assumptions on the provided value.
         if any(r_path.startswith(path) for path in paths):
+            continue
+
+        # If the required path is "a.b.c", the two previous checks tell us "a.b.c.x" and "a"/"a.b" wasn't provided.
+        # However, we need to check if *all* the sub segments (i.e. "a.b" and "a") are required, as we can't
+        # flag "a.b.c" as missing if for instance "a" is not required *and* not provided.
+        if not all(
+            JsonSchemaPath(subsegments, required=True) in required_paths
+            # fancy way of iterating over [["a"], ["a", "b"]]:
+            for subsegments in itertools.accumulate(map(lambda s: [s], r_path.segments))
+        ):
             continue
 
         missing_paths.append(r_path.segments)
