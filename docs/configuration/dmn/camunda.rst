@@ -4,6 +4,50 @@
 Camunda 7
 ---------
 
+Camunda Admin
+^^^^^^^^^^^^^
+
+In order to deploy a new decision definition and then evaluate it, users should be created with:
+
+- The **CREATE** authorization for the **Deployment** resource.
+- The **READ** and **CREATE_INSTANCE** authorization for the **Decision Definition**.
+
+To configure this, log in into the Camunda Admin with a user with admin rights. Then, follow the following instructions:
+
+#. **Creating groups**
+
+   Click on **Groups** on the navigation bar and click on **Create new group +**. Fill in ``Deployers`` as the **Group ID**
+   and then fill the other required fields. Then click on **Create new group**.
+
+   Create then another group with **Group ID** ``DecisionTableEvaluators``.
+
+#. **Creating users**
+
+   Click on **Users** on the navigation bar and click on **Add user +**. Fill in ``deployer`` as the **UserID** and then
+   fill the other required fields. Then click on **+ Create new user**.
+
+   Create then another user with **UserID** ``openForms``.
+
+   Now that the users are created, they need to be added to the right group. Click on the user ``deployer`` and then on
+   the left hand side navigate to **Groups**. Click on **Add to a group** and add the user to the ``Deployers`` group.
+
+   Then, go back to the Users page and click on the user ``openForms``. Add this user to the group ``DecisionTableEvaluators``.
+
+#. **Updating authorizations**
+
+   Click on **Authorizations** on the navigation bar.
+
+   On the left hand side, navigate to **Deployment**. Click on **+ Create new authorization**. In the **User / Group**
+   column, fill in ``Deployers``. Click on the check icon to save.
+
+   On the left hand side, navigate to **Decision Definition**. Click on **+ Create new authorization**. In the **User / Group**
+   column, fill in ``DecisionTableEvaluators``. Click on the pen icon to update the permissions. Uncheck everything, except
+   **READ** and **CREATE_INSTANCE**. Click on the check icon to save.
+
+Now, the credentials for the user ``deployer`` can be used in the Camunda modeller when deploying a decision definition.
+The credentials for the user ``openForms`` can be used in the Open Forms admin under the
+**Configuration > Camunda Configuration** page.
+
 Plugin configuration
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -13,15 +57,6 @@ See :ref:`configuration_registration_camunda` for a description of the settings 
 
 This configuration is used both when Camunda is used as a registration backend AND when Camunda is used as the engine to
 evaluate decision tables in form logic rules.
-
-However, these permissions are needed in Camunda for evaluating decision definitions:
-
-==============================  =======================================================================================
-Permissions within Camunda      Description
-==============================  =======================================================================================
-List decision definitions       Open Forms must be able to read the available decision definitions to connect a form to a process.
-Execute decision definitions    Open Forms must be able to execute decision definitions.
-==============================  =======================================================================================
 
 
 Form configuration
