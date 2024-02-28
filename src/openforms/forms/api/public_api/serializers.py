@@ -13,3 +13,4 @@ class FormSerializer(serializers.ModelSerializer):
             "internal_name",
             "slug",
         )
+        ref_name = "PublicForm"
