@@ -4,7 +4,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ...accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import TokenFactory, UserFactory
+
 from ..models import Category, Form
 from .factories import CategoryFactory
 
@@ -76,3 +77,39 @@ class CategoriesAPITests(APITestCase):
         self.assertEqual(
             response.json()["category"], "http://testserver" + category_url
         )
+
+
+class CategoriesAuthTest(APITestCase):
+    def test_cannot_access_without_session_or_token(self):
+        response = self.client.get(
+            reverse(
+                "api:categories-list",
+            )
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_can_access_with_session(self):
+        user = UserFactory.create(user_permissions=["forms.view_form"])
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get(
+            reverse(
+                "api:categories-list",
+            )
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_can_access_with_token(self):
+        user = UserFactory.create(user_permissions=["forms.view_form"])
+        token = TokenFactory(user=user)
+
+        response = self.client.get(
+            reverse(
+                "api:categories-list",
+            ),
+            HTTP_AUTHORIZATION=f"Token {token.key}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
