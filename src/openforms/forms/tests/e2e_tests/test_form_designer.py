@@ -1083,6 +1083,59 @@ class FormDesignerRegressionTests(E2ETestCase):
             )
             await expect(warning).to_be_visible()
 
+    @tag("gh-3921")
+    async def test_all_components_are_visible_in_component_select_dropdown(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "field1",
+                            "label": "Field 1",
+                        },
+                        {
+                            "type": "fieldset",
+                            "key": "fieldset",
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "field2",
+                                    "label": "Field 2",
+                                },
+                            ],
+                        },
+                    ],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await open_component_options_modal(page, "Field 2")
+            await page.get_by_role("tab", name="Location").click()
+
+            dropdown = page.get_by_role("combobox", name="Postcode component")
+            await dropdown.focus()
+            await page.keyboard.press("ArrowDown")
+            await expect(page.get_by_text("Field 1 (field1)")).to_be_visible()
+
 
 class FormDesignerTooltipTests(E2ETestCase):
     async def test_tooltip_fields_are_present(self):

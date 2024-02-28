@@ -152,7 +152,7 @@ class WebformBuilder extends WebformBuilderFormio {
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
             richTextColors={RICH_TEXT_COLORS}
-            getFormComponents={() => parent.formioContainer}
+            getFormComponents={() => this.webform.components}
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}
             getPrefillPlugins={getPrefillPlugins}
