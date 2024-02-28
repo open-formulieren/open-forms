@@ -125,7 +125,8 @@ class ComponentNode(Node):
         from .default import EditGridGroupNode
 
         # everything is emitted in export mode to get consistent columns
-        if self.mode == RenderModes.export:
+        # the same happens with the registration in order to include hidden fields as well
+        if self.mode in {RenderModes.export, RenderModes.registration}:
             return True
 
         # explicitly hidden components never show up. Note that this property can be set
