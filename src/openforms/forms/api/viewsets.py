@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import parsers, permissions, response, status, views, viewsets
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
@@ -817,6 +817,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     # TODO this permission isn't ideal with its mix of public and write access
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = [FormAPIPermissions]
     pagination_class = None
     lookup_field = "uuid"

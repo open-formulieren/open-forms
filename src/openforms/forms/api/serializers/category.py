@@ -15,6 +15,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "uuid",
             "ancestors",
+            "depth",
         )
         extra_kwargs = {
             "url": {
