@@ -8,7 +8,7 @@
  * @return {Object|null}                       The updated registrationBackendOptions draft. Return null to indicate
  *                                             no changes need to be made.
  */
-const onStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+const onCamundaStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
   // check if we're dealing with deletion or update
   const isRemove = originalComponent == null;
   if (isRemove) {
@@ -33,4 +33,40 @@ const onStepEdit = (registrationBackendOptions, componentSchema, originalCompone
   return registrationBackendOptions;
 };
 
-export {onStepEdit};
+/**
+ * Update the mapped properties after the form definitions change
+ * @param  {Object} registrationBackendOptions The currently configured backend options,
+ *                                             including the mapped properties. Note that this is
+ *                                             an immer draft which can be mutated.
+ * @param  {Object} componentSchema            The Formio component (schema) that was mutated in some way
+ * @param  {Object|null} originalComponent     The component before it was mutated, null if the component is removed.
+ * @return {Object|null}                       The updated registrationBackendOptions draft. Return null to indicate
+ *                                             no changes need to be made.
+ */
+const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+  // check if we're dealing with deletion or update
+  const isRemove = originalComponent == null;
+
+  if (isRemove) {
+    const matchingMapping = registrationBackendOptions.propertyMappings.find(
+      mapping => mapping.componentKey === componentSchema.key
+    );
+    if (!matchingMapping) return null;
+    const index = registrationBackendOptions.propertyMappings.indexOf(matchingMapping);
+    // remove the mapped property, since the component is removed completely.
+    registrationBackendOptions.propertyMappings.splice(index, 1);
+  } else {
+    const keyChange = componentSchema.key !== originalComponent.key;
+    if (!keyChange) return null;
+
+    // check if we need to update any mapped properties
+    for (const mapping of registrationBackendOptions.propertyMappings) {
+      if (mapping.componentKey === originalComponent.key) {
+        mapping.componentKey = componentSchema.key;
+      }
+    }
+  }
+  return registrationBackendOptions;
+};
+
+export {onCamundaStepEdit, onZGWStepEdit};
