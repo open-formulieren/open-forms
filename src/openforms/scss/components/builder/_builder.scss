@@ -166,6 +166,10 @@ div.flatpickr-calendar.open {
     display: block;
     margin-left: 0;
     margin-right: 0;
+
+    ul.errorlist {
+      padding-left: 0px;
+    }
   }
 }
 
