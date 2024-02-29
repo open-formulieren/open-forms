@@ -388,6 +388,7 @@ class ZGWRegistration(BasePlugin):
                     name=submission.form.admin_name,
                     submission_report=submission_report,
                     options=options,
+                    language=submission_report.submission.language_code,
                 ),
                 submission,
                 "intermediate.documents.report.document",
@@ -491,6 +492,7 @@ class ZGWRegistration(BasePlugin):
                         name=submission.form.admin_name,
                         submission_attachment=attachment,
                         options=doc_options,
+                        language=attachment.submission_step.submission.language_code,  # assume same as submission
                     ),
                     submission,
                     f"intermediate.documents.{attachment.id}.document",

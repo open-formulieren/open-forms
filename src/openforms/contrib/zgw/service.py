@@ -1,12 +1,14 @@
 import logging
 from io import BytesIO
+from typing import Literal, TypeAlias
 
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
-from openforms.translations.utils import to_iso639_2b
 
 from .clients.documenten import DocumentenClient
 
 logger = logging.getLogger(__name__)
+
+SupportedLanguage: TypeAlias = Literal["nl", "en"]
 
 
 def create_report_document(
@@ -14,6 +16,7 @@ def create_report_document(
     name: str,
     submission_report: SubmissionReport,
     options: dict,
+    language: SupportedLanguage,
 ) -> dict:
     """
     Create a document for the summary PDF.
@@ -24,7 +27,7 @@ def create_report_document(
             bronorganisatie=options["organisatie_rsin"],
             title=name,
             author=options.get("auteur") or "Aanvrager",
-            language=to_iso639_2b(submission_report.submission.language_code),
+            language=language,
             format="application/pdf",
             content=content,
             status="definitief",
@@ -41,7 +44,7 @@ def create_csv_document(
     name: str,
     csv_data: str,
     options: dict,
-    language: str = "nld",
+    language: SupportedLanguage,
 ) -> dict:
     content = BytesIO(csv_data.encode())
     return client.create_document(
@@ -64,20 +67,18 @@ def create_attachment_document(
     name: str,
     submission_attachment: SubmissionFileAttachment,
     options: dict,
+    language: SupportedLanguage,
 ) -> dict:
     """
     Create a document for a submission attachment (user upload).
     """
-    submission = submission_attachment.submission_step.submission
     with submission_attachment.content.open("rb") as content:
         return client.create_document(
             informatieobjecttype=options["informatieobjecttype"],
             bronorganisatie=options["organisatie_rsin"],
             title=options.get("titel") or name,
             author=options.get("auteur") or "Aanvrager",
-            language=to_iso639_2b(
-                submission.language_code
-            ),  # assume same as submission
+            language=language,
             format=submission_attachment.content_type,
             content=content,
             status="definitief",
