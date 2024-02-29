@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
@@ -15,11 +15,7 @@ from openforms.formio.utils import (
 )
 from openforms.formio.validators import variable_key_validator
 from openforms.prefill.constants import IdentifierRoles
-from openforms.variables.constants import (
-    COMPATIBLE_JSON_SCHEMA_TYPES,
-    FormVariableDataTypes,
-    FormVariableSources,
-)
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.utils import check_initial_value
 
 from .form_definition import FormDefinition
@@ -227,24 +223,6 @@ class FormVariable(models.Model):
 
     def __str__(self):
         return _("Form variable '{key}'").format(key=self.key)
-
-    def matches_json_schema(self, json_schema: dict[str, Any]) -> bool:
-        """Determine whether the provided JSON Schema matches the form variable."""
-
-        if "type" not in json_schema:
-            return True
-
-        type_list: str | list[str] = json_schema["type"]
-        if not isinstance(type_list, list):
-            type_list = [type_list]
-
-        compatible_data_types = {
-            data_type
-            for type_ in type_list
-            for data_type in COMPATIBLE_JSON_SCHEMA_TYPES.get(type_, set())
-        }
-
-        return self.data_type in compatible_data_types
 
     def get_initial_value(self):
         return self.initial_value

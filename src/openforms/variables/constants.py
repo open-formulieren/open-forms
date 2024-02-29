@@ -54,17 +54,3 @@ CHECK_VARIABLE_TYPE = {
     FormVariableDataTypes.date: check_date,
     FormVariableDataTypes.time: check_time,
 }
-
-COMPATIBLE_JSON_SCHEMA_TYPES = {
-    "string": {
-        FormVariableDataTypes.string,
-        FormVariableDataTypes.datetime,
-        FormVariableDataTypes.date,
-        FormVariableDataTypes.time,
-    },
-    "boolean": {FormVariableDataTypes.boolean},
-    "number": {FormVariableDataTypes.float, FormVariableDataTypes.int},
-    "integer": {FormVariableDataTypes.int},
-    "object": {FormVariableDataTypes.object},
-    "array": {FormVariableDataTypes.array},
-}

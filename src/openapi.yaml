@@ -4029,6 +4029,47 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/objects-api/target-paths:
+    post:
+      operationId: registration_plugins_objects_api_target_paths_create
+      tags:
+      - registration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TargetPathsInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TargetPathsInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TargetPathsInput'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetPaths'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
   /api/v2/service-fetch-configurations:
     get:
       operationId: service_fetch_configurations_list
@@ -9841,6 +9882,46 @@ components:
         * `_save` - Save
         * `_addanother` - Save and add another
         * `_continue` - Save and continue editing
+    TargetPaths:
+      type: object
+      properties:
+        targetPath:
+          type: array
+          items:
+            type: string
+            title: Segment of a JSON path
+          description: Representation of the JSON target location as a list of string
+            segments.
+        isRequired:
+          type: boolean
+          title: required
+          description: Wether the path is marked as required in the JSON Schema.
+        jsonSchema:
+          type: object
+          additionalProperties: {}
+          description: Corresponding (sub) JSON Schema of the target path.
+      required:
+      - isRequired
+      - jsonSchema
+      - targetPath
+    TargetPathsInput:
+      type: object
+      properties:
+        objecttypeUrl:
+          type: string
+          format: uri
+          description: The URL of the objecttype.
+        objecttypeVersion:
+          type: integer
+          description: The version of the objecttype.
+        variableJsonSchema:
+          type: object
+          additionalProperties: {}
+          description: The JSON Schema of the form variable.
+      required:
+      - objecttypeUrl
+      - objecttypeVersion
+      - variableJsonSchema
     TemporaryFileUpload:
       type: object
       description: |-

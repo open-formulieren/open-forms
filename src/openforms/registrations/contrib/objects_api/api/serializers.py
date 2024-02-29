@@ -33,7 +33,7 @@ class TargetPathsSerializer(serializers.Serializer):
             "Representation of the JSON target location as a list of string segments."
         ),
     )
-    required = serializers.BooleanField(
+    is_required = serializers.BooleanField(
         label=_("required"),
         help_text=_("Wether the path is marked as required in the JSON Schema."),
     )
@@ -44,12 +44,13 @@ class TargetPathsSerializer(serializers.Serializer):
 
 
 class TargetPathsInputSerializer(serializers.Serializer):
-    form_uuid = serializers.CharField(
-        label=_("form_uuid"), help_text=_("UUID of the form")
+    objecttype_url = serializers.URLField(
+        label=_("objecttype url"), help_text=("The URL of the objecttype.")
     )
-    backend_key = serializers.CharField(
-        label=_("backend_key"), help_text=_("Key of the registration backend")
+    objecttype_version = serializers.IntegerField(
+        label=_("objecttype version"), help_text=_("The version of the objecttype.")
     )
-    variable_key = serializers.CharField(
-        label=_("variable_key"), help_text=_("Key of the variable")
+    variable_json_schema = serializers.DictField(
+        label=_("variable json schema"),
+        help_text=_("The JSON Schema of the form variable."),
     )

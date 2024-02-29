@@ -6,14 +6,8 @@ from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.forms.tests.factories import (
-    FormRegistrationBackendFactory,
-    FormVariableFactory,
-)
 from openforms.utils.tests.vcr import OFVCRMixin
-from openforms.variables.constants import FormVariableDataTypes
 
-from ..plugin import PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER
 from .test_objecttypes_client import get_test_config
 
 
@@ -172,7 +166,7 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
         self.addCleanup(patcher.stop)
 
     def test_auth_required(self):
-        response = self.client.get(self.endpoint)
+        response = self.client.post(self.endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -181,61 +175,47 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
         with self.subTest(staff=False):
             self.client.force_authenticate(user=self.user)
 
-            response = self.client.get(self.endpoint)
+            response = self.client.post(self.endpoint)
 
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         with self.subTest(staff=True):
             self.client.force_authenticate(user=self.staff_user)
 
-            response = self.client.get(self.endpoint)
+            response = self.client.post(self.endpoint)
 
-            # Should be a 400 as permissions are ok but missing query params
-            # (but this is tested in `test_missing_query_params` and not relevant for this test)
+            # Should be a 400 as permissions are ok but missing body
+            # (but this is tested in `test_missing_body` and not relevant for this test)
             self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_missing_query_params(self):
+    def test_missing_body(self):
         self.client.force_authenticate(user=self.staff_user)
 
-        response = self.client.get(self.endpoint)
+        response = self.client.post(self.endpoint, data={})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_list_target_paths(self):
-        form_registration_backend = FormRegistrationBackendFactory.create(
-            backend=OBJECTS_API_PLUGIN_IDENTIFIER,
-            options={
-                "version": 2,
-                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                "objecttype_version": 1,
-            },
-            key="test_backend",
-        )
-        form_variable = FormVariableFactory.create(
-            form=form_registration_backend.form,
-            key="test_key",
-            data_type=FormVariableDataTypes.string,
-        )
         self.client.force_authenticate(user=self.staff_user)
 
-        response = self.client.get(
+        response = self.client.post(
             self.endpoint,
             data={
-                "form_uuid": form_registration_backend.form.uuid,
-                "backend_key": form_registration_backend.key,
-                "variable_key": form_variable.key,
+                "objecttypeUrl": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttypeVersion": 2,
+                "variableJsonSchema": {"type": "string"},
             },
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # The list of targets is constructed from a JSON mapping, which isn't guaranteed
-        # to be ordered. So `assertCountEqual` is used
+        # to be ordered. So `assertCountEqual` is used (horrible naming, but is <=> unordered `assertListEqual`)
         self.assertCountEqual(
             response.json(),
             [
                 {
                     "targetPath": ["firstName"],
-                    "required": False,
+                    "isRequired": False,
                     "jsonSchema": {
                         "type": "string",
                         "description": "The person's first name.",
@@ -243,7 +223,7 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
                 },
                 {
                     "targetPath": ["lastName"],
-                    "required": False,
+                    "isRequired": False,
                     "jsonSchema": {
                         "type": "string",
                         "description": "The person's last name.",
