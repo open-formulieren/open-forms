@@ -19,7 +19,6 @@ from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import set_submission_reference
-from openforms.translations.utils import to_iso639_2b
 from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
@@ -99,6 +98,7 @@ class ObjectsAPIRegistration(BasePlugin):
                 name=submission.form.admin_name,
                 submission_report=submission_report,
                 options=submission_report_options,
+                language=submission_report.submission.language_code,
             )
 
             # Register the attachments
@@ -131,6 +131,7 @@ class ObjectsAPIRegistration(BasePlugin):
                     name=submission.form.admin_name,
                     submission_attachment=attachment,
                     options=attachment_options,
+                    language=attachment.submission_step.submission.language_code,  # assume same as submission
                 )
                 attachments.append(attachment_document["url"])
 
@@ -253,13 +254,12 @@ def register_submission_csv(
     qs = Submission.objects.filter(pk=submission.pk).select_related("auth_info")
     submission_csv = create_submission_export(qs).export("csv")  # type: ignore
 
-    language_code_2b = to_iso639_2b(submission.language_code)
     submission_csv_document = create_csv_document(
         client=documents_client,
         name=f"{submission.form.admin_name} (csv)",
         csv_data=submission_csv,
         options=submission_csv_options,
-        language=language_code_2b,
+        language=submission.language_code,
     )
 
     return submission_csv_document["url"]

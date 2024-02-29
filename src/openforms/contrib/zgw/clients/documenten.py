@@ -5,6 +5,8 @@ from django.core.files.base import ContentFile
 
 from zgw_consumers.nlx import NLXClient
 
+from openforms.translations.utils import to_iso639_2b
+
 from .utils import get_today
 
 DocumentStatus: TypeAlias = Literal[
@@ -40,7 +42,7 @@ class DocumentenClient(NLXClient):
             "creatiedatum": today,
             "titel": title,
             "auteur": author,
-            "taal": language,
+            "taal": to_iso639_2b(language),
             "formaat": format,
             "inhoud": base64_body,
             "status": status,
