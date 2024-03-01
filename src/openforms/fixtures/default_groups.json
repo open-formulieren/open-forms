@@ -1631,6 +1631,11 @@
                 "view_form",
                 "forms",
                 "form"
+            ],
+            [
+                "view_category",
+                "forms",
+                "category"
             ]
         ]
     }
