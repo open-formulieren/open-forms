@@ -12,8 +12,8 @@ from rest_framework_nested.routers import NestedSimpleRouter
 
 from openforms.config.api.viewsets import ThemeViewSet
 from openforms.contrib.kadaster.api.views import AddressAutocompleteView
+from openforms.forms.api.public_api.viewsets import CategoryViewSet
 from openforms.forms.api.viewsets import (
-    CategoryViewSet,
     FormDefinitionViewSet,
     FormsImportAPIView,
     FormStepViewSet,
@@ -44,7 +44,9 @@ forms_router.register(r"steps", FormStepViewSet, basename="form-steps")
 forms_router.register(r"versions", FormVersionViewSet, basename="form-versions")
 
 # form decoration
+# Expose this endpoint on 2 different URLs
 router.register(r"categories", CategoryViewSet, basename="categories")
+router.register(r"public/categories", CategoryViewSet, basename="categories")
 
 # submissions API
 router.register(r"submissions", SubmissionViewSet)

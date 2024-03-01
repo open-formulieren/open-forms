@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import parsers, permissions, response, status, views, viewsets
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
@@ -26,7 +26,7 @@ from openforms.utils.urls import is_admin_request
 from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message
-from ..models import Category, Form, FormDefinition, FormStep, FormVersion
+from ..models import Form, FormDefinition, FormStep, FormVersion
 from ..tasks import recouple_submission_variables_to_form_variables
 from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
@@ -54,7 +54,6 @@ from .serializers import (
     FormVariableSerializer,
     FormVersionSerializer,
 )
-from .serializers.category import CategorySerializer
 from .serializers.logic.form_logic import FormLogicListSerializer
 from .serializers.logic.form_logic_price import FormPriceLogicListSerializer
 
@@ -811,13 +810,3 @@ class FormsImportAPIView(views.APIView):
         import_form(serializer.validated_data["file"])
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    # TODO this permission isn't ideal with its mix of public and write access
-    authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = [FormAPIPermissions]
-    pagination_class = None
-    lookup_field = "uuid"
