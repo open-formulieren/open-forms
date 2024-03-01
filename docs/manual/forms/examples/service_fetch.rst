@@ -4,13 +4,8 @@
 Formulier met waarden uit externe registraties
 ==============================================
 
-.. note::
-
-   Dit voorbeeld maakt gebruik van de **preview** functionaliteit "Bevragen
-   registraties", welke onder **Configuratie** > **Algemene configuratie** >
-   **Feature flags, test- en ontwikkelinstellingen** in te schakelen is.
-
-In dit voorbeeld maken we een deel van een formulier bestaande uit één stap. De uitgangspunten zijn:
+In dit voorbeeld maken we een deel van een formulier bestaande uit één stap. De
+uitgangspunten zijn:
 
 * de `dummyjson-service`_ bied een lijst van productcategorieën aan
 * de service biedt ook een lijst van producten aan, per categorie
@@ -22,6 +17,27 @@ basis van data uit een externe service.
 
 We gaan ervan uit dat u een :ref:`formulier met geavanceerde logica
 <example_advanced_logic>` kunt maken.
+
+Service aanmaken
+================
+
+.. note:: Het kan zijn dat je onvoldoende rechten hebt om services aan te maken. Indien
+   je deze rechten niet hebt, vraag dan aan een functioneel beheerder om de
+   :ref:`service in te stellen <configuration_general_external_services>`.
+
+#. Navigeer in de beheeromgeving naar **Configuratie** > **Services**.
+
+#. Klik op de **Service toevoegen** knop.
+
+#. Vul de formuliervelden in:
+
+    * **Label**: ``dummyJSON``
+    * **OAS URL**: ``https://tinyurl.com/dummyjson-oas``
+    * **Type**: ``ORC (Overige)``
+    * **API root url**: ``https://dummyjson.com/``
+    * **Authorization type**: ``No authorization``
+
+#. Klik op **Opslaan**.
 
 Formulier maken
 ===============

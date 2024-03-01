@@ -144,16 +144,62 @@ Expressie                           Voorbeeld waarde                   Toelichti
 ``{{ now|date:"Y" }}``              ``2022``                           Huidig jaar
 ``{{ now|date:"F" }}``              ``augustus``                       Huidige maandnaam
 ``{{ now|date:"l" }}``              ``dinsdag``                        Huidige dagnaam
+``{{ now|date:"W" }}``              ``34``                             ISO-8601 weeknummer
 ``{{ now|time:"H:i" }}``            ``09:08``                          Huidig tijstip (uren en minuten)
 ``{{ now|time:"H:i:s" }}``          ``09:08:42``                       Huidig tijstip (uren, minuten en seconden)
-``{{ now|date:"W" }}``              ``34``                             ISO-8601 weeknummer
 ``{{ legeVariabele|default:"-" }}`` ``-``                              Terugvalwaarde indien de variabele "leeg" is
 ``{{ filesize|filesizeformat }}``   ``117,7 MB``                       Weergave van bytes (nummer) in leesbare vorm
 ``{{ consent|yesno:"ok,niet ok"}}`` ``niet ok``                        Weergave op basis van ``True``/ ``False`` waarde
+``{{ getal|add:"2" }}``             ``5``                              Equivalent van de som ``getal + 2``
+``{{ getal|add:"-2" }}``            ``1``                              Verminder de variabele ``getal`` met 2
+``{{ getal|floatformat }}``         ``3,1``                            Rond een getal af op één decimaal als er een
+                                                                       decimaal gedeelte is
+``{{ getal|floatformat }}``         ``3``                              Indien er geen decimaal gedeelte is, toon dan
+                                                                       geen decimalen
+``{{ getal|floatformat:"2" }}``     ``3,00``                           Rond altijd het getal af op twee decimalen
+``{{ getal|floatformat:"-2" }}``    ``3``                              Rond het getal af op twee decimalen als er een
+                                                                       decimaal gedeelte is
+``{{ getal|floatformat:"2g" }}``    ``3.000,00``                       De ``g`` suffix past groepering toe
+``{{ getal|stringformat:"i" }}``    ``2023``                           Geef de waarde (als integer) zonder groepering
+                                                                       van duizendtallen
+``{{ lijst|join:", " }}``           ``a, b, c``                        Voeg elementen in een lijst van waarden samen,
+                                                                       gescheiden door een komma
+``{{ variabele|length }}``          ``12``                             Bereken de lengte van een lijst of string
+``{{ variabele|lower }}``           ``kleine letters``                 Converteer een tekst naar kleine letters
+``{{ variabele|upper }}``           ``HOOFDLETTERS``                   Converteer een tekst naar hoofdletters
+``{{ value|timesince }}``           ``1 week, 2 dagen``                Tijd geleden, relatief ten opzichte van "nu"
+``{{ value|timesince|yesterday }}`` ``1 dag``                          Tijd geleden, relatief ten opzichte van de
+                                                                       variabele ``yesterday``
+``{{ value|timeuntil }}``           ``1 week, 2 dagen``                Tijd tot, relatief ten opzichte van "nu"
+``{{ value|timeuntil|tomorrow }}``  ``1 dag``                          Tijd tot, relatief ten opzichte van de variabele
+                                                                       ``tomorrow``
+``{{ variabele|title }}``           ``Een Omgezette Tekst``            Maak alle woorden startend met hoofdletter, de
+                                                                       rest worden kleine letters
+``{{ variabele|truncatechars:5 }}`` ``Twee…``                          Breek tekst af tot 5 karakters
+``{{ variabele|truncatewords:3 }}`` ``Eén twee …``                     Breek tekst af tot 3 woorden
+``{{ variabele|urlize }}``          ``<a href="$url">$url</a>``        Maak hyperlinks in de variabele klikbaar
+``{{ getal|divisibleby:"3" }}``     ``True``                           ``True``/``False`` indien de variabele wel/niet
+                                                                       deelbaar is
+``{{ lijst|first }}``               ``Eerste waarde``                  Geef het eerste element in een lijst van waarden
+                                                                       terug
 =================================== ================================== ================================================
 
-.. note:: Op dit moment krijgt u altijd de Nederlandse vertalingen/lokalisatie.
-   Er is nog geen ondersteuning voor andere talen.
+Je kan ook meerdere filters combineren om geavanceerde manipulaties te doen,
+bijvoorbeeld:
+
+.. code-block:: django
+
+    {{ today|date:'Y'|add:"-1"|stringformat:"i" }}
+
+In het jaar 2024 produceert dit de output ``2023``:
+
+#. ``today`` is een ``datetime`` met de waarde 29 februari 2024
+#. ``today|date:'Y'`` leidt tot enkel het jaar, dus ``2024``
+#. ``1`` aftrekken van ``2024`` geeft ``2023``
+#. Tot slot wordt ``2023`` als integer weergegeven zodat de output ``2023`` is en niet
+   ``2.023`` (dus zonder groepering van duizendtallen)
+
+.. note:: Sjablonen worden in dezelfde taal/localisatie gerenderd als de taal van de inzending.
 
 Template tags
 -------------

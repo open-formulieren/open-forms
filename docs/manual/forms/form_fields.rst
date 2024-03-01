@@ -177,8 +177,8 @@ Basis
 * **Show Character Count**: Indien aangevinkt, dan wordt een teller getoond aan
   de eindgebruiker met het aantal karakters dat is ingevuld.
 
-Location
---------
+Locatie
+-------
 
 * **Straatnaam afleiden**: Indien aangevinkt, dan zal in dit veld automatisch de
   straatnaam worden ingevuld op basis van het ingevulde postcode en huisnummer.
@@ -211,6 +211,70 @@ Stel er zijn 4 velden:
   Er is nu een formulier gemaakt waarbij de straat en de stad automatisch worden
   ingevuld als de postcode en het huisnummer zijn ingevuld.
 
+Validatie
+---------
+
+* **Reguliere expressie**: een patroon waar de veldwaarde aan moet voldoen. Reguliere
+  expressies zijn een soort van programmeertaal die snel erg complex kunnen worden. Op
+  regex101_ kun je deze uitproberen.
+
+  We hebben een aantal kant-en-klare patronen die je als inspiratie kan gebruiken.
+
+  ================ ===================== ===============================================
+  Expressie        Voorbeeldwaarde       Toelichting
+  ================ ===================== ===============================================
+  ``[0-9]*``       0123                  Een onbeperkt aantal getallen
+  ``\d*``          0123                  Een onbeperkt aantal getallen - ``\d`` is
+                                         equivalent aan ``[0-9]``
+  ``[0-9]{1,3}``   42                    Een tekst van minimaal 1 en maximaal 3
+                                         posities, waarbij elk karakter een getal moet
+                                         zijn
+  ``[a-zA-Z]``     X                     Eén (hoofdletterongevoelige) ASCII letter
+  ``[\w]{1,5}``    aF\_4                 1 tot 5 alfanumerieke karakters of liggend
+                                         streepje. ``\w`` is equivalent aan
+                                         ``[a-zA-Z0-9_]``
+  ================ ===================== ===============================================
+
+  Hieronder vind je nog een aantal concrete voorbeelden hoe je dit kan toepassen.
+
+
+  **Een Duits kenteken**
+
+  ``[a-zA-Z]{1,3}-[a-zA-Z]{1,2}\d{1,4}``
+
+  ==================    =====================
+  Voorbeeldwaarde       Geldig
+  ==================    =====================
+  AaA-Aa111             ✓
+  aA-aA1                ✓
+  a-AA1234              ✓
+  ==================    =====================
+
+  **Een 4 cijferige pincode**
+
+  ``[0-9]{4}``
+
+  ==================    =====================
+  Voorbeeldwaarde       Geldig
+  ==================    =====================
+  1234                  ✓
+  12                    ✗
+  12345                 ✗
+  ==================    =====================
+
+  **Een woonplaats die moet overeenkomen**
+
+  ``Formulierendam``
+
+  ===================   =====================
+  Voorbeeldwaarde       Geldig
+  ===================   =====================
+  Formulierendam        ✓
+  **f**\ormulierendam   ✗
+  ===================   =====================
+
+
+.. _regex101: https://regex101.com/
 
 Keuzelijst
 ==========
