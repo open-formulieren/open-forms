@@ -71,7 +71,8 @@ export const WithObjectsAPIRegistrationBackends = {
   args: {
     registrationBackends: [
       {
-        key: 'objects_api',
+        backend: 'objects_api',
+        key: 'objects_api_1',
         name: 'Example Objects API reg.',
         options: {
           version: 2,
@@ -91,7 +92,8 @@ export const WithObjectsAPIRegistrationBackends = {
         },
       },
       {
-        key: 'objects_api',
+        backend: 'objects_api',
+        key: 'objects_api_2',
         name: 'Other Objects API registration with a long name',
         options: {
           version: 2,
@@ -107,7 +109,8 @@ export const WithObjectsAPIRegistrationBackends = {
         },
       },
       {
-        key: 'objects_api',
+        backend: 'objects_api',
+        key: 'objects_api_3',
         name: "Shouldn't display!",
         options: {
           version: 1,
@@ -127,12 +130,12 @@ export const WithObjectsAPIRegistrationBackends = {
         mockTargetPathsPost([
           {
             targetPath: ['path', 'to.the', 'target'],
-            required: true,
+            isRequired: true,
             jsonSchema: {type: 'string'},
           },
           {
             targetPath: ['other', 'path'],
-            required: false,
+            isRequired: false,
             jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
           },
         ]),

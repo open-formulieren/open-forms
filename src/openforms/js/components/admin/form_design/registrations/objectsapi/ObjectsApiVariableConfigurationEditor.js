@@ -85,10 +85,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const choices =
     loading || error
       ? LOADING_OPTION
-      : targetPaths.map(t => [
-          JSON.stringify(t.targetPath),
-          `${t.targetPath.join(' > ')}${t.required ? ' (required)' : ''}`,
-        ]);
+      : targetPaths.map(t => [JSON.stringify(t.targetPath), <TargetPathDisplay target={t} />]);
 
   return (
     <Fieldset>
@@ -141,7 +138,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
 const TargetPathSelect = ({name, index, choices}) => {
   const {getFieldProps, setFieldValue} = useFormikContext();
   const props = getFieldProps(name);
-  console.log(props, choices);
+
   return (
     <FieldArray
       name="variablesMapping"
@@ -162,6 +159,17 @@ const TargetPathSelect = ({name, index, choices}) => {
           }}
         />
       )}
+    />
+  );
+};
+
+const TargetPathDisplay = ({target}) => {
+  const path = target.targetPath.join(' > ');
+  return (
+    <FormattedMessage
+      description="Representation of a JSON Schema target path"
+      defaultMessage="{required, select, true {{path} (required)} other {{path}}}"
+      values={{path, required: target.isRequired}}
     />
   );
 };

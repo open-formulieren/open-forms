@@ -13,6 +13,7 @@ import ZGWOptionsForm from './zgw';
  *   uiSchema?: Object,
  *   configurableFromVariables?: boolean | (options: Object) => boolean,
  *   summaryHandler?: React.FC
+ *   variableConfigurationEditor?: React.FC
  * }} BackendInfo
  * A map of backend ID to components for the (advanced) option forms.
  * @type {{[key: string]: BackendInfo}}

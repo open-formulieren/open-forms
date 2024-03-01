@@ -103,7 +103,7 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
   const summaries = [];
 
   for (const [backendIndex, backend] of registrationBackends.entries()) {
-    const backendInfo = BACKEND_OPTIONS_FORMS[backend.key];
+    const backendInfo = BACKEND_OPTIONS_FORMS[backend.backend];
 
     // Check if the registration backend can be configured from the variables tab...
     const configurableFromVariables = backendInfo.configurableFromVariables;
@@ -115,10 +115,8 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
       continue;
 
     // These components are guaranteed to exist if `configurableFromVariables` is true:
-    const SummaryHandler = BACKEND_OPTIONS_FORMS[backend.key].summaryHandler;
-    const VariableConfigurationEditor =
-      BACKEND_OPTIONS_FORMS[backend.key].variableConfigurationEditor;
-
+    const SummaryHandler = backendInfo.summaryHandler;
+    const VariableConfigurationEditor = backendInfo.variableConfigurationEditor;
     summaries.push({
       name: backend.name,
       variable,
