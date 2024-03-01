@@ -90,7 +90,7 @@ class CategoriesAuthTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_can_access_with_session(self):
-        user = UserFactory.create(user_permissions=["forms.view_form"])
+        user = UserFactory.create(user_permissions=["forms.view_category"])
         self.client.force_authenticate(user=user)
 
         response = self.client.get(
@@ -102,7 +102,7 @@ class CategoriesAuthTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_can_access_with_token(self):
-        user = UserFactory.create(user_permissions=["forms.view_form"])
+        user = UserFactory.create(user_permissions=["forms.view_category"])
         token = TokenFactory(user=user)
 
         response = self.client.get(
@@ -113,3 +113,16 @@ class CategoriesAuthTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_post_not_supported(self):
+        user = UserFactory.create(user_permissions=["forms.view_category"])
+        token = TokenFactory(user=user)
+
+        response = self.client.post(
+            reverse(
+                "api:categories-list",
+            ),
+            HTTP_AUTHORIZATION=f"Token {token.key}",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
