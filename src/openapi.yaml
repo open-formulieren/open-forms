@@ -3739,9 +3739,10 @@ paths:
       summary: List forms
       parameters:
       - in: query
-        name: category__name
+        name: category__uuid
         schema:
           type: string
+          format: uuid
       tags:
       - public
       security:

@@ -1621,5 +1621,18 @@
             ]
         ]
     }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Public API client",
+        "permissions": [
+            [
+                "view_form",
+                "forms",
+                "form"
+            ]
+        ]
+    }
 }
 ]

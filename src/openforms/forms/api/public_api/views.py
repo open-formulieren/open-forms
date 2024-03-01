@@ -8,6 +8,7 @@ from rest_framework.generics import ListAPIView
 from ...models import Form
 from .filters import FormCategoryNameFilter
 from .pagination import NoPagination
+from .permissions import ViewFormPermission
 from .serializers import FormSerializer
 
 
@@ -21,7 +22,7 @@ from .serializers import FormSerializer
 )
 class FormListView(ListAPIView):
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated, ViewFormPermission)
 
     serializer_class = FormSerializer
     filterset_class = FormCategoryNameFilter
