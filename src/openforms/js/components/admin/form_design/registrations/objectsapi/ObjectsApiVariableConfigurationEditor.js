@@ -1,5 +1,6 @@
 import {FieldArray, useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
+import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
@@ -135,6 +136,12 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   );
 };
 
+ObjectsApiVariableConfigurationEditor.propTypes = {
+  variable: PropTypes.shape({
+    key: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
 const TargetPathSelect = ({name, index, choices}) => {
   const {getFieldProps, setFieldValue} = useFormikContext();
   const props = getFieldProps(name);
@@ -163,6 +170,12 @@ const TargetPathSelect = ({name, index, choices}) => {
   );
 };
 
+TargetPathSelect.propTypes = {
+  name: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+  choices: PropTypes.array.isRequired,
+};
+
 const TargetPathDisplay = ({target}) => {
   const path = target.targetPath.join(' > ');
   return (
@@ -172,6 +185,13 @@ const TargetPathDisplay = ({target}) => {
       values={{path, required: target.isRequired}}
     />
   );
+};
+
+TargetPathDisplay.propTypes = {
+  target: PropTypes.shape({
+    targetPath: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
+  isRequired: PropTypes.bool.isRequired,
 };
 
 export default ObjectsApiVariableConfigurationEditor;

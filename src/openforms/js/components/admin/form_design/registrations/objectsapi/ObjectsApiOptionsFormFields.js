@@ -32,14 +32,20 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
   const {version = 1} = formData;
 
   const changeVersion = v => {
-    if (v === 1) {
+    const realVersion = v + 1;
+    if (realVersion === 2) {
       const confirmV2Switch = window.confirm(v2SwitchMessage);
       if (!confirmV2Switch) return;
     }
 
     onChange(
       produce(formData, draft => {
-        draft.version = v + 1;
+        draft.version = realVersion;
+        if (realVersion === 2) {
+          draft.variablesMapping = [];
+        } else {
+          delete draft.variablesMapping;
+        }
         delete draft.contentJson;
         delete draft.paymentStatusUpdateJson;
       })

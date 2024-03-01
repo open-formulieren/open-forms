@@ -1,4 +1,5 @@
 import {Formik} from 'formik';
+import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
@@ -85,6 +86,16 @@ const RegistrationSummary = ({
   );
 };
 
+RegistrationSummary.propTypes = {
+  name: PropTypes.string.isRequired,
+  variable: PropTypes.object.isRequired,
+  backend: PropTypes.object.isRequired,
+  backendIndex: PropTypes.number,
+  registrationSummary: PropTypes.element.isRequired,
+  variableConfigurationEditor: PropTypes.element.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
 /**
  * Returns a list of summaries for each registration backend
  *
@@ -148,6 +159,11 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
       </ul>
     </>
   );
+};
+
+RegistrationsSummary.propTypes = {
+  variable: PropTypes.object.isRequired,
+  onFieldChange: PropTypes.func.isRequired,
 };
 
 export default RegistrationsSummary;
