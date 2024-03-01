@@ -1,4 +1,4 @@
-import {produce} from 'immer';
+import {Formik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
@@ -18,7 +18,6 @@ import {FormModal} from 'components/admin/modals';
  * @param {number} p.backendIndex - The current backend index (used to update the base state)
  * @param {JSX.Element} p.registrationSummary - The rendered summary of the registration backend for the current variable
  * @param {JSX.Element} p.variableConfigurationEditor - The rendered configuration editor for the current variable
- * @param {() => Object} p.getOptions - The function returing the new backend options. It is provided by the configuration editor
  * @param {(_: Object) => void} p.onChange - The base onChange function to update the base state
  * @returns {JSX.Element} - The rendered summary, containing the backend name, summary and edit icon
  */
@@ -29,24 +28,10 @@ const RegistrationSummary = ({
   backendIndex,
   registrationSummary,
   variableConfigurationEditor,
-  getOptions,
   onChange,
 }) => {
   const intl = useIntl();
   const [modalOpen, setModalOpen] = useState(false);
-
-  const onRegistrationOptionsChange = formData => {
-    onChange({target: `form.registrationBackend.${backendIndex}`, value: formData});
-  };
-
-  const saveRegistrationOptions = () => {
-    const newOptions = getOptions();
-    onRegistrationOptionsChange(
-      produce(backend, draft => {
-        draft.options = newOptions;
-      })
-    );
-  };
 
   return (
     <>
@@ -72,16 +57,29 @@ const RegistrationSummary = ({
         isOpen={modalOpen}
         closeModal={() => setModalOpen(false)}
       >
-        {variableConfigurationEditor}
-        <SubmitRow>
-          <SubmitAction
-            onClick={event => {
-              event.preventDefault();
-              saveRegistrationOptions();
-              setModalOpen(false);
-            }}
-          />
-        </SubmitRow>
+        <Formik
+          initialValues={backend.options}
+          onSubmit={(values, actions) => {
+            const updatedBackend = {...backend, options: values};
+            onChange({target: `form.registrationBackend.${backendIndex}`, value: updatedBackend});
+            actions.setSubmitting(false);
+            setModalOpen(false);
+          }}
+        >
+          {({handleSubmit}) => (
+            <>
+              {variableConfigurationEditor}
+              <SubmitRow>
+                <SubmitAction
+                  onClick={event => {
+                    event.preventDefault();
+                    handleSubmit(event);
+                  }}
+                />
+              </SubmitRow>
+            </>
+          )}
+        </Formik>
       </FormModal>
     </>
   );
@@ -121,22 +119,13 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
     const VariableConfigurationEditor =
       BACKEND_OPTIONS_FORMS[backend.key].variableConfigurationEditor;
 
-    const [getOptions, setGetOptions] = useState();
-
     summaries.push({
       name: backend.name,
       variable,
       backend,
       backendIndex,
       registrationSummary: <SummaryHandler variable={variable} backendOptions={backend.options} />,
-      variableConfigurationEditor: (
-        <VariableConfigurationEditor
-          variable={variable}
-          backend={backend}
-          setGetOptions={setGetOptions}
-        />
-      ),
-      getOptions,
+      variableConfigurationEditor: <VariableConfigurationEditor variable={variable} />,
       onChange: onFieldChange,
     });
   }
@@ -154,7 +143,7 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
     <>
       <ul>
         {summaries.map(summary => (
-          <li>
+          <li key={`backend-${summary.backendIndex}`}>
             <RegistrationSummary {...summary} />
           </li>
         ))}

@@ -30,4 +30,33 @@ const getErrorMarkup = errorMessages => {
   );
 };
 
-export {getErrorMarkup, getFieldErrors};
+const VARIABLE_TYPE_MAP = {
+  boolean: 'boolean',
+  int: 'integer',
+  float: 'number',
+  object: 'object',
+  array: 'array',
+  string: 'string',
+};
+
+const FORMAT_TYPE_MAP = {
+  datetime: 'date-time',
+  time: 'time',
+  date: 'date',
+};
+
+/**
+ * Return a JSON Schema definition matching the provided variable.
+ * @param {Object} variable - The current variable
+ * @returns {Object} - The JSON Schema
+ */
+const asJsonSchema = variable => {
+  if (VARIABLE_TYPE_MAP.hasOwnProperty(variable.dataType))
+    return {type: VARIABLE_TYPE_MAP[variable.dataType]};
+  return {
+    type: 'string',
+    format: FORMAT_TYPE_MAP[variable.dataType],
+  };
+};
+
+export {getErrorMarkup, getFieldErrors, asJsonSchema};

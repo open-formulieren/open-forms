@@ -1,6 +1,6 @@
 import {FeatureFlagsContext, FormContext} from 'components/admin/form_design/Context';
 
-import {FormLogicContext} from './Context';
+import {APIContext, FormLogicContext} from './Context';
 
 export const FeatureFlagsDecorator = Story => (
   <FeatureFlagsContext.Provider value={{}}>

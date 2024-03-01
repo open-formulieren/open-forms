@@ -1,49 +1,62 @@
-import {Form, Formik} from 'formik';
+import {FieldArray, useFormikContext} from 'formik';
 import isEqual from 'lodash/isEqual';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
 
-import {FormContext} from 'components/admin/form_design/Context';
+import {APIContext} from 'components/admin/form_design/Context';
 import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
+import {TextInput} from 'components/admin/forms/Inputs';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
-import {get} from 'utils/fetch';
+import {post} from 'utils/fetch';
+
+import {asJsonSchema} from './utils';
 
 /**
  * Returns the Objects API Configuration editor modal for a specific variable. This only applies to V2 Options
  *
  * @typedef {{
- *   backend: string;
- *   key: string;
- *   name: string;
- *   options: {
- *     variablesMapping: {variableKey: string, targetPath: string[]}[]
- *   }
- * }} ObjectsAPIRegistrationBackend
+ *   version: 1 | 2;
+ *   objecttype: string;
+ *   objecttypeVersion: number;
+ *   variablesMapping: {variableKey: string, targetPath: string[]}[];
+ * }} ObjectsAPIRegistrationBackendOptions
  *
  * @param {Object} p
  * @param {Object} p.variable - The current variable
- * @param {ObjectsAPIRegistrationBackend} p.backend - The Objects API registration backend (options guaranteed to be v2)
- * @param {ObjectsAPIRegistrationBackend} p.setGetOptions - A callback to register the function that will return the edited options
  * @returns {JSX.Element} - The summary, represented as a the parts of the target path separated by '>'
  */
-const ObjectsApiVariableConfigurationEditor = ({variable, backend, setGetOptions}) => {
-  const {
-    form: {uuid},
-  } = useContext(FormContext);
+const ObjectsApiVariableConfigurationEditor = ({variable}) => {
+  const {csrftoken} = useContext(APIContext);
 
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
+  const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
 
-  const getOptions = () => {
-    return backend.options;
-  };
+  /** @type {ObjectsAPIRegistrationBackendOptions} */
+  const {objecttype, objecttypeVersion, variablesMapping, version} = backendOptions;
+  if (version !== 2) throw new Error('Not supported, must be config version 2.');
 
-  useEffect(() => {
-    setGetOptions(() => getOptions);
-  }, []);
+  // get the index of our variable in the mapping, if it exists
+  let index = variablesMapping.findIndex(
+    mappedVariable => mappedVariable.variableKey === variable.key
+  );
+  let mappedVariable = variablesMapping[index];
+  if (index === -1) {
+    // if not found, grab the next available index to add it as a new record/entry
+    index = variablesMapping.length;
+    mappedVariable = {
+      variableKey: variable.key,
+      targetPath: undefined,
+    };
+    setFieldValue(`variablesMapping.${index}`, mappedVariable);
+  }
+
+  // the formik state is populated with the backend options, so our path needs to be
+  // relative to that
+  const namePrefix = `variablesMapping.${index}`;
 
   const {
     loading,
@@ -51,10 +64,10 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend, setGetOptions
     error,
   } = useAsync(
     async () => {
-      const response = await get(REGISTRATION_OBJECTS_TARGET_PATHS, {
-        backendKey: backend.key,
-        formUuid: uuid,
-        variableKey: variable.key,
+      const response = await post(REGISTRATION_OBJECTS_TARGET_PATHS, csrftoken, {
+        objecttypeUrl: objecttype,
+        objecttypeVersion,
+        variableJsonSchema: asJsonSchema(variable),
       });
 
       if (!response.ok) {
@@ -67,8 +80,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend, setGetOptions
     []
   );
 
-  const getTargetPath = pathSegment =>
-    targetPaths.find(t => isEqual(t.targetPath, JSON.parse(pathSegment)));
+  const getTargetPath = pathSegment => targetPaths.find(t => isEqual(t.targetPath, pathSegment));
 
   const choices =
     loading || error
@@ -79,72 +91,78 @@ const ObjectsApiVariableConfigurationEditor = ({variable, backend, setGetOptions
         ]);
 
   return (
-    <Formik
-      initialValues={{
-        targetPath: JSON.stringify(
-          (
-            backend.options.variablesMapping.find(
-              mapping => mapping.variableKey === variable.key
-            ) || backend.options.variablesMapping[0]
-          ).targetPath
-        ),
-      }}
-    >
-      {formik => (
-        <Form>
-          <Fieldset>
-            <FormRow>
-              <Field
-                name="name"
-                label={
-                  <FormattedMessage
-                    description="'Variable key' label"
-                    defaultMessage="Variable key"
-                  />
-                }
-              >
-                <div className="readonly">{variable.key}</div>
-              </Field>
-            </FormRow>
-            <FormRow>
-              <Field
-                name="targetPath"
-                htmlFor="targetPath"
-                label={
-                  <FormattedMessage
-                    defaultMessage="JSON Schema target"
-                    description="'JSON Schema target' label"
-                  />
-                }
-              >
-                <Select
-                  id="targetPath"
-                  name="targetPath"
-                  allowBlank
-                  choices={choices}
-                  {...formik.getFieldProps('targetPath')}
-                />
-              </Field>
-            </FormRow>
-            <div style={{marginTop: '1em'}}>
-              <a href="#" onClick={e => e.preventDefault() || toggleJsonSchemaVisible()}>
-                <FormattedMessage
-                  description="Objects API variable configuration editor JSON Schema visibility toggle"
-                  defaultMessage="Toggle JSON Schema"
-                />
-              </a>
-              {jsonSchemaVisible && (
-                <pre>
-                  {loading || !formik.values.targetPath
-                    ? 'N/A'
-                    : JSON.stringify(getTargetPath(formik.values.targetPath).jsonSchema, null, 2)}
-                </pre>
-              )}
-            </div>
-          </Fieldset>
-        </Form>
+    <Fieldset>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.variableKey`}
+          label={
+            <FormattedMessage description="'Variable key' label" defaultMessage="Variable key" />
+          }
+        >
+          <TextInput
+            {...getFieldProps(`${namePrefix}.variableKey`)}
+            value={mappedVariable.variableKey}
+            readOnly
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
+          name={`${namePrefix}.targetPath`}
+          label={
+            <FormattedMessage
+              defaultMessage="JSON Schema target"
+              description="'JSON Schema target' label"
+            />
+          }
+        >
+          <TargetPathSelect index={index} choices={choices} />
+        </Field>
+      </FormRow>
+      <div style={{marginTop: '1em'}}>
+        <a href="#" onClick={e => e.preventDefault() || toggleJsonSchemaVisible()}>
+          <FormattedMessage
+            description="Objects API variable configuration editor JSON Schema visibility toggle"
+            defaultMessage="Toggle JSON Schema"
+          />
+        </a>
+        {jsonSchemaVisible && (
+          <pre>
+            {loading || !mappedVariable.targetPath
+              ? 'N/A'
+              : JSON.stringify(getTargetPath(mappedVariable.targetPath).jsonSchema, null, 2)}
+          </pre>
+        )}
+      </div>
+    </Fieldset>
+  );
+};
+
+const TargetPathSelect = ({name, index, choices}) => {
+  const {getFieldProps, setFieldValue} = useFormikContext();
+  const props = getFieldProps(name);
+  console.log(props, choices);
+  return (
+    <FieldArray
+      name="variablesMapping"
+      render={arrayHelpers => (
+        <Select
+          id="targetPath"
+          name={name}
+          allowBlank
+          choices={choices}
+          {...props}
+          value={JSON.stringify(props.value)}
+          onChange={event => {
+            if (event.target.value === '') {
+              arrayHelpers.remove(index);
+            } else {
+              setFieldValue(name, JSON.parse(event.target.value));
+            }
+          }}
+        />
       )}
-    </Formik>
+    />
   );
 };
 

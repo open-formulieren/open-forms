@@ -1,4 +1,4 @@
-import {mockTargetPathsGet} from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';
 
 import {FormDecorator} from '../story-decorators';
 import VariablesEditor from './VariablesEditor';
@@ -8,9 +8,6 @@ export default {
   component: VariablesEditor,
   decorators: [FormDecorator],
   args: {
-    form: {
-      uuid: '36612390',
-    },
     variables: [
       {
         form: 'http://localhost:8000/api/v2/forms/36612390',
@@ -88,7 +85,7 @@ export const WithObjectsAPIRegistrationBackends = {
             },
             {
               variableKey: 'userDefined',
-              targetPath: ['path'],
+              targetPath: ['other', 'path'],
             },
           ],
         },
@@ -127,7 +124,7 @@ export const WithObjectsAPIRegistrationBackends = {
   parameters: {
     msw: {
       handlers: [
-        mockTargetPathsGet([
+        mockTargetPathsPost([
           {
             targetPath: ['path', 'to.the', 'target'],
             required: true,

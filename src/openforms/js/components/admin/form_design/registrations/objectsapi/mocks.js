@@ -20,7 +20,7 @@ export const mockObjecttypesError = () =>
     return res(ctx.status(500));
   });
 
-export const mockTargetPathsGet = paths =>
-  rest.get(`${BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`, (req, res, ctx) => {
+export const mockTargetPathsPost = paths =>
+  rest.post(`${BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`, (req, res, ctx) => {
     return res(ctx.json(paths));
   });
