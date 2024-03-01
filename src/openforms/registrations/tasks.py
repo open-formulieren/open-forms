@@ -93,14 +93,18 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             raise exc
         return
 
-    if result.reference is None:
+    if not result.reference:
         set_submission_reference(submission)
     else:
         submission.public_registration_reference = result.reference
 
+    if not submission.registration_result:
+        submission.registration_result = {}
+
+    if "traceback" in submission.registration_result:
+        del submission.registration_result["traceback"]
+
     if result.data is not None:
-        if not submission.registration_result:
-            submission.registration_result = {}
         submission.registration_result.update(result.data)
 
     submission.pre_registration_completed = True
