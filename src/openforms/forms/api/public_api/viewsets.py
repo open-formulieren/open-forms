@@ -4,6 +4,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from ...models import Category
 from ..permissions import FormAPIPermissions
 from ..serializers.category import CategorySerializer
+from .permissions import ViewCategoryPermission
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -11,6 +12,6 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CategorySerializer
     # TODO this permission isn't ideal with its mix of public and write access
     authentication_classes = (TokenAuthentication, SessionAuthentication)
-    permission_classes = [FormAPIPermissions]
+    permission_classes = [ViewCategoryPermission | FormAPIPermissions]
     pagination_class = None
     lookup_field = "uuid"
