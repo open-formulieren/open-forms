@@ -303,3 +303,31 @@ class PreRegistrationTests(TestCase):
         self.assertEqual(
             submission.registration_result, {"zaak": {"ohlalla": "a property!"}}
         )
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_traceback_removed_from_result_after_success(self, m_get_solo):
+        zgw_group = ZGWApiGroupConfigFactory.create()
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            completed_not_preregistered=True,
+            registration_attempts=1,
+            registration_result={"traceback": "An error, how sad."},
+        )
+
+        TEST_NUM_ATTEMPTS = 3
+        m_get_solo.return_value = GlobalConfiguration(
+            registration_attempt_limit=TEST_NUM_ATTEMPTS,
+        )
+
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            return_value=PreRegistrationResult(
+                reference="OF-TRALALAL", data={"something": "irrelevant"}
+            ),
+        ):
+            pre_registration(submission.id, PostSubmissionEvents.on_retry)
+
+        submission.refresh_from_db()
+
+        self.assertNotIn("traceback", submission.registration_result)
