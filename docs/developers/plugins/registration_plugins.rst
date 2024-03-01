@@ -106,6 +106,8 @@ Public Python API
 .. autoclass:: openforms.registrations.base.BasePlugin
    :members:
 
+.. autoclass:: openforms.registrations.base.PreRegistrationResult
+
 **Module documentation**
 
 .. automodule:: openforms.registrations

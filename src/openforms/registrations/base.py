@@ -19,7 +19,9 @@ class EmptyOptions(JsonSchemaSerializerMixin, serializers.Serializer):
 
 @dataclass
 class PreRegistrationResult:
-    reference: str | None = None
+    """Encapsulate the submission reference and any intermediate result from pre-registration."""
+
+    reference: str = ""
     data: dict | None = None
 
 
