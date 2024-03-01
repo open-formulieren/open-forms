@@ -59,7 +59,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
             ) as mock_registration,
             patch(
-                "openforms.submissions.public_references.get_reference_for_submission",
+                "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-TEST!",
             ),
             patch(
@@ -130,7 +130,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
             ) as mock_registration,
             patch(
-                "openforms.submissions.public_references.get_reference_for_submission",
+                "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-TEST!",
             ),
             patch(
@@ -205,7 +205,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
             ) as mock_registration,
             patch(
-                "openforms.submissions.public_references.get_reference_for_submission",
+                "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-TEST!",
             ),
             patch(
@@ -292,7 +292,7 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
                 "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
             ) as mock_registration,
             patch(
-                "openforms.submissions.public_references.get_reference_for_submission",
+                "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-TEST!",
             ),
             patch(

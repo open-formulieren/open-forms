@@ -25,7 +25,6 @@ from openforms.submissions.tests.factories import (
 )
 
 from ....constants import RegistrationAttribute
-from ....service import extract_submission_reference
 from ..plugin import ZGWRegistration
 from .factories import ZGWApiGroupConfigFactory
 
@@ -241,7 +240,11 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
@@ -454,7 +457,11 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
@@ -634,6 +641,12 @@ class ZGWBackendTests(TestCase):
             kvk="12345678",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         zgw_form_options = dict(
@@ -647,12 +660,10 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        self.assertEqual(len(m.request_history), 9)
+        self.assertEqual(len(m.request_history), 8)
         (
-            create_zaak,
             create_pdf_document,
             relate_pdf_document,
             get_roltypen,
@@ -725,7 +736,11 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
@@ -906,6 +921,12 @@ class ZGWBackendTests(TestCase):
             kvk="12345678",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         RegistratorInfoFactory.create(submission=submission, value="123456782")
         zgw_form_options = dict(
@@ -937,15 +958,13 @@ class ZGWBackendTests(TestCase):
         )
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
         self.assertIn("medewerker_rol", result)
 
-        self.assertEqual(len(m.request_history), 9)
+        self.assertEqual(len(m.request_history), 8)
         (
-            create_zaak,
             create_pdf_document,
             relate_pdf_document,
             get_roltypen,
@@ -973,7 +992,14 @@ class ZGWBackendTests(TestCase):
 
     def test_submission_roltype_initiator_not_found(self, m):
         submission = SubmissionFactory.create(
-            completed_not_preregistered=True, with_report=True
+            completed=True,
+            with_report=True,
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -997,7 +1023,6 @@ class ZGWBackendTests(TestCase):
         )
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
@@ -1008,25 +1033,22 @@ class ZGWBackendTests(TestCase):
         Assert that the internal reference is included in the "kenmerken".
         """
         submission = SubmissionFactory.from_components(
-            completed=True,
-            registration_in_progress=True,
+            completed_not_preregistered=True,
             needs_on_completion_retry=True,
             public_registration_reference="OF-1234",
             components_list=[{"key": "dummy"}],
-        )
-        zgw_form_options = dict(
-            zgw_api_group=self.zgw_group,
-            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            organisatie_rsin="000000000",
-            zaak_vertrouwelijkheidaanduiding="openbaar",
-            doc_vertrouwelijkheidaanduiding="openbaar",
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zgw_api_group": self.zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "organisatie_rsin": "000000000",
+                "vertrouwelijkheidaanduiding": "openbaar",
+            },
         )
         self.install_mocks(m)
 
-        plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
-        plugin.register_submission(submission, zgw_form_options)
+        pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
         create_zaak = m.request_history[0]
         create_zaak_body = create_zaak.json()
@@ -1070,7 +1092,14 @@ class ZGWBackendTests(TestCase):
         )
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+
+        submission.public_registration_reference = pre_registration_result.reference
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
@@ -1091,24 +1120,6 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             patch_zaak_body["laatsteBetaaldatum"], "2021-01-01T10:00:00+00:00"
         )
-
-    def test_reference_can_be_extracted(self, m):
-        result = {
-            "zaak": {
-                "url": "https://zaken.nl/api/v1/zaken/1",
-                "identificatie": "abcd1234",
-            }
-        }
-        submission = SubmissionFactory.create(
-            form__registration_backend="zgw-create-zaak",
-            completed=True,
-            registration_success=True,
-            registration_result=result,
-        )
-
-        reference = extract_submission_reference(submission)
-
-        self.assertEqual("abcd1234", reference)
 
     @tag("sentry-334882")
     def test_submission_with_zgw_backend_override_fields(self, m):
@@ -1136,6 +1147,12 @@ class ZGWBackendTests(TestCase):
                     },
                 },
             ],
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -1159,12 +1176,10 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        self.assertEqual(len(m.request_history), 11)
+        self.assertEqual(len(m.request_history), 10)
         (
-            create_zaak,
             create_pdf_document,
             relate_pdf_document,
             get_roltypen,
@@ -1254,7 +1269,11 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
         plugin.register_submission(submission, zgw_form_options)
 
         self.assertEqual(len(m.request_history), 9)
@@ -1318,6 +1337,12 @@ class ZGWBackendTests(TestCase):
             submission_step__submission__with_report=True,
             file_name="attachment1.jpg",
             form_key="field1",
+            submission_step__submission__registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         submission = attachment.submission_step.submission
         zgw_form_options = dict(
@@ -1329,12 +1354,10 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
-        self.assertEqual(len(m.request_history), 9)
+        self.assertEqual(len(m.request_history), 8)
         (
-            create_zaak,
             create_pdf_document,
             relate_pdf_document,
             get_roltypen,
@@ -1424,7 +1447,14 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+
+        submission.public_registration_reference = pre_registration_result.reference
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+
         plugin.register_submission(submission, zgw_form_options)
 
         (
@@ -1598,6 +1628,12 @@ class ZGWBackendTests(TestCase):
             bsn="111222333",
             language_code="en",
             form_definition_kwargs={"slug": "test"},
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -1612,7 +1648,6 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
@@ -1703,6 +1738,12 @@ class ZGWBackendTests(TestCase):
             },
             language_code="en",
             form_definition_kwargs={"slug": "test-eigenschappen"},
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -1814,7 +1855,6 @@ class ZGWBackendTests(TestCase):
         )
 
         plugin = ZGWRegistration("zgw")
-        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         assert result
 
@@ -1900,6 +1940,12 @@ class ZGWBackendTests(TestCase):
             },
             language_code="en",
             form_definition_kwargs={"slug": "test-eigenschappen"},
+            registration_result={
+                "zaak": {
+                    "url": "https://zaken.nl/api/v1/zaken/1",
+                    "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                }
+            },
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,

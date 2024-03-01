@@ -1,6 +1,6 @@
 import html
 from mimetypes import types_map
-from typing import Any, NoReturn, TypedDict
+from typing import Any, TypedDict
 
 from django.conf import settings
 from django.urls import reverse
@@ -21,14 +21,12 @@ from openforms.emails.utils import (
 )
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
-from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
 from openforms.template import render_from_string
 from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
-from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .checks import check_config
 from .config import EmailOptionsSerializer
@@ -187,9 +185,6 @@ class EmailRegistration(BasePlugin):
             },
         )
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
-        raise NoSubmissionReference("Email plugin does not emit a reference")
-
     def update_payment_status(self, submission: "Submission", options: dict):
         recipients = options.get("payment_emails")
         if not recipients:
@@ -214,9 +209,6 @@ class EmailRegistration(BasePlugin):
         return [
             (_("Test"), reverse("admin_email_test")),
         ]
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        set_submission_reference(submission)
 
     def get_custom_templatetags_libraries(self) -> list[str]:
         return [

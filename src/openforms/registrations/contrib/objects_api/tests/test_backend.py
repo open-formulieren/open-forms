@@ -17,7 +17,6 @@ from openforms.submissions.tests.factories import (
 )
 
 from ....constants import RegistrationAttribute
-from ....service import NoSubmissionReference, extract_submission_reference
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
@@ -791,17 +790,6 @@ class ObjectsAPIBackendTests(TestCase):
                 "https://catalogi.nl/api/v1/informatieobjecttypen/3",
             )
             self.assertNotIn("vertrouwelijkheidaanduiding", attachment2_create_data)
-
-    def test_no_reference_can_be_extracted(self, m):
-        submission = SubmissionFactory.create(
-            form__registration_backend="objects_api",
-            completed=True,
-            registration_success=True,
-            registration_result="irrelevant",
-        )
-
-        with self.assertRaises(NoSubmissionReference):
-            extract_submission_reference(submission)
 
     def test_submission_with_objects_api_backend_attachments_specific_iotypen(self, m):
         submission = SubmissionFactory.from_components(

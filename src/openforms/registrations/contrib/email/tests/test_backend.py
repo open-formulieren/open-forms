@@ -41,7 +41,6 @@ from openforms.submissions.tests.factories import (
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 from openforms.variables.constants import FormVariableSources
 
-from ....service import NoSubmissionReference, extract_submission_reference
 from ..constants import AttachmentFormat
 from ..models import EmailConfig
 from ..plugin import EmailRegistration
@@ -470,17 +469,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         # check we used the payment_emails
         self.assertEqual(message.to, ["payment@bar.nl", "payment@foo.nl"])
-
-    def test_no_reference_can_be_extracted(self):
-        submission = SubmissionFactory.create(
-            form=self.form,
-            completed=True,
-            registration_success=True,
-            registration_result="irrelevant",
-        )
-
-        with self.assertRaises(NoSubmissionReference):
-            extract_submission_reference(submission)
 
     @override_settings(DEFAULT_FROM_EMAIL="info@open-forms.nl")
     def test_submission_with_email_backend_export_csv_xlsx(self):

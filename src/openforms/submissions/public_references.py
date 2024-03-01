@@ -34,7 +34,7 @@ def set_submission_reference(submission: Submission) -> str | None:
     ) and save_attempts < MAX_NUM_ATTEMPTS:
         try:
             with transaction.atomic():
-                reference = get_reference_for_submission(submission)
+                reference = generate_unique_submission_reference()
                 submission.public_registration_reference = reference
                 submission.save(update_fields=["public_registration_reference"])
         except IntegrityError as error:
@@ -56,26 +56,6 @@ def set_submission_reference(submission: Submission) -> str | None:
         "Unexpected code-path! Either the reference should have been saved successfully, "
         "or the error should have been re-raised."
     )
-
-
-def get_reference_for_submission(submission: Submission) -> str:
-    # Circular import
-    from openforms.registrations.service import (
-        NoSubmissionReference,
-        extract_submission_reference,
-    )
-
-    try:
-        reference = extract_submission_reference(submission)
-    except NoSubmissionReference as exc:
-        logger.info(
-            "Could not get the reference from the registration result for submission %d, "
-            "generating one instead",
-            submission.id,
-            exc_info=exc,
-        )
-        reference = generate_unique_submission_reference()
-    return reference
 
 
 def get_random_reference() -> str:

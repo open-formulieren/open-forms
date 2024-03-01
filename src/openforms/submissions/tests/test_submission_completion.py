@@ -730,9 +730,6 @@ class SetRegistrationBackendTests(SubmissionsMixin, APITestCase):
             def register_submission(self, *args, **kwargs):
                 mock_calls.append((args, kwargs))
 
-            def get_reference_from_result(self, *args, **kwargs):
-                pass
-
         backend_field = FormRegistrationBackendFactory._meta.model._meta.get_field(
             "backend"
         )

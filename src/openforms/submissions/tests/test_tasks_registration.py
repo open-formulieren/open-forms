@@ -10,26 +10,6 @@ from .factories import SubmissionFactory
 
 
 class ObtainSubmissionReferenceTests(TestCase):
-    @patch(
-        "openforms.submissions.public_references.generate_unique_submission_reference"
-    )
-    def test_source_reference_from_registration_result(self, mock_generate):
-        """
-        Check that a reference is sourced from the registration result if it's available.
-        """
-        submission = SubmissionFactory.create(
-            form__registration_backend="zgw-create-zaak",
-            completed=True,
-            registration_success=True,
-            registration_result={"zaak": {"identificatie": "AEY64"}},
-        )
-
-        set_submission_reference(submission)
-
-        submission.refresh_from_db()
-        self.assertEqual(submission.public_registration_reference, "AEY64")
-        mock_generate.assert_not_called()
-
     def test_reference_generator_checks_for_used_references(self):
         RANDOM_STRINGS = ["UNIQUE", "OTHER"]
         SubmissionFactory.create(

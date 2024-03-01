@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 from testfixtures import LogCapture
 
 from openforms.config.models import GlobalConfiguration
+from openforms.registrations.base import PreRegistrationResult
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
@@ -58,7 +59,8 @@ class PreRegistrationTests(TestCase):
         )
 
         with patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            return_value=PreRegistrationResult(reference="OF-TRALALA"),
         ) as mock_pre_register:
             pre_registration(submission.id, PostSubmissionEvents.on_completion)
             pre_registration(submission.id, PostSubmissionEvents.on_retry)
@@ -239,7 +241,8 @@ class PreRegistrationTests(TestCase):
             pre_registration(submission.id, PostSubmissionEvents.on_completion)
 
         with patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            return_value=PreRegistrationResult(reference="OF-IM-FINAL"),
         ):
             pre_registration(submission.id, PostSubmissionEvents.on_retry)
 
@@ -278,3 +281,53 @@ class PreRegistrationTests(TestCase):
             "Skipping pre-registration for submission '%s' because it retried and failed too many times.",
             logs.records[-1].msg,
         )
+
+    def test_update_registration_result_after_pre_registration(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            completed_not_preregistered=True,
+        )
+
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            return_value=PreRegistrationResult(
+                reference="ZAAK-TRALALA", data={"zaak": {"ohlalla": "a property!"}}
+            ),
+        ):
+            pre_registration(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+        self.assertEqual(submission.public_registration_reference, "ZAAK-TRALALA")
+        self.assertEqual(
+            submission.registration_result, {"zaak": {"ohlalla": "a property!"}}
+        )
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_traceback_removed_from_result_after_success(self, m_get_solo):
+        zgw_group = ZGWApiGroupConfigFactory.create()
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            completed_not_preregistered=True,
+            registration_attempts=1,
+            registration_result={"traceback": "An error, how sad."},
+        )
+
+        TEST_NUM_ATTEMPTS = 3
+        m_get_solo.return_value = GlobalConfiguration(
+            registration_attempt_limit=TEST_NUM_ATTEMPTS,
+        )
+
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            return_value=PreRegistrationResult(
+                reference="OF-TRALALAL", data={"something": "irrelevant"}
+            ),
+        ):
+            pre_registration(submission.id, PostSubmissionEvents.on_retry)
+
+        submission.refresh_from_db()
+
+        self.assertNotIn("traceback", submission.registration_result)

@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import Any, NoReturn
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -18,12 +18,10 @@ from openforms.registrations.utils import execute_unless_result_exists
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.submissions.public_references import set_submission_reference
 from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
 from ...constants import RegistrationAttribute
-from ...exceptions import NoSubmissionReference
 from ...registry import register
 from .checks import check_config
 from .client import get_documents_client, get_objects_client
@@ -169,9 +167,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
         return response
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
-        raise NoSubmissionReference("Object API plugin does not emit a reference")
-
     def check_config(self):
         check_config()
 
@@ -185,9 +180,6 @@ class ObjectsAPIRegistration(BasePlugin):
                 ),
             ),
         ]
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        set_submission_reference(submission)
 
     def get_custom_templatetags_libraries(self) -> list[str]:
         prefix = "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib"

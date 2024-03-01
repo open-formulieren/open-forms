@@ -1,5 +1,4 @@
 from pathlib import PurePosixPath
-from typing import NoReturn
 
 from django.urls import reverse
 from django.utils import timezone
@@ -17,11 +16,10 @@ from openforms.registrations.contrib.microsoft_graph.models import (
     MSGraphRegistrationConfig,
 )
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.submissions.public_references import set_submission_reference
 from openforms.template import render_from_string
 
 from ...base import BasePlugin
-from ...exceptions import NoSubmissionReference, RegistrationFailed
+from ...exceptions import RegistrationFailed
 from ...registry import register
 from .config import MicrosoftGraphOptionsSerializer
 
@@ -78,9 +76,6 @@ class MSGraphRegistration(BasePlugin):
 
         self._set_payment(uploader, submission, folder_name)
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
-        raise NoSubmissionReference("MS Graph plugin does not emit a reference")
-
     def update_payment_status(self, submission: "Submission", options: dict):
         config = MSGraphRegistrationConfig.get_solo()
         client = MSGraphClient(config.service)
@@ -129,6 +124,3 @@ class MSGraphRegistration(BasePlugin):
                 ),
             ),
         ]
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        set_submission_reference(submission)
