@@ -3731,6 +3731,38 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/public/forms/:
+    get:
+      operationId: public_forms_list
+      description: List the available forms with minimal information. Does not include
+        soft deleted forms.
+      summary: List forms
+      parameters:
+      - in: query
+        name: category__uuid
+        schema:
+          type: string
+          format: uuid
+      tags:
+      - public
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicFormList'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/attributes:
     get:
       operationId: registration_attributes_list
@@ -8681,6 +8713,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormDefinition'
+    PaginatedPublicFormList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicForm'
     PaginatedServiceFetchConfigurationList:
       type: object
       properties:
@@ -9219,6 +9258,26 @@ components:
       - price
       - url
       - uuid
+    PublicForm:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 150
+        internalName:
+          type: string
+          description: internal name for management purposes
+          maxLength: 150
+        slug:
+          type: string
+          maxLength: 100
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - name
+      - slug
     RegistrationAttribute:
       type: object
       properties:
