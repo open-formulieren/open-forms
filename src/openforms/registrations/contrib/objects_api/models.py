@@ -172,6 +172,7 @@ class ObjectsAPIConfig(SingletonModel):
             )
 
     def apply_defaults_to(self, options):
+        options.setdefault("version", 1)
         options.setdefault("objecttype", self.objecttype)
         options.setdefault("objecttype_version", self.objecttype_version)
         options.setdefault("productaanvraag_type", self.productaanvraag_type)

@@ -5,8 +5,9 @@ from django.utils import timezone
 from furl import furl
 from zgw_consumers.nlx import NLXClient
 
+from openforms.utils.date import get_today
+
 from .catalogi import CatalogiClient
-from .utils import get_today
 
 logger = logging.getLogger(__name__)
 
