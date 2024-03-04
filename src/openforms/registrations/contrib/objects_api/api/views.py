@@ -79,7 +79,9 @@ class TargetPathsListView(views.APIView):
             input_serializer.validated_data["objecttype_url"],
         )
         if not match:
-            raise exceptions.ParseError(detail={"objecttype_url": _("Invalid URL.")})
+            raise exceptions.ValidationError(
+                detail={"objecttype_url": _("Invalid URL.")}
+            )
 
         objecttype_uuid = match.group()
 
@@ -100,7 +102,8 @@ class TargetPathsListView(views.APIView):
             )
             if not isinstance(json_schema, InvalidReference)
             if json_schema_matches(
-                input_serializer.validated_data["variable_json_schema"], json_schema
+                variable_schema=input_serializer.validated_data["variable_json_schema"],
+                target_schema=json_schema,
             )
         ]
 

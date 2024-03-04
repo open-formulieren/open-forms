@@ -2,7 +2,11 @@ from django.test import SimpleTestCase
 
 from referencing.exceptions import Unresolvable
 
-from ..json_schema import get_missing_required_paths, iter_json_schema_paths
+from ..json_schema import (
+    get_missing_required_paths,
+    iter_json_schema_paths,
+    json_schema_matches,
+)
 
 JSON_SCHEMA_NO_REFS = {
     "$id": "noise-complaint.schema",
@@ -364,3 +368,86 @@ class MissingRequiredPathsTests(SimpleTestCase):
 
         missing_paths = get_missing_required_paths(JSON_SCHEMA_DEEP_REQUIRED, [])
         self.assertEqual(missing_paths, [])
+
+
+class MatchesJsonShemaTests(SimpleTestCase):
+    def test_json_schema_matches(self):
+        with self.subTest("no type in variable"):
+            variable_schema = {"unrelated": "property"}
+            target_schema = {"type": "string"}
+
+            self.assertFalse(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
+        with self.subTest("no type in target"):
+            variable_schema = {"whatever": "in there"}
+            target_schema = {"no": "type"}
+
+            self.assertTrue(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
+        with self.subTest("array of types matches"):
+            variable_schema = {"type": ["string", "number"]}
+            target_schema = {"type": ["number", "string"]}
+
+            self.assertTrue(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
+        with self.subTest("array of types is subset"):
+            variable_schema = {"type": ["string", "number"]}
+            target_schema = {"type": ["number", "string", "object"]}
+
+            self.assertTrue(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
+        with self.subTest("array of types is not subset"):
+            variable_schema = {"type": ["string", "array"]}
+            target_schema = {"type": ["number", "string", "object"]}
+
+            self.assertFalse(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
+        with self.subTest("target has format, variable does not"):
+            variable_schema = {"type": "string"}
+            target_schema = {"type": "string", "format": "email"}
+
+            self.assertFalse(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
+        with self.subTest("target and variable matches format"):
+            variable_schema = {"type": "string", "format": "email"}
+            target_schema = {"type": "string", "format": "email"}
+
+            self.assertTrue(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
+        with self.subTest("target and variable does not match format"):
+            variable_schema = {"type": "string", "format": "ipv4"}
+            target_schema = {"type": "string", "format": "email"}
+
+            self.assertFalse(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )

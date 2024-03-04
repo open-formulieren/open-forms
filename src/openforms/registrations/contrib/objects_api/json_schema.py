@@ -171,7 +171,7 @@ def get_missing_required_paths(
 
 
 def json_schema_matches(
-    variable_schema: ObjectSchema, target_schema: ObjectSchema
+    *, variable_schema: ObjectSchema, target_schema: ObjectSchema
 ) -> bool:
     """Return whether the deduced JSON Schema of a variable is compatible with the target object (sub) JSON Schema.
 
@@ -194,13 +194,13 @@ def json_schema_matches(
     if not isinstance(variable_types, list):
         variable_types = [variable_types]
 
-    if sorted(target_types) != sorted(variable_types):
+    if not set(variable_types).issubset(target_types):
         return False
 
-    if "string" in target_types and (target_format := target_schema.get("type")):
+    if "string" in target_types and (target_format := target_schema.get("format")):
         variable_format = variable_schema.get("format")
         if variable_format is None:
-            return True
+            return False
         return variable_format == target_format
 
     return True

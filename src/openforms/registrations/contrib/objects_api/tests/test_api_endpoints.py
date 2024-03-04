@@ -195,6 +195,21 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_wrong_uuid_parsing(self):
+        self.client.force_authenticate(user=self.staff_user)
+
+        response = self.client.post(
+            self.endpoint,
+            data={
+                "objecttypeUrl": "http://localhost:8001/api/v2/objecttypes/bad_uuid",
+                "objecttypeVersion": 1,
+                "variableJsonSchema": {"type": "string"},
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual("objecttypeUrl", response.json()["invalidParams"][0]["name"])
+
     def test_list_target_paths(self):
         self.client.force_authenticate(user=self.staff_user)
 
