@@ -201,12 +201,6 @@ div.flatpickr-calendar.open {
     border-color: var(--body-quiet-color);
     color: var(--body-fg);
   }
-
-  &:read-only {
-    background-color: var(--form-input-bg);
-    border-color: var(--border-color);
-    color: var(--body-fg);
-  }
 }
 
 .table {
