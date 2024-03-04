@@ -418,7 +418,7 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
         response = self.client.get(url, follow=True)
 
         form_url.args["_eherkenning-message"] = "login-cancelled"
-        self.assertEquals(
+        self.assertEqual(
             response.redirect_chain[-1],
             (form_url.url, 302),
         )

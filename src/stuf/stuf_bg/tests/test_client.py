@@ -86,7 +86,7 @@ class StufBGConfigTests(SimpleTestCase):
         for attribute in FieldChoices:
             with self.subTest(attribute=attribute):
                 glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
-                self.assert_(glom_target, f"unmapped attribute: {attribute}")
+                self.assertTrue(glom_target, f"unmapped attribute: {attribute}")
 
 
 @disable_timelinelog()

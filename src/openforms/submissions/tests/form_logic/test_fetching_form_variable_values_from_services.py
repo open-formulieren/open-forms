@@ -326,7 +326,7 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
             raise self.failureException("Fetch sent bad headers!") from e
 
         # it should not add any other headers
-        self.assertEquals(
+        self.assertEqual(
             set(request.headers), {"If-None-Match"}.union(DEFAULT_REQUEST_HEADERS)
         )
 

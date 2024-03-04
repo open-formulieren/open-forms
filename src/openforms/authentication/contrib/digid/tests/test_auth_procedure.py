@@ -386,7 +386,7 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
 
         form_url.args["_digid-message"] = "login-cancelled"
 
-        self.assertEquals(
+        self.assertEqual(
             response.redirect_chain[-1],
             (form_url.url, 302),
         )

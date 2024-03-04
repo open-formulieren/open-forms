@@ -14,7 +14,7 @@ class MakeTranslatedFactoryTests(TestCase):
 
         form = TranslatedFormFactory.create(_language="en", name="my name")
 
-        self.assertEquals(form.name_en, "my name")
+        self.assertEqual(form.name_en, "my name")
         self.assertFalse(form.name)
         self.assertFalse(form.name_nl)
 
@@ -23,7 +23,7 @@ class MakeTranslatedFactoryTests(TestCase):
 
         form = TranslatedFormFactory.create(_language="en")
 
-        self.assert_(form.name_en)
+        self.assertTrue(form.name_en)
         self.assertFalse(form.name)
         self.assertFalse(form.name_nl)
 
@@ -46,16 +46,16 @@ class MakeTranslatedFactoryTests(TestCase):
 
         form = TranslatedFormFactory.create(name_en="my name")
 
-        self.assertEquals(form.name_en, "my name")
-        self.assert_(form.name)
-        self.assertEquals(form.name_nl, form.name)
+        self.assertEqual(form.name_en, "my name")
+        self.assertTrue(form.name)
+        self.assertEqual(form.name_nl, form.name)
 
     def test_ignores_non_modeltranslation_fields(self):
         TranslatedFormFactory = make_translated(FormFactory)
 
         form = TranslatedFormFactory.create(slug="Slurm", _language="en")
 
-        self.assertEquals(form.slug, "slurm")
+        self.assertEqual(form.slug, "slurm")
         self.assertFalse(getattr(form, "slug_en", False))
 
     def test_does_not_try_to_set_unconfigured_languages(self):

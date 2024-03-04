@@ -296,7 +296,7 @@ class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
 
         form_url.args["_eidas-message"] = "login-cancelled"
 
-        self.assertEquals(
+        self.assertEqual(
             response.redirect_chain[-1],
             (form_url.url, 302),
         )
