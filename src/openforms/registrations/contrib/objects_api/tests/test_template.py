@@ -55,11 +55,11 @@ class JSONTemplatingTests(TestCase):
                 return_value=config,
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
                 return_value={"url": "http://oz.nl/pdf-report"},
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_attachment_document",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_attachment_document",
                 return_value={"url": "http://oz.nl/attachment-url"},
             ),
         ):
@@ -156,19 +156,19 @@ class JSONTemplatingTests(TestCase):
                 return_value=config,
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
                 return_value={"url": "http://oz.nl/pdf-report"},
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_attachment_document",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_attachment_document",
                 return_value={"url": "http://oz.nl/attachment-url"},
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_submission_export",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_submission_export",
                 return_value=tablib.Dataset(),
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_csv_document",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_csv_document",
                 return_value={"url": "http://oz.nl/csv-report"},
             ),
         ):
@@ -264,7 +264,7 @@ class JSONTemplatingTests(TestCase):
                 return_value=config,
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
                 return_value={"url": "http://of.nl/pdf-report"},
             ),
         ):
@@ -295,7 +295,7 @@ class JSONTemplatingTests(TestCase):
                 return_value=config,
             ),
             patch(
-                "openforms.registrations.contrib.objects_api.plugin.create_report_document",
+                "openforms.registrations.contrib.objects_api.submission_registration.create_report_document",
                 return_value={"url": "http://of.nl/pdf-report"},
             ),
         ):
