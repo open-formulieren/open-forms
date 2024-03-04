@@ -4,6 +4,8 @@
 Extensions
 ==========
 
+Official extensions maintained by the Open Forms core developers.
+
 Keycloak token exchange extension
 =================================
 
@@ -39,9 +41,11 @@ The flow works as follows:
 
 #. Open Forms requests prefill data from Haal Centraal:
 
-   * The client that makes the request to the ZGW API is :class:`openforms.pre_requests.clients.PreRequestZGWClient`.
-     This client is a subclass of :class:`zgw_consumers.client.ZGWClient` which overrides the ``pre_request`` method so
-     that any pre-request hooks registered in Open Forms are run before performing the request.
+   * Prefill data is retrieved using the client
+     :class:`openforms.contrib.haal_centraal.clients.brp.BRPClient`, which makes use of
+     the pre-request hooks through :class:`openforms.pre_requests.clients.PreRequestMixin`.
+     It intercepts the :mod:`requests` request preparation to modify the request before
+     it's actually sent out over the network.
    * The ``open-forms-ext-token-exchange`` extension registers a pre-request hook which adds a
      `custom authentication class`_ to the request.
    * The custom authentication class ``token_exchange.auth.TokenAccessAuth`` checks if the URL to which the
