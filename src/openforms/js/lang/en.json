@@ -164,6 +164,11 @@
     "description": "Form askStatementOfTruth field label",
     "originalDefault": "Ask statement of truth"
   },
+  "3z1hhJ": {
+    "defaultMessage": "Toggle JSON Schema",
+    "description": "Objects API variable configuration editor JSON Schema visibility toggle",
+    "originalDefault": "Toggle JSON Schema"
+  },
   "41hfj4": {
     "defaultMessage": "Which ZGW API group to use.",
     "description": "ZGW API group selection",
@@ -298,6 +303,11 @@
     "defaultMessage": "Unique identifier for the form",
     "description": "Form ID field help text",
     "originalDefault": "Unique identifier for the form"
+  },
+  "7Vx5It": {
+    "defaultMessage": "No compatible registration backend configured.",
+    "description": "Registration summary no registration backend fallback message",
+    "originalDefault": "No compatible registration backend configured."
   },
   "7X6yT4": {
     "defaultMessage": "You are modifying an existing form definition! This change affects <link>{count, plural, one {# form} other {# forms} }</link>",
@@ -553,6 +563,16 @@
     "defaultMessage": "Move down",
     "description": "Move down icon title",
     "originalDefault": "Move down"
+  },
+  "DRidde": {
+    "defaultMessage": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?",
+    "description": "Admin error for API error when configuring Camunda actions",
+    "originalDefault": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+  },
+  "DaxIUG": {
+    "defaultMessage": "Variable key",
+    "description": "'Variable key' label",
+    "originalDefault": "Variable key"
   },
   "DcI1VF": {
     "defaultMessage": "Session expired",
@@ -829,15 +849,15 @@
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
   },
-  "JN1BvY": {
-    "defaultMessage": "Add another",
-    "description": "Registrations column 'Add another' label",
-    "originalDefault": "Add another"
-  },
   "JRGs/Q": {
     "defaultMessage": "Expand/collapse JsonLogic",
     "description": "Expand/collapse logic expression icon title",
     "originalDefault": "Expand/collapse JsonLogic"
+  },
+  "JXcHQ2": {
+    "defaultMessage": "Not yet configured",
+    "description": "'Not yet configured' registration summary message",
+    "originalDefault": "Not yet configured"
   },
   "JZRX+C": {
     "defaultMessage": "Successful Submissions Removal Limit",
@@ -1834,6 +1854,11 @@
     "description": "form step label in nav",
     "originalDefault": "{name} [new]"
   },
+  "j5KpZP": {
+    "defaultMessage": "loading...",
+    "description": "Loading select option label",
+    "originalDefault": "loading..."
+  },
   "j7rEgn": {
     "defaultMessage": "Submission report PDF informatieobjecttype",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" label",
@@ -2184,6 +2209,11 @@
     "description": "Session expiry notice - API call failed with 401",
     "originalDefault": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
   },
+  "rkzjK3": {
+    "defaultMessage": "JSON Schema target",
+    "description": "'JSON Schema target' label",
+    "originalDefault": "JSON Schema target"
+  },
   "rzGuvz": {
     "defaultMessage": "(not configured yet)",
     "description": "DMN evaluation not configured yet message",
@@ -2373,6 +2403,11 @@
     "defaultMessage": "Objects API - objecttype",
     "description": "URL to the OBJECT TYPE for the \"Product Request\" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the \"Product Request\") 3) data (submitted form data).",
     "originalDefault": "Objects API - objecttype"
+  },
+  "y4U0aW": {
+    "defaultMessage": "{required, select, true {{path} (required)} other {{path}}}",
+    "description": "Representation of a JSON Schema target path",
+    "originalDefault": "{required, select, true {{path} (required)} other {{path}}}"
   },
   "yCogwi": {
     "defaultMessage": "Select definition",
