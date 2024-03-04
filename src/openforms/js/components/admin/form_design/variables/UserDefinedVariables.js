@@ -5,7 +5,7 @@ import ButtonContainer from 'components/admin/forms/ButtonContainer';
 
 import VariablesTable from './VariablesTable';
 
-const UserDefinedVariables = ({variables, onAdd, onChange, onDelete}) => {
+const UserDefinedVariables = ({variables, onAdd, onDelete, onChange, onFieldChange}) => {
   const intl = useIntl();
 
   const onAddUserDefinedVar = event => {
@@ -30,8 +30,9 @@ const UserDefinedVariables = ({variables, onAdd, onChange, onDelete}) => {
       <VariablesTable
         variables={variables}
         editable={true}
-        onChange={onChange}
         onDelete={onDelete}
+        onChange={onChange}
+        onFieldChange={onFieldChange}
       />
       <ButtonContainer onClick={onAddUserDefinedVar}>
         <FormattedMessage

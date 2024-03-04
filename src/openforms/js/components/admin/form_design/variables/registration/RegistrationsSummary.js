@@ -62,7 +62,9 @@ const RegistrationSummary = ({
           initialValues={backend.options}
           onSubmit={(values, actions) => {
             const updatedBackend = {...backend, options: values};
-            onChange({target: `form.registrationBackend.${backendIndex}`, value: updatedBackend});
+            onChange({
+              target: {name: `form.registrationBackends.${backendIndex}`, value: updatedBackend},
+            });
             actions.setSubmitting(false);
             setModalOpen(false);
           }}

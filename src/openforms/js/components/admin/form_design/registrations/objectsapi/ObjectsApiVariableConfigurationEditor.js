@@ -44,17 +44,16 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   let index = variablesMapping.findIndex(
     mappedVariable => mappedVariable.variableKey === variable.key
   );
-  let mappedVariable = variablesMapping[index];
+
   if (index === -1) {
     // if not found, grab the next available index to add it as a new record/entry
     index = variablesMapping.length;
-    mappedVariable = {
-      variableKey: variable.key,
-      targetPath: undefined,
-    };
-    setFieldValue(`variablesMapping.${index}`, mappedVariable);
   }
 
+  let mappedVariable = variablesMapping[index] || {
+    variableKey: variable.key,
+    targetPath: undefined,
+  };
   // the formik state is populated with the backend options, so our path needs to be
   // relative to that
   const namePrefix = `variablesMapping.${index}`;
@@ -114,7 +113,12 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
             />
           }
         >
-          <TargetPathSelect index={index} choices={choices} />
+          <TargetPathSelect
+            name={`${namePrefix}.targetPath`}
+            index={index}
+            choices={choices}
+            mappedVariable={mappedVariable}
+          />
         </Field>
       </FormRow>
       <div style={{marginTop: '1em'}}>
@@ -142,9 +146,18 @@ ObjectsApiVariableConfigurationEditor.propTypes = {
   }).isRequired,
 };
 
-const TargetPathSelect = ({name, index, choices}) => {
-  const {getFieldProps, setFieldValue} = useFormikContext();
+const TargetPathSelect = ({name, index, choices, mappedVariable}) => {
+  // To avoid having an incomplete variable mapping added in the `variablesMapping` array,
+  // It is added only when an actual target path is selected. This way, having the empty
+  // option selected means the variable is unmapped (hence the `arrayHelpers.remove` call below).
+
+  const {
+    values: {variablesMapping},
+    getFieldProps,
+    setFieldValue,
+  } = useFormikContext();
   const props = getFieldProps(name);
+  const isNew = variablesMapping.length === index;
 
   return (
     <FieldArray
@@ -161,7 +174,11 @@ const TargetPathSelect = ({name, index, choices}) => {
             if (event.target.value === '') {
               arrayHelpers.remove(index);
             } else {
-              setFieldValue(name, JSON.parse(event.target.value));
+              if (isNew) {
+                arrayHelpers.push({...mappedVariable, targetPath: JSON.parse(event.target.value)});
+              } else {
+                setFieldValue(name, JSON.parse(event.target.value));
+              }
             }
           }}
         />
