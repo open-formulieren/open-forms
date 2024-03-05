@@ -44,7 +44,7 @@ You will also need the following operating-system libraries:
 .. _Python: https://www.python.org/
 .. _Django framework: https://www.djangoproject.com/
 .. _Virtualenv: https://virtualenv.pypa.io/en/stable/
-.. _Pip: https://packaging.python.org/tutorials/installing-packages/#ensure-pip-setuptools-and-wheel-are-up-to-date
+.. _Pip: https://pip.pypa.io/en/stable/installation/
 .. _PostgreSQL: https://www.postgresql.org
 .. _Node.js: http://nodejs.org/
 .. _nvm: https://github.com/nvm-sh/nvm
