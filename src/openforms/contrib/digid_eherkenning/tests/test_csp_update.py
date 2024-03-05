@@ -180,7 +180,8 @@ class EherkenningCSPUpdateTests(TestCase):
         self.assertEqual(
             csp_added.value,
             "https://test-iwelcome.nl/broker/sso/1.13 "
-            "https://ehm01.iwelcome.nl/broker/slo/1.13",
+            "https://ehm01.iwelcome.nl/broker/slo/1.13 "
+            "https://*.eherkenning.nl",
         )
 
         # assert new csp entry is added and old one is deleted after url update
@@ -195,7 +196,8 @@ class EherkenningCSPUpdateTests(TestCase):
         self.assertEqual(
             csp_updated.value,
             "https://test-iwelcome.nl/broker/sso/1.13 "
-            "https://ehm01.iwelcome.nl/broker/slo/1.13",
+            "https://ehm01.iwelcome.nl/broker/slo/1.13 "
+            "https://*.eherkenning.nl",
         )
 
     @patch(
@@ -232,6 +234,7 @@ class EherkenningCSPUpdateTests(TestCase):
             "form-action "
             "'self' "
             "https://test-iwelcome.nl/broker/sso/1.13 "
-            "https://ehm01.iwelcome.nl/broker/slo/1.13;",
+            "https://ehm01.iwelcome.nl/broker/slo/1.13 "
+            "https://*.eherkenning.nl;",
             response.headers["Content-Security-Policy"],
         )

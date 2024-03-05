@@ -2,5 +2,5 @@ from digid_eherkenning.models import DigidConfiguration, EherkenningConfiguratio
 
 ADDITIONAL_CSP_VALUES = {
     DigidConfiguration: "https://digid.nl https://*.digid.nl",
-    EherkenningConfiguration: "",
+    EherkenningConfiguration: "https://*.eherkenning.nl",
 }
