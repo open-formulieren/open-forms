@@ -16,6 +16,12 @@
 
 .field-configuration {
   overflow: unset;
+  .flex-container {
+    flex-wrap: wrap;
+    .form-builder {
+      width: 100%;
+    }
+  }
 }
 
 .field-configuration,
@@ -42,7 +48,7 @@ li.nav-item {
     max-width: 100%;
     label {
       float: none;
-      width: initial;
+      width: 100%;
     }
   }
 
