@@ -1,3 +1,3 @@
-import RegistrationsSummary from './RegistrationsSummary';
+import RegistrationsSummaryList from './RegistrationsSummaryList';
 
-export default RegistrationsSummary;
+export default RegistrationsSummaryList;

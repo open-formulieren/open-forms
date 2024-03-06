@@ -15,7 +15,7 @@ import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {get} from 'utils/fetch';
 
 import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
-import RegistrationsSummary from './registration';
+import RegistrationSummaryList from './registration';
 import Variable from './types';
 import {variableHasErrors} from './utils';
 
@@ -97,7 +97,7 @@ const VariableRow = ({index, variable, onFieldChange}) => {
         )}
       </td>
       <td>
-        <RegistrationsSummary variable={variable} onFieldChange={onFieldChange} />
+        <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
       </td>
       <td>{variable.dataType}</td>
       <td>
@@ -210,7 +210,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
         </Field>
       </td>
       <td>
-        <RegistrationsSummary variable={variable} onFieldChange={onFieldChange} />
+        <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
       </td>
       <td>
         <Field name="dataType" errors={variable.errors?.dataType}>

@@ -92,7 +92,7 @@ RegistrationSummary.propTypes = {
   name: PropTypes.string.isRequired,
   variable: PropTypes.object.isRequired,
   backend: PropTypes.object.isRequired,
-  backendIndex: PropTypes.number,
+  backendIndex: PropTypes.number.isRequired,
   registrationSummary: PropTypes.element.isRequired,
   variableConfigurationEditor: PropTypes.element.isRequired,
   onChange: PropTypes.func.isRequired,
@@ -107,7 +107,7 @@ RegistrationSummary.propTypes = {
  * @param {Object} p.variable - The current variable
  * @returns {JSX.Element} - A <ul> list of summaries
  */
-const RegistrationsSummary = ({variable, onFieldChange}) => {
+const RegistrationsSummaryList = ({variable, onFieldChange}) => {
   const formContext = useContext(FormContext);
 
   /** @type {RegistrationBackend[]} */
@@ -163,9 +163,9 @@ const RegistrationsSummary = ({variable, onFieldChange}) => {
   );
 };
 
-RegistrationsSummary.propTypes = {
+RegistrationsSummaryList.propTypes = {
   variable: PropTypes.object.isRequired,
   onFieldChange: PropTypes.func.isRequired,
 };
 
-export default RegistrationsSummary;
+export default RegistrationsSummaryList;

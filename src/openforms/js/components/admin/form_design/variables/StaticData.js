@@ -4,7 +4,7 @@ import {FormattedMessage} from 'react-intl';
 import {FormContext} from 'components/admin/form_design/Context';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 
-import RegistrationsSummary from './registration';
+import RegistrationSummaryList from './registration';
 
 const StaticData = ({onFieldChange}) => {
   const formContext = useContext(FormContext);
@@ -48,7 +48,7 @@ const StaticData = ({onFieldChange}) => {
               <td>{item.name}</td>
               <td>{item.key}</td>
               <td>
-                <RegistrationsSummary variable={item} onFieldChange={onFieldChange} />
+                <RegistrationSummaryList variable={item} onFieldChange={onFieldChange} />
               </td>
               <td>{item.dataType}</td>
             </tr>
