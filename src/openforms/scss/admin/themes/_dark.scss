@@ -29,6 +29,7 @@
   --default-button-hover-bg: #888;
 
   --form-input-bg: #232222;
+  --form-input-bg-readonly: #1a1818;
   --react-tab-border-color: var(--hairline-color);
   --list-item-active-bg: #333;
   --list-item-active-fg: #2fc0ec;
@@ -65,6 +66,9 @@
   select,
   .vTextField {
     background-color: var(--form-input-bg);
+    &:read-only {
+      background-color: var(--form-input-bg-readonly);
+    }
   }
 
   input[type='checkbox'],
