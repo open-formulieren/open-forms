@@ -11,7 +11,7 @@ import {FormattedMessage} from 'react-intl';
  * @param {Object} p
  * @param {string} p.variable - The current variable
  * @param {ObjectsAPIV2Options} p.backendOptions - The Objects API Options (guaranteed to be v2)
- * @returns {JSX.Element} - The summary, represented as a the parts of the target path separated by '>'
+ * @returns {JSX.Element} - The summary, represented as the parts of the target path separated by '>'
  */
 const ObjectsApiSummaryHandler = ({variable, backendOptions}) => {
   const variableMapping = backendOptions.variablesMapping.find(

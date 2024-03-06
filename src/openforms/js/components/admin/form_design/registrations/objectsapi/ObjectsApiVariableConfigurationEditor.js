@@ -28,13 +28,13 @@ import {asJsonSchema} from './utils';
  *
  * @param {Object} p
  * @param {Object} p.variable - The current variable
- * @returns {JSX.Element} - The summary, represented as a the parts of the target path separated by '>'
+ * @returns {JSX.Element} - The configuration form for the Objects API
  */
 const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const {csrftoken} = useContext(APIContext);
 
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
-  const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
+  const {values: backendOptions, getFieldProps} = useFormikContext();
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */
   const {objecttype, objecttypeVersion, variablesMapping, version} = backendOptions;
@@ -191,6 +191,7 @@ TargetPathSelect.propTypes = {
   name: PropTypes.string.isRequired,
   index: PropTypes.number.isRequired,
   choices: PropTypes.array.isRequired,
+  mappedVariable: PropTypes.object.isRequired,
 };
 
 const TargetPathDisplay = ({target}) => {
@@ -207,8 +208,8 @@ const TargetPathDisplay = ({target}) => {
 TargetPathDisplay.propTypes = {
   target: PropTypes.shape({
     targetPath: PropTypes.arrayOf(PropTypes.string).isRequired,
+    isRequired: PropTypes.bool.isRequired,
   }).isRequired,
-  isRequired: PropTypes.bool.isRequired,
 };
 
 export default ObjectsApiVariableConfigurationEditor;
