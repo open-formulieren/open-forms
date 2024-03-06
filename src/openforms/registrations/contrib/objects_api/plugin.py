@@ -5,42 +5,27 @@ from typing import Any
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from openforms.contrib.objects_api.helpers import prepare_data_for_registration
-from openforms.contrib.objects_api.rendering import render_to_json
-from openforms.contrib.zgw.clients import DocumentenClient
-from openforms.contrib.zgw.clients.utils import get_today
-from openforms.contrib.zgw.service import (
-    create_attachment_document,
-    create_csv_document,
-    create_report_document,
-)
+from typing_extensions import override
+
 from openforms.registrations.utils import execute_unless_result_exists
-from openforms.submissions.exports import create_submission_export
-from openforms.submissions.mapping import SKIP, FieldConf
-from openforms.submissions.models import Submission, SubmissionReport
-from openforms.variables.utils import get_variables_for_context
+from openforms.submissions.models import Submission
+from openforms.utils.date import get_today
 
 from ...base import BasePlugin
-from ...constants import RegistrationAttribute
 from ...registry import register
 from .checks import check_config
-from .client import get_documents_client, get_objects_client
+from .client import get_objects_client
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
-from .utils import get_payment_context_data
+from .submission_registration import HANDLER_MAPPING
+from .typing import RegistrationOptions
 
 PLUGIN_IDENTIFIER = "objects_api"
 
 logger = logging.getLogger(__name__)
 
 
-def _point_coordinate(value):
-    if not value or not isinstance(value, list) or len(value) != 2:
-        return SKIP
-    return {"type": "Point", "coordinates": [value[0], value[1]]}
-
-
-def build_options(plugin_options: dict, key_mapping: dict) -> dict:
+def build_options(plugin_options: RegistrationOptions, key_mapping: dict) -> dict:
     """
     Construct options from plugin options dict, allowing renaming of keys
     """
@@ -57,105 +42,25 @@ class ObjectsAPIRegistration(BasePlugin):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
 
-    object_mapping = {
-        "record.geometry": FieldConf(
-            RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
-        ),
-    }
-
+    @override
     def register_submission(
-        self, submission: Submission, options: dict
+        self, submission: Submission, options: RegistrationOptions
     ) -> dict[str, Any]:
-        """Register a submission using the ObjectsAPI backend
+        """Register a submission using the Objects API backend.
 
-        The creation of submission documents (report, attachment, csv) makes use of ZGW
-        service functions (e.g. :func:`create_report_document`) and involves a mapping
-        (and in some cases renaming) of variables which would otherwise not be
-        accessible from here. For example, 'vertrouwelijkheidaanduiding' must be named
-        'doc_vertrouwelijkheidaanduiding' because this is what the ZGW service functions
-        use."""
+        Depending on the options version (legacy or mapped variables), the payload
+        will be created differently. The actual logic lives in the ``submission_registration`` submodule.
+        """
+
         config = ObjectsAPIConfig.get_solo()
         assert isinstance(config, ObjectsAPIConfig)
         config.apply_defaults_to(options)
 
-        # Prepare all documents to relate to the Objects API record
-        with get_documents_client() as documents_client:
-            # Create the document for the PDF summary
-            submission_report = SubmissionReport.objects.get(submission=submission)
-            submission_report_options = build_options(
-                options,
-                {
-                    "informatieobjecttype": "informatieobjecttype_submission_report",
-                    "organisatie_rsin": "organisatie_rsin",
-                    "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-                },
-            )
+        handler = HANDLER_MAPPING[options["version"]]
 
-            document = create_report_document(
-                client=documents_client,
-                name=submission.form.admin_name,
-                submission_report=submission_report,
-                options=submission_report_options,
-                language=submission_report.submission.language_code,
-            )
-
-            # Register the attachments
-            # TODO turn attachments into dictionary when giving users more options then
-            # just urls.
-            attachments = []
-            for attachment in submission.attachments:
-                attachment_options = build_options(
-                    options,
-                    {
-                        "informatieobjecttype": "informatieobjecttype_attachment",  # Different IOT than for the report
-                        "organisatie_rsin": "organisatie_rsin",
-                        "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-                    },
-                )
-
-                component_overwrites = {
-                    "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
-                    "titel": attachment.titel,
-                    "organisatie_rsin": attachment.bronorganisatie,
-                    "informatieobjecttype": attachment.informatieobjecttype,
-                }
-
-                for key, value in component_overwrites.items():
-                    if value:
-                        attachment_options[key] = value
-
-                attachment_document = create_attachment_document(
-                    client=documents_client,
-                    name=submission.form.admin_name,
-                    submission_attachment=attachment,
-                    options=attachment_options,
-                    language=attachment.submission_step.submission.language_code,  # assume same as submission
-                )
-                attachments.append(attachment_document["url"])
-
-            # Create the CSV submission export, if requested.
-            # If no CSV is being uploaded, then `assert csv_url == ""` applies.
-            csv_url = register_submission_csv(submission, options, documents_client)
-
-        context = {
-            "_submission": submission,
-            "productaanvraag_type": options["productaanvraag_type"],
-            "payment": get_payment_context_data(submission),
-            "variables": get_variables_for_context(submission),
-            # Github issue #661, nested for namespacing note: other templates and context expose all submission
-            # variables in the top level namespace, but that is due for refactor
-            "submission": {
-                "public_reference": submission.public_registration_reference,
-                "kenmerk": str(submission.uuid),
-                "language_code": submission.language_code,
-                "uploaded_attachment_urls": attachments,
-                "pdf_url": document["url"],
-                "csv_url": csv_url,
-            },
-        }
-
-        object_data = prepare_data_for_registration(
-            submission, context, options, self.object_mapping
+        object_data = handler.get_object_data(
+            submission=submission,
+            options=options,
         )
 
         with get_objects_client() as objects_client:
@@ -167,9 +72,11 @@ class ObjectsAPIRegistration(BasePlugin):
 
         return response
 
+    @override
     def check_config(self):
         check_config()
 
+    @override
     def get_config_actions(self):
         return [
             (
@@ -181,13 +88,17 @@ class ObjectsAPIRegistration(BasePlugin):
             ),
         ]
 
+    @override
     def get_custom_templatetags_libraries(self) -> list[str]:
         prefix = "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib"
         return [
             f"{prefix}.objects_api.json_tags",
         ]
 
-    def update_payment_status(self, submission: "Submission", options: dict) -> None:
+    @override
+    def update_payment_status(
+        self, submission: Submission, options: RegistrationOptions
+    ) -> None:
         config = ObjectsAPIConfig.get_solo()
         assert isinstance(config, ObjectsAPIConfig)
         config.apply_defaults_to(options)
@@ -198,17 +109,14 @@ class ObjectsAPIRegistration(BasePlugin):
             )
             return
 
-        context = {
-            "variables": get_variables_for_context(submission),
-            "payment": get_payment_context_data(submission),
-        }
-
-        updated_record_data = render_to_json(
-            options["payment_status_update_json"], context
+        handler = HANDLER_MAPPING[options["version"]]
+        updated_object_data = handler.get_update_payment_status_data(
+            submission, options
         )
+
         updated_object_data = {
             "record": {
-                "data": updated_record_data,
+                "data": updated_object_data,
                 "startAt": get_today(),
             },
         }
@@ -221,37 +129,3 @@ class ObjectsAPIRegistration(BasePlugin):
                 headers={"Content-Crs": "EPSG:4326"},
             )
             response.raise_for_status()
-
-
-def register_submission_csv(
-    submission: Submission,
-    options: dict,
-    documents_client: DocumentenClient,
-) -> str:
-    if not options.get("upload_submission_csv", False):
-        return ""
-
-    if not options["informatieobjecttype_submission_csv"]:
-        return ""
-
-    submission_csv_options = build_options(
-        options,
-        {
-            "informatieobjecttype": "informatieobjecttype_submission_csv",
-            "organisatie_rsin": "organisatie_rsin",
-            "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-            "auteur": "auteur",
-        },
-    )
-    qs = Submission.objects.filter(pk=submission.pk).select_related("auth_info")
-    submission_csv = create_submission_export(qs).export("csv")  # type: ignore
-
-    submission_csv_document = create_csv_document(
-        client=documents_client,
-        name=f"{submission.form.admin_name} (csv)",
-        csv_data=submission_csv,
-        options=submission_csv_options,
-        language=submission.language_code,
-    )
-
-    return submission_csv_document["url"]

@@ -7,7 +7,8 @@ from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..utils import get_payment_context_data, html_escape_json
+from ..submission_registration import ObjectsAPIV1Handler
+from ..utils import html_escape_json
 
 
 class EscapeHTMLTests(TestCase):
@@ -76,7 +77,7 @@ class EscapeHTMLTests(TestCase):
             amount=1_000,
         )
 
-        context_data = get_payment_context_data(payment.submission)
+        context_data = ObjectsAPIV1Handler.get_payment_context_data(payment.submission)
 
         self.assertEqual("1000.00", context_data["amount"])
 
@@ -85,7 +86,7 @@ class EscapeHTMLTests(TestCase):
             amount=3.1415926535,
         )
 
-        context_data = get_payment_context_data(payment.submission)
+        context_data = ObjectsAPIV1Handler.get_payment_context_data(payment.submission)
 
         self.assertEqual("3.14", context_data["amount"])
 
@@ -104,7 +105,10 @@ class EscapeHTMLTests(TestCase):
         )
 
         rendered_json = render_to_json(
-            template, context={"payment": get_payment_context_data(submission)}
+            template,
+            context={
+                "payment": ObjectsAPIV1Handler.get_payment_context_data(submission)
+            },
         )
 
         self.assertEqual(

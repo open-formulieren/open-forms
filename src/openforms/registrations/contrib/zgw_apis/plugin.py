@@ -14,6 +14,7 @@ from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.config.data import Action
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.clients.catalogi import omschrijving_matcher
 from openforms.contrib.zgw.service import (
     create_attachment_document,
@@ -640,8 +641,15 @@ class ZGWRegistration(BasePlugin):
             },
         }
 
+        record_data = render_to_json(options["content_json"], context)
         object_data = prepare_data_for_registration(
-            submission, context, options, object_mapping
+            record_data=record_data,
+            objecttype=options["objecttype"],
+            objecttype_version=options["objecttype_version"],
+        )
+
+        apply_data_mapping(
+            submission, object_mapping, REGISTRATION_ATTRIBUTE, object_data
         )
 
         with get_objects_client() as objects_client:
