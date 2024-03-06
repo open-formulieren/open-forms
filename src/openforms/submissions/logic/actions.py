@@ -9,7 +9,6 @@ from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormVariable
 from openforms.typing import DataMapping, JSONObject, JSONValue
 from openforms.utils.json_logic import ComponentMeta
-from openforms.variables.models import ServiceFetchConfiguration
 
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
@@ -264,11 +263,10 @@ class VariableAction(ActionOperation):
 @dataclass
 class ServiceFetchAction(ActionOperation):
     variable: str
-    fetch_config: int
 
     @classmethod
     def from_action(cls, action: ActionDict) -> "ServiceFetchAction":
-        return cls(variable=action["variable"], fetch_config=action["action"]["value"])
+        return cls(variable=action["variable"])
 
     def eval(
         self,
@@ -276,17 +274,7 @@ class ServiceFetchAction(ActionOperation):
         log: Callable[[JSONValue], None],
         submission: Submission,
     ) -> DataMapping:
-        # FIXME
-        # https://github.com/open-formulieren/open-forms/issues/3052
-        if self.fetch_config:  # the old way
-            var = FormVariable(
-                key=self.variable,
-                service_fetch_configuration=ServiceFetchConfiguration.objects.get(
-                    pk=self.fetch_config
-                ),
-            )
-        else:  # the current way
-            var = self.rule.form.formvariable_set.get(key=self.variable)
+        var = self.rule.form.formvariable_set.get(key=self.variable)
         with log_errors({}, self.rule):  # TODO proper error handling
             result = perform_service_fetch(var, context, str(submission.uuid))
             log(asdict(result))
