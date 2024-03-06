@@ -43,7 +43,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     """Provide the registration data for legacy (v1) registration options, using JSON templates."""
 
     @staticmethod
-    def _point_coordinate(value):
+    def _point_coordinate(value: Any) -> dict[str, Any] | object:
         if not value or not isinstance(value, list) or len(value) != 2:
             return SKIP
         return {"type": "Point", "coordinates": [value[0], value[1]]}

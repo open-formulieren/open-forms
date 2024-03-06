@@ -48,12 +48,8 @@ class ObjectsAPIRegistration(BasePlugin):
     ) -> dict[str, Any]:
         """Register a submission using the Objects API backend.
 
-        The creation of submission documents (report, attachment, csv) makes use of ZGW
-        service functions (e.g. :func:`create_report_document`) and involves a mapping
-        (and in some cases renaming) of variables which would otherwise not be
-        accessible from here. For example, 'vertrouwelijkheidaanduiding' must be named
-        'doc_vertrouwelijkheidaanduiding' because this is what the ZGW service functions
-        use.
+        Depending on the options version (legacy or mapped variables), the payload
+        will be created differently. The actual logic lives in the ``submission_registration`` submodule.
         """
 
         config = ObjectsAPIConfig.get_solo()
