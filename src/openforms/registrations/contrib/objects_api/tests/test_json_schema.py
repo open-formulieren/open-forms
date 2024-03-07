@@ -432,6 +432,16 @@ class MatchesJsonShemaTests(SimpleTestCase):
                 )
             )
 
+        with self.subTest("variable has format, target does not"):
+            variable_schema = {"type": "string", "format": "email"}
+            target_schema = {"type": "string"}
+
+            self.assertTrue(
+                json_schema_matches(
+                    variable_schema=variable_schema, target_schema=target_schema
+                )
+            )
+
         with self.subTest("target and variable matches format"):
             variable_schema = {"type": "string", "format": "email"}
             target_schema = {"type": "string", "format": "email"}
