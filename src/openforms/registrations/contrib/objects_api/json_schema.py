@@ -48,18 +48,18 @@ class JsonSchemaPath:
 
 @overload
 def iter_json_schema_paths(
-    json_schema: ObjectSchema, fail_fast: Literal[False]
+    json_schema: ObjectSchema, *, fail_fast: Literal[False]
 ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema | InvalidReference]]: ...
 
 
 @overload
 def iter_json_schema_paths(
-    json_schema: ObjectSchema, fail_fast: Literal[True] = ...
+    json_schema: ObjectSchema, *, fail_fast: Literal[True] = ...
 ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema]]: ...
 
 
 def iter_json_schema_paths(
-    json_schema: ObjectSchema, fail_fast: bool = True
+    json_schema: ObjectSchema, *, fail_fast: bool = True
 ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema | InvalidReference]]:
     """Recursively iterate over the JSON Schema paths, resolving references if required.
 
