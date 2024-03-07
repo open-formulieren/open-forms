@@ -49,6 +49,7 @@ Core
     core/submission-renderer
     core/variables
     file-uploads
+    service-fetch
 
 Modules
 =======

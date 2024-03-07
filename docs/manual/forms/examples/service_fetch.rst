@@ -172,7 +172,7 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
    omdat er op antwoorden gewacht moet worden. Probeer door handig gebruik van
    variabelen en triggers, deze bevragingen tot een minimum te beperken.
 
-   "Bevragen registraties" is nog geschikt voor gebruik, maar nog onvolledig.
+   "Bevragen registraties" is geschikt voor gebruik, maar nog onvolledig.
    Bekende missende of beperkte functionaliteiten zijn onder andere:
 
    * `het "Probeer het uit" tabje <https://github.com/open-formulieren/open-forms/issues/2777>`_
@@ -180,9 +180,9 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
    * `slimme caching <https://github.com/open-formulieren/open-forms/issues/2688>`_
    * en `meer <https://github.com/open-formulieren/open-forms/labels/topic%3A%20hergebruik%20waarden>`_
 
-   Door de agile aard van de ontwikkeling staan deze issues staan op het moment
+   Door de agile aard van de ontwikkeling staan deze issues op het moment
    **niet** op een roadmap.
-   
+
    Daarnaast kan de manier van invoegen van formulierdata in de bevragingen van
    syntax veranderen. Op dit moment kunt u met de bekende ``{{ variabelesleutel
    }}`` syntaxis, waarden invoegen in
@@ -200,7 +200,7 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
    image:: _assets/service_fetch_products_in_category.png
    :alt: screenshot van de servicebevraging "Haal producten in gekozen categorie op"
 
-.. |logic| 
+.. |logic|
    image:: _assets/service_fetch_logic.png
    :alt: screenshot met extra acties "wijzig een attribuut van een veld/component" Productkeuze: Product (product) verborgen "Ja" resp. "Nee"
 
