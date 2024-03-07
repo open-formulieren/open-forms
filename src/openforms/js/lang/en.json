@@ -1574,6 +1574,11 @@
     "description": "JSON editor: complex value representation",
     "originalDefault": "(complex value)"
   },
+  "cK2O6E": {
+    "defaultMessage": "Something went wrong when fetching the available target paths",
+    "description": "Objects API variable registration configuration API error",
+    "originalDefault": "Something went wrong when fetching the available target paths"
+  },
   "cUVVbl": {
     "defaultMessage": "is greater than or equal to",
     "description": "\">=\" operator description",

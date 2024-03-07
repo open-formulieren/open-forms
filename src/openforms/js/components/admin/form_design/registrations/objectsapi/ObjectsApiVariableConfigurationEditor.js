@@ -12,6 +12,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
+import ErrorMessage from 'components/errors/ErrorMessage';
 import {post} from 'utils/fetch';
 
 import {asJsonSchema} from './utils';
@@ -86,6 +87,16 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
     loading || error
       ? LOADING_OPTION
       : targetPaths.map(t => [JSON.stringify(t.targetPath), <TargetPathDisplay target={t} />]);
+
+  if (error)
+    return (
+      <ErrorMessage>
+        <FormattedMessage
+          description="Objects API variable registration configuration API error"
+          defaultMessage="Something went wrong when fetching the available target paths"
+        />
+      </ErrorMessage>
+    );
 
   return (
     <Fieldset>
