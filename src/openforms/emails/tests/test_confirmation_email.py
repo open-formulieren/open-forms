@@ -678,7 +678,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             # process to keep tests sane (random tokens)
             text = message.body.rstrip()
             text = re.sub(url_exp, "#URL#", text)
-            self.assertEquals(expected_text, text)
+            self.assertEqual(expected_text, text)
             self.assertNotIn("<a ", text)
             self.assertNotIn("<td ", text)
             self.assertNotIn("<p ", text)
@@ -798,7 +798,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             """
         ).lstrip()
 
-        self.assertEquals(expected_text, text)
+        self.assertEqual(expected_text, text)
 
     def test_confirmation_email_cosign_required(self):
         submission = SubmissionFactory.from_components(
@@ -836,7 +836,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             "This form will not be processed until it has been co-signed. A co-sign "
             "request was sent to %(cosigner_email)s."
         ) % {"cosigner_email": "cosigner@test.nl"}
-        self.assertEquals(expected_text, text)
+        self.assertEqual(expected_text, text)
 
     def test_confirmation_email_cosign_not_required_but_filled_in(self):
         submission = SubmissionFactory.from_components(
@@ -874,7 +874,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             "This form will not be processed until it has been co-signed. A co-sign "
             "request was sent to %(cosigner_email)s."
         ) % {"cosigner_email": "cosigner@test.nl"}
-        self.assertEquals(expected_text, text)
+        self.assertEqual(expected_text, text)
 
     def test_confirmation_email_cosign_complete(self):
         submission = SubmissionFactory.from_components(
@@ -912,7 +912,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             "This email is a confirmation that this form has been co-signed by "
             "%(cosigner_email)s and can now be processed."
         ) % {"cosigner_email": "cosigner@test.nl"}
-        self.assertEquals(expected_text, text)
+        self.assertEqual(expected_text, text)
 
     def test_confirmation_email_cosign_not_required_and_not_filled_in(self):
         submission = SubmissionFactory.from_components(
@@ -949,7 +949,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
         message = mail.outbox[0]
         text = message.body.rstrip()
-        self.assertEquals(text, "Test:")
+        self.assertEqual(text, "Test:")
 
     def test_confirmation_email_cosign_completed(self):
         submission = SubmissionFactory.from_components(
@@ -986,4 +986,4 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         text = message.body.rstrip()
         expected_text = inspect.cleandoc("Test:").lstrip()
 
-        self.assertEquals(expected_text, text)
+        self.assertEqual(expected_text, text)

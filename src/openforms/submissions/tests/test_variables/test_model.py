@@ -277,4 +277,4 @@ class SubmissionValueVariableModelTests(TestCase):
         variable1 = SubmissionValueVariableFactory.create(value=Natural(1337))
         stored = SubmissionValueVariable.objects.get(key=variable1.key)
 
-        self.assertEquals(stored.value, 1337)
+        self.assertEqual(stored.value, 1337)

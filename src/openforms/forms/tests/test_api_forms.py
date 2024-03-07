@@ -1389,7 +1389,7 @@ class FormsAPITranslationTests(APITestCase):
 
         # The form is only translated into English
         # assert all values of this Dutch one are empty
-        self.assert_(
+        self.assertTrue(
             all(literal["value"] == "" for literal in form["literals"].values())
         )
 

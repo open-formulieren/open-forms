@@ -45,13 +45,13 @@ class HTMLEmailWrapperTest(TestCase):
         self.assertEqual(message.from_email, "foo@sender.com")
 
         # text
-        self.assertEquals(message.body, "My Message\n")
+        self.assertEqual(message.body, "My Message\n")
         self.assertNotIn("<p>", message.body)
 
         # html alternative
         self.assertEqual(len(message.alternatives), 1)
         content, mime_type = message.alternatives[0]
-        self.assertEquals(mime_type, "text/html")
+        self.assertEqual(mime_type, "text/html")
         self.assertIn("<p>My Message</p>", content)
         self.assertIn("<table", content)
 
