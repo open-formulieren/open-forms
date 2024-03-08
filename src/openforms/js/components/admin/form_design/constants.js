@@ -3,6 +3,8 @@ export const FORM_DEFINITIONS_ENDPOINT = '/api/v2/form-definitions';
 export const REGISTRATION_BACKENDS_ENDPOINT = '/api/v2/registration/plugins';
 export const REGISTRATION_OBJECTTYPES_ENDPOINT =
   '/api/v2/registration/plugins/objects-api/object-types';
+export const REGISTRATION_OBJECTS_TARGET_PATHS =
+  '/api/v2/registration/plugins/objects-api/target-paths';
 export const AUTH_PLUGINS_ENDPOINT = '/api/v2/authentication/plugins';
 export const PREFILL_PLUGINS_ENDPOINT = '/api/v2/prefill/plugins';
 export const DMN_PLUGINS_ENDPOINT = '/api/v2/dmn/plugins';

@@ -19,3 +19,8 @@ export const mockObjecttypesError = () =>
   rest.all('*', (req, res, ctx) => {
     return res(ctx.status(500));
   });
+
+export const mockTargetPathsPost = paths =>
+  rest.post(`${BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`, (req, res, ctx) => {
+    return res(ctx.json(paths));
+  });

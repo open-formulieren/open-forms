@@ -15,7 +15,7 @@ import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {get} from 'utils/fetch';
 
 import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
-import RegistrationsSummary from './registration';
+import RegistrationSummaryList from './registration';
 import Variable from './types';
 import {variableHasErrors} from './utils';
 
@@ -66,12 +66,10 @@ Td.propTypes = {
   fieldName: PropTypes.string.isRequired,
 };
 
-const VariableRow = ({index, variable}) => {
+const VariableRow = ({index, variable, onFieldChange}) => {
   const intl = useIntl();
   const formContext = useContext(FormContext);
-
   const formSteps = formContext.formSteps;
-  const registrationBackends = formContext.registrationBackends;
 
   const getFormDefinitionName = formDefinition => {
     for (const step of formSteps) {
@@ -99,10 +97,7 @@ const VariableRow = ({index, variable}) => {
         )}
       </td>
       <td>
-        <RegistrationsSummary
-          variableKey={variable.key}
-          registrationBackends={registrationBackends}
-        />
+        <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
       </td>
       <td>{variable.dataType}</td>
       <td>
@@ -113,7 +108,7 @@ const VariableRow = ({index, variable}) => {
   );
 };
 
-const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
+const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange}) => {
   const intl = useIntl();
   const deleteConfirmMessage = intl.formatMessage({
     description: 'User defined variable deletion confirm message',
@@ -122,7 +117,6 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
 
   const formContext = useContext(FormContext);
 
-  const registrationBackends = formContext.registrationBackends;
   const {availablePrefillPlugins} = formContext.plugins;
   const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
   const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
@@ -216,10 +210,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <RegistrationsSummary
-          variableKey={variable.key}
-          registrationBackends={registrationBackends}
-        />
+        <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
       </td>
       <td>
         <Field name="dataType" errors={variable.errors?.dataType}>
@@ -259,7 +250,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
   );
 };
 
-const VariablesTable = ({variables, editable, onChange, onDelete}) => {
+const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}) => {
   const headColumns = (
     <>
       <HeadColumn content="" />
@@ -347,11 +338,17 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
               key={`${variable.key}-${index}`}
               index={index}
               variable={variable}
-              onChange={onChange}
               onDelete={onDelete}
+              onChange={onChange}
+              onFieldChange={onFieldChange}
             />
           ) : (
-            <VariableRow key={`${variable.key}-${index}`} index={index} variable={variable} />
+            <VariableRow
+              key={`${variable.key}-${index}`}
+              index={index}
+              variable={variable}
+              onFieldChange={onFieldChange}
+            />
           )
         )}
       </ChangelistTableWrapper>

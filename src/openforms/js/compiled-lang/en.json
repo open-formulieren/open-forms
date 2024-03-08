@@ -391,6 +391,12 @@
       "value": "CSS class"
     }
   ],
+  "3z1hhJ": [
+    {
+      "type": 0,
+      "value": "Toggle JSON Schema"
+    }
+  ],
   "4/cCvG": [
     {
       "type": 0,
@@ -721,6 +727,12 @@
     {
       "type": 0,
       "value": "Maximum date"
+    }
+  ],
+  "7Vx5It": [
+    {
+      "type": 0,
+      "value": "No compatible registration backend configured."
     }
   ],
   "7X6yT4": [
@@ -1331,6 +1343,18 @@
       "value": "The values that can be picked for this field. Values are the text that is submitted with the form data. Labels are the text next to radio buttons, checkboxes and options in dropdowns."
     }
   ],
+  "DRidde": [
+    {
+      "type": 0,
+      "value": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+    }
+  ],
+  "DaxIUG": [
+    {
+      "type": 0,
+      "value": "Variable key"
+    }
+  ],
   "DcI1VF": [
     {
       "type": 0,
@@ -1847,16 +1871,16 @@
       "value": "The data entered in this component will be removed in accordance with the privacy settings."
     }
   ],
-  "JN1BvY": [
-    {
-      "type": 0,
-      "value": "Add another"
-    }
-  ],
   "JRGs/Q": [
     {
       "type": 0,
       "value": "Expand/collapse JsonLogic"
+    }
+  ],
+  "JXcHQ2": [
+    {
+      "type": 0,
+      "value": "Not yet configured"
     }
   ],
   "JZRX+C": [
@@ -3329,6 +3353,12 @@
       "value": "Authorised person"
     }
   ],
+  "cK2O6E": [
+    {
+      "type": 0,
+      "value": "Something went wrong when fetching the available target paths"
+    }
+  ],
   "cQvPLh": [
     {
       "type": 0,
@@ -3953,6 +3983,12 @@
     {
       "type": 0,
       "value": "Values"
+    }
+  ],
+  "j5KpZP": [
+    {
+      "type": 0,
+      "value": "loading..."
     }
   ],
   "j7rEgn": [
@@ -4669,6 +4705,12 @@
       "value": "'Add another' text"
     }
   ],
+  "rkzjK3": [
+    {
+      "type": 0,
+      "value": "JSON Schema target"
+    }
+  ],
   "rzGuvz": [
     {
       "type": 0,
@@ -5093,6 +5135,34 @@
     {
       "type": 0,
       "value": "Objects API - objecttype"
+    }
+  ],
+  "y4U0aW": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "path"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 1,
+              "value": "path"
+            },
+            {
+              "type": 0,
+              "value": " (required)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "required"
     }
   ],
   "yCogwi": [

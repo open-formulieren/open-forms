@@ -1214,7 +1214,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
 
       <FormContext.Provider
         value={{
-          form: {url: state.form.url},
+          form: {url: state.form.url, uuid: state.form.uuid},
           components: availableComponents,
           formSteps: state.formSteps,
           formDefinitions: state.formDefinitions,
@@ -1435,6 +1435,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
                     payload: {key, propertyName, propertyValue},
                   })
                 }
+                onFieldChange={onFieldChange}
               />
             </TabPanel>
           )}

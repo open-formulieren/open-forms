@@ -391,6 +391,12 @@
       "value": "Weergavestijl"
     }
   ],
+  "3z1hhJ": [
+    {
+      "type": 0,
+      "value": "Toggle JSON Schema"
+    }
+  ],
   "4/cCvG": [
     {
       "type": 0,
@@ -721,6 +727,12 @@
     {
       "type": 0,
       "value": "Maximale datum"
+    }
+  ],
+  "7Vx5It": [
+    {
+      "type": 0,
+      "value": "No compatible registration backend configured."
     }
   ],
   "7X6yT4": [
@@ -1335,6 +1347,18 @@
       "value": "De mogelijke keuzeopties voor dit veld. De waarden worden in de formuliergegevens opgeslagen. De labels zijn de teksten die aan de gebruiker getoond worden."
     }
   ],
+  "DRidde": [
+    {
+      "type": 0,
+      "value": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+    }
+  ],
+  "DaxIUG": [
+    {
+      "type": 0,
+      "value": "Variable key"
+    }
+  ],
   "DcI1VF": [
     {
       "type": 0,
@@ -1851,16 +1875,16 @@
       "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
     }
   ],
-  "JN1BvY": [
-    {
-      "type": 0,
-      "value": "Nog één toevoegen"
-    }
-  ],
   "JRGs/Q": [
     {
       "type": 0,
       "value": "Klap JsonLogic-expressie in/uit"
+    }
+  ],
+  "JXcHQ2": [
+    {
+      "type": 0,
+      "value": "Not yet configured"
     }
   ],
   "JZRX+C": [
@@ -3330,6 +3354,12 @@
       "value": "Gemachtigde"
     }
   ],
+  "cK2O6E": [
+    {
+      "type": 0,
+      "value": "Something went wrong when fetching the available target paths"
+    }
+  ],
   "cQvPLh": [
     {
       "type": 0,
@@ -3931,7 +3961,7 @@
   "iq0ppL": [
     {
       "type": 0,
-      "value": "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie."
+      "value": "Bij het inschakelen van de afsprakenmodus doorloopt de gebruiker een vaste flow."
     }
   ],
   "iqAbXt": [
@@ -3954,6 +3984,12 @@
     {
       "type": 0,
       "value": "Waarden"
+    }
+  ],
+  "j5KpZP": [
+    {
+      "type": 0,
+      "value": "loading..."
     }
   ],
   "j7rEgn": [
@@ -4671,6 +4707,12 @@
       "value": "'Groep toevoegen'-tekst"
     }
   ],
+  "rkzjK3": [
+    {
+      "type": 0,
+      "value": "JSON Schema target"
+    }
+  ],
   "rzGuvz": [
     {
       "type": 0,
@@ -5095,6 +5137,34 @@
     {
       "type": 0,
       "value": "Objecten API - objecttype"
+    }
+  ],
+  "y4U0aW": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 1,
+              "value": "path"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 1,
+              "value": "path"
+            },
+            {
+              "type": 0,
+              "value": " (required)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "required"
     }
   ],
   "yCogwi": [

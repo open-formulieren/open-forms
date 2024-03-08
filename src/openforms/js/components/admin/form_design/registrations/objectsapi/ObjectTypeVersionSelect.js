@@ -2,11 +2,8 @@ import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
-import Select from 'components/admin/forms/Select';
+import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
-
-// TODO: properly translate this
-const LOADING_OPTION = [['...', 'loading...']];
 
 const getObjecttypeVersionsEndpoint = objecttype => {
   const bits = [

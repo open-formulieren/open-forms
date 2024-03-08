@@ -1,3 +1,5 @@
+import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';
+
 import {FormDecorator} from '../story-decorators';
 import VariablesEditor from './VariablesEditor';
 
@@ -38,9 +40,39 @@ export default {
         initialValue: [],
       },
     ],
+    availableStaticVariables: [
+      {
+        form: null,
+        formDefinition: null,
+        name: 'Now',
+        key: 'now',
+        source: '',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'datetime',
+        dataFormat: '',
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '2024-02-27T16:44:22.170405Z',
+      },
+    ],
+  },
+  argTypes: {
+    onChange: {action: true},
+    onAdd: {action: true},
+    onDelete: {action: true},
+  },
+};
+
+export const Default = {};
+
+export const WithObjectsAPIRegistrationBackends = {
+  args: {
     registrationBackends: [
       {
-        key: 'objects_api',
+        backend: 'objects_api',
+        key: 'objects_api_1',
         name: 'Example Objects API reg.',
         options: {
           version: 2,
@@ -54,13 +86,14 @@ export default {
             },
             {
               variableKey: 'userDefined',
-              targetPath: ['path'],
+              targetPath: ['other', 'path'],
             },
           ],
         },
       },
       {
-        key: 'objects_api',
+        backend: 'objects_api',
+        key: 'objects_api_2',
         name: 'Other Objects API registration with a long name',
         options: {
           version: 2,
@@ -76,7 +109,8 @@ export default {
         },
       },
       {
-        key: 'objects_api',
+        backend: 'objects_api',
+        key: 'objects_api_3',
         name: "Shouldn't display!",
         options: {
           version: 1,
@@ -86,12 +120,26 @@ export default {
         },
       },
     ],
+    onFieldChange: data => {
+      console.log(data);
+    },
   },
-  argTypes: {
-    onChange: {action: true},
-    onAdd: {action: true},
-    onDelete: {action: true},
+  parameters: {
+    msw: {
+      handlers: [
+        mockTargetPathsPost([
+          {
+            targetPath: ['path', 'to.the', 'target'],
+            isRequired: true,
+            jsonSchema: {type: 'string'},
+          },
+          {
+            targetPath: ['other', 'path'],
+            isRequired: false,
+            jsonSchema: {type: 'object', properties: {a: {type: 'string'}}, required: ['a']},
+          },
+        ]),
+      ],
+    },
   },
 };
-
-export const Default = {};

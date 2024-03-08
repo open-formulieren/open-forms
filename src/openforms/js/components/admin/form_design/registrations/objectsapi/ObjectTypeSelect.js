@@ -1,10 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 
-import Select from 'components/admin/forms/Select';
-
-// TODO: properly translate this
-const LOADING_OPTION = [['...', 'loading...']];
+import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 
 const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => {
   const {loading, availableObjecttypes, error} = availableObjectTypesState;
