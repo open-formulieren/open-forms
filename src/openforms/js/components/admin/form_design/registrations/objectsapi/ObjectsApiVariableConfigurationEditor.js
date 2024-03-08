@@ -10,7 +10,7 @@ import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/co
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import ErrorMessage from 'components/errors/ErrorMessage';
 import {post} from 'utils/fetch';
@@ -25,6 +25,7 @@ import {asJsonSchema} from './utils';
  *   objecttype: string;
  *   objecttypeVersion: number;
  *   variablesMapping: {variableKey: string, targetPath: string[]}[];
+ *   geometryVariableKey: string;
  * }} ObjectsAPIRegistrationBackendOptions
  *
  * @param {Object} p
@@ -35,11 +36,15 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const {csrftoken} = useContext(APIContext);
 
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
-  const {values: backendOptions, getFieldProps} = useFormikContext();
+  const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */
-  const {objecttype, objecttypeVersion, variablesMapping, version} = backendOptions;
+  const {objecttype, objecttypeVersion, geometryVariableKey, variablesMapping, version} =
+    backendOptions;
+
   if (version !== 2) throw new Error('Not supported, must be config version 2.');
+
+  const isGeometry = geometryVariableKey === variable.key;
 
   // get the index of our variable in the mapping, if it exists
   let index = variablesMapping.findIndex(
@@ -112,6 +117,33 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
       </FormRow>
       <FormRow>
         <Field
+          label={
+            <FormattedMessage
+              defaultMessage="Map to geometry field"
+              description="'Map to geometry field' checkbox label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              description="'Map to geometry field' checkbox help text"
+              defaultMessage="Whether to map this variable to the {geometryPath} attribute"
+              values={{geometryPath: <code>record.geometry</code>}}
+            />
+          }
+          name="geometryVariableKey"
+          disabled={!!mappedVariable.targetPath}
+        >
+          <Checkbox
+            checked={isGeometry}
+            onChange={event => {
+              const newValue = event.target.checked ? variable.key : undefined;
+              setFieldValue('geometryVariableKey', newValue);
+            }}
+          />
+        </Field>
+      </FormRow>
+      <FormRow>
+        <Field
           name={`${namePrefix}.targetPath`}
           label={
             <FormattedMessage
@@ -119,12 +151,14 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
               description="'JSON Schema target' label"
             />
           }
+          disabled={isGeometry}
         >
           <TargetPathSelect
             name={`${namePrefix}.targetPath`}
             index={index}
             choices={choices}
             mappedVariable={mappedVariable}
+            disabled={isGeometry}
           />
         </Field>
       </FormRow>
@@ -153,11 +187,10 @@ ObjectsApiVariableConfigurationEditor.propTypes = {
   }).isRequired,
 };
 
-const TargetPathSelect = ({name, index, choices, mappedVariable}) => {
+const TargetPathSelect = ({name, index, choices, mappedVariable, disabled}) => {
   // To avoid having an incomplete variable mapping added in the `variablesMapping` array,
   // It is added only when an actual target path is selected. This way, having the empty
   // option selected means the variable is unmapped (hence the `arrayHelpers.remove` call below).
-
   const {
     values: {variablesMapping},
     getFieldProps,
@@ -176,6 +209,7 @@ const TargetPathSelect = ({name, index, choices, mappedVariable}) => {
           allowBlank
           choices={choices}
           {...props}
+          disabled={disabled}
           value={JSON.stringify(props.value)}
           onChange={event => {
             if (event.target.value === '') {
