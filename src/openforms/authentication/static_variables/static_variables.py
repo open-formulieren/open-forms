@@ -10,7 +10,7 @@ from openforms.variables.registry import register_static_variable
 
 from ..constants import AuthAttribute
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
     from ..utils import FormAuth
