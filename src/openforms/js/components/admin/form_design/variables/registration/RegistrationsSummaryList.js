@@ -105,17 +105,19 @@ RegistrationSummary.propTypes = {
  *
  * @param {Object} p
  * @param {Object} p.variable - The current variable
+ * @param {RegistrationBackend[]?} p.registrationBackends - The registration backends to be
+ *     taken into account. If not provided, will fallback to the backends from the form context.
  * @returns {JSX.Element} - A <ul> list of summaries
  */
-const RegistrationsSummaryList = ({variable, onFieldChange}) => {
+const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends}) => {
   const formContext = useContext(FormContext);
 
   /** @type {RegistrationBackend[]} */
-  const registrationBackends = formContext.registrationBackends;
+  const filteredRegistrationBackends = registrationBackends || formContext.registrationBackends;
 
   const summaries = [];
 
-  for (const [backendIndex, backend] of registrationBackends.entries()) {
+  for (const [backendIndex, backend] of filteredRegistrationBackends.entries()) {
     const backendInfo = BACKEND_OPTIONS_FORMS[backend.backend];
 
     // Check if the registration backend can be configured from the variables tab...

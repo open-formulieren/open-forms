@@ -41,13 +41,13 @@ import {FormWarnings} from './Warnings';
 import {
   AUTH_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
-  DMN_DECISION_DEFINITIONS_LIST,
   DMN_PLUGINS_ENDPOINT,
   FORM_DEFINITIONS_ENDPOINT,
   LANGUAGE_INFO_ENDPOINT,
   PAYMENT_PLUGINS_ENDPOINT,
   PREFILL_PLUGINS_ENDPOINT,
   REGISTRATION_BACKENDS_ENDPOINT,
+  REGISTRATION_VARIABLES_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
   THEMES_ENDPOINT,
 } from './constants';
@@ -999,6 +999,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: DMN_PLUGINS_ENDPOINT, stateVar: 'availableDMNPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
+    {endpoint: REGISTRATION_VARIABLES_ENDPOINT, stateVar: 'registrationPluginsVariables'},
   ];
 
   if (formUuid) {
@@ -1250,6 +1251,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           reusableFormDefinitionsLoaded: state.reusableFormDefinitionsLoaded,
           formVariables: state.formVariables,
           staticVariables: state.staticVariables,
+          registrationPluginsVariables: state.registrationPluginsVariables,
           plugins: {
             availableAuthPlugins: state.availableAuthPlugins,
             selectedAuthPlugins: state.selectedAuthPlugins,

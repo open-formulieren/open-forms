@@ -5,6 +5,7 @@ import {TabList, TabPanel, Tabs} from 'react-tabs';
 import Tab from 'components/admin/form_design/Tab';
 import Fieldset from 'components/admin/forms/Fieldset';
 
+import RegistrationVariables from './RegistrationVariables';
 import StaticData from './StaticData';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
@@ -48,6 +49,12 @@ const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) 
             <Tab>
               <FormattedMessage defaultMessage="Static" description="Static variables tab title" />
             </Tab>
+            <Tab>
+              <FormattedMessage
+                defaultMessage="Registration"
+                description="Registration variables tab title"
+              />
+            </Tab>
           </TabList>
 
           <TabPanel>
@@ -64,6 +71,9 @@ const VariablesEditor = ({variables, onAdd, onDelete, onChange, onFieldChange}) 
           </TabPanel>
           <TabPanel>
             <StaticData onFieldChange={onFieldChange} />
+          </TabPanel>
+          <TabPanel>
+            <RegistrationVariables onFieldChange={onFieldChange} />
           </TabPanel>
         </Tabs>
       </div>
