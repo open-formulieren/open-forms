@@ -48,18 +48,18 @@ class JsonSchemaPath:
 
 @overload
 def iter_json_schema_paths(
-    json_schema: ObjectSchema, fail_fast: Literal[False]
+    json_schema: ObjectSchema, *, fail_fast: Literal[False]
 ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema | InvalidReference]]: ...
 
 
 @overload
 def iter_json_schema_paths(
-    json_schema: ObjectSchema, fail_fast: Literal[True] = ...
+    json_schema: ObjectSchema, *, fail_fast: Literal[True] = ...
 ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema]]: ...
 
 
 def iter_json_schema_paths(
-    json_schema: ObjectSchema, fail_fast: bool = True
+    json_schema: ObjectSchema, *, fail_fast: bool = True
 ) -> Iterator[tuple[JsonSchemaPath, ObjectSchema | InvalidReference]]:
     """Recursively iterate over the JSON Schema paths, resolving references if required.
 
@@ -168,3 +168,39 @@ def get_missing_required_paths(
         missing_paths.append(r_path.segments)
 
     return missing_paths
+
+
+def json_schema_matches(
+    *, variable_schema: ObjectSchema, target_schema: ObjectSchema
+) -> bool:
+    """Return whether the deduced JSON Schema of a variable is compatible with the target object (sub) JSON Schema.
+
+    In other terms, this determines whether the variable can be mapped to a specific location. Currently,
+    only a limited subset of features is supported. For instance, ``format`` constraints are supported
+    if the type is a string, however no inspection is done on ``properties`` if it is an object.
+    """
+    if "type" not in target_schema:
+        return True
+
+    if "type" not in variable_schema:
+        # 'type' is in target but not in variable
+        return False
+
+    target_types: str | list[str] = target_schema["type"]
+    if not isinstance(target_types, list):
+        target_types = [target_types]
+
+    variable_types: str | list[str] = variable_schema["type"]
+    if not isinstance(variable_types, list):
+        variable_types = [variable_types]
+
+    if not set(variable_types).issubset(target_types):
+        return False
+
+    if "string" in target_types and (target_format := target_schema.get("format")):
+        variable_format = variable_schema.get("format")
+        if variable_format is None:
+            return False
+        return variable_format == target_format
+
+    return True

@@ -11,7 +11,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from .test_objecttypes_client import get_test_config
 
 
-class ObjecttypesAPIEndpointsTests(OFVCRMixin, APITestCase):
+class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
@@ -79,7 +79,7 @@ class ObjecttypesAPIEndpointsTests(OFVCRMixin, APITestCase):
         )
 
 
-class ObjecttypeVersionsAPIEndpointsTests(OFVCRMixin, APITestCase):
+class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
@@ -144,3 +144,105 @@ class ObjecttypeVersionsAPIEndpointsTests(OFVCRMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [])
+
+
+class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
+
+    VCR_TEST_FILES = Path(__file__).parent / "files"
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.user = UserFactory.create()
+        self.staff_user = StaffUserFactory.create()
+
+        self.endpoint = reverse_lazy("api:objects_api:target-paths")
+
+        patcher = patch(
+            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
+            return_value=get_test_config(),
+        )
+
+        self.config_mock = patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_auth_required(self):
+        response = self.client.post(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_staff_user_required(self):
+
+        with self.subTest(staff=False):
+            self.client.force_authenticate(user=self.user)
+
+            response = self.client.post(self.endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        with self.subTest(staff=True):
+            self.client.force_authenticate(user=self.staff_user)
+
+            response = self.client.post(self.endpoint)
+
+            # Should be a 400 as permissions are ok but missing body
+            # (but this is tested in `test_missing_body` and not relevant for this test)
+            self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_missing_body(self):
+        self.client.force_authenticate(user=self.staff_user)
+
+        response = self.client.post(self.endpoint, data={})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_wrong_uuid_parsing(self):
+        self.client.force_authenticate(user=self.staff_user)
+
+        response = self.client.post(
+            self.endpoint,
+            data={
+                "objecttypeUrl": "http://localhost:8001/api/v2/objecttypes/bad_uuid",
+                "objecttypeVersion": 1,
+                "variableJsonSchema": {"type": "string"},
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual("objecttypeUrl", response.json()["invalidParams"][0]["name"])
+
+    def test_list_target_paths(self):
+        self.client.force_authenticate(user=self.staff_user)
+
+        response = self.client.post(
+            self.endpoint,
+            data={
+                "objecttypeUrl": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttypeVersion": 2,
+                "variableJsonSchema": {"type": "string"},
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # The list of targets is constructed from a JSON mapping, which isn't guaranteed
+        # to be ordered. So `assertCountEqual` is used (horrible naming, but is <=> unordered `assertListEqual`)
+        self.assertCountEqual(
+            response.json(),
+            [
+                {
+                    "targetPath": ["firstName"],
+                    "isRequired": False,
+                    "jsonSchema": {
+                        "type": "string",
+                        "description": "The person's first name.",
+                    },
+                },
+                {
+                    "targetPath": ["lastName"],
+                    "isRequired": False,
+                    "jsonSchema": {
+                        "type": "string",
+                        "description": "The person's last name.",
+                    },
+                },
+            ],
+        )

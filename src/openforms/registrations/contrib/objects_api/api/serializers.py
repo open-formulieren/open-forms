@@ -23,3 +23,34 @@ class ObjecttypeVersionSerializer(serializers.Serializer):
         label=_("Integer version of the Objecttype."),
     )
     status = serializers.CharField(label=_("Status of the object type version"))
+
+
+class TargetPathsSerializer(serializers.Serializer):
+    target_path = serializers.ListField(
+        child=serializers.CharField(label=_("Segment of a JSON path")),
+        label=_("target path"),
+        help_text=_(
+            "Representation of the JSON target location as a list of string segments."
+        ),
+    )
+    is_required = serializers.BooleanField(
+        label=_("required"),
+        help_text=_("Wether the path is marked as required in the JSON Schema."),
+    )
+    json_schema = serializers.DictField(
+        label=_("json schema"),
+        help_text=_("Corresponding (sub) JSON Schema of the target path."),
+    )
+
+
+class TargetPathsInputSerializer(serializers.Serializer):
+    objecttype_url = serializers.URLField(
+        label=_("objecttype url"), help_text=("The URL of the objecttype.")
+    )
+    objecttype_version = serializers.IntegerField(
+        label=_("objecttype version"), help_text=_("The version of the objecttype.")
+    )
+    variable_json_schema = serializers.DictField(
+        label=_("variable json schema"),
+        help_text=_("The JSON Schema of the form variable."),
+    )
