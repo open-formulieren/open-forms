@@ -173,7 +173,7 @@ django-jsonform==2.21.2
     # via
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
-django-log-outgoing-requests==0.6.0
+django-log-outgoing-requests==0.6.1
     # via -r requirements/base.in
 django-modeltranslation==0.18.12
     # via -r requirements/base.in
@@ -296,6 +296,7 @@ jsonschema-spec==0.2.4
     # via openapi-spec-validator
 jsonschema-specifications==2023.7.1
     # via
+    #   -r requirements/base.in
     #   jsonschema
     #   openapi-schema-validator
 kombu==5.2.4
