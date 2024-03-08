@@ -69,4 +69,36 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
   return registrationBackendOptions;
 };
 
-export {onCamundaStepEdit, onZGWStepEdit};
+/**
+ * Update the mapped properties after the form definitions change
+ * @param  {Object} registrationBackendOptions The currently configured backend options,
+ *                                             including the mapped properties. Note that this is
+ *                                             an immer draft which can be mutated.
+ * @param  {Object} componentSchema            The Formio component (schema) that was mutated in some way
+ * @param  {Object|null} originalComponent     The component before it was mutated, null if the component is removed.
+ * @return {Object|null}                       The updated registrationBackendOptions draft. Return null to indicate
+ *                                             no changes need to be made.
+ */
+const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+  const removed = originalComponent == null;
+
+  if (removed) {
+    const matchingMappingIndex = registrationBackendOptions.variablesMapping.findIndex(
+      mapping => mapping.variableKey === componentSchema.key
+    );
+
+    if (matchingMappingIndex === -1) return;
+    registrationBackendOptions.variablesMapping.splice(matchingMappingIndex, 1);
+  } else {
+    const keyChanged = componentSchema.key !== originalComponent.key;
+    if (!keyChanged) return null;
+
+    for (const mapping of registrationBackendOptions.variablesMapping) {
+      if (mapping.variableKey === originalComponent.key) {
+        mapping.variableKey = componentSchema.key;
+      }
+    }
+  }
+};
+
+export {onCamundaStepEdit, onZGWStepEdit, onObjectsAPIStepEdit};

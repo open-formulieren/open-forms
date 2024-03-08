@@ -1,4 +1,5 @@
 import {produce} from 'immer';
+import cloneDeep from 'lodash/cloneDeep';
 import getObjectValue from 'lodash/get';
 import groupBy from 'lodash/groupBy';
 import set from 'lodash/set';
@@ -746,12 +747,29 @@ function reducer(draft, action) {
     }
     case 'DELETE_USER_DEFINED_VARIABLE': {
       const key = action.payload;
+      const deletedVariable = draft.formVariables.find(variable => variable.key === key);
+
+      // Update registration backends that might depend on the variable:
+      draft.form.registrationBackends = draft.form.registrationBackends.map(configuredBackend => {
+        const {backend: registrationBackend, options} = configuredBackend;
+
+        const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onUserDefinedVariableEdit;
+        if (handler == null) return configuredBackend;
+        const updatedOptions = handler(options, deletedVariable, null);
+        if (!updatedOptions) return configuredBackend;
+
+        return {...configuredBackend, options: updatedOptions};
+      });
+
       draft.formVariables = draft.formVariables.filter(variable => variable.key !== key);
       break;
     }
     case 'CHANGE_USER_DEFINED_VARIABLE': {
       const {key, propertyName, propertyValue} = action.payload;
 
+      const originalVariable = cloneDeep(
+        draft.formVariables.find(variable => variable.key === key)
+      );
       const index = draft.formVariables.findIndex(variable => variable.key === key);
 
       draft.formVariables[index][propertyName] = propertyValue;
@@ -781,6 +799,18 @@ function reducer(draft, action) {
           draft.logicRules = updateKeyReferencesInLogic(draft.logicRules, key, propertyValue);
         }
       }
+
+      // Update registration backends that might depend on the variable:
+      draft.form.registrationBackends = draft.form.registrationBackends.map(configuredBackend => {
+        const {backend: registrationBackend, options} = configuredBackend;
+
+        const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onUserDefinedVariableEdit;
+        if (handler == null) return configuredBackend;
+        const updatedOptions = handler(options, draft.formVariables[index], originalVariable);
+        if (!updatedOptions) return configuredBackend;
+
+        return {...configuredBackend, options: updatedOptions};
+      });
       break;
     }
 
