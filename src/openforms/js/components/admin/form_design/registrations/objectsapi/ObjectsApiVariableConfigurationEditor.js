@@ -71,10 +71,6 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
         variableJsonSchema: asJsonSchema(variable),
       });
 
-      if (!response.ok) {
-        throw new Error('Loading available target paths failed');
-      }
-
       return response.data;
     },
     // Load only once:
