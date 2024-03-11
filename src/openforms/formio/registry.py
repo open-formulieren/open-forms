@@ -27,22 +27,21 @@ from .typing import Component
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
+T = TypeVar("T", bound=Component, contravariant=True)
 
-class FormatterProtocol(Protocol):
+
+class FormatterProtocol(Generic[T], Protocol):
     def __init__(self, as_html: bool): ...
 
-    def __call__(self, component: Component, value: Any) -> str: ...
+    def __call__(self, component: T, value: Any) -> str: ...
 
 
-class NormalizerProtocol(Protocol):
-    def __call__(self, component: Component, value: Any) -> Any: ...
+class NormalizerProtocol(Generic[T], Protocol):
+    def __call__(self, component: T, value: Any) -> Any: ...
 
 
-class RewriterForRequestProtocol(Protocol):
-    def __call__(self, component: Component, request: Request) -> None: ...
-
-
-T = TypeVar("T", bound=Component)
+class RewriterForRequestProtocol(Generic[T], Protocol):
+    def __call__(self, component: T, request: Request) -> None: ...
 
 
 class BasePlugin(Generic[T], AbstractBasePlugin):
@@ -52,18 +51,18 @@ class BasePlugin(Generic[T], AbstractBasePlugin):
 
     is_enabled: bool = True
 
-    formatter: type[FormatterProtocol]
+    formatter: type[FormatterProtocol[T]]
     """
     Specify the callable to use for formatting.
 
     Formatter (class) implementation, used by
     :meth:`openforms.formio.registry.ComponentRegistry.format`.
     """
-    normalizer: None | NormalizerProtocol = None
+    normalizer: None | NormalizerProtocol[T] = None
     """
     Specify the normalizer callable to use for value normalization.
     """
-    rewrite_for_request: None | RewriterForRequestProtocol = None
+    rewrite_for_request: None | RewriterForRequestProtocol[T] = None
     """
     Callback to invoke to rewrite plugin configuration for a given HTTP request.
     """
@@ -87,7 +86,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         """
         Given a value from any source, normalize it according to the component rules.
         """
-        assert "type" in component
         if (component_type := component["type"]) not in self:
             return value
         normalizer = self[component_type].normalizer
@@ -103,7 +101,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         for the given component type, as it makes the best sense for that component
         type.
         """
-        assert "type" in component
         if (component_type := component["type"]) not in self:
             component_type = "default"
 
@@ -124,7 +121,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         for example) to work.
         """
         # if there is no plugin registered for the component, return the input
-        assert "type" in component
         if (component_type := component["type"]) not in self:
             return
 
@@ -137,7 +133,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         Mutate the component in place for the given request context.
         """
         # if there is no plugin registered for the component, return the input
-        assert "type" in component
         if (component_type := component["type"]) not in self:
             return
 
@@ -160,7 +155,6 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
           enabled, the translation information should still be stripped from the
           component definition(s).
         """
-        assert "type" in component
         generic_translations = component.get("openForms", {}).get("translations", {})
         # apply the generic translation behaviour even for unregistered components
         if enabled and (translations := generic_translations.get(language_code, {})):
