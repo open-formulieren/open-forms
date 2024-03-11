@@ -41,6 +41,7 @@ from ..formatters.formio import (
 from ..registry import BasePlugin, register
 from ..serializers import build_serializer
 from ..typing import (
+    Component,
     ContentComponent,
     FileComponent,
     RadioComponent,
@@ -104,6 +105,26 @@ class TextField(BasePlugin[TextFieldComponent]):
 @register("email")
 class Email(BasePlugin):
     formatter = EmailFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.EmailField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        base = serializers.EmailField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("time")
