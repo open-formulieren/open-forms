@@ -136,6 +136,41 @@ class Time(BasePlugin):
 class PhoneNumber(BasePlugin):
     formatter = PhoneNumberFormatter
 
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        # maxLength because of the usage in appointments, even though our form builder
+        # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        validators = []
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    pattern,
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+        if validators:
+            extra["validators"] = validators
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
+
 
 @register("file")
 class File(BasePlugin[FileComponent]):
