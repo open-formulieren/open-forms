@@ -60,3 +60,22 @@ class TextFieldValidationTests(SimpleTestCase):
         self.assertFalse(is_valid)
         error = extract_error(errors, "houseNumber")
         self.assertEqual(error.code, "invalid")
+
+    def test_multiple(self):
+        component: TextFieldComponent = {
+            "type": "textfield",
+            "key": "numbers",
+            "label": "House number",
+            "multiple": True,
+            "validate": {"pattern": r"\d+"},
+        }
+        data: JSONValue = {"numbers": ["42", "notnumber"]}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertFalse(is_valid)
+        error = errors["numbers"][1][0]
+        self.assertEqual(error.code, "invalid")
+
+        with self.subTest("valid item"):
+            self.assertNotIn(0, errors["numbers"])
