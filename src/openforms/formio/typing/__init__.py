@@ -13,22 +13,31 @@ from .vanilla import (
     ColumnsComponent,
     ContentComponent,
     DatetimeComponent,
+    EditGridComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
     SelectComponent,
+    TextFieldComponent,
 )
 
 __all__ = [
+    # base
     "Component",
     "OptionDict",
-    "ContentComponent",
+    # standard
+    "TextFieldComponent",
+    "DateComponent",
+    "DatetimeComponent",
     "FileComponent",
     "SelectComponent",
     "SelectBoxesComponent",
     "RadioComponent",
+    # layout
+    "ContentComponent",
     "Column",
     "ColumnsComponent",
-    "DatetimeComponent",
-    "DateComponent",
+    # special
+    "EditGridComponent",
+    # deprecated
 ]

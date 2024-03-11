@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 @register("date")
-class Date(BasePlugin):
+class Date(BasePlugin[DateComponent]):
     formatter = DateFormatter
 
     @staticmethod
@@ -128,9 +128,8 @@ class NPFamilyMembers(BasePlugin):
         config = FamilyMembersTypeConfig.get_solo()
         return handlers[config.data_api]
 
-    @classmethod
     def mutate_config_dynamically(
-        cls, component: Component, submission: Submission, data: DataMapping
+        self, component: Component, submission: Submission, data: DataMapping
     ) -> None:
         # Check authentication details/status before proceeding
         has_bsn = (
@@ -172,7 +171,7 @@ class NPFamilyMembers(BasePlugin):
             "value": "",
         }
         if not existing_values or existing_values[0] == empty_option:
-            handler = cls._get_handler()
+            handler = self._get_handler()
             # make the API call
             # TODO: this should eventually be replaced with logic rules/variables that
             # retrieve data from an "arbitrary source", which will cause the data to
