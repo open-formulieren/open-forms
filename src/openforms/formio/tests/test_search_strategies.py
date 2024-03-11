@@ -3,8 +3,6 @@ from django.test import SimpleTestCase
 
 from hypothesis import given, settings
 
-from openforms.forms.models.form_variable import variable_key_validator
-
 from ..typing import (
     ColumnsComponent,
     Component,
@@ -13,6 +11,7 @@ from ..typing import (
     SelectBoxesComponent,
     SelectComponent,
 )
+from ..validators import variable_key_validator
 from .search_strategies import (
     address_nl_component,
     bsn_component,
