@@ -25,7 +25,11 @@ def _is_column_component(component: ComponentLike) -> TypeGuard[ColumnsComponent
 
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def iter_components(
-    configuration: ComponentLike, recursive=True, _is_root=True, _mark_root=False
+    configuration: ComponentLike,
+    recursive=True,
+    _is_root=True,
+    _mark_root=False,
+    recurse_into_editgrid: bool = True,
 ) -> Iterator[Component]:
     components = configuration.get("components", [])
     if _is_column_component(configuration) and recursive:
@@ -40,6 +44,13 @@ def iter_components(
             component["_is_root"] = _is_root
         yield component
         if recursive:
+            # TODO: find a cleaner solution - currently just not yielding these is not
+            # an option because we have some special treatment for editgrid data which
+            # 'copies' the nested components for further processing.
+            # Ideally, with should be able to delegate this behaviour to the registered
+            # component classes, but that's a refactor too big for the current task(s).
+            if component.get("type") == "editgrid" and not recurse_into_editgrid:
+                continue
             yield from iter_components(
                 configuration=component, recursive=recursive, _is_root=False
             )

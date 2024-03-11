@@ -43,6 +43,7 @@ from ..serializers import build_serializer
 from ..typing import (
     Component,
     ContentComponent,
+    EditGridComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
@@ -348,3 +349,28 @@ class Content(BasePlugin):
            security risk.
         """
         component["html"] = post_process_html(component["html"], request)
+
+
+@register("editgrid")
+class EditGrid(BasePlugin[EditGridComponent]):
+    def build_serializer_field(
+        self, component: EditGridComponent
+    ) -> serializers.ListField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        nested = build_serializer(
+            components=component.get("components", []),
+            # XXX: check out type annotations here, there's some co/contra variance
+            # in play
+            register=self.registry,
+        )
+        kwargs = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            kwargs["max_length"] = max_length
+        return serializers.ListField(
+            child=nested,
+            required=required,
+            allow_null=not required,
+            allow_empty=False,
+            **kwargs,
+        )
