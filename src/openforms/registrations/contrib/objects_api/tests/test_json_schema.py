@@ -8,6 +8,8 @@ from ..json_schema import (
     json_schema_matches,
 )
 
+JSON_SCHEMA_NO_SPEC = {"type": "object", "properties": {"prop": {"type": "string"}}}
+
 JSON_SCHEMA_NO_REFS = {
     "$id": "noise-complaint.schema",
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -162,6 +164,12 @@ class IterJsonSchemaTests(SimpleTestCase):
     The first path element being the root one, it is not included as it could
     simply be tested as ``([], CURRENT_SCHEMA_TESTED)``.
     """
+
+    def test_no_spec_default(self):
+        try:
+            list(iter_json_schema_paths(JSON_SCHEMA_NO_SPEC))
+        except Exception as e:
+            raise self.failureException("Unexpected exception") from e
 
     def test_iter_json_schema_no_refs(self):
         paths_list = [
