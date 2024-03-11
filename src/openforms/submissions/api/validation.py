@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.api.utils import mark_experimental
+from openforms.formio.service import build_serializer
 
 from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
@@ -44,6 +45,31 @@ class CompletionValidationSerializer(serializers.Serializer):
                     "Submission of this form is not allowed due to the answers submitted in a step."
                 )
             )
+
+    def validate(self, attrs: dict):
+        submission: Submission = self.context["submission"]
+
+        formio_validation_errors = []
+
+        data = submission.data
+        for step in submission.steps:
+            errors = {}
+            assert step.form_step
+            components = step.form_step.form_definition.configuration["components"]
+
+            step_data_serializer = build_serializer(components, data=data)
+            if not step_data_serializer.is_valid():
+                errors = step_data_serializer.errors
+
+            if errors:
+                formio_validation_errors.append({"data": errors})
+            else:
+                formio_validation_errors.append(None)
+
+        if any(formio_validation_errors):
+            raise serializers.ValidationError({"steps": formio_validation_errors})
+
+        return attrs
 
     def save(self, **kwargs):
         submission = self.context["submission"]
