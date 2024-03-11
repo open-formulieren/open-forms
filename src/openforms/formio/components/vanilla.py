@@ -41,6 +41,7 @@ from ..typing import (
     RadioComponent,
     SelectBoxesComponent,
     SelectComponent,
+    TextFieldComponent,
 )
 from .translations import translate_options
 
@@ -58,7 +59,7 @@ class Default(BasePlugin):
 
 
 @register("textfield")
-class TextField(BasePlugin):
+class TextField(BasePlugin[TextFieldComponent]):
     formatter = TextFieldFormatter
 
 
@@ -78,7 +79,7 @@ class PhoneNumber(BasePlugin):
 
 
 @register("file")
-class File(BasePlugin):
+class File(BasePlugin[FileComponent]):
     formatter = FileFormatter
 
     @staticmethod
@@ -91,12 +92,12 @@ class File(BasePlugin):
         if component.get("useConfigFiletypes", False):
             config = GlobalConfiguration.get_solo()
             assert isinstance(config, GlobalConfiguration)
-            component["filePattern"] = ",".join(config.form_upload_default_file_types)
+            mimetypes: list[str] = config.form_upload_default_file_types  # type: ignore
+            component["filePattern"] = ",".join(mimetypes)
             component["file"].update(
                 {
                     "allowedTypesLabels": [
-                        UploadFileType(mimetype).label
-                        for mimetype in config.form_upload_default_file_types
+                        UploadFileType(mimetype).label for mimetype in mimetypes
                     ],
                 }
             )
@@ -176,7 +177,7 @@ class Radio(BasePlugin[RadioComponent]):
     ) -> None:
         add_options_to_config(component, data, submission)
 
-    def localize(self, component: SelectComponent, language_code: str, enabled: bool):
+    def localize(self, component: RadioComponent, language_code: str, enabled: bool):
         if not (options := component.get("values", [])):
             return
         translate_options(options, language_code, enabled)
