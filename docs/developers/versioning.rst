@@ -57,18 +57,63 @@ End-of-life versions are not listed in this table.
 Open Forms API
 --------------
 
-The Open Forms API adheres to semantic versioning with one exception: experimental
-functionality.
+Open Forms exposes a public and a private API. Semantic versioning is applied for the
+public API. However, breaking changes to the private API can happen in minor and patch versions.
 
-We use the `specification extension`_ pattern in the API spec to mark functionality
-as experimental, using the ``x-experimental: true`` flag. Experimental functionality
-may introduce breaking changes in minor versions, but not in patch versions.
+We also use the `specification extension`_ pattern in the API spec to mark functionality
+as experimental, using the ``x-experimental: true`` flag.
 
 We use this to mark parts of the API that we are not yet convinced about that they
 are the right implementation. Release notes of Open Forms backend will include which
 experimental functionality was changed.
 
 .. _specification extension: https://swagger.io/specification/#specification-extensions
+
+
+==============  ==============  =============================
+Version         Release date    API specification
+==============  ==============  =============================
+latest          n/a             `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`__
+2.5.0           2024-01-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.5.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.5.0/src/openapi.yaml>`__
+2.4.0           2023-11-09      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.4.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.4.0/src/openapi.yaml>`__
+2.3.1           2023-09-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.1/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.1/src/openapi.yaml>`__
+2.3.0           2023-08-24      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.0/src/openapi.yaml>`__
+==============  ==============  =============================
+
+Previous versions are supported for 6 months after the next version is released.
+
+See: `All versions and changes <https://github.com/open-formulieren/open-forms/blob/master/CHANGELOG.rst>`_
+
+**Unsupported versions**
+
+==============  ==============  =============================
+Version         Release date    API specification
+==============  ==============  =============================
+2.2.3           2023-09-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.2.3/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.2.3/src/openapi.yaml>`__
+2.2.0           2023-06-23      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.2.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.2.0/src/openapi.yaml>`__
+2.1.1           2023-09-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.1.7/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.1.7/src/openapi.yaml>`__
+2.1.0           2023-03-03      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.1.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.1.0/src/openapi.yaml>`__
+2.0.1           2023-09-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.0.11/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.0.11/src/openapi.yaml>`__
+2.0.0           2022-10-26      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.0.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.0.0/src/openapi.yaml>`__
+1.1.1           2022-06-21      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.1.11/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.1.11/src/openapi.yaml>`__
+1.0.1           2022-05-16      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.0.14/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.0.14/src/openapi.yaml>`__
+1.0.0           2022-03-10      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.0.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.0.0/src/openapi.yaml>`__
+==============  ==============  =============================
+
 
 Open Forms backend
 ------------------
