@@ -206,6 +206,30 @@ class TextArea(BasePlugin):
 class Number(BasePlugin):
     formatter = NumberFormatter
 
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.FloatField | serializers.ListField:
+        # new builder no longer exposes this, but existing forms may have multiple set
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        extra = {}
+        if max_value := validate.get("max"):
+            extra["max_value"] = max_value
+        if min_value := validate.get("min"):
+            extra["min_value"] = min_value
+
+        base = serializers.FloatField(
+            required=required,
+            allow_null=not required,
+            **extra,
+        )
+        return serializers.ListField(child=base) if multiple else base
+
 
 @register("password")
 class Password(BasePlugin):
