@@ -7,6 +7,10 @@ adjacent custom.py module.
 
 from typing import TYPE_CHECKING
 
+from django.core.validators import RegexValidator
+from django.utils.translation import gettext_lazy as _
+
+from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
@@ -35,6 +39,7 @@ from ..formatters.formio import (
     TimeFormatter,
 )
 from ..registry import BasePlugin, register
+from ..serializers import build_serializer
 from ..typing import (
     ContentComponent,
     FileComponent,
@@ -61,6 +66,39 @@ class Default(BasePlugin):
 @register("textfield")
 class TextField(BasePlugin[TextFieldComponent]):
     formatter = TextFieldFormatter
+
+    def build_serializer_field(
+        self, component: TextFieldComponent
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        validators = []
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    pattern,
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+        if validators:
+            extra["validators"] = validators
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("email")
