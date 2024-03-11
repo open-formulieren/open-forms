@@ -12,10 +12,12 @@ smeared out across the codebase in similar but different implementations, while 
 the public API better defined and smaller.
 """
 
+import warnings
 from typing import TYPE_CHECKING, Any, Generic, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
 
+from rest_framework import serializers
 from rest_framework.request import Request
 
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -77,6 +79,26 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
 
     def localize(self, component: ComponentT, language_code: str, enabled: bool):
         pass  # noop by default, specific component types can extend the base behaviour
+
+    def build_serializer_field(self, component: ComponentT) -> serializers.Field:
+        # the default implementation is a compatibility shim while we transition to
+        # the new backend validation mechanism.
+        warnings.warn(
+            "Relying on the default/implicit JSONField for component type "
+            f"{component['type']} is deprecated. Instead, define the "
+            "'build_serializer_field' method on the specific component plugin.",
+            DeprecationWarning,
+        )
+
+        required = (
+            validate.get("required", False)
+            if (validate := component.get("validate"))
+            else False
+        )
+
+        # Allow anything that is valid JSON, taking into account the 'required'
+        # validation which is common for most components.
+        return serializers.JSONField(required=required, allow_null=True)
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):
@@ -170,6 +192,20 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         # always drop translation meta information
         if generic_translations:
             del component["openForms"]["translations"]  # type: ignore
+
+    def build_serializer_field(self, component: Component) -> serializers.Field:
+        """
+        Translate a given component into a single serializer field, suitable for
+        input validation.
+        """
+        # if the component known in registry -> use the component plugin, otherwise
+        # fall back to the special 'default' plugin which implements the current
+        # behaviour of accepting any JSON value.
+        if (component_type := component["type"]) not in self:
+            component_type = "default"
+
+        component_plugin = self[component_type]
+        return component_plugin.build_serializer_field(component)
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

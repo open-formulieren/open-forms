@@ -25,7 +25,8 @@ from .dynamic_config import (
     rewrite_formio_components,
     rewrite_formio_components_for_request,
 )
-from .registry import register
+from .registry import ComponentRegistry, register
+from .serializers import build_serializer as _build_serializer
 from .typing import Component
 from .utils import iter_components, iterate_data_with_components, recursive_apply
 from .validation import validate_formio_data
@@ -42,6 +43,7 @@ __all__ = [
     "iterate_data_with_components",
     "validate_formio_data",
     "recursive_apply",
+    "build_serializer",
 ]
 
 
@@ -105,3 +107,9 @@ def get_dynamic_configuration(
     # as checkboxes/dropdowns/radios/...
     inject_prefill(config_wrapper, submission)
     return config_wrapper
+
+
+def build_serializer(
+    components: list[Component], _register: ComponentRegistry | None = None, **kwargs
+):
+    return _build_serializer(components, register=_register or register, **kwargs)
