@@ -6,6 +6,10 @@ from .base import Component, OptionDict
 from .dates import DatePickerConfig
 
 
+class TextFieldComponent(Component):
+    pass
+
+
 class FileConfig(TypedDict):
     allowedTypesLabels: list[str]
 
@@ -50,3 +54,8 @@ class Column(TypedDict):
 
 class ColumnsComponent(Component):
     columns: list[Column]
+
+
+class EditGridComponent(Component):
+    groupLabel: NotRequired[str]
+    components: list[Component]

@@ -9,6 +9,8 @@ These are common ancestors for all specific component types.
 
 from typing import Literal, TypeAlias, TypedDict
 
+from typing_extensions import NotRequired
+
 from openforms.typing import JSONValue
 
 from .dates import DateConstraintConfiguration
@@ -17,24 +19,28 @@ TranslationsDict: TypeAlias = dict[str, dict[str, str]]
 
 
 class Validate(TypedDict, total=False):
+    # all attributes are optional, some attributes are only present with certain
+    # component types (which we cannot express in our current type definitions)
     required: bool
     maxLength: int
+    pattern: str
     min: int | float
     max: int | float
+    plugins: list[str]
 
 
-class OpenFormsConfig(TypedDict, total=False):
-    widget: str
-    minDate: DateConstraintConfiguration | None
-    maxDate: DateConstraintConfiguration | None
-    translations: TranslationsDict
+class OpenFormsConfig(TypedDict):
+    widget: NotRequired[str]
+    minDate: NotRequired[DateConstraintConfiguration | None]
+    maxDate: NotRequired[DateConstraintConfiguration | None]
+    translations: NotRequired[TranslationsDict]
 
 
-class OpenFormsOptionExtension(TypedDict, total=False):
-    translations: TranslationsDict
+class OpenFormsOptionExtension(TypedDict):
+    translations: NotRequired[TranslationsDict]
 
 
-class OptionDict(TypedDict, total=False):
+class OptionDict(TypedDict):
     """
     Value as used in a select/radio/... component.
 
@@ -44,7 +50,7 @@ class OptionDict(TypedDict, total=False):
 
     value: str
     label: str
-    openForms: OpenFormsOptionExtension
+    openForms: NotRequired[OpenFormsOptionExtension]
 
 
 class PrefillConfiguration(TypedDict):
@@ -53,7 +59,7 @@ class PrefillConfiguration(TypedDict):
     identifierRole: Literal["main", "authorised_person"]
 
 
-class Component(TypedDict, total=False):
+class Component(TypedDict):
     """
     A formio component definition.
 
@@ -72,10 +78,10 @@ class Component(TypedDict, total=False):
     type: str
     key: str
     label: str
-    multiple: bool
-    hidden: bool
-    defaultValue: JSONValue
-    validate: Validate
-    prefill: PrefillConfiguration
-    openForms: OpenFormsConfig
-    autocomplete: str
+    multiple: NotRequired[bool]
+    hidden: NotRequired[bool]
+    defaultValue: NotRequired[JSONValue]
+    validate: NotRequired[Validate]
+    prefill: NotRequired[PrefillConfiguration]
+    openForms: NotRequired[OpenFormsConfig]
+    autocomplete: NotRequired[str]
