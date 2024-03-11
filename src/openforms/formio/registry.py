@@ -27,42 +27,42 @@ from .typing import Component
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
-T = TypeVar("T", bound=Component, contravariant=True)
+ComponentT = TypeVar("ComponentT", bound=Component, contravariant=True)
 
 
-class FormatterProtocol(Generic[T], Protocol):
+class FormatterProtocol(Protocol[ComponentT]):
     def __init__(self, as_html: bool): ...
 
-    def __call__(self, component: T, value: Any) -> str: ...
+    def __call__(self, component: ComponentT, value: Any) -> str: ...
 
 
-class NormalizerProtocol(Generic[T], Protocol):
-    def __call__(self, component: T, value: Any) -> Any: ...
+class NormalizerProtocol(Protocol[ComponentT]):
+    def __call__(self, component: ComponentT, value: Any) -> Any: ...
 
 
-class RewriterForRequestProtocol(Generic[T], Protocol):
-    def __call__(self, component: T, request: Request) -> None: ...
+class RewriterForRequestProtocol(Protocol[ComponentT]):
+    def __call__(self, component: ComponentT, request: Request) -> None: ...
 
 
-class BasePlugin(Generic[T], AbstractBasePlugin):
+class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     """
     Base class for Formio component plugins.
     """
 
     is_enabled: bool = True
 
-    formatter: type[FormatterProtocol[T]]
+    formatter: type[FormatterProtocol[ComponentT]]
     """
     Specify the callable to use for formatting.
 
     Formatter (class) implementation, used by
     :meth:`openforms.formio.registry.ComponentRegistry.format`.
     """
-    normalizer: None | NormalizerProtocol[T] = None
+    normalizer: NormalizerProtocol[ComponentT] | None = None
     """
     Specify the normalizer callable to use for value normalization.
     """
-    rewrite_for_request: None | RewriterForRequestProtocol[T] = None
+    rewrite_for_request: RewriterForRequestProtocol[ComponentT] | None = None
     """
     Callback to invoke to rewrite plugin configuration for a given HTTP request.
     """
@@ -72,10 +72,10 @@ class BasePlugin(Generic[T], AbstractBasePlugin):
         return _("{type} component").format(type=self.identifier.capitalize())
 
     def mutate_config_dynamically(
-        self, component: T, submission: "Submission", data: DataMapping
+        self, component: ComponentT, submission: "Submission", data: DataMapping
     ) -> None: ...
 
-    def localize(self, component: T, language_code: str, enabled: bool):
+    def localize(self, component: ComponentT, language_code: str, enabled: bool):
         pass  # noop by default, specific component types can extend the base behaviour
 
 
