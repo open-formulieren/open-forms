@@ -221,6 +221,33 @@ class NPFamilyMembers(BasePlugin):
             ]
 
 
+@register("bsn")
+class BSN(BasePlugin):
+    formatter = TextFieldFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        # maxLength because of the usage in appointments, even though our form builder
+        # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
+
+
 @register("addressNL")
 class AddressNL(BasePlugin):
 
