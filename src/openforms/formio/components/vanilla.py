@@ -300,6 +300,26 @@ class Radio(BasePlugin[RadioComponent]):
             return
         translate_options(options, language_code, enabled)
 
+    def build_serializer_field(
+        self, component: RadioComponent
+    ) -> serializers.ChoiceField:
+        """
+        Convert a radio component to a serializer field.
+
+        A radio component allows only a single value to be selected, but selecting a
+        value may not be required. The available choices are taken from the ``values``
+        key, which may be set dynamically (see :meth:`mutate_config_dynamically`).
+        """
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        choices = [(value["value"], value["label"]) for value in component["values"]]
+        return serializers.ChoiceField(
+            choices=choices,
+            required=required,
+            allow_blank=not required,
+            allow_null=not required,
+        )
+
 
 @register("signature")
 class Signature(BasePlugin):
