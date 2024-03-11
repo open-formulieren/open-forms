@@ -20,10 +20,10 @@ a :class:`ServiceFetchConfiguration`. This configuration specifies:
 - any query parameters
 - any expression to apply to the response
 
-While the form is being filled in by a user, the method :meth:`openforms.submissions.form_logic.evaluate_form_logic`
+While the form is being filled in by a user, the :meth:`openforms.submissions.form_logic.evaluate_form_logic` method
 performs the request specified in the logic rule action if the trigger evaluates to ``True``.
 
-The data in the response from the external service is processed with any expression (jq or json-logic) specified in the
+The data in the response from the external service is processed with any expression (``jq`` or JsonLogic) specified in the
 configuration. The result is set as the value field of the :class:`SubmissionValueVariable` referenced in the
 logic rule action.
 

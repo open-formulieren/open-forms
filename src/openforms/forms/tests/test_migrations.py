@@ -77,6 +77,23 @@ class EnableNewBuilderMigrationTests(TestMigrations):
                 }
             ],
         )
+        FormLogic.objects.create(
+            order=0,
+            form=form,
+            json_logic_trigger={"!!": [True]},
+            actions=[
+                {
+                    "action": {
+                        "type": "fetch-from-service",
+                        "value": config.pk,  # An existing service, but with an int value instead of string
+                    },
+                    "variable": "var1",
+                    "component": "",
+                    "form_step": "",
+                    "form_step_uuid": None,
+                }
+            ],
+        )
         self.form = form
 
     def test_builder_enabled(self):
@@ -84,6 +101,7 @@ class EnableNewBuilderMigrationTests(TestMigrations):
 
         self.assertEqual(rules[0].actions[0]["action"]["value"], "")
         self.assertEqual(rules[1].actions[0]["action"]["value"], "")
+        self.assertEqual(rules[2].actions[0]["action"]["value"], "")
 
         variables = self.form.formvariable_set.all().order_by("key")
 

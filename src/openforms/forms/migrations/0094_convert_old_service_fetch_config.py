@@ -4,17 +4,20 @@ from typing import TypedDict
 from django.db import migrations
 from django.db.models import QuerySet
 
-from ..models import FormLogic
+from openforms.variables.models import ServiceFetchConfiguration
+
+from ..models import FormLogic, FormVariable
 from ..constants import LogicActionTypes
 
 
 class UpdatedObjects(TypedDict):
-    rules: list
-    variables: list
+    rules: list[FormLogic]
+    variables: list[FormVariable]
 
 
 def convert_to_new_service_fetch_format(
-    rules: list[FormLogic], available_service_fetch_configs: QuerySet
+    rules: list[FormLogic],
+    available_service_fetch_configs: QuerySet[ServiceFetchConfiguration],
 ) -> UpdatedObjects:
     updated_rules = []
     updated_variables = []
@@ -24,7 +27,7 @@ def convert_to_new_service_fetch_format(
             if action["action"]["type"] != LogicActionTypes.fetch_from_service:
                 continue
 
-            if (service_fetch_config_pk := action["action"]["value"]) == "":
+            if (service_fetch_config_pk := str(action["action"]["value"])) == "":
                 continue
 
             action["action"]["value"] = ""
@@ -46,7 +49,6 @@ def convert_to_new_service_fetch_format(
 
             variable.service_fetch_configuration = service_fetch_config
             updated_variables.append(variable)
-            rule_updated = True
 
         if rule_updated:
             updated_rules.append(rule)
@@ -76,6 +78,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("forms", "0093_fix_prefill_bis"),
+        ("variables", "0012_servicefetchconfiguration_cache_timeout"),
     ]
 
     operations = [
