@@ -616,9 +616,10 @@ class AppointmentCreateValidationErrorTests(
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             invalid_params = response.json()["invalidParams"]
             self.assertEqual(len(invalid_params), 2)
-            self.assertEqual(invalid_params[0]["name"], "contactDetails.0")
+            self.assertEqual(invalid_params[0]["name"], "contactDetails.lastName")
             self.assertEqual(invalid_params[0]["code"], "required")
-            self.assertEqual(invalid_params[1]["name"], "contactDetails.1")
+
+            self.assertEqual(invalid_params[1]["name"], "contactDetails.email")
             self.assertEqual(invalid_params[1]["code"], "required")
 
         with self.subTest("value too long"):
@@ -634,8 +635,9 @@ class AppointmentCreateValidationErrorTests(
 
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             invalid_params = response.json()["invalidParams"]
+
             self.assertEqual(len(invalid_params), 2)
-            self.assertEqual(invalid_params[0]["name"], "contactDetails.0")
+            self.assertEqual(invalid_params[0]["name"], "contactDetails.lastName")
             self.assertEqual(invalid_params[0]["code"], "max_length")
-            self.assertEqual(invalid_params[1]["name"], "contactDetails.1")
+            self.assertEqual(invalid_params[1]["name"], "contactDetails.email")
             self.assertEqual(invalid_params[1]["code"], "max_length")
