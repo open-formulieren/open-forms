@@ -7,6 +7,10 @@ adjacent custom.py module.
 
 from typing import TYPE_CHECKING
 
+from django.core.validators import RegexValidator
+from django.utils.translation import gettext_lazy as _
+
+from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
@@ -35,8 +39,11 @@ from ..formatters.formio import (
     TimeFormatter,
 )
 from ..registry import BasePlugin, register
+from ..serializers import build_serializer
 from ..typing import (
+    Component,
     ContentComponent,
+    EditGridComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
@@ -62,10 +69,63 @@ class Default(BasePlugin):
 class TextField(BasePlugin[TextFieldComponent]):
     formatter = TextFieldFormatter
 
+    def build_serializer_field(
+        self, component: TextFieldComponent
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        validators = []
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    pattern,
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+        if validators:
+            extra["validators"] = validators
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
+
 
 @register("email")
 class Email(BasePlugin):
     formatter = EmailFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.EmailField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        base = serializers.EmailField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("time")
@@ -76,6 +136,41 @@ class Time(BasePlugin):
 @register("phoneNumber")
 class PhoneNumber(BasePlugin):
     formatter = PhoneNumberFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        # maxLength because of the usage in appointments, even though our form builder
+        # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        validators = []
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    pattern,
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+        if validators:
+            extra["validators"] = validators
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("file")
@@ -111,6 +206,30 @@ class TextArea(BasePlugin):
 @register("number")
 class Number(BasePlugin):
     formatter = NumberFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.FloatField | serializers.ListField:
+        # new builder no longer exposes this, but existing forms may have multiple set
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        extra = {}
+        if max_value := validate.get("max"):
+            extra["max_value"] = max_value
+        if min_value := validate.get("min"):
+            extra["min_value"] = min_value
+
+        base = serializers.FloatField(
+            required=required,
+            allow_null=not required,
+            **extra,
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("password")
@@ -182,6 +301,26 @@ class Radio(BasePlugin[RadioComponent]):
             return
         translate_options(options, language_code, enabled)
 
+    def build_serializer_field(
+        self, component: RadioComponent
+    ) -> serializers.ChoiceField:
+        """
+        Convert a radio component to a serializer field.
+
+        A radio component allows only a single value to be selected, but selecting a
+        value may not be required. The available choices are taken from the ``values``
+        key, which may be set dynamically (see :meth:`mutate_config_dynamically`).
+        """
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        choices = [(value["value"], value["label"]) for value in component["values"]]
+        return serializers.ChoiceField(
+            choices=choices,
+            required=required,
+            allow_blank=not required,
+            allow_null=not required,
+        )
+
 
 @register("signature")
 class Signature(BasePlugin):
@@ -210,3 +349,28 @@ class Content(BasePlugin):
            security risk.
         """
         component["html"] = post_process_html(component["html"], request)
+
+
+@register("editgrid")
+class EditGrid(BasePlugin[EditGridComponent]):
+    def build_serializer_field(
+        self, component: EditGridComponent
+    ) -> serializers.ListField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        nested = build_serializer(
+            components=component.get("components", []),
+            # XXX: check out type annotations here, there's some co/contra variance
+            # in play
+            register=self.registry,
+        )
+        kwargs = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            kwargs["max_length"] = max_length
+        return serializers.ListField(
+            child=nested,
+            required=required,
+            allow_null=not required,
+            allow_empty=False,
+            **kwargs,
+        )

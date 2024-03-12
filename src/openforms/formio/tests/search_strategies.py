@@ -29,7 +29,7 @@ def formio_key():
     data structure empty strings are used as keys:
     ``{"foo": {"": {"": {"bar": $value}}}}``
 
-    See :func:`openforms.forms.models.form_variable.variable_key_validator` for the
+    See :func:`openforms.formio.validators.variable_key_validator` for the
     validator implementation.
 
     This strategy differs slightly from the validator - it will generate keys with a

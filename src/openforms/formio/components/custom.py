@@ -1,9 +1,12 @@
 import logging
+from datetime import date
 from typing import Protocol
 
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
+from rest_framework import serializers
 from rest_framework.request import Request
 
 from openforms.authentication.constants import AuthAttribute
@@ -49,6 +52,32 @@ class Date(BasePlugin[DateComponent]):
         ``src/openforms/js/components/form/date.js`` for the various configurable options.
         """
         mutate_min_max_validation(component, data)
+
+    def build_serializer_field(
+        self, component: DateComponent
+    ) -> serializers.DateField | serializers.ListField:
+        """
+        Accept date values.
+
+        Additional validation is taken from the datePicker configuration, which is also
+        set dynamically through our own backend (see :meth:`mutate_config_dynamically`).
+        """
+        # relevant validators: required, datePicker.minDate and datePicker.maxDdate
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        date_picker = component.get("datePicker") or {}
+        validators = []
+        if min_date := date_picker.get("minDate"):
+            validators.append(MinValueValidator(date.fromisoformat(min_date)))
+        if max_date := date_picker.get("maxDate"):
+            validators.append(MaxValueValidator(date.fromisoformat(max_date)))
+        base = serializers.DateField(
+            required=required,
+            allow_null=not required,
+            validators=validators,
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("datetime")
@@ -190,6 +219,33 @@ class NPFamilyMembers(BasePlugin):
                 }
                 for value, label in child_choices
             ]
+
+
+@register("bsn")
+class BSN(BasePlugin):
+    formatter = TextFieldFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if validate.get("plugins", []):
+            raise NotImplementedError("Plugin validators not supported yet.")
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        # maxLength because of the usage in appointments, even though our form builder
+        # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, allow_null=False, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("addressNL")
