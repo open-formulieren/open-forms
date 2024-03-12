@@ -17,14 +17,6 @@ class NoServiceConfigured(RuntimeError):
     pass
 
 
-def get_client() -> "KVKClient":
-    config = KVKConfig.get_solo()
-    assert isinstance(config, KVKConfig)
-    if not (service := config.service):
-        raise NoServiceConfigured("No KVK service configured!")
-    return build_client(service, client_factory=KVKClient)
-
-
 class SearchParams(TypedDict, total=False):
     kvkNummer: str
     rsin: str
@@ -43,11 +35,13 @@ class SearchParams(TypedDict, total=False):
     resultatenPerPagina: int  # [1, 100] - default is 10
 
 
-class KVKClient(HALClient):
+class KVKProfileClient(HALClient):
     @elasticapm.capture_span("app.kvk")
     def get_profile(self, kvk_nummer: str) -> BasisProfiel:
         """
         Retrieve the profile of a single entity by chamber of commerce number.
+
+        :arg kvk_nummer: must be a Dutch Chamber of Commerce number and consists of 8 digits.
 
         Docs: https://developers.kvk.nl/apis/basisprofiel
         Swagger: https://developers.kvk.nl/documentation/testing/swagger-basisprofiel-api
@@ -57,11 +51,15 @@ class KVKClient(HALClient):
             response = self.get(path)
             response.raise_for_status()
         except requests.RequestException as exc:
-            logger.exception("exception while making KVK request", exc_info=exc)
+            logger.exception(
+                "exception while making KVK basisprofiel request", exc_info=exc
+            )
             raise exc
 
         return response.json()
 
+
+class KVKSearchClient(HALClient):
     @elasticapm.capture_span("app.kvk")
     def get_search_results(self, query_params: SearchParams):
         """
@@ -81,7 +79,21 @@ class KVKClient(HALClient):
             )
             response.raise_for_status()
         except requests.RequestException as exc:
-            logger.exception("exception while making KVK request", exc_info=exc)
+            logger.exception("exception while making KVK zoeken request", exc_info=exc)
             raise exc
 
         return response.json()
+
+
+def get_kvk_client(
+    client: Literal["profile", "search"]
+) -> KVKProfileClient | KVKSearchClient:
+    service_mappings = {
+        "profile": KVKProfileClient,
+        "search": KVKSearchClient,
+    }
+    config = KVKConfig.get_solo()
+    assert isinstance(config, KVKConfig)
+    if not (service := getattr(config, f"{client}_service")):
+        raise NoServiceConfigured(f"No KVK {client} service configured!")
+    return build_client(service, client_factory=service_mappings[client])

@@ -6,7 +6,7 @@ import requests
 from openforms.config.data import Action
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from .client import NoServiceConfigured, get_client
+from .client import NoServiceConfigured, get_kvk_client
 from .models import KVKConfig
 
 
@@ -17,7 +17,7 @@ class KVKRemoteValidatorCheck:
     def check_config():
         check_kvk = "68750110"
         try:
-            with get_client() as client:
+            with get_kvk_client("search") as client:
                 results = client.get_search_results({"kvkNummer": check_kvk})
         except NoServiceConfigured as exc:
             msg = _("{api_name} endpoint is not configured.").format(api_name="KVK")

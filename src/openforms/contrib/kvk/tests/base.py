@@ -51,9 +51,12 @@ class KVKTestMixin:
     def setUp(self):
         super().setUp()
 
+        # assume the API root url is the same for both so one service will be used
         patcher = patch(
             "openforms.contrib.kvk.client.KVKConfig.get_solo",
-            return_value=KVKConfig(service=KVK_SERVICE),
+            return_value=KVKConfig(
+                search_service=KVK_SERVICE, profile_service=KVK_SERVICE
+            ),
         )
         self.config_mock = patcher.start()
         self.addCleanup(patcher.stop)
