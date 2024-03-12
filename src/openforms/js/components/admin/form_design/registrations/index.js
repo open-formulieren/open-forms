@@ -1,16 +1,19 @@
 import {WysiwygWidget} from 'components/admin/RJSFWrapper';
 
 import CamundaOptionsForm from './camunda';
-import {onCamundaStepEdit, onZGWStepEdit} from './handlers';
 import ObjectsApiOptionsForm from './objectsapi/ObjectsApiOptionsForm';
 import ObjectsApiSummaryHandler from './objectsapi/ObjectsApiSummaryHandler';
 import ObjectsApiVariableConfigurationEditor from './objectsapi/ObjectsApiVariableConfigurationEditor';
+import {onCamundaStepEdit, onObjectsAPIStepEdit, onZGWStepEdit} from './stepEditHandlers';
+import {onObjectsAPIUserDefinedVariableEdit} from './userDefinedVariableEditHandlers';
 import ZGWOptionsForm from './zgw';
 
 /**
  * @typedef {{
  *   form?: React.FC,
  *   uiSchema?: Object,
+ *   onStepEdit?: (...args: any) => Object | null,
+ *   onUserDefinedVariableEdit?: (...args: any) => Object | null,
  *   configurableFromVariables?: boolean | (options: Object) => boolean,
  *   summaryHandler?: React.FC
  *   variableConfigurationEditor?: React.FC
@@ -25,7 +28,8 @@ export const BACKEND_OPTIONS_FORMS = {
   },
   objects_api: {
     form: ObjectsApiOptionsForm,
-    onStepEdit: null,
+    onStepEdit: onObjectsAPIStepEdit,
+    onUserDefinedVariableEdit: onObjectsAPIUserDefinedVariableEdit,
     configurableFromVariables: options => options.version === 2,
     summaryHandler: ObjectsApiSummaryHandler,
     variableConfigurationEditor: ObjectsApiVariableConfigurationEditor,
