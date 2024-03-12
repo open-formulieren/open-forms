@@ -112,4 +112,10 @@ def get_dynamic_configuration(
 def build_serializer(
     components: list[Component], _register: ComponentRegistry | None = None, **kwargs
 ):
+    """
+    Translate a sequence of Formio.js component definitions into a serializer.
+
+    This recursively builds up the serializer fields for each (nested) component and
+    puts them into a serializer instance ready for validation.
+    """
     return _build_serializer(components, register=_register or register, **kwargs)
