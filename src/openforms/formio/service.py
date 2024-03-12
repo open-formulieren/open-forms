@@ -29,7 +29,6 @@ from .registry import ComponentRegistry, register
 from .serializers import build_serializer as _build_serializer
 from .typing import Component
 from .utils import iter_components, iterate_data_with_components, recursive_apply
-from .validation import validate_formio_data
 from .variables import inject_variables
 
 __all__ = [
@@ -41,7 +40,6 @@ __all__ = [
     "rewrite_formio_components_for_request",
     "FormioData",
     "iterate_data_with_components",
-    "validate_formio_data",
     "recursive_apply",
     "build_serializer",
 ]

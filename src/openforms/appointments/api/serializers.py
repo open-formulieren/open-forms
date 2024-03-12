@@ -7,7 +7,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from openforms.formio.service import validate_formio_data
+from openforms.formio.service import build_serializer
 from openforms.forms.models import Form
 from openforms.submissions.api.fields import PrivacyPolicyAcceptedField
 from openforms.submissions.models import Submission
@@ -274,12 +274,16 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
                 {"datetime": _("The selected datetime is not available (anymore).")}
             )
 
-        # 5. Validate contact details against product
+        # 5. Validate contact details against product(s)
         contact_details_meta = plugin.get_required_customer_fields(products)
-        try:
-            validate_formio_data(contact_details_meta, attrs["contact_details"])
-        except serializers.ValidationError as errors:
-            raise serializers.ValidationError({"contactDetails": errors.detail})
+        contact_details_serializer = build_serializer(
+            contact_details_meta,
+            data=attrs["contact_details"],
+            context=self.context,
+        )
+        if not contact_details_serializer.is_valid():
+            errors = contact_details_serializer.errors
+            raise serializers.ValidationError({"contact_details": errors})
 
         # expose additional metadata
         attrs.update(

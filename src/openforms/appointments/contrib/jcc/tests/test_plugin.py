@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 import requests_mock
 from hypothesis import given, strategies as st
 
-from openforms.formio.validation import build_validation_chain
+from openforms.formio.service import build_serializer
 from openforms.utils.tests.logging import disable_logging
 from openforms.utils.xml import fromstring
 from soap.tests.factories import SoapServiceFactory
@@ -696,13 +696,15 @@ class ConfigurationTests(SimpleTestCase):
                 self.assertIn("key", component)
                 self.assertIn("label", component)
 
-    def test_can_create_validation_chain_for_formio_fields(self):
+    def test_can_create_serializer_for_formio_fields(self):
         for component in FIELD_TO_FORMIO_COMPONENT.values():
             assert "key" in component
             with self.subTest(component=component["key"]):
                 try:
-                    build_validation_chain(component)
+                    serializer = build_serializer([component])
                 except Exception as exc:
                     raise self.failureException(
                         "Could not create validation chain"
                     ) from exc
+
+                self.assertIn(component["key"], serializer.fields)
