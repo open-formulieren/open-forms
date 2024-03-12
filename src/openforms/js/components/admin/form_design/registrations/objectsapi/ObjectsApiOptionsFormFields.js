@@ -43,6 +43,7 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
         draft.version = realVersion;
         if (realVersion === 2) {
           draft.variablesMapping = [];
+          draft.geometryVariableKey = '';
         } else {
           delete draft.variablesMapping;
         }
