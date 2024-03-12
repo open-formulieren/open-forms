@@ -7,7 +7,7 @@ from typing import Iterator, Literal, overload
 from jsonschema_specifications import REGISTRY
 from referencing import Resource
 from referencing.exceptions import Unresolvable
-from referencing.jsonschema import ObjectSchema
+from referencing.jsonschema import DRAFT202012, ObjectSchema
 from typing_extensions import Self
 
 
@@ -68,7 +68,7 @@ def iter_json_schema_paths(
     Known to be unsupported:
     - Composition (https://json-schema.org/understanding-json-schema/reference/combining)
     """
-    resource = Resource.from_contents(json_schema)
+    resource = Resource.from_contents(json_schema, default_specification=DRAFT202012)
     # Or referencing.jsonschema.EMPTY_REGISTRY?
     resolver = REGISTRY.resolver_with_root(resource)
 
