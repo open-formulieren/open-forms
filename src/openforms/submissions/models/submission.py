@@ -10,6 +10,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.utils.formats import localize
 from django.utils.functional import cached_property
+from django.utils.timezone import localtime
 from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
@@ -331,7 +332,7 @@ class Submission(models.Model):
     def __str__(self):
         return _("{pk} - started on {started}").format(
             pk=self.pk or _("(unsaved)"),
-            started=localize(self.created_on) or _("(no timestamp yet)"),
+            started=localize(localtime(self.created_on)) or _("(no timestamp yet)"),
         )
 
     def refresh_from_db(self, *args, **kwargs):

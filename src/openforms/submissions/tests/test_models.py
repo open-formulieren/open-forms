@@ -36,7 +36,7 @@ class SubmissionTests(TestCase):
     def test_submission_str(self):
         submission = SubmissionFactory.create()
         self.assertEqual(
-            str(submission), f"{submission.pk} - started on Nov. 26, 2021, 4 p.m."
+            str(submission), f"{submission.pk} - started on Nov. 26, 2021, 5 p.m."
         )
 
     def test_submission_data_with_selectboxes_formio_formatters(self):
