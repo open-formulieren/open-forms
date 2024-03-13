@@ -161,14 +161,6 @@ class FormDefinitionSerializer(
 
         return attrs
 
-    def save(self, **kwargs):
-        # field 'component_translations' has been deprecated and it's not part of
-        # the 'form_definition' model anymore. We use it only in the serializer.
-        if "component_translations" in self.validated_data:
-            del self.validated_data["component_translations"]
-
-        return super().save(**kwargs)
-
 
 class FormDefinitionDetailSerializer(FormDefinitionSerializer):
     used_in = UsedInFormSerializer(

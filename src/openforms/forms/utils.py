@@ -313,6 +313,11 @@ def import_form_data(
                         deserialized.validated_data["configuration"]
                     )
 
+                    # field 'component_translations' has been deprecated and it's not part of
+                    # the 'form_definition' model anymore. We use it only in the serializer.
+                    if "component_translations" in deserialized.validated_data:
+                        del deserialized.validated_data["component_translations"]
+
                 if resource == "formLogic":
                     clear_old_service_fetch_config(deserialized.validated_data)
 
