@@ -22,7 +22,7 @@ describe('Checking date/datetime translation literals', () => {
       format: 'dd-MM-yyyy HH:mm',
     };
 
-    expect(extractComponentLiterals(dateComponent)).toStrictEqual(['Date']);
-    expect(extractComponentLiterals(dateTimeComponent)).toStrictEqual(['Date / Time']);
+    expect(extractComponentLiterals(dateComponent)[0].literal).toStrictEqual('Date');
+    expect(extractComponentLiterals(dateTimeComponent)[0].literal).toStrictEqual('Date / Time');
   });
 });

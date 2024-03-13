@@ -311,7 +311,6 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
 
     def __post_init__(self):
         self._base_label = self.component.get("groupLabel", self.default_label)
-        super().__post_init__()
 
     def apply_to_labels(self, f: Callable[[str], str]) -> None:
         super().apply_to_labels(f)

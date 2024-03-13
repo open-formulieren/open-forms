@@ -46,7 +46,6 @@ const FormStepDefinition = ({
   loginRequired = false,
   isReusable = false,
   translations = {},
-  componentTranslations,
   configuration = emptyConfiguration,
   onChange,
   onComponentMutated,
@@ -391,10 +390,7 @@ const FormStepDefinition = ({
       </fieldset>
 
       {translationEnabled ? (
-        <MissingComponentTranslationsWarning
-          configuration={configuration}
-          componentTranslations={componentTranslations}
-        />
+        <MissingComponentTranslationsWarning configuration={configuration} />
       ) : null}
 
       <h2>Velden</h2>
@@ -406,7 +402,6 @@ const FormStepDefinition = ({
           configuration={configuration}
           onChange={onChange}
           onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
-          componentTranslations={componentTranslations}
           componentNamespace={componentNamespace}
           registrationBackendInfo={registrationBackends}
           {...props}
@@ -435,7 +430,6 @@ FormStepDefinition.propTypes = {
       nextText: PropTypes.string.isRequired,
     })
   ),
-  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
 };
 
 const ConfigurationErrors = ({errors = []}) => {

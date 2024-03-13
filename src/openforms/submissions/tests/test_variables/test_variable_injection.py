@@ -233,18 +233,40 @@ class VariableInjectionI18NTests(SubmissionsMixin, FormioMixin, APITestCase):
                     "key": "naam",
                     "type": "textfield",
                     "label": "Naam",
+                    "openForms": {
+                        "translations": {
+                            "en": {"label": "Name"},
+                            "nl": {"label": "Naam"},
+                        }
+                    },
                 },
                 {
                     "key": "geboortedatum",
                     "type": "date",
                     "label": "Geboortedatum",
                     "format": "dd-MM-yyyy",
+                    "openForms": {
+                        "translations": {
+                            "en": {"label": "Birthdate"},
+                            "nl": {"label": "Geboortedatum"},
+                        }
+                    },
                 },
                 {
                     "key": "ww",
                     "type": "password",
                     "label": "Wachtwoord",
                     "description": 'Suggestie: #{{naam|title}}{{geboortedatum|date:"Y"}}',
+                    "openForms": {
+                        "translations": {
+                            "en": {
+                                "description": "Suggestion: #{{naam|title}}{{geboortedatum|date:'Y'}}"
+                            },
+                            "nl": {
+                                "description": "Suggestie: #{{naam|title}}{{geboortedatum|date:'Y'}}"
+                            },
+                        }
+                    },
                 },
                 {
                     "key": "ww_check",
@@ -252,6 +274,18 @@ class VariableInjectionI18NTests(SubmissionsMixin, FormioMixin, APITestCase):
                     "label": "Bevestig uw wachtwoord: {{ww}}",
                     "description": "Mooi hè? We laten u niet 2 maal hetzelfde "
                     "typen. Gemak > veiligheid.",
+                    "openForms": {
+                        "translations": {
+                            "en": {
+                                "label": "Confirm your password: {{ww}}",
+                                "description": "Nice, eh? We won't make you type the same thing twice. Convenience over safety.",
+                            },
+                            "nl": {
+                                "label": "Bevestig uw wachtwoord: {{ww}}",
+                                "description": "Mooi hè? We laten u niet 2 maal hetzelfde typen. Gemak > veiligheid.",
+                            },
+                        }
+                    },
                 },
             ],
             submitted_data={
@@ -261,16 +295,6 @@ class VariableInjectionI18NTests(SubmissionsMixin, FormioMixin, APITestCase):
             },
         )
         cls.form_step = cls.submission.steps[0].form_step
-        cls.form_step.form_definition.component_translations = {
-            "en": {
-                'Suggestie: #{{naam|title}}{{geboortedatum|date:"Y"}}': 'Suggestion: #{{naam|title}}{{geboortedatum|date:"Y"}}',
-                "Naam": "Name",
-                "Geboortedatum": "Birthdate",
-                "Bevestig uw wachtwoord: {{ww}}": "Confirm your password: {{ww}}",
-                # Actually en-ca, eh?
-                "Mooi hè? We laten u niet 2 maal hetzelfde typen. Gemak > veiligheid.": "Nice, eh? We won't make you type the same thing twice. Convenience over safety.",
-            }
-        }
         cls.form_step.form_definition.save()
 
     def test_variable_interpolates_on_translated_definitions(self):

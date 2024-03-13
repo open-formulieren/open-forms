@@ -402,8 +402,8 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             language_code="de",
         )
         form_step = submission.steps[0].form_step
-        form_step.form_definition.component_translations = {
-            "de": {"bar": "Kneipe", "Bar": "Kneipe"},
+        form_step.form_definition.configuration["components"][0]["openForms"] = {
+            "translations": {"de": {"label": "Kneipe"}}
         }
         form_step.form_definition.save()
         self._add_submission_to_session(submission)
@@ -435,34 +435,77 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                         "tooltip": "Tip 1",
                         "groupLabel": "Element",
                         "components": [
-                            {"type": "textfield", "label": "Tekst 1", "key": "text1"},
+                            {
+                                "type": "textfield",
+                                "label": "Tekst 1",
+                                "key": "text1",
+                                "openForms": {
+                                    "translations": {
+                                        "en": {"label": "Text 1"},
+                                        "nl": {"label": "Tekst 1"},
+                                    }
+                                },
+                            },
                         ],
+                        "openForms": {
+                            "translations": {
+                                "en": {
+                                    "label": "Repeating group 1",
+                                    "tooltip": "First tip",
+                                    "groupLabel": "Item",
+                                },
+                                "nl": {
+                                    "label": "Herhalende groep 1",
+                                    "tooltip": "Tip 1",
+                                    "groupLabel": "Element",
+                                },
+                            }
+                        },
                     },
                     {
                         "type": "radio",
                         "key": "radio1",
                         "tooltip": "De uitsteekschijf van deze week",
-                        "values": [{"value": 1, "label": "Een"}, {"value": 2}],
+                        "values": [
+                            {
+                                "value": 1,
+                                "label": "Een",
+                                "openForms": {
+                                    "translations": {
+                                        "en": {"label": "One"},
+                                        "nl": {"label": "Een"},
+                                    }
+                                },
+                            },
+                            {"value": 2},
+                        ],
+                        "openForms": {
+                            "translations": {
+                                "en": {"tooltip": "Radio Giraffe's tip of the week"},
+                                "nl": {"tooltip": "De uitsteekschijf van deze week"},
+                            }
+                        },
                     },
                     {
                         "type": "select",
                         "key": "select1",
                         "data": {
-                            "values": [{"value": 1, "label": "Keuze 1"}, {"value": 2}]
+                            "values": [
+                                {
+                                    "value": 1,
+                                    "label": "Keuze 1",
+                                    "openForms": {
+                                        "translations": {
+                                            "en": {"label": "1st Choice"},
+                                            "nl": {"label": "Keuze 1"},
+                                        }
+                                    },
+                                },
+                                {"value": 2},
+                            ]
                         },
                     },
                 ],
-            },
-            form__formstep__form_definition__component_translations={
-                "en": {
-                    "Herhalende groep 1": "Repeating group 1",
-                    "Element": "Item",
-                    "Tekst 1": "Text 1",
-                    "Een": "One",
-                    "Keuze 1": "1st Choice",
-                    "Tip 1": "First tip",
-                    "De uitsteekschijf van deze week": "Radio Giraffe's tip of the week",
-                }
             },
         )
         self._add_submission_to_session(submission)

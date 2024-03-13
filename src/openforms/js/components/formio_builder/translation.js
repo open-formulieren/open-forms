@@ -52,25 +52,30 @@ export const extractComponentLiterals = component => {
   ];
 
   const isDateOrDatetimeComponent = ['date', 'datetime'].includes(component.type);
-  const literals = allTranslatableProperties
+  const finalTranslatableProperties = allTranslatableProperties
     // Do not show warnings for date/datetime placeholders, they are not translatable:
     .filter(property => (isDateOrDatetimeComponent ? property !== 'placeholder' : property))
     .filter(property => !isRegex(property))
-    .map(property => get(component, property));
+    .map(property => ({property, literal: get(component, property)}));
 
   // See ADDITIONAL_PROPERTIES_BY_COMPONENT_TYPE for the reverse check
   switch (component.type) {
     case 'select': {
       const values = component?.data?.values || [];
-      literals.push(...values.map(v => v.label));
+      finalTranslatableProperties.push(
+        ...values.map(v => ({property: 'values_label', literal: v.label}))
+      );
       break;
     }
     case 'selectboxes':
     case 'radio': {
       const values = component?.values || [];
-      literals.push(...values.map(v => v.label));
+      finalTranslatableProperties.push(
+        ...values.map(v => ({property: 'values_label', literal: v.label}))
+      );
       break;
     }
   }
-  return literals.filter(literal => !!literal);
+
+  return finalTranslatableProperties.filter(property => !!property.literal);
 };

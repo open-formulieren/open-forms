@@ -138,6 +138,12 @@ class DownloadSubmissionReportTests(APITestCase):
                 "label": f"Untranslated {component_type.title()} label",
                 "showInPDF": True,
                 "hidden": False,
+                "openForms": {
+                    "translations": {
+                        "en": {"label": f"Translated {component_type.title()} label"},
+                        "nl": {"label": f"Untranslated {component_type.title()} label"},
+                    }
+                },
             }
 
             # add the component to the FormDefintion
@@ -147,8 +153,26 @@ class DownloadSubmissionReportTests(APITestCase):
             match component:
                 case {"type": "radio"}:
                     component["values"] = [
-                        {"label": "Untranslated Radio option one", "value": "radioOne"},
-                        {"label": "Untranslated Radio option two", "value": "radioTwo"},
+                        {
+                            "label": "Untranslated Radio option one",
+                            "value": "radioOne",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Radio number one"},
+                                    "nl": {"label": "Untranslated Radio option one"},
+                                }
+                            },
+                        },
+                        {
+                            "label": "Untranslated Radio option two",
+                            "value": "radioTwo",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Radio number two"},
+                                    "nl": {"label": "Untranslated Radio option two"},
+                                }
+                            },
+                        },
                     ]
                 case {"type": "select"}:
                     component["data"] = {
@@ -156,10 +180,26 @@ class DownloadSubmissionReportTests(APITestCase):
                             {
                                 "label": "Untranslated Select option one",
                                 "value": "selectOne",
+                                "openForms": {
+                                    "translations": {
+                                        "en": {"label": "A fine selection"},
+                                        "nl": {
+                                            "label": "Untranslated Select option one"
+                                        },
+                                    }
+                                },
                             },
                             {
                                 "label": "Untranslated Select option two",
                                 "value": "selectTwo",
+                                "openForms": {
+                                    "translations": {
+                                        "en": {"label": "Translated Select option two"},
+                                        "nl": {
+                                            "label": "Untranslated Select option two"
+                                        },
+                                    }
+                                },
                             },
                         ]
                     }
@@ -168,18 +208,50 @@ class DownloadSubmissionReportTests(APITestCase):
                         {
                             "label": "Untranslated Selectboxes option one",
                             "value": "selectboxesOne",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "The Deal"},
+                                    "nl": {
+                                        "label": "Untranslated Selectboxes option one"
+                                    },
+                                }
+                            },
                         },
                         {
                             "label": "Untranslated Selectboxes option two",
                             "value": "selectboxesTwo",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "This"},
+                                    "nl": {
+                                        "label": "Untranslated Selectboxes option two"
+                                    },
+                                }
+                            },
                         },
                         {
                             "label": "Untranslated Selectboxes option three",
                             "value": "selectboxesThree",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "That"},
+                                    "nl": {
+                                        "label": "Untranslated Selectboxes option three"
+                                    },
+                                }
+                            },
                         },
                         {
                             "label": "Untranslated Selectboxes option four",
                             "value": "selectboxesFour",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "The Other"},
+                                    "nl": {
+                                        "label": "Untranslated Selectboxes option four"
+                                    },
+                                }
+                            },
                         },
                     ]
 
@@ -192,6 +264,12 @@ class DownloadSubmissionReportTests(APITestCase):
                     "hidden": False,
                     "label": "Untranslated Field Set label",
                     "components": [components.pop()],
+                    "openForms": {
+                        "translations": {
+                            "en": {"label": "Translated Field Set label"},
+                            "nl": {"label": "Untranslated Field Set label"},
+                        }
+                    },
                 },
                 {
                     "type": "columns",
@@ -208,6 +286,12 @@ class DownloadSubmissionReportTests(APITestCase):
                             "components": [components.pop()],
                         },
                     ],
+                    "openForms": {
+                        "translations": {
+                            "en": {"label": "Translated Columns label"},
+                            "nl": {"label": "Untranslated Columns label"},
+                        }
+                    },
                 },
                 {
                     "type": "editgrid",
@@ -216,12 +300,32 @@ class DownloadSubmissionReportTests(APITestCase):
                     "label": "Untranslated Repeating Group label",
                     "groupLabel": "Untranslated Repeating Group Item label",
                     "components": [components.pop()],
+                    "openForms": {
+                        "translations": {
+                            "en": {
+                                "label": "Translated Repeating Group label",
+                                "groupLabel": "Translated Repeating Group Item label",
+                            },
+                            "nl": {
+                                "label": "Untranslated Repeating Group label",
+                                "groupLabel": "Untranslated Repeating Group Item label",
+                            },
+                        }
+                    },
                 },
                 {
                     "type": "checkbox",
                     "key": "interpolkey",
                     "hidden": False,
                     "label": "Untranslated label using {{textfieldkey}} interpolation",
+                    "openForms": {
+                        "translations": {
+                            "en": {"label": "Interpolated {{textfieldkey}} label"},
+                            "nl": {
+                                "label": "Untranslated label using {{textfieldkey}} interpolation"
+                            },
+                        }
+                    },
                 },
             ]
         )
@@ -234,45 +338,6 @@ class DownloadSubmissionReportTests(APITestCase):
             submission__form__name_en="Translated Form name",
             submission__form__formstep__form_definition__name_nl="Untranslated Form Step name",
             submission__form__formstep__form_definition__name_en="A Quickstep",
-            submission__form__formstep__form_definition__component_translations={
-                "en": {
-                    "Untranslated Bsn label": "Translated Bsn label",
-                    "Untranslated Checkbox label": "Translated Checkbox label",
-                    "Untranslated Currency label": "Translated Currency label",
-                    "Untranslated Date label": "Translated Date label",
-                    "Untranslated Email label": "Translated Email label",
-                    "Untranslated Field Set label": "Translated Field Set label",
-                    "Untranslated File label": "Translated File label",
-                    "Untranslated Iban label": "Translated Iban label",
-                    "Untranslated Licenseplate label": "Translated Licenseplate label",
-                    "Untranslated Map label": "Translated Map label",
-                    "Untranslated Number label": "Translated Number label",
-                    "Untranslated Password label": "Translated Password label",
-                    "Untranslated Phonenumber label": "Translated Phonenumber label",
-                    "Untranslated Postcode label": "Translated Postcode label",
-                    "Untranslated Radio label": "Translated Radio label",
-                    "Untranslated Radio option one": "Radio number one",
-                    "Untranslated Radio option two": "Translated Radio option two",
-                    "Untranslated Repeating Group Item label": "Translated Repeating Gr"
-                    "oup Item label",
-                    "Untranslated Repeating Group label": "Translated Repeating Group l"
-                    "abel",
-                    "Untranslated Select label": "Translated Select label",
-                    "Untranslated Select option one": "A fine selection",
-                    "Untranslated Select option two": "Translated Select option two",
-                    "Untranslated Selectboxes label": "Translated Selectboxes label",
-                    "Untranslated Selectboxes option four": "The Other",
-                    "Untranslated Selectboxes option one": "The Deal",
-                    "Untranslated Selectboxes option three": "That",
-                    "Untranslated Selectboxes option two": "This",
-                    "Untranslated Signature label": "Translated Signature label",
-                    "Untranslated Textarea label": "Translated Textarea label",
-                    "Untranslated Textfield label": "Translated Textfield label",
-                    "Untranslated Time label": "Translated Time label",
-                    "Untranslated Updatenote label": "Translated Updatenote label",
-                    "Untranslated label using {{textfieldkey}} interpolation": "Interpolated {{textfieldkey}} label",
-                }
-            },
             submission__form__formstep__form_definition__configuration={
                 "components": components,
             },

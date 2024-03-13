@@ -13,7 +13,7 @@ import {
 
 const LANGUAGES = getSupportedLanguages();
 
-const extractTranslatableValues = configuration => {
+const extractTranslatableProperties = configuration => {
   let translatableValues = [];
   FormioUtils.eachComponent(
     configuration.components,
@@ -21,9 +21,11 @@ const extractTranslatableValues = configuration => {
       const literals = extractComponentLiterals(component);
       literals.forEach(literal => {
         translatableValues.push({
+          component: component,
           componentKey: component.key,
           componentLabel: component.label,
-          literal: literal,
+          literal: literal.literal,
+          property: literal.property,
         });
       });
     },
@@ -31,17 +33,19 @@ const extractTranslatableValues = configuration => {
   );
   return translatableValues;
 };
-
-const extractMissingComponentTranslations = (configuration, componentTranslations = {}) => {
+const extractMissingComponentTranslations = configuration => {
   const languageCodeMapping = Object.fromEntries(LANGUAGES);
 
-  const translatableValues = extractTranslatableValues(configuration);
+  const translatableProperties = extractTranslatableProperties(configuration);
 
   let missingTranslations = [];
-  for (const entry of translatableValues) {
+  for (const entry of translatableProperties) {
+    const component = entry.component;
+
     for (const [languageCode, _languageLabel] of LANGUAGES) {
-      let translations = componentTranslations?.[languageCode] || {};
-      if (!translations[entry.literal])
+      let translations = component.openForms?.translations?.[languageCode] || {};
+
+      if (!translations[entry.property])
         missingTranslations.push({language: languageCodeMapping[languageCode], ...entry});
     }
   }
@@ -84,6 +88,7 @@ const MissingComponentTranslationsTable = ({children: missingTranslations}) => (
 MissingComponentTranslationsTable.propTypes = {
   children: PropTypes.arrayOf(
     PropTypes.shape({
+      component: PropTypes.object.isRequired,
       componentKey: PropTypes.string.isRequired,
       componentLabel: PropTypes.string.isRequired,
       language: PropTypes.string.isRequired,
@@ -92,7 +97,7 @@ MissingComponentTranslationsTable.propTypes = {
   ),
 };
 
-const MissingComponentTranslationsWarning = ({configuration, componentTranslations}) => {
+const MissingComponentTranslationsWarning = ({configuration}) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const onShowModal = event => {
@@ -100,10 +105,7 @@ const MissingComponentTranslationsWarning = ({configuration, componentTranslatio
     setModalOpen(true);
   };
 
-  const missingTranslations = extractMissingComponentTranslations(
-    configuration,
-    componentTranslations
-  );
+  const missingTranslations = extractMissingComponentTranslations(configuration);
 
   const formattedWarning = (
     <FormattedMessage
@@ -144,7 +146,6 @@ const MissingComponentTranslationsWarning = ({configuration, componentTranslatio
 
 MissingComponentTranslationsWarning.propTypes = {
   configuration: PropTypes.object.isRequired,
-  componentTranslations: PropTypes.object.isRequired,
 };
 
 export default MissingComponentTranslationsWarning;

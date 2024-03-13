@@ -21,7 +21,6 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
     isReusable,
     isNew,
     validationErrors = [],
-    componentTranslations,
   } = data;
   const previousFormDefinition = usePrevious(formDefinition);
   let forceBuilderUpdate = false;
@@ -46,7 +45,6 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
       url={formDefinition}
       generatedId={_generatedId}
       translations={translations}
-      componentTranslations={componentTranslations}
       configuration={configuration}
       isApplicable={isApplicable}
       loginRequired={loginRequired}

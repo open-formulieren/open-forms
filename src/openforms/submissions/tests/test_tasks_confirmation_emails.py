@@ -557,15 +557,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 form__translation_enabled=True,
                 form__name="Translated form name",
                 form__formstep__form_definition__name="A Quickstep",
-                form__formstep__form_definition__component_translations={
-                    "en": {
-                        "Untranslated Repeating Group label": "Translated Repeating Group label",
-                        "Untranslated Repeating Group Item label": "Translated Repeating Group Item label",
-                        "Untranslated Radio option 1": "Translated Radio option 1",
-                        "Untranslated Radio option 2": "Translated Radio option 2",
-                        "Untranslated Select option 2": "Translated Select option 2",
-                    },
-                },
                 form__formstep__form_definition__configuration={
                     "components": [
                         {
@@ -597,10 +588,30 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                                         {
                                             "label": "Untranslated Radio option 1",
                                             "value": "radiov1",
+                                            "openForms": {
+                                                "translations": {
+                                                    "en": {
+                                                        "label": "Translated Radio option 1"
+                                                    },
+                                                    "nl": {
+                                                        "label": "Untranslated Radio option 1"
+                                                    },
+                                                }
+                                            },
                                         },
                                         {
                                             "label": "Untranslated Radio option 2",
                                             "value": "radiov2",
+                                            "openForms": {
+                                                "translations": {
+                                                    "en": {
+                                                        "label": "Translated Radio option 2"
+                                                    },
+                                                    "nl": {
+                                                        "label": "Untranslated Radio option 2"
+                                                    },
+                                                }
+                                            },
                                         },
                                     ],
                                 },
@@ -617,11 +628,33 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                                             {
                                                 "label": "Untranslated Select option 2",
                                                 "value": "selectv2",
+                                                "openForms": {
+                                                    "translations": {
+                                                        "en": {
+                                                            "label": "Translated Select option 2"
+                                                        },
+                                                        "nl": {
+                                                            "label": "Untranslated Select option 2"
+                                                        },
+                                                    }
+                                                },
                                             },
                                         ],
                                     },
                                 },
                             ],
+                            "openForms": {
+                                "translations": {
+                                    "en": {
+                                        "label": "Translated Repeating Group label",
+                                        "groupLabel": "Translated Repeating Group Item label",
+                                    },
+                                    "nl": {
+                                        "label": "Untranslated Repeating Group label",
+                                        "groupLabel": "Untranslated Repeating Group Item label",
+                                    },
+                                }
+                            },
                         },
                     ],
                 },

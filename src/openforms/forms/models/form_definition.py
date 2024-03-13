@@ -70,13 +70,6 @@ class FormDefinition(models.Model):
         help_text=_("The total number of Formio components used in the configuration"),
     )
 
-    component_translations = models.JSONField(
-        verbose_name=_("Component translations"),
-        help_text=_("Translations for literals used in components"),
-        blank=True,
-        default=dict,
-    )
-
     class Meta:
         verbose_name = _("Form definition")
         verbose_name_plural = _("Form definitions")

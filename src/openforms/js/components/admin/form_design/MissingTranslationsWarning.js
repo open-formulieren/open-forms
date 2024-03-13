@@ -87,10 +87,7 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
 
   let formStepsMissingTranslations = [];
   for (const formStep of formSteps) {
-    if (
-      extractMissingComponentTranslations(formStep.configuration, formStep.componentTranslations)
-        .length
-    ) {
+    if (extractMissingComponentTranslations(formStep.configuration).length) {
       formStepsMissingTranslations.push(formStep.name);
     }
   }
