@@ -5,13 +5,21 @@ from unittest.mock import patch
 from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase, tag
 
-from openforms.forms.tasks import recouple_submission_variables_to_form_variables
-from openforms.forms.tests.factories import FormFactory, FormVariableFactory
+from openforms.forms.tasks import (
+    recouple_submission_variables_to_form_variables,
+    repopulate_reusable_definition_variables_to_form_variables,
+)
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormVariableFactory,
+)
 from openforms.submissions.models import SubmissionValueVariable
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.variables.constants import FormVariableSources
 
 
 class FormVariableTasksTest(TestCase):
@@ -60,6 +68,49 @@ class FormVariableTasksTest(TestCase):
                 submission__form=form, form_variable__isnull=True
             ).count(),
         )
+
+    def test_recouple_reusable_definition_variables(self):
+        reusable_fd = FormDefinitionFactory.create(
+            is_reusable=True,
+            configuration={"components": [{"type": "textfield", "key": "test1"}]},
+        )
+        form1 = FormFactory.create(
+            generate_minimal_setup=True, formstep__form_definition=reusable_fd
+        )
+        form2 = FormFactory.create(
+            generate_minimal_setup=True, formstep__form_definition=reusable_fd
+        )
+
+        reusable_fd.configuration = {
+            "components": [{"type": "textfield", "key": "test1Updated"}]
+        }
+        reusable_fd.save()
+
+        repopulate_reusable_definition_variables_to_form_variables(form1.id)
+
+        new_variable = form2.formvariable_set.get()
+
+        self.assertEqual(new_variable.key, "test1Updated")
+
+    def test_recouple_reusable_definition_variables_do_not_delete_user_defined(self):
+        reusable_fd = FormDefinitionFactory.create(
+            is_reusable=True,
+            configuration={"components": [{"type": "textfield", "key": "test1"}]},
+        )
+        form = FormFactory.create(
+            generate_minimal_setup=True, formstep__form_definition=reusable_fd
+        )
+        user_defined_var = FormVariableFactory.create(
+            form=form, key="variable4", user_defined=True
+        )
+
+        repopulate_reusable_definition_variables_to_form_variables(form.id)
+
+        form_user_defined_var = form.formvariable_set.get(
+            source=FormVariableSources.user_defined
+        )
+
+        self.assertEqual(form_user_defined_var, user_defined_var)
 
 
 class ThreadWithExceptionHandling(threading.Thread):
