@@ -11,6 +11,10 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.registrations.contrib.objects_api.models import (
+    ObjectsAPIRegistrationData,
+)
+from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -1253,3 +1257,68 @@ class ObjectsAPIBackendTests(TestCase):
                 "public_order_ids": [],
             },
         )
+
+    def test_csv_creation_fails_pdf_still_saved(self, m: requests_mock.Mocker):
+        """Test the behavior when one of the API calls fails.
+
+        The exception should be caught, the intermediate data saved, and a
+        ``RegistrationFailed`` should be raised in the end.
+        """
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+            ],
+            submitted_data={"voornaam": "Foo"},
+        )
+
+        pdf = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+
+        csv = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+        # OK on PDF request
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=pdf,
+            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".pdf"),
+        )
+
+        # Failure on CSV request
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=500,
+            json=csv,
+            additional_matcher=lambda req: "csv" in req.json()["bestandsnaam"],
+        )
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.assertRaises(RegistrationFailed):
+            plugin.register_submission(
+                submission,
+                {
+                    "upload_submission_csv": True,
+                    "informatieobjecttype_submission_csv": "dummy",
+                },
+            )
+
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
+
+        self.assertEqual(registration_data.pdf_url, pdf["url"])
+        self.assertEqual(registration_data.csv_url, "")
