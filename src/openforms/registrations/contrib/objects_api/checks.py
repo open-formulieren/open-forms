@@ -15,17 +15,24 @@ from .models import ObjectsAPIConfig
 
 def check_objects_service():
     with get_objects_client() as client:
-        client.get("objects", params={"pageSize": 1})
+        resp = client.get("objects", params={"pageSize": 1})
+        resp.raise_for_status()
+        if not 200 <= resp.status_code < 300:
+            raise InvalidPluginConfiguration(_("Missing API credentials"))
 
 
 def check_objecttypes_service():
     with get_objecttypes_client() as client:
-        client.get("objecttypes", params={"pageSize": 1})
+        resp = client.get("objecttypes", params={"pageSize": 1})
+        resp.raise_for_status()
+        if not 200 <= resp.status_code < 300:
+            raise InvalidPluginConfiguration(_("Missing API credentials"))
 
 
 def check_documents_service():
     with get_documents_client() as client:
-        client.get("enkelvoudiginformatieobjecten")
+        resp = client.get("enkelvoudiginformatieobjecten")
+        resp.raise_for_status()
 
 
 def check_config():
