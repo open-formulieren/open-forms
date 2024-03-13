@@ -27,7 +27,7 @@ from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message
 from ..models import Category, Form, FormDefinition, FormStep, FormVersion
-from ..tasks import recouple_submission_variables_to_form_variables
+from ..tasks import on_variables_bulk_update_event
 from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
@@ -554,7 +554,7 @@ class FormViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        recouple_submission_variables_to_form_variables.delay(form.id)
+        on_variables_bulk_update_event(form.id)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
