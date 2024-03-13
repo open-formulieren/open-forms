@@ -9,7 +9,7 @@ from requests import RequestException
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.kvk.api_models.basisprofiel import BasisProfiel
-from openforms.contrib.kvk.client import NoServiceConfigured, get_kvk_client
+from openforms.contrib.kvk.client import NoServiceConfigured, get_kvk_profile_client
 from openforms.contrib.kvk.models import KVKConfig
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
@@ -63,7 +63,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
             return {}
 
         try:
-            with get_kvk_client("profile") as client:
+            with get_kvk_profile_client() as client:
                 result = client.get_profile(kvk_value)
         except (RequestException, NoServiceConfigured):
             return {}
@@ -105,7 +105,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
     def check_config(self):
         check_kvk = "68750110"
         try:
-            with get_kvk_client("profile") as client:
+            with get_kvk_profile_client() as client:
                 result = client.get_profile(check_kvk)
         except NoServiceConfigured as e:
             raise InvalidPluginConfiguration(

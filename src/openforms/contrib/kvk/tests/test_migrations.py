@@ -3,7 +3,7 @@ from zgw_consumers.constants import APITypes, AuthTypes
 from openforms.utils.tests.test_migrations import TestMigrations
 
 
-class KVKTestMigrationsMixin:
+class KVKZoekenServicesMigrationTests(TestMigrations):
     app = "kvk"
     migrate_from = "0006_remove_refactored_service_config_fields"
     migrate_to = "0008_remove_kvkconfig_service"
@@ -27,8 +27,6 @@ class KVKTestMigrationsMixin:
         KVKConfiguration = apps.get_model("kvk", "KVKConfig")
         KVKConfiguration.objects.create(service=_service)
 
-
-class KVKZoekenServicesMigrationTests(KVKTestMigrationsMixin, TestMigrations):
     def test_kvk_service_set_with_zoeken_preset(self):
         Service = self.apps.get_model("zgw_consumers", "Service")
         service = Service.objects.get()
@@ -40,7 +38,11 @@ class KVKZoekenServicesMigrationTests(KVKTestMigrationsMixin, TestMigrations):
         self.assertEqual(config.search_service, service)
 
 
-class KVKBasisprofielenServicesMigrationTests(KVKTestMigrationsMixin, TestMigrations):
+class KVKBasisprofielenServicesMigrationTests(TestMigrations):
+    app = "kvk"
+    migrate_from = "0006_remove_refactored_service_config_fields"
+    migrate_to = "0008_remove_kvkconfig_service"
+
     def setUpBeforeMigration(self, apps):
         Service = apps.get_model("zgw_consumers", "Service")
         _service, _ = Service.objects.get_or_create(
@@ -71,7 +73,11 @@ class KVKBasisprofielenServicesMigrationTests(KVKTestMigrationsMixin, TestMigrat
         self.assertEqual(config.profile_service, service)
 
 
-class KVKGenericServicesMigrationTests(KVKTestMigrationsMixin, TestMigrations):
+class KVKGenericServicesMigrationTests(TestMigrations):
+    app = "kvk"
+    migrate_from = "0006_remove_refactored_service_config_fields"
+    migrate_to = "0008_remove_kvkconfig_service"
+
     def setUpBeforeMigration(self, apps):
         Service = apps.get_model("zgw_consumers", "Service")
         _service, _ = Service.objects.get_or_create(

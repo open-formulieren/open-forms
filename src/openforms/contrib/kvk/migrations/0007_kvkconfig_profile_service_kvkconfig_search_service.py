@@ -19,9 +19,8 @@ def set_kvk_service(apps, _):
     if config is None:
         return
 
-    if service := config.service:
-        if not (root := service.api_root):
-            return
+    if not (service := config.service) or not (root := service.api_root):
+        return
 
     if "zoeken" in root:
         config.search_service = service
@@ -49,7 +48,7 @@ class Migration(migrations.Migration):
             name="profile_service",
             field=models.OneToOneField(
                 blank=True,
-                help_text="API used to retrieve basis profielen.",
+                help_text="Service for API used to retrieve basis profielen.",
                 limit_choices_to={"api_type": "orc"},
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
@@ -63,7 +62,7 @@ class Migration(migrations.Migration):
             name="search_service",
             field=models.OneToOneField(
                 blank=True,
-                help_text="API used for validation of KvK, RSIN and vestigingsnummer's.",
+                help_text="Service for API used for validation of KvK, RSIN and vestigingsnummer's.",
                 limit_choices_to={"api_type": "orc"},
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,

@@ -13,6 +13,22 @@ from .models import KVKConfig
 logger = logging.getLogger(__name__)
 
 
+def get_kvk_profile_client() -> "KVKProfileClient":
+    config = KVKConfig.get_solo()
+    assert isinstance(config, KVKConfig)
+    if not (service := config.profile_service):
+        raise NoServiceConfigured("No KVK basisprofielen service configured!")
+    return build_client(service, client_factory=KVKProfileClient)
+
+
+def get_kvk_search_client() -> "KVKSearchClient":
+    config = KVKConfig.get_solo()
+    assert isinstance(config, KVKConfig)
+    if not (service := config.search_service):
+        raise NoServiceConfigured("No KVK zoeken service configured!")
+    return build_client(service, client_factory=KVKSearchClient)
+
+
 class NoServiceConfigured(RuntimeError):
     pass
 
@@ -41,7 +57,7 @@ class KVKProfileClient(HALClient):
         """
         Retrieve the profile of a single entity by chamber of commerce number.
 
-        :arg kvk_nummer: must be a Dutch Chamber of Commerce number and consists of 8 digits.
+        :arg kvk_nummer: a Dutch Chamber of Commerce number consisting of 8 digits.
 
         Docs: https://developers.kvk.nl/apis/basisprofiel
         Swagger: https://developers.kvk.nl/documentation/testing/swagger-basisprofiel-api
@@ -65,7 +81,7 @@ class KVKSearchClient(HALClient):
         """
         Perform a search against the KVK zoeken API.
 
-        :arg query_params: must be a non-empty dictionary of query string parameters for
+        :arg query_params: a non-empty dictionary of query string parameters for
           the actual search.
 
         Docs: https://developers.kvk.nl/apis/zoeken
@@ -83,17 +99,3 @@ class KVKSearchClient(HALClient):
             raise exc
 
         return response.json()
-
-
-def get_kvk_client(
-    client: Literal["profile", "search"]
-) -> KVKProfileClient | KVKSearchClient:
-    service_mappings = {
-        "profile": KVKProfileClient,
-        "search": KVKSearchClient,
-    }
-    config = KVKConfig.get_solo()
-    assert isinstance(config, KVKConfig)
-    if not (service := getattr(config, f"{client}_service")):
-        raise NoServiceConfigured(f"No KVK {client} service configured!")
-    return build_client(service, client_factory=service_mappings[client])
