@@ -14,12 +14,8 @@ onLoaded(async () => {
 
   for (const node of nodes) {
     const configurationInput = node.querySelector('.form-builder__configuration-input');
-    const componentTranslationsInput = node
-      .closest('form')
-      .querySelector('.form-builder__component-translations');
 
     const configuration = JSON.parse(configurationInput.value) || {display: 'form'};
-    let componentTranslations = JSON.parse(componentTranslationsInput.value) || {};
 
     const onChange = newConfiguration => {
       // extract translations
@@ -29,11 +25,7 @@ onLoaded(async () => {
     const root = createRoot(node.querySelector('.form-builder__container'));
     root.render(
       <AppWrapper {...wrapperProps}>
-        <FormIOBuilder
-          configuration={configuration}
-          onChange={onChange}
-          componentTranslations={componentTranslations}
-        />
+        <FormIOBuilder configuration={configuration} onChange={onChange} />
       </AppWrapper>
     );
   }

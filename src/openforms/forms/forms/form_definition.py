@@ -20,11 +20,5 @@ class FormDefinitionForm(forms.ModelForm):
             "login_required",
             "is_reusable",
             "configuration",
-            "component_translations",
         )
-        widgets = {
-            "uuid": forms.TextInput(attrs={"readonly": True}),
-            "component_translations": forms.HiddenInput(
-                attrs={"class": "form-builder__component-translations"}
-            ),
-        }
+        widgets = {"uuid": forms.TextInput(attrs={"readonly": True})}

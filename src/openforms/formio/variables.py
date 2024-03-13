@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Iterator
+from typing import Iterator
 
 from django.template import TemplateSyntaxError
 
@@ -62,9 +62,7 @@ def validate_configuration(configuration: JSONObject) -> dict[str, str]:
 
 
 def inject_variables(
-    configuration: FormioConfigurationWrapper,
-    values: DataMapping,
-    translate: Callable[[str], str] = str,
+    configuration: FormioConfigurationWrapper, values: DataMapping
 ) -> None:
     """
     Inject the variable values into the Formio configuration.
@@ -88,20 +86,8 @@ def inject_variables(
                 continue
 
             match property_value:
-                case str():
-                    property_value = translate(property_value)
                 case [str(), *_]:
-                    property_value = [
-                        translate(s) for s in property_value if isinstance(s, str)
-                    ]
-                case [{"label": _}, *_]:
-                    for item in property_value:
-                        if "label" in item:
-                            item["label"] = translate(item["label"])
-                case {"values": [*defined_values]}:
-                    for item in defined_values:
-                        if "label" in item:
-                            item["label"] = translate(item["label"])
+                    property_value = [s for s in property_value if isinstance(s, str)]
 
             try:
                 templated_value = render(property_value, values)

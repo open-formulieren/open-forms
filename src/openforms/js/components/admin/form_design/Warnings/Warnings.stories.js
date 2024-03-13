@@ -81,10 +81,6 @@ export const FormWarningsWithoutTranslations = {
             name: '',
           },
         },
-        componentTranslations: {
-          nl: {},
-          en: {},
-        },
         validationErrors: [],
       },
     ],

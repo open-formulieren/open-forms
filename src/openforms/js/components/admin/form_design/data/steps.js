@@ -44,9 +44,6 @@ const updateOrCreateSingleFormStep = async (
     loginRequired: step.loginRequired,
     isReusable: step.isReusable,
     translations: formDefinitionTranslations,
-    // the component translations need to be cleaned up and fully processed in the
-    // reducer/state management of the component calling the data functions.
-    componentTranslations: step.componentTranslations,
   };
 
   try {

@@ -221,7 +221,6 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 textfield["openForms"]["translations"]["nl"]["label"],
                 "Veldlabel",
             )
-            self.assertEqual(fd.component_translations, {})
 
         await assertState()
 

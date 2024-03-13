@@ -8,7 +8,6 @@ from openforms.formio.service import (
     FormioData,
     get_dynamic_configuration,
     inject_variables,
-    translate_function,
 )
 from openforms.formio.utils import get_component_empty_value
 from openforms.typing import DataMapping
@@ -55,7 +54,7 @@ def evaluate_form_logic(
     4. Apply any dirty data (unsaved) to the variable state
     5. Evaluate the logic rules in order, for each action in each triggered rule:
 
-       1. If a variable value is being update, update the variable state
+       1. If a variable value is being updated, update the variable state
        2. Else record the action to perform to the configuration (but don't apply it yet!)
 
     6. The variables state is now completely resolved and can be used as input for the
@@ -167,13 +166,7 @@ def evaluate_form_logic(
         data_diff[key] = empty_value
 
     # 7.2 Interpolate the component configuration with the variables.
-    translate = (
-        # We need to interpolate the translated string
-        translate_function(submission, step)
-        if (submission.form.translation_enabled and step.form_step)
-        else str  # a noop when translation is not enabled
-    )
-    inject_variables(config_wrapper, data_container.data, translate)
+    inject_variables(config_wrapper, data_container.data)
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.

@@ -37,16 +37,14 @@ class TranslationWarningTests(E2ETestCase):
                             "type": "textfield",
                             "key": "someField",
                             "label": "Some Field",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Some EN Field"},
+                                    "nl": {"label": "Een NL Veld"},
+                                }
+                            },
                         }
                     ],
-                },
-                formstep__form_definition__component_translations={
-                    "en": {
-                        "Some Field": "Some EN Field",
-                    },
-                    "nl": {
-                        "Some Field": "Een NL Veld",
-                    },
                 },
                 translation_enabled=True,
             )
@@ -100,16 +98,14 @@ class TranslationWarningTests(E2ETestCase):
                             "type": "textfield",
                             "key": "someField",
                             "label": "Some Field",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": ""},
+                                    "nl": {"label": ""},
+                                }
+                            },
                         }
                     ],
-                },
-                formstep__form_definition__component_translations={
-                    "en": {
-                        "Some Field": "",
-                    },
-                    "nl": {
-                        "Some Field": "",
-                    },
                 },
                 translation_enabled=True,
             )
@@ -177,16 +173,14 @@ class TranslationWarningTests(E2ETestCase):
                             "type": "textfield",
                             "key": "someField",
                             "label": "Some Field",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Some EN Field"},
+                                    "nl": {"label": "Een NL Veld"},
+                                }
+                            },
                         }
                     ],
-                },
-                formstep__form_definition__component_translations={
-                    "en": {
-                        "Some Field": "Some EN Field",
-                    },
-                    "nl": {
-                        "Some Field": "Een NL Veld",
-                    },
                 },
                 translation_enabled=True,
             )
@@ -239,16 +233,14 @@ class TranslationWarningTests(E2ETestCase):
                             "type": "textfield",
                             "key": "someField",
                             "label": "Some Field",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Some EN Field"},
+                                    "nl": {"label": "Een NL Veld"},
+                                }
+                            },
                         }
                     ],
-                },
-                formstep__form_definition__component_translations={
-                    "en": {
-                        "Some Field": "Some EN Field",
-                    },
-                    "nl": {
-                        "Some Field": "Een NL Veld",
-                    },
                 },
                 translation_enabled=True,
             )
@@ -311,16 +303,14 @@ class TranslationWarningTests(E2ETestCase):
                             "type": "textfield",
                             "key": "someField",
                             "label": "Some Field",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Some EN Field"},
+                                    "nl": {"label": "Een NL Veld"},
+                                }
+                            },
                         }
                     ],
-                },
-                formstep__form_definition__component_translations={
-                    "en": {
-                        "Some Field": "Some EN Field",
-                    },
-                    "nl": {
-                        "Some Field": "Een NL Veld",
-                    },
                 },
                 translation_enabled=True,
             )
@@ -370,16 +360,14 @@ class TranslationWarningTests(E2ETestCase):
                             "type": "textfield",
                             "key": "someField",
                             "label": "Some Field",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Some EN Field"},
+                                    "nl": {"label": "Een NL Veld"},
+                                }
+                            },
                         }
                     ],
-                },
-                formstep__form_definition__component_translations={
-                    "en": {
-                        "Some Field": "Some EN Field",
-                    },
-                    "nl": {
-                        "Some Field": "Een NL Veld",
-                    },
                 },
                 translation_enabled=True,
             )
@@ -437,16 +425,14 @@ class TranslationWarningTests(E2ETestCase):
                             "type": "textfield",
                             "key": "someField",
                             "label": "Some Field",
+                            "openForms": {
+                                "translations": {
+                                    "en": {"label": "Some EN Field"},
+                                    "nl": {"label": "Een NL Veld"},
+                                }
+                            },
                         }
                     ],
-                },
-                formstep__form_definition__component_translations={
-                    "en": {
-                        "Some Field": "Some EN Field",
-                    },
-                    "nl": {
-                        "Some Field": "Een NL Veld",
-                    },
                 },
                 translation_enabled=True,
             )

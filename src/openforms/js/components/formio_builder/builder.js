@@ -260,7 +260,6 @@ const FormIOBuilder = ({
   configuration,
   onChange,
   onComponentMutated,
-  componentTranslations = {}, // mapping of language code to (mapping of literal -> translation)
   componentNamespace = {},
   registrationBackendInfo = [],
   forceUpdate = false,
@@ -278,7 +277,6 @@ const FormIOBuilder = ({
   // This approach effectively pins the FormBuilder.form prop reference.
   const formRef = useRef(clone);
 
-  const componentTranslationsRef = useRef(componentTranslations);
   const componentNamespaceRef = useRef(componentNamespace);
   const registrationBackendInfoRef = useRef(registrationBackendInfo);
 
@@ -287,9 +285,6 @@ const FormIOBuilder = ({
   // instance actually only knows about the very first one. This means our updated state/
   // props that's checked in the callbacks is an outdated view, which we can fix by using
   // mutable refs :-)
-  useOnChanged(componentTranslations, () => {
-    componentTranslationsRef.current = componentTranslations;
-  });
   useOnChanged(componentNamespace, () => {
     componentNamespaceRef.current = componentNamespace;
   });
@@ -303,7 +298,6 @@ const FormIOBuilder = ({
   // props need to be immutable to not end up in infinite loops
   const [builderOptions] = useState(getBuilderOptions());
 
-  set(builderOptions, 'openForms.componentTranslationsRef', componentTranslationsRef);
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
   set(builderOptions, 'openForms.featureFlags', featureFlags);
   set(builderOptions, 'openForms.registrationBackendInfoRef', registrationBackendInfoRef);
@@ -342,7 +336,6 @@ FormIOBuilder.propTypes = {
   configuration: PropTypes.object,
   onChange: PropTypes.func,
   onComponentMutated: PropTypes.func,
-  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
   componentNamespace: PropTypes.arrayOf(PropTypes.object),
   forceUpdate: PropTypes.bool,
   registrationBackendInfo: PropTypes.arrayOf(PropTypes.object),

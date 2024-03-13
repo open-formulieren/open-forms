@@ -148,7 +148,6 @@ const newStepData = {
   url: '',
   _generatedId: '', // Consumers should generate this if there is no form definition url
   isNew: true,
-  componentTranslations: {},
   validationErrors: [],
 };
 
