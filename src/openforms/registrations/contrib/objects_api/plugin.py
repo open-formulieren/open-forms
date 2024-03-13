@@ -64,6 +64,8 @@ class ObjectsAPIRegistration(BasePlugin):
 
         handler = HANDLER_MAPPING[options["version"]]
 
+        handler.save_registration_data(submission, options)
+
         object_data = handler.get_object_data(
             submission=submission,
             options=options,
