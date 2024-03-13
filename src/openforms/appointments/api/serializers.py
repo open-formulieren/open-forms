@@ -279,7 +279,10 @@ class AppointmentSerializer(serializers.HyperlinkedModelSerializer):
         contact_details_serializer = build_serializer(
             contact_details_meta,
             data=attrs["contact_details"],
-            context=self.context,
+            context={
+                **self.context,
+                "submission": attrs["submission"],
+            },
         )
         if not contact_details_serializer.is_valid():
             errors = contact_details_serializer.errors

@@ -1,5 +1,6 @@
 from rest_framework.utils.serializer_helpers import ReturnDict
 
+from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONValue
 
 from ...service import build_serializer
@@ -12,7 +13,8 @@ def validate_formio_data(
     """
     Dynamically build the serializer, validate it and return the status.
     """
-    serializer = build_serializer(components=[component], data=data)
+    context = {"submission": SubmissionFactory.build()}
+    serializer = build_serializer(components=[component], data=data, context=context)
     is_valid = serializer.is_valid(raise_exception=False)
     return is_valid, serializer.errors
 

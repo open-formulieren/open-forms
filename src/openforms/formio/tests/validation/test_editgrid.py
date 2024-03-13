@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase
 
+from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject
 
 from ...service import build_serializer
@@ -145,8 +146,11 @@ class EditGridValidationTests(SimpleTestCase):
         data: JSONObject = {
             "toplevel": [{"nested": "i am valid"}],
         }
+        context = {"submission": SubmissionFactory.build()}
 
-        serializer = build_serializer(components=[component], data=data)
+        serializer = build_serializer(
+            components=[component], data=data, context=context
+        )
 
         with self.subTest("serializer validity"):
             self.assertTrue(serializer.is_valid())
