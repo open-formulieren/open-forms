@@ -121,6 +121,10 @@
   .formio-button-add-another {
     color: var(--body-fg) !important;
   }
+
+  pre {
+    color: var(--body-fg);
+  }
 }
 
 @mixin tinymce {
