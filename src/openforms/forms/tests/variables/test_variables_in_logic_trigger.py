@@ -220,7 +220,9 @@ class VariablesInLogicBulkAPITests(APITestCase):
 
         self.client.force_authenticate(user=user)
         url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
-        with patch("openforms.variables.service.register", new=register):
+        with patch(
+            "openforms.variables.service.static_variables_registry", new=register
+        ):
             response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)

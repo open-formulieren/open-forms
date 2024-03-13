@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -8,7 +10,9 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 if TYPE_CHECKING:
+    from openforms.plugins.registry import BaseRegistry
     from openforms.submissions.models import Submission
+    from openforms.variables.base import BaseStaticVariable
 
 SerializerCls = type[serializers.Serializer]
 
@@ -42,16 +46,14 @@ class BasePlugin(ABC, AbstractBasePlugin):
     """
 
     @abstractmethod
-    def register_submission(
-        self, submission: "Submission", options: dict
-    ) -> dict | None:
+    def register_submission(self, submission: Submission, options: dict) -> dict | None:
         raise NotImplementedError()
 
-    def update_payment_status(self, submission: "Submission", options: dict):
+    def update_payment_status(self, submission: Submission, options: dict):
         raise NotImplementedError()
 
     def pre_register_submission(
-        self, submission: "Submission", options: dict
+        self, submission: Submission, options: dict
     ) -> PreRegistrationResult:
         """Perform any tasks before registering the submission
 
@@ -65,3 +67,9 @@ class BasePlugin(ABC, AbstractBasePlugin):
         Return a list of custom templatetags libraries that will be added to the 'sandboxed' Django templates backend.
         """
         return []
+
+    def get_variables_registry(self) -> BaseRegistry[BaseStaticVariable] | None:
+        """
+        Return the static variables registry for this registration puglin.
+        """
+        return None
