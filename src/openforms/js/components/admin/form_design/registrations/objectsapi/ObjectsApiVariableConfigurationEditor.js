@@ -170,7 +170,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
           />
         </a>
         {jsonSchemaVisible && (
-          <pre>
+          <pre style={{marginTop: '1em'}}>
             {loading || !mappedVariable.targetPath
               ? 'N/A'
               : JSON.stringify(getTargetPath(mappedVariable.targetPath).jsonSchema, null, 2)}
@@ -236,7 +236,7 @@ TargetPathSelect.propTypes = {
 };
 
 const TargetPathDisplay = ({target}) => {
-  const path = target.targetPath.join(' > ');
+  const path = target.targetPath.length ? target.targetPath.join(' > ') : '/ (root)';
   return (
     <FormattedMessage
       description="Representation of a JSON Schema target path"
