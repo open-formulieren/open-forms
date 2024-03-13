@@ -1,16 +1,20 @@
 from django.test import tag
 
+import requests_mock
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory, APITestCase
 from testfixtures import LogCapture
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...api.viewsets import SubmissionStepViewSet
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -355,3 +359,58 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         self.assertEqual(data["step"]["data"]["datetime"], "2022-13-46T00:00:00+02:00")
         self.assertNotIn("resultDate", data["step"]["data"])
         self.assertNotIn("resultDatetime", data["step"]["data"])
+
+    @tag("gh-3975")
+    @requests_mock.Mocker()
+    def test_old_service_fetch_config_ignored(self, m):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "someComponent",
+                    }
+                ]
+            },
+        )
+        service = ServiceFactory.create(
+            api_root="https://httpbin.org/",
+        )
+        m.get("https://httpbin.org/get", json={"oh": "some data"})
+        FormVariableFactory.create(
+            form=form,
+            key="aVariable",
+            service_fetch_configuration=ServiceFetchConfigurationFactory.create(
+                service=service,
+                path="get",
+            ),
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!!": [True]},
+            actions=[
+                {
+                    "action": {
+                        "type": "fetch-from-service",
+                        "value": "4000",
+                    },  # A non-existing service
+                    "variable": "aVariable",
+                    "component": "",
+                    "form_step": "",
+                    "form_step_uuid": None,
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(endpoint, data={"data": {}})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -1058,3 +1058,72 @@ class ImportExportTests(TestCase):
         nl_translations = textfield["openForms"]["translations"]["nl"]
         self.assertIn("label", nl_translations)
         self.assertEqual(nl_translations["label"], "Tekstveld")
+
+    @tag("gh-3975")
+    def test_import_form_with_old_service_fetch_config(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "authentication_backends": [],
+                    "is_deleted": False,
+                    "login_required": False,
+                    "maintenance_mode": False,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "product": None,
+                    "show_progress_indicator": True,
+                    "slug": "old-service-fetch-config",
+                    "url": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                }
+            ],
+            "formSteps": [
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "form_definition": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "index": 0,
+                    "slug": "test-step",
+                    "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+                }
+            ],
+            "formDefinitions": [
+                {
+                    "configuration": {"components": []},
+                    "name": "A definition",
+                    "slug": "test-definition",
+                    "url": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                },
+            ],
+            "formLogic": [
+                {
+                    "actions": [
+                        {
+                            "action": {
+                                "type": "fetch-from-service",
+                                "value": "1",
+                            },  # Old service fetch format
+                            "variable": "aVariable",
+                            "component": "",
+                            "form_step": "",
+                            "form_step_uuid": None,
+                        }
+                    ],
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {"!!": [True]},
+                    "uuid": "b92342be-05e0-4070-b2cc-1b88af472091",
+                    "order": 0,
+                    "is_advanced": True,
+                }
+            ],
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        rule = FormLogic.objects.get(form__slug="old-service-fetch-config", order=0)
+        self.assertEqual(rule.actions[0]["action"]["value"], "")

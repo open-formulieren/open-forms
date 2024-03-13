@@ -28,7 +28,7 @@ from .api.serializers import (
     FormStepSerializer,
     FormVariableSerializer,
 )
-from .constants import EXPORT_META_KEY
+from .constants import EXPORT_META_KEY, LogicActionTypes
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 logger = logging.getLogger(__name__)
@@ -313,6 +313,9 @@ def import_form_data(
                         deserialized.validated_data["configuration"]
                     )
 
+                if resource == "formLogic":
+                    clear_old_service_fetch_config(deserialized.validated_data)
+
                 instance = deserialized.save()
                 if resource == "forms":
                     created_form = deserialized.instance
@@ -379,3 +382,18 @@ def remove_key_from_dict(dictionary, key):
             for value in dictionary[dict_key]:
                 if isinstance(value, dict):
                     remove_key_from_dict(value, key)
+
+
+def clear_old_service_fetch_config(rule: dict) -> None:
+    for action in rule["actions"]:
+        if action["action"]["type"] != LogicActionTypes.fetch_from_service:
+            continue
+
+        if "value" not in action["action"] or action["action"]["value"] == "":
+            continue
+
+        # See comment above in `import_form_data` where we check if the variable has a
+        # `service_fetch_configuration` attribute.
+        # We can't reliably relate the service fetch configured to an existing configuration.
+        # So we don't add any existing service fetch config to the variables
+        action["action"]["value"] = ""
