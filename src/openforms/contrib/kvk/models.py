@@ -30,7 +30,6 @@ class KVKConfig(SingletonModel):
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
-        blank=True,
         null=True,
     )
     search_service = models.OneToOneField(
@@ -42,7 +41,6 @@ class KVKConfig(SingletonModel):
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
-        blank=True,
         null=True,
     )
 
