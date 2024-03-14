@@ -2,6 +2,21 @@
 Changelog
 =========
 
+2.4.6 (2024-03-14)
+==================
+
+Bugfix release
+
+* [#3863] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [#3858] Fixed a race condition that would manifest during parallel file uploads,
+  leading to permission errors.
+* [#3864] Fixed handling of StUF-BG responses where one partner is returned.
+* [#1052] Upgraded DigiD/eHerkenning library.
+* [#3975,#3052] Fixed legacy service fetch configuration being picked over the intended
+  format.
+* [#3881] Fixed updating a re-usable form definition in one form causing issues in other
+  forms that also use this same form definition.
+
 2.4.5 (2024-02-06)
 ==================
 
