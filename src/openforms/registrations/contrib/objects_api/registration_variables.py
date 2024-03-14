@@ -30,11 +30,9 @@ class PdfUrl(BaseStaticVariable):
     data_type = FormVariableDataTypes.string
 
     def get_initial_value(self, submission: Submission | None = None):
-        return (
-            submission.objects_api_registration_data.pdf_url
-            if submission is not None
-            else None
-        )
+        if submission is None:
+            return None
+        return submission.objects_api_registration_data.pdf_url
 
 
 @register("csv_url")
@@ -43,11 +41,9 @@ class CsvUrl(BaseStaticVariable):
     data_type = FormVariableDataTypes.string
 
     def get_initial_value(self, submission: Submission | None = None):
-        return (
-            submission.objects_api_registration_data.csv_url
-            if submission is not None
-            else None
-        )
+        if submission is None:
+            return None
+        return submission.objects_api_registration_data.csv_url
 
 
 @register("attachment_urls")
@@ -56,11 +52,9 @@ class AttachmentUrls(BaseStaticVariable):
     data_type = FormVariableDataTypes.array
 
     def get_initial_value(self, submission: Submission | None = None):
-        return (
-            submission.objects_api_registration_data.attachment_urls
-            if submission is not None
-            else None
-        )
+        if submission is None:
+            return None
+        return submission.objects_api_registration_data.attachment_urls
 
 
 @register("payment_completed")
@@ -69,7 +63,9 @@ class PaymentCompleted(BaseStaticVariable):
     data_type = FormVariableDataTypes.boolean
 
     def get_initial_value(self, submission: Submission | None = None):
-        return submission.payment_user_has_paid if submission is not None else None
+        if submission is None:
+            return None
+        return submission.payment_user_has_paid
 
 
 @register("payment_amount")
@@ -78,7 +74,9 @@ class PaymentAmount(BaseStaticVariable):
     data_type = FormVariableDataTypes.string
 
     def get_initial_value(self, submission: Submission | None = None):
-        return str(submission.payments.sum_amount()) if submission is not None else None
+        if submission is None:
+            return None
+        return str(submission.payments.sum_amount())
 
 
 @register("payment_public_order_ids")
@@ -87,8 +85,6 @@ class PaymentPublicOrderIds(BaseStaticVariable):
     data_type = FormVariableDataTypes.array
 
     def get_initial_value(self, submission: Submission | None = None):
-        return (
-            submission.payments.get_completed_public_order_ids()
-            if submission is not None
-            else None
-        )
+        if submission is None:
+            return None
+        return submission.payments.get_completed_public_order_ids()

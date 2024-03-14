@@ -10,9 +10,9 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 if TYPE_CHECKING:
-    from openforms.plugins.registry import BaseRegistry
+    from openforms.forms.models import FormVariable
     from openforms.submissions.models import Submission
-    from openforms.variables.base import BaseStaticVariable
+
 
 SerializerCls = type[serializers.Serializer]
 
@@ -68,8 +68,8 @@ class BasePlugin(ABC, AbstractBasePlugin):
         """
         return []
 
-    def get_variables_registry(self) -> BaseRegistry[BaseStaticVariable] | None:
+    def get_variables(self) -> list[FormVariable]:
         """
-        Return the static variables registry for this registration puglin.
+        Return the static variables for this registration plugin.
         """
-        return None
+        return []

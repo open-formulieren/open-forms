@@ -42,7 +42,7 @@ def build_options(
     return options
 
 
-def registration_submission_pdf(
+def register_submission_pdf(
     submission: Submission,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
@@ -191,7 +191,7 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
             registration_data
         ):
             if not registration_data.pdf_url:
-                registration_data.pdf_url = registration_submission_pdf(
+                registration_data.pdf_url = register_submission_pdf(
                     submission, options, documents_client
                 )
 
