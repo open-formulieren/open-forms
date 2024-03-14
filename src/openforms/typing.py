@@ -1,13 +1,18 @@
 import datetime
 import decimal
 import uuid
-from typing import Any, NewType, Protocol, TypeAlias
+from typing import TYPE_CHECKING, Any, NewType, Protocol, TypeAlias
 
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
 from django.utils.functional import Promise
 
 from rest_framework.request import Request
+
+if TYPE_CHECKING:
+    from django.utils.functional import _StrOrPromise
+else:
+    _StrOrPromise = str
 
 JSONPrimitive: TypeAlias = str | int | float | bool | None
 
@@ -20,6 +25,9 @@ DataMapping: TypeAlias = dict[str, Any]  # key: value pair
 AnyRequest: TypeAlias = HttpRequest | Request
 
 RegistrationBackendKey = NewType("RegistrationBackendKey", str)
+
+StrOrPromise: TypeAlias = _StrOrPromise
+"""Either ``str`` or a ``Promise`` object returned by the lazy ``gettext`` functions."""
 
 
 class RequestHandler(Protocol):

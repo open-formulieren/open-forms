@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .api.views import StaticFormVariablesView
+from .api.views import RegistrationPluginVariablesView, StaticFormVariablesView
 
 app_name = "variables"
 
@@ -9,5 +9,10 @@ urlpatterns = [
         "static",
         StaticFormVariablesView.as_view(),
         name="static",
-    )
+    ),
+    path(
+        "registration",
+        RegistrationPluginVariablesView.as_view(),
+        name="registration",
+    ),
 ]

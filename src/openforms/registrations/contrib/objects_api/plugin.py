@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
 from functools import partial
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -8,8 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from typing_extensions import override
 
 from openforms.registrations.utils import execute_unless_result_exists
-from openforms.submissions.models import Submission
 from openforms.utils.date import get_today
+from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin
 from ...registry import register
@@ -17,8 +19,14 @@ from .checks import check_config
 from .client import get_objects_client
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
+from .registration_variables import register as variables_registry
 from .submission_registration import HANDLER_MAPPING
 from .typing import RegistrationOptions
+
+if TYPE_CHECKING:
+    from openforms.forms.models import FormVariable
+    from openforms.submissions.models import Submission
+
 
 PLUGIN_IDENTIFIER = "objects_api"
 
@@ -57,6 +65,8 @@ class ObjectsAPIRegistration(BasePlugin):
         config.apply_defaults_to(options)
 
         handler = HANDLER_MAPPING[options["version"]]
+
+        handler.save_registration_data(submission, options)
 
         object_data = handler.get_object_data(
             submission=submission,
@@ -129,3 +139,7 @@ class ObjectsAPIRegistration(BasePlugin):
                 headers={"Content-Crs": "EPSG:4326"},
             )
             response.raise_for_status()
+
+    @override
+    def get_variables(self) -> list[FormVariable]:
+        return get_static_variables(variables_registry=variables_registry)

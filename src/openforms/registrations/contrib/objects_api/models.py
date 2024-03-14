@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.loader import render_to_string
@@ -195,3 +196,38 @@ class ObjectsAPIConfig(SingletonModel):
             options["payment_status_update_json"] = self.payment_status_update_json
 
         options.setdefault("auteur", "Aanvrager")
+
+
+class ObjectsAPIRegistrationData(models.Model):
+    """Holds the temporary data available when registering a submission to the Objects API.
+
+    When starting the submission registration, this model is first populated. The Objects API
+    registration variables can then safely make use of this model to provide their data.
+    """
+
+    submission = models.OneToOneField(
+        "submissions.Submission",
+        on_delete=models.CASCADE,
+        verbose_name=_("submission"),
+        help_text=_("The submission linked to the registration data."),
+        related_name="objects_api_registration_data",
+    )
+    pdf_url = models.URLField(
+        _("pdf url"),
+        help_text=_("The PDF URL of the document on the Documents API."),
+        blank=True,
+    )
+    csv_url = models.URLField(
+        _("csv url"),
+        help_text=_("The CSV URL of the document on the Documents API."),
+        blank=True,
+    )
+    attachment_urls = ArrayField(
+        models.URLField(
+            _("attachment url"), help_text=_("The attachment URL on the Documents API.")
+        ),
+        verbose_name=_("attachment urls"),
+        help_text=_("The list of attachment URLs on the Documents API."),
+        blank=True,
+        default=list,
+    )

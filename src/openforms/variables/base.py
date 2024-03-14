@@ -1,16 +1,17 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from typing import ClassVar
 
 from openforms.forms.models import FormVariable
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
+from openforms.typing import StrOrPromise
+
+from .constants import FormVariableDataTypes
 
 
-@dataclass
 class BaseStaticVariable(ABC, AbstractBasePlugin):
-    identifier: str
-    name: str = field(init=False)
-    data_type: str = field(init=False)
+    name: ClassVar[StrOrPromise]
+    data_type: ClassVar[FormVariableDataTypes]
 
     @abstractmethod
     def get_initial_value(self, submission: Submission | None = None):
