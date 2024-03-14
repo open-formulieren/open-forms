@@ -9,7 +9,9 @@ input_validation subdirectory.
 
 from pathlib import Path
 
-from openforms.formio.typing import Component
+from playwright.async_api import Page
+
+from openforms.formio.typing import Component, DateComponent
 
 from .input_validation_base import ValidationsTestCase
 
@@ -151,4 +153,126 @@ class SingleNumberTests(ValidationsTestCase):
             component,
             ui_input=50,
             expected_ui_error="De waarde moet 42 of kleiner zijn.",
+        )
+
+
+class SingleBSNTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "bsn",
+            "key": "requiredBSN",
+            "label": "Required bsn",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required bsn is niet ingevuld.",
+        )
+
+
+class SingleDateTests(ValidationsTestCase):
+
+    def _locate_input(self, page: Page, label: str):
+        # fix the input resolution because the formio datepicker is not accessible
+        label_node = page.get_by_text(label, exact=True)
+        label_parent = label_node.locator("xpath=../..")
+        input_node = label_parent.get_by_role("textbox", include_hidden=False)
+        return input_node
+
+    def test_required_field(self):
+        component: DateComponent = {
+            "type": "date",
+            "key": "requiredDate",
+            "label": "Required date field",
+            "validate": {"required": True},
+            "datepickerMode": "day",
+            "enableDate": True,
+            "enableTime": False,
+            "format": "dd-MM-yyyy",
+            "datePicker": {
+                "showWeeks": True,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "minDate": None,
+                "maxDate": None,
+            },
+            "customOptions": {"allowInvalidPreload": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required date field is niet ingevuld.",
+        )
+
+    def test_min_date_fixed_value(self):
+        component: DateComponent = {
+            "type": "date",
+            "key": "minDate",
+            "label": "Minimum date",
+            "openForms": {
+                "minDate": {"mode": "fixedValue"},
+            },
+            "datepickerMode": "day",
+            "enableDate": True,
+            "enableTime": False,
+            "format": "dd-MM-yyyy",
+            "datePicker": {
+                "showWeeks": True,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "minDate": "2024-03-13",
+                "maxDate": None,
+            },
+            "customOptions": {"allowInvalidPreload": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="01-01-2024",
+            api_value="2024-01-01",
+            expected_ui_error="De opgegeven datum ligt te ver in het verleden.",
+        )
+
+    def test_max_date_fixed_value(self):
+        component: DateComponent = {
+            "type": "date",
+            "key": "maxDate",
+            "label": "Maximum date",
+            "openForms": {
+                "maxDate": {"mode": "fixedValue"},
+            },
+            "datepickerMode": "day",
+            "enableDate": True,
+            "enableTime": False,
+            "format": "dd-MM-yyyy",
+            "datePicker": {
+                "showWeeks": True,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "maxDate": "2024-03-13",
+                "minDate": None,
+            },
+            "customOptions": {"allowInvalidPreload": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="01-01-2025",
+            api_value="2025-01-01",
+            expected_ui_error="De opgegeven datum ligt te ver in de toekomst.",
         )

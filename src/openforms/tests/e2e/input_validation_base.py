@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from asgiref.sync import async_to_sync
 from furl import furl
-from playwright.async_api import expect
+from playwright.async_api import Page, expect
 from rest_framework import status
 from typing_extensions import NotRequired, Unpack
 
@@ -86,6 +86,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
             api_value = kwargs.pop("api_value", ui_input)
             self._assertBackendValidation(form, component["key"], api_value)
 
+    def _locate_input(self, page: Page, label: str):
+        return page.get_by_label(label, exact=True)
+
     @async_to_sync()
     async def _assertFrontendValidation(
         self,
@@ -102,7 +105,7 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
             await page.get_by_role("button", name="Formulier starten").click()
 
             # fill in the test input
-            await page.get_by_label(label, exact=True).fill(ui_input)
+            await self._locate_input(page, label).fill(ui_input)
 
             # try to submit the step which should be invalid, so we expect this to
             # render the error message.
