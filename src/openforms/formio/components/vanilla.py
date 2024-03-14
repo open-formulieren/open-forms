@@ -19,6 +19,7 @@ from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
+from openforms.validations.service import PluginValidator
 
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
@@ -76,9 +77,6 @@ class TextField(BasePlugin[TextFieldComponent]):
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
-        if validate.get("plugins", []):
-            raise NotImplementedError("Plugin validators not supported yet.")
-
         # dynamically add in more kwargs based on the component configuration
         extra = {}
         if (max_length := validate.get("maxLength")) is not None:
@@ -94,6 +92,11 @@ class TextField(BasePlugin[TextFieldComponent]):
                     message=_("This value does not match the required pattern."),
                 )
             )
+
+        # Run plugin validators at the end after all basic checks have been performed.
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
         if validators:
             extra["validators"] = validators
 
@@ -114,16 +117,23 @@ class Email(BasePlugin):
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
-        if validate.get("plugins", []):
-            raise NotImplementedError("Plugin validators not supported yet.")
-
         # dynamically add in more kwargs based on the component configuration
         extra = {}
         if (max_length := validate.get("maxLength")) is not None:
             extra["max_length"] = max_length
 
+        validators = []
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
         base = serializers.EmailField(
-            required=required, allow_blank=not required, allow_null=False, **extra
+            required=required,
+            allow_blank=not required,
+            allow_null=False,
+            **extra,
         )
         return serializers.ListField(child=base) if multiple else base
 
@@ -144,9 +154,6 @@ class PhoneNumber(BasePlugin):
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
-        if validate.get("plugins", []):
-            raise NotImplementedError("Plugin validators not supported yet.")
-
         # dynamically add in more kwargs based on the component configuration
         extra = {}
         # maxLength because of the usage in appointments, even though our form builder
@@ -164,6 +171,11 @@ class PhoneNumber(BasePlugin):
                     message=_("This value does not match the required pattern."),
                 )
             )
+
+        # Run plugin validators at the end after all basic checks have been performed.
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
         if validators:
             extra["validators"] = validators
 
@@ -215,19 +227,21 @@ class Number(BasePlugin):
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
-        if validate.get("plugins", []):
-            raise NotImplementedError("Plugin validators not supported yet.")
-
         extra = {}
         if max_value := validate.get("max"):
             extra["max_value"] = max_value
         if min_value := validate.get("min"):
             extra["min_value"] = min_value
 
+        validators = []
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
         base = serializers.FloatField(
-            required=required,
-            allow_null=not required,
-            **extra,
+            required=required, allow_null=not required, **extra
         )
         return serializers.ListField(child=base) if multiple else base
 

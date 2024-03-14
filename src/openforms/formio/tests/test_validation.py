@@ -2,6 +2,7 @@ from django.test import SimpleTestCase
 
 from rest_framework.serializers import ValidationError
 
+from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
 
 from ..service import build_serializer
@@ -9,7 +10,8 @@ from ..typing import Component, RadioComponent, TextFieldComponent
 
 
 def validate_formio_data(components: list[Component], data: JSONValue) -> None:
-    serializer = build_serializer(components=components, data=data)
+    context = {"submission": SubmissionFactory.build()}
+    serializer = build_serializer(components=components, data=data, context=context)
     serializer.is_valid(raise_exception=True)
 
 

@@ -14,6 +14,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
+from openforms.validations.service import PluginValidator
 
 from ..dynamic_config.date import mutate as mutate_min_max_validation
 from ..formatters.custom import (
@@ -232,15 +233,19 @@ class BSN(BasePlugin):
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
-        if validate.get("plugins", []):
-            raise NotImplementedError("Plugin validators not supported yet.")
-
         # dynamically add in more kwargs based on the component configuration
         extra = {}
         # maxLength because of the usage in appointments, even though our form builder
         # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
         if (max_length := validate.get("maxLength")) is not None:
             extra["max_length"] = max_length
+
+        validators = []
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
 
         base = serializers.CharField(
             required=required, allow_blank=not required, allow_null=False, **extra

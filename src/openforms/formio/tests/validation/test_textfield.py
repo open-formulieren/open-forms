@@ -1,5 +1,7 @@
 from django.test import SimpleTestCase, tag
 
+from hypothesis import given, strategies as st
+
 from openforms.typing import JSONValue
 
 from ...typing import TextFieldComponent
@@ -79,3 +81,19 @@ class TextFieldValidationTests(SimpleTestCase):
 
         with self.subTest("valid item"):
             self.assertNotIn(0, errors["numbers"])
+
+    @given(validator=st.sampled_from(["phonenumber-international", "phonenumber-nl"]))
+    def test_textfield_with_plugin_validator(self, validator: str):
+        component: TextFieldComponent = {
+            "type": "textfield",
+            "key": "foo",
+            "label": "House number",
+            "validate": {"plugins": [validator]},
+        }
+        data: JSONValue = {"foo": "notaphonenumber"}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertFalse(is_valid)
+        error = extract_error(errors, "foo")
+        self.assertEqual(error.code, "invalid")

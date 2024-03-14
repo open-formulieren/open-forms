@@ -35,5 +35,8 @@ class BasePlugin(ABC, AbstractBasePlugin, Generic[T]):
         return True
 
     @abstractmethod
-    def __call__(self, value: T, submission: Submission) -> bool:
+    def __call__(self, value: T, submission: Submission) -> None:
+        """
+        Raise a django or DRF validation error for invalid values.
+        """
         pass

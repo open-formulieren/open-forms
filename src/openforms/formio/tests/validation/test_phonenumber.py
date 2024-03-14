@@ -1,5 +1,7 @@
 from django.test import SimpleTestCase
 
+from hypothesis import given, strategies as st
+
 from openforms.typing import JSONValue
 
 from ...typing import Component
@@ -67,3 +69,19 @@ class PhoneNumberValidationTests(SimpleTestCase):
         self.assertIn(component["key"], errors)
         error = extract_error(errors, component["key"])
         self.assertEqual(error.code, "max_length")
+
+    @given(validator=st.sampled_from(["phonenumber-international", "phonenumber-nl"]))
+    def test_phonenumber_with_plugin_validator(self, validator: str):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "foo",
+            "label": "Phone",
+            "validate": {"plugins": [validator]},
+        }
+        data: JSONValue = {"foo": "notaphonenumber"}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertFalse(is_valid)
+        error = extract_error(errors, "foo")
+        self.assertEqual(error.code, "invalid")
