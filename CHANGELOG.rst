@@ -2,6 +2,19 @@
 Changelog
 =========
 
+2.3.8 (2024-03-14)
+==================
+
+Bugfix release
+
+* [#3863] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [#3858] Fixed a race condition that would manifest during parallel file uploads,
+  leading to permission errors.
+* [#3975,#3052] Fixed legacy service fetch configuration being picked over the intended
+  format.
+* [#3881] Fixed updating a re-usable form definition in one form causing issues in other
+  forms that also use this same form definition.
+
 2.3.7 (2024-02-06)
 ==================
 
