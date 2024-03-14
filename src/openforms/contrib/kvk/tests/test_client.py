@@ -6,7 +6,7 @@ from privates.test import temp_private_root
 
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..client import get_client
+from ..client import get_kvk_profile_client, get_kvk_search_client
 from .base import TEST_FILES, KVKTestMixin
 
 
@@ -15,8 +15,7 @@ class KVKSearchClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
     VCR_TEST_FILES = TEST_FILES
 
     def test_client(self):
-
-        with get_client() as client:
+        with get_kvk_search_client() as client:
             # exists
             res = client.get_search_results({"kvkNummer": "69599084"})
 
@@ -26,7 +25,7 @@ class KVKSearchClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
         self.assertEqual(res["resultaten"][0]["kvkNummer"], "69599084")
 
     def test_client_404(self):
-        with get_client() as client:
+        with get_kvk_search_client() as client:
             with self.assertRaises(requests.HTTPError):
                 client.get_search_results({"kvkNummer": "12345678"})
 
@@ -34,7 +33,7 @@ class KVKSearchClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
     def test_client_500(self, m):
         m.get(requests_mock.ANY, status_code=500)
 
-        with get_client() as client:
+        with get_kvk_search_client() as client:
             with self.assertRaises(requests.RequestException):
                 client.get_search_results({"kvkNummer": "69599084"})
 
@@ -45,7 +44,7 @@ class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
 
     def test_client(self):
 
-        with get_client() as client:
+        with get_kvk_profile_client() as client:
             # exists
             res = client.get_profile("69599084")
 
@@ -60,7 +59,7 @@ class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
         information must be sourced elsewhere.
         """
 
-        with get_client() as client:
+        with get_kvk_profile_client() as client:
             # exists
             res = client.get_profile("90000749")
 
@@ -68,7 +67,7 @@ class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
         self.assertEqual(res["kvkNummer"], "90000749")
 
     def test_client_404(self):
-        with get_client() as client:
+        with get_kvk_profile_client() as client:
             with self.assertRaises(requests.HTTPError):
                 client.get_profile("12345678")
 
@@ -76,6 +75,6 @@ class KVKProfilesClientTests(OFVCRMixin, KVKTestMixin, SimpleTestCase):
     def test_client_500(self, m):
         m.get(requests_mock.ANY, status_code=500)
 
-        with get_client() as client:
+        with get_kvk_profile_client() as client:
             with self.assertRaises(requests.RequestException):
                 client.get_profile("69599084")

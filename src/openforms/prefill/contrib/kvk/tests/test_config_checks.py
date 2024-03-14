@@ -14,7 +14,8 @@ plugin = KVK_KVKNumberPrefill("kvk")
 @temp_private_root()
 class KVKPrefillConfigCheckTests(KVKTestMixin, SimpleTestCase):
     def test_no_kvk_service_configured(self):
-        self.config_mock.return_value.service = None
+        self.config_mock.return_value.search_service = None
+        self.config_mock.return_value.profile_service = None
 
         with self.assertRaises(InvalidPluginConfiguration):
             plugin.check_config()

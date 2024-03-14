@@ -35,7 +35,7 @@ Configuration
 
    * **Label**: *Fill in a human readable label*, for example: ``My KvK Basisprofiel API``
    * **Type**: ORC (Overige)
-   * **API root URL**: *The API URL provided by KvK but typically:* ``https://api.kvk.nl/api/v1/basisprofielen/``
+   * **API root URL**: *The API URL provided by KvK but typically:* ``https://api.kvk.nl/api/``
    * **Authorization type**: API key
    * **Header key**: ``apikey``
    * **Header value**: *The KvK API key obtained in step 1*
@@ -46,7 +46,9 @@ Configuration
    to validate KvK-numbers, you also need to configure the KvK Zoeken API. If 
    this is not used, you can go to step 10.
 7. For **KvK API Zoeken** select the appropriate service, or create it. If the 
-   appropriate service already exists, select it and go to step 10.
+   appropriate service already exists, select it and go to step 10. In case you are using the same API root url for both 
+   **KvK API Basisprofiel** and **KvK API Zoeken**, you have to choose the same service for both. The credentials will be 
+   the same so depending on what you are asking for, the correct API endpoint will be used.
 8. Click **Add** next to the **KvK API Zoeken** field and fill in the following
    details:
 

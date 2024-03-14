@@ -10,7 +10,7 @@ from openforms.utils.validators import validate_digits, validate_rsin
 from openforms.validations.base import BasePlugin
 from openforms.validations.registry import register
 
-from .client import NoServiceConfigured, SearchParams, get_client
+from .client import NoServiceConfigured, SearchParams, get_kvk_search_client
 
 
 @deconstructible
@@ -64,7 +64,7 @@ class KVKRemoteValidatorMixin:
         )  # isinstance isn't supported
 
         try:
-            with get_client() as client:
+            with get_kvk_search_client() as client:
                 result = client.get_search_results(query_params=query)
         except (RequestException, NoServiceConfigured):
             raise ValidationError(

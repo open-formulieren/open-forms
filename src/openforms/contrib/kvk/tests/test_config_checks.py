@@ -15,7 +15,7 @@ class ConfigCheckTests(SimpleTestCase):
     def setUp(self):
         super().setUp()
 
-        self.config = KVKConfig(service=KVK_SERVICE)
+        self.config = KVKConfig(search_service=KVK_SERVICE)
         config_patcher = patch(
             "openforms.contrib.kvk.client.KVKConfig.get_solo",
             return_value=self.config,
@@ -24,7 +24,7 @@ class ConfigCheckTests(SimpleTestCase):
         self.addCleanup(config_patcher.stop)
 
     def test_no_kvk_service_configured(self):
-        self.config.service = None
+        self.config.search_service = None
 
         with self.assertRaises(InvalidPluginConfiguration):
             KVKRemoteValidatorCheck.check_config()

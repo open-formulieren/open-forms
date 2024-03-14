@@ -123,7 +123,9 @@ class KVKPrefillTests(KVKTestMixin, TestCase):
 
     def test_plugin_usage_without_configuring_kvk_service(self):
         config = self.config_mock.return_value
-        config.service = None  # remove KVK service configuration
+        # remove KVK service configuration
+        config.search_service = None
+        config.profile_service = None
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
         submission = SubmissionFactory.create(
             auth_info__value="69599084",
