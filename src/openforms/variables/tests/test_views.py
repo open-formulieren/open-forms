@@ -6,12 +6,14 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.forms.models import FormVariable
 from openforms.prefill.constants import IdentifierRoles
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.registry import Registry as RegistrationRegistry
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.registry import Registry as VariableRegistry
+from openforms.variables.service import get_static_variables
 
 
 class GetStaticVariablesViewTest(APITestCase):
@@ -126,8 +128,8 @@ class GetRegistrationPluginVariablesViewTest(APITestCase):
             def get_initial_value(self, *args, **kwargs):
                 return "demo initial value"
 
-        variable_registry = VariableRegistry()
-        variable_registry("now")(DemoNow)
+        variables_registry = VariableRegistry()
+        variables_registry("now")(DemoNow)
 
         class DemoRegistrationPlugin(BasePlugin):
             verbose_name = "Demo verbose name"
@@ -135,14 +137,14 @@ class GetRegistrationPluginVariablesViewTest(APITestCase):
             def register_submission(self, submission, options):
                 pass
 
-            def get_variables_registry(self):
-                return variable_registry
+            def get_variables(self) -> list[FormVariable]:
+                return get_static_variables(variables_registry=variables_registry)
 
         plugin_registry = RegistrationRegistry()
         plugin_registry("demo")(DemoRegistrationPlugin)
 
         with patch(
-            "openforms.variables.service.registration_plugins_registry",
+            "openforms.variables.api.views.registration_plugins_registry",
             new=plugin_registry,
         ):
             response = self.client.get(url)
