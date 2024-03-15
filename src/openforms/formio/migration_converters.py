@@ -149,10 +149,27 @@ def prevent_datetime_components_from_emptying_invalid_values(
     return True
 
 
+def fix_empty_validate_lengths(component: Component) -> bool:
+    if not (validate := component.get("validate")):
+        return False
+
+    changed = False
+    for key in ("minLength", "maxLength", "min", "max", "minWords", "maxWords"):
+        if key in validate and validate[key] == "":  # type: ignore
+            changed = True
+            del validate[key]  # type: ignore
+
+    return changed
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
         "alter_prefill_default_values": alter_prefill_default_values,
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
+    "email": {
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
@@ -164,22 +181,43 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "time": {
         "move_time_validators": move_time_validators,
     },
-    "select": {"set_openforms_datasrc": set_openforms_datasrc},
-    "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
-    "radio": {"set_openforms_datasrc": set_openforms_datasrc},
+    "phoneNumber": {
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
     "postcode": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "ensure_validate_pattern": ensure_postcode_validate_pattern,
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
     "file": {
         "fix_default_value": fix_file_default_value,
     },
+    "textarea": {
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
+    "number": {
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
+    "select": {"set_openforms_datasrc": set_openforms_datasrc},
+    "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
+    "currency": {
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
+    "radio": {"set_openforms_datasrc": set_openforms_datasrc},
     # Special components
+    "iban": {
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
     "licenseplate": {
         "ensure_validate_pattern": ensure_licensplate_validate_pattern,
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
+    "cosign": {
+        "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
     # Layout components
     "columns": {

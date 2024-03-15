@@ -2,6 +2,8 @@
 
 from django.db import migrations
 
+from openforms.forms.migration_operations import ConvertComponentsOperation
+
 
 class Migration(migrations.Migration):
 
@@ -9,4 +11,16 @@ class Migration(migrations.Migration):
         ("forms", "0095_merge_20240313_1742"),
     ]
 
-    operations = []
+    operations = [
+        ConvertComponentsOperation("textfield", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("email", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("phoneNumber", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("postcode", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("textarea", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("number", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("currency", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("iban", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("licenseplate", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("bsn", "fix_empty_validate_lengths"),
+        ConvertComponentsOperation("cosign", "fix_empty_validate_lengths"),
+    ]
