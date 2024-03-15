@@ -107,7 +107,6 @@ certifi==2023.7.22
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   django-simple-certmanager
     #   elastic-apm
     #   requests
     #   self-certifi
@@ -377,7 +376,7 @@ django-sessionprofile==2.0.0
     #   django-digid-eherkenning
 django-silk==5.1.0
     # via -r requirements/dev.in
-django-simple-certmanager[testutils]==1.4.1
+django-simple-certmanager[testutils]==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -851,7 +850,6 @@ pyopenssl==24.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   django-simple-certmanager
     #   josepy
     #   webauthn
     #   zgw-consumers
