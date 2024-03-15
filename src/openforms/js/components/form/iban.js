@@ -1,5 +1,7 @@
 import {Formio} from 'formiojs';
 
+import {patchValidateDefaults} from './textfield';
+
 const TextField = Formio.Components.components.textfield;
 
 class IbanField extends TextField {
@@ -23,6 +25,12 @@ class IbanField extends TextField {
       weight: 10,
       schema: IbanField.schema(),
     };
+  }
+
+  constructor(...args) {
+    super(...args);
+
+    patchValidateDefaults(this);
   }
 
   get defaultSchema() {

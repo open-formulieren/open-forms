@@ -3,6 +3,7 @@ import CurrencyEditData from 'formiojs/components/currency/editForm/Currency.edi
 import _ from 'lodash';
 
 import {localiseSchema} from './i18n';
+import {patchValidateDefaults} from './number';
 
 const FormioCurrency = Formio.Components.components.currency;
 
@@ -18,6 +19,12 @@ class CurrencyField extends FormioCurrency {
       ...FormioCurrency.builderInfo,
       schema: CurrencyField.schema(),
     };
+  }
+
+  constructor(...args) {
+    super(...args);
+
+    patchValidateDefaults(this);
   }
 
   get defaultValue() {
