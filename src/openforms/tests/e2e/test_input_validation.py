@@ -80,6 +80,22 @@ class SingleTextFieldTests(ValidationsTestCase):
             expected_ui_error="Huisnummertoevoeging mag enkel alfanumerieke karaketers zijn.",
         )
 
+    def test_kvk_number_validation_plugin(self):
+        component: Component = {
+            "type": "textfield",
+            "key": "chamberOfCommerce",
+            "label": "KVK nummer",
+            "validate": {
+                "plugins": ["kvk-kvkNumber"],
+            },
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="aaaa",  # deliberate to trigger the non-network validation
+            expected_ui_error="Waarde moet numeriek zijn.",
+        )
+
 
 class SingleEmailTests(ValidationsTestCase):
     def test_required_field(self):

@@ -57,7 +57,11 @@ class CompletionValidationSerializer(serializers.Serializer):
             assert step.form_step
             components = step.form_step.form_definition.configuration["components"]
 
-            step_data_serializer = build_serializer(components, data=data)
+            step_data_serializer = build_serializer(
+                components,
+                data=data,
+                context={"submission": submission},
+            )
             if not step_data_serializer.is_valid():
                 errors = step_data_serializer.errors
 
