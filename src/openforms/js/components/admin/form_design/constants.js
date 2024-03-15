@@ -15,6 +15,7 @@ export const THEMES_ENDPOINT = '/api/v2/themes';
 export const PROCESS_DEFINITIONS_ENDPOINT =
   '/api/v2/registration/plugins/camunda/process-definitions';
 export const STATIC_VARIABLES_ENDPOINT = '/api/v2/variables/static';
+export const REGISTRATION_VARIABLES_ENDPOINT = '/api/v2/variables/registration';
 export const LANGUAGE_INFO_ENDPOINT = '/api/v2/i18n/info';
 export const LOGIC_DESCRIPTION_ENDPOINT = '/api/v2/logic/description';
 export const SERVICES_ENDPOINT = '/api/v2/services';
