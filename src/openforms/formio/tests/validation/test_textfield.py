@@ -63,6 +63,22 @@ class TextFieldValidationTests(SimpleTestCase):
         error = extract_error(errors, "houseNumber")
         self.assertEqual(error.code, "invalid")
 
+    @tag("gh-3977")
+    def test_textfield_regex_housenumber_addition(self):
+        component: TextFieldComponent = {
+            "type": "textfield",
+            "key": "houseNumberAddition",
+            "label": "House number",
+            "validate": {"pattern": r"^[a-zA-Z0-9]{1,4}$"},
+        }
+        data: JSONValue = {"houseNumberAddition": "<div>injection</div>"}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertFalse(is_valid)
+        error = extract_error(errors, "houseNumberAddition")
+        self.assertEqual(error.code, "invalid")
+
     def test_multiple(self):
         component: TextFieldComponent = {
             "type": "textfield",

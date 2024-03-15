@@ -57,6 +57,17 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
+def _normalize_pattern(pattern: str) -> str:
+    """
+    Normalize a regex pattern so that it matches from beginning to the end of the value.
+    """
+    if not pattern.startswith("^"):
+        pattern = f"^{pattern}"
+    if not pattern.endswith("$"):
+        pattern = f"{pattern}$"
+    return pattern
+
+
 @register("default")
 class Default(BasePlugin):
     """
@@ -88,7 +99,7 @@ class TextField(BasePlugin[TextFieldComponent]):
         if pattern := validate.get("pattern"):
             validators.append(
                 RegexValidator(
-                    pattern,
+                    _normalize_pattern(pattern),
                     message=_("This value does not match the required pattern."),
                 )
             )
@@ -167,7 +178,7 @@ class PhoneNumber(BasePlugin):
         if pattern := validate.get("pattern"):
             validators.append(
                 RegexValidator(
-                    pattern,
+                    _normalize_pattern(pattern),
                     message=_("This value does not match the required pattern."),
                 )
             )
