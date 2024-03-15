@@ -592,7 +592,6 @@ pyopenssl==24.0.0
     #   -r requirements/base.txt
     #   josepy
     #   webauthn
-    #   zgw-consumers
 pyphen==0.14.0
     # via
     #   -r requirements/base.txt
@@ -832,7 +831,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-zgw-consumers==0.30.0
+zgw-consumers==0.31.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt

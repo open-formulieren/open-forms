@@ -372,7 +372,6 @@ pyopenssl==24.0.0
     # via
     #   josepy
     #   webauthn
-    #   zgw-consumers
 pyphen==0.14.0
     # via weasyprint
 pypng==0.20220715.0
@@ -529,7 +528,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.2.1
     # via -r requirements/base.in
-zgw-consumers==0.30.0
+zgw-consumers==0.31.0
     # via -r requirements/base.in
 zopfli==0.2.3
     # via fonttools

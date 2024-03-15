@@ -852,7 +852,6 @@ pyopenssl==24.0.0
     #   -r requirements/ci.txt
     #   josepy
     #   webauthn
-    #   zgw-consumers
 pyphen==0.14.0
     # via
     #   -c requirements/ci.txt
@@ -1266,7 +1265,7 @@ zeep==4.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers[testutils]==0.30.0
+zgw-consumers[testutils]==0.31.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
