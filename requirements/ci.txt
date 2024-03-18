@@ -93,7 +93,6 @@ certifi==2023.7.22
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   django-simple-certmanager
     #   elastic-apm
     #   requests
     #   self-certifi
@@ -340,7 +339,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
-django-simple-certmanager[testutils]==1.4.1
+django-simple-certmanager[testutils]==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -735,10 +734,8 @@ pyopenssl==24.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   django-simple-certmanager
     #   josepy
     #   webauthn
-    #   zgw-consumers
 pyphen==0.14.0
     # via
     #   -c requirements/base.txt
@@ -1080,7 +1077,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers[testutils]==0.30.0
+zgw-consumers[testutils]==0.31.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

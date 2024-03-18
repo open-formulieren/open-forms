@@ -50,7 +50,6 @@ celery-once==3.0.1
     # via -r requirements/base.in
 certifi==2023.7.22
     # via
-    #   django-simple-certmanager
     #   elastic-apm
     #   requests
     #   self-certifi
@@ -197,7 +196,7 @@ django-sendfile2==0.7.0
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
-django-simple-certmanager==1.4.1
+django-simple-certmanager==2.0.0
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
@@ -371,10 +370,8 @@ pyjwt==2.6.0
     # via gemma-zds-client
 pyopenssl==24.0.0
     # via
-    #   django-simple-certmanager
     #   josepy
     #   webauthn
-    #   zgw-consumers
 pyphen==0.14.0
     # via weasyprint
 pypng==0.20220715.0
@@ -531,7 +528,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.2.1
     # via -r requirements/base.in
-zgw-consumers==0.30.0
+zgw-consumers==0.31.0
     # via -r requirements/base.in
 zopfli==0.2.3
     # via fonttools
