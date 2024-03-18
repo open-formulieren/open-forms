@@ -907,6 +907,59 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         data = response.json()
         self.assertEqual(data["step"]["data"], {})
 
+    @tag("gh-2827")
+    def test_component_value_set_to_now(self):
+        """
+        Assert that the 'now' variable can be assigned to a component.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "datetime",
+                        "type": "datetime",
+                        "label": "Now",
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "datetime",
+                    "action": {
+                        "type": "variable",
+                        "value": {"var": "now"},
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+
+        response = self.client.post(
+            logic_check_endpoint,
+            {
+                "data": {
+                    "radio": "show",
+                    "textfield1": "foo",
+                    "textfield2": "bar",
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 def is_valid_expression(expr: dict):
     try:
