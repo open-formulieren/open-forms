@@ -294,6 +294,7 @@ waarde.
 Variabele       Type      Voorbeeld waarde            Toelichting
 =============== ========= =========================== ====================================================================================================================
 now             datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn :ref:`verschillende weergaven <manual_templates_formatting_of_variables>` van mogelijk.
+                                                      Seconden en milliseconden zijn altijd 0.
 environment     string    ``production``              De waarde die tijdens de installatie gezet is als ``ENVIRONMENT``. Zie: :ref:`installation_environment_config`.
 form_name       string    ``Paspoort aanvragen``      De naam van het formulier.
 form_id         string    ``1c453fc8-b10f-4510-``...  Het unieke ID van het formulier.

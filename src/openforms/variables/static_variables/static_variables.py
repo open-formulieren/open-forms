@@ -15,7 +15,12 @@ class Now(BaseStaticVariable):
     data_type = FormVariableDataTypes.datetime
 
     def get_initial_value(self, submission: Submission | None = None):
-        return timezone.now()
+        # Issue #2827 - the frontend schedules a new logic check when data is changed,
+        # but the value of 'now' changes every time that it's called, so this leads to
+        # infinite logic checking. As a workaround, we truncate the value of seconds/
+        # milliseconds to break this loop.
+        now = timezone.now()
+        return now.replace(second=0, microsecond=0)
 
 
 @register_static_variable("today")
