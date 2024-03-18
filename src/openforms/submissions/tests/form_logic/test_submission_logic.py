@@ -959,6 +959,50 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         # extra logic check.
         self.assertEqual(new_value, "2024-03-18T07:31:00Z")
 
+    def test_component_value_set_to_today(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "date",
+                        "type": "date",
+                        "label": "Today",
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "date",
+                    "action": {
+                        "type": "variable",
+                        "value": {"var": "today"},
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+
+        with freeze_time("2024-03-18T08:31:08+01:00"):
+            response = self.client.post(logic_check_endpoint, {"data": {}})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        new_value = response.json()["step"]["data"]["date"]
+        self.assertEqual(new_value, "2024-03-18")
+
 
 def is_valid_expression(expr: dict):
     try:
