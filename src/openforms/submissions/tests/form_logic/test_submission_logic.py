@@ -947,18 +947,17 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             },
         )
 
-        response = self.client.post(
-            logic_check_endpoint,
-            {
-                "data": {
-                    "radio": "show",
-                    "textfield1": "foo",
-                    "textfield2": "bar",
-                }
-            },
-        )
+        with freeze_time("2024-03-18T08:31:08+01:00"):
+            response = self.client.post(logic_check_endpoint, {"data": {}})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        new_value = response.json()["step"]["data"]["datetime"]
+        # check that the seconds/ms are truncated to prevent infinite logic bouncing.
+        # Note that this doesn't make the problem go away 100% - you will get an
+        # additional check if the minute value changes, but that should settle after one
+        # extra logic check.
+        self.assertEqual(new_value, "2024-03-18T07:31:00Z")
 
 
 def is_valid_expression(expr: dict):
