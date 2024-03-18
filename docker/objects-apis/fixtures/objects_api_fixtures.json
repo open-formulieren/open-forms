@@ -1,0 +1,46 @@
+[
+    {
+        "model": "core.objecttype",
+        "pk": 1,
+        "fields": {
+            "service": 1,
+            "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            "_name": "Person"
+        }
+    },
+    {
+        "model": "token.tokenauth",
+        "pk": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "fields": {
+            "contact_person": "Admin",
+            "email": "admin@example.com",
+            "organization": "",
+            "last_modified": "2023-10-24T08:58:51.291Z",
+            "created": "2023-10-24T08:58:51.291Z",
+            "application": "",
+            "administration": ""
+        }
+    },
+    {
+        "model": "zgw_consumers.service",
+        "pk": 1,
+        "fields": {
+            "label": "Local objecttypes",
+            "oas": "https://raw.githubusercontent.com/maykinmedia/objecttypes-api/master/src/objecttypes/api/v2/openapi.yaml",
+            "oas_file": "",
+            "uuid": "ee08faa2-4cd1-45f6-ba16-d50872cf5cf2",
+            "api_type": "orc",
+            "api_root": "http://localhost:8001/api/v2/",
+            "client_id": "",
+            "secret": "",
+            "auth_type": "api_key",
+            "header_key": "Authorization",
+            "header_value": "Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+            "nlx": "",
+            "user_id": "",
+            "user_representation": "",
+            "client_certificate": null,
+            "server_certificate": null
+        }
+    }
+]
