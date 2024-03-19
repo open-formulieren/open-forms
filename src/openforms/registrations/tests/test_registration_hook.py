@@ -331,6 +331,27 @@ class RegistrationHookTests(TestCase):
         ):
             register_submission(submission.id, PostSubmissionEvents.on_retry)
 
+    def test_calling_registration_task_with_serialized_args(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            with_public_registration_reference=True,
+            with_completed_payment=True,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["registration@test.nl"]},
+        )
+
+        with patch(
+            "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+        ):
+            register_submission(
+                submission.id, str(PostSubmissionEvents.on_payment_complete)
+            )
+
+        submission.refresh_from_db()
+
+        self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+
 
 class NumRegistrationsTest(TestCase):
     @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
