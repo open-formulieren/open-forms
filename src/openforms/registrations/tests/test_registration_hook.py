@@ -1,6 +1,7 @@
 """
 Test the registration hook on submissions.
 """
+
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -17,6 +18,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import FormRegistrationBackend
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
+from openforms.submissions.public_references import get_random_reference
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import BasePlugin
@@ -344,6 +346,27 @@ class RegistrationHookTests(TestCase):
             self.assertRaises(ValidationError),
         ):
             register_submission(submission.id, PostSubmissionEvents.on_retry)
+
+    def test_calling_registration_task_with_serialized_args(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            public_registration_reference=get_random_reference(),
+            with_completed_payment=True,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["registration@test.nl"]},
+        )
+
+        with patch(
+            "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+        ):
+            register_submission(
+                submission.id, str(PostSubmissionEvents.on_payment_complete)
+            )
+
+        submission.refresh_from_db()
+
+        self.assertEqual(submission.registration_status, RegistrationStatuses.success)
 
 
 class NumRegistrationsTest(TestCase):
