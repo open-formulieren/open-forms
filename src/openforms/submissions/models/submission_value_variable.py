@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, time
+from datetime import date, datetime, time
 from typing import TYPE_CHECKING, Any
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -353,8 +353,10 @@ class SubmissionValueVariable(models.Model):
             return self.value
 
         if self.value and data_type == FormVariableDataTypes.date:
-            date = format_date_value(self.value)
-            naive_date = parse_date(date)
+            if isinstance(self.value, date):
+                return self.value
+            formatted_date = format_date_value(self.value)
+            naive_date = parse_date(formatted_date)
             if naive_date is not None:
                 aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
                 return aware_date.date()
@@ -368,6 +370,8 @@ class SubmissionValueVariable(models.Model):
             return timezone.make_aware(maybe_naive_datetime).date()
 
         if self.value and data_type == FormVariableDataTypes.datetime:
+            if isinstance(self.value, datetime):
+                return self.value
             maybe_naive_datetime = parse_datetime(self.value)
             if maybe_naive_datetime is None:
                 return

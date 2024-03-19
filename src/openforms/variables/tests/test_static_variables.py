@@ -1,7 +1,7 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from django.test import TestCase, override_settings
-from django.utils import timezone
 
 from freezegun import freeze_time
 
@@ -14,19 +14,21 @@ def _get_variable(key: str, **kwargs):
     return register[key].get_static_variable(**kwargs)
 
 
-@freeze_time("2022-08-29T17:10:00+02:00")
+@freeze_time("2022-08-29T17:10:55+02:00")
 class NowTests(TestCase):
     def test_with_submission(self):
         submission = SubmissionFactory.build()
 
         variable = _get_variable("now", submission=submission)
 
-        self.assertEqual(variable.initial_value, timezone.now())
+        expected = datetime(2022, 8, 29, 15, 10, 0).replace(tzinfo=timezone.utc)
+        self.assertEqual(variable.initial_value, expected)
 
     def test_without_submission(self):
         variable = _get_variable("now")
 
-        self.assertEqual(variable.initial_value, timezone.now())
+        expected = datetime(2022, 8, 29, 15, 10, 0).replace(tzinfo=timezone.utc)
+        self.assertEqual(variable.initial_value, expected)
 
 
 @freeze_time("2022-08-29T17:10:00+02:00")
@@ -36,12 +38,12 @@ class CurrentYearTests(TestCase):
 
         variable = _get_variable("current_year", submission=submission)
 
-        self.assertEqual(variable.initial_value, timezone.now().year)
+        self.assertEqual(variable.initial_value, 2022)
 
     def test_without_submission(self):
         variable = _get_variable("current_year")
 
-        self.assertEqual(variable.initial_value, timezone.now().year)
+        self.assertEqual(variable.initial_value, 2022)
 
 
 class EnvironmentTests(TestCase):
