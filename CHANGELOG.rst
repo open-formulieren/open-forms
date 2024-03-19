@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.5.4 (2024-03-19)
+==================
+
+Hotfix release to address a regression in 2.5.3
+
+* [#4022] Fix crash on registration handling of post-payment registration. The patch for
+  #3924 was bugged.
+* Updated included SDK which was missing a fix for the progress indicator
+
 2.5.3 (2024-03-14)
 ==================
 
