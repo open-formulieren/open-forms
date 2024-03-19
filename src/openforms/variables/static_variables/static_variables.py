@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -14,7 +16,7 @@ class Now(BaseStaticVariable):
     name = _("Now")
     data_type = FormVariableDataTypes.datetime
 
-    def get_initial_value(self, submission: Submission | None = None):
+    def get_initial_value(self, submission: Submission | None = None) -> datetime:
         # Issue #2827 - the frontend schedules a new logic check when data is changed,
         # but the value of 'now' changes every time that it's called, so this leads to
         # infinite logic checking. As a workaround, we truncate the value of seconds/
@@ -28,7 +30,7 @@ class Today(BaseStaticVariable):
     name = _("Today")
     data_type = FormVariableDataTypes.date
 
-    def get_initial_value(self, submission: Submission | None = None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> date:
         now_utc = timezone.now()
         return timezone.localtime(now_utc).date()
 
