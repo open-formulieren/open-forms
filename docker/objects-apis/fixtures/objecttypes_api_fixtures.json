@@ -128,20 +128,34 @@
                 "properties": {
                     "age": {
                         "type": "integer",
-                        "minimum": 18,
-                        "description": "Age in years which must be equal to or greater than 18."
+                        "minimum": 18
                     },
-                    "country": {
-                        "type": "string",
-                        "description": "The person's current country."
+                    "name": {
+                        "type": "object",
+                        "properties": {
+                            "last.name": {"type": "string"}
+                        }
                     },
-                    "lastName": {
+                    "submission_pdf_url": {
                         "type": "string",
-                        "description": "The person's last name."
+                        "format": "uri"
                     },
-                    "firstName": {
+                    "submission_csv_url": {
                         "type": "string",
-                        "description": "The person's first name."
+                        "format": "uri"
+                    },
+                    "submission_payment_completed": {
+                        "type": "boolean"
+                    },
+                    "submission_payment_amount": {
+                        "type": "string"
+                    },
+                    "submission_payment_public_ids": {
+                        "type": "array"
+                    },
+                    "submission_date": {
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },

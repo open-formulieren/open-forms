@@ -1,11 +1,15 @@
 version: '3'
 
+name: objects-apis
+
 services:
-  redis:
+  objects-redis:
     image: redis:7
     command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - open-forms-dev
 
-  db:
+  objects-objecttypes-db:
     image: postgis/postgis:${PG_VERSION:-14-master}
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
@@ -21,10 +25,11 @@ services:
       - DJANGO_SETTINGS_MODULE=objecttypes.conf.docker
       - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
       - ALLOWED_HOSTS=*
+      - DB_HOST=objects-objecttypes-db
     ports:
       - 8001:8000
     depends_on:
-      - db
+      - objects-objecttypes-db
     networks:
       - open-forms-dev
 
@@ -34,22 +39,26 @@ services:
       - DJANGO_SETINGS_MODULE=objects.conf.docker
       - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
       - ALLOWED_HOSTS=*
+      - DB_HOST=objects-objecttypes-db
       - DISABLE_2FA=True
+      - CELERY_BROKER_URL=redis://objects-redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://objects-redis:6379/0
+      - NOTIFICATIONS_DISABLED=True
     ports:
       - 8002:8000
     depends_on:
-      - db
-      - redis
+      - objects-objecttypes-db
+      - objects-redis
     networks:
       - open-forms-dev
 
-  celery:
+  objects-celery:
     image: maykinmedia/objects-api:${OBJECTS_VERSION:-2.3.0}
     environment: *objects_web_env
     command: /celery_worker.sh
     depends_on:
-      - db
-      - redis
+      - objects-objecttypes-db
+      - objects-redis
     networks:
       - open-forms-dev
 
