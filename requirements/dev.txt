@@ -190,7 +190,7 @@ defusedxml==0.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django==4.2.10
+django==4.2.11
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
