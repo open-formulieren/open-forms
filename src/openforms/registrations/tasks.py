@@ -116,7 +116,7 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
     ignore_result=False,
     once={"graceful": True},  # do not spam error monitoring
 )
-def register_submission(submission_id: int, event: PostSubmissionEvents) -> None:
+def register_submission(submission_id: int, event: PostSubmissionEvents | str) -> None:
     """
     Attempt to register the submission with the configured backend.
 
@@ -292,7 +292,10 @@ def register_submission(submission_id: int, event: PostSubmissionEvents) -> None
         submission,
     )
 
-    if config.wait_for_payment_to_register and event.on_payment_complete:
+    if (
+        config.wait_for_payment_to_register
+        and event == PostSubmissionEvents.on_payment_complete
+    ):
         submission.payments.update(status=PaymentStatus.registered)
 
     submission.save_registration_status(RegistrationStatuses.success, result or {})
