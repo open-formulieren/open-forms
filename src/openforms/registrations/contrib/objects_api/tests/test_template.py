@@ -68,6 +68,8 @@ class JSONTemplatingTests(TestCase):
                 {
                     "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
                     "objecttype_version": 300,
+                    "informatieobjecttype_submission_report": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                    "informatieobjecttype_attachment": "https://catalogi.nl/api/v1/informatieobjecttypen/2",
                 },
             )
 
@@ -180,6 +182,8 @@ class JSONTemplatingTests(TestCase):
                     "productaanvraag_type": "tralala-type",
                     "upload_submission_csv": True,
                     "informatieobjecttype_submission_csv": "http://oz.nl/informatieobjecttype/1",
+                    "informatieobjecttype_submission_report": "http://oz.nl/informatieobjecttype/2",
+                    "informatieobjecttype_attachment": "http://oz.nl/informatieobjecttype/3",
                 },
             )
 
