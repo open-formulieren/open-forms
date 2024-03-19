@@ -107,3 +107,183 @@ class EnableNewBuilderMigrationTests(TestMigrations):
 
         self.assertIsNotNone(variables[0].service_fetch_configuration)
         self.assertIsNone(variables[1].service_fetch_configuration)
+
+
+class FixValidateConfigurationMigrationTests(TestMigrations):
+    app = "forms"
+    migrate_from = "0095_merge_20240313_1742"
+    migrate_to = "0096_fix_invalid_validate_configuration"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        bad_config = [
+            {
+                "type": "textfield",
+                "key": "textfield",
+                "key": "textfield",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+            {
+                "type": "email",
+                "key": "email",
+                "key": "email",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+            {
+                "type": "phoneNumber",
+                "key": "phoneNumber",
+                "key": "phoneNumber",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+            {
+                "type": "postcode",
+                "key": "postcode",
+                "key": "postcode",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+            {
+                "type": "textarea",
+                "key": "textarea",
+                "key": "textarea",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                    "minWords": "",
+                    "maxWords": "",
+                },
+            },
+            {
+                "type": "number",
+                "key": "number",
+                "key": "number",
+                "validate": {
+                    "min": "",
+                    "max": "",
+                },
+            },
+            {
+                "type": "currency",
+                "key": "currency",
+                "key": "currency",
+                "validate": {
+                    "min": "",
+                    "max": "",
+                },
+            },
+            {
+                "type": "iban",
+                "key": "iban",
+                "key": "iban",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+            {
+                "type": "licenseplate",
+                "key": "licenseplate",
+                "key": "licenseplate",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+            {
+                "type": "bsn",
+                "key": "bsn",
+                "key": "bsn",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+            {
+                "type": "cosign",
+                "key": "cosign",
+                "key": "cosign",
+                "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                },
+            },
+        ]
+        FormDefinition.objects.create(
+            name="broken", configuration={"components": bad_config}
+        )
+
+    def test_migration_fixes_issues(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fixed_config = FormDefinition.objects.get().configuration["components"]
+
+        (
+            textfield,
+            email,
+            phone_number,
+            postcode,
+            textarea,
+            number,
+            currency,
+            iban,
+            licenseplate,
+            bsn,
+            cosign,
+        ) = fixed_config
+
+        with self.subTest("textfield"):
+            self.assertNotIn("minLength", textfield["validate"])
+            self.assertNotIn("maxLength", textfield["validate"])
+
+        with self.subTest("email"):
+            self.assertNotIn("minLength", email["validate"])
+            self.assertNotIn("maxLength", email["validate"])
+
+        with self.subTest("phone_number"):
+            self.assertNotIn("minLength", phone_number["validate"])
+            self.assertNotIn("maxLength", phone_number["validate"])
+
+        with self.subTest("postcode"):
+            self.assertNotIn("minLength", postcode["validate"])
+            self.assertNotIn("maxLength", postcode["validate"])
+
+        with self.subTest("textarea"):
+            self.assertNotIn("minLength", textarea["validate"])
+            self.assertNotIn("maxLength", textarea["validate"])
+            self.assertNotIn("minWords", textarea["validate"])
+            self.assertNotIn("maxWords", textarea["validate"])
+
+        with self.subTest("number"):
+            self.assertNotIn("min", number["validate"])
+            self.assertNotIn("max", number["validate"])
+
+        with self.subTest("currency"):
+            self.assertNotIn("min", currency["validate"])
+            self.assertNotIn("max", currency["validate"])
+
+        with self.subTest("iban"):
+            self.assertNotIn("minLength", iban["validate"])
+            self.assertNotIn("maxLength", iban["validate"])
+
+        with self.subTest("licenseplate"):
+            self.assertNotIn("minLength", licenseplate["validate"])
+            self.assertNotIn("maxLength", licenseplate["validate"])
+
+        with self.subTest("bsn"):
+            self.assertNotIn("minLength", bsn["validate"])
+            self.assertNotIn("maxLength", bsn["validate"])
+
+        with self.subTest("cosign"):
+            self.assertNotIn("minLength", cosign["validate"])
+            self.assertNotIn("maxLength", cosign["validate"])

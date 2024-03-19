@@ -1,6 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {localiseSchema} from './i18n';
+import {patchValidateDefaults} from './textfield';
 
 const TextField = Formio.Components.components.textfield;
 
@@ -32,6 +33,12 @@ class LicensePlate extends TextField {
       weight: 10,
       schema: LicensePlate.schema(),
     };
+  }
+
+  constructor(...args) {
+    super(...args);
+
+    patchValidateDefaults(this);
   }
 
   get defaultSchema() {

@@ -4,6 +4,7 @@ import {AUTH_PLUGINS_ENDPOINT} from 'components/admin/form_design/constants.js';
 import {get} from 'utils/fetch';
 
 import {localiseSchema} from './i18n';
+import {patchValidateDefaults} from './textfield';
 
 export const getAvailableAuthPlugins = async () => {
   const response = await get(AUTH_PLUGINS_ENDPOINT);
@@ -15,6 +16,8 @@ const FormioEmail = Formio.Components.components.email;
 class CoSignField extends FormioEmail {
   constructor(...args) {
     super(...args);
+
+    patchValidateDefaults(this);
 
     // somewhere the default emptyValue/defaultValue does not seem to be used and it forces
     // component.defaultValue to be null, which crashes the builder.

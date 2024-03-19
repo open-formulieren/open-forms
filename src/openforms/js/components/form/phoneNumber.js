@@ -1,6 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {localiseSchema} from './i18n';
+import {patchValidateDefaults} from './textfield';
 
 const PhoneNumber = Formio.Components.components.phoneNumber;
 
@@ -23,6 +24,12 @@ class PhoneNumberField extends PhoneNumber {
       weight: 10,
       schema: PhoneNumberField.schema(),
     };
+  }
+
+  constructor(...args) {
+    super(...args);
+
+    patchValidateDefaults(this);
   }
 
   get defaultSchema() {
