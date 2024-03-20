@@ -241,6 +241,7 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
     def get_update_payment_status_data(
         self, submission: Submission, options: OptionsT
     ) -> dict[str, Any] | None:
+        """Get the object data payload to be sent (either as a PATCH or PUT request) to the Objects API."""
         pass
 
 
@@ -320,7 +321,16 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             "payment": self.get_payment_context_data(submission),
         }
 
-        return render_to_json(options["payment_status_update_json"], context)
+        record_data = cast(
+            dict[str, Any],
+            render_to_json(options["payment_status_update_json"], context),
+        )
+
+        return prepare_data_for_registration(
+            record_data=record_data,
+            objecttype=options["objecttype"],
+            objecttype_version=options["objecttype_version"],
+        )
 
 
 class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
@@ -381,9 +391,11 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     @override
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV2
-    ) -> None:
-        # TODO
-        return None
+    ) -> dict[str, Any]:
+        # In V2, a PUT request is made, so we essentially return the same
+        # payload from the initial registration. Payment related variables
+        # will have their value updated.
+        return self.get_object_data(submission, options)
 
 
 HANDLER_MAPPING: dict[ConfigVersion, ObjectsAPIRegistrationHandler[Any]] = {
