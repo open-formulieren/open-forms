@@ -46,17 +46,6 @@ class CsvUrl(BaseStaticVariable):
         return submission.objects_api_registration_data.csv_url
 
 
-@register("attachment_urls")
-class AttachmentUrls(BaseStaticVariable):
-    name = _("Attachment Urls")
-    data_type = FormVariableDataTypes.array
-
-    def get_initial_value(self, submission: Submission | None = None):
-        if submission is None:
-            return None
-        return submission.objects_api_registration_data.attachment_urls
-
-
 @register("payment_completed")
 class PaymentCompleted(BaseStaticVariable):
     name = _("Payment completed")
