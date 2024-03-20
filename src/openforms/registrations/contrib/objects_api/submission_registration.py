@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 def _point_coordinate(value: Any) -> dict[str, Any] | object:
-    if not value or not isinstance(value, list) or len(value) != 2:
+    if not isinstance(value, list) or len(value) != 2:
         return SKIP
     return {"type": "Point", "coordinates": [value[0], value[1]]}
 
