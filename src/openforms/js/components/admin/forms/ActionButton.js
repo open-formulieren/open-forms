@@ -24,15 +24,6 @@ const SubmitAction = props => {
   return <ActionButton name="_save" text={btnText} {...props} />;
 };
 
-const AddAnotherAction = props => {
-  const intl = useIntl();
-  const btnText = intl.formatMessage({
-    description: 'Admin save and add another submit button',
-    defaultMessage: 'Save and add another',
-  });
-  return <ActionButton name="_addanother" text={btnText} {...props} />;
-};
-
 const ContinueEditingAction = props => {
   const intl = useIntl();
   const btnText = intl.formatMessage({
@@ -43,4 +34,4 @@ const ContinueEditingAction = props => {
 };
 
 export default ActionButton;
-export {ActionButton, SubmitAction, AddAnotherAction, ContinueEditingAction};
+export {ActionButton, SubmitAction, ContinueEditingAction};
