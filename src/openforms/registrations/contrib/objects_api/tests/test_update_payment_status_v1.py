@@ -17,7 +17,7 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
 
 @requests_mock.Mocker()
-class ObjectsAPIPaymentStatusUpdateTests(TestCase):
+class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
     def test_update_payment_status(self, m):
         submission = SubmissionFactory.from_components(
             [
