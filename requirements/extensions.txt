@@ -106,7 +106,7 @@ click-repl==0.2.0
     # via
     #   -r requirements/base.txt
     #   celery
-cryptography==42.0.2
+cryptography==42.0.5
     # via
     #   -r requirements/base.txt
     #   django-simple-certmanager
@@ -122,7 +122,7 @@ defusedxml==0.7.1
     #   -c requirements/base.in
     #   -r requirements/base.txt
     #   django-camunda
-django==3.2.24
+django==3.2.25
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt

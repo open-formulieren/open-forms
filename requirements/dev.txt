@@ -155,7 +155,7 @@ coverage==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==42.0.2
+cryptography==42.0.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -180,7 +180,7 @@ defusedxml==0.7.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-camunda
-django==3.2.24
+django==3.2.25
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
