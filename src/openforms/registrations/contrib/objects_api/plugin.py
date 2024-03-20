@@ -10,7 +10,6 @@ from django.utils.translation import gettext_lazy as _
 from typing_extensions import override
 
 from openforms.registrations.utils import execute_unless_result_exists
-from openforms.utils.date import get_today
 from openforms.variables.service import get_static_variables
 
 from ...base import BasePlugin
@@ -108,7 +107,7 @@ class ObjectsAPIRegistration(BasePlugin):
     @override
     def update_payment_status(
         self, submission: Submission, options: RegistrationOptions
-    ) -> None:
+    ) -> dict[str, Any] | None:
         config = ObjectsAPIConfig.get_solo()
         assert isinstance(config, ObjectsAPIConfig)
         config.apply_defaults_to(options)
@@ -121,21 +120,19 @@ class ObjectsAPIRegistration(BasePlugin):
         if updated_object_data is None:
             return
 
-        updated_object_data = {
-            "record": {
-                "data": updated_object_data,
-                "startAt": get_today(),
-            },
-        }
-
         object_url = submission.registration_result["url"]
         with get_objects_client() as objects_client:
-            response = objects_client.patch(
+            operation = (
+                objects_client.patch if options["version"] == 1 else objects_client.put
+            )
+
+            response = operation(
                 url=object_url,
                 json=updated_object_data,
                 headers={"Content-Crs": "EPSG:4326"},
             )
             response.raise_for_status()
+            return response.json()
 
     @override
     def get_variables(self) -> list[FormVariable]:

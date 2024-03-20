@@ -49,7 +49,9 @@ class BasePlugin(ABC, AbstractBasePlugin):
     def register_submission(self, submission: Submission, options: dict) -> dict | None:
         raise NotImplementedError()
 
-    def update_payment_status(self, submission: Submission, options: dict):
+    def update_payment_status(
+        self, submission: Submission, options: dict
+    ) -> dict | None:
         raise NotImplementedError()
 
     def pre_register_submission(
