@@ -1,4 +1,4 @@
-import {ActionButton, AddAnotherAction, ContinueEditingAction, SubmitAction} from './ActionButton';
+import {ActionButton, ContinueEditingAction, SubmitAction} from './ActionButton';
 
 export default {
   title: 'Admin/Django/ActionButton',
@@ -17,11 +17,6 @@ export const ActionButtonDefault = {
 export const SubmitActionStory = {
   name: 'SubmitAction',
   render: () => <SubmitAction />,
-};
-
-export const AddAnotherActionStory = {
-  name: 'AddAnotherAction',
-  render: () => <AddAnotherAction />,
 };
 
 export const ContinueEditingActionStory = {

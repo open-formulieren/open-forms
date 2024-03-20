@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import {AddAnotherAction, ContinueEditingAction, SubmitAction} from './ActionButton';
+import {ContinueEditingAction, SubmitAction} from './ActionButton';
 
 const SubmitRow = ({
   onSubmit,
@@ -25,7 +25,6 @@ const SubmitRow = ({
       {children ?? (
         <>
           <SubmitAction className={isDefault ? 'default' : ''} onClick={onSubmitClick} />
-          <AddAnotherAction onClick={onSubmitClick} />
           <ContinueEditingAction onClick={onSubmitClick} />
         </>
       )}
