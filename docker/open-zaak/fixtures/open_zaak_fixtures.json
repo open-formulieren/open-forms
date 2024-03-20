@@ -1,0 +1,99 @@
+[
+    {
+        "model": "authorizations.applicatie",
+        "pk": 1,
+        "fields": {
+            "uuid": "c2f70b46-14cc-4c22-87ce-31b72b83dd62",
+            "client_ids": "[\"test_client_id\"]",
+            "label": "test application",
+            "heeft_alle_autorisaties": true
+        }
+    },
+    {
+        "model": "vng_api_common.jwtsecret",
+        "pk": 1,
+        "fields": {
+            "identifier": "test_client_id",
+            "secret": "test_secret_key"
+        }
+    },
+    {
+        "model": "catalogi.catalogus",
+        "pk": 1,
+        "fields": {
+            "_etag": "a7068427bca54eb6f5e23d2b1f9961ff",
+            "naam": "Test catalog",
+            "uuid": "bd58635c-793e-446d-a7e0-460d7b04829d",
+            "domein": "TEST",
+            "rsin": "000000000",
+            "contactpersoon_beheer_naam": "Test name",
+            "contactpersoon_beheer_telefoonnummer": "",
+            "contactpersoon_beheer_emailadres": "",
+            "versie": "",
+            "begindatum_versie": null
+        }
+    },
+    {
+        "model": "catalogi.informatieobjecttype",
+        "pk": 1,
+        "fields": {
+            "_etag": "89c597c58e42b804148e6867c3480ed1",
+            "datum_begin_geldigheid": "2024-03-19",
+            "datum_einde_geldigheid": null,
+            "concept": false,
+            "uuid": "7a474713-0833-402a-8441-e467c08ac55b",
+            "omschrijving": "PDF Informatieobjecttype",
+            "informatieobjectcategorie": "Test category",
+            "trefwoord": "[]",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "omschrijving_generiek_informatieobjecttype": "",
+            "omschrijving_generiek_definitie": "",
+            "omschrijving_generiek_herkomst": "",
+            "omschrijving_generiek_hierarchie": "",
+            "omschrijving_generiek_opmerking": "",
+            "catalogus": 1
+        }
+    },
+    {
+        "model": "catalogi.informatieobjecttype",
+        "pk": 2,
+        "fields": {
+            "_etag": "89d53439caa01c2f00ab822679e80c7b",
+            "datum_begin_geldigheid": "2024-03-19",
+            "datum_einde_geldigheid": null,
+            "concept": false,
+            "uuid": "b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+            "omschrijving": "CSV Informatieobjecttype",
+            "informatieobjectcategorie": "Test category",
+            "trefwoord": "[]",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "omschrijving_generiek_informatieobjecttype": "",
+            "omschrijving_generiek_definitie": "",
+            "omschrijving_generiek_herkomst": "",
+            "omschrijving_generiek_hierarchie": "",
+            "omschrijving_generiek_opmerking": "",
+            "catalogus": 1
+        }
+    },
+    {
+        "model": "catalogi.informatieobjecttype",
+        "pk": 3,
+        "fields": {
+            "_etag": "783e0cef431e02aeb91d56074271d3c6",
+            "datum_begin_geldigheid": "2024-03-19",
+            "datum_einde_geldigheid": null,
+            "concept": false,
+            "uuid": "531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "omschrijving": "Attachment Informatieobjecttype",
+            "informatieobjectcategorie": "Test category",
+            "trefwoord": "[]",
+            "vertrouwelijkheidaanduiding": "openbaar",
+            "omschrijving_generiek_informatieobjecttype": "",
+            "omschrijving_generiek_definitie": "",
+            "omschrijving_generiek_herkomst": "",
+            "omschrijving_generiek_hierarchie": "",
+            "omschrijving_generiek_opmerking": "",
+            "catalogus": 1
+        }
+    }
+]

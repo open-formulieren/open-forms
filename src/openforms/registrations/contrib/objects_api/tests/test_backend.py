@@ -93,6 +93,7 @@ class ObjectsAPIBackendTests(TestCase):
                 {
                     "upload_submission_csv": True,
                     "informatieobjecttype_submission_csv": "dummy",
+                    "informatieobjecttype_submission_report": "dummy",
                 },
             )
 

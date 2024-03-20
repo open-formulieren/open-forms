@@ -113,16 +113,13 @@ class ObjectsAPIRegistration(BasePlugin):
         assert isinstance(config, ObjectsAPIConfig)
         config.apply_defaults_to(options)
 
-        if not options["payment_status_update_json"]:
-            logger.warning(
-                "Skipping payment status update because no template was configured."
-            )
-            return
-
         handler = HANDLER_MAPPING[options["version"]]
         updated_object_data = handler.get_update_payment_status_data(
             submission, options
         )
+
+        if updated_object_data is None:
+            return
 
         updated_object_data = {
             "record": {

@@ -150,9 +150,19 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
     )
 
+    # As `record.geometry` is outside `record.data`, we special case this attribute:
+    geometry_variable_key = FormioVariableKeyField(
+        label=_("geometry variable"),
+        help_text=_(
+            "The 'dotted' path to a form variable key that should be mapped to the `record.geometry` attribute."
+        ),
+        required=False,
+        allow_blank=True,
+    )
+
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         v1_only_fields = {"content_json", "payment_status_update_json"}
-        v2_only_fields = {"variables_mapping"}
+        v2_only_fields = {"variables_mapping", "geometry_variable_key"}
 
         version = get_from_serializer_data_or_instance("version", attrs, self)
 

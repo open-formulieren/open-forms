@@ -22,6 +22,17 @@
         }
     },
     {
+        "model": "token.permission",
+        "pk": 1,
+        "fields": {
+            "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+            "object_type": 1,
+            "mode": "read_and_write",
+            "use_fields": false,
+            "fields": null
+        }
+    },
+    {
         "model": "zgw_consumers.service",
         "pk": 1,
         "fields": {
@@ -30,7 +41,7 @@
             "oas_file": "",
             "uuid": "ee08faa2-4cd1-45f6-ba16-d50872cf5cf2",
             "api_type": "orc",
-            "api_root": "http://localhost:8001/api/v2/",
+            "api_root": "http://objecttypes-web:8000/api/v2/",
             "client_id": "",
             "secret": "",
             "auth_type": "api_key",

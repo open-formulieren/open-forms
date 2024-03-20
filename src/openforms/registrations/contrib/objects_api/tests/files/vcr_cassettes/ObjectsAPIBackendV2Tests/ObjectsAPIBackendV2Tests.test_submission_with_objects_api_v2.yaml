@@ -1,0 +1,164 @@
+interactions:
+- request:
+    body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+      "bronorganisatie": "000000000", "creatiedatum": "2024-03-19", "titel": "Form
+      000", "auteur": "Aanvrager", "taal": "nld", "formaat": "application/pdf", "inhoud":
+      "", "status": "definitief", "bestandsnaam": "open-forms-Form 000.pdf", "beschrijving":
+      "Ingezonden formulier", "indicatieGebruiksrecht": false, "bestandsomvang": 0}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcxMDg1NTYzNCwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.NJjZEPSwh9eGzntjwUB7rFAiaq_5DqYgVylWuKdtdMA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '450'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
+  response:
+    body:
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/0c5dbf44-ed54-4b11-8974-4f7370a892c4","identificatie":"DOCUMENT-2024-0000000011","bronorganisatie":"000000000","creatiedatum":"2024-03-19","titel":"Form
+        000","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"application/pdf","taal":"nld","versie":1,"beginRegistratie":"2024-03-19T13:40:44.807631Z","bestandsnaam":"open-forms-Form
+        000.pdf","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/0c5dbf44-ed54-4b11-8974-4f7370a892c4/download?versie=1","bestandsomvang":0,"link":"","beschrijving":"Ingezonden
+        formulier","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
+    headers:
+      API-version:
+      - 1.4.2
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Length:
+      - '1042'
+      Content-Type:
+      - application/json
+      Location:
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/0c5dbf44-ed54-4b11-8974-4f7370a892c4
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: Created
+- request:
+    body: '{"informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+      "bronorganisatie": "000000000", "creatiedatum": "2024-03-19", "titel": "Form
+      000 (csv)", "auteur": "Aanvrager", "taal": "nld", "formaat": "text/csv", "inhoud":
+      "Rm9ybXVsaWVybmFhbSxJbnplbmRpbmdkYXR1bSxhZ2UsbGFzdG5hbWUsbG9jYXRpb24NCkZvcm0gMDAwLDIwMjQtMDMtMDMgMTg6MzQ6MzMuMzUwMDk2LDIwLE15IGxhc3QgbmFtZSwiWzUyLjM2NjczMzc4OTY3MTIyLCA0Ljg5MzE2NDI3NDQ3MDI5OV0iDQo=",
+      "status": "definitief", "bestandsnaam": "open-forms-Form 000 (csv).csv", "beschrijving":
+      "Ingezonden formulierdata", "indicatieGebruiksrecht": false, "bestandsomvang":
+      146}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcxMDg1NTYzNCwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.NJjZEPSwh9eGzntjwUB7rFAiaq_5DqYgVylWuKdtdMA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '657'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten
+  response:
+    body:
+      string: '{"url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/de312c5c-a423-4629-afd3-1adf9d7be55e","identificatie":"DOCUMENT-2024-0000000012","bronorganisatie":"000000000","creatiedatum":"2024-03-19","titel":"Form
+        000 (csv)","vertrouwelijkheidaanduiding":"openbaar","auteur":"Aanvrager","status":"definitief","formaat":"text/csv","taal":"nld","versie":1,"beginRegistratie":"2024-03-19T13:40:44.854574Z","bestandsnaam":"open-forms-Form
+        000 (csv).csv","inhoud":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/de312c5c-a423-4629-afd3-1adf9d7be55e/download?versie=1","bestandsomvang":146,"link":"","beschrijving":"Ingezonden
+        formulierdata","ontvangstdatum":null,"verzenddatum":null,"indicatieGebruiksrecht":false,"verschijningsvorm":"","ondertekening":{"soort":"","datum":null},"integriteit":{"algoritme":"","waarde":"","datum":null},"informatieobjecttype":"http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3","locked":false,"bestandsdelen":[],"trefwoorden":[],"lock":""}'
+    headers:
+      API-version:
+      - 1.4.2
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Length:
+      - '1053'
+      Content-Type:
+      - application/json
+      Location:
+      - http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/de312c5c-a423-4629-afd3-1adf9d7be55e
+      Referrer-Policy:
+      - same-origin
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 201
+      message: Created
+- request:
+    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+      "record": {"typeVersion": 3, "data": {"age": 20, "name": {"last.name": "My last
+      name"}, "submission_date": "2024-03-19T13:40:34.222258+00:00", "submission_pdf_url":
+      "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/0c5dbf44-ed54-4b11-8974-4f7370a892c4",
+      "submission_csv_url": "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/de312c5c-a423-4629-afd3-1adf9d7be55e",
+      "submission_payment_completed": false, "submission_payment_amount": "0", "submission_payment_public_ids":
+      []}, "startAt": "2024-03-19", "geometry": {"type": "Point", "coordinates": [52.36673378967122,
+      4.893164274470299]}}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - EPSG:4326
+      Content-Length:
+      - '725'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8002/api/v2/objects
+  response:
+    body:
+      string: '{"url":"http://localhost:8002/api/v2/objects/8ce8a87a-da7b-45ca-8f17-10b491d5da1f","uuid":"8ce8a87a-da7b-45ca-8f17-10b491d5da1f","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"submission_date":"2024-03-19T13:40:34.222258+00:00","submission_pdf_url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/0c5dbf44-ed54-4b11-8974-4f7370a892c4","submission_csv_url":"http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/de312c5c-a423-4629-afd3-1adf9d7be55e","submission_payment_completed":false,"submission_payment_amount":"0","submission_payment_public_ids":[]},"geometry":{"type":"Point","coordinates":[52.36673378967122,4.893164274470299]},"startAt":"2024-03-19","endAt":null,"registrationAt":"2024-03-19","correctionFor":null,"correctedBy":null}}'
+    headers:
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Crs:
+      - EPSG:4326
+      Content-Length:
+      - '916'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Location:
+      - http://localhost:8002/api/v2/objects/8ce8a87a-da7b-45ca-8f17-10b491d5da1f
+      Referrer-Policy:
+      - same-origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 201
+      message: Created
+version: 1

@@ -1,7 +1,10 @@
+import logging
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
+from datetime import date, datetime
 from typing import Any, Generic, Iterator, TypeVar, cast
 
+import glom
 from typing_extensions import override
 
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
@@ -11,21 +14,33 @@ from openforms.contrib.zgw.service import (
     create_csv_document,
     create_report_document,
 )
+from openforms.formio.service import FormioData
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.typing import JSONValue
+from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from .client import DocumentenClient, get_documents_client
 from .models import ObjectsAPIRegistrationData
+from .registration_variables import register as variables_registry
 from .typing import (
     ConfigVersion,
     RegistrationOptions,
     RegistrationOptionsV1,
     RegistrationOptionsV2,
 )
+
+logger = logging.getLogger(__name__)
+
+
+def _point_coordinate(value: Any) -> dict[str, Any] | object:
+    if not isinstance(value, list) or len(value) != 2:
+        return SKIP
+    return {"type": "Point", "coordinates": [value[0], value[1]]}
 
 
 def build_options(
@@ -47,6 +62,9 @@ def register_submission_pdf(
     options: RegistrationOptions,
     documents_client: DocumentenClient,
 ) -> str:
+    if not options["informatieobjecttype_submission_report"]:
+        return ""
+
     submission_report = SubmissionReport.objects.get(submission=submission)
     submission_report_options = build_options(
         options,
@@ -106,6 +124,9 @@ def register_submission_attachments(
     options: RegistrationOptions,
     documents_client: DocumentenClient,
 ) -> list[str]:
+    if not options["informatieobjecttype_attachment"]:
+        return []
+
     attachment_urls: list[str] = []
     for attachment in submission.attachments:
         attachment_options = build_options(
@@ -219,18 +240,12 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
     @abstractmethod
     def get_update_payment_status_data(
         self, submission: Submission, options: OptionsT
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] | None:
         pass
 
 
 class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     """Provide the registration data for legacy (v1) registration options, using JSON templates."""
-
-    @staticmethod
-    def _point_coordinate(value: Any) -> dict[str, Any] | object:
-        if not value or not isinstance(value, list) or len(value) != 2:
-            return SKIP
-        return {"type": "Point", "coordinates": [value[0], value[1]]}
 
     @staticmethod
     def get_payment_context_data(submission: Submission) -> dict[str, Any]:
@@ -272,7 +287,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         object_mapping = {
             "record.geometry": FieldConf(
                 RegistrationAttribute.locatie_coordinaat,
-                transform=self._point_coordinate,
+                transform=_point_coordinate,
             ),
         }
 
@@ -292,7 +307,14 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     @override
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV1
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] | None:
+
+        if not options["payment_status_update_json"]:
+            logger.warning(
+                "Skipping payment status update because no template was configured."
+            )
+            return
+
         context = {
             "variables": get_variables_for_context(submission),
             "payment": self.get_payment_context_data(submission),
@@ -301,6 +323,70 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         return render_to_json(options["payment_status_update_json"], context)
 
 
+class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
+
+    @override
+    def get_object_data(
+        self, submission: Submission, options: RegistrationOptionsV2
+    ) -> dict[str, Any]:
+        state = submission.load_submission_value_variables_state()
+        dynamic_values = state.get_data()
+        static_values = state.static_data()
+        static_values.update(
+            {
+                variable.key: variable.initial_value
+                for variable in get_static_variables(
+                    submission=submission,
+                    variables_registry=variables_registry,
+                )
+            }
+        )
+
+        variables_values = FormioData(
+            {
+                **dynamic_values,
+                **static_values,
+            }
+        ).data
+
+        variables_mapping = options["variables_mapping"]
+        record_data: dict[str, JSONValue] = {}
+
+        for mapping in variables_mapping:
+            variable_key = mapping["variable_key"]
+            target_path = mapping["target_path"]
+
+            # Type hint is wrong: currently some static variables are of type date/datetime
+            value = cast(Any, variables_values[variable_key])
+
+            # Comply with JSON Schema "format" specs:
+            if isinstance(value, (datetime, date)):
+                value = value.isoformat()
+
+            glom.assign(record_data, glom.Path(*target_path), value, missing=dict)
+
+        object_data = prepare_data_for_registration(
+            record_data=record_data,
+            objecttype=options["objecttype"],
+            objecttype_version=options["objecttype_version"],
+        )
+
+        if geometry_variable_key := options.get("geometry_variable_key"):
+            object_data["record"]["geometry"] = _point_coordinate(
+                variables_values[geometry_variable_key]
+            )
+
+        return object_data
+
+    @override
+    def get_update_payment_status_data(
+        self, submission: Submission, options: RegistrationOptionsV2
+    ) -> None:
+        # TODO
+        return None
+
+
 HANDLER_MAPPING: dict[ConfigVersion, ObjectsAPIRegistrationHandler[Any]] = {
     1: ObjectsAPIV1Handler(),
+    2: ObjectsAPIV2Handler(),
 }

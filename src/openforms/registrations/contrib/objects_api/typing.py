@@ -27,9 +27,10 @@ class ObjecttypeVariableMapping(TypedDict):
     target_path: list[str]
 
 
-class RegistrationOptionsV2(_BaseRegistrationOptions):
-    version: Literal[2]
-    variables_mapping: list[ObjecttypeVariableMapping]
+class RegistrationOptionsV2(_BaseRegistrationOptions, total=False):
+    version: Required[Literal[2]]
+    variables_mapping: Required[list[ObjecttypeVariableMapping]]
+    geometry_variable_key: str
 
 
 RegistrationOptions: TypeAlias = RegistrationOptionsV1 | RegistrationOptionsV2

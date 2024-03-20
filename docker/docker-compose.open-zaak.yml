@@ -1,0 +1,70 @@
+version: '3.8'
+
+name: open-zaak
+
+services:
+  openzaak-redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - open-forms-dev
+
+  openzaak-db:
+    image: postgis/postgis:${PG_VERSION:-14-master}
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./open-zaak/docker-init-open-zaak-db/:/docker-entrypoint-initdb.d
+      - open-zaak-db:/var/lib/postgresql/data
+    networks:
+      - open-forms-dev
+
+  openzaak-web.local:
+    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.11.0}
+    environment: &openzaak_web_env
+      - DJANGO_SETTINGS_MODULE=openzaak.conf.docker
+      - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
+      - ALLOWED_HOSTS=openzaak-web.local,localhost
+      - DB_NAME=openzaak
+      - DB_USER=openzaak
+      - DB_HOST=openzaak-db
+      - IS_HTTPS=no
+      - CACHE_DEFAULT=openzaak-redis:6379/0
+      - CACHE_AXES=openzaak-redis:6379/0
+      - SUBPATH=${SUBPATH:-/}
+      - OPENZAAK_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=admin
+      - OPENZAAK_SUPERUSER_EMAIL=admin@localhost
+      - CELERY_BROKER_URL=redis://openzaak-redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://openzaak-redis:6379/1
+      - NOTIFICATIONS_DISABLED=true
+    ports:
+      - 8003:8000
+    volumes: &openzaak_web_volumes
+      - media:/app/media  # Shared media volume to get access to saved OAS files
+      - private-media:/app/private-media
+    depends_on:
+      - openzaak-db
+      - openzaak-redis
+    networks:
+      - open-forms-dev
+
+  celery:
+    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.11.0}
+    environment: *openzaak_web_env
+    volumes: *openzaak_web_volumes
+    command: /celery_worker.sh
+    depends_on:
+      - openzaak-db
+      - openzaak-redis
+    networks:
+      - open-forms-dev
+
+volumes:
+  open-zaak-db:
+  media:
+  private-media:
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev
