@@ -11,7 +11,10 @@ from zgw_consumers.test.factories import ServiceFactory
 from openforms.registrations.contrib.objects_api.models import (
     ObjectsAPIRegistrationData,
 )
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionFileAttachmentFactory,
+)
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import ObjectsAPIConfig
@@ -169,3 +172,74 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "coordinates": [52.36673378967122, 4.893164274470299],
             },
         )
+
+    def test_submission_with_file_components(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "single_file",
+                    "type": "file",
+                },
+                {
+                    "key": "multiple_files",
+                    "type": "file",
+                    "multiple": True,
+                },
+            ],
+            completed=True,
+        )
+        submission_step = submission.steps[0]
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment1.jpg",
+            form_key="single_file",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment2_1.jpg",
+            form_key="multiple_files",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment2_2.jpg",
+            form_key="multiple_files",
+        )
+
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                # fmt: off
+                {
+                    "variable_key": "single_file",
+                    "target_path": ["single_file"],
+                },
+                {
+                    "variable_key": "multiple_files",
+                    "target_path": ["multiple_files"]
+                },
+                # fmt: on
+            ],
+        }
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        self.assertEqual(result["type"], v2_options["objecttype"])
+        self.assertEqual(
+            result["record"]["typeVersion"], v2_options["objecttype_version"]
+        )
+
+        self.assertTrue(
+            result["record"]["data"]["single_file"].startswith(
+                "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
+            )
+        )
+        self.assertEqual(len(result["record"]["data"]["multiple_files"]), 2)
