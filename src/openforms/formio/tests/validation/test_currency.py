@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from openforms.validations.base import BasePlugin
 
-from ...typing import CurrencyComponent
+from ...typing import Component
 from .helpers import extract_error, replace_validators_registry, validate_formio_data
 
 
@@ -23,7 +23,7 @@ class GT5Validator(BasePlugin[int | float]):
 class CurrencyFieldValidationTests(SimpleTestCase):
 
     def test_currencyfield_required_validation(self):
-        component: CurrencyComponent = {
+        component: Component = {
             "type": "currency",
             "key": "foo",
             "label": "Foo",
@@ -45,7 +45,7 @@ class CurrencyFieldValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     def test_min_max_values(self):
-        component: CurrencyComponent = {
+        component: Component = {
             "type": "currency",
             "key": "foo",
             "label": "Foo",
@@ -57,6 +57,7 @@ class CurrencyFieldValidationTests(SimpleTestCase):
         }
 
         invalid_values = [
+            ({"foo": 0}, "min_value"),
             ({"foo": 9}, "min_value"),
             ({"foo": 17}, "max_value"),
         ]
@@ -74,7 +75,7 @@ class CurrencyFieldValidationTests(SimpleTestCase):
         with replace_validators_registry() as register:
             register("gt_5")(GT5Validator)
 
-            component: CurrencyComponent = {
+            component: Component = {
                 "type": "currency",
                 "key": "foo",
                 "label": "Test",
