@@ -1,36 +1,39 @@
 {
-    "supportedTags":
-    [
-        {
-            "gitRef": "master",
-            "tag": "latest",
-            "hasExtensionsVariant": true
-        },
-        {
-            "gitRef": "stable/2.5.x",
-            "tag": null,
-            "hasExtensionsVariant": true
-        },
-        {
-            "gitRef": "stable/2.4.x",
-            "tag": null,
-            "hasExtensionsVariant": true
-        },
-        {
-            "gitRef": "stable/2.3.x",
-            "tag": null,
-            "hasExtensionsVariant": true
-        }
-    ],
-    "availableExtensions":
-    [
-        {
-            "name": "Token Exchange",
-            "repo": "open-forms-ext-token-exchange"
-        },
-        {
-            "name": "Haal Centraal HR Prefill",
-            "repo": "open-forms-ext-haalcentraal-hr"
-        }
-    ]
+  "supportedTags": [
+    {
+      "gitRef": "master",
+      "tag": "latest",
+      "hasExtensionsVariant": true
+    },
+    {
+      "gitRef": "stable/2.6.x",
+      "tag": null,
+      "hasExtensionsVariant": true
+    },
+    {
+      "gitRef": "stable/2.5.x",
+      "tag": null,
+      "hasExtensionsVariant": true
+    },
+    {
+      "gitRef": "stable/2.4.x",
+      "tag": null,
+      "hasExtensionsVariant": true
+    },
+    {
+      "gitRef": "stable/2.3.x",
+      "tag": null,
+      "hasExtensionsVariant": true
+    }
+  ],
+  "availableExtensions": [
+    {
+      "name": "Token Exchange",
+      "repo": "open-forms-ext-token-exchange"
+    },
+    {
+      "name": "Haal Centraal HR Prefill",
+      "repo": "open-forms-ext-haalcentraal-hr"
+    }
+  ]
 }
