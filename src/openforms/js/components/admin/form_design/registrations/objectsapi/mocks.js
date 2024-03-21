@@ -21,6 +21,12 @@ export const mockObjecttypesError = () =>
   });
 
 export const mockTargetPathsPost = paths =>
-  rest.post(`${BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`, (req, res, ctx) => {
-    return res(ctx.json(paths));
-  });
+  rest.post(
+    `${BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`,
+    async (req, res, ctx) => {
+      const requestBody = await req.json();
+      const variableJsonSchemaType = requestBody.variableJsonSchema.type;
+
+      return res(ctx.json(paths[variableJsonSchemaType]));
+    }
+  );
