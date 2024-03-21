@@ -9,6 +9,15 @@
         }
     },
     {
+        "model": "core.objecttype",
+        "pk": 2,
+        "fields": {
+            "service": 1,
+            "uuid": "527b8408-7421-4808-a744-43ccb7bdaaa2",
+            "_name": "File uploads"
+        }
+    },
+    {
         "model": "token.tokenauth",
         "pk": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
         "fields": {
@@ -27,6 +36,17 @@
         "fields": {
             "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
             "object_type": 1,
+            "mode": "read_and_write",
+            "use_fields": false,
+            "fields": null
+        }
+    },
+    {
+        "model": "token.permission",
+        "pk": 1,
+        "fields": {
+            "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+            "object_type": 2,
             "mode": "read_and_write",
             "use_fields": false,
             "fields": null
