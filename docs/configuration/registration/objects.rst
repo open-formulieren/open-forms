@@ -248,13 +248,13 @@ The Objects API configuration is now complete and can be selected as registratio
 Technical
 =========
 
-Open Forms requires Objects API v2 or newer.
+Open Forms requires Objects API v2.2 or newer.
 
 ================  ==========================================
 Objects API       Test status
 ================  ==========================================
-2.0.x             Manually verified
-2.1.x             Manually verified, integration tests in CI
+2.2.x             Manually verified
+2.3.x             Manually verified, integration tests in CI
 ================  ==========================================
 
 .. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/
