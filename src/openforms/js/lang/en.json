@@ -524,6 +524,11 @@
     "description": "option \"global_setting\" of statement checkbox configuration",
     "originalDefault": "Global setting"
   },
+  "CGSzx/": {
+    "defaultMessage": "Whether to map this variable to the {geometryPath} attribute",
+    "description": "'Map to geometry field' checkbox help text",
+    "originalDefault": "Whether to map this variable to the {geometryPath} attribute"
+  },
   "CN9j+L": {
     "defaultMessage": "Delete",
     "description": "Delete icon title",
@@ -1084,11 +1089,6 @@
     "description": "data type datetime",
     "originalDefault": "Datetime"
   },
-  "P3oGZG": {
-    "defaultMessage": "Save and add another",
-    "description": "Admin save and add another submit button",
-    "originalDefault": "Save and add another"
-  },
   "PC7ICN": {
     "defaultMessage": "Enabled",
     "description": "Manage process vars enabled checkbox column title",
@@ -1404,6 +1404,11 @@
     "description": "Form askPrivacyConsent field label",
     "originalDefault": "Ask privacy consent"
   },
+  "XYZcYw": {
+    "defaultMessage": "Map to geometry field",
+    "description": "'Map to geometry field' checkbox label",
+    "originalDefault": "Map to geometry field"
+  },
   "Xe+CCn": {
     "defaultMessage": "Basic",
     "description": "Service fetch configuration modal basic fieldset title",
@@ -1498,6 +1503,11 @@
     "defaultMessage": "Slug of the form definition used in this form step",
     "description": "Form step slug field help text",
     "originalDefault": "Slug of the form definition used in this form step"
+  },
+  "aBC+qN": {
+    "defaultMessage": "Mapped to the {geometryPath} attribute",
+    "description": "'Mapped to geometry' registration summary message",
+    "originalDefault": "Mapped to the {geometryPath} attribute"
   },
   "aUChz/": {
     "defaultMessage": "Products Component",
@@ -2198,6 +2208,11 @@
     "defaultMessage": "Objecttype",
     "description": "Objects API registration options \"Objecttype\" label",
     "originalDefault": "Objecttype"
+  },
+  "rRB7WE": {
+    "defaultMessage": "Registration",
+    "description": "Registration variables tab title",
+    "originalDefault": "Registration"
   },
   "rTafvA": {
     "defaultMessage": "Float",

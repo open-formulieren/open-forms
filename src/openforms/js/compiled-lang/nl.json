@@ -86,7 +86,7 @@
   "/fAEsY": [
     {
       "type": 0,
-      "value": "Submission report CSV informatieobjecttype"
+      "value": "informatieobjecttype CSV-document met inzendingsgegevens"
     }
   ],
   "/gcLcC": [
@@ -394,7 +394,7 @@
   "3z1hhJ": [
     {
       "type": 0,
-      "value": "Toggle JSON Schema"
+      "value": "Toon/verberg JSON Schema"
     }
   ],
   "4/cCvG": [
@@ -494,7 +494,7 @@
   "51k2La": [
     {
       "type": 0,
-      "value": "JSON content field"
+      "value": "JSON-inhoud sjabloon"
     }
   ],
   "5AC1+x": [
@@ -732,7 +732,7 @@
   "7Vx5It": [
     {
       "type": 0,
-      "value": "No compatible registration backend configured."
+      "value": "Er is geen (relevante) registratiemethode ingesteld."
     }
   ],
   "7X6yT4": [
@@ -992,7 +992,7 @@
   "A/vedA": [
     {
       "type": 0,
-      "value": "JSON template for the body of the request sent to the Objects API."
+      "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt."
     }
   ],
   "A1tDIH": [
@@ -1159,6 +1159,12 @@
       "value": "Formulier"
     }
   ],
+  "BVuE94": [
+    {
+      "type": 0,
+      "value": "Indien opgegeven, dan moet de gebruiker minimaal dit aantal opties aanvinken."
+    }
+  ],
   "BcuXrg": [
     {
       "type": 0,
@@ -1213,6 +1219,26 @@
       "value": "Opties-expressie"
     }
   ],
+  "C4TGm5": [
+    {
+      "type": 0,
+      "value": "Je kan sjablonen gebruiken in dit veld. Bekijk de "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "handleiding"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": " voor voorbeelden en documentatie."
+    }
+  ],
   "C4Zn+R": [
     {
       "type": 0,
@@ -1235,6 +1261,20 @@
     {
       "type": 0,
       "value": "Maximale bestandsgrootte"
+    }
+  ],
+  "CGSzx/": [
+    {
+      "type": 0,
+      "value": "Vink aan om deze variabele te koppelen aan het "
+    },
+    {
+      "type": 1,
+      "value": "geometryPath"
+    },
+    {
+      "type": 0,
+      "value": "-attribuut."
     }
   ],
   "CN9j+L": [
@@ -1350,13 +1390,13 @@
   "DRidde": [
     {
       "type": 0,
-      "value": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+      "value": "Er ging iets fout bij het ophalen van de beschikbare beslisdefinities. Is de geselecteerde DMN-plugin goed ingesteld en beschikbaar?"
     }
   ],
   "DaxIUG": [
     {
       "type": 0,
-      "value": "Variable key"
+      "value": "Sleutel variabele"
     }
   ],
   "DcI1VF": [
@@ -1744,7 +1784,7 @@
   "HKA7Ic": [
     {
       "type": 0,
-      "value": "Productaanvraag type"
+      "value": "Productaanvraagtype"
     }
   ],
   "HNoGb8": [
@@ -1884,7 +1924,7 @@
   "JXcHQ2": [
     {
       "type": 0,
-      "value": "Not yet configured"
+      "value": "(nog niet ingesteld)"
     }
   ],
   "JZRX+C": [
@@ -2153,6 +2193,22 @@
       "value": "Alle eenvoudige variabelen zijn gekoppeld aan een zaakeigenschap."
     }
   ],
+  "NdaqDN": [
+    {
+      "type": 0,
+      "value": "Waarde-omschrijving ("
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "option"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "Nsifca": [
     {
       "type": 0,
@@ -2174,7 +2230,7 @@
   "NwxORf": [
     {
       "type": 0,
-      "value": "Upload submission CSV"
+      "value": "CSV-inzendingsbestand uploaden"
     }
   ],
   "O/wKJh": [
@@ -2261,12 +2317,6 @@
     {
       "type": 0,
       "value": "Datumtijd (datetime)"
-    }
-  ],
-  "P3oGZG": [
-    {
-      "type": 0,
-      "value": "Opslaan en nieuwe toevoegen"
     }
   ],
   "PC7ICN": [
@@ -2442,7 +2492,7 @@
   "RrjozJ": [
     {
       "type": 0,
-      "value": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
+      "value": "URL naar het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het objecttype moet de volgende drie attributen bevatten:  \"submission_id\", \"type\" (het type van de 'ProductAanvraag') en \"data\" (de ingezonden formuliergegevens)."
     }
   ],
   "RuAQwk": [
@@ -2644,7 +2694,7 @@
   "U/t6b+": [
     {
       "type": 0,
-      "value": "Variables Mapping"
+      "value": "Variabelekoppelingen"
     }
   ],
   "UCGSib": [
@@ -2896,7 +2946,7 @@
   "WnKF/i": [
     {
       "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
+      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen."
     }
   ],
   "Wz5QZo": [
@@ -2932,7 +2982,7 @@
   "XPEv9r": [
     {
       "type": 0,
-      "value": "Legacy"
+      "value": "Verouderd (sjabloon)"
     }
   ],
   "XPLnIL": [
@@ -2957,6 +3007,12 @@
     {
       "type": 0,
       "value": "Bestandsnaam"
+    }
+  ],
+  "XYZcYw": [
+    {
+      "type": 0,
+      "value": "Koppel aan geometrie-veld"
     }
   ],
   "Xe+CCn": [
@@ -3017,6 +3073,12 @@
     {
       "type": 0,
       "value": "Opslaan"
+    }
+  ],
+  "YSuwK2": [
+    {
+      "type": 0,
+      "value": "(inklappen)"
     }
   ],
   "YbnFnL": [
@@ -3082,7 +3144,7 @@
   "Yyvvx1": [
     {
       "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
+      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document."
     }
   ],
   "YzLSHY": [
@@ -3194,10 +3256,30 @@
       "value": "Maximum aantal bestanden"
     }
   ],
+  "aBC+qN": [
+    {
+      "type": 0,
+      "value": "Gekoppeld aan het "
+    },
+    {
+      "type": 1,
+      "value": "geometryPath"
+    },
+    {
+      "type": 0,
+      "value": "-attribuut"
+    }
+  ],
   "aUChz/": [
     {
       "type": 0,
       "value": "Product veld"
+    }
+  ],
+  "aWwaAq": [
+    {
+      "type": 0,
+      "value": "Maximum aantal aangevinkte opties"
     }
   ],
   "aXJpiI": [
@@ -3210,6 +3292,12 @@
     {
       "type": 0,
       "value": "Vereist authenticatie"
+    }
+  ],
+  "aqYeqv": [
+    {
+      "type": 0,
+      "value": "Waarde-omschrijvingen"
     }
   ],
   "arAMAF": [
@@ -3357,7 +3445,7 @@
   "cK2O6E": [
     {
       "type": 0,
-      "value": "Something went wrong when fetching the available target paths"
+      "value": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden."
     }
   ],
   "cQvPLh": [
@@ -3502,6 +3590,12 @@
       "value": "Het verplichte veld Label is niet ingevuld."
     }
   ],
+  "dbAJfK": [
+    {
+      "type": 0,
+      "value": "Minimum aantal aangevinkte opties"
+    }
+  ],
   "ddDA6+": [
     {
       "type": 0,
@@ -3565,7 +3659,7 @@
   "dwkDsV": [
     {
       "type": 0,
-      "value": "Version of the objecttype in the Objecttypes API"
+      "value": "Versie van het objecttype in de Objecttypen-API"
     }
   ],
   "e6SsfR": [
@@ -3583,7 +3677,7 @@
   "eBtStW": [
     {
       "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
+      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document."
     }
   ],
   "eJEu3L": [
@@ -3601,7 +3695,7 @@
   "eR8wGd": [
     {
       "type": 0,
-      "value": "RSIN of organization, which creates the INFORMATIEOBJECT"
+      "value": "RSIN van de organisatie die het INFORMATIEOBJECT aanmaakt"
     }
   ],
   "eU7+uS": [
@@ -3691,7 +3785,7 @@
   "fVNaJK": [
     {
       "type": 0,
-      "value": "Objecttype version"
+      "value": "Objecttypeversie"
     }
   ],
   "fWcg7I": [
@@ -3877,7 +3971,7 @@
   "hwD3q9": [
     {
       "type": 0,
-      "value": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag"
+      "value": "Geeft aan of de inzendingsgegevens als CSV in de Documenten API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens."
     }
   ],
   "hwsnj9": [
@@ -3901,19 +3995,25 @@
   "iHpAYZ": [
     {
       "type": 0,
-      "value": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field."
+      "value": "Dit sjabloon wordt geëvalueerd met de inzendingsvariabelen en de resulterende JSON wordt vervolgens naar de Objecten API gestuurd met een PATCH call om de betalingsvelden bij te werken."
     }
   ],
   "iNmPDd": [
     {
       "type": 0,
-      "value": "Attachment informatieobjecttype"
+      "value": "Informatieobjecttype bijlagen"
     }
   ],
   "iOADkJ": [
     {
       "type": 0,
       "value": "Weergeven in overzicht"
+    }
+  ],
+  "iOcL9h": [
+    {
+      "type": 0,
+      "value": "Omschrijving"
     }
   ],
   "iX0YPY": [
@@ -3989,13 +4089,13 @@
   "j5KpZP": [
     {
       "type": 0,
-      "value": "loading..."
+      "value": "(ophalen gegevens...)"
     }
   ],
   "j7rEgn": [
     {
       "type": 0,
-      "value": "Submission report PDF informatieobjecttype"
+      "value": "Informatieobjecttype inzendings-PDF"
     }
   ],
   "jARYB7": [
@@ -4007,7 +4107,7 @@
   "jCUorM": [
     {
       "type": 0,
-      "value": "Something went wrong when fectching the available Objecttypes and versions"
+      "value": "Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies."
     }
   ],
   "jLg5l6": [
@@ -4121,7 +4221,7 @@
   "kQtrKX": [
     {
       "type": 0,
-      "value": "The type of ProductAanvraag"
+      "value": "Het type ProductAanvraag"
     }
   ],
   "kg/eh1": [
@@ -4173,7 +4273,7 @@
   "l/mtou": [
     {
       "type": 0,
-      "value": "Payment status update JSON template"
+      "value": "JSON-sjabloon voor de betaalstatus-update"
     }
   ],
   "l1fi1t": [
@@ -4270,6 +4370,12 @@
     {
       "type": 0,
       "value": "Stappen en velden"
+    }
+  ],
+  "mWuCXv": [
+    {
+      "type": 0,
+      "value": "Je kan een extra omschrijving opnemen om een keuzeoptie te verduidelijken."
     }
   ],
   "mXJbc8": [
@@ -4679,6 +4785,12 @@
       "value": "Objecttype"
     }
   ],
+  "rRB7WE": [
+    {
+      "type": 0,
+      "value": "Registratie"
+    }
+  ],
   "rTafvA": [
     {
       "type": 0,
@@ -4710,7 +4822,7 @@
   "rkzjK3": [
     {
       "type": 0,
-      "value": "JSON Schema target"
+      "value": "Bestemmingspad"
     }
   ],
   "rzGuvz": [
@@ -4729,6 +4841,12 @@
     {
       "type": 0,
       "value": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier."
+    }
+  ],
+  "sR9GVQ": [
+    {
+      "type": 0,
+      "value": "Indien opgegeven, dan mag de gebruiker maximaal dit aantal opties aanvinken."
     }
   ],
   "sU/n0S": [
@@ -4794,7 +4912,7 @@
   "sptpzv": [
     {
       "type": 0,
-      "value": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
+      "value": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?"
     }
   ],
   "t9+e9k": [
@@ -5158,7 +5276,7 @@
             },
             {
               "type": 0,
-              "value": " (required)"
+              "value": " (verplicht)"
             }
           ]
         }
@@ -5254,7 +5372,7 @@
   "zF8YEc": [
     {
       "type": 0,
-      "value": "Organisation RSIN"
+      "value": "Organisatie-RSIN"
     }
   ],
   "zGMQ75": [
@@ -5279,6 +5397,30 @@
     {
       "type": 0,
       "value": "Sleutel-waarde paar (object)"
+    }
+  ],
+  "zWxcfD": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Voeg omschrijving toe"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Bewerk omschrijving"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasDescription"
     }
   ],
   "zeXZzX": [

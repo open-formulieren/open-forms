@@ -40,7 +40,7 @@
     "originalDefault": "Locations Component"
   },
   "/fAEsY": {
-    "defaultMessage": "Submission report CSV informatieobjecttype",
+    "defaultMessage": "informatieobjecttype CSV-document met inzendingsgegevens",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" label",
     "originalDefault": "Submission report CSV informatieobjecttype"
   },
@@ -166,7 +166,7 @@
     "originalDefault": "Ask statement of truth"
   },
   "3z1hhJ": {
-    "defaultMessage": "Toggle JSON Schema",
+    "defaultMessage": "Toon/verberg JSON Schema",
     "description": "Objects API variable configuration editor JSON Schema visibility toggle",
     "originalDefault": "Toggle JSON Schema"
   },
@@ -201,7 +201,7 @@
     "originalDefault": "Name"
   },
   "51k2La": {
-    "defaultMessage": "JSON content field",
+    "defaultMessage": "JSON-inhoud sjabloon",
     "description": "Objects API registration options \"JSON content field\" label",
     "originalDefault": "JSON content field"
   },
@@ -308,7 +308,7 @@
     "originalDefault": "Unique identifier for the form"
   },
   "7Vx5It": {
-    "defaultMessage": "No compatible registration backend configured.",
+    "defaultMessage": "Er is geen (relevante) registratiemethode ingesteld.",
     "description": "Registration summary no registration backend fallback message",
     "originalDefault": "No compatible registration backend configured."
   },
@@ -419,7 +419,7 @@
     "originalDefault": "Errored Submissions Removal Limit"
   },
   "A/vedA": {
-    "defaultMessage": "JSON template for the body of the request sent to the Objects API.",
+    "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt.",
     "description": "Objects API registration options \"JSON content field\" description",
     "originalDefault": "JSON template for the body of the request sent to the Objects API."
   },
@@ -529,6 +529,11 @@
     "description": "option \"global_setting\" of statement checkbox configuration",
     "originalDefault": "Global setting"
   },
+  "CGSzx/": {
+    "defaultMessage": "Vink aan om deze variabele te koppelen aan het {geometryPath}-attribuut.",
+    "description": "'Map to geometry field' checkbox help text",
+    "originalDefault": "Whether to map this variable to the {geometryPath} attribute"
+  },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",
     "description": "Delete icon title",
@@ -570,12 +575,12 @@
     "originalDefault": "Move down"
   },
   "DRidde": {
-    "defaultMessage": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?",
+    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare beslisdefinities. Is de geselecteerde DMN-plugin goed ingesteld en beschikbaar?",
     "description": "Admin error for API error when configuring Camunda actions",
     "originalDefault": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
   },
   "DaxIUG": {
-    "defaultMessage": "Variable key",
+    "defaultMessage": "Sleutel variabele",
     "description": "'Variable key' label",
     "originalDefault": "Variable key"
   },
@@ -771,7 +776,7 @@
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
   "HKA7Ic": {
-    "defaultMessage": "Productaanvraag type",
+    "defaultMessage": "Productaanvraagtype",
     "description": "Objects API registration options \"Productaanvraag type\" label",
     "originalDefault": "Productaanvraag type"
   },
@@ -861,7 +866,7 @@
     "originalDefault": "Expand/collapse JsonLogic"
   },
   "JXcHQ2": {
-    "defaultMessage": "Not yet configured",
+    "defaultMessage": "(nog niet ingesteld)",
     "description": "'Not yet configured' registration summary message",
     "originalDefault": "Not yet configured"
   },
@@ -1031,7 +1036,7 @@
     "originalDefault": "Component where locations for an appointment will be shown"
   },
   "NwxORf": {
-    "defaultMessage": "Upload submission CSV",
+    "defaultMessage": "CSV-inzendingsbestand uploaden",
     "description": "Objects API registration options \"Upload submission CSV\" label",
     "originalDefault": "Upload submission CSV"
   },
@@ -1092,11 +1097,6 @@
     "defaultMessage": "Datumtijd (datetime)",
     "description": "data type datetime",
     "originalDefault": "Datetime"
-  },
-  "P3oGZG": {
-    "defaultMessage": "Opslaan en nieuwe toevoegen",
-    "description": "Admin save and add another submit button",
-    "originalDefault": "Save and add another"
   },
   "PC7ICN": {
     "defaultMessage": "Ingeschakeld",
@@ -1195,7 +1195,7 @@
     "originalDefault": "Initial value"
   },
   "RrjozJ": {
-    "defaultMessage": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)",
+    "defaultMessage": "URL naar het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het objecttype moet de volgende drie attributen bevatten:  \"submission_id\", \"type\" (het type van de 'ProductAanvraag') en \"data\" (de ingezonden formuliergegevens).",
     "description": "Objects API registration options \"Objecttype\" description",
     "originalDefault": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
   },
@@ -1295,7 +1295,7 @@
     "originalDefault": "Do not ask"
   },
   "U/t6b+": {
-    "defaultMessage": "Variables Mapping",
+    "defaultMessage": "Variabelekoppelingen",
     "description": "Objects API registration backend options 'Variables Mapping' tab label",
     "originalDefault": "Variables Mapping"
   },
@@ -1377,7 +1377,7 @@
     "originalDefault": "Prefill plugin"
   },
   "WnKF/i": {
-    "defaultMessage": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments",
+    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen.",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" description",
     "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
   },
@@ -1402,7 +1402,7 @@
     "originalDefault": "Invalid JSON logic expression"
   },
   "XPEv9r": {
-    "defaultMessage": "Legacy",
+    "defaultMessage": "Verouderd (sjabloon)",
     "description": "Objects API registration backend options 'Legacy' tab label",
     "originalDefault": "Legacy"
   },
@@ -1415,6 +1415,11 @@
     "defaultMessage": "Vraag toestemming om gegevens te verwerken",
     "description": "Form askPrivacyConsent field label",
     "originalDefault": "Ask privacy consent"
+  },
+  "XYZcYw": {
+    "defaultMessage": "Koppel aan geometrie-veld",
+    "description": "'Map to geometry field' checkbox label",
+    "originalDefault": "Map to geometry field"
   },
   "Xe+CCn": {
     "defaultMessage": "Basis",
@@ -1457,7 +1462,7 @@
     "originalDefault": "Add item"
   },
   "Yyvvx1": {
-    "defaultMessage": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV",
+    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document.",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" description",
     "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
   },
@@ -1510,6 +1515,11 @@
     "defaultMessage": "URL-deel voor deze formulierstap. Dit wordt gebruikt samen met het URL-deel van het formulier zelf.",
     "description": "Form step slug field help text",
     "originalDefault": "Slug of the form definition used in this form step"
+  },
+  "aBC+qN": {
+    "defaultMessage": "Gekoppeld aan het {geometryPath}-attribuut",
+    "description": "'Mapped to geometry' registration summary message",
+    "originalDefault": "Mapped to the {geometryPath} attribute"
   },
   "aUChz/": {
     "defaultMessage": "Product veld",
@@ -1588,7 +1598,7 @@
     "originalDefault": "(complex value)"
   },
   "cK2O6E": {
-    "defaultMessage": "Something went wrong when fetching the available target paths",
+    "defaultMessage": "Er ging helaas iets fout bij het ophalen van de beschikbare bestemmingspaden.",
     "description": "Objects API variable registration configuration API error",
     "originalDefault": "Something went wrong when fetching the available target paths"
   },
@@ -1664,7 +1674,7 @@
     "originalDefault": "Date"
   },
   "dwkDsV": {
-    "defaultMessage": "Version of the objecttype in the Objecttypes API",
+    "defaultMessage": "Versie van het objecttype in de Objecttypen-API",
     "description": "Objects API registration options \"Objecttype version\" description",
     "originalDefault": "Version of the objecttype in the Objecttypes API"
   },
@@ -1674,7 +1684,7 @@
     "originalDefault": "Manage process variables"
   },
   "eBtStW": {
-    "defaultMessage": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF",
+    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document.",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
     "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
   },
@@ -1689,7 +1699,7 @@
     "originalDefault": "Advanced options"
   },
   "eR8wGd": {
-    "defaultMessage": "RSIN of organization, which creates the INFORMATIEOBJECT",
+    "defaultMessage": "RSIN van de organisatie die het INFORMATIEOBJECT aanmaakt",
     "description": "Objects API registration options \"Organisation RSIN\" description",
     "originalDefault": "RSIN of organization, which creates the INFORMATIEOBJECT"
   },
@@ -1724,7 +1734,7 @@
     "originalDefault": "Pricing logic"
   },
   "fVNaJK": {
-    "defaultMessage": "Objecttype version",
+    "defaultMessage": "Objecttypeversie",
     "description": "Objects API registration options \"Objecttype version\" label",
     "originalDefault": "Objecttype version"
   },
@@ -1829,7 +1839,7 @@
     "originalDefault": "Configure"
   },
   "hwD3q9": {
-    "defaultMessage": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag",
+    "defaultMessage": "Geeft aan of de inzendingsgegevens als CSV in de Documenten API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens.",
     "description": "Objects API registration options \"Upload submission CSV\" description",
     "originalDefault": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag"
   },
@@ -1844,12 +1854,12 @@
     "originalDefault": "Tab name"
   },
   "iHpAYZ": {
-    "defaultMessage": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field.",
+    "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsvariabelen en de resulterende JSON wordt vervolgens naar de Objecten API gestuurd met een PATCH call om de betalingsvelden bij te werken.",
     "description": "Objects API registration options \"Payment status update JSON template\" description",
     "originalDefault": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field."
   },
   "iNmPDd": {
-    "defaultMessage": "Attachment informatieobjecttype",
+    "defaultMessage": "Informatieobjecttype bijlagen",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" label",
     "originalDefault": "Attachment informatieobjecttype"
   },
@@ -1874,12 +1884,12 @@
     "originalDefault": "{name} [new]"
   },
   "j5KpZP": {
-    "defaultMessage": "loading...",
+    "defaultMessage": "(ophalen gegevens...)",
     "description": "Loading select option label",
     "originalDefault": "loading..."
   },
   "j7rEgn": {
-    "defaultMessage": "Submission report PDF informatieobjecttype",
+    "defaultMessage": "Informatieobjecttype inzendings-PDF",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" label",
     "originalDefault": "Submission report PDF informatieobjecttype"
   },
@@ -1889,7 +1899,7 @@
     "originalDefault": "Form definition"
   },
   "jCUorM": {
-    "defaultMessage": "Something went wrong when fectching the available Objecttypes and versions",
+    "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies.",
     "description": "Objects API registrations options API error",
     "originalDefault": "Something went wrong when fectching the available Objecttypes and versions"
   },
@@ -1954,7 +1964,7 @@
     "originalDefault": "disabled"
   },
   "kQtrKX": {
-    "defaultMessage": "The type of ProductAanvraag",
+    "defaultMessage": "Het type ProductAanvraag",
     "description": "Objects API registration options \"Productaanvraag type\" description",
     "originalDefault": "The type of ProductAanvraag"
   },
@@ -1964,7 +1974,7 @@
     "originalDefault": "Category"
   },
   "l/mtou": {
-    "defaultMessage": "Payment status update JSON template",
+    "defaultMessage": "JSON-sjabloon voor de betaalstatus-update",
     "description": "Objects API registration options \"Payment status update JSON template\" label",
     "originalDefault": "Payment status update JSON template"
   },
@@ -2212,7 +2222,13 @@
   "rJTe9U": {
     "defaultMessage": "Objecttype",
     "description": "Objects API registration options \"Objecttype\" label",
+    "isTranslated": true,
     "originalDefault": "Objecttype"
+  },
+  "rRB7WE": {
+    "defaultMessage": "Registratie",
+    "description": "Registration variables tab title",
+    "originalDefault": "Registration"
   },
   "rTafvA": {
     "defaultMessage": "Kommagetal (float)",
@@ -2230,7 +2246,7 @@
     "originalDefault": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
   },
   "rkzjK3": {
-    "defaultMessage": "JSON Schema target",
+    "defaultMessage": "Bestemmingspad",
     "description": "'JSON Schema target' label",
     "originalDefault": "JSON Schema target"
   },
@@ -2256,7 +2272,7 @@
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable mapped)} other {({varCount} variables mapped)} }"
   },
   "sptpzv": {
-    "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",
+    "defaultMessage": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?",
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
   },
@@ -2426,7 +2442,7 @@
     "originalDefault": "Objects API - objecttype"
   },
   "y4U0aW": {
-    "defaultMessage": "{required, select, true {{path} (required)} other {{path}}}",
+    "defaultMessage": "{required, select, true {{path} (verplicht)} other {{path}}}",
     "description": "Representation of a JSON Schema target path",
     "originalDefault": "{required, select, true {{path} (required)} other {{path}}}"
   },
@@ -2456,7 +2472,7 @@
     "originalDefault": "Action"
   },
   "zF8YEc": {
-    "defaultMessage": "Organisation RSIN",
+    "defaultMessage": "Organisatie-RSIN",
     "description": "Objects API registration options \"Organisation RSIN\" label",
     "originalDefault": "Organisation RSIN"
   },
