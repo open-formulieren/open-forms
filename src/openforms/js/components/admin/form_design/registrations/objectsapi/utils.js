@@ -48,9 +48,21 @@ const FORMAT_TYPE_MAP = {
 /**
  * Return a JSON Schema definition matching the provided variable.
  * @param {Object} variable - The current variable
+ * @param {Object} components - The components available in the form. The key is the component key, the value is the
+ * component definition.
  * @returns {Object} - The JSON Schema
  */
-const asJsonSchema = variable => {
+const asJsonSchema = (variable, components) => {
+  // Figure out if the component is a file component (special case)
+  const componentDefinition = components[variable.key];
+  if (componentDefinition && componentDefinition.type === 'file') {
+    // If it is, and it has multiple == True, then type is array
+    if (componentDefinition.multiple)
+      return {type: 'array', items: {type: 'string', format: 'uri'}};
+    // Otherwise it's string (URL of the document)
+    return {type: 'string', format: 'uri'};
+  }
+
   if (VARIABLE_TYPE_MAP.hasOwnProperty(variable.dataType))
     return {type: VARIABLE_TYPE_MAP[variable.dataType]};
   return {
