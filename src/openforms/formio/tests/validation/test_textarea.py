@@ -2,13 +2,13 @@ from django.test import SimpleTestCase
 
 from openforms.typing import JSONValue
 
-from ...typing import TextAreaComponent
+from ...typing import Component
 from .helpers import extract_error, validate_formio_data
 
 
 class TextAreaValidationTests(SimpleTestCase):
     def test_textarea_required_validation(self):
-        component: TextAreaComponent = {
+        component: Component = {
             "type": "textarea",
             "key": "foo",
             "label": "Test",
@@ -31,7 +31,7 @@ class TextAreaValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     def test_textarea_max_length(self):
-        component: TextAreaComponent = {
+        component: Component = {
             "type": "textarea",
             "key": "foo",
             "label": "Test",
@@ -46,7 +46,7 @@ class TextAreaValidationTests(SimpleTestCase):
         self.assertEqual(error.code, "max_length")
 
     def test_multiple(self):
-        component: TextAreaComponent = {
+        component: Component = {
             "type": "textarea",
             "key": "foo",
             "label": "Test",

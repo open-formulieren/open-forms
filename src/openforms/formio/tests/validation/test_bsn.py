@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from openforms.validations.base import BasePlugin
 
-from ...typing import BSNComponent
+from ...typing import Component
 from .helpers import extract_error, replace_validators_registry, validate_formio_data
 
 
@@ -17,7 +17,7 @@ class NoLeading1Validator(BasePlugin[str]):
 class BSNValidationTests(SimpleTestCase):
 
     def test_bsn_field_required_validation(self):
-        component: BSNComponent = {
+        component: Component = {
             "type": "bsn",
             "key": "foo",
             "label": "Test",
@@ -40,7 +40,7 @@ class BSNValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     def test_elfproef(self):
-        component: BSNComponent = {
+        component: Component = {
             "type": "bsn",
             "key": "foo",
             "label": "Test",
@@ -63,7 +63,7 @@ class BSNValidationTests(SimpleTestCase):
         with replace_validators_registry() as register:
             register("no_leading_1")(NoLeading1Validator)
 
-            component: BSNComponent = {
+            component: Component = {
                 "type": "bsn",
                 "key": "foo",
                 "label": "Test",

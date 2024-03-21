@@ -2,14 +2,14 @@ from django.test import SimpleTestCase
 
 from openforms.typing import JSONValue
 
-from ...typing import PostcodeComponent
+from ...typing import Component
 from .helpers import extract_error, validate_formio_data
 
 
 class PostcodeFieldValidationTests(SimpleTestCase):
 
     def test_postcodefield_required_validation(self):
-        component: PostcodeComponent = {
+        component: Component = {
             "type": "postcode",
             "key": "foo",
             "label": "Foo",
@@ -31,7 +31,7 @@ class PostcodeFieldValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     def test_postcode_pattern_validation(self):
-        component: PostcodeComponent = {
+        component: Component = {
             "type": "postcode",
             "key": "foo",
             "label": "Foo",
@@ -49,7 +49,7 @@ class PostcodeFieldValidationTests(SimpleTestCase):
         self.assertEqual(error.code, "invalid")
 
     def test_multiple(self):
-        component: PostcodeComponent = {
+        component: Component = {
             "type": "postcode",
             "key": "foo",
             "label": "Test",

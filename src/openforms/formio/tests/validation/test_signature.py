@@ -1,13 +1,13 @@
 from django.test import SimpleTestCase
 
-from ...typing import SignatureComponent
+from ...typing import Component
 from .helpers import extract_error, validate_formio_data
 
 
 class SignatureValidationTests(SimpleTestCase):
 
     def test_signature_field_required_validation(self):
-        component: SignatureComponent = {
+        component: Component = {
             "type": "signature",
             "key": "foo",
             "label": "Test",

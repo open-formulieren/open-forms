@@ -2,14 +2,14 @@ from django.test import SimpleTestCase
 
 from openforms.typing import JSONValue
 
-from ...typing import TimeComponent
+from ...typing import Component
 from .helpers import extract_error, validate_formio_data
 
 
 class TimeFieldValidationTests(SimpleTestCase):
 
     def test_timefield_required_validation(self):
-        component: TimeComponent = {
+        component: Component = {
             "type": "time",
             "key": "foo",
             "label": "Foo",
@@ -31,7 +31,7 @@ class TimeFieldValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     def test_min_max_time(self):
-        component: TimeComponent = {
+        component: Component = {
             "type": "time",
             "key": "foo",
             "label": "Foo",
@@ -57,7 +57,7 @@ class TimeFieldValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     def test_multiple(self):
-        component: TimeComponent = {
+        component: Component = {
             "type": "time",
             "key": "foo",
             "label": "Test",

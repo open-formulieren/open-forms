@@ -10,38 +10,6 @@ class TextFieldComponent(Component):
     pass
 
 
-class TextAreaComponent(Component):
-    pass
-
-
-class TimeComponent(Component):
-    pass
-
-
-class PostcodeComponent(Component):
-    pass
-
-
-class BSNComponent(Component):
-    pass
-
-
-class CurrencyComponent(Component):
-    pass
-
-
-class CheckboxComponent(Component):
-    pass
-
-
-class SignatureComponent(Component):
-    pass
-
-
-class MapComponent(Component):
-    pass
-
-
 class FileConfig(TypedDict):
     allowedTypesLabels: list[str]
 

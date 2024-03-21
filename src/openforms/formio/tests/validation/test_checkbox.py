@@ -1,13 +1,13 @@
 from django.test import SimpleTestCase
 
-from ...typing import CheckboxComponent
+from ...typing import Component
 from .helpers import extract_error, validate_formio_data
 
 
 class CheckboxValidationTests(SimpleTestCase):
 
     def test_checkbox_field_required_validation(self):
-        component: CheckboxComponent = {
+        component: Component = {
             "type": "checkbox",
             "key": "foo",
             "label": "Test",
