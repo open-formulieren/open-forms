@@ -16,6 +16,7 @@ assignees: sergei-maertens
   - [ ] `src.soap.tests.test_client`
   - [ ] BRK (Kadaster)
   - [ ] Ogone
+  - [ ] Objects API v2
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
