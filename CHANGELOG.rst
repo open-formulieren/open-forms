@@ -2,14 +2,192 @@
 Changelog
 =========
 
-Unreleased
-==========
+2.6.0 "???" (2024-03-25)
+========================
 
-Upgrade procedure
------------------
+Open Forms 2.6.0 is a feature release.
 
-* ⚠️ The ``CSRF_TRUSTED_ORIGINS`` setting now requires items to have a scheme. If you
-  specify this setting, update your infrastructure code.
+.. epigraph::
+
+   ...
+
+   -- ...
+
+
+Upgrade notes
+-------------
+
+* Ensure you upgrade to (at least) Open Forms 2.5.2 before upgrading to 2.6.
+
+* ⚠️ The ``CSRF_TRUSTED_ORIGINS`` setting now requires items to have a scheme. E.g. if
+  you specified this as ``example.com,cms.example.com``, then the value needs to be
+  updated to ``https://example.com,https://cms.example.com``.
+
+  Check (and update) your infrastructure code/configuration for this setting before
+  deploying.
+
+* The Objects API registration backend can now update the payment status after
+  registering an object. For this feature to work, the minimum version of the Objects
+  API is now ``v2.2`` (raised from ``v2.0``). If you don't make use of payments or don't
+  store payment information in the object, you can likely keep using older versions, but
+  this is at your own risk.
+
+* The ``TWO_FACTOR_FORCE_OTP_ADMIN`` and ``TWO_FACTOR_PATCH_ADMIN`` environment variables
+  are removed, you can remove them from your infrastructure configuration. Disabling MFA
+  in the admin is no longer possible. Note that the OpenID Connect login backends do not
+  require (additional) MFA in the admin and we've added support for hardware tokens
+  (like the YubiKey) which make MFA less of a nuisance.
+
+Major features
+--------------
+
+**📄 Objects API contract**
+
+We completely revamped our Objects API registration backend - there is now tight
+integration with the "contract" imposed by the selected object type. This makes it
+much more user friendly to map form variables to properties defined in the object type.
+
+The existing template-based approach is still available, giving you plenty of time to
+convert existing forms. It is not scheduled for removal yet.
+
+**👔 Decision engine (DMN) support**
+
+At times, form logic can become very complex to capture all the business needs. We've
+added support for evaluation of "Decision models" defined in a decision evaluation
+engine, such as Camunda DMN. This provides a better user experience for the people
+modelling the decisions, centralizes the definitions and gives more control to the
+business, all while simplifying the form logic configuration.
+
+Currently only Camunda 7 is supported, and using this feature requires you to have
+access to a Camunda instance in your infrastructure.
+
+**🔑 Multi-factor rework**
+
+We've improved the login flow for staff users by making it more secure *and* removing
+friction:
+
+* users of OIDC authentication never have to provide a second factor in Open Forms
+* you can now set up an automatic redirect to the OIDC-provider, saving a couple of
+  clicks
+* users logging in with username/password can now use hardware tokens (like YubiKey),
+  as an alternative one-time-password tokens (via apps like Google/Microsoft
+  Authenticator)
+
+**🔓 Added explicit, public API endpoints**
+
+We've explicitly divided up our API into public and private parts, and this is reflected
+in the URLs. Public API endpoints can be used by CMS integrations to present lists of
+available forms, for example. Public API endpoints are subject to semantic versioning,
+i.e. we will not introduce breaking changes within a major version.
+
+Currently there are public endpoints for available form categories and available forms.
+The existing, private, API endpoints will continue to work for the foreseeable future
+to give integrations time to adapt. The performance of these endpoints is now optimized
+too.
+
+The other API endpoints are private unless documented otherwise. They are *not* subject
+to our semantic versioning policy anymore, and using these is at your own risk. Changes
+will continue to be documented in the release notes.
+
+Detailed changes
+----------------
+
+The 2.6.0-alpha.0 changes are included as well, see the earlier changelog entry.
+
+**New features**
+
+* [#3688] Objects API registration rework
+
+    - Added support for selecting an available object type/version in a dropdown instead
+      of copy-pasting a URL.
+    - The objecttype definition (JSON-schema) is processed and will be used for validation.
+    - Registration configuration is specified on the "variables" tab for each available
+      (built-in or user-defined) variable, where you can select the appropriate object
+      type property in a dropdown.
+    - Added the ability to explicitly map a file upload variable into a specific object
+      property for better data quality.
+    - Ensured that the legacy format is still available (100% backwards compatible).
+
+* [#3855] Improved user experience of DMN integration
+
+    - The available input/output parameters can now be selected in a dropdown instead of
+      entering them manually.
+    - Added robustness in case the DMN engine is not available.
+    - Added caching of DMN evaluation results.
+    - Automatically select the only option if there's only one.
+
+* Added documentation on how to configure Camunda for DMN.
+* Tweaked the dark-mode styling of WYSIWYG editors to better fit in the page.
+* [#3164] Added explicit timeout fields to services so they can be different from the
+  global default.
+* [#3695] Improved login screen and flow
+
+    - Allow opt-in to automatically redirect to OIDC provider.
+    - Support WebAuthn (like YubiKey) hardware tokens.
+
+* [#3885] The admin form list now keeps track of open/collapsed form categories.
+* [#3957] Updated the eIDAS logo.
+* [#3825] Added a well-performing public API endpoint to list available forms, returning
+  only minimal information.
+* [#3825] Added public API endpoint to list available form categories.
+* [#3879] Added documentation on how to add services for the service fetch feature.
+* [#3823] Added more extensive documentation for template filters, field regex validation
+  and integrated this documentation more into the form builder.
+* [#3950] Added additional values to the eHerkenning CSP-header configuration.
+* [#3977] Added additional validation checks on submission completion of the configured
+  formio components in form steps.
+* [#4000] Deleted the 'save and add another' button in the form designer to maintain safe
+  blood pressure levels for users who accidentally clicked it.
+
+**Bugfixes**
+
+* [#3672] Fixed the handling of object/array variable types in service fetch configuration.
+* [#3890] Fixed visually hidden fields not being sent to Objects API registration backend.
+* [#1052] Upgraded DigiD/eHerkenning library.
+* [#3924] Fixed updating of payment status when the "registration after payment is
+  received" option is enabled.
+* [#3909] Fixed a crash in the form designer when removing form variables that are used
+  in the case properties mapping.
+* [#3921] Fixed not all (parent/sibling) components being available for selection in the
+  form builder.
+* [#3922] Fixed a crash because of invalid prefill configuration in the form builder.
+* [#3958] Fixed the preview appearance of read-only components.
+* [#3961] Reverted the merged KVK API services (basisprofiel, zoeken) back into separate
+  configuration fields. API gateways can expose these services on different endpoints.
+* [#3705] Fixed the representation of timestamps (again).
+* [#3975,#3052] Fixed legacy service fetch configuration being picked over the intended
+  format.
+* [#3881] Fixed updating a re-usable form definition in one form causing issues in other
+  forms that also use this same form definition.
+* [#4022] Fix crash on registration handling of post-payment registration. The patch for
+  #3924 was bugged.
+* [#2827] Worked around an infinite loop when assigning the variable ``now`` to a field
+  via logic.
+* [#2828] Fixed a crash when assigning the variable ``today`` to a variable via logic.
+
+**Project maintenance**
+
+* Removed the legacy translation handling obsoleted by the new form builder.
+* [#3049] Upgraded the Django framework to version 4.2 (LTS) to guarantee future
+  security and stability updates.
+* Bumped dependencies to pull in their latest security/patch updates.
+* Removed stale data migrations, squashed migrations and cleaned up old squashed migrations.
+* [#851] Cleaned up ``DocumentenClient`` language handling.
+* [#3359] Cleaned up the registration flow and plugin requirements.
+* [#3735] Updated developer documentation about pre-request clients.
+* [#3838] Divided the API into public and private API and their implied versioning
+  policies.
+* [#3718] Removed obsolete translation data store.
+* [#4006] Added utility to detect KVK integration via API gateway.
+* [#3931] Remove dependencies on PyOpenSSL.
+
+2.5.4 (2024-03-19)
+==================
+
+Hotfix release to address a regression in 2.5.3
+
+* [#4022] Fix crash on registration handling of post-payment registration. The patch for
+  #3924 was bugged.
 
 2.5.3 (2024-03-14)
 ==================
@@ -70,7 +248,7 @@ Final release in the 2.2.x series.
 * [#3858] Fixed a race condition that would manifest during parallel file uploads,
   leading to permission errors.
 
-2.6.0-alpha.0 (2023-02-20)
+2.6.0-alpha.0 (2024-02-20)
 ==========================
 
 This is an alpha release, meaning it is not finished yet or suitable for production use.
