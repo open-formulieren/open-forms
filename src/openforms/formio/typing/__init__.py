@@ -9,25 +9,17 @@ Formio components are JSON blobs adhering to a formio-specific schema. We define
 from .base import Component, OptionDict
 from .custom import DateComponent
 from .vanilla import (
-    BSNComponent,
-    CheckboxComponent,
     Column,
     ColumnsComponent,
     ContentComponent,
-    CurrencyComponent,
     DatetimeComponent,
     EditGridComponent,
     FieldsetComponent,
     FileComponent,
-    MapComponent,
-    PostcodeComponent,
     RadioComponent,
     SelectBoxesComponent,
     SelectComponent,
-    SignatureComponent,
-    TextAreaComponent,
     TextFieldComponent,
-    TimeComponent,
 )
 
 __all__ = [
@@ -36,20 +28,12 @@ __all__ = [
     "OptionDict",
     # standard
     "TextFieldComponent",
-    "TextAreaComponent",
     "DateComponent",
     "DatetimeComponent",
     "FileComponent",
     "SelectComponent",
     "SelectBoxesComponent",
     "RadioComponent",
-    "PostcodeComponent",
-    "TimeComponent",
-    "BSNComponent",
-    "CurrencyComponent",
-    "CheckboxComponent",
-    "SignatureComponent",
-    "MapComponent",
     # layout
     "ContentComponent",
     "Column",

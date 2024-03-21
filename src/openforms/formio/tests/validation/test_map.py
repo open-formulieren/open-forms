@@ -1,13 +1,13 @@
 from django.test import SimpleTestCase
 
-from ...typing import MapComponent
+from ...typing import Component
 from .helpers import extract_error, validate_formio_data
 
 
 class MapValidationTests(SimpleTestCase):
 
     def test_map_field_required_validation(self):
-        component: MapComponent = {
+        component: Component = {
             "type": "map",
             "key": "foo",
             "label": "Test",

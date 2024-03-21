@@ -26,14 +26,7 @@ from ..formatters.custom import (
 )
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
-from ..typing import (
-    BSNComponent,
-    Component,
-    DateComponent,
-    DatetimeComponent,
-    MapComponent,
-    PostcodeComponent,
-)
+from ..typing import Component, DateComponent, DatetimeComponent
 from ..utils import conform_to_mask
 from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
@@ -118,7 +111,7 @@ class Datetime(BasePlugin):
 
 
 @register("map")
-class Map(BasePlugin[MapComponent]):
+class Map(BasePlugin[Component]):
     formatter = MapFormatter
 
     @staticmethod
@@ -131,7 +124,7 @@ class Map(BasePlugin[MapComponent]):
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
-    def build_serializer_field(self, component: MapComponent) -> serializers.ListField:
+    def build_serializer_field(self, component: Component) -> serializers.ListField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
         base = serializers.FloatField(
@@ -142,7 +135,7 @@ class Map(BasePlugin[MapComponent]):
 
 
 @register("postcode")
-class Postcode(BasePlugin[PostcodeComponent]):
+class Postcode(BasePlugin[Component]):
     formatter = TextFieldFormatter
 
     @staticmethod
@@ -163,7 +156,7 @@ class Postcode(BasePlugin[PostcodeComponent]):
             return value
 
     def build_serializer_field(
-        self, component: PostcodeComponent
+        self, component: Component
     ) -> serializers.CharField | serializers.ListField:
         multiple = component.get("multiple", False)
         validate = component.get("validate", {})
@@ -188,7 +181,7 @@ class Postcode(BasePlugin[PostcodeComponent]):
             extra["validators"] = validators
 
         base = serializers.CharField(
-            required=required, allow_null=not required, **extra
+            required=required, allow_blank=not required, **extra
         )
         return serializers.ListField(child=base) if multiple else base
 
@@ -282,7 +275,7 @@ class NPFamilyMembers(BasePlugin):
 
 
 @register("bsn")
-class BSN(BasePlugin[BSNComponent]):
+class BSN(BasePlugin[Component]):
     formatter = TextFieldFormatter
 
     def build_serializer_field(

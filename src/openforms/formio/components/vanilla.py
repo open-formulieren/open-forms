@@ -43,19 +43,14 @@ from ..formatters.formio import (
 from ..registry import BasePlugin, register
 from ..serializers import build_serializer
 from ..typing import (
-    CheckboxComponent,
     Component,
     ContentComponent,
-    CurrencyComponent,
     EditGridComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
     SelectComponent,
-    SignatureComponent,
-    TextAreaComponent,
     TextFieldComponent,
-    TimeComponent,
 )
 from .translations import translate_options
 from .utils import _normalize_pattern
@@ -153,11 +148,11 @@ class Email(BasePlugin):
 
 
 @register("time")
-class Time(BasePlugin[TimeComponent]):
+class Time(BasePlugin[Component]):
     formatter = TimeFormatter
 
     def build_serializer_field(
-        self, component: TimeComponent
+        self, component: Component
     ) -> serializers.TimeField | serializers.ListField:
         multiple = component.get("multiple", False)
         validate = component.get("validate", {})
@@ -253,11 +248,11 @@ class File(BasePlugin[FileComponent]):
 
 
 @register("textarea")
-class TextArea(BasePlugin[TextAreaComponent]):
+class TextArea(BasePlugin[Component]):
     formatter = TextAreaFormatter
 
     def build_serializer_field(
-        self, component: TextAreaComponent
+        self, component: Component
     ) -> serializers.CharField | serializers.ListField:
         multiple = component.get("multiple", False)
         validate = component.get("validate", {})
@@ -269,7 +264,7 @@ class TextArea(BasePlugin[TextAreaComponent]):
             extra["max_length"] = max_length
 
         base = serializers.CharField(
-            required=required, allow_blank=not required, allow_null=False, **extra
+            required=required, allow_blank=not required, **extra
         )
         return serializers.ListField(child=base) if multiple else base
 
@@ -311,12 +306,10 @@ class Password(BasePlugin):
 
 
 @register("checkbox")
-class Checkbox(BasePlugin[CheckboxComponent]):
+class Checkbox(BasePlugin[Component]):
     formatter = CheckboxFormatter
 
-    def build_serializer_field(
-        self, component: CheckboxComponent
-    ) -> serializers.BooleanField:
+    def build_serializer_field(self, component: Component) -> serializers.BooleanField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
         return serializers.BooleanField(required=required)
@@ -373,17 +366,14 @@ class Select(BasePlugin[SelectComponent]):
             choices=choices,
             required=required,
             allow_blank=not required,
-            allow_null=not required,
         )
 
 
 @register("currency")
-class Currency(BasePlugin[CurrencyComponent]):
+class Currency(BasePlugin[Component]):
     formatter = CurrencyFormatter
 
-    def build_serializer_field(
-        self, component: CurrencyComponent
-    ) -> serializers.FloatField:
+    def build_serializer_field(self, component: Component) -> serializers.FloatField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
@@ -441,15 +431,13 @@ class Radio(BasePlugin[RadioComponent]):
 
 
 @register("signature")
-class Signature(BasePlugin[SignatureComponent]):
+class Signature(BasePlugin[Component]):
     formatter = SignatureFormatter
 
-    def build_serializer_field(
-        self, component: SignatureComponent
-    ) -> serializers.CharField:
+    def build_serializer_field(self, component: Component) -> serializers.CharField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
-        return serializers.CharField(required=required, allow_null=not required)
+        return serializers.CharField(required=required, allow_blank=not required)
 
 
 @register("content")
