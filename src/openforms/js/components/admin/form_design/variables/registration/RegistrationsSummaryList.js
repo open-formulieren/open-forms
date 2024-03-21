@@ -54,7 +54,16 @@ const RegistrationSummary = ({
       </div>
       <div>{registrationSummary}</div>
       <FormModal
-        title={`'${variable.name}' registration configuration for '${name}'`}
+        title={
+          <FormattedMessage
+            description="Variable registration configuration modal title"
+            defaultMessage="{varName}: registration configuration for {backendName}"
+            values={{
+              varName: variable.name,
+              backendName: name,
+            }}
+          />
+        }
         isOpen={modalOpen}
         closeModal={() => setModalOpen(false)}
       >

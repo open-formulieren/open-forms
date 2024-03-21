@@ -171,9 +171,11 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
         </a>
         {jsonSchemaVisible && (
           <pre style={{marginTop: '1em'}}>
-            {loading || !mappedVariable.targetPath
-              ? 'N/A'
-              : JSON.stringify(getTargetPath(mappedVariable.targetPath).jsonSchema, null, 2)}
+            {loading || !mappedVariable.targetPath ? (
+              <FormattedMessage description="Not applicable" defaultMessage="N/A" />
+            ) : (
+              JSON.stringify(getTargetPath(mappedVariable.targetPath).jsonSchema, null, 2)
+            )}
           </pre>
         )}
       </div>
