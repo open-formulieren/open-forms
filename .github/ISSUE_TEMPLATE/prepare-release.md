@@ -15,8 +15,9 @@ assignees: sergei-maertens
   - [ ] Haal Centraal BRP Personen bevragen
   - [ ] `src.soap.tests.test_client`
   - [ ] BRK (Kadaster)
+  - [ ] KVK
   - [ ] Ogone
-  - [ ] Objects API v2
+  - [ ] Objects API (registration)
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
