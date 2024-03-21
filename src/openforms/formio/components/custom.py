@@ -2,7 +2,7 @@ import logging
 from datetime import date
 from typing import Protocol
 
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
@@ -14,6 +14,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
+from openforms.utils.validators import BSNValidator
 from openforms.validations.service import PluginValidator
 
 from ..dynamic_config.date import mutate as mutate_min_max_validation
@@ -25,12 +26,20 @@ from ..formatters.custom import (
 )
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
-from ..typing import Component, DateComponent, DatetimeComponent
+from ..typing import (
+    BSNComponent,
+    Component,
+    DateComponent,
+    DatetimeComponent,
+    MapComponent,
+    PostcodeComponent,
+)
 from ..utils import conform_to_mask
 from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.models import FamilyMembersTypeConfig
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
+from .utils import _normalize_pattern
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +83,7 @@ class Date(BasePlugin[DateComponent]):
         Additional validation is taken from the datePicker configuration, which is also
         set dynamically through our own backend (see :meth:`mutate_config_dynamically`).
         """
-        # relevant validators: required, datePicker.minDate and datePicker.maxDdate
+        # relevant validators: required, datePicker.minDate and datePicker.maxDate
         multiple = component.get("multiple", False)
         validate = component.get("validate", {})
         required = validate.get("required", False)
@@ -109,7 +118,7 @@ class Datetime(BasePlugin):
 
 
 @register("map")
-class Map(BasePlugin):
+class Map(BasePlugin[MapComponent]):
     formatter = MapFormatter
 
     @staticmethod
@@ -122,9 +131,18 @@ class Map(BasePlugin):
             component["initialCenter"]["lat"] = config.form_map_default_latitude
             component["initialCenter"]["lng"] = config.form_map_default_longitude
 
+    def build_serializer_field(self, component: MapComponent) -> serializers.ListField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        base = serializers.FloatField(
+            required=required,
+            allow_null=not required,
+        )
+        return serializers.ListField(child=base)
+
 
 @register("postcode")
-class Postcode(BasePlugin):
+class Postcode(BasePlugin[PostcodeComponent]):
     formatter = TextFieldFormatter
 
     @staticmethod
@@ -143,6 +161,36 @@ class Postcode(BasePlugin):
                 "Could not conform value '%s' to input mask '%s', returning original value."
             )
             return value
+
+    def build_serializer_field(
+        self, component: PostcodeComponent
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        validators = []
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    _normalize_pattern(pattern),
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
+        base = serializers.CharField(
+            required=required, allow_null=not required, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 class FamilyMembersHandler(Protocol):
@@ -234,7 +282,7 @@ class NPFamilyMembers(BasePlugin):
 
 
 @register("bsn")
-class BSN(BasePlugin):
+class BSN(BasePlugin[BSNComponent]):
     formatter = TextFieldFormatter
 
     def build_serializer_field(
@@ -246,17 +294,12 @@ class BSN(BasePlugin):
 
         # dynamically add in more kwargs based on the component configuration
         extra = {}
-        # maxLength because of the usage in appointments, even though our form builder
-        # does not expose it. See `openforms.appointments.contrib.qmatic.constants`.
-        if (max_length := validate.get("maxLength")) is not None:
-            extra["max_length"] = max_length
 
-        validators = []
+        validators = [BSNValidator()]
         if plugin_ids := validate.get("plugins", []):
             validators += [PluginValidator(plugin) for plugin in plugin_ids]
 
-        if validators:
-            extra["validators"] = validators
+        extra["validators"] = validators
 
         base = serializers.CharField(
             required=required,
