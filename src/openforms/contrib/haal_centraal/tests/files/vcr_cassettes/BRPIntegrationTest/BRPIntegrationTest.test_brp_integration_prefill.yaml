@@ -27,7 +27,7 @@ interactions:
     uri: https://lab.api.mijniconnect.nl/iconnect/apihcbrp/actueel/v2/personen
   response:
     body:
-      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"aNummer":"6374749384","burgerservicenummer":"999990421","geslacht":{"code":"M","omschrijving":"man"},"leeftijd":119,"naam":{"aanduidingNaamgebruik":{"code":"E","omschrijving":"eigen
+      string: '{"type":"RaadpleegMetBurgerservicenummer","personen":[{"aNummer":"6374749384","burgerservicenummer":"999990421","geslacht":{"code":"M","omschrijving":"man"},"leeftijd":120,"naam":{"aanduidingNaamgebruik":{"code":"E","omschrijving":"eigen
         geslachtsnaam"},"voornamen":"Adrianus Hendrikus","geslachtsnaam":"Holthuizen","voorletters":"A.H.","volledigeNaam":"Adrianus
         Hendrikus Holthuizen"},"geboorte":{"datum":{"type":"Datum","datum":"1904-02-15","langFormaat":"15
         februari 1904"}},"verblijfplaats":{"type":"Adres","verblijfadres":{"officieleStraatnaam":"Nieuwe
@@ -42,7 +42,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 24 Jan 2024 17:43:01 GMT
+      - Thu, 21 Mar 2024 12:12:18 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Transfer-Encoding:
