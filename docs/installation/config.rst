@@ -94,10 +94,10 @@ See: https://github.com/adamchainz/django-cors-headers
   cross-site HTTP requests. Defaults to ``[]``. An example value would be:
   ``https://cms.example.org,https://forms.example.org``
 
-* ``CSRF_TRUSTED_ORIGINS``: the list of trusted CSRF origins, e.g. ``cms.example.com``.
+* ``CSRF_TRUSTED_ORIGINS``: the list of trusted CSRF origins, e.g. ``https://cms.example.com``.
   When embedding forms on third party sites, these third party domains need to be added
   to the allowlist. The default value is taken from the ``CORS_ALLOWED_ORIGINS`` setting.
-  See also `the Django documentation <https://docs.djangoproject.com/en/3.2/ref/settings/#csrf-trusted-origins>`_.
+  See also `the Django documentation <https://docs.djangoproject.com/en/4.2/ref/settings/#csrf-trusted-origins>`_.
 
 It is recommended to configure CORS explicitly by setting just ``CORS_ALLOWED_ORIGINS``.
 

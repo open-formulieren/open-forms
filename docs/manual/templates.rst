@@ -402,7 +402,7 @@ Voorbeeld
 
          Neem alstublieft uw afspraakbevestiging mee.
 
-.. _Django defaultfilters reference: https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#built-in-filter-reference
+.. _Django defaultfilters reference: https://docs.djangoproject.com/en/4.2/ref/templates/builtins/#built-in-filter-reference
 
 
 Registratie e-mail

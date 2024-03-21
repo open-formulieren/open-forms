@@ -74,4 +74,4 @@ U kunt nu het formulier bekijken.
 
 .. _merge: https://jsonlogic.com/operations.html#merge
 .. _var: https://jsonlogic.com/operations.html#var
-.. _stringformat: https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#stringformat
+.. _stringformat: https://docs.djangoproject.com/en/4.2/ref/templates/builtins/#stringformat
