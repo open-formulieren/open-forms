@@ -77,10 +77,47 @@ class ConfigCheckTests(DisableNLXRewritingMixin, SimpleTestCase):
             plugin.check_config()
 
     @requests_mock.Mocker()
-    def test_objects_service_misconfigured(self, m):
+    def test_objects_service_misconfigured_connection_error(self, m):
         m.get(
             "https://objects.example.com/api/v1/objects?pageSize=1",
             exc=requests.ConnectionError,
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    @requests_mock.Mocker()
+    def test_objects_service_misconfigured_http_error(self, m):
+        m.get(
+            "https://objects.example.com/api/v1/objects?pageSize=1",
+            status_code=400,
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    @requests_mock.Mocker()
+    def test_objects_service_misconfigured_redirect(self, m):
+        m.get(
+            "https://objects.example.com/api/v1/objects?pageSize=1",
+            status_code=302,
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    @requests_mock.Mocker()
+    def test_objecttypes_service_misconfigured_redirect(self, m):
+        m.get(
+            "https://objects.example.com/api/v1/objects?pageSize=1",
+            json={"results": []},
+        )
+        m.get(
+            "https://objecttypes.example.com/api/v1/objecttypes?pageSize=1",
+            status_code=302,
         )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
