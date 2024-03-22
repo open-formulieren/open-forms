@@ -26,7 +26,7 @@ from openforms.submissions.models import (
     SubmissionFileAttachment,
     SubmissionReport,
 )
-from openforms.typing import JSONValue
+from openforms.typing import JSONObject
 from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
@@ -36,6 +36,7 @@ from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import register as variables_registry
 from .typing import (
     ConfigVersion,
+    ObjecttypeVariableMapping,
     RegistrationOptions,
     RegistrationOptionsV1,
     RegistrationOptionsV2,
@@ -357,6 +358,31 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
 class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
+    @staticmethod
+    def _get_record_data(
+        variables_values: FormioData, variables_mapping: list[ObjecttypeVariableMapping]
+    ) -> JSONObject:
+        record_data: JSONObject = {}
+
+        for mapping in variables_mapping:
+            variable_key = mapping["variable_key"]
+            if variable_key not in variables_values:
+                # This should only happen for payment status update,
+                # where only a subset of the variables are updated.
+                continue
+            target_path = mapping["target_path"]
+
+            # Type hint is wrong: currently some static variables are of type date/datetime
+            value = cast(Any, variables_values[variable_key])
+
+            # Comply with JSON Schema "format" specs:
+            if isinstance(value, (datetime, date)):
+                value = value.isoformat()
+
+            glom.assign(record_data, glom.Path(*target_path), value, missing=dict)
+
+        return record_data
+
     @override
     def get_object_data(
         self, submission: Submission, options: RegistrationOptionsV2
@@ -401,22 +427,8 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         )
 
         variables_values = FormioData({**dynamic_values, **static_values})
-
         variables_mapping = options["variables_mapping"]
-        record_data: dict[str, JSONValue] = {}
-
-        for mapping in variables_mapping:
-            variable_key = mapping["variable_key"]
-            target_path = mapping["target_path"]
-
-            # Type hint is wrong: currently some static variables are of type date/datetime
-            value = cast(Any, variables_values[variable_key])
-
-            # Comply with JSON Schema "format" specs:
-            if isinstance(value, (datetime, date)):
-                value = value.isoformat()
-
-            glom.assign(record_data, glom.Path(*target_path), value, missing=dict)
+        record_data = self._get_record_data(variables_values, variables_mapping)
 
         object_data = prepare_data_for_registration(
             record_data=record_data,
@@ -435,10 +447,28 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV2
     ) -> dict[str, Any]:
-        # In V2, a PUT request is made, so we essentially return the same
-        # payload from the initial registration. Payment related variables
-        # will have their value updated.
-        return self.get_object_data(submission, options)
+
+        values = {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(
+                submission=submission,
+                variables_registry=variables_registry,
+            )
+            if variable.key
+            in ["payment_completed", "payment_amount", "payment_public_order_ids"]
+        }
+
+        variables_values = FormioData(values)
+        variables_mapping = options["variables_mapping"]
+        record_data = self._get_record_data(variables_values, variables_mapping)
+
+        object_data = prepare_data_for_registration(
+            record_data=record_data,
+            objecttype=options["objecttype"],
+            objecttype_version=options["objecttype_version"],
+        )
+
+        return object_data
 
 
 HANDLER_MAPPING: dict[ConfigVersion, ObjectsAPIRegistrationHandler[Any]] = {
