@@ -129,7 +129,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 7.  Delete submission attachment files
         # 8.  RELEASE SAVEPOINT
         # 9.  Delete submission values
-        with self.assertNumQueries(9):
+        with self.assertNumQueries(6):
             evaluate_form_logic(submission, submission_step2, data)
 
     def test_update_step_data(self):
