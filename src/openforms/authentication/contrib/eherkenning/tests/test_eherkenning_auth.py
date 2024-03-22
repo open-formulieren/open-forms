@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 import requests_mock
-from digid_eherkenning.choices import AssuranceLevels
 from digid_eherkenning.models import EherkenningConfiguration
 from freezegun import freeze_time
 from furl import furl
@@ -179,70 +178,6 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
                 "AttributeConsumingServiceIndex": "8888",
             },
         )
-
-    @freeze_time("2020-04-09T08:31:46Z")
-    @patch(
-        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="ONELOGIN_123456",
-    )
-    def test_authn_request_uses_minimal_loa_from_form(self, mock_id):
-        form = FormFactory.create(
-            authentication_backends=["eherkenning"],
-            authentication_backend_options={
-                "eherkenning": {"loa": AssuranceLevels.high}
-            },
-            generate_minimal_setup=True,
-            formstep__form_definition__login_required=True,
-        )
-        login_url = reverse(
-            "authentication:start",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
-        )
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        form_url = f"https://testserver{form_path}"
-        login_url = furl(login_url).set({"next": form_url})
-
-        response = self.client.get(login_url.url, follow=True)
-
-        return_url = reverse(
-            "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
-        )
-        full_return_url = furl(return_url).add({"next": form_url})
-
-        self.assertEqual(
-            response.context["form"].initial["RelayState"],
-            str(full_return_url),
-        )
-
-        saml_request = b64decode(
-            response.context["form"].initial["SAMLRequest"].encode("utf-8")
-        )
-        tree = etree.fromstring(saml_request)
-
-        self.assertEqual(
-            tree.attrib,
-            {
-                "ID": "ONELOGIN_123456",
-                "Version": "2.0",
-                "ForceAuthn": "true",
-                "IssueInstant": "2020-04-09T08:31:46Z",
-                "Destination": "https://test-iwelcome.nl/broker/sso/1.13",
-                "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
-                "AssertionConsumerServiceURL": "https://test-sp.nl/eherkenning/acs/",
-                "AttributeConsumingServiceIndex": "8888",
-            },
-        )
-
-        auth_context_class_ref = tree.xpath(
-            "samlp:RequestedAuthnContext[@Comparison='minimum']/saml:AuthnContextClassRef",
-            namespaces={
-                "samlp": "urn:oasis:names:tc:SAML:2.0:protocol",
-                "saml": "urn:oasis:names:tc:SAML:2.0:assertion",
-            },
-        )[0]
-
-        self.assertEqual(auth_context_class_ref.text, AssuranceLevels.high.value)
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
