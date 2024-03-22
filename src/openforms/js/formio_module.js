@@ -15,7 +15,6 @@ import EmailField from './components/form/email';
 import FieldSet from './components/form/fieldset';
 import FileField from './components/form/file';
 import IbanField from './components/form/iban';
-import InformatieObjectTypeSelectField from './components/form/iotype-select';
 import LicensePlate from './components/form/licenseplate';
 import Map from './components/form/map';
 import NpFamilyMembers from './components/form/np-family-members';
@@ -49,7 +48,6 @@ const FormIOModule = {
     postcode: PostcodeField,
     file: FileField,
     select: SelectField,
-    iotypeSelect: InformatieObjectTypeSelectField,
     radio: RadioField,
     selectboxes: SelectBoxesField,
     email: EmailField,
