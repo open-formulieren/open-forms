@@ -44,7 +44,9 @@ class TimeFieldValidationTests(SimpleTestCase):
 
         invalid_values = [
             ({"foo": "09:10"}, "min_value"),
+            ({"foo": "09:59:59"}, "min_value"),
             ({"foo": "12:10"}, "max_value"),
+            ({"foo": "12:00:01"}, "max_value"),
         ]
 
         for data, error_code in invalid_values:

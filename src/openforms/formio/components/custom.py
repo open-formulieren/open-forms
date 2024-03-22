@@ -131,7 +131,7 @@ class Map(BasePlugin[Component]):
             required=required,
             allow_null=not required,
         )
-        return serializers.ListField(child=base)
+        return serializers.ListField(child=base, min_length=2, max_length=2)
 
 
 @register("postcode")
