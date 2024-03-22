@@ -279,7 +279,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
                 # fmt: on
             ],
-            "geometry_variable_key": "location",
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)

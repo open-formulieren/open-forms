@@ -18,6 +18,7 @@ from openforms.contrib.zgw.service import (
     create_report_document,
 )
 from openforms.formio.service import FormioData
+from openforms.formio.typing import Component
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -27,6 +28,7 @@ from openforms.submissions.models import (
     SubmissionReport,
 )
 from openforms.typing import JSONObject
+from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
@@ -209,8 +211,9 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
             submission=submission
         )
 
-        with get_documents_client() as documents_client, save_and_raise(
-            registration_data
+        with (
+            get_documents_client() as documents_client,
+            save_and_raise(registration_data),
         ):
             if not registration_data.pdf_url:
                 registration_data.pdf_url = register_submission_pdf(
@@ -383,6 +386,20 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         return record_data
 
+    @staticmethod
+    def _process_value(value: Any, component: Component) -> Any:
+        match component:
+            case {"type": "file", **rest}:
+                multiple = rest.get("multiple", False)
+                assert isinstance(value, list)
+                return value[0] if not multiple else value
+
+            case {"type": "map"}:
+                # Currently we only support Point coordinates
+                return _point_coordinate(value)
+            case _:
+                return value
+
     @override
     def get_object_data(
         self, submission: Submission, options: RegistrationOptionsV2
@@ -404,16 +421,25 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             urls_map[o.variable_key].append(o.document_url)
 
         for key in dynamic_values.keys():
+            variable = state.get_variable(key)
+            submission_value = dynamic_values[key]
+
+            # special casing documents - we transform the formio file upload data into
+            # the api resource URLs for the uploaded documents in the Documens API.
+            #
+            # Normalizing to string/array of strings is done in the _process_value
+            # method.
             if key in urls_map:
-                variable = state.get_variable(key)
-                is_multiple = variable.form_variable.form_definition.configuration_wrapper.component_map[
+                submission_value = urls_map[key]
+
+            # look up the component used (if relevant) to perform any required
+            # pre-processing.
+            if (variable.form_variable.source) == FormVariableSources.component:
+                component = variable.form_variable.form_definition.configuration_wrapper.component_map[
                     key
-                ].get(
-                    "multiple", False
-                )
-                dynamic_values[key] = (
-                    urls_map[key][0] if not is_multiple else urls_map[key]
-                )
+                ]
+                # update the value after processing to make it objects-API suitable
+                dynamic_values[key] = self._process_value(submission_value, component)
 
         static_values = state.static_data()
         static_values.update(
@@ -437,9 +463,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         )
 
         if geometry_variable_key := options.get("geometry_variable_key"):
-            object_data["record"]["geometry"] = _point_coordinate(
-                variables_values[geometry_variable_key]
-            )
+            object_data["record"]["geometry"] = variables_values[geometry_variable_key]
 
         return object_data
 
