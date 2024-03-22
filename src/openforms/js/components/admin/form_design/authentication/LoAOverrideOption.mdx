@@ -1,0 +1,18 @@
+import {ArgTypes, Canvas, Meta} from '@storybook/addon-docs';
+
+import LoAOverrideOption from './LoAOverrideOption';
+import * as Stories from './LoAOverrideOption.stories';
+
+<Meta of={Stories} />
+
+# Form field
+
+Some authentication plugins offer the option of overriding the Level of Assurance (LoA) per form.
+This form field is visible if one of these plugins has been selected. It is then possible to select
+the new minimum desired LoA for a form.
+
+<Canvas of={Stories.Default} />
+
+### Props
+
+<ArgTypes of={LoAOverrideOption} />
