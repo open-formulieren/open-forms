@@ -1,264 +1,322 @@
 [
-    {
-        "model": "core.objecttype",
-        "pk": 1,
-        "fields": {
-            "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-            "name": "Person",
-            "name_plural": "Persons",
-            "description": "",
-            "data_classification": "open",
-            "maintainer_organization": "",
-            "maintainer_department": "",
-            "contact_person": "",
-            "contact_email": "",
-            "source": "",
-            "update_frequency": "unknown",
-            "provider_organization": "",
-            "documentation_url": "",
-            "labels": {},
-            "created_at": "2023-10-24",
-            "modified_at": "2024-02-08",
-            "allow_geometry": true
-        }
-    },
-    {
-        "model": "core.objecttype",
-        "pk": 2,
-        "fields": {
-            "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-            "name": "Tree",
-            "name_plural": "Trees",
-            "description": "",
-            "data_classification": "confidential",
-            "maintainer_organization": "",
-            "maintainer_department": "",
-            "contact_person": "",
-            "contact_email": "",
-            "source": "",
-            "update_frequency": "unknown",
-            "provider_organization": "",
-            "documentation_url": "",
-            "labels": {},
-            "created_at": "2024-02-08",
-            "modified_at": "2024-02-08",
-            "allow_geometry": true
-        }
-    },
-    {
-        "model": "core.objecttype",
-        "pk": 3,
-        "fields": {
-            "uuid": "527b8408-7421-4808-a744-43ccb7bdaaa2",
-            "name": "File Uploads",
-            "name_plural": "File Uploads",
-            "description": "",
-            "data_classification": "confidential",
-            "maintainer_organization": "",
-            "maintainer_department": "",
-            "contact_person": "",
-            "contact_email": "",
-            "source": "",
-            "update_frequency": "unknown",
-            "provider_organization": "",
-            "documentation_url": "",
-            "labels": {},
-            "created_at": "2024-02-08",
-            "modified_at": "2024-02-08",
-            "allow_geometry": true
-        }
-    },
-    {
-        "model": "core.objectversion",
-        "pk": 1,
-        "fields": {
-            "object_type": 1,
-            "version": 1,
-            "created_at": "2023-10-24",
-            "modified_at": "2024-02-08",
-            "published_at": "2024-02-08",
-            "json_schema": {
-                "$id": "https://example.com/person.schema.json",
-                "type": "object",
-                "title": "Person",
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "properties": {
-                    "age": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "description": "Age in years which must be equal to or greater than zero."
-                    },
-                    "lastName": {
-                        "type": "string",
-                        "description": "The person's last name."
-                    },
-                    "firstName": {
-                        "type": "string",
-                        "description": "The person's first name."
-                    }
+{
+    "model": "core.objecttype",
+    "pk": 1,
+    "fields": {
+        "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        "name": "Person",
+        "name_plural": "Persons",
+        "description": "",
+        "data_classification": "open",
+        "maintainer_organization": "",
+        "maintainer_department": "",
+        "contact_person": "",
+        "contact_email": "",
+        "source": "",
+        "update_frequency": "unknown",
+        "provider_organization": "",
+        "documentation_url": "",
+        "labels": {},
+        "created_at": "2023-10-24",
+        "modified_at": "2024-02-08",
+        "allow_geometry": true
+    }
+},
+{
+    "model": "core.objecttype",
+    "pk": 2,
+    "fields": {
+        "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+        "name": "Tree",
+        "name_plural": "Trees",
+        "description": "",
+        "data_classification": "confidential",
+        "maintainer_organization": "",
+        "maintainer_department": "",
+        "contact_person": "",
+        "contact_email": "",
+        "source": "",
+        "update_frequency": "unknown",
+        "provider_organization": "",
+        "documentation_url": "",
+        "labels": {},
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "allow_geometry": true
+    }
+},
+{
+    "model": "core.objecttype",
+    "pk": 3,
+    "fields": {
+        "uuid": "527b8408-7421-4808-a744-43ccb7bdaaa2",
+        "name": "File Uploads",
+        "name_plural": "File Uploads",
+        "description": "",
+        "data_classification": "confidential",
+        "maintainer_organization": "",
+        "maintainer_department": "",
+        "contact_person": "",
+        "contact_email": "",
+        "source": "",
+        "update_frequency": "unknown",
+        "provider_organization": "",
+        "documentation_url": "",
+        "labels": {},
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "allow_geometry": true
+    }
+},
+{
+    "model": "core.objecttype",
+    "pk": 4,
+    "fields": {
+        "uuid": "f1dde4fe-b7f9-46dc-84ae-429ae49e3705",
+        "name": "Geo in data",
+        "name_plural": "Geo in data",
+        "description": "",
+        "data_classification": "confidential",
+        "maintainer_organization": "",
+        "maintainer_department": "",
+        "contact_person": "",
+        "contact_email": "",
+        "source": "",
+        "update_frequency": "unknown",
+        "provider_organization": "",
+        "documentation_url": "",
+        "labels": {},
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "allow_geometry": true
+    }
+},
+{
+    "model": "core.objectversion",
+    "pk": 1,
+    "fields": {
+        "object_type": 1,
+        "version": 1,
+        "created_at": "2023-10-24",
+        "modified_at": "2024-02-08",
+        "published_at": "2024-02-08",
+        "json_schema": {
+            "$id": "https://example.com/person.schema.json",
+            "type": "object",
+            "title": "Person",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Age in years which must be equal to or greater than zero."
+                },
+                "lastName": {
+                    "type": "string",
+                    "description": "The person's last name."
+                },
+                "firstName": {
+                    "type": "string",
+                    "description": "The person's first name."
                 }
-            },
-            "status": "published"
-        }
-    },
-    {
-        "model": "core.objectversion",
-        "pk": 2,
-        "fields": {
-            "object_type": 1,
-            "version": 2,
-            "created_at": "2024-02-08",
-            "modified_at": "2024-02-08",
-            "published_at": "2024-02-08",
-            "json_schema": {
-                "$id": "https://example.com/person.schema.json",
-                "type": "object",
-                "title": "Person",
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "properties": {
-                    "age": {
-                        "type": "integer",
-                        "minimum": 18,
-                        "description": "Age in years which must be equal to or greater than 18."
-                    },
-                    "lastName": {
-                        "type": "string",
-                        "description": "The person's last name."
-                    },
-                    "firstName": {
-                        "type": "string",
-                        "description": "The person's first name."
-                    }
+            }
+        },
+        "status": "published"
+    }
+},
+{
+    "model": "core.objectversion",
+    "pk": 2,
+    "fields": {
+        "object_type": 1,
+        "version": 2,
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "published_at": "2024-02-08",
+        "json_schema": {
+            "$id": "https://example.com/person.schema.json",
+            "type": "object",
+            "title": "Person",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "minimum": 18,
+                    "description": "Age in years which must be equal to or greater than 18."
+                },
+                "lastName": {
+                    "type": "string",
+                    "description": "The person's last name."
+                },
+                "firstName": {
+                    "type": "string",
+                    "description": "The person's first name."
                 }
-            },
-            "status": "published"
-        }
-    },
-    {
-        "model": "core.objectversion",
-        "pk": 3,
-        "fields": {
-            "object_type": 1,
-            "version": 3,
-            "created_at": "2024-02-08",
-            "modified_at": "2024-02-08",
-            "published_at": "2024-02-08",
-            "json_schema": {
-                "$id": "https://example.com/person.schema.json",
-                "type": "object",
-                "title": "Person",
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "properties": {
-                    "age": {
-                        "type": "integer",
-                        "minimum": 18
-                    },
-                    "name": {
-                        "type": "object",
-                        "properties": {
-                            "last.name": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "submission_pdf_url": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "submission_csv_url": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "submission_payment_completed": {
-                        "type": "boolean"
-                    },
-                    "nested": {
-                        "type": "object",
-                        "properties": {
-                            "unrelated": {
-                                "type": "string"
-                            },
-                            "submission_payment_amount": {
-                                "type": "number",
-                                "multipleOf": 0.01
-                            }
-                        }
-                    },
-                    "submission_payment_public_ids": {
-                        "type": "array"
-                    },
-                    "submission_date": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
-            },
-            "status": "draft"
-        }
-    },
-    {
-        "model": "core.objectversion",
-        "pk": 4,
-        "fields": {
-            "object_type": 2,
-            "version": 1,
-            "created_at": "2024-02-08",
-            "modified_at": "2024-02-08",
-            "published_at": "2024-02-08",
-            "json_schema": {
-                "$id": "https://example.com/tree.schema.json",
-                "type": "object",
-                "title": "Tree",
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "properties": {
-                    "height": {
-                        "type": "integer",
-                        "description": "The height of the tree."
-                    }
-                }
-            },
-            "status": "published"
-        }
-    },
-    {
-        "model": "core.objectversion",
-        "pk": 5,
-        "fields": {
-            "object_type": 3,
-            "version": 1,
-            "created_at": "2024-02-08",
-            "modified_at": "2024-02-08",
-            "published_at": "2024-02-08",
-            "json_schema": {
-                "type": "object",
-                "title": "File uploads",
-                "$schema": "https://json-schema.org/draft/2020-12/schema",
-                "properties": {
-                    "single_file": {
-                        "type": "string"
-                    },
-                    "multiple_files": {
-                        "type": "array",
-                        "items": {
+            }
+        },
+        "status": "published"
+    }
+},
+{
+    "model": "core.objectversion",
+    "pk": 3,
+    "fields": {
+        "object_type": 1,
+        "version": 3,
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "published_at": "2024-02-08",
+        "json_schema": {
+            "$id": "https://example.com/person.schema.json",
+            "type": "object",
+            "title": "Person",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "minimum": 18
+                },
+                "name": {
+                    "type": "object",
+                    "properties": {
+                        "last.name": {
                             "type": "string"
                         }
                     }
+                },
+                "nested": {
+                    "type": "object",
+                    "properties": {
+                        "unrelated": {
+                            "type": "string"
+                        },
+                        "submission_payment_amount": {
+                            "type": "number",
+                            "multipleOf": 0.01
+                        }
+                    }
+                },
+                "submission_date": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "submission_csv_url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "submission_pdf_url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "submission_payment_completed": {
+                    "type": "boolean"
+                },
+                "submission_payment_public_ids": {
+                    "type": "array"
                 }
-            },
-            "status": "published"
-        }
-    },
-    {
-        "model": "token.tokenauth",
-        "pk": "171be5abaf41e7856b423ad513df1ef8f867ff48",
-        "fields": {
-            "contact_person": "Admin",
-            "email": "admin@example.com",
-            "organization": "",
-            "last_modified": "2023-10-24T08:56:26.955Z",
-            "created": "2023-10-24T08:56:26.955Z",
-            "application": "",
-            "administration": ""
-        }
+            }
+        },
+        "status": "draft"
     }
+},
+{
+    "model": "core.objectversion",
+    "pk": 4,
+    "fields": {
+        "object_type": 2,
+        "version": 1,
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "published_at": "2024-02-08",
+        "json_schema": {
+            "$id": "https://example.com/tree.schema.json",
+            "type": "object",
+            "title": "Tree",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+                "height": {
+                    "type": "integer",
+                    "description": "The height of the tree."
+                }
+            }
+        },
+        "status": "published"
+    }
+},
+{
+    "model": "core.objectversion",
+    "pk": 5,
+    "fields": {
+        "object_type": 3,
+        "version": 1,
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "published_at": "2024-02-08",
+        "json_schema": {
+            "type": "object",
+            "title": "File uploads",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+                "single_file": {
+                    "type": "string"
+                },
+                "multiple_files": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "status": "published"
+    }
+},
+{
+    "model": "core.objectversion",
+    "pk": 6,
+    "fields": {
+        "object_type": 4,
+        "version": 1,
+        "created_at": "2024-02-08",
+        "modified_at": "2024-02-08",
+        "published_at": "2024-02-08",
+        "json_schema": {
+            "type": "object",
+            "title": "Geo data inside data",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "properties": {
+                "pointCoordinates": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "Point"
+                        },
+                        "coordinates": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                        }
+                    }
+                }
+            }
+        },
+        "status": "published"
+    }
+},
+{
+    "model": "token.tokenauth",
+    "pk": "171be5abaf41e7856b423ad513df1ef8f867ff48",
+    "fields": {
+        "contact_person": "Admin",
+        "email": "admin@example.com",
+        "organization": "",
+        "last_modified": "2023-10-24T08:56:26.955Z",
+        "created": "2023-10-24T08:56:26.955Z",
+        "application": "",
+        "administration": ""
+    }
+}
 ]

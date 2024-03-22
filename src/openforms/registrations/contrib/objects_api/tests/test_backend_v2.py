@@ -241,3 +241,56 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
 
         self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
         self.assertEqual(len(result["record"]["data"]["multiple_files"]), 1)
+
+    def test_submission_with_map_component_inside_data(self):
+        """
+        A map component can be explicitly mapped to an attribute inside the 'data' key.
+
+        This happens when more than one map component is in the form, and only one can
+        be mapped to the ``record.geometry`` path, the rest must go in ``record.data.``.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "location",
+                    "type": "map",
+                    "label": "Map with point coordinate",
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "location": [52.36673378967122, 4.893164274470299],
+            },
+        )
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705",
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+            "informatieobjecttype_attachment": "",
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                # fmt: off
+                {
+                    "variable_key": "location",
+                    "target_path": ["pointCoordinates"],
+                },
+                # fmt: on
+            ],
+        }
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        record_data = result["record"]["data"]
+        self.assertEqual(
+            record_data["pointCoordinates"],
+            {
+                "type": "Point",
+                "coordinates": [52.36673378967122, 4.893164274470299],
+            },
+        )
