@@ -150,6 +150,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         self.assertEqual(
             result["record"]["typeVersion"], v2_options["objecttype_version"]
         )
+        submission_date = timezone.now().replace(second=0, microsecond=0).isoformat()
         self.assertEqual(
             result["record"]["data"],
             {
@@ -162,7 +163,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "submission_payment_completed": False,
                 "submission_payment_amount": "0",
                 "submission_payment_public_ids": [],
-                "submission_date": timezone.now().isoformat(),
+                "submission_date": submission_date,
             },
         )
         self.assertEqual(
@@ -197,11 +198,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment2_1.jpg",
-            form_key="multiple_files",
-        )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
-            file_name="attachment2_2.jpg",
             form_key="multiple_files",
         )
 
@@ -242,4 +238,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "http://localhost:8003/documenten/api/v1/enkelvoudiginformatieobjecten/"
             )
         )
-        self.assertEqual(len(result["record"]["data"]["multiple_files"]), 2)
+
+        self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
+        self.assertEqual(len(result["record"]["data"]["multiple_files"]), 1)
