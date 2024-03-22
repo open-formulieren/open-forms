@@ -73,12 +73,14 @@ class ObjectsAPIConfig(SingletonModel):
             "2) type (the type of productaanvraag); "
             "3) data (the submitted form data)"
         ),
+        editable=False,
     )
     objecttype_version = models.IntegerField(
         _("objecttype version"),
         null=True,
         blank=True,
         help_text=_("Default version of the OBJECTTYPE in the Objecttypes API"),
+        editable=False,
     )
     productaanvraag_type = models.CharField(
         _("Productaanvraag type"),
