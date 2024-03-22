@@ -46,6 +46,29 @@
         }
     },
     {
+        "model": "core.objecttype",
+        "pk": 3,
+        "fields": {
+            "uuid": "527b8408-7421-4808-a744-43ccb7bdaaa2",
+            "name": "File Uploads",
+            "name_plural": "File Uploads",
+            "description": "",
+            "data_classification": "confidential",
+            "maintainer_organization": "",
+            "maintainer_department": "",
+            "contact_person": "",
+            "contact_email": "",
+            "source": "",
+            "update_frequency": "unknown",
+            "provider_organization": "",
+            "documentation_url": "",
+            "labels": {},
+            "created_at": "2024-02-08",
+            "modified_at": "2024-02-08",
+            "allow_geometry": true
+        }
+    },
+    {
         "model": "core.objectversion",
         "pk": 1,
         "fields": {
@@ -133,7 +156,9 @@
                     "name": {
                         "type": "object",
                         "properties": {
-                            "last.name": {"type": "string"}
+                            "last.name": {
+                                "type": "string"
+                            }
                         }
                     },
                     "submission_pdf_url": {
@@ -180,6 +205,34 @@
                     "height": {
                         "type": "integer",
                         "description": "The height of the tree."
+                    }
+                }
+            },
+            "status": "published"
+        }
+    },
+    {
+        "model": "core.objectversion",
+        "pk": 5,
+        "fields": {
+            "object_type": 3,
+            "version": 1,
+            "created_at": "2024-02-08",
+            "modified_at": "2024-02-08",
+            "published_at": "2024-02-08",
+            "json_schema": {
+                "type": "object",
+                "title": "File uploads",
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "properties": {
+                    "single_file": {
+                        "type": "string"
+                    },
+                    "multiple_files": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     }
                 }
             },

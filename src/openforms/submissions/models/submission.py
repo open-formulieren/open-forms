@@ -673,7 +673,9 @@ class Submission(models.Model):
 
         return SubmissionFileAttachment.objects.for_submission(self)
 
-    attachments = property(get_attachments)
+    @property
+    def attachments(self) -> "SubmissionFileAttachmentQuerySet":
+        return self.get_attachments()
 
     def get_merged_attachments(self) -> Mapping[str, list["SubmissionFileAttachment"]]:
         if not hasattr(self, "_merged_attachments"):

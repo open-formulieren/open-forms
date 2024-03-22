@@ -70,7 +70,9 @@ class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
         verbose_name_plural = _("temporary file uploads")
 
 
-class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
+class SubmissionFileAttachmentQuerySet(
+    DeleteFilesQuerySetMixin, models.QuerySet["SubmissionFileAttachment"]
+):
     def for_submission(self, submission: Submission):
         return self.filter(submission_step__submission=submission)
 

@@ -1,8 +1,11 @@
 import logging
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from contextlib import contextmanager
 from datetime import date, datetime
 from typing import Any, Generic, Iterator, TypeVar, cast
+
+from django.db.models import F
 
 import glom
 from typing_extensions import override
@@ -18,14 +21,18 @@ from openforms.formio.service import FormioData
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
-from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.models import (
+    Submission,
+    SubmissionFileAttachment,
+    SubmissionReport,
+)
 from openforms.typing import JSONValue
 from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from .client import DocumentenClient, get_documents_client
-from .models import ObjectsAPIRegistrationData
+from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import register as variables_registry
 from .typing import (
     ConfigVersion,
@@ -119,46 +126,39 @@ def register_submission_csv(
     return submission_csv_document["url"]
 
 
-def register_submission_attachments(
+def register_submission_attachment(
     submission: Submission,
+    attachment: SubmissionFileAttachment,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
-) -> list[str]:
-    if not options["informatieobjecttype_attachment"]:
-        return []
+) -> str:
 
-    attachment_urls: list[str] = []
-    for attachment in submission.attachments:
-        attachment_options = build_options(
-            options,
-            {
-                "informatieobjecttype": "informatieobjecttype_attachment",  # Different IOT than for the report
-                "organisatie_rsin": "organisatie_rsin",
-                "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
-            },
-        )
+    attachment_options = build_options(
+        options,
+        {
+            "informatieobjecttype": "informatieobjecttype_attachment",  # Different IOT than for the report
+            "organisatie_rsin": "organisatie_rsin",
+            "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
+        },
+    )
+    component_overwrites = {
+        "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
+        "titel": attachment.titel,
+        "organisatie_rsin": attachment.bronorganisatie,
+        "informatieobjecttype": attachment.informatieobjecttype,
+    }
+    for key, value in component_overwrites.items():
+        if value:
+            attachment_options[key] = value
+    attachment_document = create_attachment_document(
+        client=documents_client,
+        name=submission.form.admin_name,
+        submission_attachment=attachment,
+        options=attachment_options,
+        language=attachment.submission_step.submission.language_code,  # assume same as submission
+    )
 
-        component_overwrites = {
-            "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
-            "titel": attachment.titel,
-            "organisatie_rsin": attachment.bronorganisatie,
-            "informatieobjecttype": attachment.informatieobjecttype,
-        }
-
-        for key, value in component_overwrites.items():
-            if value:
-                attachment_options[key] = value
-
-        attachment_document = create_attachment_document(
-            client=documents_client,
-            name=submission.form.admin_name,
-            submission_attachment=attachment,
-            options=attachment_options,
-            language=attachment.submission_step.submission.language_code,  # assume same as submission
-        )
-        attachment_urls.append(attachment_document["url"])
-
-    return attachment_urls
+    return attachment_document["url"]
 
 
 @contextmanager
@@ -221,12 +221,28 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                     submission, options, documents_client
                 )
 
-            if not registration_data.attachment_urls:
-                # TODO turn attachments into a dictionary when giving users more options than
-                # just urls.
-                registration_data.attachment_urls = register_submission_attachments(
-                    submission, options, documents_client
-                )
+            if options["informatieobjecttype_attachment"]:
+                existing = [
+                    o.submission_file_attachment
+                    for o in ObjectsAPISubmissionAttachment.objects.filter(
+                        submission_file_attachment__submission_step__submission=submission
+                    )
+                ]
+
+                objs: list[ObjectsAPISubmissionAttachment] = []
+
+                for attachment in submission.attachments:
+                    if attachment not in existing:
+                        objs.append(
+                            ObjectsAPISubmissionAttachment(
+                                submission_file_attachment=attachment,
+                                document_url=register_submission_attachment(
+                                    submission, attachment, options, documents_client
+                                ),
+                            )
+                        )
+
+                ObjectsAPISubmissionAttachment.objects.bulk_create(objs)
 
     @abstractmethod
     def get_object_data(
@@ -268,6 +284,10 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             submission=submission
         )
 
+        objects_api_attachments = ObjectsAPISubmissionAttachment.objects.filter(
+            submission_file_attachment__submission_step__submission=submission
+        )
+
         context = {
             "_submission": submission,
             "productaanvraag_type": options["productaanvraag_type"],
@@ -279,7 +299,9 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
                 "public_reference": submission.public_registration_reference,
                 "kenmerk": str(submission.uuid),
                 "language_code": submission.language_code,
-                "uploaded_attachment_urls": registration_data.attachment_urls,
+                "uploaded_attachment_urls": [
+                    attachment.document_url for attachment in objects_api_attachments
+                ],
                 "pdf_url": registration_data.pdf_url,
                 "csv_url": registration_data.csv_url,
             },
@@ -339,8 +361,34 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     def get_object_data(
         self, submission: Submission, options: RegistrationOptionsV2
     ) -> dict[str, Any]:
+
         state = submission.load_submission_value_variables_state()
         dynamic_values = state.get_data()
+
+        # For every file upload component, we alter the value of the variable to be
+        # the Document API URL(s).
+        objects_api_attachments = ObjectsAPISubmissionAttachment.objects.filter(
+            submission_file_attachment__submission_variable__submission=submission
+        ).annotate(
+            variable_key=F("submission_file_attachment__submission_variable__key")
+        )
+
+        urls_map: defaultdict[str, list[str]] = defaultdict(list)
+        for o in objects_api_attachments:
+            urls_map[o.variable_key].append(o.document_url)
+
+        for key in dynamic_values.keys():
+            if key in urls_map:
+                variable = state.get_variable(key)
+                is_multiple = variable.form_variable.form_definition.configuration_wrapper.component_map[
+                    key
+                ].get(
+                    "multiple", False
+                )
+                dynamic_values[key] = (
+                    urls_map[key][0] if not is_multiple else urls_map[key]
+                )
+
         static_values = state.static_data()
         static_values.update(
             {
@@ -352,12 +400,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             }
         )
 
-        variables_values = FormioData(
-            {
-                **dynamic_values,
-                **static_values,
-            }
-        ).data
+        variables_values = FormioData({**dynamic_values, **static_values})
 
         variables_mapping = options["variables_mapping"]
         record_data: dict[str, JSONValue] = {}

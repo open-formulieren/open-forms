@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.loader import render_to_string
@@ -222,12 +221,21 @@ class ObjectsAPIRegistrationData(models.Model):
         help_text=_("The CSV URL of the document on the Documents API."),
         blank=True,
     )
-    attachment_urls = ArrayField(
-        models.URLField(
-            _("attachment url"), help_text=_("The attachment URL on the Documents API.")
+
+
+class ObjectsAPISubmissionAttachment(models.Model):
+    """A utility model to link a submission file attachment with the Documents API URL."""
+
+    submission_file_attachment = models.ForeignKey(
+        "submissions.SubmissionFileAttachment",
+        on_delete=models.CASCADE,
+        verbose_name=_("submission file attachment"),
+        help_text=_("The submission file attachment."),
+    )
+
+    document_url = models.URLField(
+        _("document_url"),
+        help_text=_(
+            "The URL of the submission attachment registered in the Documents API."
         ),
-        verbose_name=_("attachment urls"),
-        help_text=_("The list of attachment URLs on the Documents API."),
-        blank=True,
-        default=list,
     )
