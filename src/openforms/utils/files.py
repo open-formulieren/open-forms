@@ -7,13 +7,13 @@ These utilities apply to file fields and subclasses thereof.
 import logging
 
 from django.db import models, transaction
-from django.db.models.base import ModelBase
+from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 
 logger = logging.getLogger(__name__)
 
 
-def get_file_field_names(model: ModelBase) -> list[str]:
+def get_file_field_names(model: type[Model]) -> list[str]:
     """
     Collect names of :class:`django.db.models.FileField` (& subclass) model fields.
     """

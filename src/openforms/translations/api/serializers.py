@@ -1,7 +1,6 @@
 from typing import cast
 
 from django.conf import settings
-from django.db.models.base import ModelBase
 from django.utils.translation import gettext_lazy as _
 
 from modeltranslation.manager import get_translatable_fields_for_model
@@ -93,7 +92,7 @@ class ModelTranslationsSerializer(serializers.Serializer):
 
         parent = cast(serializers.ModelSerializer, parent)
         base = type(parent)
-        model: ModelBase = parent.Meta.model
+        model = parent.Meta.model
         # get the translatable models fields, with deterministic ordering
         _translatable_fields = get_translatable_fields_for_model(model) or []
         translatable_fields = [
