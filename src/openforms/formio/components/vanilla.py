@@ -5,7 +5,7 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
-from datetime import datetime
+from datetime import time
 from typing import TYPE_CHECKING
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -153,13 +153,9 @@ class Time(BasePlugin[Component]):
 
         validators = []
         if min_time := validate.get("minTime"):
-            validators.append(
-                MinValueValidator(datetime.strptime(min_time, "%H:%M").time())
-            )
+            validators.append(MinValueValidator(time.fromisoformat(min_time)))
         if max_time := validate.get("maxTime"):
-            validators.append(
-                MaxValueValidator(datetime.strptime(max_time, "%H:%M").time())
-            )
+            validators.append(MaxValueValidator(time.fromisoformat(max_time)))
         base = serializers.TimeField(
             required=required,
             allow_null=not required,

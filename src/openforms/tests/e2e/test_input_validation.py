@@ -187,6 +187,24 @@ class SingleBSNTests(ValidationsTestCase):
             expected_ui_error="Het verplichte veld Required bsn is niet ingevuld.",
         )
 
+    def test_elfproef(self):
+        component: Component = {
+            "type": "bsn",
+            "key": "requiredBSN",
+            "label": "Required bsn",
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="1234",
+            expected_ui_error="Ongeldig BSN",
+        )
+        self.assertValidationIsAligned(
+            component,
+            ui_input="123456781",
+            expected_ui_error="Ongeldig BSN",
+        )
+
 
 class SingleDateTests(ValidationsTestCase):
 
@@ -291,4 +309,198 @@ class SingleDateTests(ValidationsTestCase):
             ui_input="01-01-2025",
             api_value="2025-01-01",
             expected_ui_error="De opgegeven datum ligt te ver in de toekomst.",
+        )
+
+
+class SingleCheckboxTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "checkbox",
+            "key": "requiredCheckbox",
+            "label": "Required checkbox",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            input_type="other",
+            api_value=False,
+            expected_ui_error="Het verplichte veld Required checkbox is niet ingevuld.",
+        )
+
+
+class SingleCurrencyTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "currency",
+            "key": "requiredCurrency",
+            "label": "Required currency",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required currency is niet ingevuld.",
+        )
+
+    def test_min_value(self):
+        component: Component = {
+            "type": "currency",
+            "key": "requiredCurrency",
+            "label": "Required currency",
+            "validate": {"min": 10.7},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input=2,
+            expected_ui_error="De waarde moet 10.7 of groter zijn.",
+        )
+
+    def test_max_value(self):
+        component: Component = {
+            "type": "currency",
+            "key": "requiredCurrency",
+            "label": "Required currency",
+            "validate": {"max": 15},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input=50,
+            expected_ui_error="De waarde moet 15 of kleiner zijn.",
+        )
+
+
+class SingleMapTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "map",
+            "key": "requiredMap",
+            "label": "Required map",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            input_type="other",
+            expected_ui_error="Het verplichte veld Required map is niet ingevuld.",
+        )
+
+
+class SinglePostcodeTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "postcode",
+            "key": "requiredPostcode",
+            "label": "Required postcode",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required postcode is niet ingevuld.",
+        )
+
+
+class SingleSignatureTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "signature",
+            "key": "requiredSignature",
+            "label": "Required signature",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            input_type="other",
+            expected_ui_error="Het verplichte veld Required signature is niet ingevuld.",
+        )
+
+
+class SingleTextAreaTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "requiredTextarea",
+            "label": "Required textarea",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required textarea is niet ingevuld.",
+        )
+
+    def test_max_length(self):
+        component: Component = {
+            "type": "textarea",
+            "key": "requiredTextarea",
+            "label": "Required textarea",
+            "validate": {"maxLength": 10},
+        }
+        invalid_sample = "word" * 4
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input=invalid_sample,
+            api_value=invalid_sample,
+            expected_ui_error="Er zijn teveel karakters opgegeven.",
+        )
+
+
+class SingleTimeTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "time",
+            "key": "requiredTime",
+            "label": "Required time",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required time is niet ingevuld.",
+        )
+
+    def test_min_value(self):
+        component: Component = {
+            "type": "time",
+            "key": "requiredTime",
+            "label": "Required time",
+            "validate": {
+                "minTime": "10:00",
+                "maxTime": "12:00",
+            },
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="09:10",
+            expected_ui_error="Alleen tijden tussen 10:00 en 12:00 zijn toegestaan.",
+        )
+
+    def test_max_value(self):
+        component: Component = {
+            "type": "time",
+            "key": "requiredTime",
+            "label": "Required time",
+            "validate": {
+                "minTime": "10:00",
+                "maxTime": "12:00",
+            },
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="12:10",
+            expected_ui_error="Alleen tijden tussen 10:00 en 12:00 zijn toegestaan.",
         )
