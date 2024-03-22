@@ -5,7 +5,7 @@ import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
 
-import {APIContext} from 'components/admin/form_design/Context';
+import {APIContext, FormContext} from 'components/admin/form_design/Context';
 import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
@@ -34,7 +34,7 @@ import {asJsonSchema} from './utils';
  */
 const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const {csrftoken} = useContext(APIContext);
-
+  const {components} = useContext(FormContext);
   const [jsonSchemaVisible, toggleJsonSchemaVisible] = useToggle(false);
   const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
 
@@ -73,7 +73,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
       const response = await post(REGISTRATION_OBJECTS_TARGET_PATHS, csrftoken, {
         objecttypeUrl: objecttype,
         objecttypeVersion,
-        variableJsonSchema: asJsonSchema(variable),
+        variableJsonSchema: asJsonSchema(variable, components),
       });
 
       return response.data;
