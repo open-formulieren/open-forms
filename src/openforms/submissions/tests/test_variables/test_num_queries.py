@@ -125,10 +125,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 4.  Retrieve the submission variables to be deleted - deletion of data happens
         #     because the step is marked N/A
         # 5.  Retrieve the submission attachment files to be deleted
-        # 6.  SAVEPOINT
-        # 7.  Delete submission attachment files
-        # 8.  RELEASE SAVEPOINT
-        # 9.  Delete submission values
+        # 6.  Delete submission values
         with self.assertNumQueries(6):
             evaluate_form_logic(submission, submission_step2, data)
 
