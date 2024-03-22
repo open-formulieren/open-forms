@@ -400,12 +400,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             }
         )
 
-        variables_values = FormioData(
-            {
-                **dynamic_values,
-                **static_values,
-            }
-        ).data
+        variables_values = FormioData({**dynamic_values, **static_values})
 
         variables_mapping = options["variables_mapping"]
         record_data: dict[str, JSONValue] = {}
