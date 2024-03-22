@@ -146,7 +146,7 @@ class EherkenningCSPUpdateTests(TestCase):
         cls.config.base_url = "https://test-sp.nl"
         cls.config.service_name = "Test"
         cls.config.service_description = "Test"
-        cls.config.loa = "urn:etoegang:core:assurance-class:loa3"
+        cls.config.eh_loa = "urn:etoegang:core:assurance-class:loa3"
         cls.config.oin = "00000001111111111000"
         cls.config.no_eidas = True
         cls.config.privacy_policy = "https://test-sp.nl/privacy_policy"
