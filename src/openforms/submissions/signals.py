@@ -1,13 +1,18 @@
 import logging
 
+from django.db import transaction
 from django.db.models import F
-from django.db.models.base import ModelBase
 from django.db.models.signals import post_delete
 from django.dispatch import Signal, receiver
 from django.utils import timezone
 
 from openforms.forms.models.form_statistics import FormStatistics
-from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.models import (
+    Submission,
+    SubmissionFileAttachment,
+    SubmissionReport,
+)
+from openforms.utils.files import _delete_obj_files, get_file_field_names
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +58,23 @@ Provides:
 """
 
 
+@receiver(post_delete, sender=SubmissionFileAttachment)
+def delete_obj_files(
+    sender: type[SubmissionFileAttachment], instance: SubmissionFileAttachment, **kwargs
+):
+    """A ``post_delete`` signal ensuring file deletion on database record deletion.
+
+    The implementation is identical to the :class:`openforms.utils.files.DeleteFileFieldFilesMixin` class,
+    and is required as the Django deletion internals might not call the model's ``delete`` in all cases.
+    """
+    file_field_names = get_file_field_names(sender)
+    with transaction.atomic():
+        _delete_obj_files(file_field_names, instance)
+
+
 @receiver(post_delete, sender=SubmissionReport)
 def delete_submission_report_files(
-    sender: ModelBase, instance: SubmissionReport, **kwargs
+    sender: type[SubmissionReport], instance: SubmissionReport, **kwargs
 ) -> None:
     logger.debug("Deleting file %r", instance.content.name)
 
