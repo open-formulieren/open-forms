@@ -61,7 +61,10 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                         "submission_pdf_url": "http://example.com",
                         "submission_csv_url": "http://example.com",
                         "submission_payment_completed": False,
-                        "submission_payment_amount": "0",
+                        "nested": {
+                            "unrelated": "some_value",
+                            "submission_payment_amount": 0,
+                        },
                         "submission_payment_public_ids": [],
                         "submission_date": timezone.now().isoformat(),
                     },
@@ -137,7 +140,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                 },
                 {
                     "variable_key": "payment_amount",
-                    "target_path": ["submission_payment_amount"],
+                    "target_path": ["nested", "submission_payment_amount"],
                 },
                 {
                     "variable_key": "payment_public_order_ids",
@@ -164,5 +167,11 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
         result_data = result["record"]["data"]
 
         self.assertTrue(result_data["submission_payment_completed"])
-        self.assertEqual(result_data["submission_payment_amount"], "10.01")
+        self.assertEqual(
+            result_data["nested"],
+            {
+                "unrelated": "some_value",
+                "submission_payment_amount": 10.01,
+            },
+        )
         self.assertEqual(result_data["submission_payment_public_ids"], ["TEST-123"])
