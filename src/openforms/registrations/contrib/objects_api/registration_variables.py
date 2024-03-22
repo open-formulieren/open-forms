@@ -65,7 +65,7 @@ class PaymentAmount(BaseStaticVariable):
     def get_initial_value(self, submission: Submission | None = None):
         if submission is None:
             return None
-        return str(submission.payments.sum_amount())
+        return float(submission.payments.sum_amount())
 
 
 @register("payment_public_order_ids")

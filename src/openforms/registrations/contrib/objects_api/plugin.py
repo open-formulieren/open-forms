@@ -122,11 +122,7 @@ class ObjectsAPIRegistration(BasePlugin):
 
         object_url = submission.registration_result["url"]
         with get_objects_client() as objects_client:
-            operation = (
-                objects_client.patch if options["version"] == 1 else objects_client.put
-            )
-
-            response = operation(
+            response = objects_client.patch(
                 url=object_url,
                 json=updated_object_data,
                 headers={"Content-Crs": "EPSG:4326"},
