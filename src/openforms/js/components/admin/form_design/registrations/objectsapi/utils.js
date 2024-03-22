@@ -53,16 +53,34 @@ const FORMAT_TYPE_MAP = {
  * @returns {Object} - The JSON Schema
  */
 const asJsonSchema = (variable, components) => {
-  // Figure out if the component is a file component (special case)
-  const componentDefinition = components[variable.key];
-  if (componentDefinition && componentDefinition.type === 'file') {
-    // If it is, and it has multiple == True, then type is array
-    if (componentDefinition.multiple)
-      return {type: 'array', items: {type: 'string', format: 'uri'}};
-    // Otherwise it's string (URL of the document)
-    return {type: 'string', format: 'uri'};
+  // Special handling for component types.
+  if (variable.source === 'component') {
+    const componentDefinition = components[variable.key];
+
+    switch (componentDefinition.type) {
+      case 'file': {
+        const {multiple = false} = componentDefinition;
+        const uriSchema = {type: 'string', format: 'uri'};
+        // If the component allows multiple files, the type is array, otherwise it's
+        // just a single string.
+        return multiple ? {type: 'array', items: uriSchema} : uriSchema;
+      }
+      case 'map': {
+        // TODO: in the future we could use `const: 'Point'` for the `type` key to be
+        // more strict.
+        return {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'string',
+            },
+          },
+        };
+      }
+    }
   }
 
+  // default behaviour - map the variable data type to a json-schema type.
   if (VARIABLE_TYPE_MAP.hasOwnProperty(variable.dataType))
     return {type: VARIABLE_TYPE_MAP[variable.dataType]};
   return {
