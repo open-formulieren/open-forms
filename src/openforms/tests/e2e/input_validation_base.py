@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from django.test import override_settings, tag
 from django.urls import reverse
@@ -58,6 +58,7 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
         component: Component,
         ui_input: str | int | float,
         expected_ui_error: str,
+        input_type: Literal["text", "other"] = "text",
         **kwargs: Unpack[ValidationKwargs],
     ):
         """
@@ -74,17 +75,19 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
         :arg ui_input: Input to enter in the field with playwright.
         :arg expected_ui_error: Content of the validation error to be expected in the
           playwright test.
+        :input_type: Depending on the literal we fill in the input or we leave the element
+          unmodified (e.g. checkbox, map, signature etc.).
         """
         form = create_form(component)
 
         with self.subTest("frontend validation"):
             self._assertFrontendValidation(
-                form, component["label"], str(ui_input), expected_ui_error
+                form, component["label"], str(ui_input), expected_ui_error, input_type
             )
 
         with self.subTest("backend validation"):
             api_value = kwargs.pop("api_value", ui_input)
-            self._assertBackendValidation(form, component["key"], api_value)
+            self._assertBackendValidation(form, component["key"], api_value, input_type)
 
     def _locate_input(self, page: Page, label: str):
         return page.get_by_label(label, exact=True)
@@ -96,6 +99,7 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
         label: str,
         ui_input: str,
         expected_ui_error: str,
+        input_type: str,
     ):
         frontend_path = reverse("forms:form-detail", kwargs={"slug": form.slug})
         url = str(furl(self.live_server_url) / frontend_path)
@@ -104,8 +108,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
             await page.goto(url)
             await page.get_by_role("button", name="Formulier starten").click()
 
-            # fill in the test input
-            await self._locate_input(page, label).fill(ui_input)
+            # fill in the test input in case of text otherwise continue
+            if input_type == "text":
+                await self._locate_input(page, label).fill(ui_input)
 
             # try to submit the step which should be invalid, so we expect this to
             # render the error message.
@@ -113,7 +118,14 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
 
             await expect(page.get_by_text(expected_ui_error)).to_be_visible()
 
-    def _assertBackendValidation(self, form: Form, key: str, value: JSONValue):
+    def _assertBackendValidation(
+        self, form: Form, key: str, value: JSONValue, input_type: str
+    ):
+        body_mappings = {
+            "text": {"data": {key: value}},
+            "other": {"input": value},
+        }
+
         submission = SubmissionFactory.create(form=form)
         step = form.formstep_set.get()
         self._add_submission_to_session(submission)
@@ -125,8 +137,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
                 "step_uuid": step.uuid,
             },
         )
-        body = {"data": {key: value}}
-        response = self.client.put(step_endpoint, body, content_type="application/json")
+        response = self.client.put(
+            step_endpoint, body_mappings[input_type], content_type="application/json"
+        )
         assert response.status_code in [201, 200]
 
         # try to complete the submission, this is expected to fail
