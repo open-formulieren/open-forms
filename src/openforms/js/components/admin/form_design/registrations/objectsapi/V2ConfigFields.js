@@ -23,7 +23,6 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
   const {
     objecttype = '',
     objecttypeVersion = '',
-    productaanvraagType = '',
     informatieobjecttypeSubmissionReport = '',
     uploadSubmissionCsv = '',
     informatieobjecttypeSubmissionCsv = '',
@@ -91,27 +90,6 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
           availableObjecttypes={availableObjectTypesState.availableObjecttypes}
           selectedObjecttype={objecttype}
           selectedVersion={objecttypeVersion}
-          onChange={onChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_productaanvraagType"
-        label={intl.formatMessage({
-          defaultMessage: 'Productaanvraag type',
-          description: 'Objects API registration options "Productaanvraag type" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage: 'The type of ProductAanvraag',
-          description: 'Objects API registration options "Productaanvraag type" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'productaanvraagType')}
-        errors={buildErrorsComponent('productaanvraagType')}
-        displayLabel
-      >
-        <TextInput
-          id="root_productaanvraagType"
-          name="productaanvraagType"
-          value={productaanvraagType}
           onChange={onChange}
         />
       </CustomFieldTemplate>
@@ -250,7 +228,6 @@ V2ConfigFields.propTypes = {
     version: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
-    productaanvraagType: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
     uploadSubmissionCsv: PropTypes.string,
     informatieobjecttypeSubmissionCsv: PropTypes.string,

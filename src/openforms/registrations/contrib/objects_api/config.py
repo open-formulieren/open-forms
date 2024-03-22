@@ -72,11 +72,6 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("objecttype version"),
         help_text=_("Version of the objecttype in the Objecttypes API"),
     )
-    productaanvraag_type = serializers.CharField(
-        label=_("productaanvraag type"),
-        help_text=_("The type of ProductAanvraag"),
-        required=False,
-    )
     informatieobjecttype_submission_report = serializers.URLField(
         label=_("submission report PDF informatieobjecttype"),
         help_text=_(
@@ -117,6 +112,11 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
 
     # V1 only fields:
+    productaanvraag_type = serializers.CharField(
+        label=_("productaanvraag type"),
+        help_text=_("The type of ProductAanvraag"),
+        required=False,
+    )
     content_json = serializers.CharField(
         label=_("JSON content field"),
         help_text=_(
@@ -161,7 +161,11 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        v1_only_fields = {"content_json", "payment_status_update_json"}
+        v1_only_fields = {
+            "productaanvraag_type",
+            "content_json",
+            "payment_status_update_json",
+        }
         v2_only_fields = {"variables_mapping", "geometry_variable_key"}
 
         version = get_from_serializer_data_or_instance("version", attrs, self)

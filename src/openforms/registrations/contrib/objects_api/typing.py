@@ -8,7 +8,6 @@ ConfigVersion: TypeAlias = Literal[1, 2]
 class _BaseRegistrationOptions(TypedDict, total=False):
     objecttype: Required[str]
     objecttype_version: Required[int]
-    productaanvraag_type: str
     informatieobjecttype_submission_report: str
     upload_submission_csv: bool
     informatieobjecttype_submission_csv: str
@@ -18,6 +17,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
 
 class RegistrationOptionsV1(_BaseRegistrationOptions, total=False):
     version: Required[Literal[1]]
+    productaanvraag_type: str
     content_json: str
     payment_status_update_json: str
 
