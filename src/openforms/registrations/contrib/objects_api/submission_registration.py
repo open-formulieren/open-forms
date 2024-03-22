@@ -1,8 +1,11 @@
 import logging
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from contextlib import contextmanager
 from datetime import date, datetime
 from typing import Any, Generic, Iterator, TypeVar, cast
+
+from django.db.models import F
 
 import glom
 from typing_extensions import override
@@ -219,18 +222,27 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                 )
 
             if options["informatieobjecttype_attachment"]:
+                existing = [
+                    o.submission_file_attachment
+                    for o in ObjectsAPISubmissionAttachment.objects.filter(
+                        submission_file_attachment__submission_step__submission=submission
+                    )
+                ]
+
+                objs: list[ObjectsAPISubmissionAttachment] = []
+
                 for attachment in submission.attachments:
-                    try:
-                        ObjectsAPISubmissionAttachment.objects.get(
-                            submission_file_attachment=attachment
+                    if attachment not in existing:
+                        objs.append(
+                            ObjectsAPISubmissionAttachment(
+                                submission_file_attachment=attachment,
+                                document_url=register_submission_attachment(
+                                    submission, attachment, options, documents_client
+                                ),
+                            )
                         )
-                    except ObjectsAPISubmissionAttachment.DoesNotExist:
-                        ObjectsAPISubmissionAttachment.objects.create(
-                            submission_file_attachment=attachment,
-                            document_url=register_submission_attachment(
-                                submission, attachment, options, documents_client
-                            ),
-                        )
+
+                ObjectsAPISubmissionAttachment.objects.bulk_create(objs)
 
     @abstractmethod
     def get_object_data(
@@ -355,16 +367,27 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         # For every file upload component, we alter the value of the variable to be
         # the Document API URL(s).
+        objects_api_attachments = ObjectsAPISubmissionAttachment.objects.filter(
+            submission_file_attachment__submission_variable__submission=submission
+        ).annotate(
+            variable_key=F("submission_file_attachment__submission_variable__key")
+        )
+
+        urls_map: defaultdict[str, list[str]] = defaultdict(list)
+        for o in objects_api_attachments:
+            urls_map[o.variable_key].append(o.document_url)
+
         for key in dynamic_values.keys():
-            objects_api_attachments = ObjectsAPISubmissionAttachment.objects.filter(
-                submission_file_attachment__submission_variable__submission=submission,
-                submission_file_attachment__submission_variable__key=key,
-            )
-            if objects_api_attachments.exists():
-                urls = list(
-                    objects_api_attachments.values_list("document_url", flat=True)
+            if key in urls_map:
+                variable = state.get_variable(key)
+                is_multiple = variable.form_variable.form_definition.configuration_wrapper.component_map[
+                    key
+                ].get(
+                    "multiple", False
                 )
-                dynamic_values[key] = urls[0] if len(urls) == 1 else urls
+                dynamic_values[key] = (
+                    urls_map[key][0] if not is_multiple else urls_map[key]
+                )
 
         static_values = state.static_data()
         static_values.update(
