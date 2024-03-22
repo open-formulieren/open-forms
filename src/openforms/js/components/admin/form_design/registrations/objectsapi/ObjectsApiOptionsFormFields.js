@@ -47,6 +47,7 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
         } else {
           delete draft.variablesMapping;
         }
+        delete draft.productaanvraagType;
         delete draft.contentJson;
         delete draft.paymentStatusUpdateJson;
       })
