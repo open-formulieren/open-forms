@@ -134,7 +134,7 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
     def check_requirements(self, request, config):
         # check LoA requirements
         authenticated_loa = request.session[FORM_AUTH_SESSION_KEY]["loa"]
-        required = config.get("loa") or EherkenningConfiguration.get_solo().loa
+        required = config.get("loa") or EherkenningConfiguration.get_solo().eh_loa
         return loa_order(authenticated_loa) >= loa_order(required)
 
     def get_logo(self, request) -> LoginLogo | None:
