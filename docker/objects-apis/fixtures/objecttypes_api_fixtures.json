@@ -172,8 +172,17 @@
                     "submission_payment_completed": {
                         "type": "boolean"
                     },
-                    "submission_payment_amount": {
-                        "type": "string"
+                    "nested": {
+                        "type": "object",
+                        "properties": {
+                            "unrelated": {
+                                "type": "string"
+                            },
+                            "submission_payment_amount": {
+                                "type": "number",
+                                "multipleOf": 0.01
+                            }
+                        }
                     },
                     "submission_payment_public_ids": {
                         "type": "array"
