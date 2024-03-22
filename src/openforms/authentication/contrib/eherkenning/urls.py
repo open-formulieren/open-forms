@@ -1,6 +1,8 @@
 from django.urls import path
 
-from .views import eHerkenningAssertionConsumerServiceView, eHerkenningLoginView
+from digid_eherkenning.views import eHerkenningLoginView
+
+from .views import eHerkenningAssertionConsumerServiceView
 
 app_name = "eherkenning"
 
