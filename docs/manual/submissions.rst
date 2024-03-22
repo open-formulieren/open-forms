@@ -40,6 +40,12 @@ raadplegen via de Open Formulieren
 een registratiesysteem blijft de inzending ook in Open Formulieren 
 beschikbaar tot het moment van schoning.
 
+**Handleidingen per plugin**
+
+.. toctree::
+   :maxdepth: 3
+
+   registration/objects-api
 
 Opschonen
 =========

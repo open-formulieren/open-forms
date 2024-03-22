@@ -496,6 +496,8 @@ Voorbeeld
 Objecten API registratie
 ========================
 
+.. note:: We adviseren om gebruik te maken van de :ref:`manual_registration_objects_api_variables` in plaats van sjablonen.
+
 De Objecten API-registratiebackend maakt een object aan in de geconfigureerde Objecten API met de gegevens van een
 inzending. Een voorbeeld van de JSON die naar de Objecten API wordt gestuurd:
 

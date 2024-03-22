@@ -4,161 +4,49 @@
 Objects API
 ===========
 
-The `Objects API`_ allows us to easily store and expose various objects
-according to the related objecttype resource in the Objecttypes API. Open Forms
-supports creating objects in the Objects API, such as the `ProductAanvraag objecttype`_.
+The `Objects API`_ is a standard for generic storage of objects/records according to
+your own, process-specific, data description, such as the `ProductAanvraag objecttype`_.
 
-Open Forms can be configured to create an object (of type ``ProductAanvraag``) to
-register form submissions.
+Open Forms supports registering form submisisons in the Objects API. The
+:ref:`manual (Dutch) <manual_registration_objects_api>` describes how to configure a form
+for usage with the Objects API.
 
-What does the Open Forms administator need?
-===========================================
+What does the Open Forms administrator need?
+============================================
 
-* API resource URL of object type(s) to use for registration. Open Forms does not (yet)
-  need access to the Object Types API.
-* Access the Objects API, with write permissions for the relevant object types. Open
-  Forms creates and updates records.
-* API resource URLs of document types (informatieobjecttype) in the Catalogi API -
-  attachments are created using these document types:
+* An instance of the `Objecttypes API`_ with:
 
-    - PDF summary of submitted form data
-    - CSV export of submitted form data (optional)
-    - Attachments from uploads done by the end-user through ``file`` components.
+    - an API token to access the API from Open Forms
+    - one or more objecttypes (legacy configuration requires the API resource URL for
+      these too)
 
-* Write access to the Documenten API, some attachments/files are created there and then
-  related to the record in the Objects API.
+* An instance of the `Objects API`_ (v2.2+) with:
 
-.. warning:: For forms with payment requirements, a PATCH request is made to the
-   Objects API to update the payment status. This requires a version of the Objects API
-   newer than 2.1.1, which is unreleased at the time of writing.
+    - (API) access to the above Objecttypes API
+    - an API token to access the Objects API from Open Forms
+    - write permissions for the relevant Objecttypes - Open Forms creates and updates
+      records.
+
+* An instance of the Catalogi API (e.g. via Open Zaak) with:
+
+    - API credentials (client ID + secret) to read the available document types (
+      informatieobjecttypen)
+    - API resource URLs of the document type to use for the PDF summary of submitted
+      form data
+    - API resource URLs of the document type to use for the CSV of submitted form data
+      (optional)
+    - API resource URLs of the document type to use for the user uploaded attachments
+      (optional, works as fallback). The document type can also be selected on each
+      individual ``file`` component
+
+* An instance of the Documenten API (e.g. via Open Zaak) with:
+
+    - (API) access to the above Catalogi API
+    - API credentials (client ID + secret) with write access to create documents of the
+      document types mentioned above
 
 Configuration
 =============
-
-Below is an example of the contents in the ``record.data`` attribute in the
-Objects API. The top-level has meta-data about the form submission, and the
-``data`` element holds the submitted form values, nested within each step (using the step-slug as key):
-
-.. tabs::
-
-   .. group-tab:: Example
-
-      .. code-block:: json
-
-         {
-           "data": {
-             "uw-gegevens": {
-               "naam": "Jan Jansen",
-               "omschrijving": "Ik heb een vraag over mijn paspoort",
-               "telefoonnummer": "0612345678"
-             }
-           },
-           "type": "terugbelnotitie",
-           "bsn": "111222333",
-           "pdf_url": "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/230bab4a-4b51-40c6-91b2-f2022008a7f8",
-           "attachments": [],
-           "submission_id": "a43e84ac-e08b-4d5f-8d5c-5874c6dddf56"
-         }
-
-   .. group-tab:: JSON-schema for Objecttype
-
-      .. code-block:: json
-
-         {
-           "title": "ProductAanvraag",
-           "default": {},
-           "required": [
-             "submission_id",
-             "type",
-             "data"
-           ],
-           "properties": {
-             "data": {
-               "$id": "#/properties/data",
-               "type": "object",
-               "title": "Object met de ingezonden formulierdata",
-               "default": {},
-               "examples": [
-                 {
-                   "field1": "value1"
-                 }
-               ]
-             },
-             "type": {
-               "$id": "#/properties/type",
-               "type": "string",
-               "title": "Type productaanvraag",
-               "default": "",
-               "examples": [
-                 "terugbelnotitie"
-               ]
-             },
-             "bsn": {
-               "$id": "#/properties/bsn",
-               "type": "string",
-               "title": "Burgerservicenummer",
-               "default": "",
-               "examples": [
-                 "111222333"
-               ]
-             },
-             "kvk": {
-               "$id": "#/properties/kvk",
-               "type": "string",
-               "title": "KVK-nummer van het bedrijf in het Handelsregister",
-               "default": "",
-               "examples": [
-                 "12345678"
-               ]
-             },
-             "pdf_url": {
-               "$id": "#/properties/pdf_url",
-               "type": "string",
-               "title": "URL van een document (in een Documenten API) dat de bevestigings PDF van Open Forms bevat",
-               "format": "uri",
-               "default": "",
-               "examples": [
-                 "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/230bab4a-4b51-40c6-91b2-f2022008a7f8"
-               ]
-             },
-             "csv_url": {
-               "$id": "#/properties/csv_url",
-               "type": "string",
-               "title": "URL van een document (in een Documenten API) dat de CSV met ingezonden formulierdata bevat",
-               "format": "uri",
-               "default": "",
-               "examples": [
-                 "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/aeaba696-4968-46a6-8b1e-016f503ed88d"
-               ]
-             },
-             "attachments": {
-               "$id": "#/properties/attachments",
-               "type": "array",
-               "items": {
-                 "type": "string",
-                 "format": "uri"
-               },
-               "title": "Lijst met URLs van de bijlagen van het ingezonden formulier in een Documenten API",
-               "default": [],
-               "examples": [
-                 [
-                   "https://example.com/documenten/api/v1/enkelvoudiginformatieobjecten/94ff43d6-0ee5-4b5c-8ed7-b86eaa908718"
-                 ]
-               ]
-             },
-             "submission_id": {
-               "$id": "#/properties/submission_id",
-               "type": "string",
-               "title": "ID van de submission in Open Forms",
-               "default": "",
-               "examples": [
-                 "a43e84ac-e08b-4d5f-8d5c-5874c6dddf56"
-               ]
-             },
-             "additionalProperties": true
-           }
-         }
-
 
 To configure the Objects API follow these steps:
 
@@ -170,7 +58,7 @@ To configure the Objects API follow these steps:
 
       * **Label**: *Fill in a human readable label*, for example: ``My Objects API``
       * **Type**: Select the type: ``ORC``
-      * **API root url**: The root of this API, *for example* ``https://example.com/objecten/api/v1/``
+      * **API root url**: The root of this API, *for example* ``https://example.com/objecten/api/v2/``
 
       * **Authorization type**: Select the option: ``API Key``
       * **Header key**: Fill in ``Authorization``
@@ -179,12 +67,29 @@ To configure the Objects API follow these steps:
         *for example:* ``https://example.com/objecten/api/v1/schema/openapi.yaml``
 
       * **NLX**: Support for NLX can be selected here if enabled in the installation
-      * **User ID**: Audit trail user ID, usually same as the Client ID
-      * **User representation**: *For example:* ``Open Forms``
 
    c. Click **Opslaan** and repeat to create configuration for the other component.
 
-#. Create a second service, for the Documentregistratiecomponent (DRC) where the PDF summary and form attachment documents will be stored.
+#. Create a service for the Objecttypes API (ORC).
+
+   a. Click **Service toevoegen**.
+   b. Fill out the form:
+
+      * **Label**: *Fill in a human readable label*, for example: ``My Objecttypes API``
+      * **Type**: Select the type: ``ORC``
+      * **API root url**: The root of this API, *for example* ``https://example.com/objecttypen/api/v2/``
+
+      * **Authorization type**: Select the option: ``API Key``
+      * **Header key**: Fill in ``Authorization``
+      * **Header value**: Fill in ``Token <tokenValue>`` where ``<tokenValue>`` is replaced by the token provided by the backend service
+      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
+        *for example:* ``https://example.com/objecttypen/api/v1/schema/openapi.yaml``
+
+      * **NLX**: Support for NLX can be selected here if enabled in the installation
+
+   c. Click **Opslaan** and repeat to create configuration for the other component.
+
+#. Create a service for the Documenten API (DRC) where the PDF summary and form attachment documents will be stored.
 
    a. Click **Service toevoegen**.
    b. Fill out the form:
@@ -203,7 +108,7 @@ To configure the Objects API follow these steps:
       * **User ID**: Audit trail user ID, usually same as the Client ID
       * **User representation**: *For example:* ``Open Forms``
 
-#. Create a third service, for the Zaaktypecatalogus (ZTC). This is needed to retrieve Informatieobjecttypen.
+#. Create a service for the Catalogi API (ZTC). This is needed to retrieve Informatieobjecttypen.
 
    a. Click **Service toevoegen**.
    b. Fill out the form:
@@ -222,40 +127,97 @@ To configure the Objects API follow these steps:
       * **User ID**: Audit trail user ID, usually same as the Client ID
       * **User representation**: *For example:* ``Open Forms``
 
-#. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **Objects API registratie** line.
+#. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group,
+   click on **Configuration** for the **Objects API registratie** line.
+
 #. Enter the following details:
 
    * **Objects API**: Select the Objects API (ORC) service created above
-   * **Documenten API**: Select the Documentregistratiecomponent (DRC) service created above
+   * **Objecttypes API**: Select the Objecttypes API (ORC) service created above
+   * **Documenten API**: Select the Documenten API (DRC) service created above
    * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
-   * **Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API *For example* ``https://example.com/api/v1/objecttypes``
-   * **Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API *For example:* ``1``
-   * **Productaanvraag type**: Fill in the type of ProductAanvraag *For example:* ``terugbelnotitie``
-   * **Submission report informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission report in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/1/``
-   * **Upload submission CSV**: Indicate whether or not the submission CSV should be uploaded to the Documenten API by default (can be overridden per form)
-   * **Submission report CSV informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission report CSV in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/2/``
-   * **Attachment informatieobjecttype**: Fill in the default URL of the INFORMATIEOBJECTTYPE for the submission attachments in the Catalogi API *For example* ``https://example.com/api/v1/informatieobjecttypen/3/``
-   * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
-   * **JSON content template**: This is a template for the JSON that will be sent to the Object API nested in the
-     ``record.data`` field.
-   * **Payment status update JSON template**: This is a template for the JSON that will be sent with a PATCH request to
-     the Object API to update the payment status of a submission. This JSON will be nested in the ``record.data.payment`` field.
+   * **Submission report informatieobjecttype**: Fill in the default URL of the
+     INFORMATIEOBJECTTYPE for the submission report in the Catalogi API *For example*
+     ``https://example.com/api/v1/informatieobjecttypen/1/``. You an override this on a
+     per-form basis.
+   * **Upload submission CSV**: Indicate whether or not the submission CSV should be
+     uploaded to the Documenten API by default. You an override this on a per-form basis.
+   * **Submission report CSV informatieobjecttype**: Fill in the default URL of the
+     INFORMATIEOBJECTTYPE for the submission report CSV in the Catalogi API *For example*
+     ``https://example.com/api/v1/informatieobjecttypen/2/``. You an override this on a
+     per-form basis.
+   * **Attachment informatieobjecttype**: Fill in the default URL of the
+     INFORMATIEOBJECTTYPE for the submission attachments in the Catalogi API *For example*
+     ``https://example.com/api/v1/informatieobjecttypen/3/``. You an override this on a
+     per-form and per-file component basis.
+   * **Organisatie RSIN**: Fill the RSIN to use as "bronorganisatie" in Document uploads.
+     *For example:* ``123456789``. You an override this on a per-form basis.
+
+   For the legacy configuration format, additional fields are available:
+
+   * **Productaanvraag type**: Optionally fill in the default type of ProductAanvraag
+     *For example:* ``terugbelnotitie``. You an override this on a per-form basis.
+   * **JSON content template**: This is a template for the JSON that will be sent to the
+     Objects API nested in the ``record.data`` field.
+   * **Payment status update JSON template**: This is a template for the JSON that will
+     be sent with a PATCH request to the Object API to update the payment status of a
+     submission. This JSON will be merge-patched in the ``record.data`` field.
 
 #. Click **Opslaan**
 
 The Objects API configuration is now complete and can be selected as registration backend in the form builder.
+When doing so, the corresponding objecttype and objecttype version will have to be configured.
+
+.. versionchanged:: 2.6.0
+
+   The objecttype URL and version must be configured at the form level, and can no
+   longer be configured globally.
+
+.. _configuration_registration_objects_objecttype_tips:
+
+Recommendations for the Objecttype JSON Schemas
+================================================
+
+The objecttype definition uses `JSON Schema <https://json-schema.org/>`_, and this schema
+is processed by Open Forms.
+
+There are some pitfalls with JSON Schema that can lead to unexpected results, so we have
+some guidelines for schema authors:
+
+
+* Preferably, define the ``$schema`` property pointing to the version of the
+  specification you are using. If not specified, Open Forms will assume the latest
+  specification (*2020-12*) applies, which may not be compatible.
+
+* Do not omit the ``type`` property for the top-level object. In practice, this should
+  probably always be set to the value ``"object"``. If unspecified, technically any
+  data type is allowed which is probably not what you intended.
+
+* Include ``additionalProperties: false`` for objects - the default is that any
+  unspecified, additional properties are allowed and those cannot be input-validated.
+
+* Using references (``$ref: #/foo``) is supported, but they should not (yet) point to an
+  external entity (resolving this will likely be added in the future in a way that does
+  not create security issues).
 
 Technical
 =========
 
-Open Forms requires Objects API v2 or newer.
+Open Forms requires Objects API v2.2 or newer.
 
 ================  ==========================================
 Objects API       Test status
 ================  ==========================================
-2.0.x             Manually verified
-2.1.x             Manually verified, integration tests in CI
+2.2.x             Manually verified
+2.3.x             Manually verified, integration tests in CI
 ================  ==========================================
 
+.. versionchanged:: 2.6.0
+
+    Objects API versions older than 2.2.0 are no longer officially supported. You need
+    at least version 2.2.0.
+
+
 .. _`Objects API`: https://objects-and-objecttypes-api.readthedocs.io/
+.. _`Objecttypes API`: https://objects-and-objecttypes-api.readthedocs.io/en/latest/#objecttypes-api
 .. _`ProductAanvraag objecttype`: https://github.com/open-objecten/objecttypes/tree/main/community-concepts/productaanvraag/
