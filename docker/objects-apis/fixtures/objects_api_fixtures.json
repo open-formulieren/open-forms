@@ -1,77 +1,97 @@
 [
-    {
-        "model": "core.objecttype",
-        "pk": 1,
-        "fields": {
-            "service": 1,
-            "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-            "_name": "Person"
-        }
-    },
-    {
-        "model": "core.objecttype",
-        "pk": 2,
-        "fields": {
-            "service": 1,
-            "uuid": "527b8408-7421-4808-a744-43ccb7bdaaa2",
-            "_name": "File uploads"
-        }
-    },
-    {
-        "model": "token.tokenauth",
-        "pk": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-        "fields": {
-            "contact_person": "Admin",
-            "email": "admin@example.com",
-            "organization": "",
-            "last_modified": "2023-10-24T08:58:51.291Z",
-            "created": "2023-10-24T08:58:51.291Z",
-            "application": "",
-            "administration": ""
-        }
-    },
-    {
-        "model": "token.permission",
-        "pk": 1,
-        "fields": {
-            "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-            "object_type": 1,
-            "mode": "read_and_write",
-            "use_fields": false,
-            "fields": null
-        }
-    },
-    {
-        "model": "token.permission",
-        "pk": 1,
-        "fields": {
-            "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-            "object_type": 2,
-            "mode": "read_and_write",
-            "use_fields": false,
-            "fields": null
-        }
-    },
-    {
-        "model": "zgw_consumers.service",
-        "pk": 1,
-        "fields": {
-            "label": "Local objecttypes",
-            "oas": "https://raw.githubusercontent.com/maykinmedia/objecttypes-api/master/src/objecttypes/api/v2/openapi.yaml",
-            "oas_file": "",
-            "uuid": "ee08faa2-4cd1-45f6-ba16-d50872cf5cf2",
-            "api_type": "orc",
-            "api_root": "http://objecttypes-web:8000/api/v2/",
-            "client_id": "",
-            "secret": "",
-            "auth_type": "api_key",
-            "header_key": "Authorization",
-            "header_value": "Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
-            "nlx": "",
-            "user_id": "",
-            "user_representation": "",
-            "client_certificate": null,
-            "server_certificate": null
-        }
+{
+    "model": "core.objecttype",
+    "pk": 1,
+    "fields": {
+        "service": 1,
+        "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        "_name": "Person"
     }
+},
+{
+    "model": "core.objecttype",
+    "pk": 2,
+    "fields": {
+        "service": 1,
+        "uuid": "527b8408-7421-4808-a744-43ccb7bdaaa2",
+        "_name": "File uploads"
+    }
+},
+{
+    "model": "core.objecttype",
+    "pk": 3,
+    "fields": {
+        "service": 1,
+        "uuid": "f1dde4fe-b7f9-46dc-84ae-429ae49e3705",
+        "_name": "Geo in data"
+    }
+},
+{
+    "model": "token.tokenauth",
+    "pk": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+    "fields": {
+        "contact_person": "Admin",
+        "email": "admin@example.com",
+        "organization": "",
+        "last_modified": "2023-10-24T08:58:51.291Z",
+        "created": "2023-10-24T08:58:51.291Z",
+        "application": "",
+        "administration": ""
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 1,
+    "fields": {
+        "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "object_type": 1,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 2,
+    "fields": {
+        "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "object_type": 2,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 3,
+    "fields": {
+        "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "object_type": 3,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "zgw_consumers.service",
+    "pk": 1,
+    "fields": {
+        "label": "Local objecttypes",
+        "oas": "https://raw.githubusercontent.com/maykinmedia/objecttypes-api/master/src/objecttypes/api/v2/openapi.yaml",
+        "oas_file": "",
+        "uuid": "ee08faa2-4cd1-45f6-ba16-d50872cf5cf2",
+        "api_type": "orc",
+        "api_root": "http://objecttypes-web:8000/api/v2/",
+        "client_id": "",
+        "secret": "",
+        "auth_type": "api_key",
+        "header_key": "Authorization",
+        "header_value": "Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+        "nlx": "",
+        "user_id": "",
+        "user_representation": "",
+        "client_certificate": null,
+        "server_certificate": null
+    }
+}
 ]
