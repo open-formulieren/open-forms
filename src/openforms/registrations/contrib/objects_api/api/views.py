@@ -15,8 +15,8 @@ from ..json_schema import InvalidReference, iter_json_schema_paths, json_schema_
 from .serializers import (
     ObjecttypeSerializer,
     ObjecttypeVersionSerializer,
-    TargetPathsInputSerializer,
-    TargetPathsSerializer,
+    ObjecttypeVersionTargetPathsInputSerializer,
+    ObjecttypeVersionTargetPathsSerializer,
 )
 
 
@@ -62,15 +62,18 @@ class ObjecttypeVersionsListView(ListMixin, views.APIView):
             return client.list_objecttype_versions(self.kwargs["submission_uuid"])
 
 
-class TargetPathsListView(views.APIView):
+class ObjecttypeVersionTargetPathsListView(views.APIView):
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
 
     @extend_schema(
-        request=TargetPathsInputSerializer, responses={200: TargetPathsSerializer}
+        request=ObjecttypeVersionTargetPathsInputSerializer,
+        responses={200: ObjecttypeVersionTargetPathsSerializer},
     )
     def post(self, request: Request, *args: Any, **kwargs: Any):
-        input_serializer = TargetPathsInputSerializer(data=request.data)
+        input_serializer = ObjecttypeVersionTargetPathsInputSerializer(
+            data=request.data
+        )
         input_serializer.is_valid(raise_exception=True)
 
         # Regex taken from django.urls.converters.UUIDConverter
@@ -87,25 +90,33 @@ class TargetPathsListView(views.APIView):
 
         with get_objecttypes_client() as client:
 
+            allow_geometry = client.get_objecttype(objecttype_uuid).get(
+                "allowGeometry", True
+            )
             json_schema = client.get_objecttype_version(
                 objecttype_uuid, input_serializer.validated_data["objecttype_version"]
             )["jsonSchema"]
 
-        return_data = [
-            {
-                "target_path": json_path.segments,
-                "is_required": json_path.required,
-                "json_schema": json_schema,
-            }
-            for json_path, json_schema in iter_json_schema_paths(
-                json_schema, fail_fast=False
-            )
-            if not isinstance(json_schema, InvalidReference)
-            if json_schema_matches(
-                variable_schema=input_serializer.validated_data["variable_json_schema"],
-                target_schema=json_schema,
-            )
-        ]
+        return_data = {
+            "allow_geometry": allow_geometry,
+            "target_paths": [
+                {
+                    "target_path": json_path.segments,
+                    "is_required": json_path.required,
+                    "json_schema": json_schema,
+                }
+                for json_path, json_schema in iter_json_schema_paths(
+                    json_schema, fail_fast=False
+                )
+                if not isinstance(json_schema, InvalidReference)
+                if json_schema_matches(
+                    variable_schema=input_serializer.validated_data[
+                        "variable_json_schema"
+                    ],
+                    target_schema=json_schema,
+                )
+            ],
+        }
 
-        output_serializer = TargetPathsSerializer(many=True, instance=return_data)
+        output_serializer = ObjecttypeVersionTargetPathsSerializer(instance=return_data)
         return Response(data=output_serializer.data)

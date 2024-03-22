@@ -43,7 +43,21 @@ class TargetPathsSerializer(serializers.Serializer):
     )
 
 
-class TargetPathsInputSerializer(serializers.Serializer):
+class ObjecttypeVersionTargetPathsSerializer(serializers.Serializer):
+    allow_geometry = serializers.BooleanField(
+        label=_("allow geometry"),
+        help_text=_(
+            "Whether this object type allows the geometry attribute to be filled."
+        ),
+    )
+    target_paths = TargetPathsSerializer(
+        many=True,
+        label=_("target paths"),
+        help_text=_("The list of available target paths."),
+    )
+
+
+class ObjecttypeVersionTargetPathsInputSerializer(serializers.Serializer):
     objecttype_url = serializers.URLField(
         label=_("objecttype url"), help_text=("The URL of the objecttype.")
     )

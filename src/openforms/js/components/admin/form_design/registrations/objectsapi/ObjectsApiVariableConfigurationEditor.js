@@ -66,7 +66,7 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
 
   const {
     loading,
-    value: targetPaths,
+    value: objecttypeVersionInfo,
     error,
   } = useAsync(
     async () => {
@@ -82,12 +82,16 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
     []
   );
 
-  const getTargetPath = pathSegment => targetPaths.find(t => isEqual(t.targetPath, pathSegment));
+  const getTargetPath = pathSegment =>
+    objecttypeVersionInfo.targetPaths.find(t => isEqual(t.targetPath, pathSegment));
 
   const choices =
     loading || error
       ? LOADING_OPTION
-      : targetPaths.map(t => [JSON.stringify(t.targetPath), <TargetPathDisplay target={t} />]);
+      : objecttypeVersionInfo.targetPaths.map(t => [
+          JSON.stringify(t.targetPath),
+          <TargetPathDisplay target={t} />,
+        ]);
 
   if (error)
     return (
@@ -115,33 +119,35 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
           />
         </Field>
       </FormRow>
-      <FormRow>
-        <Field
-          label={
-            <FormattedMessage
-              defaultMessage="Map to geometry field"
-              description="'Map to geometry field' checkbox label"
+      {objecttypeVersionInfo && objecttypeVersionInfo.allowGeometry && (
+        <FormRow>
+          <Field
+            label={
+              <FormattedMessage
+                defaultMessage="Map to geometry field"
+                description="'Map to geometry field' checkbox label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="'Map to geometry field' checkbox help text"
+                defaultMessage="Whether to map this variable to the {geometryPath} attribute"
+                values={{geometryPath: <code>record.geometry</code>}}
+              />
+            }
+            name="geometryVariableKey"
+            disabled={!!mappedVariable.targetPath}
+          >
+            <Checkbox
+              checked={isGeometry}
+              onChange={event => {
+                const newValue = event.target.checked ? variable.key : undefined;
+                setFieldValue('geometryVariableKey', newValue);
+              }}
             />
-          }
-          helpText={
-            <FormattedMessage
-              description="'Map to geometry field' checkbox help text"
-              defaultMessage="Whether to map this variable to the {geometryPath} attribute"
-              values={{geometryPath: <code>record.geometry</code>}}
-            />
-          }
-          name="geometryVariableKey"
-          disabled={!!mappedVariable.targetPath}
-        >
-          <Checkbox
-            checked={isGeometry}
-            onChange={event => {
-              const newValue = event.target.checked ? variable.key : undefined;
-              setFieldValue('geometryVariableKey', newValue);
-            }}
-          />
-        </Field>
-      </FormRow>
+          </Field>
+        </FormRow>
+      )}
       <FormRow>
         <Field
           name={`${namePrefix}.targetPath`}
