@@ -165,7 +165,10 @@ def register_submission_attachment(
 
 
 @contextmanager
-def save_and_raise(registration_data: ObjectsAPIRegistrationData) -> Iterator[None]:
+def save_and_raise(
+    registration_data: ObjectsAPIRegistrationData,
+    submission_attachments: list[ObjectsAPISubmissionAttachment],
+) -> Iterator[None]:
     """Save the registration data before raising a :class:`~openforms.registrations.exceptions.RegistrationFailed` exception."""
 
     try:
@@ -174,6 +177,7 @@ def save_and_raise(registration_data: ObjectsAPIRegistrationData) -> Iterator[No
         raise RegistrationFailed() from e
     finally:
         registration_data.save()
+        ObjectsAPISubmissionAttachment.objects.bulk_create(submission_attachments)
 
 
 OptionsT = TypeVar(
@@ -210,10 +214,11 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
         registration_data, _ = ObjectsAPIRegistrationData.objects.get_or_create(
             submission=submission
         )
+        submission_attachments: list[ObjectsAPISubmissionAttachment] = []
 
         with (
             get_documents_client() as documents_client,
-            save_and_raise(registration_data),
+            save_and_raise(registration_data, submission_attachments),
         ):
             if not registration_data.pdf_url:
                 registration_data.pdf_url = register_submission_pdf(
@@ -233,11 +238,9 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                     )
                 ]
 
-                objs: list[ObjectsAPISubmissionAttachment] = []
-
                 for attachment in submission.attachments:
                     if attachment not in existing:
-                        objs.append(
+                        submission_attachments.append(
                             ObjectsAPISubmissionAttachment(
                                 submission_file_attachment=attachment,
                                 document_url=register_submission_attachment(
@@ -245,8 +248,6 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                                 ),
                             )
                         )
-
-                ObjectsAPISubmissionAttachment.objects.bulk_create(objs)
 
     @abstractmethod
     def get_object_data(
