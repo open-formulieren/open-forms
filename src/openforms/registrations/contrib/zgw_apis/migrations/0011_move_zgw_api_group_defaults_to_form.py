@@ -4,7 +4,39 @@ from django.db import migrations
 
 
 def move_defaults_from_zgw_api_group_to_backend_options(apps, _):
-    raise NotImplementedError
+    FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+    ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
+    ZgwConfig = apps.get_model("zgw_apis", "ZgwConfig")
+
+    zgw_api_groups = ZGWApiGroupConfig.objects.in_bulk(field_name="id")
+    if not zgw_api_groups:
+        return
+
+    registration_backends = FormRegistrationBackend.objects.filter(
+        backend="zgw-create-zaak"
+    )
+    if not registration_backends.exists():
+        return
+
+    config = ZgwConfig.objects.first()
+    default_group = config.default_zgw_api_group if config else None
+
+    for backend in registration_backends.iterator():
+        options = backend.options
+        # leave explicit configuration untouched
+        if options.get("zaaktype") and options.get("informatieobjecttype"):
+            continue
+
+        # it's possible there are broken FK references or incomplete configuration,
+        # resulting in no group being determined at all!
+        group_id = options.get("zgw_api_group")
+        group = zgw_api_groups.get(group_id) or default_group
+        if group is None:
+            continue
+
+        options.setdefault("zaaktype", group.zaaktype)
+        options.setdefault("informatieobjecttype", group.informatieobjecttype)
+        backend.save()
 
 
 class Migration(migrations.Migration):
