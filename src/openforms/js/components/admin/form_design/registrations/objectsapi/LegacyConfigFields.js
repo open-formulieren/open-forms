@@ -46,6 +46,7 @@ const LegacyConfigFields = ({index, name, formData, onChange}) => {
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttype')}
         errors={buildErrorsComponent('objecttype')}
         displayLabel
+        required
       >
         <TextInput id="root_objecttype" name="objecttype" value={objecttype} onChange={onChange} />
       </CustomFieldTemplate>
@@ -62,6 +63,7 @@ const LegacyConfigFields = ({index, name, formData, onChange}) => {
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttypeVersion')}
         errors={buildErrorsComponent('objecttypeVersion')}
         displayLabel
+        required
       >
         <NumberInput
           id="root_objecttypeVersion"
