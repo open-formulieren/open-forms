@@ -6,7 +6,7 @@
 #
 --no-binary lxml
 
-alabaster==0.7.12
+alabaster==0.7.16
     # via sphinx
 amqp==5.0.9
     # via
@@ -141,8 +141,6 @@ click-repl==0.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-commonmark==0.9.1
-    # via recommonmark
 coverage==7.4.0
     # via -r requirements/test-tools.in
 cryptography==42.0.4
@@ -391,9 +389,8 @@ djangorestframework-camel-case==1.4.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-docutils==0.16
+docutils==0.20.1
     # via
-    #   recommonmark
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
@@ -499,7 +496,7 @@ idna==2.10
     #   -r requirements/base.txt
     #   requests
     #   yarl
-imagesize==1.2.0
+imagesize==1.4.1
     # via sphinx
 inflection==0.5.1
     # via
@@ -578,8 +575,6 @@ mail-parser==3.15.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-yubin
-markdown==3.3.4
-    # via sphinx-markdown-tables
 markupsafe==2.1.2
     # via jinja2
 maykin-2fa==1.0.0
@@ -721,7 +716,7 @@ pyee==9.0.4
     # via playwright
 pyflakes==3.0.1
     # via flake8
-pygments==2.15.1
+pygments==2.17.2
     # via
     #   sphinx
     #   sphinx-tabs
@@ -799,8 +794,6 @@ qrcode==7.4.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
-recommonmark==0.7.1
-    # via -r requirements/docs.in
 redis==4.5.4
     # via
     #   -c requirements/base.txt
@@ -920,29 +913,29 @@ soupsieve==2.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   beautifulsoup4
-sphinx==4.5.0
+sphinx==7.2.6
     # via
     #   -r requirements/docs.in
-    #   recommonmark
     #   sphinx-rtd-theme
     #   sphinx-tabs
-sphinx-markdown-tables==0.0.15
+    #   sphinxcontrib-jquery
+sphinx-rtd-theme==2.0.0
     # via -r requirements/docs.in
-sphinx-rtd-theme==0.5.2
+sphinx-tabs==3.4.5
     # via -r requirements/docs.in
-sphinx-tabs==3.0.0
-    # via -r requirements/docs.in
-sphinxcontrib-applehelp==1.0.2
+sphinxcontrib-applehelp==1.0.8
     # via sphinx
-sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-devhelp==1.0.6
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.0
+sphinxcontrib-htmlhelp==2.0.5
     # via sphinx
+sphinxcontrib-jquery==4.1
+    # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
-sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-qthelp==1.0.7
     # via sphinx
-sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
 sqlparse==0.4.4
     # via

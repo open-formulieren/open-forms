@@ -6,7 +6,7 @@
 #
 --no-binary lxml
 
-alabaster==0.7.12
+alabaster==0.7.16
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -156,11 +156,6 @@ click-repl==0.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
-commonmark==0.9.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   recommonmark
 coverage==7.4.0
     # via
     #   -c requirements/ci.txt
@@ -430,11 +425,10 @@ djangorestframework-camel-case==1.4.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-docutils==0.16
+docutils==0.20.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   recommonmark
     #   sphinx
     #   sphinx-rtd-theme
     #   sphinx-tabs
@@ -560,7 +554,7 @@ idna==2.10
     #   -r requirements/ci.txt
     #   requests
     #   yarl
-imagesize==1.2.0
+imagesize==1.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -650,11 +644,6 @@ mail-parser==3.15.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
-markdown==3.3.4
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   sphinx-markdown-tables
 markupsafe==2.1.2
     # via
     #   -c requirements/ci.txt
@@ -835,7 +824,7 @@ pyflakes==3.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flake8
-pygments==2.15.1
+pygments==2.17.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -919,10 +908,6 @@ qrcode==7.4.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
-recommonmark==0.7.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 redis==4.5.4
     # via
     #   -c requirements/ci.txt
@@ -1052,51 +1037,52 @@ soupsieve==2.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   beautifulsoup4
-sphinx==4.5.0
+sphinx==7.2.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   recommonmark
     #   sphinx-rtd-theme
     #   sphinx-tabs
-sphinx-markdown-tables==0.0.15
+    #   sphinxcontrib-jquery
+sphinx-rtd-theme==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-sphinx-rtd-theme==0.5.2
+sphinx-tabs==3.4.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-sphinx-tabs==3.0.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-sphinxcontrib-applehelp==1.0.2
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   sphinx
-sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-applehelp==1.0.8
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-sphinxcontrib-htmlhelp==2.0.0
+sphinxcontrib-devhelp==1.0.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
+sphinxcontrib-htmlhelp==2.0.5
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   sphinx
+sphinxcontrib-jquery==4.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-qthelp==1.0.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-serializinghtml==1.1.10
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
