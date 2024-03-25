@@ -20,6 +20,62 @@ the code for this is organized in the ``openforms.formio`` package.
     and all of the separate registries (formatters, normalizers...) were merged into a
     single compoment registry.
 
+Form.io configuration
+=====================
+
+A form.io configuration is an object containing a ``"components"`` key mapped to an array of objects
+representing the definition of form components for a specific form step.
+The following is an example of such a configuration:
+
+.. code-block:: json
+
+    {
+        "display": "form",
+        "components": [
+            {
+                "type": "textfield",
+                "key": "field_1",
+                "label": "Field 1"
+            },
+            {
+                "type": "number",
+                "key": "field_2",
+                "label": "Field 2"
+            }
+        ]
+    }
+
+Whenever a submission is created, submission data will be attached to it. The layout of this submission
+data will depend on the components configuration. For instance, with the example configuration given above,
+submission data will look like:
+
+.. code-block:: json
+
+    {
+        "field_1": "some_value",
+        "field_2": 1
+    }
+
+
+Components can be roughly categorised as layout and data components. Layout components don't have
+a matching entry in the submission data.
+
+Every component has two required properties:
+
+* ``"key"``: A unique identifier across the form. The key represents a structured path "into" the submission
+  data. A period (``.``) represents a level of nesting in this data.
+* ``"type"``: The corresponding component type.
+
+.. note::
+
+    Submission data should be interpreted along with components configuration, as it is impossible
+    to determine how data needs to be handled without this context. At times, the submission data
+    can also influence the component configuration, e.g. with conditionals expressing when a component
+    is visible or not.
+
+The `form.io playground`_ can be used to play with the different components and how the submission data will
+look like.
+
 Supported features
 ==================
 
@@ -132,3 +188,4 @@ Module: ``openforms.formio.rendering``
     :members:
 
 .. _form.io: https://www.form.io/
+.. _form.io playground: https://formio.github.io/formio.js/app/builder
