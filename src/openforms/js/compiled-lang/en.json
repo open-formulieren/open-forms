@@ -1155,6 +1155,12 @@
       "value": "Form"
     }
   ],
+  "BVuE94": [
+    {
+      "type": 0,
+      "value": "If specified, the user must check at least this many options."
+    }
+  ],
   "BcuXrg": [
     {
       "type": 0,
@@ -1209,6 +1215,26 @@
       "value": "Items expression"
     }
   ],
+  "C4TGm5": [
+    {
+      "type": 0,
+      "value": "This field supports templating. See the "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "manual"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": " for documentation and examples."
+    }
+  ],
   "C4Zn+R": [
     {
       "type": 0,
@@ -1231,6 +1257,20 @@
     {
       "type": 0,
       "value": "Maximum file size"
+    }
+  ],
+  "CGSzx/": [
+    {
+      "type": 0,
+      "value": "Whether to map this variable to the "
+    },
+    {
+      "type": 1,
+      "value": "geometryPath"
+    },
+    {
+      "type": 0,
+      "value": " attribute"
     }
   ],
   "CN9j+L": [
@@ -2149,6 +2189,22 @@
       "value": "All simple variables are mapped to a case property."
     }
   ],
+  "NdaqDN": [
+    {
+      "type": 0,
+      "value": "Option description ("
+    },
+    {
+      "children": [
+      ],
+      "type": 8,
+      "value": "option"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "Nsifca": [
     {
       "type": 0,
@@ -2257,12 +2313,6 @@
     {
       "type": 0,
       "value": "Datetime"
-    }
-  ],
-  "P3oGZG": [
-    {
-      "type": 0,
-      "value": "Save and add another"
     }
   ],
   "PC7ICN": [
@@ -2959,6 +3009,12 @@
       "value": "File name"
     }
   ],
+  "XYZcYw": [
+    {
+      "type": 0,
+      "value": "Map to geometry field"
+    }
+  ],
   "Xe+CCn": [
     {
       "type": 0,
@@ -3017,6 +3073,12 @@
     {
       "type": 0,
       "value": "Save"
+    }
+  ],
+  "YSuwK2": [
+    {
+      "type": 0,
+      "value": "(collapse)"
     }
   ],
   "YbnFnL": [
@@ -3193,10 +3255,30 @@
       "value": "Maximum number of files"
     }
   ],
+  "aBC+qN": [
+    {
+      "type": 0,
+      "value": "Mapped to the "
+    },
+    {
+      "type": 1,
+      "value": "geometryPath"
+    },
+    {
+      "type": 0,
+      "value": " attribute"
+    }
+  ],
   "aUChz/": [
     {
       "type": 0,
       "value": "Products Component"
+    }
+  ],
+  "aWwaAq": [
+    {
+      "type": 0,
+      "value": "Maximum selected checkboxes"
     }
   ],
   "aXJpiI": [
@@ -3209,6 +3291,12 @@
     {
       "type": 0,
       "value": "Login required?"
+    }
+  ],
+  "aqYeqv": [
+    {
+      "type": 0,
+      "value": "Description translations"
     }
   ],
   "arAMAF": [
@@ -3275,6 +3363,20 @@
     {
       "type": 0,
       "value": "Whether to show this value in the submission summary"
+    }
+  ],
+  "bf6Y/t": [
+    {
+      "type": 1,
+      "value": "varName"
+    },
+    {
+      "type": 0,
+      "value": ": registration configuration for "
+    },
+    {
+      "type": 1,
+      "value": "backendName"
     }
   ],
   "bnxtnX": [
@@ -3499,6 +3601,12 @@
     {
       "type": 0,
       "value": "Label is a required field."
+    }
+  ],
+  "dbAJfK": [
+    {
+      "type": 0,
+      "value": "Minimum selected checkboxes"
     }
   ],
   "ddDA6+": [
@@ -3915,6 +4023,12 @@
       "value": "Show in summary"
     }
   ],
+  "iOcL9h": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
   "iX0YPY": [
     {
       "options": {
@@ -4269,6 +4383,12 @@
     {
       "type": 0,
       "value": "Steps and fields"
+    }
+  ],
+  "mWuCXv": [
+    {
+      "type": 0,
+      "value": "Optionally provide additional information to explain the meaning of the option."
     }
   ],
   "mXJbc8": [
@@ -4677,6 +4797,12 @@
       "value": "Objecttype"
     }
   ],
+  "rRB7WE": [
+    {
+      "type": 0,
+      "value": "Registration"
+    }
+  ],
   "rTafvA": [
     {
       "type": 0,
@@ -4727,6 +4853,12 @@
     {
       "type": 0,
       "value": "Whether to send a confirmation email to the end-user who submitted the form."
+    }
+  ],
+  "sR9GVQ": [
+    {
+      "type": 0,
+      "value": "If specified, the user must check at most this many options."
     }
   ],
   "sU/n0S": [
@@ -5267,6 +5399,12 @@
       "value": "Component where dates for an appointment will be shown"
     }
   ],
+  "zQE4f2": [
+    {
+      "type": 0,
+      "value": "N/A"
+    }
+  ],
   "zUVGyl": [
     {
       "type": 0,
@@ -5277,6 +5415,30 @@
     {
       "type": 0,
       "value": "Object"
+    }
+  ],
+  "zWxcfD": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Add description"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Edit description"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "hasDescription"
     }
   ],
   "zeXZzX": [
