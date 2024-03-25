@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
+import LoAOverrideOption from 'components/admin/form_design/authentication/LoAOverrideOption';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -254,41 +255,12 @@ const FormConfigurationFields = ({
               ></AuthPluginAutoLoginField>
             </Field>
           </FormRow>
-          <FormRow>
-            <Field
-              name="form.authenticationBackendOptions"
-              label={
-                <FormattedMessage
-                  description="Minimal levels of assurance label"
-                  defaultMessage="Minimal levels of assurance"
-                />
-              }
-            >
-              <ul>
-                {availableAuthPlugins
-                  .filter(
-                    plugin =>
-                      plugin.assuranceLevels.length && selectedAuthPlugins.includes(plugin.id)
-                  )
-                  .map(plugin => (
-                    <li key={plugin.id}>
-                      <label htmlFor={`form.authenticationBackendOptions.${plugin.id}.loa`}>
-                        {plugin.label}
-                      </label>
-                      <Select
-                        key={plugin.id}
-                        id={`form.authenticationBackendOptions.${plugin.id}.loa`}
-                        name={`form.authenticationBackendOptions.${plugin.id}.loa`}
-                        value={form.authenticationBackendOptions[plugin.id]?.loa}
-                        onChange={onChange}
-                        allowBlank={true}
-                        choices={plugin.assuranceLevels.map(loa => [loa.value, loa.label])}
-                      />
-                    </li>
-                  ))}
-              </ul>
-            </Field>
-          </FormRow>
+          <LoAOverrideOption
+            availableAuthPlugins={availableAuthPlugins}
+            selectedAuthPlugins={selectedAuthPlugins}
+            authenticationBackendOptions={form.authenticationBackendOptions}
+            onChange={onChange}
+          />
         </>
       )}
 

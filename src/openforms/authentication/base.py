@@ -39,6 +39,7 @@ class Choice(TypedDict):
 
 class BasePlugin(AbstractBasePlugin):
     provides_auth: AuthAttribute
+    supports_loa_override = False
     assurance_levels: type[TextChoices] = TextChoices
     return_method = "GET"
     is_for_gemachtigde = False

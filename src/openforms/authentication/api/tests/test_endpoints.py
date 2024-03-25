@@ -98,6 +98,7 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
                 "providesAuth": "bsn",
+                "supportsLoaOverride": False,
                 "assuranceLevels": [
                     {"label": "low", "value": "low"},
                     {"label": "Stare into the Sun", "value": "∞"},
@@ -120,6 +121,7 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "SingleAuthPlugin",
                 "providesAuth": "bsn",
+                "supportsLoaOverride": False,
                 "assuranceLevels": [
                     {"label": "low", "value": "low"},
                     {"label": "Stare into the Sun", "value": "∞"},
@@ -129,6 +131,7 @@ class ResponseTests(APITestCase):
                 "id": "plugin2",
                 "label": "DemoAuthPlugin",
                 "providesAuth": "bsn",
+                "supportsLoaOverride": False,
                 "assuranceLevels": [],
             },
         ]

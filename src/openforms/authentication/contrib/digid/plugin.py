@@ -34,6 +34,7 @@ def loa_order(loa: str) -> int:
 class DigidAuthentication(BasePlugin):
     verbose_name = _("DigiD")
     provides_auth = AuthAttribute.bsn
+    supports_loa_override = True
     assurance_levels = DigiDAssuranceLevels
 
     def start_login(

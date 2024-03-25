@@ -6716,6 +6716,10 @@ components:
           type: string
           title: Provides authentication attributes
           description: The authentication attribute provided by this plugin.
+        supportsLoaOverride:
+          type: boolean
+          description: Does the Identity Provider support overriding the minimum Level
+            of Assurance (LoA) through the authentication request?
         assuranceLevels:
           type: array
           items:
@@ -6727,6 +6731,7 @@ components:
       - id
       - label
       - providesAuth
+      - supportsLoaOverride
     AuthenticationBackendsEnum:
       enum:
       - digid
