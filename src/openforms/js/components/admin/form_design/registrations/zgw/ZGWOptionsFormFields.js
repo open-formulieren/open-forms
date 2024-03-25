@@ -90,6 +90,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
         rawErrors={getFieldErrors(name, index, validationErrors, 'zaaktype')}
         errors={buildErrorsComponent('zaaktype')}
         displayLabel
+        required
       >
         <TextInput id="root_zaaktype" name="zaaktype" value={zaaktype} onChange={onFieldChange} />
       </CustomFieldTemplate>
@@ -107,6 +108,7 @@ const ZGWFormFields = ({index, name, schema, formData, onChange}) => {
         rawErrors={getFieldErrors(name, index, validationErrors, 'informatieobjecttype')}
         errors={buildErrorsComponent('informatieobjecttype')}
         displayLabel
+        required
       >
         <TextInput
           id="root_informatieobjecttype"

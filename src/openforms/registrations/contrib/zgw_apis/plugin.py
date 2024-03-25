@@ -94,10 +94,10 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
     )
     zaaktype = serializers.URLField(
-        required=False, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
+        required=True, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
     )
     informatieobjecttype = serializers.URLField(
-        required=False,
+        required=True,
         help_text=_("URL of the INFORMATIEOBJECTTYPE in the Catalogi API"),
     )
     organisatie_rsin = serializers.CharField(
@@ -175,12 +175,14 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         # We know it exists thanks to the previous check
         group_config = ZGWRegistration.get_zgw_config(attrs)
 
+        # zaaktype + informatieobjecttype *must* be specified on the options level.
+        # TODO: add validation that they're provided
+        # TODO: add validation that they live the specified catalogi API
+
         # Make sure the property (eigenschap) related to the zaaktype exists
         if mappings := attrs.get("property_mappings"):
             with get_catalogi_client(group_config) as client:
-                eigenschappen = client.list_eigenschappen(
-                    zaaktype=attrs.get("zaaktype") or group_config.zaaktype
-                )
+                eigenschappen = client.list_eigenschappen(zaaktype=attrs["zaaktype"])
                 retrieved_eigenschappen = {
                     eigenschap["naam"]: eigenschap["url"]
                     for eigenschap in eigenschappen
@@ -201,7 +203,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                         {"property_mappings": errors}, code="invalid"
                     )
 
-        if not ("medewerker_roltype" in attrs and "zaaktype" in attrs):
+        if not ("medewerker_roltype" in attrs):
             return attrs
 
         with get_catalogi_client(group_config) as client:
