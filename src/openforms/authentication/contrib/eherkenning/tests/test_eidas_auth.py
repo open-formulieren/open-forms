@@ -55,7 +55,7 @@ class EIDASConfigMixin:
         config.service_name = "Test eIDAS"
         config.service_description = "Test eIDAS"
         config.want_assertions_signed = False
-        config.loa = "urn:etoegang:core:assurance-class:loa3"
+        config.eh_loa = "urn:etoegang:core:assurance-class:loa3"
         config.privacy_policy = "https://test-sp.nl/privacy_policy"
         config.makelaar_id = "00000002222222222000"
         config.oin = "00000001111111111000"
@@ -64,6 +64,7 @@ class EIDASConfigMixin:
 
         config.eidas_attribute_consuming_service_index = "9999"
         config.eidas_requested_attributes = []
+        config.eidas_loa = "urn:etoegang:core:assurance-class:loa3"
         config.eidas_service_uuid = "75b40657-ec50-4ced-8e7a-e77d55b46040"
         config.eidas_service_instance_uuid = "ebd00992-3c8f-4c1c-b28f-d98074de1554"
 

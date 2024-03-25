@@ -98,7 +98,6 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         config.makelaar_id = "00000003244440010000"
         config.privacy_policy = "https://example.com"
         config.service_language = "nl"
-        config.loa = AssuranceLevels.low_plus
 
         config.requested_attributes = [
             "urn:etoegang:1.9:EntityConcernedID:KvKnr",
@@ -107,6 +106,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         config.attribute_consuming_service_index = "9052"
         config.eh_service_uuid = "588932b9-28ae-4323-ab6c-fabbddae05cd"
         config.eh_service_instance_uuid = "952cee6a-6553-4f58-922d-dd03486a772c"
+        config.eh_loa = AssuranceLevels.low_plus
 
         config.no_eidas = True
 
