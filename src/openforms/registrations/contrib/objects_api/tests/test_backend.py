@@ -9,9 +9,13 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.registrations.contrib.objects_api.models import (
     ObjectsAPIRegistrationData,
+    ObjectsAPISubmissionAttachment,
 )
 from openforms.registrations.exceptions import RegistrationFailed
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionFileAttachmentFactory,
+)
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
@@ -103,6 +107,77 @@ class ObjectsAPIBackendTests(TestCase):
 
         self.assertEqual(registration_data.pdf_url, pdf["url"])
         self.assertEqual(registration_data.csv_url, "")
+
+    def test_attachment_fails_other_attachments_still_saved(
+        self, m: requests_mock.Mocker
+    ):
+        """Test the behavior when one of the API calls to register an attachment fails.
+
+        The exception should be caught, the first attachment saved, and a
+        ``RegistrationFailed`` should be raised in the end.
+        """
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "file_1",
+                    "type": "file",
+                },
+                {
+                    "key": "file_2",
+                    "type": "file",
+                },
+            ],
+            completed=True,
+        )
+        submission_step = submission.steps[0]
+        attachment_1 = SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment1.jpg",
+            form_key="file_1",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission_step,
+            file_name="attachment2.png",
+            form_key="file_2",
+        )
+
+        jpg_resp = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+
+        # OK on JPG attachment request
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=jpg_resp,
+            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".jpg"),
+        )
+
+        # Failure on PNG attachment request (which is dispatched after the JPG one)
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=500,
+            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".png"),
+        )
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.assertRaises(RegistrationFailed):
+            plugin.register_submission(
+                submission,
+                {
+                    "upload_submission_csv": False,
+                    "informatieobjecttype_attachment": "dummy",
+                },
+            )
+
+        attachment = ObjectsAPISubmissionAttachment.objects.filter(
+            submission_file_attachment=attachment_1
+        )
+        self.assertTrue(attachment.exists())
 
     def test_registration_works_after_failure(self, m: requests_mock.Mocker):
         """Test the registration behavior after a failure.
