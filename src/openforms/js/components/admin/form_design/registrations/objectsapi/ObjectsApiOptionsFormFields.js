@@ -21,6 +21,13 @@ const Wrapper = ({children}) => (
 const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) => {
   const intl = useIntl();
 
+  const v1SwitchMessage = intl.formatMessage({
+    defaultMessage: `Switching to the legacy registration options will remove the existing variables mapping.
+    Are you sure you want to continue?
+    `,
+    description: 'Objects API registration backend: v1 switch warning message',
+  });
+
   const v2SwitchMessage = intl.formatMessage({
     defaultMessage: `Switching to the new registration options will remove the existing JSON templates.
     You will also not be able to save the form until the variables are correctly mapped.
@@ -33,6 +40,12 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
 
   const changeVersion = v => {
     const realVersion = v + 1;
+
+    if (realVersion === 1) {
+      const confirmV1Switch = window.confirm(v1SwitchMessage);
+      if (!confirmV1Switch) return;
+    }
+
     if (realVersion === 2) {
       const confirmV2Switch = window.confirm(v2SwitchMessage);
       if (!confirmV2Switch) return;
