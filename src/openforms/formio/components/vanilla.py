@@ -22,6 +22,7 @@ from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
+from ..api.validators import TruthyBooleanValueValidator
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
@@ -266,9 +267,9 @@ class Number(BasePlugin):
         required = validate.get("required", False)
 
         extra = {}
-        if max_value := validate.get("max"):
+        if (max_value := validate.get("max")) is not None:
             extra["max_value"] = max_value
-        if min_value := validate.get("min"):
+        if (min_value := validate.get("min")) is not None:
             extra["min_value"] = min_value
 
         validators = []
@@ -296,7 +297,18 @@ class Checkbox(BasePlugin[Component]):
     def build_serializer_field(self, component: Component) -> serializers.BooleanField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
-        return serializers.BooleanField(required=required)
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+
+        validators = [TruthyBooleanValueValidator()] if required else []
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
+        return serializers.BooleanField(**extra)
 
 
 @register("selectboxes")
@@ -362,9 +374,9 @@ class Currency(BasePlugin[Component]):
         required = validate.get("required", False)
 
         extra = {}
-        if max_value := validate.get("max"):
+        if (max_value := validate.get("max")) is not None:
             extra["max_value"] = max_value
-        if min_value := validate.get("min"):
+        if (min_value := validate.get("min")) is not None:
             extra["min_value"] = min_value
 
         validators = []
