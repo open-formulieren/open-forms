@@ -287,3 +287,29 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
         self.assertIn("zaaktype", serializer.errors)
         error = serializer.errors["zaaktype"][0]
         self.assertEqual(error.code, "not-found")
+
+    def test_validate_informatieobjecttype_within_configured_ztc_service(self):
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            zrc_service=self.zaken_service,
+            drc_service=self.documenten_service,
+            ztc_service=self.catalogi_service,
+        )
+        data = {
+            "zgw_api_group": zgw_group.pk,
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/ca5ffa84-3806-4663-a226-f2d163b79643"  # bad UUID
+            ),
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("informatieobjecttype", serializer.errors)
+        error = serializer.errors["informatieobjecttype"][0]
+        self.assertEqual(error.code, "not-found")
