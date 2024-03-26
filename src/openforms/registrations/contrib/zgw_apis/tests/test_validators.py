@@ -44,6 +44,7 @@ class OmschrijvingValidatorTests(TestCase):
         data = {
             "zgw_api_group": self.zgw_group.pk,
             "zaaktype": "https://catalogus.nl/api/v1/zaaktypen/111",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "medewerker_roltype": "Some description",
         }
 
@@ -69,6 +70,7 @@ class OmschrijvingValidatorTests(TestCase):
         data = {
             "zgw_api_group": self.zgw_group.pk,
             "zaaktype": "https://catalogus.nl/api/v1/zaaktypen/111",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "medewerker_roltype": "Some description",
         }
 
@@ -88,7 +90,12 @@ class OmschrijvingValidatorTests(TestCase):
 class ZGWAPIGroupConfigTest(TestCase):
     def test_no_zgw_api_group_and_no_default(self):
         # No zgw_api_group provided
-        serializer = ZaakOptionsSerializer(data={})
+        serializer = ZaakOptionsSerializer(
+            data={
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            }
+        )
 
         # No ZgwConfig.default_zgw_api_group configured
         with patch(
@@ -111,8 +118,6 @@ class ZGWAPIGroupConfigTest(TestCase):
             drc_service__api_root="https://documenten.nl/api/v1/",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
         )
-        zgw_group.zaaktype = "https://zaken.nl/api/v1/zaaktypen/1"
-        zgw_group.save()
         m.get(
             "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fzaken.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
             status_code=200,
@@ -143,6 +148,8 @@ class ZGWAPIGroupConfigTest(TestCase):
 
         data = {
             "zgw_api_group": zgw_group.pk,
+            "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "property_mappings": [
                 {"component_key": "textField", "eigenschap": "a property name"}
             ],
@@ -160,8 +167,6 @@ class ZGWAPIGroupConfigTest(TestCase):
             drc_service__api_root="https://documenten.nl/api/v1/",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
         )
-        zgw_group.zaaktype = "https://zaken.nl/api/v1/zaaktypen/1"
-        zgw_group.save()
         m.get(
             "https://catalogus.nl/api/v1/eigenschappen?zaaktype=https%3A%2F%2Fzaken.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
             status_code=200,
@@ -192,6 +197,8 @@ class ZGWAPIGroupConfigTest(TestCase):
 
         data = {
             "zgw_api_group": zgw_group.pk,
+            "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
             "property_mappings": [
                 {"component_key": "textField", "eigenschap": "wrong variable"}
             ],

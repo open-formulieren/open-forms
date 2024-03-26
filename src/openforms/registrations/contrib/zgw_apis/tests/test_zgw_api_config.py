@@ -28,18 +28,14 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         cls.zgw_group1 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-1.nl/api/v1/",
             drc_service__api_root="https://documenten-1.nl/api/v1/",
-            ztc_service__api_root="https://catalogus-1.nl/api/v1/",
-            zaaktype="https://catalogi-1.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi-1.nl/api/v1/informatieobjecttypen/1",
+            ztc_service__api_root="https://catalogi-1.nl/api/v1/",
             organisatie_rsin="000000000",
             zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.openbaar,
         )
         cls.zgw_group2 = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken-2.nl/api/v1/",
             drc_service__api_root="https://documenten-2.nl/api/v1/",
-            ztc_service__api_root="https://catalogus-2.nl/api/v1/",
-            zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/1",
-            informatieobjecttype="https://catalogi-2.nl/api/v1/informatieobjecttypen/1",
+            ztc_service__api_root="https://catalogi-2.nl/api/v1/",
             organisatie_rsin="000000001",
             zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.beperkt_openbaar,
         )
@@ -108,7 +104,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         )
 
         m.get(
-            "https://catalogus-1.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi-1.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
+            "https://catalogi-1.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi-1.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
             status_code=200,
             json={
                 "count": 1,
@@ -118,7 +114,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     generate_oas_component(
                         "catalogi",
                         "schemas/RolType",
-                        url="https://catalogus-1.nl/api/v1/roltypen/1",
+                        url="https://catalogi-1.nl/api/v1/roltypen/1",
                     )
                 ],
             },
@@ -131,7 +127,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             ),
         )
         m.get(
-            "https://catalogus-1.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi-1.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            "https://catalogi-1.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi-1.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
             status_code=200,
             json={
                 "count": 2,
@@ -141,19 +137,19 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     generate_oas_component(
                         "catalogi",
                         "schemas/StatusType",
-                        url="https://catalogus-1.nl/api/v1/statustypen/2",
+                        url="https://catalogi-1.nl/api/v1/statustypen/2",
                         volgnummer=2,
                     ),
                     generate_oas_component(
                         "catalogi",
                         "schemas/StatusType",
-                        url="https://catalogus-1.nl/api/v1/statustypen/1",
+                        url="https://catalogi-1.nl/api/v1/statustypen/1",
                         volgnummer=1,
                     ),
                 ],
             },
         )
-        m.get("https://catalogus-1.nl/api/v1/zaaktypen", status_code=200, json=[])
+        m.get("https://catalogi-1.nl/api/v1/zaaktypen", status_code=200, json=[])
         m.post(
             "https://zaken-1.nl/api/v1/statussen",
             status_code=201,
@@ -225,7 +221,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         )
 
         m.get(
-            "https://catalogus-2.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi-2.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
+            "https://catalogi-2.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi-2.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
             status_code=200,
             json={
                 "count": 1,
@@ -235,13 +231,13 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     generate_oas_component(
                         "catalogi",
                         "schemas/RolType",
-                        url="https://catalogus-2.nl/api/v1/roltypen/1",
+                        url="https://catalogi-2.nl/api/v1/roltypen/1",
                     )
                 ],
             },
         )
         m.get(
-            "https://catalogus-2.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi-2.nl%2Fapi%2Fv1%2Fzaaktypen%2F2&omschrijvingGeneriek=initiator",
+            "https://catalogi-2.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi-2.nl%2Fapi%2Fv1%2Fzaaktypen%2F2&omschrijvingGeneriek=initiator",
             status_code=200,
             json={
                 "count": 1,
@@ -251,12 +247,12 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     generate_oas_component(
                         "catalogi",
                         "schemas/RolType",
-                        url="https://catalogus-2.nl/api/v1/roltypen/2",
+                        url="https://catalogi-2.nl/api/v1/roltypen/2",
                     )
                 ],
             },
         )
-        m.get("https://catalogus-2.nl/api/v1/zaaktypen", status_code=200, json=[])
+        m.get("https://catalogi-2.nl/api/v1/zaaktypen", status_code=200, json=[])
         m.post(
             "https://zaken-2.nl/api/v1/rollen",
             status_code=201,
@@ -265,7 +261,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             ),
         )
         m.get(
-            "https://catalogus-2.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi-2.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            "https://catalogi-2.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi-2.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
             status_code=200,
             json={
                 "count": 2,
@@ -275,13 +271,13 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                     generate_oas_component(
                         "catalogi",
                         "schemas/StatusType",
-                        url="https://catalogus-2.nl/api/v1/statustypen/2",
+                        url="https://catalogi-2.nl/api/v1/statustypen/2",
                         volgnummer=2,
                     ),
                     generate_oas_component(
                         "catalogi",
                         "schemas/StatusType",
-                        url="https://catalogus-2.nl/api/v1/statustypen/1",
+                        url="https://catalogi-2.nl/api/v1/statustypen/1",
                         volgnummer=1,
                     ),
                 ],
@@ -309,7 +305,11 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             form_key="field1",
             _component_configuration_path="components.0",
         )
-        zgw_form_options = {"zgw_api_group": self.zgw_group2}
+        zgw_form_options = {
+            "zgw_api_group": self.zgw_group2,
+            "zaaktype": "https://catalogi-2.nl/api/v1/zaaktypen/1",
+            "informatieobjecttype": "https://catalogi-2.nl/api/v1/informatieobjecttypen/1",
+        }
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
@@ -340,8 +340,8 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group2,  # Configure to use the second ZGW API
-            zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/2",  # Use zaaktype 2 instead of 1
-            informatieobjecttype="https://catalogi-2.nl/api/v1/informatieobjecttypen/2",  # Use iot 2 instead of 1
+            zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/2",
+            informatieobjecttype="https://catalogi-2.nl/api/v1/informatieobjecttypen/2",
             organisatie_rsin="000000123",
             zaak_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.confidentieel,
             doc_vertrouwelijkheidaanduiding=VertrouwelijkheidsAanduidingen.geheim,
@@ -496,11 +496,11 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
 
         self.assertEqual(list_zaken_1.hostname, "zaken-1.nl")
         self.assertEqual(list_documenten_1.hostname, "documenten-1.nl")
-        self.assertEqual(list_zaaktypen_1.hostname, "catalogus-1.nl")
+        self.assertEqual(list_zaaktypen_1.hostname, "catalogi-1.nl")
 
         self.assertEqual(list_zaken_2.hostname, "zaken-2.nl")
         self.assertEqual(list_documenten_2.hostname, "documenten-2.nl")
-        self.assertEqual(list_zaaktypen_2.hostname, "catalogus-2.nl")
+        self.assertEqual(list_zaaktypen_2.hostname, "catalogi-2.nl")
 
     def test_check_config_no_zrc_service(self, m):
         self.install_mocks(m)
