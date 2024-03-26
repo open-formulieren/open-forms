@@ -469,11 +469,6 @@ furl==2.1.2
     #   -r requirements/base.txt
     #   ape-pie
     #   django-digid-eherkenning
-gemma-zds-client==2.0.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   zgw-consumers
 glom==20.11.0
     # via
     #   -c requirements/base.txt
@@ -729,7 +724,7 @@ pyjwt==2.6.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   gemma-zds-client
+    #   zgw-consumers
 pyopenssl==24.0.0
     # via
     #   -c requirements/base.txt
@@ -791,9 +786,9 @@ pyyaml==6.0.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
-    #   gemma-zds-client
     #   jsonschema-spec
     #   vcrpy
+    #   zgw-consumers
 qrcode==7.4.2
     # via
     #   -c requirements/base.txt
@@ -822,7 +817,6 @@ requests==2.31.0
     #   ape-pie
     #   django-camunda
     #   django-log-outgoing-requests
-    #   gemma-zds-client
     #   jsonschema-spec
     #   maykin-python3-saml
     #   mozilla-django-oidc
@@ -991,6 +985,7 @@ typing-extensions==4.9.0
     #   black
     #   pyee
     #   qrcode
+    #   zgw-consumers
 tzdata==2023.3
     # via
     #   -c requirements/base.txt
@@ -1077,7 +1072,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers[testutils]==0.31.0
+zgw-consumers[testutils]==0.32.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
