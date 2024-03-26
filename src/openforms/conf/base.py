@@ -435,7 +435,7 @@ LOGGING = {
     "loggers": {
         "openforms": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
         "stuf": {
@@ -455,7 +455,7 @@ LOGGING = {
         },
         "mozilla_django_oidc": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
         },
         "log_outgoing_requests": {
             "handlers": (

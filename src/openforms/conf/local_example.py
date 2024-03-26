@@ -4,8 +4,8 @@
 import os
 import sys
 
-from .dev import LOGGING as _LOGGING
-from .utils import config
+from .dev import LOGGING
+from .utils import config, mute_logging
 
 # Configure your database via the DB_* envvars in .env, see also dotenv.example file.
 
@@ -21,14 +21,14 @@ if "test" in sys.argv:
 
     # Silence logging during testing
     # if "VERBOSE" not in os.environ:
-    #     LOGGING = None
+    #     mute_logging(LOGGING)
 
 
 if "CELERY_TASK_ALWAYS_EAGER" in os.environ:
     CELERY_TASK_ALWAYS_EAGER = True
 
 if log_level := os.environ.get("LOG_LEVEL"):
-    for logger in _LOGGING["loggers"].values():
+    for logger in LOGGING["loggers"].values():
         logger["level"] = log_level
 
 # make the language code configurable via envvars

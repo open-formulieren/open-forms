@@ -25,6 +25,7 @@ os.environ.setdefault("SDK_RELEASE", "latest")
 # otherwise the test suite is flaky due to logging config lookups to the DB in
 # non-DB test cases
 os.environ.setdefault("LOG_REQUESTS", "no")
+os.environ.setdefault("LOG_STDOUT", "1")
 os.environ.setdefault("VCR_RECORD_MODE", "once")
 
 from .base import *  # noqa isort:skip
@@ -40,24 +41,14 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 LOGGING["loggers"].update(
     {
-        "openforms": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-        "stuf": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
         "django": {
             "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
         },
         "django.db.backends": {
             "handlers": ["django"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": False,
         },
         #
@@ -72,7 +63,7 @@ LOGGING["loggers"].update(
         "weasyprint": {
             "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
         },
     }
 )
