@@ -9,7 +9,7 @@ input_validation subdirectory.
 
 from pathlib import Path
 
-from playwright.async_api import Page
+from playwright.async_api import Page, expect
 
 from openforms.formio.typing import Component, DateComponent
 
@@ -187,7 +187,7 @@ class SingleBSNTests(ValidationsTestCase):
             expected_ui_error="Het verplichte veld Required bsn is niet ingevuld.",
         )
 
-    def test_elfproef(self):
+    def test_elfproef_invalid_num_chars(self):
         component: Component = {
             "type": "bsn",
             "key": "requiredBSN",
@@ -199,6 +199,13 @@ class SingleBSNTests(ValidationsTestCase):
             ui_input="1234",
             expected_ui_error="Ongeldig BSN",
         )
+
+    def test_elfproef_invalid_bsn(self):
+        component: Component = {
+            "type": "bsn",
+            "key": "requiredBSN",
+            "label": "Required bsn",
+        }
         self.assertValidationIsAligned(
             component,
             ui_input="123456781",
@@ -208,12 +215,12 @@ class SingleBSNTests(ValidationsTestCase):
 
 class SingleDateTests(ValidationsTestCase):
 
-    def _locate_input(self, page: Page, label: str):
+    async def apply_ui_input(self, page: Page, label: str, ui_input: str = "") -> None:
         # fix the input resolution because the formio datepicker is not accessible
         label_node = page.get_by_text(label, exact=True)
         label_parent = label_node.locator("xpath=../..")
         input_node = label_parent.get_by_role("textbox", include_hidden=False)
-        return input_node
+        await input_node.fill(ui_input)
 
     def test_required_field(self):
         component: DateComponent = {
@@ -313,6 +320,12 @@ class SingleDateTests(ValidationsTestCase):
 
 
 class SingleCheckboxTests(ValidationsTestCase):
+
+    async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
+        await expect(
+            page.get_by_role("checkbox", name="Required checkbox")
+        ).not_to_be_checked()
+
     def test_required_field(self):
         component: Component = {
             "type": "checkbox",
@@ -324,7 +337,6 @@ class SingleCheckboxTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="",
-            input_type="other",
             api_value=False,
             expected_ui_error="Het verplichte veld Required checkbox is niet ingevuld.",
         )
@@ -375,6 +387,11 @@ class SingleCurrencyTests(ValidationsTestCase):
 
 
 class SingleMapTests(ValidationsTestCase):
+    async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
+        page.wait_for_selector(
+            ".openforms-leaflet-map, [aria-label='Required map']", state="visible"
+        )
+
     def test_required_field(self):
         component: Component = {
             "type": "map",
@@ -386,7 +403,6 @@ class SingleMapTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="",
-            input_type="other",
             expected_ui_error="Het verplichte veld Required map is niet ingevuld.",
         )
 
@@ -408,6 +424,10 @@ class SinglePostcodeTests(ValidationsTestCase):
 
 
 class SingleSignatureTests(ValidationsTestCase):
+
+    async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
+        page.wait_for_selector("[aria-label='Required signature']", state="visible")
+
     def test_required_field(self):
         component: Component = {
             "type": "signature",
@@ -419,7 +439,6 @@ class SingleSignatureTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input="",
-            input_type="other",
             expected_ui_error="Het verplichte veld Required signature is niet ingevuld.",
         )
 
