@@ -293,3 +293,45 @@ class BSN(BasePlugin[Component]):
 class AddressNL(BasePlugin):
 
     formatter = AddressNLFormatter
+
+
+@register("iban")
+class Iban(BasePlugin):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        base = serializers.CharField(required=required, allow_blank=not required)
+        return serializers.ListField(child=base) if multiple else base
+
+
+@register("licenseplate")
+class LicensePlate(BasePlugin):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.CharField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        extra = {}
+        validators = []
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    _normalize_pattern(pattern),
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+
+        if validators:
+            extra["validators"] = validators
+
+        return serializers.CharField(
+            required=required, allow_blank=not required, **extra
+        )
