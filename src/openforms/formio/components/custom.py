@@ -2,7 +2,7 @@ import logging
 from datetime import date
 from typing import Protocol
 
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
@@ -31,6 +31,7 @@ from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.models import FamilyMembersTypeConfig
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
+from .utils import _normalize_pattern
 
 logger = logging.getLogger(__name__)
 
@@ -257,3 +258,45 @@ class BSN(BasePlugin):
 class AddressNL(BasePlugin):
 
     formatter = AddressNLFormatter
+
+
+@register("iban")
+class Iban(BasePlugin):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        base = serializers.CharField(required=required, allow_blank=not required)
+        return serializers.ListField(child=base) if multiple else base
+
+
+@register("licenseplate")
+class LicensePlate(BasePlugin):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.CharField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        extra = {}
+        validators = []
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    _normalize_pattern(pattern),
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+
+        if validators:
+            extra["validators"] = validators
+
+        return serializers.CharField(
+            required=required, allow_blank=not required, **extra
+        )
