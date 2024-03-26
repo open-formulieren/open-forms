@@ -26,6 +26,8 @@ class Validate(TypedDict, total=False):
     pattern: str
     min: int | float
     max: int | float
+    minTime: str
+    maxTime: str
     plugins: list[str]
 
 
