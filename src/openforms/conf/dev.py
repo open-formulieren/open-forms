@@ -60,11 +60,6 @@ LOGGING["loggers"].update(
             "level": "DEBUG",
             "propagate": False,
         },
-        "performance": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": True,
-        },
         #
         # See: https://code.djangoproject.com/ticket/30554
         # Autoreload logs excessively, turn it down a bit.

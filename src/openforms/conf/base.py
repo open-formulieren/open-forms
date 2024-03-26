@@ -386,9 +386,6 @@ LOGGING = {
         },
         "timestamped": {"format": "%(asctime)s %(levelname)s %(name)s  %(message)s"},
         "simple": {"format": "%(levelname)s  %(message)s"},
-        "performance": {
-            "format": "%(asctime)s %(process)d | %(thread)d | %(message)s",
-        },
         "outgoing_requests": {"()": HttpFormatter},
     },
     "filters": {
@@ -422,14 +419,6 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(LOGGING_DIR, "openforms.log"),
             "formatter": "verbose",
-            "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "backupCount": 10,
-        },
-        "performance": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGGING_DIR, "performance.log"),
-            "formatter": "performance",
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
         },
