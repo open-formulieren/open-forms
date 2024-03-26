@@ -4,8 +4,9 @@ from dataclasses import dataclass
 from django.core.management import BaseCommand
 
 import black
+import requests
+import yaml
 from glom import GlomError, Path, glom
-from zds_client.oas import SchemaFetcher
 from zgw_consumers.models import Service
 
 from ...attributes_generator import OpenApi3AttributesGenerator
@@ -70,11 +71,18 @@ def select_schema(root_schema, api_schema):
         return None
 
 
+def fetch_schema(url: str) -> dict:
+    # fetch the schema and load as yaml. Note that JSON documents are also valid YAML.
+    response = requests.get(url)
+    response.raise_for_status()
+    root_schema = yaml.safe_load(response.content)
+    return root_schema
+
+
 def generate_prefill_from_spec_url(
     url, api_path="", api_schema="", use_embeds=False, command=""
 ):
-    schema_fetcher = SchemaFetcher()
-    root_schema = schema_fetcher.fetch(url)
+    root_schema = fetch_schema(url)
 
     # find the call with the http parameters we're interested in
     if not api_path and not api_schema:
@@ -333,7 +341,7 @@ class Command(BaseCommand):
 
         if url and not options["path"] and not options["schema"]:
             # be helpful and suggest paths and schemas
-            schema = SchemaFetcher().fetch(url)
+            schema = fetch_schema(url)
 
             if schema["paths"]:
                 self.stdout.write("path:")

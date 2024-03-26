@@ -1,4 +1,3 @@
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 from unittest import skip
@@ -46,16 +45,6 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
                 from_path=str(Path(__file__).parent.parent / "files" / "openapi.yaml")
             ),
         )
-
-        # prevent parsing the yaml over and over and over
-        cls.service.id = 1  # need pk for __hash__
-        # FIXME: update to new client approach
-        cls.service.build_client = lru_cache(1)(cls.service.build_client)
-
-        # populate the schema cache *before* any test runs, otherwise this causes flakiness
-        # in hypothesis tests
-        client = cls.service.build_client()
-        client.schema
 
     @requests_mock.Mocker()
     def test_it_performs_simple_get(self, m):
