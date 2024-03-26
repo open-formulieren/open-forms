@@ -1,13 +1,20 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 
 import requests_mock
+from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test import generate_oas_component
+from zgw_consumers.test.factories import ServiceFactory
+
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import ZgwConfig
 from ..plugin import ZaakOptionsSerializer
 from .factories import ZGWApiGroupConfigFactory
+
+FILES_DIR = Path(__file__).parent / "files"
 
 
 @requests_mock.Mocker()
@@ -87,7 +94,49 @@ class OmschrijvingValidatorTests(TestCase):
 
 
 @override_settings(LANGUAGE_CODE="en")
-class ZGWAPIGroupConfigTest(TestCase):
+class OptionsSerializerTests(OFVCRMixin, TestCase):
+    """
+    Test validations against ZGW API's.
+
+    The VCR tests make use of the Open Zaak docker-compose, from the root of the
+    repository run:
+
+    .. codeblock:: bash
+
+        cd docker
+        docker compose -f docker-compose.open-zaak.yml up
+
+    See the relevant README to load the necessary data into the instance.
+    """
+
+    VCR_TEST_FILES = FILES_DIR
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        # create services for the docker-compose Open Zaak instance.
+        _credentials = {
+            "auth_type": AuthTypes.zgw,
+            "client_id": "test_client_id",
+            "secret": "test_secret_key",
+        }
+        cls.zaken_service = ServiceFactory.create(
+            api_root="http://localhost:8003/zaken/api/v1/",
+            api_type=APITypes.zrc,
+            **_credentials,
+        )
+        cls.documenten_service = ServiceFactory.create(
+            api_root="http://localhost:8003/documenten/api/v1/",
+            api_type=APITypes.drc,
+            **_credentials,
+        )
+        cls.catalogi_service = ServiceFactory.create(
+            api_root="http://localhost:8003/catalogi/api/v1/",
+            api_type=APITypes.ztc,
+            **_credentials,
+        )
+
     def test_no_zgw_api_group_and_no_default(self):
         # No zgw_api_group provided
         serializer = ZaakOptionsSerializer(
@@ -212,3 +261,29 @@ class ZGWAPIGroupConfigTest(TestCase):
             "Could not find a property with the name 'wrong variable' related to the zaaktype.",
             serializer.errors["property_mappings"][0],
         )
+
+    def test_validate_zaaktype_within_configured_ztc_service(self):
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            zrc_service=self.zaken_service,
+            drc_service=self.documenten_service,
+            ztc_service=self.catalogi_service,
+        )
+        data = {
+            "zgw_api_group": zgw_group.pk,
+            "zaaktype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "zaaktypen/ca5ffa84-3806-4663-a226-f2d163b79643"  # bad UUID
+            ),
+            "informatieobjecttype": (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        }
+        serializer = ZaakOptionsSerializer(data=data)
+
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("zaaktype", serializer.errors)
+        error = serializer.errors["zaaktype"][0]
+        self.assertEqual(error.code, "not-found")
