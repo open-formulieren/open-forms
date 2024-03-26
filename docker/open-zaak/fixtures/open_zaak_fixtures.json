@@ -1,99 +1,237 @@
 [
-    {
-        "model": "authorizations.applicatie",
-        "pk": 1,
-        "fields": {
-            "uuid": "c2f70b46-14cc-4c22-87ce-31b72b83dd62",
-            "client_ids": "[\"test_client_id\"]",
-            "label": "test application",
-            "heeft_alle_autorisaties": true
-        }
-    },
-    {
-        "model": "vng_api_common.jwtsecret",
-        "pk": 1,
-        "fields": {
-            "identifier": "test_client_id",
-            "secret": "test_secret_key"
-        }
-    },
-    {
-        "model": "catalogi.catalogus",
-        "pk": 1,
-        "fields": {
-            "_etag": "a7068427bca54eb6f5e23d2b1f9961ff",
-            "naam": "Test catalog",
-            "uuid": "bd58635c-793e-446d-a7e0-460d7b04829d",
-            "domein": "TEST",
-            "rsin": "000000000",
-            "contactpersoon_beheer_naam": "Test name",
-            "contactpersoon_beheer_telefoonnummer": "",
-            "contactpersoon_beheer_emailadres": "",
-            "versie": "",
-            "begindatum_versie": null
-        }
-    },
-    {
-        "model": "catalogi.informatieobjecttype",
-        "pk": 1,
-        "fields": {
-            "_etag": "89c597c58e42b804148e6867c3480ed1",
-            "datum_begin_geldigheid": "2024-03-19",
-            "datum_einde_geldigheid": null,
-            "concept": false,
-            "uuid": "7a474713-0833-402a-8441-e467c08ac55b",
-            "omschrijving": "PDF Informatieobjecttype",
-            "informatieobjectcategorie": "Test category",
-            "trefwoord": "[]",
-            "vertrouwelijkheidaanduiding": "openbaar",
-            "omschrijving_generiek_informatieobjecttype": "",
-            "omschrijving_generiek_definitie": "",
-            "omschrijving_generiek_herkomst": "",
-            "omschrijving_generiek_hierarchie": "",
-            "omschrijving_generiek_opmerking": "",
-            "catalogus": 1
-        }
-    },
-    {
-        "model": "catalogi.informatieobjecttype",
-        "pk": 2,
-        "fields": {
-            "_etag": "89d53439caa01c2f00ab822679e80c7b",
-            "datum_begin_geldigheid": "2024-03-19",
-            "datum_einde_geldigheid": null,
-            "concept": false,
-            "uuid": "b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
-            "omschrijving": "CSV Informatieobjecttype",
-            "informatieobjectcategorie": "Test category",
-            "trefwoord": "[]",
-            "vertrouwelijkheidaanduiding": "openbaar",
-            "omschrijving_generiek_informatieobjecttype": "",
-            "omschrijving_generiek_definitie": "",
-            "omschrijving_generiek_herkomst": "",
-            "omschrijving_generiek_hierarchie": "",
-            "omschrijving_generiek_opmerking": "",
-            "catalogus": 1
-        }
-    },
-    {
-        "model": "catalogi.informatieobjecttype",
-        "pk": 3,
-        "fields": {
-            "_etag": "783e0cef431e02aeb91d56074271d3c6",
-            "datum_begin_geldigheid": "2024-03-19",
-            "datum_einde_geldigheid": null,
-            "concept": false,
-            "uuid": "531f6c1a-97f7-478c-85f0-67d2f23661c7",
-            "omschrijving": "Attachment Informatieobjecttype",
-            "informatieobjectcategorie": "Test category",
-            "trefwoord": "[]",
-            "vertrouwelijkheidaanduiding": "openbaar",
-            "omschrijving_generiek_informatieobjecttype": "",
-            "omschrijving_generiek_definitie": "",
-            "omschrijving_generiek_herkomst": "",
-            "omschrijving_generiek_hierarchie": "",
-            "omschrijving_generiek_opmerking": "",
-            "catalogus": 1
-        }
+{
+    "model": "authorizations.applicatie",
+    "pk": 1,
+    "fields": {
+        "uuid": "c2f70b46-14cc-4c22-87ce-31b72b83dd62",
+        "client_ids": "[\"test_client_id\"]",
+        "label": "test application",
+        "heeft_alle_autorisaties": true
     }
+},
+{
+    "model": "vng_api_common.jwtsecret",
+    "pk": 1,
+    "fields": {
+        "identifier": "test_client_id",
+        "secret": "test_secret_key"
+    }
+},
+{
+    "model": "catalogi.catalogus",
+    "pk": 1,
+    "fields": {
+        "_etag": "f324f0578ac42cf6f2a7f68df8819d29",
+        "naam": "Test catalog",
+        "uuid": "bd58635c-793e-446d-a7e0-460d7b04829d",
+        "domein": "TEST",
+        "rsin": "000000000",
+        "contactpersoon_beheer_naam": "Test name",
+        "contactpersoon_beheer_telefoonnummer": "",
+        "contactpersoon_beheer_emailadres": "",
+        "versie": "",
+        "begindatum_versie": null
+    }
+},
+{
+    "model": "catalogi.informatieobjecttype",
+    "pk": 1,
+    "fields": {
+        "_etag": "89c597c58e42b804148e6867c3480ed1",
+        "datum_begin_geldigheid": "2024-03-19",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "7a474713-0833-402a-8441-e467c08ac55b",
+        "omschrijving": "PDF Informatieobjecttype",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 1
+    }
+},
+{
+    "model": "catalogi.informatieobjecttype",
+    "pk": 2,
+    "fields": {
+        "_etag": "89d53439caa01c2f00ab822679e80c7b",
+        "datum_begin_geldigheid": "2024-03-19",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+        "omschrijving": "CSV Informatieobjecttype",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 1
+    }
+},
+{
+    "model": "catalogi.informatieobjecttype",
+    "pk": 3,
+    "fields": {
+        "_etag": "cf350f1b55d7eb0ccd17cceb88c1c6c8",
+        "datum_begin_geldigheid": "2024-03-19",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "531f6c1a-97f7-478c-85f0-67d2f23661c7",
+        "omschrijving": "Attachment Informatieobjecttype",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 1
+    }
+},
+{
+    "model": "catalogi.zaaktypeinformatieobjecttype",
+    "pk": 1,
+    "fields": {
+        "_etag": "4eacfad4ac6bcfa26c0715ee04c70f2c",
+        "uuid": "c2377104-7b5c-4986-b09a-494733bfc47a",
+        "zaaktype": 1,
+        "informatieobjecttype": 3,
+        "volgnummer": 1,
+        "richting": "inkomend",
+        "statustype": null
+    }
+},
+{
+    "model": "catalogi.resultaattype",
+    "pk": 1,
+    "fields": {
+        "_etag": "86f9ca56aacb4b16a3ce4a8aeffe66ea",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "65b7cedd-5729-41bd-b9c7-1f51d7583340",
+        "zaaktype": 1,
+        "omschrijving": "Geslaagd",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/43ac0469-e0c0-4985-a6ce-8ec285d2df47",
+        "omschrijving_generiek": "Vastgesteld",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 1,
+    "fields": {
+        "_etag": "0867d7be0a8bff6fabdc3a8505b410a6",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "43e8026c-8abd-4b29-8a4c-ac2a37bc6f5b",
+        "omschrijving": "Initiator",
+        "omschrijving_generiek": "initiator",
+        "zaaktype": 1
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 1,
+    "fields": {
+        "_etag": "8eaf4d92bcd9c057a680e7bed90c20e9",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "6443ac1a-04a1-4335-9db2-5f3c998dbb34",
+        "zaaktype": 1,
+        "statustype_omschrijving": "Ontvangen",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 1,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 2,
+    "fields": {
+        "_etag": "360e002e252b85e8d064d9c28f2984a0",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "1de05b57-a938-47e4-b808-f129c6406b60",
+        "zaaktype": 1,
+        "statustype_omschrijving": "Afgerond",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 2,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.zaaktype",
+    "pk": 1,
+    "fields": {
+        "_etag": "7524c960768cceca7a7a8c93e0dd687d",
+        "datum_begin_geldigheid": "2024-03-26",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "1f41885e-23fc-4462-bbc8-80be4ae484dc",
+        "identificatie": "ZT-001",
+        "zaaktype_omschrijving": "Test",
+        "zaaktype_omschrijving_generiek": "",
+        "vertrouwelijkheidaanduiding": "intern",
+        "doel": "testen",
+        "aanleiding": "integratietests",
+        "toelichting": "",
+        "indicatie_intern_of_extern": "intern",
+        "handeling_initiator": "Formulier indienen",
+        "onderwerp": "Testformulier",
+        "handeling_behandelaar": "Controleren",
+        "doorlooptijd_behandeling": "P1D",
+        "servicenorm_behandeling": "P0D",
+        "opschorting_en_aanhouding_mogelijk": false,
+        "verlenging_mogelijk": false,
+        "verlengingstermijn": null,
+        "trefwoorden": "[]",
+        "publicatie_indicatie": false,
+        "publicatietekst": "",
+        "verantwoordingsrelatie": "[]",
+        "versiedatum": "2024-03-26",
+        "verantwoordelijke": "Ontwikkelaar",
+        "producten_of_diensten": "[]",
+        "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
+        "selectielijst_procestype_jaar": 2020,
+        "referentieproces_naam": "Testen",
+        "referentieproces_link": "",
+        "broncatalogus_url": "",
+        "broncatalogus_domein": "",
+        "broncatalogus_rsin": "",
+        "bronzaaktype_url": "",
+        "bronzaaktype_identificatie": "",
+        "bronzaaktype_omschrijving": "",
+        "catalogus": 1,
+        "deelzaaktypen": []
+    }
+}
 ]
