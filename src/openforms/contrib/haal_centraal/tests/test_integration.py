@@ -118,7 +118,7 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
         prefill_variables(submission=self.submission)
         state = self.submission.load_submission_value_variables_state()
 
-        self.assertPrefillVariableValues(state.variables["address"].value)
+        self.assertPrefillVariableValues(state.get_variables()["address"].value)
 
     @patch(
         "openforms.contrib.haal_centraal.clients.HaalCentraalConfig.get_solo",
@@ -144,4 +144,4 @@ class BRPIntegrationTest(OFVCRMixin, TransactionTestCase):
         prefill_variables(submission=self.submission)
         state = self.submission.load_submission_value_variables_state()
 
-        self.assertPrefillVariableValues(state.variables["address"].value)
+        self.assertPrefillVariableValues(state.get_variables()["address"].value)

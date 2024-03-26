@@ -166,7 +166,7 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
     register = register or default_register
 
     state = submission.load_submission_value_variables_state()
-    variables_to_prefill = state.get_prefill_variables()
+    variables_to_prefill = state.get_variables(is_initially_prefilled=True).values()
 
     # grouped_fields is a dict of the following shape:
     # {"plugin_id": {"identifier_role": ["attr_1", "attr_2"]}}

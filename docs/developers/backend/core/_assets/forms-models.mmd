@@ -1,0 +1,46 @@
+---
+Forms model relationship
+---
+erDiagram
+Category {
+    UUIDField uuid
+    CharField path
+    CharField name
+}
+Form {
+    UUIDField uuid
+    SlugField slug
+    CharField name
+    ForeignKey category
+}
+FormDefinition {
+    UUIDField uuid
+    CharField name
+    SlugField slug
+    JSONField configuration
+    BooleanField login_required
+    BooleanField is_reusable
+}
+FormStep {
+    UUIDField uuid
+    SlugField slug
+    ForeignKey form
+    ForeignKey form_definition
+    BooleanField is_applicable
+}
+FormVariable {
+    ForeignKey form
+    ForeignKey form_definition
+    TextField name
+    TextField key
+    CharField source
+    CharField data_type
+    CharField data_format
+    BooleanField is_sensitive_data
+    JSONField initial_value
+}
+Form }|--|| Category : category
+FormStep }|--|| Form : form
+FormStep }|--|| FormDefinition : form_definition
+FormVariable }|--|| Form : form
+FormVariable }|--|| FormDefinition : form_definition

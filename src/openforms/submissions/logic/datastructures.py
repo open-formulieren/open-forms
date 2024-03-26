@@ -40,7 +40,7 @@ class DataContainer:
         dynamic_values = {
             key: variable.to_python() for key, variable in self.state.variables.items()
         }
-        static_values = self.state.static_data()
+        static_values = self.state.get_static_data()
         nested_data = FormioData({**dynamic_values, **static_values})
         return nested_data.data
 
@@ -51,8 +51,9 @@ class DataContainer:
         self.state.set_values(updates)
 
     def get_updated_step_data(self, step: SubmissionStep) -> FormioData:
-        relevant_variables = self.state.get_variables_in_submission_step(
-            step, include_unsaved=True
+        relevant_variables = self.state.get_variables(
+            submission_step=step,
+            include_unsaved=True,
         )
 
         updated_data = FormioData()

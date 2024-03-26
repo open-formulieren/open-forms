@@ -180,7 +180,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     result = list()
 
     variable_state = submission_step.submission.load_submission_value_variables_state()
-    step_variables = variable_state.get_variables_in_submission_step(submission_step)
+    step_variables = variable_state.get_variables(submission_step=submission_step)
 
     for upload_context in iter_step_uploads(submission_step):
         upload, component, key, data_path, configuration_path = (

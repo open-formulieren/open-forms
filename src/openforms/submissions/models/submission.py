@@ -386,6 +386,16 @@ class Submission(models.Model):
 
     @property
     def total_configuration_wrapper(self) -> FormioConfigurationWrapper:
+        """A configuration wrapper for all steps of the submission's form.
+
+        .. code-block:: pycon
+
+            >>> for component in submission.total_configuration_wrapper:
+            >>>    print(component)
+            {'type': 'my_fieldset', 'key': 'my_fieldset', 'components': [...]}
+            {'type': 'textfield', 'key': 'my_textfield'}
+            ...
+        """
         if not self._total_configuration_wrapper:
             state = self.load_execution_state()
             form_steps = state.form_steps
@@ -467,7 +477,7 @@ class Submission(models.Model):
     @elasticapm.capture_span(span_type="app.data.loading")
     def load_submission_value_variables_state(
         self, refresh: bool = False
-    ) -> "SubmissionValueVariablesState":
+    ) -> SubmissionValueVariablesState:
         if hasattr(self, "_variables_state") and not refresh:
             return self._variables_state
 
@@ -746,7 +756,9 @@ class Submission(models.Model):
     def get_prefilled_data(self):
         if self._prefilled_data is None:
             values_state = self.load_submission_value_variables_state()
-            prefill_vars = values_state.get_prefill_variables()
+            prefill_vars = values_state.get_variables(
+                is_initially_prefilled=True
+            ).values()
             self._prefilled_data = {
                 variable.key: variable.value for variable in prefill_vars
             }

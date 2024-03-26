@@ -95,7 +95,7 @@ class VariableModificationTests(TestCase):
         evaluate_form_logic(submission, submission_step2, submission.data)
 
         variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["nTotalBoxes"]
+        variable = variables_state.get_variables()["nTotalBoxes"]
         self.assertEqual(7, variable.value)
 
     def test_modify_variable_related_to_another_step_than_the_one_being_edited(self):
@@ -174,7 +174,7 @@ class VariableModificationTests(TestCase):
         evaluate_form_logic(submission, submission_step2, submission.data)
 
         variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["nTotalBoxes"]
+        variable = variables_state.get_variables()["nTotalBoxes"]
         self.assertEqual(7, variable.value)
 
     def test_modify_variable_not_related_to_a_step(self):
@@ -253,7 +253,7 @@ class VariableModificationTests(TestCase):
         evaluate_form_logic(submission, submission_step2, submission.data)
 
         variables_state = submission.load_submission_value_variables_state()
-        variable = variables_state.variables["nTotalBoxes"]
+        variable = variables_state.get_variables()["nTotalBoxes"]
         self.assertEqual(7, variable.value)
 
     def test_logic_with_repeating_groups(self):
@@ -357,9 +357,9 @@ class VariableModificationTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state()
 
-        self.assertEqual(2, variables_state.variables["numberOfCars"].value)
-        self.assertEqual(5000, variables_state.variables["totalPrice"].value)
-        self.assertEqual(0, variables_state.variables["priceOfThirdCar"].value)
+        self.assertEqual(2, variables_state.get_variables()["numberOfCars"].value)
+        self.assertEqual(5000, variables_state.get_variables()["totalPrice"].value)
+        self.assertEqual(0, variables_state.get_variables()["priceOfThirdCar"].value)
 
     def test_dates_and_timedeltas(self):
         form = FormFactory.create(
@@ -406,7 +406,7 @@ class VariableModificationTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state()
 
-        self.assertEqual("P368D", variables_state.variables["timedelta"].value)
+        self.assertEqual("P368D", variables_state.get_variables()["timedelta"].value)
 
     @requests_mock.Mocker()
     def test_evaluate_dmn_action(self, m):
@@ -501,7 +501,7 @@ class VariableModificationTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state()
 
-        self.assertTrue(variables_state.variables["canApply"].value)
+        self.assertTrue(variables_state.get_variables()["canApply"].value)
 
     @requests_mock.Mocker()
     def test_evaluate_dmn_with_nested_variables(self, m):
@@ -614,7 +614,7 @@ class VariableModificationTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state()
 
-        self.assertFalse(variables_state.variables["yo.im.nested.canApply"].value)
+        self.assertFalse(variables_state.get_variables()["yo.im.nested.canApply"].value)
 
     @requests_mock.Mocker()
     def test_evaluate_dmn_action_returns_empty_data(self, m):
@@ -713,4 +713,4 @@ class VariableModificationTests(TestCase):
 
         variables_state = submission.load_submission_value_variables_state()
 
-        self.assertTrue(variables_state.variables["canApply"].value)
+        self.assertTrue(variables_state.get_variables()["canApply"].value)

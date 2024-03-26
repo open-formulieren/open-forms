@@ -20,6 +20,90 @@ the code for this is organized in the ``openforms.formio`` package.
     and all of the separate registries (formatters, normalizers...) were merged into a
     single compoment registry.
 
+Data model
+==========
+
+The following is a simplified relationship diagram of the Django models that relates to forms:
+
+.. mermaid:: _assets/forms-models.mmd
+
+Each ``Form`` can have multiple ``FormStep``'s defined, which acts as a proxy model
+to a ``FormDefinition`` (as these can be reusable across forms). The ``FormDefinition`` model
+has a ``configuration`` JSON field, holding the form.io configuration.
+
+The submissions data model mirrors this model in some way:
+
+- A ``Submission`` is tied to a ``Form``.
+- A ``SubmissionStep`` is tied to a ``FormStep``.
+- A ``SubmissionValueVariable`` is tied to a ``FormVariable``.
+
+Form.io configuration
+---------------------
+
+A form.io configuration is an object containing a ``"components"`` key, mapping to an array of objects 
+representing the definition of form components for a specific form step.
+The following is an example of such a configuration:
+
+.. code-block:: json
+
+    {
+        "display": "form",
+        "components": [
+            {
+                "type": "textfield",
+                "key": "field_1",
+                "label": "Field 1"
+            },
+            {
+                "type": "number",
+                "key": "field_2",
+                "label": "Field 2"
+            }
+        ]
+    }
+
+Some specific components (such as the ``editgrid`` or some layout components) can have nested
+components defined:
+
+.. code-block:: json
+
+    [
+        {
+            "type": "fieldset",
+            "key": "my_fieldset",
+            "label": "My Fieldset",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "my_textfield"
+                }
+            ]
+        }
+    ]
+
+.. note::
+
+    Components are responsible for defining the underlying nested structure. Having a
+    nested ``"components"`` key is common, but it doesn't necessarily have to be that
+    way.
+
+To be able to refer to these nested components, a "dotted path" notation is used. In the previous example,
+the ``my_textfield`` component can be referred as ``my_fieldset.my_textfield``. The
+:class:`~openforms.formio.service.FormioData` data structure should be used to handle such cases.
+
+When dealing with the configuration of a ``FormDefinition``, it is recommended to use the ``configuration_wrapper``
+property:
+
+.. code-block:: pycon
+
+    >>> for component in form_definition.configuration_wrapper:
+    >>>     print(component)
+    {'type': 'my_fieldset', 'key': 'my_fieldset', 'components': [...]}
+    {'type': 'textfield', 'key': 'my_textfield'}
+
+This wrapper is also accessible for all form steps through a submission, using the
+``submission.total_configuration_wrapper`` property.
+
 Supported features
 ==================
 
