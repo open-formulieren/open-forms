@@ -386,6 +386,16 @@ class Submission(models.Model):
 
     @property
     def total_configuration_wrapper(self) -> FormioConfigurationWrapper:
+        """A configuration wrapper for all steps of the submission's form.
+
+        .. code-block:: pycon
+
+            >>> for component in submission.total_configuration_wrapper:
+            >>>    print(component)
+            {'type': 'my_fieldset', 'key': 'my_fieldset', 'components': [...]}
+            {'type': 'textfield', 'key': 'my_textfield'}
+            ...
+        """
         if not self._total_configuration_wrapper:
             state = self.load_execution_state()
             form_steps = state.form_steps
