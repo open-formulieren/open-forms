@@ -63,7 +63,7 @@ billiard==3.6.4.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   celery
-black==24.1.1
+black==24.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

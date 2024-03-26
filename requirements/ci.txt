@@ -55,7 +55,7 @@ billiard==3.6.4.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-black==24.1.1
+black==24.3.0
     # via -r requirements/test-tools.in
 bleach[css]==5.0.1
     # via
