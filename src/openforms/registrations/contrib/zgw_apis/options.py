@@ -113,7 +113,8 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 raise serializers.ValidationError(
                     {
                         "zgw_api_group": _(
-                            "No ZGW API set was configured on the form and no default was specified globally."
+                            "No ZGW API set was configured on the form and no default "
+                            "was specified globally."
                         )
                     },
                     code="invalid",
@@ -122,13 +123,45 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         # We know it exists thanks to the previous check
         group_config = ZGWRegistration.get_zgw_config(attrs)
 
-        # zaaktype + informatieobjecttype *must* be specified on the options level.
-        # TODO: add validation that they're provided
-        # TODO: add validation that they live the specified catalogi API
+        # Run all validations against catalogi API in the same connection pool.
+        with get_catalogi_client(group_config) as client:
+            catalogi = client.get_all_catalogi()
 
-        # Make sure the property (eigenschap) related to the zaaktype exists
-        if mappings := attrs.get("property_mappings"):
-            with get_catalogi_client(group_config) as client:
+            # validate that the zaaktype is in the provided catalogi
+            zaaktype_url = attrs["zaaktype"]
+            zaaktype_exists = any(
+                zaaktype_url in catalogus["zaaktypen"] for catalogus in catalogi
+            )
+            if not zaaktype_exists:
+                raise serializers.ValidationError(
+                    {
+                        "zaaktype": _(
+                            "The provided zaaktype does not exist in the specified "
+                            "Catalogi API."
+                        )
+                    },
+                    code="not-found",
+                )
+
+            # validate that the informatieobjecttype is in the provided catalogi
+            informatieobjecttype_url = attrs["informatieobjecttype"]
+            informatieobjecttype_exists = any(
+                informatieobjecttype_url in catalogus["informatieobjecttypen"]
+                for catalogus in catalogi
+            )
+            if not informatieobjecttype_exists:
+                raise serializers.ValidationError(
+                    {
+                        "informatieobjecttype": _(
+                            "The provided informatieobjecttype does not exist in the "
+                            "specified Catalogi API."
+                        )
+                    },
+                    code="not-found",
+                )
+
+            # Make sure the property (eigenschap) related to the zaaktype exists
+            if mappings := attrs.get("property_mappings"):
                 eigenschappen = client.list_eigenschappen(zaaktype=attrs["zaaktype"])
                 retrieved_eigenschappen = {
                     eigenschap["naam"]: eigenschap["url"]
@@ -150,10 +183,9 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                         {"property_mappings": errors}, code="invalid"
                     )
 
-        if not ("medewerker_roltype" in attrs):
-            return attrs
+            if not ("medewerker_roltype" in attrs):
+                return attrs
 
-        with get_catalogi_client(group_config) as client:
             roltypen = client.list_roltypen(
                 zaaktype=attrs["zaaktype"],
                 matcher=omschrijving_matcher(attrs["medewerker_roltype"]),
