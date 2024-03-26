@@ -228,7 +228,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 1. Get the form variables
         # 2. Get the submission variables
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState(submission).variables
+            SubmissionValueVariablesState(submission, load_variables=True)
 
     def test_get_variables_state_two_submission_variables(self):
         form = FormFactory.create()
@@ -270,7 +270,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 1. Get the form variables
         # 2. Get the submission variables
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState(submission).variables
+            SubmissionValueVariablesState(submission, load_variables=True)
 
     def test_get_variables_state_all_saved_submission_variables(self):
         form = FormFactory.create()
@@ -313,7 +313,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 1. Get the form variables
         # 2. Get the submission variables
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState(submission).variables
+            SubmissionValueVariablesState(submission, load_variables=True)
 
     def test_value_variables_state_get_data(self):
         form = FormFactory.create()
@@ -349,9 +349,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             data={"var3": "test3", "var4": "test4"},
         )
 
-        state = SubmissionValueVariablesState(submission)
-        # Load variables
-        state.variables
+        state = SubmissionValueVariablesState(submission, load_variables=True)
 
         # The queries should have been done in the get_state function
         with self.assertNumQueries(0):

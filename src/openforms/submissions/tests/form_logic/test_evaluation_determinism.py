@@ -62,7 +62,7 @@ class DeterministicEvaluationTests(TestCase):
         evaluate_form_logic(submission, submission_step, {"a": 3})
 
         state = submission.load_submission_value_variables_state()
-        variable = state.variables["a"]
+        variable = state.get_variables()["a"]
         self.assertEqual(variable.value, 8)  # ( 3 x 2 ) + 2
 
     def test_evaluate_rules_when_trigger_step_reached(self):
@@ -137,8 +137,8 @@ class DeterministicEvaluationTests(TestCase):
             evaluate_form_logic(submission, ss1, submission.data)
 
             state = submission.load_submission_value_variables_state()
-            var_a = state.variables["a"]
-            var_b = state.variables["b"]
+            var_a = state.get_variables()["a"]
+            var_b = state.get_variables()["b"]
             self.assertEqual(var_a.value, 2)
             self.assertEqual(var_b.value, 4)
 
@@ -150,8 +150,8 @@ class DeterministicEvaluationTests(TestCase):
             evaluate_form_logic(submission, ss2, submission.data)
 
             state = submission.load_submission_value_variables_state()
-            var_c = state.variables["c"]
-            var_d = state.variables["d"]
+            var_c = state.get_variables()["c"]
+            var_d = state.get_variables()["d"]
             self.assertEqual(var_c.value, 2)
             self.assertEqual(var_d.value, 6)
 

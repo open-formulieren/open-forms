@@ -277,7 +277,7 @@ def persist_user_defined_variables(
     check_submission_logic(submission, data)
 
     state = submission.load_submission_value_variables_state()
-    variables = state.variables
+    variables = state.get_variables()
 
     user_defined_vars_data = {
         variable.key: variable.value

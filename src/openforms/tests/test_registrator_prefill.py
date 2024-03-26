@@ -245,7 +245,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         submission = Submission.objects.get()
         state = submission.load_submission_value_variables_state()
 
-        vars = state.get_prefill_variables()
+        vars = state.get_variables(is_initially_prefilled=True).values()
 
         self.assertEqual(len(vars), 1)
         self.assertEqual(vars[0].key, "voornamen")

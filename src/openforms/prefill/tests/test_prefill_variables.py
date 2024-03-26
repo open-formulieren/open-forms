@@ -70,7 +70,7 @@ class PrefillVariablesTests(TestCase):
             submission_step.submission.load_submission_value_variables_state()
         )
 
-        self.assertEqual(2, len(submission_value_variables_state.variables))
+        self.assertEqual(2, len(submission_value_variables_state.get_variables()))
 
         submission_variable1 = submission_value_variables_state.get_variable(
             key="voornamen"
@@ -187,7 +187,9 @@ class PrefillVariablesTests(TestCase):
 
         FormVariable.objects.all().delete()
 
-        prefill_variables = submission_value_variables_state.get_prefill_variables()
+        prefill_variables = submission_value_variables_state.get_variables(
+            is_initially_prefilled=True
+        ).values()
         self.assertEqual(2, len(prefill_variables))
 
 

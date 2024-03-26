@@ -34,8 +34,7 @@ class VariablesNode(Node):
             variables_state = self.submission.load_submission_value_variables_state()
             relevant_vars = [
                 variable
-                for variable in variables_state.variables.values()
-                if variable.pk
+                for variable in variables_state.get_variables(include_unsaved=False)
                 # if there is no form variable, this may be because the form step and
                 # form definition were deleted, which makes it by definition not a user-defined variable
                 and variable.form_variable

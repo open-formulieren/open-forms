@@ -441,7 +441,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 # update the value after processing to make it objects-API suitable
                 dynamic_values[key] = self._process_value(submission_value, component)
 
-        static_values = state.static_data()
+        static_values = state.get_static_data()
         static_values.update(
             {
                 variable.key: variable.initial_value
