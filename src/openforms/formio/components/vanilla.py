@@ -408,6 +408,6 @@ class EditGrid(BasePlugin[EditGridComponent]):
             child=nested,
             required=required,
             allow_null=not required,
-            allow_empty=False,
+            allow_empty=not required,
             **kwargs,
         )

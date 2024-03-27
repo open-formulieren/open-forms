@@ -123,7 +123,8 @@ class InputValidationRegressionTests(E2ETestCase):
                         },
                         {
                             "type": "editgrid",
-                            "key": "Optional repeating group",
+                            "key": "optionalRepeatingGroup",
+                            "label": "Optional repeating group",
                             "validate": {"required": False},
                             "components": [
                                 {
