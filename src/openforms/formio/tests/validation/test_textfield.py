@@ -32,6 +32,19 @@ class TextFieldValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
+    def test_hidden_textfield_required_validation(self):
+        component: TextFieldComponent = {
+            "type": "textfield",
+            "key": "foo.bar",
+            "label": "Test",
+            "validate": {"required": True},
+            "hidden": True,
+        }
+
+        is_valid = validate_formio_data(component, {"foo": {"bar": ""}})
+
+        self.assertTrue(is_valid)
+
     def test_textfield_max_length(self):
         component: TextFieldComponent = {
             "type": "textfield",
