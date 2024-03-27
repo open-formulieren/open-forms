@@ -322,9 +322,7 @@ class SingleDateTests(ValidationsTestCase):
 class SingleCheckboxTests(ValidationsTestCase):
 
     async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
-        await expect(
-            page.get_by_role("checkbox", name="Required checkbox")
-        ).not_to_be_checked()
+        await expect(page.get_by_role("checkbox", name=label)).not_to_be_checked()
 
     def test_required_field(self):
         component: Component = {
@@ -388,8 +386,8 @@ class SingleCurrencyTests(ValidationsTestCase):
 
 class SingleMapTests(ValidationsTestCase):
     async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
-        page.wait_for_selector(
-            ".openforms-leaflet-map, [aria-label='Required map']", state="visible"
+        await page.wait_for_selector(
+            f".openforms-leaflet-map, [aria-label='{label}']", state="visible"
         )
 
     def test_required_field(self):
@@ -426,7 +424,7 @@ class SinglePostcodeTests(ValidationsTestCase):
 class SingleSignatureTests(ValidationsTestCase):
 
     async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
-        page.wait_for_selector("[aria-label='Required signature']", state="visible")
+        page.wait_for_selector(f"[aria-label='{label}']", state="visible")
 
     def test_required_field(self):
         component: Component = {
@@ -470,7 +468,6 @@ class SingleTextAreaTests(ValidationsTestCase):
         self.assertValidationIsAligned(
             component,
             ui_input=invalid_sample,
-            api_value=invalid_sample,
             expected_ui_error="Er zijn teveel karakters opgegeven.",
         )
 
@@ -522,4 +519,21 @@ class SingleTimeTests(ValidationsTestCase):
             component,
             ui_input="12:10",
             expected_ui_error="Alleen tijden tussen 10:00 en 12:00 zijn toegestaan.",
+        )
+
+    def test_min_max_special_logic(self):
+        component: Component = {
+            "type": "time",
+            "key": "requiredTime",
+            "label": "Required time",
+            "validate": {
+                "minTime": "20:00",
+                "maxTime": "04:00",
+            },
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="15:00",
+            expected_ui_error="Alleen tijden tussen 20:00 en 04:00 zijn toegestaan.",
         )

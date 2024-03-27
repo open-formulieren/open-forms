@@ -18,6 +18,7 @@ class CheckboxValidationTests(SimpleTestCase):
             ({}, "required"),
             ({"foo": ""}, "invalid"),
             ({"foo": None}, "null"),
+            ({"foo": False}, "invalid"),
         ]
 
         for data, error_code in invalid_values:
