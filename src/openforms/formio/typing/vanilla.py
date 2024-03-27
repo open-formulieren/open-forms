@@ -46,6 +46,10 @@ class DatetimeComponent(Component):
     datePicker: NotRequired[DatePickerConfig | None]
 
 
+class FieldsetComponent(Component):
+    components: list[Component]
+
+
 class Column(TypedDict):
     size: int
     sizeMobile: int
