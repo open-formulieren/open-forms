@@ -123,6 +123,10 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         # We know it exists thanks to the previous check
         group_config = ZGWRegistration.get_zgw_config(attrs)
 
+        validate_business_logic = self.context.get("validate_business_logic", True)
+        if not validate_business_logic:
+            return attrs
+
         # Run all validations against catalogi API in the same connection pool.
         with get_catalogi_client(group_config) as client:
             catalogi = client.get_all_catalogi()
@@ -183,22 +187,19 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                         {"property_mappings": errors}, code="invalid"
                     )
 
-            if not ("medewerker_roltype" in attrs):
-                return attrs
-
-            roltypen = client.list_roltypen(
-                zaaktype=attrs["zaaktype"],
-                matcher=omschrijving_matcher(attrs["medewerker_roltype"]),
-            )
-
-        if not roltypen:
-            raise serializers.ValidationError(
-                {
-                    "medewerker_roltype": _(
-                        "Could not find a roltype with this description related to the zaaktype."
+            if "medewerker_roltype" in attrs:
+                roltypen = client.list_roltypen(
+                    zaaktype=attrs["zaaktype"],
+                    matcher=omschrijving_matcher(attrs["medewerker_roltype"]),
+                )
+                if not roltypen:
+                    raise serializers.ValidationError(
+                        {
+                            "medewerker_roltype": _(
+                                "Could not find a roltype with this description related to the zaaktype."
+                            )
+                        },
+                        code="invalid",
                     )
-                },
-                code="invalid",
-            )
 
         return attrs

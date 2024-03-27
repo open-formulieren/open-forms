@@ -52,7 +52,8 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             return
 
         options_serializer = registration_plugin.configuration_options(
-            data=submission.registration_backend.options
+            data=submission.registration_backend.options,
+            context={"validate_business_logic": False},
         )
 
         try:
@@ -229,7 +230,10 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         return
 
     logger.debug("De-serializing the plugin configuration options")
-    options_serializer = plugin.configuration_options(data=backend_config.options)
+    options_serializer = plugin.configuration_options(
+        data=backend_config.options,
+        context={"validate_business_logic": False},
+    )
 
     try:
         options_serializer.is_valid(raise_exception=True)
