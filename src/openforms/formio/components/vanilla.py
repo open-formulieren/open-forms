@@ -112,7 +112,12 @@ class TextField(BasePlugin[TextFieldComponent]):
             extra["validators"] = validators
 
         base = serializers.CharField(
-            required=required, allow_blank=not required, allow_null=False, **extra
+            required=required,
+            allow_blank=not required,
+            # FIXME: should always be False, but formio client sends `null` for
+            # untouched fields :( See #4068
+            allow_null=multiple,
+            **extra,
         )
         return serializers.ListField(child=base) if multiple else base
 
@@ -143,7 +148,9 @@ class Email(BasePlugin):
         base = serializers.EmailField(
             required=required,
             allow_blank=not required,
-            allow_null=False,
+            # FIXME: should always be False, but formio client sends `null` for
+            # untouched fields :( See #4068
+            allow_null=multiple,
             **extra,
         )
         return serializers.ListField(child=base) if multiple else base
@@ -191,7 +198,12 @@ class PhoneNumber(BasePlugin):
             extra["validators"] = validators
 
         base = serializers.CharField(
-            required=required, allow_blank=not required, allow_null=False, **extra
+            required=required,
+            allow_blank=not required,
+            # FIXME: should always be False, but formio client sends `null` for
+            # untouched fields :( See #4068
+            allow_null=multiple,
+            **extra,
         )
         return serializers.ListField(child=base) if multiple else base
 
