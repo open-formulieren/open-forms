@@ -35,6 +35,17 @@ from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
 logger = logging.getLogger(__name__)
 
 
+class FormioDateField(serializers.DateField):
+    def validate_empty_values(self, data):
+        is_empty, data = super().validate_empty_values(data)
+        # base field only treats `None` as empty, but formio uses empty strings
+        if data == "":
+            if self.required:
+                self.fail("required")
+            return (True, "")
+        return is_empty, data
+
+
 @register("date")
 class Date(BasePlugin[DateComponent]):
     formatter = DateFormatter
@@ -56,7 +67,7 @@ class Date(BasePlugin[DateComponent]):
 
     def build_serializer_field(
         self, component: DateComponent
-    ) -> serializers.DateField | serializers.ListField:
+    ) -> FormioDateField | serializers.ListField:
         """
         Accept date values.
 
@@ -73,7 +84,7 @@ class Date(BasePlugin[DateComponent]):
             validators.append(MinValueValidator(date.fromisoformat(min_date)))
         if max_date := date_picker.get("maxDate"):
             validators.append(MaxValueValidator(date.fromisoformat(max_date)))
-        base = serializers.DateField(
+        base = FormioDateField(
             required=required,
             allow_null=not required,
             validators=validators,
