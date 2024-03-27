@@ -111,6 +111,25 @@ class TextFieldValidationTests(SimpleTestCase):
         with self.subTest("valid item"):
             self.assertNotIn(0, errors["numbers"])
 
+    @tag("gh-4068")
+    def test_multiple_with_form_builder_empty_defaults(self):
+        # Our own form builder does funky stuff here by setting the defaultValue to
+        # a list with `null` item.
+        # XXX null is really not a correct value, but we need to rework the rest of our
+        # builder (in the backend) for this first.
+        component: TextFieldComponent = {
+            "type": "textfield",
+            "key": "manyTextfield",
+            "label": "Optional Text fields",
+            "validate": {"required": False},
+            "multiple": True,
+            "defaultValue": [None],  # FIXME: should really be [""] or []
+        }
+
+        is_valid, _ = validate_formio_data(component, {"manyTextfield": [None]})
+
+        self.assertTrue(is_valid)
+
     @given(validator=st.sampled_from(["phonenumber-international", "phonenumber-nl"]))
     def test_textfield_with_plugin_validator(self, validator: str):
         component: TextFieldComponent = {

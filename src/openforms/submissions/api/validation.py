@@ -68,7 +68,7 @@ class CompletionValidationSerializer(serializers.Serializer):
             if errors:
                 formio_validation_errors.append({"data": errors})
             else:
-                formio_validation_errors.append(None)
+                formio_validation_errors.append({})
 
         if any(formio_validation_errors):
             raise serializers.ValidationError({"steps": formio_validation_errors})
