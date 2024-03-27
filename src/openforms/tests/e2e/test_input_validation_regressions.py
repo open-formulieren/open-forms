@@ -176,8 +176,8 @@ class InputValidationRegressionTests(E2ETestCase):
                     "components": [
                         {
                             "type": "editgrid",
-                            "key": "Optional repeating group",
-                            "validate": {"required": False},
+                            "key": "optionalRepeatingGroup",
+                            "label": "Optional repeating group",
                             "components": [
                                 {
                                     "type": "textfield",
@@ -205,7 +205,6 @@ class InputValidationRegressionTests(E2ETestCase):
 
             # Fill in the repeating group
             await page.get_by_role("button", name="Nog één toevoegen").click()
-            "Optional Text field"
             await page.get_by_label("Optional Text field").fill("testing")
             await page.get_by_role("button", name="Opslaan", exact=True).click()
             await page.get_by_role("button", name="Volgende").click()
