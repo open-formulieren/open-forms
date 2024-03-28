@@ -5,7 +5,7 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import expect
 
-from openforms.forms.tests.factories import FormFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from .base import E2ETestCase, browser_page
 
@@ -153,6 +153,73 @@ class InputValidationRegressionTests(E2ETestCase):
 
             # Everything is optional, don't fill anything out
             await page.get_by_role("button", name="Volgende").click()
+
+            # Confirm and finish the form
+            await page.get_by_role("button", name="Verzenden").click()
+            await expect(
+                page.get_by_text("Een moment geduld", exact=False)
+            ).to_be_visible()
+
+    @tag("gh-4068")
+    async def test_non_applicable_steps(self):
+        @sync_to_async
+        def setUpTestData():
+            form = FormFactory.create(
+                slug="validation",
+                registration_backend=None,
+                translation_enabled=False,  # force Dutch
+                ask_privacy_consent=False,
+                ask_statement_of_truth=False,
+            )
+            FormStepFactory.create(
+                form=form,
+                next_text="Volgende",
+                form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "Optional textfield",
+                        },
+                    ]
+                },
+            )
+            FormStepFactory.create(
+                form=form,
+                next_text="Volgende",
+                is_applicable=False,  # should not be validated
+                form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield2",
+                            "label": "Required textfield",
+                            "validate": {"required": True},
+                        },
+                    ]
+                },
+            )
+            return form
+
+        form = await setUpTestData()
+        form_url = str(
+            furl(self.live_server_url)
+            / reverse("forms:form-detail", kwargs={"slug": form.slug})
+        )
+
+        async with browser_page() as page:
+            await page.goto(form_url)
+            # Start the form
+            await page.get_by_role("button", name="Formulier starten").click()
+
+            # Submit first step without filling anything out
+            await page.get_by_role("button", name="Volgende").click()
+
+            # Second step is n/a, should be skipped, so we go straight to the
+            # confirmation page.
+            await expect(
+                page.get_by_role("heading", name="Controleer en bevestig")
+            ).to_be_visible()
 
             # Confirm and finish the form
             await page.get_by_role("button", name="Verzenden").click()
