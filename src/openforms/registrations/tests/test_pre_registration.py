@@ -14,6 +14,7 @@ from openforms.registrations.tasks import register_submission
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tasks.registration import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.utils.tests.logging import ensure_logger_level
 
 
 class PreRegistrationTests(TestCase):
@@ -272,6 +273,7 @@ class PreRegistrationTests(TestCase):
             patch(
                 "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"
             ) as mock_pre_register,
+            ensure_logger_level("DEBUG"),
             self.assertLogs(level="DEBUG") as logs,
         ):
             pre_registration(submission.id, PostSubmissionEvents.on_retry)

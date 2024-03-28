@@ -386,9 +386,6 @@ LOGGING = {
         },
         "timestamped": {"format": "%(asctime)s %(levelname)s %(name)s  %(message)s"},
         "simple": {"format": "%(levelname)s  %(message)s"},
-        "performance": {
-            "format": "%(asctime)s %(process)d | %(thread)d | %(message)s",
-        },
         "outgoing_requests": {"()": HttpFormatter},
     },
     "filters": {
@@ -425,14 +422,6 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
         },
-        "performance": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(LOGGING_DIR, "performance.log"),
-            "formatter": "performance",
-            "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "backupCount": 10,
-        },
         "log_outgoing_requests": {
             "level": "DEBUG",
             "formatter": "outgoing_requests",
@@ -446,7 +435,7 @@ LOGGING = {
     "loggers": {
         "openforms": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
         "stuf": {
@@ -466,7 +455,7 @@ LOGGING = {
         },
         "mozilla_django_oidc": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
-            "level": "DEBUG",
+            "level": "INFO",
         },
         "log_outgoing_requests": {
             "handlers": (

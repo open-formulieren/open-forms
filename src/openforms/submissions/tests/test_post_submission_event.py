@@ -16,6 +16,7 @@ from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.utils.tests.logging import ensure_logger_level
 
 from ..constants import PostSubmissionEvents
 from ..models import SubmissionReport
@@ -1058,6 +1059,7 @@ class PaymentFlowTests(TestCase):
                 "openforms.registrations.tasks.GlobalConfiguration.get_solo",
                 return_value=GlobalConfiguration(wait_for_payment_to_register=True),
             ),
+            ensure_logger_level("DEBUG"),
             LogCapture() as logs,
         ):
             on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)

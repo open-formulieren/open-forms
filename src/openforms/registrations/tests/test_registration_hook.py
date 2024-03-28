@@ -19,6 +19,7 @@ from openforms.forms.models import FormRegistrationBackend
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.utils.tests.logging import ensure_logger_level
 
 from ..base import BasePlugin
 from ..exceptions import RegistrationFailed
@@ -286,6 +287,7 @@ class RegistrationHookTests(TestCase):
 
             with self.subTest("on retry"):
                 with (
+                    ensure_logger_level("DEBUG"),
                     self.assertRaises(RegistrationFailed),
                     self.assertLogs(level="DEBUG") as logs,
                 ):
