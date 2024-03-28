@@ -292,3 +292,97 @@ class SingleDateTests(ValidationsTestCase):
             api_value="2025-01-01",
             expected_ui_error="De opgegeven datum ligt te ver in de toekomst.",
         )
+
+
+class SingleIbanTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "iban",
+            "key": "requiredIban",
+            "label": "Required iban",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required iban is niet ingevuld.",
+        )
+
+
+class SingleLicenseplateTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "requiredLicenseplate",
+            "label": "Required licenseplate",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required licenseplate is niet ingevuld.",
+        )
+
+    def test_regex_pattern(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "requiredLicenseplate",
+            "label": "Required licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\\-[a-zA-Z0-9]{1,3}\\-[a-zA-Z0-9]{1,3}$"
+            },
+            "errors": {"pattern": "Ongeldig Nederlands kenteken"},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="<h2>test</h2>",
+            expected_ui_error="Ongeldig Nederlands kenteken",
+        )
+
+
+class SinglePasswordTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "password",
+            "key": "requiredPassword",
+            "label": "Required password",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required password is niet ingevuld.",
+        )
+
+
+class SingleCosignTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "cosign",
+            "key": "requiredCosign",
+            "label": "Required cosign",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required cosign is niet ingevuld.",
+        )
+
+    def test_cosign_format(self):
+        component: Component = {
+            "type": "cosign",
+            "key": "cosign",
+            "label": "Cosign",
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="invalid",
+            expected_ui_error="Ongeldig e-mailadres",
+        )
