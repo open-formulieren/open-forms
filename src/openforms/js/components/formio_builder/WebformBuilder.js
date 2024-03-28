@@ -378,6 +378,7 @@ class WebformBuilder extends WebformBuilderFormio {
     // hand contents of modal over to React
     (async () => {
       const intlProviderProps = await getIntlProviderProps();
+
       root.render(
         <IntlProvider {...intlProviderProps}>
           <ComponentConfiguration
@@ -385,7 +386,7 @@ class WebformBuilder extends WebformBuilderFormio {
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
             richTextColors={RICH_TEXT_COLORS}
-            getFormComponents={() => this.webform.components}
+            getFormComponents={() => this.webform.form.components}
             getValidatorPlugins={getValidatorPlugins}
             getRegistrationAttributes={getRegistrationAttributes}
             getPrefillPlugins={getPrefillPlugins}
