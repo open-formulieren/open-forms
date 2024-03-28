@@ -80,6 +80,12 @@ class StepDataSerializer(serializers.Serializer):
             case serializers.CharField():
                 field.allow_blank = True
 
+            case serializers.ListField():
+                field.allow_null = True
+                field.allow_empty = True
+                field.min_length = None
+                field.max_length = None
+
 
 def dict_to_serializer(
     fields: dict[str, FieldOrNestedFields], **kwargs
