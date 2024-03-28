@@ -37,3 +37,8 @@ class AddressNLFormatter(FormatterBase):
         return format_html(
             "{postcode} {houseNumber}{houseLetter} {houseNumberAddition}", **value
         ).strip()
+
+
+class CosignFormatter(FormatterBase):
+    def format(self, component: Component, value: str) -> str:
+        return str(value)
