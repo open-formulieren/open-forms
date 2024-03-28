@@ -105,7 +105,9 @@ def dict_to_serializer(
                 # we do not pass **kwwargs to nested serializers, as this should only
                 # be provided to the top-level serializer. The context/data is then
                 # shared through all children by DRF.
-                serializer.fields[bit] = dict_to_serializer(nested_fields)
+                serializer.fields[bit] = dict_to_serializer(
+                    nested_fields, required=False
+                )
             # treat default case as a serializer field
             case _:
                 serializer.fields[bit] = field
