@@ -91,7 +91,10 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
             DeprecationWarning,
         )
 
-        if is_layout_component(component):
+        # not considered a layout component (because it doesn't have children)
+        if component["type"] == "content":
+            required = False
+        elif is_layout_component(component):
             required = False  # they do not hold data, they can never be required
         else:
             required = (
