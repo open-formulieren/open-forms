@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject
@@ -165,3 +165,27 @@ class EditGridValidationTests(SimpleTestCase):
 
             self.assertIn("nested", nested_fields)
             self.assertNotIn("toplevel", nested_fields)
+
+    @tag("gh-4068")
+    def test_optional_editgrid(self):
+        component: EditGridComponent = {
+            "type": "editgrid",
+            "key": "optionalRepeatingGroup",
+            "label": "Optional repeating group",
+            "validate": {"required": False},
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "optionalTextfield",
+                    "label": "Optional Text field",
+                    "validate": {"required": False},
+                }
+            ],
+        }
+
+        is_valid, errors = validate_formio_data(
+            component,
+            {"optionalRepeatingGroup": []},
+        )
+
+        self.assertTrue(is_valid)

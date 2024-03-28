@@ -14,6 +14,7 @@ from .vanilla import (
     ContentComponent,
     DatetimeComponent,
     EditGridComponent,
+    FieldsetComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
@@ -37,6 +38,7 @@ __all__ = [
     "ContentComponent",
     "Column",
     "ColumnsComponent",
+    "FieldsetComponent",
     # special
     "EditGridComponent",
     # deprecated

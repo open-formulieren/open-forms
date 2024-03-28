@@ -25,6 +25,7 @@ from openforms.plugins.registry import BaseRegistry
 from openforms.typing import DataMapping
 
 from .typing import Component
+from .utils import is_layout_component
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
@@ -90,11 +91,14 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
             DeprecationWarning,
         )
 
-        required = (
-            validate.get("required", False)
-            if (validate := component.get("validate"))
-            else False
-        )
+        if is_layout_component(component):
+            required = False  # they do not hold data, they can never be required
+        else:
+            required = (
+                validate.get("required", False)
+                if (validate := component.get("validate"))
+                else False
+            )
 
         # Allow anything that is valid JSON, taking into account the 'required'
         # validation which is common for most components.

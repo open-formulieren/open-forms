@@ -90,3 +90,72 @@ class InputValidationRegressionTests(E2ETestCase):
             await expect(
                 page.get_by_text("Een moment geduld", exact=False)
             ).to_be_visible()
+
+    @tag("gh-4068")
+    async def test_optional_fields(self):
+        @sync_to_async
+        def setUpTestData():
+            form = FormFactory.create(
+                slug="validation",
+                generate_minimal_setup=True,
+                registration_backend=None,
+                translation_enabled=False,  # force Dutch
+                ask_privacy_consent=False,
+                ask_statement_of_truth=False,
+                formstep__next_text="Volgende",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "date",
+                            "key": "date",
+                            "label": "Optional date",
+                            "validate": {"required": False},
+                        },
+                        {
+                            "type": "textfield",
+                            "key": "manyTextfield",
+                            "label": "Optional Text fields",
+                            "validate": {"required": False},
+                            "multiple": True,
+                            "defaultValue": [
+                                None
+                            ],  # The default value of multiple text fields
+                        },
+                        {
+                            "type": "editgrid",
+                            "key": "optionalRepeatingGroup",
+                            "label": "Optional repeating group",
+                            "validate": {"required": False},
+                            "components": [
+                                {
+                                    "type": "textfield",
+                                    "key": "optionalTextfield",
+                                    "label": "Optional Text field",
+                                    "validate": {"required": False},
+                                }
+                            ],
+                        },
+                    ]
+                },
+            )
+            return form
+
+        form = await setUpTestData()
+        form_url = str(
+            furl(self.live_server_url)
+            / reverse("forms:form-detail", kwargs={"slug": form.slug})
+        )
+
+        async with browser_page() as page:
+            await page.goto(form_url)
+            # Start the form
+            await page.get_by_role("button", name="Formulier starten").click()
+
+            # Everything is optional, don't fill anything out
+            await page.get_by_role("button", name="Volgende").click()
+
+            # Confirm and finish the form
+            await page.get_by_role("button", name="Verzenden").click()
+            await expect(
+                page.get_by_text("Een moment geduld", exact=False)
+            ).to_be_visible()
