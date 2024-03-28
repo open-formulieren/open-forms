@@ -75,6 +75,11 @@ class StepDataSerializer(serializers.Serializer):
         # added based on component['validate']
         field.validators = field.get_validators()
 
+        # apply additional attributes depending on the field type
+        match field:
+            case serializers.CharField():
+                field.allow_blank = True
+
 
 def dict_to_serializer(
     fields: dict[str, FieldOrNestedFields], **kwargs
