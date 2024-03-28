@@ -399,6 +399,12 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
         name: 'Example test registration',
         options: {},
       },
+      {
+        backend: 'stuf-zds-create-zaak',
+        key: 'test_zds',
+        name: 'Example ZDS registration',
+        options: {},
+      },
     ],
     registrationPluginsVariables: [
       {
