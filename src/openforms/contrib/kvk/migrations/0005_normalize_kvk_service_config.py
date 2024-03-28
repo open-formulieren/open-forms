@@ -24,6 +24,10 @@ def set_kvk_service(apps, _):
     """
     Derive the "common" API root for KVK interaction.
 
+    NOTE: the explanation below is kept for historical reasons. The API specs are
+    separate and so are the services/config. We don't use the API specs anymore,
+    but API gateways caused issues. See migration 0007 which reverts this change.
+
     The zoeken/basisprofielen API's were historically separate services because they
     have their own OpenAPI specs and zgw_consumers requires api_root to be unique. Not
     doing this doesn't allow using zgw_consumers.Service.build_client (which needs the

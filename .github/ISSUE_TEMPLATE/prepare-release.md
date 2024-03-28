@@ -18,6 +18,7 @@ assignees: sergei-maertens
   - [ ] KVK
   - [ ] Ogone
   - [ ] Objects API (registration)
+  - [ ] ZGW APIs (registration)
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations

@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
@@ -63,18 +62,6 @@ class ZGWApiGroupConfig(models.Model):
         null=True,
     )
     # Overridable defaults
-    zaaktype = models.URLField(
-        _("zaaktype"),
-        max_length=1000,
-        blank=True,
-        help_text=_("Default URL of the ZAAKTYPE in the Catalogi API"),
-    )
-    informatieobjecttype = models.URLField(
-        _("informatieobjecttype"),
-        max_length=1000,
-        blank=True,
-        help_text=_("Default URL of the INFORMATIEOBJECTTYPE in the Catalogi API"),
-    )
     organisatie_rsin = models.CharField(
         _("organisation RSIN"),
         max_length=9,
@@ -131,28 +118,7 @@ class ZGWApiGroupConfig(models.Model):
     def __str__(self):
         return self.name
 
-    def clean(self):
-        super().clean()
-
-        if self.ztc_service and self.zaaktype:
-            if not self.zaaktype.startswith(self.ztc_service.api_root):
-                raise ValidationError(
-                    {"zaaktype": _("ZAAKTYPE is not part of the Catalogi API")}
-                )
-
-        if self.ztc_service and self.informatieobjecttype:
-            if not self.informatieobjecttype.startswith(self.ztc_service.api_root):
-                raise ValidationError(
-                    {
-                        "informatieobjecttype": _(
-                            "INFORMATIEOBJECTTYPE is not part of the Catalogi API"
-                        )
-                    }
-                )
-
     def apply_defaults_to(self, options):
-        options.setdefault("zaaktype", self.zaaktype)
-        options.setdefault("informatieobjecttype", self.informatieobjecttype)
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
         options.setdefault(
             "zaak_vertrouwelijkheidaanduiding", self.zaak_vertrouwelijkheidaanduiding

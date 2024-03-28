@@ -395,10 +395,6 @@ furl==2.1.2
     #   ape-pie
     #   django-digid-eherkenning
     #   open-forms-ext-token-exchange
-gemma-zds-client==2.0.0
-    # via
-    #   -r requirements/base.txt
-    #   zgw-consumers
 glom==20.11.0
     # via
     #   -c requirements/base.in
@@ -508,7 +504,7 @@ oauthlib==3.2.2
     # via
     #   -r requirements/base.txt
     #   requests-oauthlib
-open-forms-ext-haalcentraal-hr==0.3.0
+open-forms-ext-haalcentraal-hr==0.3.1
     # via -r requirements/extensions.in
 open-forms-ext-token-exchange==0.4.0
     # via -r requirements/extensions.in
@@ -586,7 +582,7 @@ pydyf==0.8.0
 pyjwt==2.6.0
     # via
     #   -r requirements/base.txt
-    #   gemma-zds-client
+    #   zgw-consumers
 pyopenssl==24.0.0
     # via
     #   -r requirements/base.txt
@@ -634,7 +630,6 @@ pyyaml==6.0.1
     # via
     #   -r requirements/base.txt
     #   drf-spectacular
-    #   gemma-zds-client
     #   jsonschema-spec
 qrcode==7.4.2
     # via
@@ -659,7 +654,6 @@ requests==2.31.0
     #   ape-pie
     #   django-camunda
     #   django-log-outgoing-requests
-    #   gemma-zds-client
     #   jsonschema-spec
     #   maykin-python3-saml
     #   mozilla-django-oidc
@@ -768,6 +762,7 @@ typing-extensions==4.9.0
     #   -r requirements/base.txt
     #   asgiref
     #   qrcode
+    #   zgw-consumers
 tzdata==2023.3
     # via
     #   -r requirements/base.txt
@@ -831,7 +826,7 @@ zeep==4.2.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-zgw-consumers==0.31.0
+zgw-consumers==0.32.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt

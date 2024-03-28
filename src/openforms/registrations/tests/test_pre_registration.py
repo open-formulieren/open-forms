@@ -55,7 +55,11 @@ class PreRegistrationTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             completed_not_preregistered=True,
         )
 
@@ -103,7 +107,11 @@ class PreRegistrationTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             completed_not_preregistered=True,
         )
 
@@ -194,7 +202,11 @@ class PreRegistrationTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             completed_not_preregistered=True,
         )
 
@@ -225,7 +237,11 @@ class PreRegistrationTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             completed_not_preregistered=True,
         )
 
@@ -259,7 +275,11 @@ class PreRegistrationTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             completed_not_preregistered=True,
             registration_attempts=3,
         )
@@ -288,7 +308,11 @@ class PreRegistrationTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             completed_not_preregistered=True,
         )
 
@@ -311,7 +335,11 @@ class PreRegistrationTests(TestCase):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             completed_not_preregistered=True,
             registration_attempts=1,
             registration_result={"traceback": "An error, how sad."},

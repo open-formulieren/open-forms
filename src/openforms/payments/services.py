@@ -30,7 +30,8 @@ def update_submission_payment_registration(submission: Submission):
             data=(
                 submission.registration_backend
                 and submission.registration_backend.options
-            )
+            ),
+            context={"validate_business_logic": False},
         )
         options_serializer.is_valid(raise_exception=True)
 

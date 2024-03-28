@@ -40,7 +40,11 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             needs_on_completion_retry=True,
             registration_success=True,
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             form__payment_backend="ogone-legacy",
             registration_result={
                 "zaak": {
@@ -90,7 +94,11 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             needs_on_completion_retry=True,
             registration_success=True,
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             form__payment_backend="ogone-legacy",
             registration_result={
                 "zaak": {
@@ -151,7 +159,11 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             needs_on_completion_retry=True,
             registration_failed=True,
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
         )
@@ -184,7 +196,11 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             pre_registration_completed=False,
             registration_failed=True,
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
         )
@@ -223,7 +239,11 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             needs_on_completion_retry=True,
             registration_failed=True,
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
             with_completed_payment=True,
@@ -251,7 +271,12 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         mock_register.assert_called_once()
         # downstream tasks should not have been called - chain should abort
         mock_update_payment.assert_called_once_with(
-            submission, {"zgw_api_group": zgw_group}
+            submission,
+            {
+                "zgw_api_group": zgw_group,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
         )
         self.assertNotEqual(submission.last_register_date, original_register_date)
         self.assertEqual(submission.public_registration_reference, "OF-1234")

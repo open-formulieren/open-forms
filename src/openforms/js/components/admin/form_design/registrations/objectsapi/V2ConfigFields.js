@@ -63,6 +63,7 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttype')}
         errors={buildErrorsComponent('objecttype')}
         displayLabel
+        required
       >
         {/* TODO: fallback to legacy UI if there are loading errors */}
         <ObjectTypeSelect
@@ -84,6 +85,7 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttypeVersion')}
         errors={buildErrorsComponent('objecttypeVersion')}
         displayLabel
+        required
       >
         {/* TODO: fallback to legacy UI if there are loading errors */}
         <ObjectTypeVersionSelect

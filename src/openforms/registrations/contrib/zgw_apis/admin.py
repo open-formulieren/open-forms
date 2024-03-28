@@ -1,9 +1,6 @@
 from django.contrib import admin
 
 from solo.admin import SingletonModelAdmin
-from zgw_consumers.admin import ListZaaktypenMixin
-
-from openforms.admin.decorators import suppress_requests_errors
 
 from .models import ZGWApiGroupConfig, ZgwConfig
 
@@ -13,10 +10,10 @@ class ZgwConfigAdmin(SingletonModelAdmin):
     pass
 
 
-@suppress_requests_errors(ZGWApiGroupConfig, fields=["zaaktype"])
 @admin.register(ZGWApiGroupConfig)
-class ZGWApiGroupConfigAdmin(ListZaaktypenMixin, admin.ModelAdmin):
-    zaaktype_fields = [
-        "zaaktype",
-    ]
-    # TODO implement informatieobjecttype suggestions similar to zaaktype
+class ZGWApiGroupConfigAdmin(admin.ModelAdmin):
+    list_display = ("name", "zrc_service", "drc_service", "ztc_service")
+    list_select_related = ("zrc_service", "drc_service", "ztc_service")
+    search_fields = ("name",)
+    raw_id_fields = ("zrc_service", "drc_service", "ztc_service")
+    ordering = ("name",)
