@@ -55,15 +55,16 @@ class CompletionValidationSerializer(serializers.Serializer):
         for step in submission.steps:
             errors = {}
             assert step.form_step
-            components = step.form_step.form_definition.configuration["components"]
 
-            step_data_serializer = build_serializer(
-                components,
-                data=data,
-                context={"submission": submission},
-            )
-            if not step_data_serializer.is_valid():
-                errors = step_data_serializer.errors
+            if step.is_applicable:
+                components = step.form_step.form_definition.configuration["components"]
+                step_data_serializer = build_serializer(
+                    components,
+                    data=data,
+                    context={"submission": submission},
+                )
+                if not step_data_serializer.is_valid():
+                    errors = step_data_serializer.errors
 
             if errors:
                 formio_validation_errors.append({"data": errors})
