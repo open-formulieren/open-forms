@@ -2,6 +2,35 @@
 Changelog
 =========
 
+2.6.1 (2024-03-28)
+==================
+
+Hotfix release
+
+A number of issues were discovered in 2.6.0, in particular related to the additional
+validation performed on the backend.
+
+* [#4065] Fixed validation being run for fields/components that are (conditionally)
+  hidden. The behaviour is now consistent with the frontend.
+* [#4068] Fixed more backend validation issues:
+
+    * Allow empty string as empty value for date field.
+    * Don't reject textfield (and derivatives) with multiple=True when
+      items inside are null (treat them as empty value/string).
+    * Allow empty lists for edit grid/repeating group when field is
+      not required.
+    * Skip validation for layout components, they never get data.
+    * Ensure that empty string values for optional text fields are
+      allowed (also covers derived fields).
+    * Fixed validation error being returned that doesn't point to
+      a particular component.
+    * Fixed validation being run for form steps that are (conditionally) marked as
+      "not applicable".
+
+* [#4069] Fixed a crash in the form designer when navigating to the variables tab if you
+  use any of the following registration backends: email, MS Graph (OneDrive/Sharepoint)
+  or StUF-ZDS.
+
 2.6.0 "Traiectum" (2024-03-25)
 ==============================
 
