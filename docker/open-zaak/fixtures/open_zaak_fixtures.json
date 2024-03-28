@@ -34,6 +34,33 @@
     }
 },
 {
+    "model": "catalogi.eigenschapspecificatie",
+    "pk": 1,
+    "fields": {
+        "groep": "",
+        "formaat": "tekst",
+        "lengte": "10",
+        "kardinaliteit": "1",
+        "waardenverzameling": "[]"
+    }
+},
+{
+    "model": "catalogi.eigenschap",
+    "pk": 1,
+    "fields": {
+        "_etag": "757c9c0ec0e1a592c0a3a7b4965dc71f",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "b659caed-e39e-47e3-ac51-bc8bd2ad797e",
+        "eigenschapnaam": "a property name",
+        "definitie": "a definition",
+        "specificatie_van_eigenschap": 1,
+        "toelichting": "",
+        "zaaktype": 1,
+        "statustype": null
+    }
+},
+{
     "model": "catalogi.informatieobjecttype",
     "pk": 1,
     "fields": {
@@ -153,6 +180,19 @@
     }
 },
 {
+    "model": "catalogi.roltype",
+    "pk": 2,
+    "fields": {
+        "_etag": "",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "7f1887e8-bf22-47e7-ae52-ed6848d7e70e",
+        "omschrijving": "Baliemedewerker",
+        "omschrijving_generiek": "klantcontacter",
+        "zaaktype": 1
+    }
+},
+{
     "model": "catalogi.statustype",
     "pk": 1,
     "fields": {
@@ -192,7 +232,7 @@
     "model": "catalogi.zaaktype",
     "pk": 1,
     "fields": {
-        "_etag": "7524c960768cceca7a7a8c93e0dd687d",
+        "_etag": "4b7814375796d28f29fea94ee27127b8",
         "datum_begin_geldigheid": "2024-03-26",
         "datum_einde_geldigheid": null,
         "concept": false,
