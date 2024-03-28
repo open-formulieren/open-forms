@@ -32,3 +32,29 @@ class FieldSetValidationTests(SimpleTestCase):
         is_valid, _ = validate_formio_data(component, {})
 
         self.assertTrue(is_valid)
+
+    @tag("gh-4068")
+    def test_hidden_fieldset_with_nested_required_fields(self):
+        component: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "A field set",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfield",
+                    "label": "Text field",
+                    "validate": {"required": True},
+                },
+            ],
+            "hidden": True,
+            "conditional": {
+                "show": True,
+                "when": "missing",
+                "eq": "never-triggered",
+            },
+        }
+
+        is_valid, _ = validate_formio_data(component, {"textfield": ""})
+
+        self.assertTrue(is_valid)
