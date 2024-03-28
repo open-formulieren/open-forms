@@ -8,25 +8,30 @@ from ...typing import Component
 from .helpers import extract_error, replace_validators_registry, validate_formio_data
 
 
-class NoLeading1Validator(BasePlugin[str]):
-    def __call__(self, value: str, submission):
-        if value.startswith("1"):
-            raise serializers.ValidationError("nope")
+class CurrencyValueSerializer(serializers.Serializer):
+    value = serializers.FloatField()
 
 
-class BSNValidationTests(SimpleTestCase):
+class GT5Validator(BasePlugin[int | float]):
+    value_serializer = CurrencyValueSerializer
 
-    def test_bsn_field_required_validation(self):
+    def __call__(self, value: int | float, submission):
+        if not value > 5:
+            raise serializers.ValidationError("Nope")
+
+
+class CurrencyFieldValidationTests(SimpleTestCase):
+
+    def test_currencyfield_required_validation(self):
         component: Component = {
-            "type": "bsn",
+            "type": "currency",
             "key": "foo",
-            "label": "Test",
+            "label": "Foo",
             "validate": {"required": True},
         }
 
         invalid_values = [
             ({}, "required"),
-            ({"foo": ""}, "blank"),
             ({"foo": None}, "null"),
         ]
 
@@ -39,15 +44,22 @@ class BSNValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
-    def test_elfproef(self):
+    def test_min_max_values(self):
         component: Component = {
-            "type": "bsn",
+            "type": "currency",
             "key": "foo",
-            "label": "Test",
+            "label": "Foo",
+            "validate": {
+                "required": False,
+                "min": 10.7,
+                "max": 15,
+            },
         }
+
         invalid_values = [
-            ({"foo": "1234"}, "invalid"),
-            ({"foo": "123456781"}, "invalid"),
+            ({"foo": 0}, "min_value"),
+            ({"foo": 9}, "min_value"),
+            ({"foo": 17}, "max_value"),
         ]
 
         for data, error_code in invalid_values:
@@ -59,23 +71,23 @@ class BSNValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
-    def test_bsn_with_plugin_validator(self):
+    def test_currency_with_plugin_validator(self):
         with replace_validators_registry() as register:
-            register("no_leading_1")(NoLeading1Validator)
+            register("gt_5")(GT5Validator)
 
             component: Component = {
-                "type": "bsn",
+                "type": "currency",
                 "key": "foo",
                 "label": "Test",
-                "validate": {"plugins": ["no_leading_1"]},
+                "validate": {"plugins": ["gt_5"]},
             }
 
             with self.subTest("valid value"):
-                is_valid, _ = validate_formio_data(component, {"foo": "223456780"})
+                is_valid, _ = validate_formio_data(component, {"foo": 10})
 
                 self.assertTrue(is_valid)
 
             with self.subTest("invalid value"):
-                is_valid, _ = validate_formio_data(component, {"foo": "123456782"})
+                is_valid, _ = validate_formio_data(component, {"foo": 1.5})
 
                 self.assertFalse(is_valid)

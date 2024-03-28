@@ -5,9 +5,10 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
+from datetime import time
 from typing import TYPE_CHECKING
 
-from django.core.validators import RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -21,6 +22,7 @@ from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
+from ..api.validators import TruthyBooleanValueValidator
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
@@ -52,20 +54,10 @@ from ..typing import (
     TextFieldComponent,
 )
 from .translations import translate_options
+from .utils import _normalize_pattern
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
-
-
-def _normalize_pattern(pattern: str) -> str:
-    """
-    Normalize a regex pattern so that it matches from beginning to the end of the value.
-    """
-    if not pattern.startswith("^"):
-        pattern = f"^{pattern}"
-    if not pattern.endswith("$"):
-        pattern = f"{pattern}$"
-    return pattern
 
 
 @register("default")
@@ -157,8 +149,27 @@ class Email(BasePlugin):
 
 
 @register("time")
-class Time(BasePlugin):
+class Time(BasePlugin[Component]):
     formatter = TimeFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.TimeField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        validators = []
+        if min_time := validate.get("minTime"):
+            validators.append(MinValueValidator(time.fromisoformat(min_time)))
+        if max_time := validate.get("maxTime"):
+            validators.append(MaxValueValidator(time.fromisoformat(max_time)))
+        base = serializers.TimeField(
+            required=required,
+            allow_null=not required,
+            validators=validators,
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("phoneNumber")
@@ -234,8 +245,25 @@ class File(BasePlugin[FileComponent]):
 
 
 @register("textarea")
-class TextArea(BasePlugin):
+class TextArea(BasePlugin[Component]):
     formatter = TextAreaFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("number")
@@ -251,9 +279,9 @@ class Number(BasePlugin):
         required = validate.get("required", False)
 
         extra = {}
-        if max_value := validate.get("max"):
+        if (max_value := validate.get("max")) is not None:
             extra["max_value"] = max_value
-        if min_value := validate.get("min"):
+        if (min_value := validate.get("min")) is not None:
             extra["min_value"] = min_value
 
         validators = []
@@ -275,8 +303,24 @@ class Password(BasePlugin):
 
 
 @register("checkbox")
-class Checkbox(BasePlugin):
+class Checkbox(BasePlugin[Component]):
     formatter = CheckboxFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.BooleanField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+
+        validators = [TruthyBooleanValueValidator()] if required else []
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
+        return serializers.BooleanField(**extra)
 
 
 @register("selectboxes")
@@ -318,10 +362,45 @@ class Select(BasePlugin[SelectComponent]):
             return
         translate_options(options, language_code, enabled)
 
+    def build_serializer_field(
+        self, component: SelectComponent
+    ) -> serializers.MultipleChoiceField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        choices = [
+            (value["value"], value["label"]) for value in component["data"]["values"]
+        ]
+        return serializers.MultipleChoiceField(
+            choices=choices,
+            required=required,
+            allow_blank=not required,
+        )
+
 
 @register("currency")
-class Currency(BasePlugin):
+class Currency(BasePlugin[Component]):
     formatter = CurrencyFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.FloatField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        extra = {}
+        if (max_value := validate.get("max")) is not None:
+            extra["max_value"] = max_value
+        if (min_value := validate.get("min")) is not None:
+            extra["min_value"] = min_value
+
+        validators = []
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
+        return serializers.FloatField(
+            required=required, allow_null=not required, **extra
+        )
 
 
 @register("radio")
@@ -360,8 +439,13 @@ class Radio(BasePlugin[RadioComponent]):
 
 
 @register("signature")
-class Signature(BasePlugin):
+class Signature(BasePlugin[Component]):
     formatter = SignatureFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.CharField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        return serializers.CharField(required=required, allow_blank=not required)
 
 
 @register("content")
