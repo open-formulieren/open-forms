@@ -8,10 +8,9 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
-from decorator_include import decorator_include
-
 from openforms.emails.views import EmailWrapperTestView
 from openforms.submissions.dev_views import SubmissionPDFTestView
+from openforms.utils.urls import decorator_include
 from openforms.utils.views import ErrorDetailView, SDKRedirectView
 
 handler500 = "openforms.utils.views.server_error"
@@ -33,7 +32,7 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("cookies/", include("cookie_consent.urls")),
-    path("tinymce/", decorator_include(login_required, "tinymce.urls")),
+    path("tinymce/", decorator_include(login_required, "tinymce.urls")),  # type: ignore
     path("api/", include("openforms.api.urls", namespace="api")),
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),
     path(
