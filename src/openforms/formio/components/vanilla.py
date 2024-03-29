@@ -5,6 +5,7 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
+import logging
 from datetime import time
 from typing import TYPE_CHECKING
 
@@ -57,6 +58,9 @@ from .utils import _normalize_pattern
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
+
+
+logger = logging.getLogger(__name__)
 
 
 @register("default")
@@ -147,23 +151,79 @@ class Email(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
 
+class FormioTimeField(serializers.TimeField):
+    def validate_empty_values(self, data):
+        is_empty, data = super().validate_empty_values(data)
+        # base field only treats `None` as empty, but formio uses empty strings
+        if data == "":
+            if self.required:
+                self.fail("required")
+            return (True, "")
+        return is_empty, data
+
+
+class TimeBetweenValidator:
+
+    def __init__(self, min_time: time, max_time: time) -> None:
+        self.min_time = min_time
+        self.max_time = max_time
+
+    def __call__(self, value: time):
+        # same day - straight forward comparison
+        if self.min_time < self.max_time:
+            if value < self.min_time:
+                raise serializers.ValidationError(
+                    _("Value is before minimum time"),
+                    code="min_value",
+                )
+            if value > self.max_time:
+                raise serializers.ValidationError(
+                    _("Value is after maximum time"),
+                    code="max_value",
+                )
+
+        # min time is on the day before the max time applies (e.g. 20:00 -> 04:00)
+        else:
+            if value < self.min_time and value > self.max_time:
+                raise serializers.ValidationError(
+                    _("Value is not between mininum and maximum time."), code="invalid"
+                )
+
+
 @register("time")
 class Time(BasePlugin[Component]):
     formatter = TimeFormatter
 
     def build_serializer_field(
         self, component: Component
-    ) -> serializers.TimeField | serializers.ListField:
+    ) -> FormioTimeField | serializers.ListField:
         multiple = component.get("multiple", False)
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
         validators = []
-        if min_time := validate.get("minTime"):
-            validators.append(MinValueValidator(time.fromisoformat(min_time)))
-        if max_time := validate.get("maxTime"):
-            validators.append(MaxValueValidator(time.fromisoformat(max_time)))
-        base = serializers.TimeField(
+
+        match (
+            min_time := validate.get("minTime"),
+            max_time := validate.get("maxTime"),
+        ):
+            case (None, None):
+                pass
+            case (str(), None):
+                validators.append(MinValueValidator(time.fromisoformat(min_time)))
+            case (None, str()):
+                validators.append(MaxValueValidator(time.fromisoformat(max_time)))
+            case (str(), str()):
+                validators.append(
+                    TimeBetweenValidator(
+                        time.fromisoformat(min_time),
+                        time.fromisoformat(max_time),
+                    )
+                )
+            case _:
+                logger.warning("Got unexpected min/max time in component %r", component)
+
+        base = FormioTimeField(
             required=required,
             allow_null=not required,
             validators=validators,
