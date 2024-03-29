@@ -179,7 +179,6 @@ django==4.2.11
     #   django-cors-headers
     #   django-csp
     #   django-csp-reports
-    #   django-decorator-include
     #   django-digid-eherkenning
     #   django-filter
     #   django-formtools
@@ -256,10 +255,6 @@ django-csp==3.7
     #   -c requirements/base.txt
     #   -r requirements/base.txt
 django-csp-reports==1.8.1
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-django-decorator-include==3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

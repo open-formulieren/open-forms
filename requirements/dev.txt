@@ -203,7 +203,6 @@ django==4.2.11
     #   django-csp
     #   django-csp-reports
     #   django-debug-toolbar
-    #   django-decorator-include
     #   django-digid-eherkenning
     #   django-extensions
     #   django-filter
@@ -288,10 +287,6 @@ django-csp-reports==1.8.1
     #   -r requirements/ci.txt
 django-debug-toolbar==4.3.0
     # via -r requirements/dev.in
-django-decorator-include==3.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 django-digid-eherkenning==0.12.0
     # via
     #   -c requirements/ci.txt

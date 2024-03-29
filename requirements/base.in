@@ -45,7 +45,6 @@ django-capture-tag
 django-colorfield
 django-cookie-consent
 django-cors-headers
-django-decorator-include
 django-digid-eherkenning
 django-hijack
 django-jsonform
