@@ -190,8 +190,8 @@ class SingleBSNTests(ValidationsTestCase):
     def test_elfproef_invalid_num_chars(self):
         component: Component = {
             "type": "bsn",
-            "key": "requiredBSN",
-            "label": "Required bsn",
+            "key": "bsnTooShort",
+            "label": "BSN too short",
         }
 
         self.assertValidationIsAligned(
@@ -203,8 +203,8 @@ class SingleBSNTests(ValidationsTestCase):
     def test_elfproef_invalid_bsn(self):
         component: Component = {
             "type": "bsn",
-            "key": "requiredBSN",
-            "label": "Required bsn",
+            "key": "invalidBSN",
+            "label": "Invalid bsn",
         }
         self.assertValidationIsAligned(
             component,
@@ -358,8 +358,8 @@ class SingleCurrencyTests(ValidationsTestCase):
     def test_min_value(self):
         component: Component = {
             "type": "currency",
-            "key": "requiredCurrency",
-            "label": "Required currency",
+            "key": "minValueCurrency",
+            "label": "Min value currency",
             "validate": {"min": 10.7},
         }
 
@@ -372,8 +372,8 @@ class SingleCurrencyTests(ValidationsTestCase):
     def test_max_value(self):
         component: Component = {
             "type": "currency",
-            "key": "requiredCurrency",
-            "label": "Required currency",
+            "key": "maxValueCurrency",
+            "label": "Max value currency",
             "validate": {"max": 15},
         }
 
@@ -461,8 +461,8 @@ class SingleTextAreaTests(ValidationsTestCase):
     def test_max_length(self):
         component: Component = {
             "type": "textarea",
-            "key": "requiredTextarea",
-            "label": "Required textarea",
+            "key": "maxLengthTextarea",
+            "label": "Max length textarea",
             "validate": {"maxLength": 10},
         }
         invalid_sample = "word" * 4
@@ -492,8 +492,8 @@ class SingleTimeTests(ValidationsTestCase):
     def test_min_value(self):
         component: Component = {
             "type": "time",
-            "key": "requiredTime",
-            "label": "Required time",
+            "key": "minTime",
+            "label": "Minimum time",
             "validate": {
                 "minTime": "10:00",
                 "maxTime": "12:00",
@@ -509,8 +509,8 @@ class SingleTimeTests(ValidationsTestCase):
     def test_max_value(self):
         component: Component = {
             "type": "time",
-            "key": "requiredTime",
-            "label": "Required time",
+            "key": "maxTime",
+            "label": "Maximum time",
             "validate": {
                 "minTime": "10:00",
                 "maxTime": "12:00",
@@ -523,11 +523,11 @@ class SingleTimeTests(ValidationsTestCase):
             expected_ui_error="Alleen tijden tussen 10:00 en 12:00 zijn toegestaan.",
         )
 
-    def test_min_max_special_logic(self):
+    def test_min_max_crossing_midnight(self):
         component: Component = {
             "type": "time",
-            "key": "requiredTime",
-            "label": "Required time",
+            "key": "nextDayTime",
+            "label": "Next day min/max time",
             "validate": {
                 "minTime": "20:00",
                 "maxTime": "04:00",
