@@ -158,9 +158,3 @@ class NoVirusValidator:
                 raise serializers.ValidationError(
                     _("The virus scan returned an unexpected status.")
                 )
-
-
-class TruthyBooleanValueValidator:
-    def __call__(self, value):
-        if not value:
-            raise serializers.ValidationError(_("This field must be true."))

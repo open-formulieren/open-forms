@@ -424,7 +424,9 @@ class SinglePostcodeTests(ValidationsTestCase):
 class SingleSignatureTests(ValidationsTestCase):
 
     async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
-        page.wait_for_selector(f"[aria-label='{label}']", state="visible")
+        # can't do anything because it's a canvas, but we can assert that the label
+        # is rendered.
+        await expect(page.get_by_text(label, exact=True)).to_be_visible()
 
     def test_required_field(self):
         component: Component = {

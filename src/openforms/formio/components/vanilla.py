@@ -22,7 +22,6 @@ from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
-from ..api.validators import TruthyBooleanValueValidator
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
@@ -302,6 +301,16 @@ class Password(BasePlugin):
     formatter = PasswordFormatter
 
 
+def validate_required_checkbox(value: bool) -> None:
+    """
+    A required checkbox in Formio terms means it *must* be checked.
+    """
+    if not value:
+        raise serializers.ValidationError(
+            _("Checkbox must be checked."), code="invalid"
+        )
+
+
 @register("checkbox")
 class Checkbox(BasePlugin[Component]):
     formatter = CheckboxFormatter
@@ -313,7 +322,9 @@ class Checkbox(BasePlugin[Component]):
         # dynamically add in more kwargs based on the component configuration
         extra = {}
 
-        validators = [TruthyBooleanValueValidator()] if required else []
+        validators = []
+        if required:
+            validators.append(validate_required_checkbox)
         if plugin_ids := validate.get("plugins", []):
             validators += [PluginValidator(plugin) for plugin in plugin_ids]
 
