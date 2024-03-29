@@ -8,6 +8,7 @@ https://github.com/formio/formio.js/blob/4.13.x/src/validator/Validator.js.
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, TypeAlias
 
 from glom import assign, glom
@@ -86,6 +87,20 @@ class StepDataSerializer(serializers.Serializer):
                 field.min_length = None
                 field.max_length = None
 
+    def _get_required(self) -> bool:
+        return any(field.required for field in self.fields.values())
+
+    def _set_required(self, value: bool) -> None:
+        # we need a setter because the serializers.Field.__init__ sets the initival
+        # value, but we actually derive the value via :meth:`_get_required` above
+        # dynamically based on the children, so we just ignore it.
+        logging.debug(
+            "Setting the serializer required property has no effect. "
+            "This is deliberate"
+        )
+
+    required = property(_get_required, _set_required)  # type:ignore
+
 
 def dict_to_serializer(
     fields: dict[str, FieldOrNestedFields], **kwargs
@@ -105,9 +120,7 @@ def dict_to_serializer(
                 # we do not pass **kwwargs to nested serializers, as this should only
                 # be provided to the top-level serializer. The context/data is then
                 # shared through all children by DRF.
-                serializer.fields[bit] = dict_to_serializer(
-                    nested_fields, required=False
-                )
+                serializer.fields[bit] = dict_to_serializer(nested_fields)
             # treat default case as a serializer field
             case _:
                 serializer.fields[bit] = field
