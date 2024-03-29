@@ -4,7 +4,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject
 
 from ...service import build_serializer
-from ...typing import EditGridComponent
+from ...typing import EditGridComponent, FieldsetComponent
 from .helpers import validate_formio_data
 
 
@@ -183,9 +183,39 @@ class EditGridValidationTests(SimpleTestCase):
             ],
         }
 
-        is_valid, errors = validate_formio_data(
+        is_valid, _ = validate_formio_data(
             component,
             {"optionalRepeatingGroup": []},
+        )
+
+        self.assertTrue(is_valid)
+
+    def test_required_but_empty_editgrid(self):
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "requiredRepeatingGroup",
+            "label": "Required repeating group",
+            "validate": {"required": True},
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "optionalTextfield",
+                    "label": "Optional Text field",
+                    "validate": {"required": False},
+                }
+            ],
+        }
+        component: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "Hidden fieldset",
+            "hidden": True,
+            "components": [editgrid],
+        }
+
+        is_valid, _ = validate_formio_data(
+            component,
+            {"requiredRepeatingGroup": []},
         )
 
         self.assertTrue(is_valid)
