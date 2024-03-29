@@ -3,12 +3,12 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
-from decorator_include import decorator_include
 from maykin_2fa import monkeypatch_admin
 from maykin_2fa.urls import urlpatterns, webauthn_urlpatterns
 from mozilla_django_oidc_db.views import AdminLoginFailure
 
 from openforms.emails.admin import EmailTestAdminView
+from openforms.utils.urls import decorator_include
 
 from .views import AdminLoginRedirectView, ClassicAdminLoginView
 
