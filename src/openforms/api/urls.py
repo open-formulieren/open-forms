@@ -1,7 +1,6 @@
 from django.urls import include, path
 from django.views.generic import RedirectView
 
-from decorator_include import decorator_include
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularJSONAPIView,
@@ -25,6 +24,7 @@ from openforms.services.api.viewsets import ServiceViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 from openforms.utils.decorators import never_cache
 from openforms.utils.json_logic.api.views import GenerateLogicDescriptionView
+from openforms.utils.urls import decorator_include
 from openforms.variables.api.viewsets import ServiceFetchConfigurationViewSet
 
 from .views import PingView

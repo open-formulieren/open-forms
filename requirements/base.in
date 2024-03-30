@@ -4,6 +4,7 @@ bleach[css] >= 5
 celery ~= 5.0
 celery-once
 defusedxml
+frozendict
 furl
 glom
 maykin-json-logic-py
@@ -33,10 +34,6 @@ tabulate
 typing-extensions
 weasyprint
 zeep
-# Pinned setuptools to a version lower than 58 to allow pyzmail36 to be
-# installed, as required by django-yubin.
-setuptools
-frozendict
 
 # Framework libraries
 django ~= 4.2
@@ -48,7 +45,6 @@ django-capture-tag
 django-colorfield
 django-cookie-consent
 django-cors-headers
-django-decorator-include
 django-digid-eherkenning
 django-hijack
 django-jsonform

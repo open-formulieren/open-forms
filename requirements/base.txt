@@ -100,7 +100,6 @@ django==4.2.11
     #   django-cors-headers
     #   django-csp
     #   django-csp-reports
-    #   django-decorator-include
     #   django-digid-eherkenning
     #   django-filter
     #   django-formtools
@@ -140,7 +139,7 @@ django-appconf==1.0.4
     #   django-timeline-logger
 django-autoslug==1.9.9
     # via -r requirements/base.in
-django-axes[ipware]==6.0.5
+django-axes[ipware]==6.4.0
     # via -r requirements/base.in
 django-camunda==0.14.0
     # via -r requirements/base.in
@@ -155,8 +154,6 @@ django-cors-headers==3.11.0
 django-csp==3.7
     # via -r requirements/base.in
 django-csp-reports==1.8.1
-    # via -r requirements/base.in
-django-decorator-include==3.0
     # via -r requirements/base.in
 django-digid-eherkenning==0.12.0
     # via -r requirements/base.in
@@ -278,7 +275,7 @@ isodate==0.6.1
     #   maykin-json-logic-py
     #   maykin-python3-saml
     #   zeep
-josepy==1.8.0
+josepy==1.14.0
     # via mozilla-django-oidc
 jq==1.3.0
     # via -r requirements/base.in
@@ -529,10 +526,3 @@ zgw-consumers==0.32.0
     # via -r requirements/base.in
 zopfli==0.2.3
     # via fonttools
-
-# The following packages are considered to be unsafe in a requirements file:
-setuptools==65.6.3
-    # via
-    #   -r requirements/base.in
-    #   django-axes
-    #   josepy
