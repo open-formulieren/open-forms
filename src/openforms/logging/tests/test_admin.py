@@ -54,7 +54,14 @@ class AVGAuditLogListViewTests(WebTest):
         html_form = changelist.forms["changelist-form"]
 
         # It is not possible to select the "delete_selected" option
-        self.assertIsNone(html_form.fields.get("action"))
+        self.assertEqual(
+            [
+                option
+                for option in html_form.fields.get("action")[0].options
+                if option[0] == "delete_selected"
+            ],
+            [],
+        )
 
     def test_superuser_cant_delete_individual_logs(self):
         submission = SubmissionFactory.create(completed_on=timezone.now())
