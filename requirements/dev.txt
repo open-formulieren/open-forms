@@ -658,7 +658,7 @@ maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-python3-saml==1.16.0.post2
+maykin-python3-saml==1.16.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

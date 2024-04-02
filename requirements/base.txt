@@ -314,7 +314,7 @@ maykin-2fa==1.0.0
     # via -r requirements/base.in
 maykin-json-logic-py==0.13.0
     # via -r requirements/base.in
-maykin-python3-saml==1.16.0.post2
+maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
