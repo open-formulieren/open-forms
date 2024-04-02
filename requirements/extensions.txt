@@ -215,7 +215,7 @@ django-cors-headers==3.11.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django-csp==3.7
+django-csp==3.8
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt

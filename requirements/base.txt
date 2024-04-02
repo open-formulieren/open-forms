@@ -151,7 +151,7 @@ django-cookie-consent==0.5.0b0
     # via -r requirements/base.in
 django-cors-headers==3.11.0
     # via -r requirements/base.in
-django-csp==3.7
+django-csp==3.8
     # via -r requirements/base.in
 django-csp-reports==1.8.1
     # via -r requirements/base.in
