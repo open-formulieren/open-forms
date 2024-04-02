@@ -91,3 +91,37 @@ class CurrencyFieldValidationTests(SimpleTestCase):
                 is_valid, _ = validate_formio_data(component, {"foo": 1.5})
 
                 self.assertFalse(is_valid)
+
+    def test_currency_required_validation(self):
+        component: Component = {
+            "type": "currency",
+            "key": "foo",
+            "label": "Test",
+            "validate": {"required": True},
+        }
+
+        invalid_values = [
+            ({}, "required"),
+            ({"foo": None}, "null"),
+        ]
+
+        for data, error_code in invalid_values:
+            with self.subTest(data=data):
+                is_valid, errors = validate_formio_data(component, data)
+
+                self.assertFalse(is_valid)
+                self.assertIn(component["key"], errors)
+                error = extract_error(errors, component["key"])
+                self.assertEqual(error.code, error_code)
+
+    def test_currency_optional_allows_empty(self):
+        component: Component = {
+            "type": "currency",
+            "key": "foo",
+            "label": "Test",
+            "validate": {"required": False},
+        }
+
+        is_valid, _ = validate_formio_data(component, {"foo": None})
+
+        self.assertTrue(is_valid)

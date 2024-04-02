@@ -7,7 +7,7 @@ adjacent custom.py module.
 
 import logging
 from datetime import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils.translation import gettext_lazy as _
@@ -440,16 +440,31 @@ class Select(BasePlugin[SelectComponent]):
 
     def build_serializer_field(
         self, component: SelectComponent
-    ) -> serializers.MultipleChoiceField:
+    ) -> serializers.ChoiceField:
         validate = component.get("validate", {})
         required = validate.get("required", False)
+        assert "values" in component["data"]
         choices = [
             (value["value"], value["label"]) for value in component["data"]["values"]
         ]
-        return serializers.MultipleChoiceField(
+
+        # map multiple false/true to the respective serializer field configuration
+        field_kwargs: dict[str, Any]
+        match component:
+            case {"multiple": True}:
+                field_cls = serializers.MultipleChoiceField
+                field_kwargs = {"allow_empty": not required}
+            case _:
+                field_cls = serializers.ChoiceField
+                field_kwargs = {}
+
+        return field_cls(
             choices=choices,
             required=required,
+            # See #4084 - form builder bug causes empty option to be added. allow_blank
+            # is therefore required for select with `multiple: true` too.
             allow_blank=not required,
+            **field_kwargs,
         )
 
 
