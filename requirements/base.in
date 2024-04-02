@@ -47,6 +47,7 @@ django-cookie-consent
 django-cors-headers
 django-digid-eherkenning
 django-hijack
+django-import-export
 django-jsonform
 django-log-outgoing-requests
 django-modeltranslation

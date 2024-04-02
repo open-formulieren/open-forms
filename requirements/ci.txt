@@ -167,6 +167,12 @@ defusedxml==0.7.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   odfpy
+diff-match-patch==20230430
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-import-export
 django==4.2.11
     # via
     #   -c requirements/base.txt
@@ -183,6 +189,7 @@ django==4.2.11
     #   django-filter
     #   django-formtools
     #   django-hijack
+    #   django-import-export
     #   django-jenkins
     #   django-jsonform
     #   django-log-outgoing-requests
@@ -272,6 +279,10 @@ django-formtools==2.5.1
     #   -r requirements/base.txt
     #   django-two-factor-auth
 django-hijack==3.4.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+django-import-export==2.9.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -570,6 +581,11 @@ mail-parser==3.15.0
     #   django-yubin
 markdown==3.3.4
     # via sphinx-markdown-tables
+markuppy==1.14
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   tablib
 markupsafe==2.1.2
     # via jinja2
 maykin-2fa==1.0.0
@@ -609,6 +625,11 @@ oauthlib==3.2.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   requests-oauthlib
+odfpy==1.4.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   tablib
 openapi-schema-validator==0.6.2
     # via
     #   -c requirements/base.txt
@@ -782,6 +803,7 @@ pyyaml==6.0.1
     #   -r requirements/base.txt
     #   drf-spectacular
     #   jsonschema-spec
+    #   tablib
     #   vcrpy
     #   zgw-consumers
 qrcode==7.4.2
@@ -942,10 +964,11 @@ stringcase==1.2.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   o365
-tablib[xlsx]==3.0.0
+tablib[html,ods,xls,xlsx,yaml]==3.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-import-export
     #   tablib
 tabulate==0.8.9
     # via
@@ -1053,6 +1076,16 @@ wrapt==1.15.0
     #   -r requirements/base.txt
     #   elastic-apm
     #   vcrpy
+xlrd==2.0.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   tablib
+xlwt==1.3.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   tablib
 xmlsec==1.3.10
     # via
     #   -c requirements/base.txt

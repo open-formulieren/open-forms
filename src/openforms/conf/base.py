@@ -194,6 +194,7 @@ INSTALLED_APPS = [
     "csp_post_processor",
     "django_camunda",
     "log_outgoing_requests",
+    "import_export",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
