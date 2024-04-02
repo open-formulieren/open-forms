@@ -77,8 +77,10 @@ click-repl==0.2.0
     # via celery
 cryptography==42.0.2
     # via
+    #   django-digid-eherkenning
     #   django-simple-certmanager
     #   josepy
+    #   maykin-python3-saml
     #   mozilla-django-oidc
     #   pyopenssl
 cssselect2==0.4.1
@@ -161,7 +163,7 @@ django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
-django-digid-eherkenning==0.11.0
+django-digid-eherkenning==0.12.0
     # via -r requirements/base.in
 django-filter==23.2
     # via -r requirements/base.in
@@ -308,7 +310,7 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via -r requirements/base.in
 maykin-json-logic-py==0.13.0
     # via -r requirements/base.in
-maykin-python3-saml==1.16.0.post1
+maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
@@ -362,7 +364,6 @@ pyopenssl==24.0.0
     # via
     #   django-simple-certmanager
     #   josepy
-    #   maykin-python3-saml
     #   zgw-consumers
 pyphen==0.10.0
     # via weasyprint

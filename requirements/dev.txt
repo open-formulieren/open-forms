@@ -165,8 +165,10 @@ cryptography==42.0.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-digid-eherkenning
     #   django-simple-certmanager
     #   josepy
+    #   maykin-python3-saml
     #   mozilla-django-oidc
     #   pyopenssl
 cssselect==1.1.0
@@ -293,7 +295,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.11.0
+django-digid-eherkenning==0.12.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -647,7 +649,7 @@ maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-python3-saml==1.16.0.post1
+maykin-python3-saml==1.16.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -826,7 +828,6 @@ pyopenssl==24.0.0
     #   -r requirements/ci.txt
     #   django-simple-certmanager
     #   josepy
-    #   maykin-python3-saml
     #   zgw-consumers
 pyphen==0.10.0
     # via
