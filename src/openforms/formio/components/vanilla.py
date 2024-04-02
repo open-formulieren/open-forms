@@ -320,7 +320,12 @@ class TextArea(BasePlugin[Component]):
             extra["max_length"] = max_length
 
         base = serializers.CharField(
-            required=required, allow_blank=not required, **extra
+            required=required,
+            allow_blank=not required,
+            # FIXME: should always be False, but formio client sends `null` for
+            # untouched fields :( See #4068
+            allow_null=multiple,
+            **extra,
         )
         return serializers.ListField(child=base) if multiple else base
 

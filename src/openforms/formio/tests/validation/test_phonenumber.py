@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 
 from hypothesis import given, strategies as st
 
@@ -85,3 +85,22 @@ class PhoneNumberValidationTests(SimpleTestCase):
         self.assertFalse(is_valid)
         error = extract_error(errors, "foo")
         self.assertEqual(error.code, "invalid")
+
+    @tag("gh-4068")
+    def test_multiple_with_form_builder_empty_defaults(self):
+        # Our own form builder does funky stuff here by setting the defaultValue to
+        # a list with `null` item.
+        # XXX null is really not a correct value, but we need to rework the rest of our
+        # builder (in the backend) for this first.
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "manyPhonenumber",
+            "label": "Optional Phone numbers",
+            "validate": {"required": False},
+            "multiple": True,
+            "defaultValue": [None],  # FIXME: should really be [""] or []
+        }
+
+        is_valid, _ = validate_formio_data(component, {"manyPhonenumber": [None]})
+
+        self.assertTrue(is_valid)

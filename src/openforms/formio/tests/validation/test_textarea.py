@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 
 from openforms.typing import JSONValue
 
@@ -60,3 +60,22 @@ class TextAreaValidationTests(SimpleTestCase):
         self.assertIn(component["key"], errors)
         error = extract_error(errors, component["key"])
         self.assertEqual(error.code, "invalid")
+
+    @tag("gh-4068")
+    def test_multiple_with_form_builder_empty_defaults(self):
+        # Our own form builder does funky stuff here by setting the defaultValue to
+        # a list with `null` item.
+        # XXX null is really not a correct value, but we need to rework the rest of our
+        # builder (in the backend) for this first.
+        component: Component = {
+            "type": "textarea",
+            "key": "manyTextarea",
+            "label": "Optional textareas",
+            "validate": {"required": False},
+            "multiple": True,
+            "defaultValue": [None],  # FIXME: should really be [""] or []
+        }
+
+        is_valid, _ = validate_formio_data(component, {"manyTextarea": [None]})
+
+        self.assertTrue(is_valid)
