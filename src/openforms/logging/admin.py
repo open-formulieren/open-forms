@@ -15,6 +15,7 @@ class TimelineLogProxyAdmin(admin.ModelAdmin):
         "extra_data",
     )
     list_display = ("message",)
+    list_filter = ("timestamp", "user")
     search_fields = (
         "extra_data",
         "object_id",
