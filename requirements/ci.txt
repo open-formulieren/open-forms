@@ -590,7 +590,7 @@ maykin-json-logic-py==0.13.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-maykin-python3-saml==1.16.0.post2
+maykin-python3-saml==1.16.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
