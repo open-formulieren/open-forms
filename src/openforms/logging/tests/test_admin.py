@@ -1,5 +1,7 @@
+import json
+
 from django.contrib.auth.models import Permission
-from django.test import tag
+from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 
@@ -12,6 +14,8 @@ from openforms.logging.models import TimelineLogProxy
 from openforms.logging.tests.factories import TimelineLogProxyFactory
 from openforms.prefill.registry import register
 from openforms.submissions.tests.factories import SubmissionFactory
+
+from ..admin import TimelineLogProxyResource
 
 
 @disable_admin_mfa()
@@ -85,3 +89,24 @@ class AVGAuditLogListViewTests(WebTest):
         response = self.app.get(url, user=user)
 
         self.assertEqual(200, response.status_code)
+
+
+class TimelineLogExportsTest(TestCase):
+    def test_timelinelog_exports(self):
+        submission = SubmissionFactory.create()
+        user = StaffUserFactory.create()
+        log = TimelineLogProxyFactory.create(content_object=submission, user=user)
+
+        dataset = TimelineLogProxyResource().export()
+
+        self.assertEqual(
+            json.loads(dataset.json),
+            [
+                {
+                    "message": log.message().strip(),
+                    "user": log.fmt_user,
+                    "related_object": str(log.content_object),
+                    "timestamp": log.timestamp.isoformat(),
+                }
+            ],
+        )
