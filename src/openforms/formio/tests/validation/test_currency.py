@@ -8,66 +8,75 @@ from ...typing import Component
 from .helpers import extract_error, replace_validators_registry, validate_formio_data
 
 
-class NumberValueSerializer(serializers.Serializer):
+class CurrencyValueSerializer(serializers.Serializer):
     value = serializers.FloatField()
 
 
 class GT5Validator(BasePlugin[int | float]):
-    value_serializer = NumberValueSerializer
+    value_serializer = CurrencyValueSerializer
 
     def __call__(self, value: int | float, submission):
         if not value > 5:
             raise serializers.ValidationError("Nope")
 
 
-class NumberValidationTests(SimpleTestCase):
-    def test_number_min_value(self):
+class CurrencyFieldValidationTests(SimpleTestCase):
+
+    def test_currencyfield_required_validation(self):
         component: Component = {
-            "type": "number",
+            "type": "currency",
             "key": "foo",
-            "label": "Test",
-            "validate": {
-                "min": -3.5,
-            },
-        }
-
-        is_valid, errors = validate_formio_data(component, {"foo": -5.2})
-
-        self.assertFalse(is_valid)
-        self.assertIn(component["key"], errors)
-        error = extract_error(errors, component["key"])
-        self.assertEqual(error.code, "min_value")
-
-    def test_number_min_value_with_non_required_value(self):
-        component: Component = {
-            "type": "number",
-            "key": "foo",
-            "label": "Test",
-            "validate": {"max": 10},
-        }
-
-        is_valid, _ = validate_formio_data(component, {})
-
-        self.assertTrue(is_valid)
-
-    def test_zero_is_accepted(self):
-        component: Component = {
-            "type": "number",
-            "key": "foo",
-            "label": "Test",
+            "label": "Foo",
             "validate": {"required": True},
         }
 
-        is_valid, _ = validate_formio_data(component, {"foo": 0})
+        invalid_values = [
+            ({}, "required"),
+            ({"foo": None}, "null"),
+        ]
 
-        self.assertTrue(is_valid)
+        for data, error_code in invalid_values:
+            with self.subTest(data=data):
+                is_valid, errors = validate_formio_data(component, data)
 
-    def test_number_with_plugin_validator(self):
+                self.assertFalse(is_valid)
+                self.assertIn(component["key"], errors)
+                error = extract_error(errors, component["key"])
+                self.assertEqual(error.code, error_code)
+
+    def test_min_max_values(self):
+        component: Component = {
+            "type": "currency",
+            "key": "foo",
+            "label": "Foo",
+            "validate": {
+                "required": False,
+                "min": 10.7,
+                "max": 15,
+            },
+        }
+
+        invalid_values = [
+            ({"foo": 0}, "min_value"),
+            ({"foo": 9}, "min_value"),
+            ({"foo": 17}, "max_value"),
+        ]
+
+        for data, error_code in invalid_values:
+            with self.subTest(data=data):
+                is_valid, errors = validate_formio_data(component, data)
+
+                self.assertFalse(is_valid)
+                self.assertIn(component["key"], errors)
+                error = extract_error(errors, component["key"])
+                self.assertEqual(error.code, error_code)
+
+    def test_currency_with_plugin_validator(self):
         with replace_validators_registry() as register:
             register("gt_5")(GT5Validator)
 
             component: Component = {
-                "type": "number",
+                "type": "currency",
                 "key": "foo",
                 "label": "Test",
                 "validate": {"plugins": ["gt_5"]},
@@ -79,13 +88,13 @@ class NumberValidationTests(SimpleTestCase):
                 self.assertTrue(is_valid)
 
             with self.subTest("invalid value"):
-                is_valid, _ = validate_formio_data(component, {"foo": 1})
+                is_valid, _ = validate_formio_data(component, {"foo": 1.5})
 
                 self.assertFalse(is_valid)
 
-    def test_number_required_validation(self):
+    def test_currency_required_validation(self):
         component: Component = {
-            "type": "number",
+            "type": "currency",
             "key": "foo",
             "label": "Test",
             "validate": {"required": True},
@@ -105,9 +114,9 @@ class NumberValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
-    def test_number_optional_allows_empty(self):
+    def test_currency_optional_allows_empty(self):
         component: Component = {
-            "type": "number",
+            "type": "currency",
             "key": "foo",
             "label": "Test",
             "validate": {"required": False},

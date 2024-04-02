@@ -2,7 +2,6 @@ from django.test import SimpleTestCase
 
 from rest_framework import serializers
 
-from openforms.typing import JSONValue
 from openforms.validations.base import BasePlugin
 
 from ...typing import Component
@@ -40,24 +39,25 @@ class BSNValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
-    def test_maxlength(self):
+    def test_elfproef(self):
         component: Component = {
             "type": "bsn",
             "key": "foo",
             "label": "Test",
-            "validate": {"required": True, "maxLength": 5},
         }
-        data: JSONValue = {"foo": "123456"}
+        invalid_values = [
+            ({"foo": "1234"}, "invalid"),
+            ({"foo": "123456781"}, "invalid"),
+        ]
 
-        is_valid, errors = validate_formio_data(component, data)
+        for data, error_code in invalid_values:
+            with self.subTest(data=data):
+                is_valid, errors = validate_formio_data(component, data)
 
-        self.assertFalse(is_valid)
-        error = extract_error(errors, "foo")
-        self.assertEqual(error.code, "max_length")
-
-    # TODO
-    # def test_elfproef(self):
-    #     pass
+                self.assertFalse(is_valid)
+                self.assertIn(component["key"], errors)
+                error = extract_error(errors, component["key"])
+                self.assertEqual(error.code, error_code)
 
     def test_bsn_with_plugin_validator(self):
         with replace_validators_registry() as register:

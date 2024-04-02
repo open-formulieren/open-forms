@@ -5,9 +5,11 @@ Custom component types (defined by us or third parties) need to be organized in 
 adjacent custom.py module.
 """
 
-from typing import TYPE_CHECKING
+import logging
+from datetime import time
+from typing import TYPE_CHECKING, Any
 
-from django.core.validators import RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -52,20 +54,13 @@ from ..typing import (
     TextFieldComponent,
 )
 from .translations import translate_options
+from .utils import _normalize_pattern
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-def _normalize_pattern(pattern: str) -> str:
-    """
-    Normalize a regex pattern so that it matches from beginning to the end of the value.
-    """
-    if not pattern.startswith("^"):
-        pattern = f"^{pattern}"
-    if not pattern.endswith("$"):
-        pattern = f"{pattern}$"
-    return pattern
+logger = logging.getLogger(__name__)
 
 
 @register("default")
@@ -156,9 +151,84 @@ class Email(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
 
+class FormioTimeField(serializers.TimeField):
+    def validate_empty_values(self, data):
+        is_empty, data = super().validate_empty_values(data)
+        # base field only treats `None` as empty, but formio uses empty strings
+        if data == "":
+            if self.required:
+                self.fail("required")
+            return (True, "")
+        return is_empty, data
+
+
+class TimeBetweenValidator:
+
+    def __init__(self, min_time: time, max_time: time) -> None:
+        self.min_time = min_time
+        self.max_time = max_time
+
+    def __call__(self, value: time):
+        # same day - straight forward comparison
+        if self.min_time < self.max_time:
+            if value < self.min_time:
+                raise serializers.ValidationError(
+                    _("Value is before minimum time"),
+                    code="min_value",
+                )
+            if value > self.max_time:
+                raise serializers.ValidationError(
+                    _("Value is after maximum time"),
+                    code="max_value",
+                )
+
+        # min time is on the day before the max time applies (e.g. 20:00 -> 04:00)
+        else:
+            if value < self.min_time and value > self.max_time:
+                raise serializers.ValidationError(
+                    _("Value is not between mininum and maximum time."), code="invalid"
+                )
+
+
 @register("time")
-class Time(BasePlugin):
+class Time(BasePlugin[Component]):
     formatter = TimeFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> FormioTimeField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        validators = []
+
+        match (
+            min_time := validate.get("minTime"),
+            max_time := validate.get("maxTime"),
+        ):
+            case (None, None):
+                pass
+            case (str(), None):
+                validators.append(MinValueValidator(time.fromisoformat(min_time)))
+            case (None, str()):
+                validators.append(MaxValueValidator(time.fromisoformat(max_time)))
+            case (str(), str()):
+                validators.append(
+                    TimeBetweenValidator(
+                        time.fromisoformat(min_time),
+                        time.fromisoformat(max_time),
+                    )
+                )
+            case _:
+                logger.warning("Got unexpected min/max time in component %r", component)
+
+        base = FormioTimeField(
+            required=required,
+            allow_null=not required,
+            validators=validators,
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("phoneNumber")
@@ -234,8 +304,30 @@ class File(BasePlugin[FileComponent]):
 
 
 @register("textarea")
-class TextArea(BasePlugin):
+class TextArea(BasePlugin[Component]):
     formatter = TextAreaFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+        if (max_length := validate.get("maxLength")) is not None:
+            extra["max_length"] = max_length
+
+        base = serializers.CharField(
+            required=required,
+            allow_blank=not required,
+            # FIXME: should always be False, but formio client sends `null` for
+            # untouched fields :( See #4068
+            allow_null=multiple,
+            **extra,
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("number")
@@ -251,9 +343,9 @@ class Number(BasePlugin):
         required = validate.get("required", False)
 
         extra = {}
-        if max_value := validate.get("max"):
+        if (max_value := validate.get("max")) is not None:
             extra["max_value"] = max_value
-        if min_value := validate.get("min"):
+        if (min_value := validate.get("min")) is not None:
             extra["min_value"] = min_value
 
         validators = []
@@ -274,9 +366,37 @@ class Password(BasePlugin):
     formatter = PasswordFormatter
 
 
+def validate_required_checkbox(value: bool) -> None:
+    """
+    A required checkbox in Formio terms means it *must* be checked.
+    """
+    if not value:
+        raise serializers.ValidationError(
+            _("Checkbox must be checked."), code="invalid"
+        )
+
+
 @register("checkbox")
-class Checkbox(BasePlugin):
+class Checkbox(BasePlugin[Component]):
     formatter = CheckboxFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.BooleanField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        # dynamically add in more kwargs based on the component configuration
+        extra = {}
+
+        validators = []
+        if required:
+            validators.append(validate_required_checkbox)
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
+        return serializers.BooleanField(**extra)
 
 
 @register("selectboxes")
@@ -318,10 +438,60 @@ class Select(BasePlugin[SelectComponent]):
             return
         translate_options(options, language_code, enabled)
 
+    def build_serializer_field(
+        self, component: SelectComponent
+    ) -> serializers.ChoiceField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        assert "values" in component["data"]
+        choices = [
+            (value["value"], value["label"]) for value in component["data"]["values"]
+        ]
+
+        # map multiple false/true to the respective serializer field configuration
+        field_kwargs: dict[str, Any]
+        match component:
+            case {"multiple": True}:
+                field_cls = serializers.MultipleChoiceField
+                field_kwargs = {"allow_empty": not required}
+            case _:
+                field_cls = serializers.ChoiceField
+                field_kwargs = {}
+
+        return field_cls(
+            choices=choices,
+            required=required,
+            # See #4084 - form builder bug causes empty option to be added. allow_blank
+            # is therefore required for select with `multiple: true` too.
+            allow_blank=not required,
+            **field_kwargs,
+        )
+
 
 @register("currency")
-class Currency(BasePlugin):
+class Currency(BasePlugin[Component]):
     formatter = CurrencyFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.FloatField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        extra = {}
+        if (max_value := validate.get("max")) is not None:
+            extra["max_value"] = max_value
+        if (min_value := validate.get("min")) is not None:
+            extra["min_value"] = min_value
+
+        validators = []
+        if plugin_ids := validate.get("plugins", []):
+            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+
+        if validators:
+            extra["validators"] = validators
+
+        return serializers.FloatField(
+            required=required, allow_null=not required, **extra
+        )
 
 
 @register("radio")
@@ -360,8 +530,13 @@ class Radio(BasePlugin[RadioComponent]):
 
 
 @register("signature")
-class Signature(BasePlugin):
+class Signature(BasePlugin[Component]):
     formatter = SignatureFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.CharField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        return serializers.CharField(required=required, allow_blank=not required)
 
 
 @register("content")

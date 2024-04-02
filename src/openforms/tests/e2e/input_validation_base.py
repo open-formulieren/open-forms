@@ -89,6 +89,9 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
     def _locate_input(self, page: Page, label: str):
         return page.get_by_label(label, exact=True)
 
+    async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
+        await self._locate_input(page, label).fill(ui_input)
+
     @async_to_sync()
     async def _assertFrontendValidation(
         self,
@@ -104,8 +107,7 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
             await page.goto(url)
             await page.get_by_role("button", name="Formulier starten").click()
 
-            # fill in the test input
-            await self._locate_input(page, label).fill(ui_input)
+            await self.apply_ui_input(page, label, ui_input)
 
             # try to submit the step which should be invalid, so we expect this to
             # render the error message.
