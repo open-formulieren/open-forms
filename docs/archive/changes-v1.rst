@@ -95,27 +95,6 @@ Bugfix release + preparation for 2.0.0 upgrade
 * [#2055] Added management command to check for invalid keys
 * [#1979] Added model to track currently deployed version
 
-1.0.14 (2022-09-29)
-===================
-
-Final bugfix release in the ``1.0.x`` series.
-
-* [#1856] Fixed crash on logic rule saving in the admin
-* [#1842] Fixed crash on various types of empty StUF-BG response
-* [#1832] Prevent and handle location service rate limit errors
-* [#1960] Ensure design tokens override default style
-* [#1957] Fixed not being able to manually retry errored submission registrations having
-  exceeded the retry limit
-* [#1867] Added more StUF-ZDS/ZGW registration fields.
-* Added missing translation for max files
-* [#2011] Worked around thread-safety issue when configuring Ogone merchants in the admin
-* [#2066] Re-added key validation in form builder
-* [#2055] Added management command to check for invalid keys
-* [#1979] Added model to track currently deployed version
-
-.. note:: This is the FINAL 1.0.x release - support for this version has now ended. We
-   recommend upgrading to the latest major version.
-
 1.1.5 (2022-08-09)
 ==================
 
@@ -126,39 +105,8 @@ This release fixes a potential reflected file download vulnerability.
 * Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
 * [#1833] Fixed submission being blocked on empty prefill data
 
-1.0.13 (2022-08-09)
-===================
-
-Security fix release
-
-This release fixes a potential reflected file download vulnerability.
-
-* Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
-* Fixed the filename of submission attachment file downloads
-* [#1833] Fixed submission being blocked on empty prefill data
-
 1.1.4 (2022-07-25)
 ==================
-
-Bugfix release
-
-Note that this release includes a fix for Github security advisory
-`GHSA-g936-w68m-87j8 <https://github.com/open-formulieren/open-forms/security/advisories/GHSA-g936-w68m-87j8>`_.
-
-* Upgraded to latest Django security release
-* [#1730] Update allowed headers for nonce CSP header
-* [#1325] Added management command to check number of forms with duplicate component
-  keys (required for upgrade to 1.2 when it's available)
-* [#1723] StUF-ZDS registration: a number of configuration options are now optional
-* [#1769] StUF-ZDS registration: you can now configure the confidentiality level of a
-  document attached to the zaak
-* [#1617] Fixed crash on StUF onvolledige datum
-* [GHSA-g936-w68m-87j8] Perform additional permission checks if the form requires
-  login
-* Backported Submission.is_authenticated from #1418
-
-1.0.12 (2022-07-25)
-===================
 
 Bugfix release
 
@@ -187,19 +135,6 @@ Periodic bugfix release
 * Fixed unintended camelization of response data
 * Bumped API version to 1.1.1
 * [#1693] Fixed postcode validation errors by applying input mask normalization to prefill values
-* [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
-
-1.0.11 (2022-06-29)
-===================
-
-Periodic bugfix release
-
-* [#1681] Use a unique reference number every time for StUF-ZDS requests
-* [#1687] Added explicit submission step validate endpoint
-* Fixed unintended camelization of response data
-* Bumped API version to 1.0.2
-* [#1693] Fixed postcode validation errors by applying input mask normalization to
-  prefill values
 * [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
 
 1.1.2 (2022-06-16)
@@ -231,11 +166,6 @@ data. This involves a couple of steps with some pointers below.
    will report any issues and print out the references and IDs of the affected
    submissions.
 
-1.0.10 (2022-06-16)
-===================
-
-Hotfix following 1.0.9 - this is the same patch as 1.1.2.
-
 1.1.1 (2022-06-13)
 ==================
 
@@ -247,19 +177,6 @@ as soon as possible.
 * [CVE-2022-31040] Fixed open redirect in cookie-consent 'close' button
 * [CVE-2022-31041] Perform upload content validation against allowed file types
 * [#1670] Update error message for number validation
-
-1.0.9 (2022-06-13)
-==================
-
-Security release (CVE-2022-31040, CVE-2022-31041)
-
-This bugfix release fixes two security issues in Open Forms. We recommend upgrading
-as soon as possible.
-
-* [CVE-2022-31040] Fixed open redirect in cookie-consent 'close' button
-* [CVE-2022-31041] Perform upload content validation against allowed file types
-* [#1670] Update error message for number validation
-* [#1560] Fix prefill not working inside of nested/layout components
 
 1.1.0 (2022-05-24)
 ==================
@@ -415,6 +332,90 @@ All the bugfixes up to the ``1.0.8`` release are included.
   formio-specific endpoint instead.
 * ``Submission.nextStep`` is deprecated as it's unused, all the information to determine
   this is available from other attributes.
+
+1.0.14 (2022-09-29)
+===================
+
+Final bugfix release in the ``1.0.x`` series.
+
+* [#1856] Fixed crash on logic rule saving in the admin
+* [#1842] Fixed crash on various types of empty StUF-BG response
+* [#1832] Prevent and handle location service rate limit errors
+* [#1960] Ensure design tokens override default style
+* [#1957] Fixed not being able to manually retry errored submission registrations having
+  exceeded the retry limit
+* [#1867] Added more StUF-ZDS/ZGW registration fields.
+* Added missing translation for max files
+* [#2011] Worked around thread-safety issue when configuring Ogone merchants in the admin
+* [#2066] Re-added key validation in form builder
+* [#2055] Added management command to check for invalid keys
+* [#1979] Added model to track currently deployed version
+
+.. note:: This is the FINAL 1.0.x release - support for this version has now ended. We
+   recommend upgrading to the latest major version.
+
+1.0.13 (2022-08-09)
+===================
+
+Security fix release
+
+This release fixes a potential reflected file download vulnerability.
+
+* Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
+* Fixed the filename of submission attachment file downloads
+* [#1833] Fixed submission being blocked on empty prefill data
+
+
+1.0.12 (2022-07-25)
+===================
+
+Bugfix release
+
+Note that this release includes a fix for Github security advisory
+`GHSA-g936-w68m-87j8 <https://github.com/open-formulieren/open-forms/security/advisories/GHSA-g936-w68m-87j8>`_.
+
+* Upgraded to latest Django security release
+* [#1730] Update allowed headers for nonce CSP header
+* [#1325] Added management command to check number of forms with duplicate component
+  keys (required for upgrade to 1.2 when it's available)
+* [#1723] StUF-ZDS registration: a number of configuration options are now optional
+* [#1769] StUF-ZDS registration: you can now configure the confidentiality level of a
+  document attached to the zaak
+* [#1617] Fixed crash on StUF onvolledige datum
+* [GHSA-g936-w68m-87j8] Perform additional permission checks if the form requires
+  login
+* Backported Submission.is_authenticated from #1418
+
+1.0.11 (2022-06-29)
+===================
+
+Periodic bugfix release
+
+* [#1681] Use a unique reference number every time for StUF-ZDS requests
+* [#1687] Added explicit submission step validate endpoint
+* Fixed unintended camelization of response data
+* Bumped API version to 1.0.2
+* [#1693] Fixed postcode validation errors by applying input mask normalization to
+  prefill values
+* [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
+
+1.0.10 (2022-06-16)
+===================
+
+Hotfix following 1.0.9 - this is the same patch as 1.1.2.
+
+1.0.9 (2022-06-13)
+==================
+
+Security release (CVE-2022-31040, CVE-2022-31041)
+
+This bugfix release fixes two security issues in Open Forms. We recommend upgrading
+as soon as possible.
+
+* [CVE-2022-31040] Fixed open redirect in cookie-consent 'close' button
+* [CVE-2022-31041] Perform upload content validation against allowed file types
+* [#1670] Update error message for number validation
+* [#1560] Fix prefill not working inside of nested/layout components
 
 1.0.8 (2022-05-16)
 ==================

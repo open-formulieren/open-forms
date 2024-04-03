@@ -47,33 +47,8 @@ Periodic bugfix release
 * [#2710] Added missing initials (voorletters) prefill option for StUF-BG plugin.
 * Fixed failing docs build by disabling/changing some link checks.
 
-2.1.11 (2023-12-28)
-===================
-
-Final release in the 2.1.x series.
-
-Upgrade to Open Forms 2.2 or higher to continue receiving support/bugfixes.
-
-* [#3656] Fixed an incorrect DigiD error message being shown with OIDC authentication
-  plugins.
-* [#3692] Fixed a crash when cancelling DigiD authentication while logged in as admin
-  user.
-
 2.2.7 (2023-12-12)
 ==================
-
-Periodic bugfix release
-
-* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
-  present.
-* [#3605] Fixed unintended number localization in StUF/SOAP messages.
-* [#3613] Fixed submission resume flow not sending the user through the authentication
-  flow again when they authenticated for forms that have optional authentication. This
-  unfortunately resulted in hashed BSNs being sent to registration backends, which we
-  can not recover/translate back to the plain-text values.
-
-2.1.10 (2023-12-12)
-===================
 
 Periodic bugfix release
 
@@ -94,28 +69,12 @@ Hotfix release
 * [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
   creating the rol/betrokkene.
 
-2.1.9 (2023-11-09)
-==================
-
-Hotfix release
-
-* Upgraded bundled SDK version
-* [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
-  creating the rol/betrokkene.
-
 2.2.5 (2023-10-30)
 ==================
 
 Periodic bugfix release
 
 * [#3279] Added robustness to the admin that retrieves data from external APIs.
-* Bumped dependencies to their latest security fixes.
-
-2.1.8 (2023-10-30)
-==================
-
-Periodic bugfix release
-
 * Bumped dependencies to their latest security fixes.
 
 2.2.4 (2023-09-29)
@@ -143,34 +102,6 @@ Periodic bugfix release
 * [#3437] Improved robustness of outgoing request logging solution.
 * Included latest SDK bugfix release.
 
-2.1.7 (2023-09-25)
-==================
-
-Periodic bugfix release
-
-* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
-* Fixed the version of openapi-generator.
-* Bumped to latest Django patch release.
-* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
-* [#3420] Fixed styling of cookie overview page.
-* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
-  the logic tab.
-* [#3470] Fixed form names with slashes breaking submission generation.
-* Included latest SDK bugfix release.
-
-2.0.11 (2023-09-25)
-===================
-
-Final bugfix release in the ``2.0.x`` series.
-
-* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
-* Fixed the version of openapi-generator.
-* Bumped to latest Django patch release.
-* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
-  the logic tab.
-* [#3470] Fixed form names with slashes breaking submission generation.
-* Included latest SDK bugfix release.
-
 2.2.2 (2023-08-24)
 ==================
 
@@ -181,24 +112,6 @@ Periodic bugfix release
 * [#3358] Fixed display of appointment time in correct timezone.
 * [#3368] Fixed a crash when empty values are returned from StUF-BG.
 * Fixed JQ documentation URL for sorting.
-
-2.1.6 (2023-08-24)
-==================
-
-Periodic bugfix release
-
-* [#3319] Fixed forms possibly sending a DigiD SAML request without assurance level due
-  to misconfiguration.
-* [#3358] Fixed display of appointment time in correct timezone.
-* [#3368] Fixed a crash when empty values are returned from StUF-BG.
-
-2.0.10 (2023-08-24)
-===================
-
-Periodic bugfix release
-
-* [#3358] Fixed display of appointment time in correct timezone.
-* [#3368] Fixed a crash when empty values are returned from StUF-BG.
 
 2.2.1 (2023-07-26)
 ==================
@@ -232,53 +145,6 @@ Periodic bugfix release
 .. note:: We only provided best-effort developer environment support for the MacOS
    platform. This is now costing too much resources as there are no actual MacOS users
    in the development team.
-
-2.1.5 (2023-07-26)
-==================
-
-Periodic bugfix release
-
-* [#3132] Fixed replacing form steps in the designer with another step having overlapping
-  variable names.
-* Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
-* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
-* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
-  tracked.
-* [#3161] Fixed not being able to reset form-specific data removal settings to the
-  empty value so that the global configuration is used again.
-* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
-  removes the upload again.
-* Fixed CI builds (bump PyYAML, docs build).
-* [#3258] Fixed labels for Haal Centraal prefill attributes.
-* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
-* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
-  inside a container (fieldset, repeating group).
-* [#3302] Fixed an issue causing uploaded images not to be resized.
-* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
-* Bumped dependencies to get their latest security fixes
-
-2.0.9 (2023-07-26)
-==================
-
-Periodic bugfix release
-
-* [#3132] Fixed replacing form steps in the designer with another step having overlapping
-  variable names.
-* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
-* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
-  tracked.
-* [#3161] Fixed not being able to reset form-specific data removal settings to the
-  empty value so that the global configuration is used again.
-* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
-  removes the upload again.
-* Fixed CI builds (bump PyYAML, docs build).
-* [#3258] Fixed labels for Haal Centraal prefill attributes.
-* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
-* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
-  inside a container (fieldset, repeating group).
-* [#3302] Fixed an issue causing uploaded images not to be resized.
-* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
-* Bumped dependencies to include latest security fixes.
 
 2.2.0 "Èspelès" (2023-06-26)
 ============================
@@ -520,6 +386,96 @@ Detailed changes
 * [#2784] Introduced and refactored code to use ``FormioDate`` interface.
 * Tests are now also run in reverse order in CI to catch test isolation problems.
 
+2.1.11 (2023-12-28)
+===================
+
+Final release in the 2.1.x series.
+
+Upgrade to Open Forms 2.2 or higher to continue receiving support/bugfixes.
+
+* [#3656] Fixed an incorrect DigiD error message being shown with OIDC authentication
+  plugins.
+* [#3692] Fixed a crash when cancelling DigiD authentication while logged in as admin
+  user.
+
+2.1.10 (2023-12-12)
+===================
+
+Periodic bugfix release
+
+* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* [#3605] Fixed unintended number localization in StUF/SOAP messages.
+* [#3613] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+
+2.1.9 (2023-11-09)
+==================
+
+Hotfix release
+
+* Upgraded bundled SDK version
+* [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
+  creating the rol/betrokkene.
+
+2.1.8 (2023-10-30)
+==================
+
+Periodic bugfix release
+
+* Bumped dependencies to their latest security fixes.
+
+2.1.7 (2023-09-25)
+==================
+
+Periodic bugfix release
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [#3420] Fixed styling of cookie overview page.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* Included latest SDK bugfix release.
+
+2.1.6 (2023-08-24)
+==================
+
+Periodic bugfix release
+
+* [#3319] Fixed forms possibly sending a DigiD SAML request without assurance level due
+  to misconfiguration.
+* [#3358] Fixed display of appointment time in correct timezone.
+* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+
+2.1.5 (2023-07-26)
+==================
+
+Periodic bugfix release
+
+* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+  variable names.
+* Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
+* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
+* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+  tracked.
+* [#3161] Fixed not being able to reset form-specific data removal settings to the
+  empty value so that the global configuration is used again.
+* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+  removes the upload again.
+* Fixed CI builds (bump PyYAML, docs build).
+* [#3258] Fixed labels for Haal Centraal prefill attributes.
+* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
+* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
+  inside a container (fieldset, repeating group).
+* [#3302] Fixed an issue causing uploaded images not to be resized.
+* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
+* Bumped dependencies to get their latest security fixes
+
 2.1.4 (2023-06-21)
 ==================
 
@@ -535,36 +491,6 @@ Periodic bugfix release
 * [#3136] Fixed wrong Site ID being used for Matomo analytics.
 * [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
 * [#3103] Fixed DigiD/eHerkenning-metadata missing the XML declaration.
-
-2.0.8 (2023-06-21)
-==================
-
-Periodic bugfix release
-
-* [#3015] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
-* [#2927] Added Celery worker monitoring tooling (for devops/infra).
-* [#3068] Added soft and hard task timeout settings for background workers.
-* [#3077] Use public (instead of private) form name for ``form_name`` variable in templates.
-* [#3136] Fixed wrong Site ID being used for Matomo analytics.
-* [#3117] Fixed a crash in migrations preventing upgrading from older versions.
-* [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
-* [#3128] Fixed hidden (file) components triggering validation too early.
-
-.. note::
-
-    The fix for premature validation triggering (#3128) only applies to new
-    components/forms.
-
-    To fix this for existing file components, it's recommended to remove and re-add the
-    component in the form.
-
-2.0.7 (2023-05-01)
-==================
-
-Periodic bugfix release
-
-* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
-* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
 
 2.1.3 (2023-04-19)
 ==================
@@ -594,49 +520,6 @@ Periodic bugfix release
 * [#2980] Fixed file upload component not using config overwrites when registering
   with the objects API backend.
 
-2.0.6 (2023-04-17)
-==================
-
-Periodic bugfix release
-
-Note that there is a manual intervention below if you make use of analytics providers
-integration.
-
-* [#2791] Fixed long words overflowing in the confirmation PDF.
-* [#2838] Fixed hidden selectboxes triggering validation of required fields too early
-* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
-  submissions are displayed.
-* [#2842] Fixed the Content Security Policy breaking when enabling analytics provider
-  configurations
-* [#2888] Fixed a crash when using file fields and hidden repeating groups at the same
-  time
-* [#2888] Fixed a crash when using file fields and repeating groups with numbers inside
-* [#2945] Fixed logic rule variables inadvertedly being cleared when adding a new
-  user defined variable
-* Fixed mutatiesoort when doing StUF ``UpdateZaak`` calls
-* [#2716] Added missing co-sign identifier (BSN) to PDF submission report
-* [#2900] Fixed inconsistent frontend logic involving checkboxes
-* [#2632] Fixed crash during submission data pruning when submissions point to form
-  steps that have been deleted
-* [#2977] Fixed StUF postcode not being uppercase
-* [#2849] Restored ability to import forms using form logic in the pre-2.0 format
-* Updated the bundled SDK version to 1.2.8
-* CI no longer installs the codecov package from PyPI (obsolete)
-
-
-.. warning:: Manual intervention required if analytics tools are enabled
-
-   When enabling analytics tools, CSP directives were automatically added to the admin
-   under  **Configuratie** > **CSP settings**. The directive
-   ``connect-src <domain of the analytic tool>`` was causing forms to no longer load.
-
-   In order to fix this issue:
-
-   1. Go to  **Configuratie** > **CSP settings**
-   2. Delete any directive that is not ``default-src``, for example ``connect-src``, ``script-src``...
-   3. If not present, add a directive ``default-src <domain of the analytic tool>``
-
-
 2.1.1 (2023-03-31)
 ==================
 
@@ -652,7 +535,6 @@ Periodic maintenance release
 * [#2888] Fix uploading documents when there is a hidden repeating group.
 * Change the type of mutation from "T" to "W" when making Zaak update calls in the StUF registration backend.
 * A note was added to the documentation on how to use soft hyphens when configuring form or form step names.
-
 
 2.1.0 "Gers" (2023-03-14)
 =========================
@@ -762,15 +644,6 @@ Please review the changelog entries for the release candidate and alpha versions
 * [#2838] Fixed hidden selectboxes field triggering premature validation of required fields.
 * [#2874] Fixed "repeating group" component group label not being translated.
 
-2.0.5 (2023-03-07)
-==================
-
-Hotfix release
-
-* [#2804] Fixed static variables not being included in template context for submission
-  confirmation template.
-* [#2400] Clean up cached execution state
-
 2.1.0-rc.0 (2023-03-03)
 =======================
 
@@ -874,26 +747,6 @@ Detailed changes
 * [#2748] Pinned the project to Python 3.10.9 due to a CPython regression.
 * [#2712] Replaced django-choices usage with core Django equivalents.
 * Fixed a test failing between 00:00-01:00 AM.
-
-
-2.0.4 (2023-02-28)
-==================
-
-Periodic maintenance release
-
-* [#2607] Fixed crash when selecting trigger-from-step in logic editor
-* Fixed crash when importing forms
-* [#2699] Fixed file uploads not resolving when inside fieldsets/repeating groups
-* Stopped link checking JCC links in CI since we're actively being blocked
-* [#2671] Fixed QR code background in dark mode
-* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
-* [#2724] Ensure backport of negative-numbers (#1351) is correctly included
-* [#2734] Added bandaid fix for non-unique keys inside repeating groups
-* Updated to SDK 1.2.6
-* [#2717] Fixed crash on StUF-ZDS when updating the payment status
-* [#2781] Fixed clearing the value of hidden components with a nested key (``nested.key``).
-* [#2759] Fixed handling of file uploads with a nested key (``nested.key``).
-
 
 2.1.0-alpha.2 (2023-02-01)
 ==========================
@@ -1003,59 +856,6 @@ Detailed changes
 * Added CI job to install dev deps on MacOS.
 * [#2478] Added frontend code test infrastructure.
 
-
-2.0.3 (2023-01-24)
-==================
-
-Bugfix release addressing some more upgrade issues
-
-* [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
-* [#2519] Skip 2.0.x upgrade checks if we're already on 2.0.x
-* [#2576] Fix upgrade crash on components with prefill attribute names > 50 chars
-* [security#20] Fixed CSP configuration for Matomo, Piwik and Piwik PRO analytics
-* [#2012] Fixed CSP mechanisms in SiteImprove analytics provider snippet
-* [#2396] Fixed "auto login authentication" option not properly resetting
-* [#2541] Fixed a crash in the logic editor when changing the key of selectboxes components
-
-.. warning:: Manual intervention required for Matomo, Piwik and Piwik PRO users.
-
-   Before 2.0.3, the server URLs for these analytics providers were configured without
-   protocol (typically ``https://``), leading to an insufficiently strict CSP
-   configuration.
-
-   We can not automatically migrate this, but the configuration can be fixed easily in
-   the admin in two places:
-
-   1. Navigate to Admin > Configuratie > Analytics tools-configuratie
-   2. Add ``https://`` in front of your analytics provider server URL (or ``http://``,
-      depending on your environment)
-   3. Save the changes
-
-   Next, apply the same update to the CSP configuration:
-
-   1. Navigate to Admin > Configuratie > Csp settings
-   2. Find all occurrences of your analytics tool server URL (e.g. ``matomo.example.com``)
-   3. Update every record by prepending ``https://`` (or ``http://``, depending on your
-      environment) and save the changes
-
-2.0.2 (2022-12-23)
-==================
-
-Periodic bugfix release, addressing some blocking defects and upgrade issues.
-
-* [#2331] Fixed incorrect key validation problem which would block upgrades to 2.0+
-* [#2385] Fixed incomplete logic handling which would block upgrades to 2.0+
-* [#2398] Fixed logic trigger processing which could crash upgrades to 2.0+
-* [#2413] Fixed fields being made visible by selectboxes in frontend logic not being
-  visible in summary/pdf/emails
-* [#2422] Fixed invalid postcode format being sent to StUF-ZDS
-* [#2289] Fixed StUF-ZDS: now a ``Vestiging`` is created if vestigingsnummer is present,
-  falling back to ``NietNatuurlijkPersoon`` otherwise.
-* [#2494] Fixed person details not being sent to StUF-ZDS if the submitter was not
-  authenticated but instead filled out details manually.
-* [#2432] Fixed importing pre-2.0 forms with legacy form step references in actions
-* Fix docs build due to legacy renegotiation being disabled in openssl 3
-
 2.1.0-alpha.1 (2022-12-20)
 ==========================
 
@@ -1127,31 +927,6 @@ Second alpha version of the 2.1.0 release.
 * [#2487] Add import sorting plugin for prettier
 * Catch invalid appointment configs in management command
 * Bumped frontend/build dependency versions
-
-2.0.1 (2022-11-23)
-==================
-
-First maintenance release of the 2.0 series.
-
-This patch fixes a couple of bugs encountered when upgrading from 1.1 to 2.0.
-
-**Bugfixes**
-
-* [#2301] Fixed identifying attributes still being hashed after a submission is resumed
-* [#2135] Fixed submission step data being cascade deleted in certain edge cases
-* [#2219] A fix was also attempted for bad CSS unit usage in confirmation emails, but
-  this caused other problems. As a workaround you should use the correctly sized images
-  for the time being.
-* [#2244] Fixed 'content' component and components not marked as showInSummary showing
-  up in server rendered summary
-* Fixed pattern for formio key validation
-* [#2304] Refactored form logic action "mark step as not applicable" to use ID
-  references rather than API paths, which affected some logic actions.
-* [#2262] Fixed upgrade from < 2.0 crash when corrupt prefill configuration was present
-  in existing forms
-* [#1899] Apply prefill data normalization before saving into variables
-* [#2367] Fixed automatic conversion of advanced frontend logic when using selectboxes
-  component type
 
 2.1.0-alpha.0 (2022-11-21)
 ==========================
@@ -1250,6 +1025,226 @@ the end of a sprint) and putting out a new minor or major version every quarter.
 * [#2280] Removed ``SubmissionValueVariable.language``
 * Refactored mail cleaning utilities into separate library
 * Parametrize workflows/dockerfile for extensions build
+
+2.0.11 (2023-09-25)
+===================
+
+Final bugfix release in the ``2.0.x`` series.
+
+* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [#3470] Fixed form names with slashes breaking submission generation.
+* Included latest SDK bugfix release.
+
+2.0.10 (2023-08-24)
+===================
+
+Periodic bugfix release
+
+* [#3358] Fixed display of appointment time in correct timezone.
+* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+
+2.0.9 (2023-07-26)
+==================
+
+Periodic bugfix release
+
+* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+  variable names.
+* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
+* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+  tracked.
+* [#3161] Fixed not being able to reset form-specific data removal settings to the
+  empty value so that the global configuration is used again.
+* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+  removes the upload again.
+* Fixed CI builds (bump PyYAML, docs build).
+* [#3258] Fixed labels for Haal Centraal prefill attributes.
+* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
+* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
+  inside a container (fieldset, repeating group).
+* [#3302] Fixed an issue causing uploaded images not to be resized.
+* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
+* Bumped dependencies to include latest security fixes.
+
+2.0.8 (2023-06-21)
+==================
+
+Periodic bugfix release
+
+* [#3015] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
+* [#2927] Added Celery worker monitoring tooling (for devops/infra).
+* [#3068] Added soft and hard task timeout settings for background workers.
+* [#3077] Use public (instead of private) form name for ``form_name`` variable in templates.
+* [#3136] Fixed wrong Site ID being used for Matomo analytics.
+* [#3117] Fixed a crash in migrations preventing upgrading from older versions.
+* [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
+* [#3128] Fixed hidden (file) components triggering validation too early.
+
+.. note::
+
+    The fix for premature validation triggering (#3128) only applies to new
+    components/forms.
+
+    To fix this for existing file components, it's recommended to remove and re-add the
+    component in the form.
+
+2.0.7 (2023-05-01)
+==================
+
+Periodic bugfix release
+
+* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
+* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
+
+2.0.6 (2023-04-17)
+==================
+
+Periodic bugfix release
+
+Note that there is a manual intervention below if you make use of analytics providers
+integration.
+
+* [#2791] Fixed long words overflowing in the confirmation PDF.
+* [#2838] Fixed hidden selectboxes triggering validation of required fields too early
+* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+  submissions are displayed.
+* [#2842] Fixed the Content Security Policy breaking when enabling analytics provider
+  configurations
+* [#2888] Fixed a crash when using file fields and hidden repeating groups at the same
+  time
+* [#2888] Fixed a crash when using file fields and repeating groups with numbers inside
+* [#2945] Fixed logic rule variables inadvertedly being cleared when adding a new
+  user defined variable
+* Fixed mutatiesoort when doing StUF ``UpdateZaak`` calls
+* [#2716] Added missing co-sign identifier (BSN) to PDF submission report
+* [#2900] Fixed inconsistent frontend logic involving checkboxes
+* [#2632] Fixed crash during submission data pruning when submissions point to form
+  steps that have been deleted
+* [#2977] Fixed StUF postcode not being uppercase
+* [#2849] Restored ability to import forms using form logic in the pre-2.0 format
+* Updated the bundled SDK version to 1.2.8
+* CI no longer installs the codecov package from PyPI (obsolete)
+
+
+.. warning:: Manual intervention required if analytics tools are enabled
+
+   When enabling analytics tools, CSP directives were automatically added to the admin
+   under  **Configuratie** > **CSP settings**. The directive
+   ``connect-src <domain of the analytic tool>`` was causing forms to no longer load.
+
+   In order to fix this issue:
+
+   1. Go to  **Configuratie** > **CSP settings**
+   2. Delete any directive that is not ``default-src``, for example ``connect-src``, ``script-src``...
+   3. If not present, add a directive ``default-src <domain of the analytic tool>``
+
+2.0.5 (2023-03-07)
+==================
+
+Hotfix release
+
+* [#2804] Fixed static variables not being included in template context for submission
+  confirmation template.
+* [#2400] Clean up cached execution state
+
+2.0.4 (2023-02-28)
+==================
+
+Periodic maintenance release
+
+* [#2607] Fixed crash when selecting trigger-from-step in logic editor
+* Fixed crash when importing forms
+* [#2699] Fixed file uploads not resolving when inside fieldsets/repeating groups
+* Stopped link checking JCC links in CI since we're actively being blocked
+* [#2671] Fixed QR code background in dark mode
+* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
+* [#2724] Ensure backport of negative-numbers (#1351) is correctly included
+* [#2734] Added bandaid fix for non-unique keys inside repeating groups
+* Updated to SDK 1.2.6
+* [#2717] Fixed crash on StUF-ZDS when updating the payment status
+* [#2781] Fixed clearing the value of hidden components with a nested key (``nested.key``).
+* [#2759] Fixed handling of file uploads with a nested key (``nested.key``).
+
+2.0.3 (2023-01-24)
+==================
+
+Bugfix release addressing some more upgrade issues
+
+* [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
+* [#2519] Skip 2.0.x upgrade checks if we're already on 2.0.x
+* [#2576] Fix upgrade crash on components with prefill attribute names > 50 chars
+* [security#20] Fixed CSP configuration for Matomo, Piwik and Piwik PRO analytics
+* [#2012] Fixed CSP mechanisms in SiteImprove analytics provider snippet
+* [#2396] Fixed "auto login authentication" option not properly resetting
+* [#2541] Fixed a crash in the logic editor when changing the key of selectboxes components
+
+.. warning:: Manual intervention required for Matomo, Piwik and Piwik PRO users.
+
+   Before 2.0.3, the server URLs for these analytics providers were configured without
+   protocol (typically ``https://``), leading to an insufficiently strict CSP
+   configuration.
+
+   We can not automatically migrate this, but the configuration can be fixed easily in
+   the admin in two places:
+
+   1. Navigate to Admin > Configuratie > Analytics tools-configuratie
+   2. Add ``https://`` in front of your analytics provider server URL (or ``http://``,
+      depending on your environment)
+   3. Save the changes
+
+   Next, apply the same update to the CSP configuration:
+
+   1. Navigate to Admin > Configuratie > Csp settings
+   2. Find all occurrences of your analytics tool server URL (e.g. ``matomo.example.com``)
+   3. Update every record by prepending ``https://`` (or ``http://``, depending on your
+      environment) and save the changes
+
+2.0.2 (2022-12-23)
+==================
+
+Periodic bugfix release, addressing some blocking defects and upgrade issues.
+
+* [#2331] Fixed incorrect key validation problem which would block upgrades to 2.0+
+* [#2385] Fixed incomplete logic handling which would block upgrades to 2.0+
+* [#2398] Fixed logic trigger processing which could crash upgrades to 2.0+
+* [#2413] Fixed fields being made visible by selectboxes in frontend logic not being
+  visible in summary/pdf/emails
+* [#2422] Fixed invalid postcode format being sent to StUF-ZDS
+* [#2289] Fixed StUF-ZDS: now a ``Vestiging`` is created if vestigingsnummer is present,
+  falling back to ``NietNatuurlijkPersoon`` otherwise.
+* [#2494] Fixed person details not being sent to StUF-ZDS if the submitter was not
+  authenticated but instead filled out details manually.
+* [#2432] Fixed importing pre-2.0 forms with legacy form step references in actions
+* Fix docs build due to legacy renegotiation being disabled in openssl 3
+
+2.0.1 (2022-11-23)
+==================
+
+First maintenance release of the 2.0 series.
+
+This patch fixes a couple of bugs encountered when upgrading from 1.1 to 2.0.
+
+**Bugfixes**
+
+* [#2301] Fixed identifying attributes still being hashed after a submission is resumed
+* [#2135] Fixed submission step data being cascade deleted in certain edge cases
+* [#2219] A fix was also attempted for bad CSS unit usage in confirmation emails, but
+  this caused other problems. As a workaround you should use the correctly sized images
+  for the time being.
+* [#2244] Fixed 'content' component and components not marked as showInSummary showing
+  up in server rendered summary
+* Fixed pattern for formio key validation
+* [#2304] Refactored form logic action "mark step as not applicable" to use ID
+  references rather than API paths, which affected some logic actions.
+* [#2262] Fixed upgrade from < 2.0 crash when corrupt prefill configuration was present
+  in existing forms
+* [#1899] Apply prefill data normalization before saving into variables
+* [#2367] Fixed automatic conversion of advanced frontend logic when using selectboxes
+  component type
 
 2.0.0 "Règâh" (2022-10-26)
 ==========================
