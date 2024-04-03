@@ -101,40 +101,43 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "variables_mapping": [
                 # fmt: off
                 {
+                    "variable_key": "location",
+                    "target_path": ["geometry"],
+                },
+                {
                     "variable_key": "age",
-                    "target_path": ["age"],
+                    "target_path": ["data", "age"],
                 },
                 {
                     "variable_key": "lastname",
-                    "target_path": ["name", "last.name"]
+                    "target_path": ["data", "name", "last.name"]
                 },
                 {
                     "variable_key": "now",
-                    "target_path": ["submission_date"],
+                    "target_path": ["data", "submission_date"],
                 },
                 {
                     "variable_key": "pdf_url",
-                    "target_path": ["submission_pdf_url"],
+                    "target_path": ["data", "submission_pdf_url"],
                 },
                 {
                     "variable_key": "csv_url",
-                    "target_path": ["submission_csv_url"],
+                    "target_path": ["data", "submission_csv_url"],
                 },
                 {
                     "variable_key": "payment_completed",
-                    "target_path": ["submission_payment_completed"],
+                    "target_path": ["data", "submission_payment_completed"],
                 },
                 {
                     "variable_key": "payment_amount",
-                    "target_path": ["submission_payment_amount"],
+                    "target_path": ["data", "submission_payment_amount"],
                 },
                 {
                     "variable_key": "payment_public_order_ids",
-                    "target_path": ["submission_payment_public_ids"],
+                    "target_path": ["data", "submission_payment_public_ids"],
                 },
                 # fmt: on
             ],
-            "geometry_variable_key": "location",
         }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -213,11 +216,11 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 # fmt: off
                 {
                     "variable_key": "single_file",
-                    "target_path": ["single_file"],
+                    "target_path": ["data", "single_file"],
                 },
                 {
                     "variable_key": "multiple_files",
-                    "target_path": ["multiple_files"]
+                    "target_path": ["data", "multiple_files"]
                 },
                 # fmt: on
             ],
@@ -275,7 +278,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 # fmt: off
                 {
                     "variable_key": "location",
-                    "target_path": ["pointCoordinates"],
+                    "target_path": ["data", "pointCoordinates"],
                 },
                 # fmt: on
             ],
