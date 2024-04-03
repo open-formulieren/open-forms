@@ -219,3 +219,81 @@ class EditGridValidationTests(SimpleTestCase):
         )
 
         self.assertTrue(is_valid)
+
+    @tag("dh-667")
+    def test_regression_dh_ooievaarspas(self):
+        # Some fields inside the repeating group apparently get/got hoisted to the
+        # root serializer.
+        components = [
+            {
+                "type": "content",
+                "key": "werkgeverInfo",
+                "label": "werkgeverInfo",
+                "html": "<p>Als u een werkgever heeft krijgt u loon. Dit noemen we ook wel inkomen. U bent dan in loondienst.</p>",
+            },
+            {
+                "type": "radio",
+                "key": "heeftUEenWerkgever",
+                "label": "Heeft u een werkgever?",
+                "validate": {"required": True},
+                "openForms": {"dataSrc": "manual"},
+                "values": [
+                    {"label": "Ja", "value": "ja"},
+                    {"label": "Nee", "value": "nee"},
+                ],
+            },
+            {
+                "type": "fieldset",
+                "key": "loondienstWerkgevers",
+                "label": "Loondienst/werkgever(s)",
+                "conditional": {"eq": "ja", "show": True, "when": "heeftUEenWerkgever"},
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "werkgevers",
+                        "label": "Werkgever(s)",
+                        "groupLabel": "Werkgever",
+                        "validate": {"maxLength": 4},
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "naamWerkgever",
+                                "label": "Naam werkgever",
+                                "validate": {"required": True},
+                            },
+                            {
+                                "type": "currency",
+                                "key": "nettoLoon",
+                                "label": "Hoeveel nettoloon krijgt u ?",
+                                "currency": "EUR",
+                                "validate": {"required": True},
+                            },
+                            {
+                                "type": "radio",
+                                "key": "periodeNettoLoon",
+                                "label": "Over welke periode ontvangt u dit loon?",
+                                "validate": {"required": True},
+                                "openForms": {"dataSrc": "manual"},
+                                "values": [
+                                    {"label": "Per week", "value": "week"},
+                                    {"label": "Per 4 weken", "value": "vierWeken"},
+                                    {"label": "Per maand", "value": "maand"},
+                                ],
+                            },
+                        ],
+                    }
+                ],
+            },
+        ]
+        data = {
+            "heeftUEenWerkgever": "ja",
+            "werkgevers": [
+                {"naamWerkgever": "ABC", "nettoLoon": 5, "periodeNettoLoon": "maand"}
+            ],
+        }
+        context = {"submission": SubmissionFactory.build()}
+        serializer = build_serializer(components=components, data=data, context=context)
+
+        is_valid = serializer.is_valid()
+
+        self.assertTrue(is_valid)

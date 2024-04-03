@@ -67,6 +67,7 @@ class CompletionValidationSerializer(serializers.Serializer):
                     errors = step_data_serializer.errors
 
             if errors:
+                breakpoint()
                 formio_validation_errors.append({"data": errors})
             else:
                 formio_validation_errors.append({})
