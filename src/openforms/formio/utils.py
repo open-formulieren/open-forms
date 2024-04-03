@@ -36,7 +36,10 @@ def iter_components(
         assert not components, "Both nested components and columns found"
         for column in configuration["columns"]:
             yield from iter_components(
-                configuration=column, recursive=recursive, _is_root=False
+                configuration=column,
+                recursive=recursive,
+                _is_root=False,
+                recurse_into_editgrid=recurse_into_editgrid,
             )
 
     for component in components:
@@ -52,7 +55,10 @@ def iter_components(
             if component.get("type") == "editgrid" and not recurse_into_editgrid:
                 continue
             yield from iter_components(
-                configuration=component, recursive=recursive, _is_root=False
+                configuration=component,
+                recursive=recursive,
+                _is_root=False,
+                recurse_into_editgrid=recurse_into_editgrid,
             )
 
 
