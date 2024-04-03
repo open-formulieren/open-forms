@@ -1,8 +1,10 @@
-=======================
-Open Forms v1 changelog
-=======================
+=============
+Open Forms v1
+=============
 
 All changes related to the major version 1 of Open Forms.
+
+.. warning:: Open Forms v1 is no longer maintained.
 
 1.1.11 (2023-04-17)
 ===================
