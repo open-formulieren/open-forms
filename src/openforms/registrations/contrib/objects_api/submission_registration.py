@@ -27,7 +27,6 @@ from openforms.submissions.models import (
     SubmissionFileAttachment,
     SubmissionReport,
 )
-from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
@@ -363,10 +362,10 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
     @staticmethod
-    def _get_record_data(
+    def _get_payload_data(
         variables_values: FormioData, variables_mapping: list[ObjecttypeVariableMapping]
-    ) -> JSONObject:
-        record_data: JSONObject = {}
+    ) -> dict[str, Any]:
+        payload_data: dict[str, Any] = {}
 
         for mapping in variables_mapping:
             variable_key = mapping["variable_key"]
@@ -383,9 +382,9 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             if isinstance(value, (datetime, date)):
                 value = value.isoformat()
 
-            glom.assign(record_data, glom.Path(*target_path), value, missing=dict)
+            glom.assign(payload_data, glom.Path(*target_path), value, missing=dict)
 
-        return record_data
+        return payload_data
 
     @staticmethod
     def _process_value(value: Any, component: Component) -> Any:
@@ -455,16 +454,14 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         variables_values = FormioData({**dynamic_values, **static_values})
         variables_mapping = options["variables_mapping"]
-        record_data = self._get_record_data(variables_values, variables_mapping)
+        payload_data = self._get_payload_data(variables_values, variables_mapping)
 
         object_data = prepare_data_for_registration(
-            record_data=record_data,
+            record_data=payload_data.get("data", {}),
+            geometry_data=payload_data.get("geometry"),
             objecttype=options["objecttype"],
             objecttype_version=options["objecttype_version"],
         )
-
-        if geometry_variable_key := options.get("geometry_variable_key"):
-            object_data["record"]["geometry"] = variables_values[geometry_variable_key]
 
         return object_data
 
@@ -485,10 +482,11 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         variables_values = FormioData(values)
         variables_mapping = options["variables_mapping"]
-        record_data = self._get_record_data(variables_values, variables_mapping)
+        payload_data = self._get_payload_data(variables_values, variables_mapping)
 
         object_data = prepare_data_for_registration(
-            record_data=record_data,
+            record_data=payload_data.get("data", {}),
+            geometry_data=payload_data.get("geometry"),
             objecttype=options["objecttype"],
             objecttype_version=options["objecttype_version"],
         )

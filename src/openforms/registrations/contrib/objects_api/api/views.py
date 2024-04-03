@@ -87,9 +87,21 @@ class TargetPathsListView(views.APIView):
 
         with get_objecttypes_client() as client:
 
-            json_schema = client.get_objecttype_version(
+            allow_geometry = client.get_objecttype(objecttype_uuid).get(
+                "allowGeometry", True
+            )
+
+            _json_schema = client.get_objecttype_version(
                 objecttype_uuid, input_serializer.validated_data["objecttype_version"]
             )["jsonSchema"]
+
+        json_schema = {
+            "type": "object",
+            "properties": {"data": {"type": "object", "properties": _json_schema}},
+        }
+
+        if allow_geometry:
+            json_schema["properties"]["geometry"] = {"type": "object"}
 
         return_data = [
             {
