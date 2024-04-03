@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import uuid
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping
+from typing import TYPE_CHECKING, Any, Mapping
 
 from django.conf import settings
 from django.db import models, transaction
@@ -636,11 +636,19 @@ class Submission(models.Model):
 
         return appointment_data
 
-    def get_merged_data(self) -> dict:
+    @property
+    def data(self) -> dict[str, Any]:
+        """The filled-in data of the submission.
+
+        This is a mapping between variable keys and their corresponding values.
+
+        .. note::
+
+            Keys containings dots (``.``) will be nested under another mapping.
+            Static variables values are *not* included.
+        """
         values_state = self.load_submission_value_variables_state()
         return values_state.get_data()
-
-    data = property(get_merged_data)
 
     def get_co_signer(self) -> str:
         if not self.co_sign_data:
