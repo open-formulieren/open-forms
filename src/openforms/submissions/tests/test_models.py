@@ -39,53 +39,6 @@ class SubmissionTests(TestCase):
             str(submission), f"{submission.pk} - started on Nov. 26, 2021, 5 p.m."
         )
 
-    def test_submission_data_with_selectboxes_formio_formatters(self):
-        form_definition = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "testSelectBoxes",
-                        "type": "selectboxes",
-                        "label": "My Boxes",
-                        "values": [
-                            {"value": "test1", "label": "test 1", "shortcut": ""},
-                            {"value": "test2", "label": "test 2", "shortcut": ""},
-                            {"value": "test3", "label": "test 3", "shortcut": ""},
-                        ],
-                    },
-                ],
-            }
-        )
-        submission = SubmissionFactory.create()
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={"testSelectBoxes": {"test1": True, "test2": True, "test3": False}},
-            form_step=FormStepFactory.create(
-                form=submission.form, form_definition=form_definition
-            ),
-        )
-
-        ordered = submission.get_ordered_data_with_component_type()
-        self.assertEqual(
-            ordered,
-            {
-                "testSelectBoxes": (
-                    {
-                        "key": "testSelectBoxes",
-                        "type": "selectboxes",
-                        "label": "My Boxes",
-                        "values": [
-                            {"value": "test1", "label": "test 1", "shortcut": ""},
-                            {"value": "test2", "label": "test 2", "shortcut": ""},
-                            {"value": "test3", "label": "test 3", "shortcut": ""},
-                        ],
-                    },
-                    {"test1": True, "test2": True, "test3": False},
-                )
-            },
-        )
-
     def test_submission_remove_sensitive_data(self):
         form_definition = FormDefinitionFactory.create(
             configuration={

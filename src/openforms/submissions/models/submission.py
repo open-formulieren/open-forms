@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections import OrderedDict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Mapping
 
@@ -604,23 +603,6 @@ class Submission(models.Model):
         """
         submission_state = self.load_execution_state()
         return submission_state.get_last_completed_step()
-
-    def get_ordered_data_with_component_type(self) -> OrderedDict:
-        from openforms.formio.formatters.printable import filter_printable
-
-        ordered_data = OrderedDict()
-        merged_data = self.get_merged_data()
-
-        # first collect data we have in the same order the components are defined in the form
-        for component in filter_printable(self.form.iter_components(recursive=True)):
-            key = component["key"]
-            value = merged_data.get(key, None)
-            component.setdefault("label", key)
-            ordered_data[key] = (
-                component,
-                value,
-            )
-        return ordered_data
 
     def get_merged_appointment_data(self) -> dict[str, dict[str, str | dict]]:
         component_config_key_to_appointment_key = {
