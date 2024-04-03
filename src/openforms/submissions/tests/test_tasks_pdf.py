@@ -17,7 +17,10 @@ from .factories import SubmissionFactory, SubmissionReportFactory
 class SubmissionReportGenerationTests(TestCase):
     def test_submission_report_metadata(self):
         submission = SubmissionFactory.create(
-            completed=True, form__name="Test Form", form__slug="test-form"
+            completed=True,
+            form__name="Test Form",
+            form__slug="test-form",
+            public_registration_reference="OF-TRALALA",
         )
 
         generate_submission_report.request.id = "some-id"
@@ -25,7 +28,9 @@ class SubmissionReportGenerationTests(TestCase):
 
         report = SubmissionReport.objects.get()
         self.assertEqual(
-            _("%(title)s: Submission report") % {"title": "Test Form"}, report.title
+            _("%(title)s: Submission report (%(reference)s)")
+            % {"title": "Test Form", "reference": "OF-TRALALA"},
+            report.title,
         )
         self.assertEqual(submission, report.submission)
         self.assertTrue(report.content.name.endswith("test-form.pdf"))
