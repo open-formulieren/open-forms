@@ -45,8 +45,9 @@ class AppointmentRenderer(Renderer):
         )
         plugin = get_plugin(plugin=appointment.plugin)
 
+        identifier: str = self.submission.appointment_info.appointment_id
         ctx = {
-            "appointment": plugin.get_appointment_details(appointment.pk),
+            "appointment": plugin.get_appointment_details(identifier),
             "contact_details": self.get_children(),  # todo: a bit of a wart
         }
         return render_to_string(template_name, ctx)
