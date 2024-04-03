@@ -56,8 +56,8 @@ jobs:
 
       - name: Start CI docker services
         run: |
-          docker-compose -f docker-compose.ci.yml up -d
-          docker-compose -f docker-compose.camunda.yml up -d
+          docker compose -f docker-compose.ci.yml up -d
+          docker compose -f docker-compose.camunda.yml up -d
         working-directory: docker
 
       - name: Wait for Camunda to be up
@@ -145,8 +145,8 @@ jobs:
 
       - name: Start CI docker services
         run: |
-          docker-compose -f docker-compose.ci.yml up -d
-          docker-compose -f docker-compose.camunda.yml up -d
+          docker compose -f docker-compose.ci.yml up -d
+          docker compose -f docker-compose.camunda.yml up -d
         working-directory: docker
 
       - name: Wait for Camunda to be up
