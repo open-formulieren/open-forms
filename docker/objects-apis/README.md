@@ -10,7 +10,7 @@ Start an instance in your local environment from the parent directory:
 docker compose -f docker-compose.objects-apis.yml up -d
 ```
 
-Create a super user:
+Create a superuser:
 
 ```bash
 docker compose -f docker-compose.objects-apis.yml exec objecttypes-web src/manage.py createsuperuser
