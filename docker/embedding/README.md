@@ -2,14 +2,14 @@
 
 The JS SDK is built to support embedding forms in third party pages, like CMS pages.
 
-The files here and the docker-compose configuration in the parent folder (
+The files here and the `docker compose` configuration in the parent folder (
 `docker-compose.embedding.yml`) exist to test and demo this behaviour.
 
 ## Requirements
 
 To succesfully run an embed test setup, you need:
 
-- docker-compose
+- `docker compose`
 - an Open Forms 2.5.0+ instance, available over HTTPS. E.g. `https://openforms.example.com`
   - the instance must allow CORS requests from `https://localhost:9000`
   - the instance must have `localhost:9000` in the CSRF trusted origins
@@ -19,7 +19,7 @@ Consult the installation/configuration
 [documentation](https://open-forms.readthedocs.io/en/stable/developers/sdk/embedding.html#backend-configuration)
 on how to properly configure your backend for embedding.
 
-## Bring up docker-compose
+## Bring up docker compose
 
 All instructions are relative to the top-level directory.
 
@@ -38,7 +38,7 @@ All instructions are relative to the top-level directory.
 2. Then, bring up the docker services:
 
    ```bash
-   docker-compose -f ./docker/docker-compose.embedding.yml up
+   docker compose -f ./docker/docker-compose.embedding.yml up
    ```
 
 ## Embed test cases

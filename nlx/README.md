@@ -2,7 +2,7 @@
 
 [NLX][NLX] integration is optional.
 
-This directory contains the docker-compose tooling and instructions on how to enable
+This directory contains the `docker compose` tooling and instructions on how to enable
 NLX on the demo network and connect Open Forms services with it.
 
 Ensure you are in the Open Forms repository `nlx` directory for any steps documented
@@ -45,10 +45,10 @@ sudo chmod go-rwx nlx-try-me/pki/certs/internal-cert-key.pem
 
 ## Running the NLX stack
 
-Navigate to this (`nlx`) directory and start the components using docker-compose:
+Navigate to this (`nlx`) directory and start the components using `docker compose`:
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 and follow the rest of the guide at the

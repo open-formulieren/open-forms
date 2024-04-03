@@ -6,12 +6,12 @@ an example of an Identity Provider that supports OIDC.
 We include a compose stack for development and CI purposes. This is **NOT** suitable
 for production usage.
 
-## docker-compose
+## docker compose
 
 Start a Keycloak instance in your local environment from the parent directory:
 
 ```bash
-docker-compose -f docker-compose.keycloak.yml up -d
+docker compose -f docker-compose.keycloak.yml up -d
 ```
 
 This brings up Keycloak, the admin interface is accessible at http://localhost:8080/.

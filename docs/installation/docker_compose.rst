@@ -43,12 +43,12 @@ Getting started
       $ unzip master.zip
       $ cd open-forms-master
 
-2. Start the docker containers with ``docker-compose``. If you want to run the 
+2. Start the docker containers with ``docker compose``. If you want to run the
    containers in the background, add the ``-d`` option to the command below:
 
    .. code:: bash
 
-      $ docker-compose up
+      docker compose up
 
       Creating network "open-forms-master_default" with the default driver
       Creating volume "open-forms-master_db" with default driver
@@ -67,7 +67,7 @@ Getting started
 
    .. code:: bash
 
-      $ docker-compose exec web src/manage.py createsuperuser
+      docker compose exec web src/manage.py createsuperuser
 
 4. Navigate to ``http://127.0.0.1:8000/admin/`` and use the credentials created 
    above to log in.
@@ -76,11 +76,11 @@ Getting started
 
    .. code:: bash
 
-      $ docker-compose stop
+      docker compose stop
 
 6. If you want to get newer versions, you need to ``pull`` because the 
    ``docker-compose.yml`` contains no explicit versions:
 
    .. code:: bash
 
-      $ docker-compose pull
+      $ docker compose pull

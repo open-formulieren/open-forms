@@ -8,7 +8,7 @@ and expertise.
 
 1. Deploy using :ref:`Ansible <installation_ansible>` for public testing and
    production purposes
-2. Run with :ref:`Docker-Compose <installation_docker_compose>` on your computer for private testing purposes
+2. Run with :ref:`Docker Compose <installation_docker_compose>` on your computer for private testing purposes
 3. Run from :ref:`Python code <developers_installation>` on your computer for development purposes
 
 .. note::
