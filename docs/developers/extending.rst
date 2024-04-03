@@ -167,9 +167,9 @@ your choice, for example:
 
     docker build -t myorg/open-forms:1.0.0 .
 
-or use the relevant docker-compose command variants.
+or use the relevant ``docker compose`` command variants.
 
-**Running all the services with docker-compose**
+**Running all the services with docker compose**
 
 You can create your own ``docker-compose.yml`` inspired by the Open Forms docker-compose
 configuration, or use the `docker-compose.override.yml <https://docs.docker.com/compose/multiple-compose-files/extends/>`_
@@ -179,7 +179,7 @@ environment variables your extensions require.
 
 .. code-block:: bash
 
-    docker-compose up
+    docker compose up
 
 
 Testing in CI

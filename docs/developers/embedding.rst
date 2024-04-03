@@ -192,7 +192,7 @@ More examples
 -------------
 
 See (on Github) the directory ``docker/embedding`` README file for working examples of
-different embedding cases. These should be easy to bring up with docker-compose, provided
+different embedding cases. These should be easy to bring up with ``docker compose``, provided
 you have a backend instance ready to go.
 
 Backend configuration
