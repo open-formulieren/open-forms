@@ -126,7 +126,7 @@ class TimelineLogProxy(TimelineLog):
     def content_admin_url(self) -> str:
         if not (self.object_id and self.content_type_id):
             return ""
-
+        breakpoint()
         ct = self.content_type
         return reverse(
             f"admin:{ct.app_label}_{ct.model}_change", args=(self.object_id,)

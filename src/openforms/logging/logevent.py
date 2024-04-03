@@ -71,6 +71,18 @@ def _create_log(
     return log_entry
 
 
+def timelinelog_details_view_admin(timelinelog_proxy: TimelineLogProxy, user: User):
+    _create_log(
+        timelinelog_proxy,
+        "timelinelog_details_view_admin",
+        tags=[TimelineLogTags.AVG],
+        user=user,
+    )
+
+
+# - - -
+
+
 def enabling_analytics_tool(
     analytics_tools_configuration: AnalyticsToolsConfiguration, analytics_tool: str
 ):

@@ -8,7 +8,11 @@ from django.utils import timezone
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 
-from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    SuperUserFactory,
+    UserFactory,
+)
 from openforms.logging import logevent
 from openforms.logging.models import TimelineLogProxy
 from openforms.logging.tests.factories import TimelineLogProxyFactory
@@ -96,6 +100,28 @@ class AVGAuditLogListViewTests(WebTest):
         response = self.app.get(url, user=user)
 
         self.assertEqual(200, response.status_code)
+
+
+@disable_admin_mfa()
+class TimelineLogAdminTests(WebTest):
+    def test_viewing_timelinelog_details_in_admin_creates_log(self):
+        user = UserFactory.create(is_superuser=True, is_staff=True)
+        timeline_log = TimelineLogProxyFactory.create(user=user)
+
+        self.app.get(
+            reverse(
+                "admin:logging_timelinelogproxy_change",
+                kwargs={"object_id": timeline_log.id},
+            ),
+            user=user,
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/timelinelog_details_view_admin.txt"
+            ).count(),
+            1,
+        )
 
 
 class TimelineLogExportsTest(TestCase):
