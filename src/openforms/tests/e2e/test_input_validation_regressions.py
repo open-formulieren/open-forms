@@ -5,7 +5,11 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import expect
 
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 
 from .base import E2ETestCase, browser_page
 
@@ -220,6 +224,87 @@ class InputValidationRegressionTests(E2ETestCase):
             await expect(
                 page.get_by_role("heading", name="Controleer en bevestig")
             ).to_be_visible()
+
+            # Confirm and finish the form
+            await page.get_by_role("button", name="Verzenden").click()
+            await expect(
+                page.get_by_text("Een moment geduld", exact=False)
+            ).to_be_visible()
+
+    @tag("dh-671")
+    async def test_component_not_required_via_logic(self):
+        @sync_to_async
+        def setUpTestData():
+            form = FormFactory.create(
+                slug="validation",
+                generate_minimal_setup=True,
+                registration_backend=None,
+                translation_enabled=False,  # force Dutch
+                ask_privacy_consent=False,
+                ask_statement_of_truth=False,
+                formstep__next_text="Volgende",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "Visible text field",
+                            "validate": {"required": True},
+                        },
+                    ]
+                },
+            )
+            # add a second step
+            FormStepFactory.create(
+                form=form,
+                next_text="Volgende",
+                is_applicable=True,  # should not be validated
+                form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield2",
+                            "label": "Textfield 2",
+                            "validate": {"required": False},
+                        },
+                    ]
+                },
+            )
+            FormLogicFactory.create(
+                form=form,
+                json_logic_trigger=True,
+                actions=[
+                    {
+                        "component": "textfield",
+                        "formStepUuid": None,
+                        "action": {
+                            "type": "property",
+                            "property": {"value": "validate.required", "type": "bool"},
+                            "state": False,
+                        },
+                    }
+                ],
+            )
+            return form
+
+        form = await setUpTestData()
+        form_url = str(
+            furl(self.live_server_url)
+            / reverse("forms:form-detail", kwargs={"slug": form.slug})
+        )
+
+        async with browser_page() as page:
+            await page.goto(form_url)
+            # Start the form
+            await page.get_by_role("button", name="Formulier starten").click()
+
+            # Confirm first step is visible
+            await expect(page.get_by_label("Visible text field")).to_be_visible()
+            await page.get_by_role("button", name="Volgende").click()
+
+            # Handle second step
+            await expect(page.get_by_label("Textfield 2")).to_be_visible()
+            await page.get_by_role("button", name="Volgende").click()
 
             # Confirm and finish the form
             await page.get_by_role("button", name="Verzenden").click()
