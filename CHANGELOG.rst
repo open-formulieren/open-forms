@@ -2,6 +2,18 @@
 Changelog
 =========
 
+2.5.5 (2023-04-03)
+==================
+
+Hotfix release for appointments bug
+
+* [#4103] Fixed incorrect appointment details being included in the submission PDF.
+* [#4079] Fixed metadata retrieval for DigiD failing when certificates signed by the G1
+  root are used.
+* [#4061] Fixed not all form components being visible in the form builder when other
+  components can be selected.
+* Updated dependencies to their latest security releases.
+
 2.5.4 (2024-03-19)
 ==================
 
