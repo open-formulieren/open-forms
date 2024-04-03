@@ -41,12 +41,12 @@ class StepDataSerializer(serializers.Serializer):
         Hidden fields in Formio don't run *any* validation, see the
         ``Component.shouldSkipValidation`` method for reference.
         """
-        config_wrapper = FormioConfigurationWrapper(configuration)
-
         # initial_data is only set if Serializer(data=...) was used, and we can't take
         # (dynamic) hidden state into account without initial data.
         if not hasattr(self, "initial_data"):
             return
+
+        config_wrapper = FormioConfigurationWrapper(configuration)
 
         # can't use FormioData yet because of is_visible_in_frontend
         values: DataMapping = self.initial_data
