@@ -16,10 +16,7 @@ class ConfigCheckTests(SimpleTestCase):
     def setUp(self):
         super().setUp()
 
-        self.config = StufZDSConfig(
-            service=StufServiceFactory.build(),
-            gemeentecode="foo",
-        )
+        self.config = StufZDSConfig(service=StufServiceFactory.build())
         patcher = patch(
             "stuf.stuf_zds.client.StufZDSConfig.get_solo",
             return_value=self.config,
@@ -29,13 +26,6 @@ class ConfigCheckTests(SimpleTestCase):
 
     def test_no_service_configured(self):
         self.config.service = None
-        plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
-
-        with self.assertRaises(InvalidPluginConfiguration):
-            plugin.check_config()
-
-    def test_missing_gemeentecode(self):
-        self.config.gemeentecode = ""
         plugin = StufZDSRegistration(PLUGIN_IDENTIFIER)
 
         with self.assertRaises(InvalidPluginConfiguration):
