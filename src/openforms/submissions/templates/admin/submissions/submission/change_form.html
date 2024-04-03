@@ -3,26 +3,6 @@
 
 {% block after_field_sets %}
     <fieldset class="module aligned">
-        <div class="form-row field-merged_data">
-            <div>
-                <label>{% trans "Merged Data:" %}</label>
-                <div class="readonly">
-                    <ul>
-                        {% for key, info in data.items %}
-                            {% with component=info.0 value=info.1 %}
-                            {% if component.type == 'unknown component' %}
-                                <li>{% trans "Unknown component" %}</li>
-                            {% elif component.type in image_components and value %}
-                                <li>{{ key }}: <img class='signature-image' src='{{ value }}' alt='{{ key }}'></li>
-                            {% else %}
-                                <li>{{ key }}: {{ value }}</li>
-                            {% endif %}
-                            {% endwith %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
         <div class="form-row field-attachments">
             <div>
                 <label>{% trans "Attachments:" %}</label>

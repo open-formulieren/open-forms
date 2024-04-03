@@ -269,7 +269,6 @@ class SubmissionAdmin(admin.ModelAdmin):
             raise Http404(f"No {self.model._meta.object_name} matches the given query.")
         submission_details_view_admin(submission, request.user)
         extra_context = {
-            "data": submission.get_ordered_data_with_component_type(),
             "attachments": submission.get_merged_attachments(),
             "image_components": IMAGE_COMPONENTS,
         }
