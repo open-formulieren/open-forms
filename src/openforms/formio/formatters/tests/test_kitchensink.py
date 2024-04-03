@@ -17,7 +17,7 @@ from .utils import load_json
 
 def _get_printable_data(submission: Submission) -> list[tuple[str, Any]]:
     printable_data: list[tuple[str, Any]] = []
-    merged_data = submission.get_merged_data()
+    merged_data = submission.data
 
     for component in filter_printable(submission.form.iter_components(recursive=True)):
         key = component["key"]

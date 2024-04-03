@@ -48,7 +48,7 @@ def get_process_variables(
         ]
     )
 
-    merged_data: dict[str, Any] = submission.get_merged_data()
+    merged_data = submission.data
     for component in submission.form.iter_components(recursive=True):
         if (key := component.get("key")) not in simple_mappings:
             continue

@@ -63,7 +63,7 @@ class SubmissionFactoryTests(TestCase):
             },
         )
 
-        actual = submission.get_merged_data()
+        actual = submission.data
         expected = {"foo": 1, "bar": 2}
         self.assertEqual(actual, expected)
 
@@ -94,7 +94,7 @@ class SubmissionFactoryTests(TestCase):
             }
         )
 
-        actual = submission.get_merged_data()
+        actual = submission.data
         expected = {
             "foo": 1,
             "bar": 2,
@@ -111,7 +111,7 @@ class SubmissionFactoryTests(TestCase):
             kvk="111222333",
         )
 
-        actual = submission.get_merged_data()
+        actual = submission.data
         expected = {
             "foo": 1,
             "bar": 2,

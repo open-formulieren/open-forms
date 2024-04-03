@@ -614,7 +614,7 @@ class Submission(models.Model):
             "appointments.phoneNumber": "clientPhoneNumber",
         }
 
-        merged_data = self.get_merged_data()
+        merged_data = self.data
         appointment_data = {}
 
         for component in self.form.iter_components(recursive=True):
