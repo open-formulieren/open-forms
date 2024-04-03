@@ -1,10 +1,13 @@
-from django.test import RequestFactory, TestCase, override_settings
+from unittest.mock import patch
+
+from django.test import RequestFactory, TestCase, override_settings, tag
 from django.utils.html import escape
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.submissions.dev_views import SubmissionPDFTestView
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ..contrib.demo.plugin import DemoAppointment
 from .factories import AppointmentFactory, AppointmentProductFactory
 
 
@@ -18,6 +21,7 @@ class PDFGenerationTests(TestCase):
             submission__registration_success=True,
             submission__with_report=True,
             appointment_info__registration_ok=True,
+            appointment_info__appointment_id="a-remote-id",
             location__identifier="1",
         )
         AppointmentProductFactory.create(
@@ -59,3 +63,17 @@ class PDFGenerationTests(TestCase):
         html = submission.report.generate_submission_report_pdf()
 
         self.assertNotIn("Afspraakinformatie", html)
+
+    @tag("gh-4103")
+    def test_uses_remote_appoinment_id(self):
+        plugin = DemoAppointment("demo")
+
+        with (
+            patch("openforms.appointments.renderer.get_plugin", return_value=plugin),
+            patch.object(
+                plugin, "get_appointment_details", wraps=plugin.get_appointment_details
+            ) as m_get_details,
+        ):
+            self.submission.report.generate_submission_report_pdf()
+
+        m_get_details.assert_called_once_with("a-remote-id")
