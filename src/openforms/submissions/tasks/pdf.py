@@ -23,7 +23,11 @@ def generate_submission_report(task, submission_id: int) -> None:
         submission_report = submission.report
     except SubmissionReport.DoesNotExist:
         submission_report = SubmissionReport.objects.create(
-            title=_("%(title)s: Submission report") % {"title": submission.form.name},
+            title=_("%(title)s: Submission report (%(reference)s)")
+            % {
+                "title": submission.form.name,
+                "reference": submission.public_registration_reference,
+            },
             submission=submission,
             task_id=task.request.id,
         )
