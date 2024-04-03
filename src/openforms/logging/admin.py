@@ -12,6 +12,7 @@ class TimelineLogProxyResource(resources.ModelResource):
     user = Field(attribute="user")
     related_object = Field(attribute="content_object")
     message = Field(attribute="message")
+    event = Field(attribute="extra_data")
 
     class Meta:
         model = TimelineLogProxy
@@ -31,6 +32,11 @@ class TimelineLogProxyResource(resources.ModelResource):
 
     def dehydrate_timestamp(self, obj: TimelineLogProxy) -> str:
         return obj.timestamp.isoformat()
+
+    def dehydrate_event(self, obj: TimelineLogProxy) -> str | None:
+        if not obj.extra_data:
+            return None
+        return obj.extra_data.get("log_event")
 
 
 @admin.register(TimelineLogProxy)

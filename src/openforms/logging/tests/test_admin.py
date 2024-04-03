@@ -99,10 +99,31 @@ class AVGAuditLogListViewTests(WebTest):
 
 
 class TimelineLogExportsTest(TestCase):
-    def test_timelinelog_exports(self):
+    def test_bare_timelinelog_export(self):
+        user = StaffUserFactory.create()
+        bare_log = TimelineLogProxyFactory.create(user=user)
+
+        dataset = TimelineLogProxyResource().export()
+
+        self.assertEqual(
+            json.loads(dataset.json),
+            [
+                {
+                    "message": bare_log.message().strip(),
+                    "user": bare_log.fmt_user,
+                    "related_object": None,
+                    "timestamp": bare_log.timestamp.isoformat(),
+                    "event": None,
+                }
+            ],
+        )
+
+    def test_timelinelog_export(self):
         submission = SubmissionFactory.create()
         user = StaffUserFactory.create()
-        log = TimelineLogProxyFactory.create(content_object=submission, user=user)
+        log = TimelineLogProxyFactory.create(
+            content_object=submission, user=user, extra_data={"log_event": "test_event"}
+        )
 
         dataset = TimelineLogProxyResource().export()
 
@@ -112,8 +133,9 @@ class TimelineLogExportsTest(TestCase):
                 {
                     "message": log.message().strip(),
                     "user": log.fmt_user,
-                    "related_object": str(log.content_object),
+                    "related_object": str(submission),
                     "timestamp": log.timestamp.isoformat(),
+                    "event": "test_event",
                 }
             ],
         )
