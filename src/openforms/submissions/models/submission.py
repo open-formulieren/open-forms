@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SubmissionState:
     form_steps: list[FormStep]
-    submission_steps: list["SubmissionStep"]
+    submission_steps: list[SubmissionStep]
 
     def _get_step_offset(self):
         completed_steps = sorted(
@@ -66,7 +66,7 @@ class SubmissionState:
         )
         return offset
 
-    def get_last_completed_step(self) -> "SubmissionStep" | None:
+    def get_last_completed_step(self) -> SubmissionStep | None:
         """
         Determine the last step that was filled out.
 
@@ -86,7 +86,7 @@ class SubmissionState:
         )
         return next(candidates, None)
 
-    def get_submission_step(self, form_step_uuid: str) -> "SubmissionStep" | None:
+    def get_submission_step(self, form_step_uuid: str) -> SubmissionStep | None:
         return next(
             (
                 step
@@ -96,7 +96,7 @@ class SubmissionState:
             None,
         )
 
-    def resolve_step(self, form_step_uuid: str) -> "SubmissionStep":
+    def resolve_step(self, form_step_uuid: str) -> SubmissionStep:
         return self.get_submission_step(form_step_uuid=form_step_uuid)
 
 
@@ -467,7 +467,7 @@ class Submission(models.Model):
     @elasticapm.capture_span(span_type="app.data.loading")
     def load_submission_value_variables_state(
         self, refresh: bool = False
-    ) -> "SubmissionValueVariablesState":
+    ) -> SubmissionValueVariablesState:
         if hasattr(self, "_variables_state") and not refresh:
             return self._variables_state
 
@@ -593,12 +593,12 @@ class Submission(models.Model):
         return summary_data
 
     @property
-    def steps(self) -> list["SubmissionStep"]:
+    def steps(self) -> list[SubmissionStep]:
         # fetch the existing DB records for submitted form steps
         submission_state = self.load_execution_state()
         return submission_state.submission_steps
 
-    def get_last_completed_step(self) -> "SubmissionStep" | None:
+    def get_last_completed_step(self) -> SubmissionStep | None:
         """
         Determine which is the next step for the current submission.
         """
@@ -620,7 +620,6 @@ class Submission(models.Model):
                 component,
                 value,
             )
-
         return ordered_data
 
     def get_merged_appointment_data(self) -> dict[str, dict[str, str | dict]]:
@@ -668,16 +667,16 @@ class Submission(models.Model):
             logger.warning("Incomplete co-sign data for submission %s", self.uuid)
         return co_signer
 
-    def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
+    def get_attachments(self) -> SubmissionFileAttachmentQuerySet:
         from .submission_files import SubmissionFileAttachment
 
         return SubmissionFileAttachment.objects.for_submission(self)
 
     @property
-    def attachments(self) -> "SubmissionFileAttachmentQuerySet":
+    def attachments(self) -> SubmissionFileAttachmentQuerySet:
         return self.get_attachments()
 
-    def get_merged_attachments(self) -> Mapping[str, list["SubmissionFileAttachment"]]:
+    def get_merged_attachments(self) -> Mapping[str, list[SubmissionFileAttachment]]:
         if not hasattr(self, "_merged_attachments"):
             self._merged_attachments = self.get_attachments().as_form_dict()
         return self._merged_attachments
