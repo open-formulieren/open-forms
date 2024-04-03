@@ -55,7 +55,7 @@ class EHerkenningConfigMixin:
         config.service_name = "Test"
         config.service_description = "Test"
         config.want_assertions_signed = False
-        config.loa = "urn:etoegang:core:assurance-class:loa3"
+        config.eh_loa = "urn:etoegang:core:assurance-class:loa3"
         config.privacy_policy = "https://test-sp.nl/privacy_policy"
         config.makelaar_id = "00000002222222222000"
         config.oin = "00000001111111111000"
