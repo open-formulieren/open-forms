@@ -6,7 +6,6 @@ import {FormattedMessage} from 'react-intl';
  *
  * @typedef {{
  *   variablesMapping: {variableKey: string, targetPath: string[]}[],
- *   geometryVariableKey: string,
  * }} ObjectsAPIV2Options
  *
  * @param {Object} p
@@ -15,18 +14,6 @@ import {FormattedMessage} from 'react-intl';
  * @returns {JSX.Element} - The summary, represented as the parts of the target path separated by '>'
  */
 const ObjectsApiSummaryHandler = ({variable, backendOptions}) => {
-  const geometryVariableKey = backendOptions.geometryVariableKey;
-
-  if (geometryVariableKey === variable.key) {
-    return (
-      <FormattedMessage
-        description="'Mapped to geometry' registration summary message"
-        defaultMessage="Mapped to the {geometryPath} attribute"
-        values={{geometryPath: <code>record.geometry</code>}}
-      />
-    );
-  }
-
   const variableMapping = backendOptions.variablesMapping.find(
     mapping => mapping.variableKey === variable.key
   );
