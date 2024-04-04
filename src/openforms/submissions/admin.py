@@ -348,7 +348,11 @@ class SubmissionAdmin(admin.ModelAdmin):
 class SubmissionReportAdmin(PrivateMediaMixin, admin.ModelAdmin):
     list_display = ("title",)
     list_filter = ("title",)
-    search_fields = ("title",)
+    search_fields = (
+        "title",
+        "submission__uuid",
+        "submission__public_registration_reference",
+    )
     raw_id_fields = ("submission",)
 
     private_media_fields = ("content",)
