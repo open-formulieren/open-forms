@@ -64,6 +64,8 @@ class FillInFormTests(E2ETestCase):
                 file_chooser = await fc_info.value
                 await file_chooser.set_files(TEST_FILES / "test.txt")
 
+                await page.wait_for_load_state("networkidle")
+
                 uploaded_file = page.get_by_text("test.txt")
                 await expect(uploaded_file).to_be_visible()
 
