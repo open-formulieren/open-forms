@@ -13,6 +13,7 @@ const onObjectsAPIUserDefinedVariableEdit = (
   variable,
   originalVariable
 ) => {
+  if (registrationBackendOptions.version !== 2) return;
   // If the data type has changed, the mapped target might not be compatible anymore:
   const shouldRemove = originalVariable == null || variable.dataType !== originalVariable.dataType;
 
@@ -23,15 +24,17 @@ const onObjectsAPIUserDefinedVariableEdit = (
 
     if (matchingMappingIndex === -1) return;
     registrationBackendOptions.variablesMapping.splice(matchingMappingIndex, 1);
+    return registrationBackendOptions;
   } else {
     const keyChanged = variable.key !== originalVariable.key;
-    if (!keyChanged) return null;
+    if (!keyChanged) return;
 
     for (const mapping of registrationBackendOptions.variablesMapping) {
       if (mapping.variableKey === originalVariable.key) {
         mapping.variableKey = variable.key;
       }
     }
+    return registrationBackendOptions;
   }
 };
 
