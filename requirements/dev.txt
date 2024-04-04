@@ -750,7 +750,7 @@ phonenumberslite==8.13.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-two-factor-auth
-pillow==10.2.0
+pillow==10.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
