@@ -8,6 +8,7 @@ from django.core.cache import caches
 from django.http import HttpRequest
 from django.utils import translation
 
+from furl import furl
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
@@ -335,3 +336,13 @@ def get_report_download_url(request: Request, report: SubmissionReport) -> str:
         kwargs={"report_id": report.id, "token": token},
     )
     return request.build_absolute_uri(download_url)
+
+
+def get_filtered_submission_admin_url(form_id: int, state: int, from_time: str) -> str:
+    query_params = {
+        "form__id__exact": form_id,
+        "needs_on_completion_retry__exact": state,
+        "from_time": from_time,
+    }
+    submissions_admin_url = furl(reverse("admin:submissions_submission_changelist"))
+    return submissions_admin_url.add(query_params).url

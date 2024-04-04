@@ -5,13 +5,11 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from django_yubin.models import Message
-
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
-from openforms.logging.models import TimelineLogProxy
+from openforms.registrations.utils import collect_registrations_failures
 
-from .utils import send_mail_html
+from .utils import collect_failed_emails, send_mail_html
 
 
 @app.task
@@ -20,32 +18,24 @@ def send_email_digest() -> None:
     if not (recipients := config.recipients_email_digest):
         return
 
-    period_start = timezone.now() - timedelta(days=1)
+    desired_period = timezone.now() - timedelta(days=1)
 
-    logs = TimelineLogProxy.objects.filter(
-        timestamp__gt=period_start,
-        extra_data__status=Message.STATUS_FAILED,
-        extra_data__include_in_daily_digest=True,
-    ).distinct("content_type", "extra_data__status", "extra_data__event")
+    failed_emails = collect_failed_emails(desired_period)
+    failed_registrations = collect_registrations_failures(desired_period)
 
-    if not logs:
+    if not (failed_emails or failed_registrations):
         return
 
     content = render_to_string(
         "emails/admin_digest.html",
         {
-            "logs": [
-                {
-                    "submission_uuid": log.content_object.uuid,
-                    "event": log.extra_data["event"],
-                }
-                for log in logs
-            ],
+            "failed_emails": failed_emails,
+            "failed_registrations": failed_registrations,
         },
     )
 
     send_mail_html(
-        _("[Open Forms] Daily summary of failed emails"),
+        _("[Open Forms] Daily summary of failed procedures"),
         content,
         settings.DEFAULT_FROM_EMAIL,
         recipients,

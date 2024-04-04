@@ -1,10 +1,24 @@
 {% load static i18n %}
 
 <p>
-    {% blocktranslate %}Here is a summary of the emails that failed to send yesterday:{% endblocktranslate %}
+    {% blocktranslate %}Here is a summary of the failed procedures in the past 24 hours:{% endblocktranslate %}
 </p>
-<ul>
-    {% for log in logs %}<li>- Email for the event "{{ log.event }}" for submission {{ log.submission_uuid }}.</li>
-    {% endfor %}
-</ul>
 
+{% if failed_emails %}
+    <h5>{% trans "Emails" %}</h5>
+    <ul>
+        {% for email in failed_emails %}
+            <li>- Email for the event "{{ email.event }}" for submission {{ email.submission_uuid }}.</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if failed_registrations %}
+    <h5>{% trans "Registrations" %}</h5>
+    <ul>
+        {% for registration in failed_registrations %}
+            <li>- {{ registration.form_name }} failed {{ registration.failed_submissions_counter }} times between {{ registration.initial_failure_at|date:"H:i" }} and {{ registration.last_failure_at|date:"H:i" }}.</li>
+            <a href="{{ registration.admin_link }}">Click here to see all the failed submissions for form {{ registration.form_name }} in the admin</a>
+        {% endfor %}
+    </ul>
+{% endif %}
