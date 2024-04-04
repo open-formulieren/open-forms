@@ -22,6 +22,7 @@ from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.constants import UPLOADS_SESSION_KEY
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.tests.utils import log_flaky
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"
 
@@ -398,6 +399,8 @@ class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
         }
 
         session_uuids = set(self.client.session[UPLOADS_SESSION_KEY])
+
+        log_flaky()
 
         # Flaky test - provide some debug output
         if session_uuids != uuids:

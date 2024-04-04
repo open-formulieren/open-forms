@@ -387,6 +387,9 @@ LOGGING = {
         "timestamped": {"format": "%(asctime)s %(levelname)s %(name)s  %(message)s"},
         "simple": {"format": "%(levelname)s  %(message)s"},
         "outgoing_requests": {"()": HttpFormatter},
+        "flaky_tests_github_actions": {
+            "format": """{"msg": "%(message)s", "file": "%(file)s", "line": %(line)d}"""
+        },
     },
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
@@ -431,6 +434,14 @@ LOGGING = {
             "level": "DEBUG",
             "class": "log_outgoing_requests.handlers.DatabaseOutgoingRequestsHandler",
         },
+        "flaky_tests": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGGING_DIR, "flaky.jsonl"),
+            "formatter": "flaky_tests_github_actions",
+            "maxBytes": 1024 * 1024 * 10,  # 10 MB
+            "backupCount": 10,
+        },
     },
     "loggers": {
         "openforms": {
@@ -465,6 +476,11 @@ LOGGING = {
             ),
             "level": "DEBUG",
             "propagate": True,
+        },
+        "flaky_tests": {
+            "handlers": ["flaky_tests"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }
