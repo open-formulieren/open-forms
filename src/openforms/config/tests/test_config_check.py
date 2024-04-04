@@ -78,7 +78,7 @@ class ConfigCheckTests(TestCase):
         "stuf.stuf_zds.client.parse_soap_error_text", return_value="(parsed error text)"
     )
     def test_check_config_service_failure_correctly_reported(self, m, *mocks):
-        config = StufZDSConfig(service=StufServiceFactory.create(), gemeentecode="1234")
+        config = StufZDSConfig(service=StufServiceFactory.create())
         m.get(
             "http://zaken/soap/?wsdl",
             status_code=500,

@@ -36,11 +36,6 @@ PLUGIN_IDENTIFIER = "stuf-zds-create-zaak"
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-    gemeentecode = serializers.CharField(
-        required=False,
-        help_text=_("Municipality code to register zaken"),
-    )
-
     zds_zaaktype_code = serializers.CharField(
         required=True,
         help_text=_("Zaaktype code for newly created Zaken in StUF-ZDS"),
@@ -328,11 +323,6 @@ class StufZDSRegistration(BasePlugin):
     def check_config(self):
         config = StufZDSConfig.get_solo()
         assert isinstance(config, StufZDSConfig)
-
-        if not config.gemeentecode:
-            raise InvalidPluginConfiguration(
-                _("StufService missing setting '{name}'").format(name="gemeentecode")
-            )
 
         options: ZaakOptions = {
             "omschrijving": "MyForm",

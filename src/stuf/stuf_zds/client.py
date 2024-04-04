@@ -76,7 +76,6 @@ def xml_value(xml, xpath, namespaces=nsmap):
 
 class ZaakOptions(TypedDict):
     # from stuf_zds.plugin.ZaakOptionsSerializer
-    gemeentecode: str  # unused?? can't find any template using this
     zds_zaaktype_code: str
     zds_zaaktype_omschrijving: str
     zds_zaaktype_status_code: str
@@ -104,7 +103,6 @@ class NoServiceConfigured(RuntimeError):
 def get_client(options: ZaakOptions) -> "Client":
     config = StufZDSConfig.get_solo()
     assert isinstance(config, StufZDSConfig)
-    config.apply_defaults_to(options)
     if not (service := config.service):
         raise NoServiceConfigured("You must configure a service!")
     return StufZDSClient(service, options)

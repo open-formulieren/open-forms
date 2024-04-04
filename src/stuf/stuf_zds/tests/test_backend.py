@@ -44,7 +44,6 @@ class StufZDSClientTests(StUFZDSTestBase):
         )
 
         cls.options: ZaakOptions = {
-            "gemeentecode": "1234",
             "omschrijving": "my-form",
             "zds_zaaktype_code": "zt-code",
             "zds_zaaktype_omschrijving": "zt-omschrijving",
