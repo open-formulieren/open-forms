@@ -87,6 +87,9 @@ class StepDataSerializer(serializers.Serializer):
                 field.min_length = None
                 field.max_length = None
 
+            case serializers.ChoiceField():
+                field.allow_blank = True
+
     def _get_required(self) -> bool:
         return any(field.required for field in self.fields.values())
 
