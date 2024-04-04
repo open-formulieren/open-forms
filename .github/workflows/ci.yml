@@ -96,6 +96,10 @@ jobs:
           DB_PASSWORD: ''
           DEBUG: 'true'
 
+      - run: npm ci
+        working-directory: .github/actions/report-flaky
+      - uses: ./.github/actions/report-flaky
+
       - name: Run JS tests
         run: npm test
 
@@ -180,6 +184,10 @@ jobs:
           DB_PASSWORD: ''
           DEBUG: 'true'
 
+      - run: npm ci
+        working-directory: .github/actions/report-flaky
+      - uses: ./.github/actions/report-flaky
+
   e2etests:
     runs-on: ubuntu-latest
     strategy:
@@ -262,7 +270,7 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          src/manage.py test src --parallel 4 --tag=e2e
+          src/manage.py test src --tag=e2e
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy

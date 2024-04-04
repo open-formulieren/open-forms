@@ -1,0 +1,12 @@
+---
+
+name: Report flaky tests
+description: Parses log file for flaky tests and adds annotations for them
+inputs:
+  logFile:
+    description: Log file containing the flaky test logs
+    required: true
+    default: 'log/flaky.jsonl'
+runs:
+  using: 'node20'
+  main: 'report_flaky.js'

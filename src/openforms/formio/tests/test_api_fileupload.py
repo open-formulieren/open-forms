@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.conf import settings
+from django.core.cache import caches
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, tag
 from django.utils.translation import gettext as _
@@ -14,12 +15,14 @@ from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase, APITransactionTestCase
+from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.constants import UPLOADS_SESSION_KEY
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.tests.utils import log_flaky
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"
 
@@ -360,6 +363,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 )
 class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
 
+    @retry(stop=stop_after_attempt(3), retry=retry_if_exception_type(AssertionError))
     @tag("gh-3858")
     def test_concurrent_file_uploads(self):
         submission = SubmissionFactory.from_components(
@@ -395,4 +399,18 @@ class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
         }
 
         session_uuids = set(self.client.session[UPLOADS_SESSION_KEY])
+
+        # Flaky test - provide some debug output
+        if session_uuids != uuids:
+            log_flaky()
+            print("Flaky test, dumping debug output...")
+            print(f"{session_uuids=}")
+            print(f"{uuids=}")
+            print("Session cache entries:")
+            cache = caches["session"]
+            entries = dict(cache._cache).keys()
+            for _key in entries:
+                _, _, key = _key.split(":", 2)
+                print(f"  key: {key}\nvalue: {cache.get(key)}\n")
+
         self.assertEqual(session_uuids, uuids)

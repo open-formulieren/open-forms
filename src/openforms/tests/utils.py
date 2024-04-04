@@ -1,10 +1,12 @@
 import contextlib
 import cProfile
 import io
+import logging
 import os
 import pstats
 import socket
 import sys
+from inspect import currentframe, getframeinfo
 from pathlib import Path
 from pstats import SortKey
 
@@ -14,6 +16,8 @@ NOOP_CACHES = {
     name: {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}
     for name in settings.CACHES.keys()
 }
+
+flaky_test_logger = logging.getLogger("flaky_tests")
 
 
 def can_connect(hostname: str):
@@ -79,3 +83,28 @@ def c_profile(sort_by=SortKey.CUMULATIVE):  # pragma: no cover
             ps = pstats.Stats(pr, stream=s).sort_stats(sort_by)
             ps.print_stats()
             print(s.getvalue(), file=outfile)
+
+
+def log_flaky():
+    """
+    Log that a/the test is flaky.
+
+    Call this function when you detect flakiness in a test. The result can be processed
+    by Github workflows to add annotations, while retrying the test to not fail the
+    build.
+    """
+    frame = currentframe()
+    assert frame is not None
+    assert (
+        frame.f_back is not None
+    ), "You may only call log_flaky inside another function"
+    frame_info = getframeinfo(frame.f_back)
+    relative_path = Path(frame_info.filename).relative_to(Path(settings.BASE_DIR))
+    flaky_test_logger.warning(
+        "Flaky test: %s",
+        frame_info.function,
+        extra={
+            "file": relative_path,
+            "line": frame_info.lineno,
+        },
+    )

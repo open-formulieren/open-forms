@@ -41,6 +41,7 @@ local.py
 /static/
 /mail/
 /log/*.log*
+/log/*.jsonl
 /log/nginx/*.log*
 /.env
 /docker/.env
