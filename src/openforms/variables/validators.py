@@ -1,7 +1,8 @@
 import re
 from typing import TYPE_CHECKING, Mapping
+from urllib.parse import quote
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
@@ -257,3 +258,15 @@ def validate_mapping_expression(configuration: "ServiceFetchConfiguration") -> N
 
 def has_whitespace_padding(s: str) -> bool:
     return not re.match(r"^([^ \t].*[^ \t]|[^ \t])$", s)
+
+
+def validate_path_context_values(v: object) -> str:
+    if v == "..":
+        # GH-4015: requests is applying path traversal on "..", i.e. https://web.com/path1/../path2
+        # will request to https://web.com/path2. "../" and similar are fine as '/' is escaped by `quote`.
+        # see https://github.com/urllib3/urllib3/issues/1781
+        # see https://mazinahmed.net/blog/testing-for-path-traversal-with-python/
+        raise SuspiciousOperation(
+            "Usage of '..' in service fetch can lead to path traversal attacks"
+        )
+    return quote(str(v), safe="")
