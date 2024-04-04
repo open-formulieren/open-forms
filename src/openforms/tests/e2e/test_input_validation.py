@@ -11,7 +11,7 @@ from pathlib import Path
 
 from playwright.async_api import Page, expect
 
-from openforms.formio.typing import Component, DateComponent
+from openforms.formio.typing import Component, DateComponent, RadioComponent
 
 from .input_validation_base import ValidationsTestCase
 
@@ -169,6 +169,39 @@ class SingleNumberTests(ValidationsTestCase):
             component,
             ui_input=50,
             expected_ui_error="De waarde moet 42 of kleiner zijn.",
+        )
+
+
+class RadioTests(ValidationsTestCase):
+    async def apply_ui_input(self, page: Page, label: str, ui_input: str | int | float):
+        """
+        Check the radio input labeled by ``ui_input``.
+        """
+        assert isinstance(ui_input, str)
+
+        # no option to select -> do nothing
+        if not ui_input:
+            return
+
+        await page.get_by_label(ui_input).click()
+
+    def test_required_field(self):
+        component: RadioComponent = {
+            "type": "radio",
+            "key": "requiredRadio",
+            "label": "Required radio",
+            "validate": {"required": True},
+            "openForms": {"dataSrc": "manual"},  # type: ignore
+            "values": [
+                {"value": "a", "label": "A"},
+                {"value": "b", "label": "B"},
+            ],
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required radio is niet ingevuld.",
         )
 
 
