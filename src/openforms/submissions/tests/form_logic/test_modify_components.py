@@ -1126,3 +1126,42 @@ class ComponentModificationTests(TestCase):
         }
 
         self.assertEqual(configuration, expected)
+
+    @tag("gh-3964")
+    def test_frontend_logic_with_numbers(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "number",
+                        "type": "number",
+                        "label": "Number",
+                    },
+                    {
+                        "key": "textArea",
+                        "type": "textarea",
+                        "label": "Text Area",
+                        "conditional": {"eq": "0", "show": True, "when": "number"},
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"number": 0, "textArea": "Test value"},
+        )
+
+        self.assertEqual(submission_step.data["textArea"], "Test value")
+
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["textArea"]
+
+        self.assertEqual(variable.value, "Test value")
