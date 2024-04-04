@@ -12,14 +12,9 @@ from openforms.formio.service import (
 from openforms.formio.utils import get_component_empty_value
 from openforms.typing import DataMapping
 
-from .logic.actions import PropertyAction
+from .logic.actions import ActionOperation
 from .logic.datastructures import DataContainer
-from .logic.rules import (
-    EvaluatedRule,
-    get_current_step,
-    get_rules_to_evaluate,
-    iter_evaluate_rules,
-)
+from .logic.rules import EvaluatedRule, get_rules_to_evaluate, iter_evaluate_rules
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:
@@ -205,7 +200,6 @@ def check_submission_logic(
     if not submission_state.form_steps:
         return
 
-    step = get_current_step(submission)
     rules = get_rules_to_evaluate(submission)
 
     # load the data state and all variables
@@ -214,15 +208,19 @@ def check_submission_logic(
         submission_variables_state.set_values(unsaved_data)
     data_container = DataContainer(state=submission_variables_state)
 
-    mutation_operations = []
+    mutation_operations: list[ActionOperation] = []
     for operation in iter_evaluate_rules(rules, data_container, submission):
-        # component mutations can be skipped as we're not in the context of a single
-        # form step.
-        if isinstance(operation, PropertyAction):
-            continue
         mutation_operations.append(operation)
 
+    # we loop over all steps because we have validations that ensure unique component
+    # keys across multiple steps for the whole form.
+    #
+    # We need to apply all component mutations at this stage too, because for validation
+    # reasons, a serializer is built from them.
     for mutation in mutation_operations:
-        mutation.apply(step, {})
+        for step in submission_state.submission_steps:
+            assert step.form_step
+            configuration = step.form_step.form_definition.configuration_wrapper
+            mutation.apply(step, configuration)
 
     submission._form_logic_evaluated = True
