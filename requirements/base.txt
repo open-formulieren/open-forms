@@ -345,7 +345,7 @@ pathable==0.4.3
     # via jsonschema-spec
 phonenumberslite==8.13.29
     # via django-two-factor-auth
-pillow==10.2.0
+pillow==10.3.0
     # via
     #   -r requirements/base.in
     #   django-colorfield

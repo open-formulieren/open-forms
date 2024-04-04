@@ -665,7 +665,7 @@ phonenumberslite==8.13.29
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-two-factor-auth
-pillow==10.2.0
+pillow==10.3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
