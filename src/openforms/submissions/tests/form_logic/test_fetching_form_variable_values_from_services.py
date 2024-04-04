@@ -3,6 +3,7 @@ from typing import Any
 from unittest import skip
 from urllib.parse import unquote
 
+from django.core.exceptions import SuspiciousOperation
 from django.test import SimpleTestCase, tag
 
 import requests_mock
@@ -112,7 +113,8 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
     @example("./../.")
     @example("foo/ +.")
     def test_it_can_construct_simple_path_parameters_from_any_input(self, field_value):
-        assume(field_value != ".")  # request_mock eats the single dot :pacman:
+        # request_mock eats the single dot :pacman:, and ".." is disallowed:
+        assume(field_value not in {".", ".."})
         # https://swagger.io/docs/specification/describing-parameters/#path-parameters
         context = {"late": {"seconds": field_value}}
 
@@ -149,6 +151,20 @@ class ServiceFetchConfigVariableBindingTests(DisableNLXRewritingMixin, SimpleTes
         self.assertEqual(set(request.headers), DEFAULT_REQUEST_HEADERS)
         # and a weak assertion
         self.assertNotIn(str(field_value), request.headers.values())
+
+    @tag("gh-4015")
+    def test_raises_suspicious_operation_on_double_dot_input(self):
+        context = {"late": {"seconds": ".."}}
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="delay/{{late.seconds}}",  # this is not defined as number in the OAS
+            )
+        )
+
+        with self.assertRaises(SuspiciousOperation):
+            perform_service_fetch(var, context)
 
     # TODO
     @tag("gh-2745")

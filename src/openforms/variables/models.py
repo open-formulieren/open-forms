@@ -1,5 +1,3 @@
-from urllib.parse import quote
-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +11,7 @@ from .validators import (
     HeaderValidator,
     QueryParameterValidator,
     validate_mapping_expression,
+    validate_path_context_values,
     validate_request_body,
 )
 
@@ -149,7 +148,7 @@ class ServiceFetchConfiguration(models.Model):
         HeaderValidator()(headers)
 
         escaped_for_path = recursive_apply(
-            context, lambda v: quote(str(v), safe=""), transform_leaf=True
+            context, validate_path_context_values, transform_leaf=True
         )
 
         query_params = {
@@ -165,7 +164,7 @@ class ServiceFetchConfiguration(models.Model):
             for param, values in (self.query_params or {}).items()
         }
 
-        # Interface of :meth:`requests.Sesssion.request`
+        # Interface of :meth:`requests.Session.request`
         request_args = {
             "method": self.method,
             # client class automatically adds this to the API root
