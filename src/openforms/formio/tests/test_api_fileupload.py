@@ -400,8 +400,6 @@ class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
 
         session_uuids = set(self.client.session[UPLOADS_SESSION_KEY])
 
-        log_flaky()
-
         # Flaky test - provide some debug output
         if session_uuids != uuids:
             log_flaky()

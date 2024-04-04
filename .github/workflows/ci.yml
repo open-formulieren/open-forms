@@ -96,6 +96,10 @@ jobs:
           DB_PASSWORD: ''
           DEBUG: 'true'
 
+      - run: npm ci
+        working-directory: .github/actions/report-flaky
+      - uses: ./.github/actions/report-flaky
+
       - name: Run JS tests
         run: npm test
 
@@ -179,6 +183,10 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: ''
           DEBUG: 'true'
+
+      - run: npm ci
+        working-directory: .github/actions/report-flaky
+      - uses: ./.github/actions/report-flaky
 
   e2etests:
     runs-on: ubuntu-latest
