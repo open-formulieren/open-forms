@@ -270,7 +270,7 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          src/manage.py test src --parallel 4 --tag=e2e
+          src/manage.py test src --tag=e2e
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
