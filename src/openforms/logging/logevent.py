@@ -17,6 +17,8 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import JSONObject
 
 if TYPE_CHECKING:
+    from log_outgoing_requests.models import OutgoingRequestsLog
+
     from openforms.payments.models import SubmissionPayment
     from openforms.submissions.models import Submission, SubmissionStep
     from stuf.models import StufService
@@ -71,10 +73,12 @@ def _create_log(
     return log_entry
 
 
-def timelinelog_details_view_admin(timelinelog_proxy: TimelineLogProxy, user: User):
+def outgoing_request_log_details_view_admin(
+    outgoing_request_log: OutgoingRequestsLog, user: User
+) -> None:
     _create_log(
-        timelinelog_proxy,
-        "timelinelog_details_view_admin",
+        outgoing_request_log,
+        "outgoing_request_log_details_view_admin",
         tags=[TimelineLogTags.AVG],
         user=user,
     )

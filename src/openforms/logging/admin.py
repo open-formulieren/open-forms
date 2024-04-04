@@ -1,9 +1,4 @@
-from typing import Any
-
 from django.contrib import admin
-from django.http import Http404
-from django.http.request import HttpRequest
-from django.http.response import HttpResponse
 
 from import_export import resources
 from import_export.admin import ExportActionModelAdmin
@@ -11,8 +6,6 @@ from import_export.fields import Field
 from timeline_logger.models import TimelineLog
 
 from openforms.logging.models import AVGTimelineLogProxy, TimelineLogProxy
-
-from .logevent import timelinelog_details_view_admin
 
 
 class TimelineLogProxyResource(resources.ModelResource):
@@ -74,19 +67,6 @@ class TimelineLogProxyAdmin(ExportActionModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-
-    def change_view(
-        self,
-        request: HttpRequest,
-        object_id: str,
-        form_url: str = "",
-        extra_context: dict[str, Any] | None = None,
-    ) -> HttpResponse:
-        timelinelog = self.get_object(request, object_id)
-        if timelinelog is None:
-            raise Http404(f"No {self.model._meta.object_name} matches the given query.")
-        timelinelog_details_view_admin(timelinelog, request.user)
-        return super().change_view(request, object_id, form_url, extra_context)
 
 
 @admin.register(AVGTimelineLogProxy)
