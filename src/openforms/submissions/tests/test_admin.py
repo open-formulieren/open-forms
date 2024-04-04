@@ -7,13 +7,12 @@ from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.forms.models import FormVariable
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 
 from ...config.models import GlobalConfiguration
 from ..constants import PostSubmissionEvents, RegistrationStatuses
-from .factories import SubmissionFactory, SubmissionValueVariableFactory
+from .factories import SubmissionFactory
 
 
 @disable_admin_mfa()
@@ -41,49 +40,6 @@ class TestSubmissionAdmin(WebTest):
     def setUp(self):
         super().setUp()
         self.user = UserFactory.create(is_superuser=True, is_staff=True)
-
-    def test_displaying_merged_data_formio_formatters(self):
-        response = self.app.get(
-            reverse(
-                "admin:submissions_submission_change", args=(self.submission_1.pk,)
-            ),
-            user=self.user,
-        )
-        expected = """
-        <ul>
-        <li>adres: Voorburg</li>
-        <li>voornaam: shea</li>
-        <li>familienaam: meyers</li>
-        <li>geboortedatum: None</li>
-        <li>signature: None</li>
-        </ul>
-        """
-
-        self.assertContains(response, expected, html=True)
-
-    def test_displaying_merged_data_displays_signature_as_image_formio_formatters(self):
-        form_variable = FormVariable.objects.get(
-            key="signature", form=self.submission_1.form
-        )
-        SubmissionValueVariableFactory.create(
-            key="signature",
-            submission=self.submission_1,
-            value="data:image/png;base64,iVBOR",
-            form_variable=form_variable,
-        )
-
-        response = self.app.get(
-            reverse(
-                "admin:submissions_submission_change", args=(self.submission_1.pk,)
-            ),
-            user=self.user,
-        )
-
-        self.assertContains(
-            response,
-            "<li>signature: <img class='signature-image' src='data:image/png;base64,iVBOR' alt='signature'></li>",
-            html=True,
-        )
 
     def test_viewing_submission_details_in_admin_creates_log(self):
         self.app.get(

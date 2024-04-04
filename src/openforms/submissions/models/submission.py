@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections import OrderedDict
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping
+from typing import TYPE_CHECKING, Any, Mapping
 
 from django.conf import settings
 from django.db import models, transaction
@@ -52,7 +51,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SubmissionState:
     form_steps: list[FormStep]
-    submission_steps: list["SubmissionStep"]
+    submission_steps: list[SubmissionStep]
 
     def _get_step_offset(self):
         completed_steps = sorted(
@@ -66,7 +65,7 @@ class SubmissionState:
         )
         return offset
 
-    def get_last_completed_step(self) -> "SubmissionStep" | None:
+    def get_last_completed_step(self) -> SubmissionStep | None:
         """
         Determine the last step that was filled out.
 
@@ -86,7 +85,7 @@ class SubmissionState:
         )
         return next(candidates, None)
 
-    def get_submission_step(self, form_step_uuid: str) -> "SubmissionStep" | None:
+    def get_submission_step(self, form_step_uuid: str) -> SubmissionStep | None:
         return next(
             (
                 step
@@ -96,7 +95,7 @@ class SubmissionState:
             None,
         )
 
-    def resolve_step(self, form_step_uuid: str) -> "SubmissionStep":
+    def resolve_step(self, form_step_uuid: str) -> SubmissionStep:
         return self.get_submission_step(form_step_uuid=form_step_uuid)
 
 
@@ -467,7 +466,7 @@ class Submission(models.Model):
     @elasticapm.capture_span(span_type="app.data.loading")
     def load_submission_value_variables_state(
         self, refresh: bool = False
-    ) -> "SubmissionValueVariablesState":
+    ) -> SubmissionValueVariablesState:
         if hasattr(self, "_variables_state") and not refresh:
             return self._variables_state
 
@@ -593,35 +592,17 @@ class Submission(models.Model):
         return summary_data
 
     @property
-    def steps(self) -> list["SubmissionStep"]:
+    def steps(self) -> list[SubmissionStep]:
         # fetch the existing DB records for submitted form steps
         submission_state = self.load_execution_state()
         return submission_state.submission_steps
 
-    def get_last_completed_step(self) -> "SubmissionStep" | None:
+    def get_last_completed_step(self) -> SubmissionStep | None:
         """
         Determine which is the next step for the current submission.
         """
         submission_state = self.load_execution_state()
         return submission_state.get_last_completed_step()
-
-    def get_ordered_data_with_component_type(self) -> OrderedDict:
-        from openforms.formio.formatters.printable import filter_printable
-
-        ordered_data = OrderedDict()
-        merged_data = self.get_merged_data()
-
-        # first collect data we have in the same order the components are defined in the form
-        for component in filter_printable(self.form.iter_components(recursive=True)):
-            key = component["key"]
-            value = merged_data.get(key, None)
-            component.setdefault("label", key)
-            ordered_data[key] = (
-                component,
-                value,
-            )
-
-        return ordered_data
 
     def get_merged_appointment_data(self) -> dict[str, dict[str, str | dict]]:
         component_config_key_to_appointment_key = {
@@ -633,7 +614,7 @@ class Submission(models.Model):
             "appointments.phoneNumber": "clientPhoneNumber",
         }
 
-        merged_data = self.get_merged_data()
+        merged_data = self.data
         appointment_data = {}
 
         for component in self.form.iter_components(recursive=True):
@@ -655,11 +636,19 @@ class Submission(models.Model):
 
         return appointment_data
 
-    def get_merged_data(self) -> dict:
+    @property
+    def data(self) -> dict[str, Any]:
+        """The filled-in data of the submission.
+
+        This is a mapping between variable keys and their corresponding values.
+
+        .. note::
+
+            Keys containings dots (``.``) will be nested under another mapping.
+            Static variables values are *not* included.
+        """
         values_state = self.load_submission_value_variables_state()
         return values_state.get_data()
-
-    data = property(get_merged_data)
 
     def get_co_signer(self) -> str:
         if not self.co_sign_data:
@@ -668,16 +657,16 @@ class Submission(models.Model):
             logger.warning("Incomplete co-sign data for submission %s", self.uuid)
         return co_signer
 
-    def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
+    def get_attachments(self) -> SubmissionFileAttachmentQuerySet:
         from .submission_files import SubmissionFileAttachment
 
         return SubmissionFileAttachment.objects.for_submission(self)
 
     @property
-    def attachments(self) -> "SubmissionFileAttachmentQuerySet":
+    def attachments(self) -> SubmissionFileAttachmentQuerySet:
         return self.get_attachments()
 
-    def get_merged_attachments(self) -> Mapping[str, list["SubmissionFileAttachment"]]:
+    def get_merged_attachments(self) -> Mapping[str, list[SubmissionFileAttachment]]:
         if not hasattr(self, "_merged_attachments"):
             self._merged_attachments = self.get_attachments().as_form_dict()
         return self._merged_attachments

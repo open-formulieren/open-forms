@@ -97,7 +97,7 @@ def apply_data_mapping(
             attr_key_lookup[attribute] = key
 
     # grab submitted data
-    data = submission.get_merged_data()
+    data = submission.data
 
     for target_path, conf in mapping_config.items():
         if isinstance(conf, str):
@@ -137,7 +137,7 @@ def get_unmapped_data(
     """
     companion to apply_data_mapping() returns data not mapped to RegistrationAttributes
     """
-    data = submission.get_merged_data()
+    data = submission.data
 
     attr_key_lookup = dict()
 

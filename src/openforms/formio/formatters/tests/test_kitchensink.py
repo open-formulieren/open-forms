@@ -1,5 +1,8 @@
+from typing import Any
+
 from django.utils.translation import gettext as _
 
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -12,15 +15,15 @@ from .mixins import BaseFormatterTestCase
 from .utils import load_json
 
 
-def _get_printable_data(submission):
-    printable_data = []
-    for key, (
-        component,
-        value,
-    ) in submission.get_ordered_data_with_component_type().items():
-        printable_data.append(
-            (component["label"], format_value(component, value, as_html=False))
-        )
+def _get_printable_data(submission: Submission) -> list[tuple[str, Any]]:
+    printable_data: list[tuple[str, Any]] = []
+    merged_data = submission.data
+
+    for component in filter_printable(submission.form.iter_components(recursive=True)):
+        key = component["key"]
+        value = format_value(component, merged_data.get(key), as_html=False)
+        printable_data.append((component.get("label", key), value))
+
     return printable_data
 
 

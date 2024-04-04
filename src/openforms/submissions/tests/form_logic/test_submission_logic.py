@@ -424,9 +424,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         with freeze_time("2015-10-10"):
-            response = self.client.post(
-                endpoint, {"data": submission.get_merged_data()}
-            )
+            response = self.client.post(endpoint, {"data": submission.data})
 
         submission_details = response.json()
 
