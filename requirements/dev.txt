@@ -313,7 +313,7 @@ django-hijack==3.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-import-export==2.9.0
+django-import-export==3.3.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1123,7 +1123,7 @@ stringcase==1.2.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   o365
-tablib[html,ods,xls,xlsx,yaml]==3.0.0
+tablib[html,ods,xls,xlsx,yaml]==3.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

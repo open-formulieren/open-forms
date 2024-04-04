@@ -168,7 +168,7 @@ django-formtools==2.5.1
     # via django-two-factor-auth
 django-hijack==3.4.1
     # via -r requirements/base.in
-django-import-export==2.9.0
+django-import-export==3.3.7
     # via -r requirements/base.in
 django-ipware==5.0.0
     # via django-axes
@@ -478,7 +478,7 @@ sqlparse==0.4.4
     # via django
 stringcase==1.2.0
     # via o365
-tablib[html,ods,xls,xlsx,yaml]==3.0.0
+tablib[html,ods,xls,xlsx,yaml]==3.5.0
     # via
     #   -r requirements/base.in
     #   django-import-export
