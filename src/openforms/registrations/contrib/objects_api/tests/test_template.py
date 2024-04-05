@@ -2,7 +2,7 @@ import textwrap
 from unittest.mock import patch
 
 from django.core.exceptions import SuspiciousOperation
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 import requests_mock
 import tablib
@@ -14,6 +14,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
@@ -305,3 +306,99 @@ class JSONTemplatingTests(TestCase):
         ):
             with self.assertRaises(RuntimeError):
                 plugin.register_submission(submission, {})
+
+
+class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
+    @tag("dh-673")
+    def test_object_nulls_regression(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "type": "radio",
+                    "key": "radio",
+                    "label": "Radio",
+                    "values": [
+                        {"label": "1", "value": "1"},
+                        {"label": "2", "value": "2"},
+                    ],
+                    "defaultValue": None,
+                    "validate": {"required": True},
+                    "openForms": {"dataSrc": "manual"},
+                },
+                {
+                    "type": "textfield",
+                    "key": "tekstveld",
+                    "label": "Tekstveld",
+                    "hidden": True,
+                    "validate": {"required": True},
+                    "conditional": {"eq": "1", "show": True, "when": "radio"},
+                    "defaultValue": None,
+                    "clearOnHide": True,
+                },
+                {
+                    "type": "currency",
+                    "currency": "EUR",
+                    "key": "bedrag",
+                    "label": "Bedrag",
+                    "hidden": True,
+                    "validate": {"required": True},
+                    "conditional": {"eq": "1", "show": True, "when": "radio"},
+                    "defaultValue": None,
+                    "clearOnHide": True,
+                },
+            ],
+            with_report=True,
+            submitted_data={"radio": "2"},
+            form_definition_kwargs={"slug": "stepwithnulls"},
+        )
+        config = ObjectsAPIConfig(
+            objects_service=ServiceFactory.build(),
+            drc_service=ServiceFactory.build(),
+            content_json="{% json_summary %}",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        prefix = "openforms.registrations.contrib.objects_api"
+
+        with (
+            patch(
+                f"{prefix}.models.ObjectsAPIConfig.get_solo",
+                return_value=config,
+            ),
+            patch(f"{prefix}.plugin.get_objects_client") as mock_objects_client,
+        ):
+            _objects_client = mock_objects_client.return_value.__enter__.return_value
+            _objects_client.create_object.return_value = {"dummy": "response"}
+
+            plugin.register_submission(
+                submission,
+                {
+                    "version": 1,
+                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype_version": 300,
+                    # skip document uploads
+                    "informatieobjecttype_submission_report": "",
+                    "upload_submission_csv": False,
+                    "informatieobjecttype_attachment": "",
+                },
+            )
+
+        _objects_client.create_object.mock_assert_called_once()
+        _objects_client.create_object.call_args
+        record_data = _objects_client.create_object.call_args[1]["object_data"][
+            "record"
+        ]["data"]
+        # for missing values, the empty value (depending on component type) must be used
+        # Note that the input data was validated against the hidden/visible and
+        # clearOnHide state - absence of the data implies that the component was not
+        # visible and its data was cleared (otherwise the value *would* have been sent
+        # along and be present).
+        self.assertEqual(
+            record_data,
+            {
+                "stepwithnulls": {
+                    "radio": "2",
+                    "tekstveld": "",
+                    "bedrag": None,
+                },
+            },
+        )
