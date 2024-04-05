@@ -2,6 +2,32 @@
 Changelog
 =========
 
+2.6.2 (2024-04-05)
+==================
+
+Bugfix release - not all issues were fixed in 2.6.1.
+
+* Fixed various more mismatches between frontend and backend input validation:
+
+    - [DH#671] Fixed conditionally making components required/optional via backend logic.
+    - Fixed validation of empty/optional select components.
+    - [#4096] Fixed validation of hidden (with ``clearOnHide: false``) radio components.
+    - [DH#667] Fixed components inside a repeating group causing validation issues when
+      they are nested inside a fieldset or columns.
+
+* [#4061] Fixed not all form components being visible in the form builder when other
+  components can be selected.
+* [#4079] Fixed metadata retrieval for DigiD failing when certificates signed by the G1
+  root are used.
+* [#4103] Fixed incorrect appointment details being included in the submission PDF.
+* [#4099] Fixed a crash in the form designer when editing (user defined) variables and
+  the template-based Objects API registration backend is configured.
+* Update image processing library with latest security fixes.
+* [DH#673] Fixed wrong datatype for field empty value being sent in the Objects API
+  registration backend when the field is not visible.
+* [DH#673] Fixed fields hidden because the parent fieldset or column is hidden not being
+  sent to the Objects API. This is a follow up of #3890.
+
 2.6.1 (2024-03-28)
 ==================
 
