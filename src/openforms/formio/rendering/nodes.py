@@ -12,6 +12,7 @@ from openforms.typing import DataMapping
 from ..service import format_value
 from ..typing import Component
 from ..utils import (
+    get_component_empty_value,
     is_layout_component,
     is_visible_in_frontend,
     iterate_components_with_configuration_path,
@@ -186,7 +187,12 @@ class ComponentNode(Node):
         """
         path = Path(self.path, self.key_as_path) if self.path else self.key_as_path
 
-        value = glom(self.step_data, path, default=None)
+        empty_value = (
+            get_component_empty_value(self.component)
+            if self.renderer.mode == RenderModes.registration
+            else None
+        )
+        value = glom(self.step_data, path, default=empty_value)
         return value
 
     @property

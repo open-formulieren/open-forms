@@ -387,4 +387,18 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
         record_data = _objects_client.create_object.call_args[1]["object_data"][
             "record"
         ]["data"]
-        self.assertEqual(record_data, {"stepwithnulls": {"radio": "2"}})
+        # for missing values, the empty value (depending on component type) must be used
+        # Note that the input data was validated against the hidden/visible and
+        # clearOnHide state - absence of the data implies that the component was not
+        # visible and its data was cleared (otherwise the value *would* have been sent
+        # along and be present).
+        self.assertEqual(
+            record_data,
+            {
+                "stepwithnulls": {
+                    "radio": "2",
+                    "tekstveld": "",
+                    "bedrag": None,
+                },
+            },
+        )
