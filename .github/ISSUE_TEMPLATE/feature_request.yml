@@ -1,5 +1,5 @@
 name: Verzoek tot verbetering / Feature request
-description: Stel een idee voor om het project beter te maken / Suggest an idea for this project
+description: Stel een idee voor om het product beter te maken / Suggest an idea for this product
 title: "Title here"
 labels: ["enhancement", "triage"]
 assignees: []
@@ -27,7 +27,7 @@ body:
   - type: textarea
     id: added-value
     attributes:
-      label: Added value / Toegevoegde waarde
+      label: Toegevoegde waarde / Added value
       description: Omschrijf de toegevoegde waarde voor de bedrijfsvoering of dienstverlening / Describe the added value for business operations or services
     validations:
       required: false
