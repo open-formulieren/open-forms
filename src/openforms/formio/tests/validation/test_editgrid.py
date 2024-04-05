@@ -1,11 +1,17 @@
+from collections import namedtuple
+
 from django.test import SimpleTestCase, tag
+
+from rest_framework import serializers
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.typing import JSONObject, JSONValue
 
+from ...components.vanilla import EditGridField
+from ...registry import register
 from ...service import build_serializer
 from ...typing import EditGridComponent, FieldsetComponent
-from .helpers import validate_formio_data
+from .helpers import extract_error, validate_formio_data
 
 
 class EditGridValidationTests(SimpleTestCase):
@@ -161,7 +167,10 @@ class EditGridValidationTests(SimpleTestCase):
             self.assertNotIn("nested", top_level_fields)
 
         with self.subTest("nested fields"):
-            nested_fields = top_level_fields["toplevel"].child.fields  # type: ignore
+            # implementation detail, but an important one - nested components may only
+            # appear in the child serializers used to validate each item in the value
+            # list.
+            nested_fields = top_level_fields["toplevel"]._build_child().fields  # type: ignore
 
             self.assertIn("nested", nested_fields)
             self.assertNotIn("toplevel", nested_fields)
@@ -328,13 +337,118 @@ class EditGridValidationTests(SimpleTestCase):
         with self.subTest("invalid"):
             invalid_data: JSONValue = {"editgrid": [{"textfield1": "SHOW_FIELD_2"}]}
 
-            is_valid, _ = validate_formio_data(component, invalid_data)
+            is_valid, errors = validate_formio_data(component, invalid_data)
 
             self.assertFalse(is_valid)
+            error = extract_error(errors["editgrid"][0], "textfield2")
+            self.assertEqual(error.code, "required")
 
         with self.subTest("valid"):
             invalid_data: JSONValue = {"editgrid": [{"textfield1": "NO_SHOW_FIELD_2"}]}
 
-            is_valid, _ = validate_formio_data(component, invalid_data)
+            is_valid, errors = validate_formio_data(component, invalid_data)
 
             self.assertTrue(is_valid)
+
+
+class EditGridFieldTests(SimpleTestCase):
+    """
+    Unit tests for the custom ``ListField`` implementation.
+    """
+
+    def test_invalid_type_provided(self):
+        class Serializer(serializers.Serializer):
+            editgrid = EditGridField(
+                registry=register,
+                components=[
+                    {"type": "textfield", "key": "textfield", "label": "Text field"}
+                ],
+            )
+
+        invalid_values = (False, {}, 123, "foo")
+        for value in invalid_values:
+            with self.subTest(invalid_value=value):
+                serializer = Serializer(data={"editgrid": value})
+
+                is_valid = serializer.is_valid()
+
+                self.assertFalse(is_valid)
+                error = extract_error(serializer.errors, "editgrid")
+                self.assertEqual(error.code, "not_a_list")
+
+    def test_empty_disallowed(self):
+        class Serializer(serializers.Serializer):
+            editgrid = EditGridField(
+                registry=register,
+                components=[
+                    {"type": "textfield", "key": "textfield", "label": "Text field"}
+                ],
+                allow_empty=False,
+            )
+
+        serializer = Serializer(data={"editgrid": []})
+
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        error = extract_error(serializer.errors, "editgrid")
+        self.assertEqual(error.code, "empty")
+
+    def test_min_length(self):
+        class Serializer(serializers.Serializer):
+            editgrid = EditGridField(
+                registry=register,
+                components=[
+                    {"type": "textfield", "key": "textfield", "label": "Text field"}
+                ],
+                allow_empty=False,
+                min_length=3,
+            )
+
+        serializer = Serializer(data={"editgrid": [{"textfield": "foo"}]})
+
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        error = extract_error(serializer.errors, "editgrid")
+        self.assertEqual(error.code, "min_length")
+
+    def test_max_length(self):
+        class Serializer(serializers.Serializer):
+            editgrid = EditGridField(
+                registry=register,
+                components=[
+                    {"type": "textfield", "key": "textfield", "label": "Text field"}
+                ],
+                allow_empty=False,
+                max_length=3,
+            )
+
+        serializer = Serializer(data={"editgrid": [{"textfield": "foo"}] * 4})
+
+        is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        error = extract_error(serializer.errors, "editgrid")
+        self.assertEqual(error.code, "max_length")
+
+    def test_to_representation(self):
+        class Serializer(serializers.Serializer):
+            editgrid = EditGridField(
+                registry=register,
+                components=[{"type": "textfield", "key": "bar", "label": "Bar"}],
+            )
+
+        Foo = namedtuple("Foo", "bar")
+        foos = [Foo(bar="first"), Foo(bar="second")]
+        serializer = Serializer(instance={"editgrid": foos})
+
+        data = serializer.data
+
+        expected = {
+            "editgrid": [
+                {"bar": "first"},
+                {"bar": "second"},
+            ]
+        }
+        self.assertEqual(data, expected)
