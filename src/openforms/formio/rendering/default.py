@@ -33,7 +33,9 @@ class ContainerMixin:
     def is_visible(self) -> bool:
         # fieldset/editgrid components do not support the showInFoo properties, so we don't use the super
         # class.
-        if self.mode == RenderModes.export:
+        # In registration mode, we need to treat layout/container nodes as visible so
+        # that their children are emitted too.
+        if self.mode in {RenderModes.export, RenderModes.registration}:
             return True
 
         # We only pass the step data, since frontend logic only has access to the current step data.

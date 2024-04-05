@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -8,6 +8,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode
 from ..registry import Registry
+from ..structured import render_json
 
 
 class FormNodeTests(TestCase):
@@ -362,6 +363,40 @@ class FormNodeTests(TestCase):
 
             self.assertEqual(len(nodelist), 2)
             self.assertEqual(nodelist[0].label, "A container without visible children")
+
+    @tag("dh-673")
+    def test_visible_component_inside_hidden_fieldset_not_skipped(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "fieldset",
+                    "key": "fieldset",
+                    "label": "Hidden fieldset",
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "Text field",
+                            "hidden": False,
+                        },
+                    ],
+                }
+            ],
+        )
+
+        rendered = render_json(submission)
+
+        self.assertEqual(
+            rendered,
+            {
+                submission.steps[0].form_step.slug: {
+                    "fieldset": {
+                        "textfield": "",
+                    },
+                }
+            },
+        )
 
     def test_export_always_emits_all_nodes(self):
         renderer = Renderer(self.submission, mode=RenderModes.export, as_html=False)
