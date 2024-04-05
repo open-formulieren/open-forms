@@ -11,6 +11,18 @@ from openforms.logging.models import TimelineLogProxy
 
 @disable_admin_mfa()
 class OutgoingRequestLogAdminTests(WebTest):
+    def test_view_404(self):
+        user = UserFactory.create(is_superuser=True, is_staff=True)
+
+        self.app.get(
+            reverse(
+                "admin:log_outgoing_requests_outgoingrequestslog_change",
+                kwargs={"object_id": 123456},
+            ),
+            user=user,
+            status=404,
+        )
+
     def test_viewing_outgoing_request_log_details_in_admin_creates_log(self):
         user = UserFactory.create(is_superuser=True, is_staff=True)
         outgoing_request_log = OutgoingRequestsLog.objects.create(
