@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase, tag
 
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
 
 from ...service import build_serializer
 from ...typing import EditGridComponent, FieldsetComponent
@@ -297,3 +297,44 @@ class EditGridValidationTests(SimpleTestCase):
         is_valid = serializer.is_valid()
 
         self.assertTrue(is_valid)
+
+    @tag("dh-673")
+    def test_conditional_hidden_inside_editgrid(self):
+        component: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Edit grid with nested conditional",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfield1",
+                    "label": "text field 1",
+                    "validate": {"required": True},
+                },
+                {
+                    "type": "textfield",
+                    "key": "textfield2",
+                    "label": "text field 2",
+                    "validate": {"required": True},
+                    "conditional": {  # type: ignore
+                        "eq": "SHOW_FIELD_2",
+                        "show": True,
+                        "when": "editgrid.textfield1",
+                    },
+                },
+            ],
+        }
+
+        with self.subTest("invalid"):
+            invalid_data: JSONValue = {"editgrid": [{"textfield1": "SHOW_FIELD_2"}]}
+
+            is_valid, _ = validate_formio_data(component, invalid_data)
+
+            self.assertFalse(is_valid)
+
+        with self.subTest("valid"):
+            invalid_data: JSONValue = {"editgrid": [{"textfield1": "NO_SHOW_FIELD_2"}]}
+
+            is_valid, _ = validate_formio_data(component, invalid_data)
+
+            self.assertTrue(is_valid)
