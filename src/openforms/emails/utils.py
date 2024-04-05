@@ -1,5 +1,6 @@
 import logging
 import re
+from datetime import datetime
 from typing import Any, Sequence
 from urllib.parse import urlsplit
 
@@ -104,9 +105,9 @@ def render_email_template(
     )
 
 
-def collect_failed_emails(desired_period) -> list[dict[str, str] | None]:
+def collect_failed_emails(since: datetime) -> list[dict[str, str] | None]:
     logs = TimelineLogProxy.objects.filter(
-        timestamp__gt=desired_period,
+        timestamp__gt=since,
         extra_data__status=Message.STATUS_FAILED,
         extra_data__include_in_daily_digest=True,
     ).distinct("content_type", "extra_data__status", "extra_data__event")

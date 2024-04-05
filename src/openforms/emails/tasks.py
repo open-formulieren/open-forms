@@ -18,10 +18,10 @@ def send_email_digest() -> None:
     if not (recipients := config.recipients_email_digest):
         return
 
-    desired_period = timezone.now() - timedelta(days=1)
+    yesterday = timezone.now() - timedelta(days=1)
 
-    failed_emails = collect_failed_emails(desired_period)
-    failed_registrations = collect_registrations_failures(desired_period)
+    failed_emails = collect_failed_emails(yesterday)
+    failed_registrations = collect_registrations_failures(yesterday)
 
     if not (failed_emails or failed_registrations):
         return

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Callable
 
 from glom import assign, glom
@@ -34,9 +35,9 @@ def execute_unless_result_exists(
     return callback_result
 
 
-def collect_registrations_failures(desired_period) -> list[dict[str, str] | None]:
+def collect_registrations_failures(since: datetime) -> list[dict[str, str] | None]:
     logs = TimelineLogProxy.objects.filter(
-        timestamp__gt=desired_period,
+        timestamp__gt=since,
         extra_data__log_event="registration_failure",
         extra_data__include_in_daily_digest=True,
     ).order_by("timestamp")

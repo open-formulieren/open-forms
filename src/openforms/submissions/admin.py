@@ -95,9 +95,9 @@ class SubmissionTimeListFilter(admin.SimpleListFilter):
         ]
 
     def queryset(self, request, queryset):
-        desired_period = timezone.now() - timedelta(days=1)
+        yesterday = timezone.now() - timedelta(days=1)
         if self.value() == "24hAgo":
-            return queryset.filter(last_register_date__gt=desired_period)
+            return queryset.filter(last_register_date__gt=yesterday)
 
 
 class SubmissionStepInline(admin.StackedInline):
