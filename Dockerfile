@@ -30,12 +30,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 
 WORKDIR /app
 
-# Ensure we use the latest version of pip
-RUN pip install pip -U
+# Use uv to install dependencies
+RUN pip install uv -U
 COPY ./requirements /app/requirements
 
 ARG TARGET_ENVIRONMENT=production
-RUN pip install -r requirements/${TARGET_ENVIRONMENT}.txt
+RUN uv pip install --system -r requirements/${TARGET_ENVIRONMENT}.txt
 
 # Apply patches of third party libraries
 COPY ./patches /tmp/patches
