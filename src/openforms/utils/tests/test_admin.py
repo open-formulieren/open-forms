@@ -1,7 +1,11 @@
+from datetime import datetime, timezone as dt_timezone
+
+from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 
 from django_webtest import WebTest
+from freezegun import freeze_time
 from log_outgoing_requests.models import OutgoingRequestsLog
 from maykin_2fa.test import disable_admin_mfa
 
@@ -23,23 +27,28 @@ class OutgoingRequestLogAdminTests(WebTest):
             status=404,
         )
 
+    @freeze_time(datetime(2024, 1, 1, tzinfo=dt_timezone.utc))
+    @override_settings(LANGUAGE_CODE="en")
     def test_viewing_outgoing_request_log_details_in_admin_creates_log(self):
         user = UserFactory.create(is_superuser=True, is_staff=True)
         outgoing_request_log = OutgoingRequestsLog.objects.create(
-            url="https://example.com", timestamp=timezone.now()
+            url="https://example.com", timestamp=timezone.now(), method="GET"
         )
 
         self.app.get(
             reverse(
                 "admin:log_outgoing_requests_outgoingrequestslog_change",
-                kwargs={"object_id": outgoing_request_log.id},
+                kwargs={"object_id": outgoing_request_log.pk},
             ),
             user=user,
         )
 
+        log = TimelineLogProxy.objects.get(
+            template="logging/events/outgoing_request_log_details_view_admin.txt"
+        )
         self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/outgoing_request_log_details_view_admin.txt"
-            ).count(),
-            1,
+            log.message().strip(),
+            "[2024-01-01 01:00:00 CET] (Outgoing request log "
+            f"{outgoing_request_log.pk}): User Staff user {user} viewed outgoing "
+            "request log GET https://example.com in the admin",
         )
