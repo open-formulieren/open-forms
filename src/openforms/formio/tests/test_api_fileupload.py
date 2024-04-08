@@ -416,5 +416,7 @@ class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
             for _key in entries:
                 _, _, key = _key.split(":", 2)
                 print(f"  key: {key}\nvalue: {cache.get(key)}\n")
+            # clear cache for next run
+            cache.clear()
 
         self.assertEqual(session_uuids, uuids)
