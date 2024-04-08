@@ -86,6 +86,25 @@ class PhoneNumberValidationTests(SimpleTestCase):
         error = extract_error(errors, "foo")
         self.assertEqual(error.code, "invalid")
 
+    @tag("gh-4121")
+    def test_validators_are_or_rather_than_and(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "foo",
+            "label": "Phone",
+            "validate": {
+                "plugins": [
+                    "phonenumber-international",
+                    "phonenumber-nl",
+                ]
+            },
+        }
+        data: JSONValue = {"foo": "0633975328"}
+
+        is_valid, _ = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+
     @tag("gh-4068")
     def test_multiple_with_form_builder_empty_defaults(self):
         # Our own form builder does funky stuff here by setting the defaultValue to
