@@ -175,7 +175,7 @@ class Postcode(BasePlugin[Component]):
             )
 
         if plugin_ids := validate.get("plugins", []):
-            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+            validators.append(PluginValidator(plugin_ids))
 
         if validators:
             extra["validators"] = validators
@@ -290,7 +290,7 @@ class BSN(BasePlugin[Component]):
 
         validators = [BSNValidator()]
         if plugin_ids := validate.get("plugins", []):
-            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+            validators.append(PluginValidator(plugin_ids))
 
         extra["validators"] = validators
 
