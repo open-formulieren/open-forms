@@ -44,6 +44,7 @@ const onCamundaStepEdit = (registrationBackendOptions, componentSchema, original
  *                                             no changes need to be made.
  */
 const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+  if (!registrationBackendOptions.propertyMappings) return null;
   // check if we're dealing with deletion or update
   const isRemove = originalComponent == null;
 
