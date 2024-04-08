@@ -80,6 +80,8 @@ const onZGWStepEdit = (registrationBackendOptions, componentSchema, originalComp
  *                                             no changes need to be made.
  */
 const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, originalComponent) => {
+  if (registrationBackendOptions.version !== 2) return;
+
   const removed = originalComponent == null;
 
   if (removed) {
@@ -89,6 +91,7 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
 
     if (matchingMappingIndex === -1) return;
     registrationBackendOptions.variablesMapping.splice(matchingMappingIndex, 1);
+    return registrationBackendOptions;
   } else {
     const keyChanged = componentSchema.key !== originalComponent.key;
     if (!keyChanged) return null;
@@ -98,6 +101,7 @@ const onObjectsAPIStepEdit = (registrationBackendOptions, componentSchema, origi
         mapping.variableKey = componentSchema.key;
       }
     }
+    return registrationBackendOptions;
   }
 };
 
