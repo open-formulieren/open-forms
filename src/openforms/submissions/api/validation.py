@@ -48,13 +48,17 @@ class CompletionValidationSerializer(serializers.Serializer):
             )
 
     def validate(self, attrs: dict):
+        self._run_formio_validation()
+        return attrs
+
+    def _run_formio_validation(self) -> None:
+        # Check feature flag to opt out of formio validation first.
         config = GlobalConfiguration.get_solo()
         assert isinstance(config, GlobalConfiguration)
         if not config.enable_backend_formio_validation:
-            return attrs
+            return
 
         submission: Submission = self.context["submission"]
-
         formio_validation_errors = []
 
         data = submission.data
@@ -79,8 +83,6 @@ class CompletionValidationSerializer(serializers.Serializer):
 
         if any(formio_validation_errors):
             raise serializers.ValidationError({"steps": formio_validation_errors})
-
-        return attrs
 
     def save(self, **kwargs):
         submission = self.context["submission"]
