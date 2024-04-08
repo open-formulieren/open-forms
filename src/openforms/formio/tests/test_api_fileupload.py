@@ -363,7 +363,11 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 )
 class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
 
-    @retry(stop=stop_after_attempt(3), retry=retry_if_exception_type(AssertionError))
+    @retry(
+        stop=stop_after_attempt(3),
+        retry=retry_if_exception_type(AssertionError),
+        reraise=True,
+    )
     @tag("gh-3858")
     def test_concurrent_file_uploads(self):
         submission = SubmissionFactory.from_components(
@@ -412,5 +416,7 @@ class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
             for _key in entries:
                 _, _, key = _key.split(":", 2)
                 print(f"  key: {key}\nvalue: {cache.get(key)}\n")
+            # clear cache for next run
+            cache.clear()
 
         self.assertEqual(session_uuids, uuids)
