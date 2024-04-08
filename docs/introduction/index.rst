@@ -15,5 +15,6 @@ under an open source license and supported by the community.
    :maxdepth: 1
    :caption: Further reading
 
+   versions
    team
    open-source/index
