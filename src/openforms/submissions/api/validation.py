@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.api.utils import mark_experimental
+from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import build_serializer
 
 from ..form_logic import check_submission_logic
@@ -47,6 +48,11 @@ class CompletionValidationSerializer(serializers.Serializer):
             )
 
     def validate(self, attrs: dict):
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+        if not config.enable_backend_formio_validation:
+            return attrs
+
         submission: Submission = self.context["submission"]
 
         formio_validation_errors = []
