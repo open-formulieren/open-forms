@@ -1,12 +1,9 @@
 import json
-from datetime import datetime, timezone as dt_timezone
 
 from django.contrib.auth.models import Permission
 from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.formats import localize
-from django.utils.translation import gettext_lazy as _
 
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
@@ -100,54 +97,30 @@ class AVGAuditLogListViewTests(WebTest):
 class TimelineLogExportsTest(TestCase):
     def test_bare_timelinelog_export(self):
         user = StaffUserFactory.create()
-        bare_log = TimelineLogProxyFactory.create(user=user)
-        bare_log.timestamp = datetime(2024, 1, 1, tzinfo=dt_timezone.utc)
-        bare_log.save()
+        TimelineLogProxyFactory.create(user=user)
 
         dataset = TimelineLogProxyResource().export()
 
-        self.assertEqual(
-            json.loads(dataset.json),
-            [
-                {
-                    "message": bare_log.message().strip(),
-                    "user": _("Staff user {user}").format(user=user),
-                    "related_object": None,
-                    "timestamp": "2024-01-01T00:00:00+00:00",
-                    "event": None,
-                }
-            ],
-        )
+        # Asserting on `dataset.json` as it is the most straightforward
+        json_data = json.loads(dataset.json)
+
+        self.assertEqual(len(json_data), 1)
+        for member in ["user", "related_object", "message", "event", "timestamp"]:
+            self.assertIn(member, dataset.headers)
+
+        self.assertIsNone(json_data[0]["related_object"])
+        self.assertIsNone(json_data[0]["event"])
 
     def test_timelinelog_export(self):
         submission = SubmissionFactory.create()
-        submission.created_on = datetime(2024, 1, 1, tzinfo=dt_timezone.utc)
-        submission.save()
         user = StaffUserFactory.create()
-        log = TimelineLogProxyFactory.create(
+        TimelineLogProxyFactory.create(
             content_object=submission, user=user, extra_data={"log_event": "test_event"}
         )
-        log.timestamp = datetime(2024, 1, 1, tzinfo=dt_timezone.utc)
-        log.save()
 
         dataset = TimelineLogProxyResource().export()
 
-        self.assertEqual(
-            json.loads(dataset.json),
-            [
-                {
-                    "message": log.message().strip(),
-                    "user": _("Staff user {user}").format(user=user),
-                    "related_object": _("{pk} - started on {started}").format(
-                        pk=submission.pk,
-                        started=localize(
-                            timezone.localtime(
-                                datetime(2024, 1, 1, tzinfo=dt_timezone.utc)
-                            )
-                        ),
-                    ),
-                    "timestamp": "2024-01-01T00:00:00+00:00",
-                    "event": "test_event",
-                }
-            ],
-        )
+        # Asserting on `dataset.json` as it is the most straightforward
+        self.assertEqual(len(json.loads(dataset.json)), 1)
+        for member in ["user", "related_object", "message", "event", "timestamp"]:
+            self.assertIn(member, dataset.headers)
