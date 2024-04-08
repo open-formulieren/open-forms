@@ -350,6 +350,64 @@ class EditGridValidationTests(SimpleTestCase):
 
             self.assertTrue(is_valid)
 
+    @tag("dh-673")
+    def test_conditional_hidden_inside_editgrid_with_reference_to_outside_editgrid(
+        self,
+    ):
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Edit grid with nested conditional",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "nestedInEditgrid",
+                    "label": "Nested in edit grid",
+                    "validate": {"required": True},
+                    "conditional": {  # type: ignore
+                        "eq": "SHOW_NESTED",
+                        "show": True,
+                        "when": "outsideEditgrid",
+                    },
+                },
+            ],
+        }
+        component: FieldsetComponent = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "Container",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "outsideEditgrid",
+                    "label": "Textfield outside edit grid",
+                },
+                editgrid,
+            ],
+        }
+
+        with self.subTest("invalid"):
+            invalid_data: JSONValue = {
+                "outsideEditgrid": "SHOW_NESTED",
+                "editgrid": [{}],
+            }
+
+            is_valid, errors = validate_formio_data(component, invalid_data)
+
+            self.assertFalse(is_valid)
+            error = extract_error(errors["editgrid"][0], "nestedInEditgrid")
+            self.assertEqual(error.code, "required")
+
+        with self.subTest("valid"):
+            invalid_data: JSONValue = {
+                "outsideEditgrid": "NO_SHOW_NESTED",
+                "editgrid": [{}],
+            }
+
+            is_valid, errors = validate_formio_data(component, invalid_data)
+
+            self.assertTrue(is_valid)
+
 
 class EditGridFieldTests(SimpleTestCase):
     """

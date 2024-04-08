@@ -651,7 +651,7 @@ class EditGridField(serializers.Field):
             # configuration and apply the dynamic hide/visible logic to it.
             # Note that we add the editgrid key as container so that the
             # conditional.when values resolve, as these look like `editgridparent.child`.
-            data = FormioData({self.field_name: item}).data
+            data = FormioData({**self.root.initial_data, self.field_name: item}).data
             nested_serializer = self._build_child(data=data)
             try:
                 result.append(nested_serializer.run_validation(item))
