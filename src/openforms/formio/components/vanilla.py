@@ -6,15 +6,23 @@ adjacent custom.py module.
 """
 
 import logging
+from collections.abc import Mapping
 from datetime import time
 from typing import TYPE_CHECKING, Any
 
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import (
+    MaxLengthValidator,
+    MaxValueValidator,
+    MinLengthValidator,
+    MinValueValidator,
+    RegexValidator,
+)
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
+from rest_framework.utils.formatting import lazy_format
 
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
@@ -23,6 +31,7 @@ from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
+from ..datastructures import FormioData
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
@@ -563,24 +572,109 @@ class Content(BasePlugin):
         component["html"] = post_process_html(component["html"], request)
 
 
-@register("editgrid")
-class EditGrid(BasePlugin[EditGridComponent]):
-    def build_serializer_field(
-        self, component: EditGridComponent
-    ) -> serializers.ListField:
-        validate = component.get("validate", {})
-        required = validate.get("required", False)
-        nested = build_serializer(
-            components=component.get("components", []),
+class EditGridField(serializers.Field):
+    """
+    A variant of :class:`serializers.ListField`.
+
+    The same child serializer cannot be applied for each item in the list of values,
+    since the field validation parameters depend on the input data/conditionals.
+
+    For each item, a dynamic serializer is set up on the fly to perform input
+    validation.
+    """
+
+    initial = []
+    default_error_messages = {
+        "not_a_list": _('Expected a list of items but got type "{input_type}".'),
+        "empty": _("This list may not be empty."),
+        "min_length": _("Ensure this field has at least {min_length} elements."),
+        "max_length": _("Ensure this field has no more than {max_length} elements."),
+    }
+
+    def __init__(self, **kwargs):
+        self.registry = kwargs.pop("registry")
+        self.components: list[Component] = kwargs.pop("components", [])
+        self.allow_empty = kwargs.pop("allow_empty", True)
+        self.max_length = kwargs.pop("max_length", None)
+        self.min_length = kwargs.pop("min_length", None)
+        super().__init__(**kwargs)
+        if self.max_length is not None:
+            message = lazy_format(
+                self.error_messages["max_length"], max_length=self.max_length
+            )
+            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+        if self.min_length is not None:
+            message = lazy_format(
+                self.error_messages["min_length"], min_length=self.min_length
+            )
+            self.validators.append(MinLengthValidator(self.min_length, message=message))
+
+    def get_value(self, dictionary):
+        # We don't bother with html or partial serializers
+        return dictionary.get(self.field_name, serializers.empty)
+
+    def to_internal_value(self, data):
+        """
+        List of dicts of native values <- List of dicts of primitive datatypes.
+        """
+        if isinstance(data, (str, Mapping)) or not hasattr(data, "__iter__"):
+            self.fail("not_a_list", input_type=type(data).__name__)
+        if not self.allow_empty and len(data) == 0:
+            self.fail("empty")
+        return self.run_child_validation(data)
+
+    def to_representation(self, value: list):
+        """
+        List of object instances -> List of dicts of primitive datatypes.
+        """
+        child = self._build_child()
+        return [
+            child.to_representation(item) if item is not None else None
+            for item in value
+        ]
+
+    def _build_child(self, **kwargs):
+        return build_serializer(
+            components=self.components,
             # XXX: check out type annotations here, there's some co/contra variance
             # in play
             register=self.registry,
+            **kwargs,
         )
+
+    def run_child_validation(self, data):
+        result = []
+        errors = {}
+
+        for idx, item in enumerate(data):
+            # given the local scope of data, build a nested serializer for the component
+            # configuration and apply the dynamic hide/visible logic to it.
+            # Note that we add the editgrid key as container so that the
+            # conditional.when values resolve, as these look like `editgridparent.child`.
+            data = FormioData({**self.root.initial_data, self.field_name: item}).data
+            nested_serializer = self._build_child(data=data)
+            try:
+                result.append(nested_serializer.run_validation(item))
+            except serializers.ValidationError as e:
+                errors[idx] = e.detail
+
+        if not errors:
+            return result
+        raise serializers.ValidationError(errors)
+
+
+@register("editgrid")
+class EditGrid(BasePlugin[EditGridComponent]):
+    def build_serializer_field(self, component: EditGridComponent) -> EditGridField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        components = component.get("components", [])
         kwargs = {}
         if (max_length := validate.get("maxLength")) is not None:
             kwargs["max_length"] = max_length
-        return serializers.ListField(
-            child=nested,
+        return EditGridField(
+            components=components,
+            registry=self.registry,
             required=required,
             allow_null=not required,
             allow_empty=not required,

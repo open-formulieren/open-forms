@@ -68,6 +68,12 @@ class StepDataSerializer(serializers.Serializer):
             self._remove_validations_from_field(serializer_field)
 
     def _remove_validations_from_field(self, field: serializers.Field) -> None:
+        from .components.vanilla import EditGridField  # circular import
+
+        # Dynamically change the properties of the field to remove validations. CAREFUL
+        # when inspecting field instances with a debugger - ``str(field)`` or
+        # ``repr(field)`` does *not* reflect the current state of field, only how it
+        # was initialized. Mutations are not taken into account here (!!).
         field.required = False
         # note that prefilled fields are validated separately when they're read-only
         # to protect against tampering
@@ -81,8 +87,7 @@ class StepDataSerializer(serializers.Serializer):
             case serializers.CharField():
                 field.allow_blank = True
 
-            case serializers.ListField():
-                field.allow_null = True
+            case serializers.ListField() | EditGridField():
                 field.allow_empty = True
                 field.min_length = None
                 field.max_length = None
