@@ -253,7 +253,7 @@ class BSN(BasePlugin):
 
         validators = []
         if plugin_ids := validate.get("plugins", []):
-            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+            validators.append(PluginValidator(plugin_ids))
 
         if validators:
             extra["validators"] = validators

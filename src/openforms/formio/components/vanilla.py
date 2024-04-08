@@ -113,7 +113,7 @@ class TextField(BasePlugin[TextFieldComponent]):
 
         # Run plugin validators at the end after all basic checks have been performed.
         if plugin_ids := validate.get("plugins", []):
-            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+            validators.append(PluginValidator(plugin_ids))
 
         if validators:
             extra["validators"] = validators
@@ -147,7 +147,7 @@ class Email(BasePlugin):
 
         validators = []
         if plugin_ids := validate.get("plugins", []):
-            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+            validators.append(PluginValidator(plugin_ids))
 
         if validators:
             extra["validators"] = validators
@@ -199,7 +199,7 @@ class PhoneNumber(BasePlugin):
 
         # Run plugin validators at the end after all basic checks have been performed.
         if plugin_ids := validate.get("plugins", []):
-            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+            validators.append(PluginValidator(plugin_ids))
 
         if validators:
             extra["validators"] = validators
@@ -265,7 +265,7 @@ class Number(BasePlugin):
 
         validators = []
         if plugin_ids := validate.get("plugins", []):
-            validators += [PluginValidator(plugin) for plugin in plugin_ids]
+            validators.append(PluginValidator(plugin_ids))
 
         if validators:
             extra["validators"] = validators

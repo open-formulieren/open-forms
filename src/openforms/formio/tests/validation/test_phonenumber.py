@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 
 from hypothesis import given, strategies as st
 
@@ -85,3 +85,22 @@ class PhoneNumberValidationTests(SimpleTestCase):
         self.assertFalse(is_valid)
         error = extract_error(errors, "foo")
         self.assertEqual(error.code, "invalid")
+
+    @tag("gh-4121")
+    def test_validators_are_or_rather_than_and(self):
+        component: Component = {
+            "type": "phoneNumber",
+            "key": "foo",
+            "label": "Phone",
+            "validate": {
+                "plugins": [
+                    "phonenumber-international",
+                    "phonenumber-nl",
+                ]
+            },
+        }
+        data: JSONValue = {"foo": "0633975328"}
+
+        is_valid, _ = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
