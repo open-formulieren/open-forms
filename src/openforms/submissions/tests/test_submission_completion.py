@@ -117,6 +117,41 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         ]
         self.assertIn("steps.0.data.firstName", invalid_param_names)
 
+    @patch(
+        "openforms.submissions.api.validation.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(enable_backend_formio_validation=False),
+    )
+    def test_component_level_validation_disabled_via_feature_flag(self, m_solo):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "firstName",
+                        "label": "First name",
+                        "validate": {
+                            "required": True,
+                            "maxLength": 20,
+                        },
+                    }
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={
+                "firstName": "this value is longer than twenty characters and should not validate"
+            },
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     @patch("openforms.submissions.api.mixins.on_post_submission_event")
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_complete_submission(self, mock_on_post_submission_event):
