@@ -36,6 +36,7 @@
                 <p>{% blocktrans with submission_date=report.submission.completed_on trimmed %}
                     Submitted on: {{ submission_date }}
                 {% endblocktrans %}</p>
+                <p>{% trans "Report created on:" %} {% now "DATETIME_FORMAT" %}</p>
                 <p>{% blocktrans with ref=report.submission.public_registration_reference trimmed %}
                     Your reference is: {{ ref }}
                 {% endblocktrans %}</p>
