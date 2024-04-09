@@ -383,7 +383,6 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             )
 
         _objects_client.create_object.mock_assert_called_once()
-        _objects_client.create_object.call_args
         record_data = _objects_client.create_object.call_args[1]["object_data"][
             "record"
         ]["data"]
