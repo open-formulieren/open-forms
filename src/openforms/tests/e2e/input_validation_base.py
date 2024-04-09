@@ -127,19 +127,34 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
         )
         body = {"data": {key: value}}
         response = self.client.put(step_endpoint, body, content_type="application/json")
-        assert response.status_code in [201, 200]
 
-        # try to complete the submission, this is expected to fail
-        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+        # step data validation is run *if* a value is provided - it ignores empty data
+        # for fields that are required. So we accept an HTTP 400, or if a 200/201 is
+        # returned, then we apply additional checks with the _complete endpoint.
+        assert response.status_code in [201, 200, 400]
 
-        response = self.client.post(
-            endpoint,
-            data={"privacyPolicyAccepted": True},
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        match response.status_code:
+            case 201 | 200:
+                # try to complete the submission, this is expected to fail
+                endpoint = reverse(
+                    "api:submission-complete", kwargs={"uuid": submission.uuid}
+                )
 
-        invalid_params = response.json()["invalidParams"]
-        expected_name = f"steps.0.data.{key}"
-        names = [param["name"] for param in invalid_params]
-        self.assertIn(expected_name, names)
+                response = self.client.post(
+                    endpoint,
+                    data={"privacyPolicyAccepted": True},
+                    content_type="application/json",
+                )
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+                invalid_params = response.json()["invalidParams"]
+                names = [param["name"] for param in invalid_params]
+                expected_name = f"steps.0.data.{key}"
+                self.assertIn(expected_name, names)
+
+            case 400:
+                # check that the expected validation error key is present
+                invalid_params = response.json()["invalidParams"]
+                names = [param["name"] for param in invalid_params]
+                expected_name = f"data.{key}"
+                self.assertIn(expected_name, names)
