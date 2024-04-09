@@ -252,7 +252,6 @@ class SubmissionReportGenerationTests(TestCase):
                     "type": "textfield",
                 },
             ],
-            with_report=True,
             public_registration_reference="OF-12345",
         )
 
