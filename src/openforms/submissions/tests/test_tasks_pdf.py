@@ -4,6 +4,7 @@ from django.test import TestCase, override_settings
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from freezegun import freeze_time
 from privates.test import temp_private_root
 from pyquery import PyQuery as pq
 from testfixtures import LogCapture
@@ -236,9 +237,30 @@ class SubmissionReportGenerationTests(TestCase):
         html = submission.report.generate_submission_report_pdf()
 
         doc = pq(html)
-        reference_node = doc(".metadata").children()[1]
+        reference_node = doc(".metadata").children()[2]
 
         self.assertEqual(reference_node.text, "Your reference is: OF-12345")
+
+    @freeze_time("2024-01-01")
+    @override_settings(LANGUAGE_CODE="en")
+    def test_timestamp_included(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "input",
+                    "label": "Input",
+                    "type": "textfield",
+                },
+            ],
+            public_registration_reference="OF-12345",
+        )
+
+        html = submission.report.generate_submission_report_pdf()
+
+        doc = pq(html)
+        reference_node = doc(".metadata").children()[1]
+
+        self.assertEqual(reference_node.text, "Report created on: Jan. 1, 2024, 1 a.m.")
 
 
 @temp_private_root()
