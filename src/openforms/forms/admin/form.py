@@ -14,6 +14,7 @@ from openforms.api.utils import underscore_to_camel
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.payments.admin import PaymentBackendChoiceFieldMixin
 from openforms.registrations.admin import RegistrationBackendFieldMixin
+from openforms.typing import StrOrPromise
 from openforms.utils.expressions import FirstNotBlank
 
 from ..models import Category, Form, FormDefinition, FormStep
@@ -235,12 +236,14 @@ class FormAdmin(
         )
 
     @admin.display(description=_("Actions"))
-    def get_object_actions(self, obj) -> str:
-        links = ((obj.get_absolute_url(), _("Show form")),)
+    def get_object_actions(self, obj: Form) -> str:
+        links: list[tuple[str, StrOrPromise]] = []
+        if obj.active:
+            links.append((obj.get_absolute_url(), _("Show form")))
         return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
 
     @admin.display(description=_("name"), ordering="anno_name")
-    def anno_name(self, obj) -> str:
+    def anno_name(self, obj: Form) -> str:
         return obj.admin_name
 
     def get_form(self, request, *args, **kwargs):
