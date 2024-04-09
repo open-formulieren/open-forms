@@ -1,6 +1,11 @@
+from typing import Any
+
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
+from django.http import Http404
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -8,6 +13,10 @@ from cookie_consent.admin import LogItemAdmin as CookieLogAdmin
 from cookie_consent.models import LogItem as CookieLog
 from cspreports.admin import CSPReportAdmin
 from cspreports.models import CSPReport
+from log_outgoing_requests.admin import OutgoingRequestsLogAdmin
+from log_outgoing_requests.models import OutgoingRequestsLog
+
+from openforms.logging.logevent import outgoing_request_log_details_view_admin
 
 
 class SubmitActions(models.TextChoices):
@@ -49,3 +58,22 @@ class CSPReportOverrideAdmin(ReadOnlyAdminMixin, CSPReportAdmin):
 
 admin.site.unregister(CSPReport)
 admin.site.register(CSPReport, CSPReportOverrideAdmin)
+
+
+class OutgoingRequestsLogOverrideAdmin(OutgoingRequestsLogAdmin):
+    def change_view(
+        self,
+        request: HttpRequest,
+        object_id: str,
+        form_url: str = "",
+        extra_context: dict[str, Any] | None = None,
+    ) -> HttpResponse:
+        outgoing_request_log = self.get_object(request, object_id)
+        if outgoing_request_log is None:
+            raise Http404(f"No {self.model._meta.object_name} matches the given query.")
+        outgoing_request_log_details_view_admin(outgoing_request_log, request.user)
+        return super().change_view(request, object_id, form_url, extra_context)
+
+
+admin.site.unregister(OutgoingRequestsLog)
+admin.site.register(OutgoingRequestsLog, OutgoingRequestsLogOverrideAdmin)

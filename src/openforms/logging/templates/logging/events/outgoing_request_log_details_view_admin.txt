@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead user=log.fmt_user method=log.content_object.method url=log.content_object.url %}
+   {{ lead }}: User {{ user }} viewed outgoing request log {{ method }} {{ url }} in the admin
+{% endblocktrans %}
