@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Group, Permission
 
 import factory
+from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
 from django_otp.util import random_hex
 
 
@@ -10,6 +11,22 @@ class TOTPDeviceFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "otp_totp.TOTPDevice"
+
+
+class RecoveryDeviceFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory("openforms.accounts.tests.factories.UserFactory")
+    name = "backup"
+
+    class Meta:
+        model = StaticDevice
+
+
+class RecoveryTokenFactory(factory.django.DjangoModelFactory):
+    device = factory.SubFactory(RecoveryDeviceFactory)
+    token = factory.LazyFunction(StaticToken.random_token)
+
+    class Meta:
+        model = StaticToken
 
 
 class UserFactory(factory.django.DjangoModelFactory):
