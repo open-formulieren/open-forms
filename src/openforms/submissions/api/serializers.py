@@ -1,3 +1,4 @@
+import copy
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
@@ -18,6 +19,8 @@ from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
+from openforms.formio.service import build_serializer
+from openforms.formio.utils import iter_components
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
@@ -221,6 +224,8 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         "submission_uuid": "submission__uuid",
     }
 
+    instance: SubmissionStep
+
     class Meta:
         model = SubmissionStep
         fields = (
@@ -256,7 +261,36 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
 
     def validate_data(self, data: dict):
         validate_uploads(self.instance, data=data)
+        self._run_formio_validation(data)
         return data
+
+    def _run_formio_validation(self, data: dict) -> None:
+        # Check feature flag to opt out of formio validation first.
+        config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
+        if not config.enable_backend_formio_validation:
+            return
+
+        # take a deep copy because we will be mutating each component validate.required
+        # to massage the validation serializer into a more "relaxed" variant.
+        assert self.instance.form_step is not None
+        fd = self.instance.form_step.form_definition
+        submission = self.instance.submission
+        configuration = copy.deepcopy(fd.configuration)
+        # mark them all as not required
+        for component in iter_components(configuration):
+            if "validate" not in component:
+                continue
+            if not component["validate"].get("required", False):
+                continue
+            component["validate"]["required"] = False
+
+        step_data_serializer = build_serializer(
+            configuration["components"],
+            data=data,
+            context={"submission": submission},
+        )
+        step_data_serializer.is_valid(raise_exception=True)
 
 
 class FormDataSerializer(serializers.Serializer):
