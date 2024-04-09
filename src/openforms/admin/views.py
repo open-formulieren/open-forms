@@ -11,6 +11,12 @@ from maykin_2fa.views import AdminLoginView
 
 
 class ClassicAdminLoginView(AdminLoginView):
+    def get_prefix(self, request, *args, **kwargs):
+        # The subclass causes this to become ``classic_admin_login_view``, which is
+        # misaligned with :meth:`maykin_2fa.views.RecoveryTokenView.get_prefix` and
+        # results in being sent to the login screen again.
+        return "admin_login_view"
+
     def get_context_data(self, form, **kwargs):
         context = super().get_context_data(form, **kwargs)
         redirect_to = self.request.GET.get(self.redirect_field_name, "")
