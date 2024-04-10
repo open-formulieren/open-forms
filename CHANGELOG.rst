@@ -2,7 +2,14 @@
 Changelog
 =========
 
-2.5.5 (2023-04-03)
+2.5.6 (2024-04-10)
+==================
+
+Hotfix release for StUF-ZDS users.
+
+* [#4145] Fixed the payment status not being registered correctly for StUF-ZDS.
+
+2.5.5 (2024-04-03)
 ==================
 
 Hotfix release for appointments bug
