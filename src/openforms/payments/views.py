@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 from django import forms
 from django.db import transaction
@@ -239,11 +240,15 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
                 )
                 raise ParseError(detail="redirect not allowed")
 
-        transaction.on_commit(
-            lambda: on_post_submission_event(
-                payment.submission.pk, PostSubmissionEvents.on_payment_complete
+        payment.refresh_from_db()
+        if payment.status == PaymentStatus.completed:
+            transaction.on_commit(
+                partial(
+                    on_post_submission_event,
+                    payment.submission.pk,
+                    PostSubmissionEvents.on_payment_complete,
+                )
             )
-        )
 
         return response
 
