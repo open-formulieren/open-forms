@@ -215,7 +215,11 @@ class StufZDSClientTests(StUFZDSTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
-        client.create_zaak("foo", {"bsn": "111222333"}, {}, payment_required=True)
+        client.create_zaak(
+            "foo",
+            {"bsn": "111222333", "betalings_indicatie": PaymentStatus.NOT_YET},
+            {},
+        )
 
         request = m.request_history[0]
         self.assertEqual(

@@ -22,7 +22,12 @@ from openforms.submissions.mapping import (
 )
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
-from stuf.stuf_zds.client import NoServiceConfigured, ZaakOptions, get_client
+from stuf.stuf_zds.client import (
+    NoServiceConfigured,
+    PaymentStatus,
+    ZaakOptions,
+    get_client,
+)
 from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from stuf.stuf_zds.models import StufZDSConfig
 
@@ -271,10 +276,19 @@ class StufZDSRegistration(BasePlugin):
                     yield ("language_code", submission.language_code)
                     yield from extra_data.items()
 
+            payment_status = (
+                PaymentStatus.NVT
+                if not submission.payment_required
+                else (
+                    PaymentStatus.FULL
+                    if submission.payment_user_has_paid
+                    else PaymentStatus.NOT_YET
+                )
+            )
+            zaak_data.update({"betalings_indicatie": payment_status})
+
             execute_unless_result_exists(
-                lambda: client.create_zaak(
-                    zaak_id, zaak_data, LangInjection(), submission.payment_required
-                ),
+                lambda: client.create_zaak(zaak_id, zaak_data, LangInjection()),
                 submission,
                 "intermediate.zaak_created",
                 default=False,
