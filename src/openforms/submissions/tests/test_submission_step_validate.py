@@ -10,8 +10,13 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 from openforms.prefill import prefill_variables
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..models import SubmissionValueVariable
 from .factories import SubmissionFactory, TemporaryFileUploadFactory
@@ -461,3 +466,104 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         response = self.client.put(endpoint, {"data": data})
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_validate_selectboxes_with_dynamic_values_source(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "selectboxes",
+                    "key": "selectboxes",
+                    "label": "Dynamic selectboxes",
+                    "validate": {
+                        "required": True,
+                        "minSelectedCount": 1,
+                        "maxSelectedCount": 3,
+                    },
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {
+                            "var": "items",
+                        },
+                    },
+                    "values": [],
+                },
+            ]
+        )
+        FormVariableFactory.create(
+            form=submission.form,
+            user_defined=True,
+            key="items",
+            data_type=FormVariableDataTypes.array,
+            initial_value=[
+                ["a", "Value A"],
+                ["b", "Value B"],
+                ["c", "Value C"],
+                ["d", "Value D"],
+                ["e", "Value E"],
+            ],
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": submission.form.formstep_set.get().uuid,
+            },
+        )
+
+        # sanity check
+        with self.subTest("check valid configuration items expression"):
+            resp = self.client.get(endpoint)
+
+            values = resp.json()["formStep"]["configuration"]["components"][0]["values"]
+            self.assertEqual(len(values), 5)
+
+        with self.subTest("valid data"):
+            data = {
+                "selectboxes": {
+                    "a": False,
+                    "b": True,
+                    "c": False,
+                    "d": True,
+                    "e": False,
+                }
+            }
+
+            response = self.client.put(endpoint, {"data": data})
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # invalid data cases
+        invalid_data_cases = [
+            # missing keys
+            {"a": True},
+            # minimum count checked not okay
+            {
+                "a": False,
+                "b": False,
+                "c": False,
+                "d": False,
+                "e": False,
+            },
+            # maximum count checked not okay
+            {
+                "a": True,
+                "b": True,
+                "c": True,
+                "d": True,
+                "e": True,
+            },
+        ]
+
+        for invalid_case in invalid_data_cases:
+            data = {"selectboxes": invalid_case}
+            with self.subTest("invalid data", data=data):
+                response = self.client.put(endpoint, {"data": data})
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                error_names = [
+                    param["name"] for param in response.json()["invalidParams"]
+                ]
+                self.assertTrue(
+                    all(name.startswith("data.selectboxes") for name in error_names)
+                )
