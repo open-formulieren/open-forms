@@ -2857,9 +2857,22 @@ class StufZDSPluginTests(StUFZDSTestBase):
             "2023",
         )
 
+
+@freeze_time("2020-12-22")
+@temp_private_root()
+@requests_mock.Mocker()
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class StufZDSPluginPaymentTests(StUFZDSTestBase):
+    def setUp(self):
+        super().setUp()
+
+        self.service = StufServiceFactory.create()
+        config = StufZDSConfig.get_solo()
+        config.service = self.service
+        config.save()
+
     @tag("gh-4145")
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    def test_payment_status_is_correct(self, m):
+    def test_payment_status_is_correct_on_payment_update(self, m):
         """
         #4145:
         Testing that if 'wait_for_payment_to_register' is True, when the payment is completed and the submission is
@@ -2875,7 +2888,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             ],
             submitted_data={"email": "test@test.nl"},
             with_public_registration_reference=True,
-            cosign_request_email_sent=True,
             confirmation_email_sent=True,
             form__registration_backend="stuf-zds-create-zaak",
             form__registration_backend_options={
@@ -2926,4 +2938,112 @@ class StufZDSPluginTests(StUFZDSTestBase):
             xml_doc,
             "//zkn:betalingsIndicatie",
             StuFPaymentStatus.FULL,
+        )
+
+    def test_payment_status_is_correct_if_not_waiting_for_payment(self, m):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+            with_public_registration_reference=True,
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            form__name="Pretty Form",
+            form__product__price=Decimal("10.00"),
+            form__payment_backend="demo",
+            registration_result={},
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        with patch(
+            "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(wait_for_payment_to_register=False),
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+
+        xml_doc = xml_from_request_history(m, 0)
+
+        self.assertXPathEquals(
+            xml_doc,
+            "//zkn:betalingsIndicatie",
+            StuFPaymentStatus.NOT_YET,
+        )
+
+    def test_payment_status_is_correct_when_no_payment_required(self, m):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+            with_public_registration_reference=True,
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            form__name="Pretty Form",
+            registration_result={},
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+
+        xml_doc = xml_from_request_history(m, 0)
+
+        self.assertXPathEquals(
+            xml_doc,
+            "//zkn:betalingsIndicatie",
+            StuFPaymentStatus.NVT,
         )
