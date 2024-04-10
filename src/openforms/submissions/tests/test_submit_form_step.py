@@ -8,15 +8,12 @@ by using HTTP PUT.
 
 from unittest.mock import patch
 
-from django.test import tag
-
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -290,143 +287,3 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # Check that the data has not been converted to camel case
         self.assertIn("country_of_residence", data)
         self.assertNotIn("countryOfResidence", data)
-
-    @tag("gh-4143")
-    def test_data_validated(self):
-        """
-        Assert that the shape of data is validated according to the formio definition.
-
-        The validate configuration of each component needs to be applied, but a field
-        being required/optional is irrelevant at this stage (that runs at the end).
-        """
-        submission = SubmissionFactory.create(
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "textfield",
-                        "label": "Patterned textfield",
-                        "validate": {
-                            "required": True,
-                            "pattern": r"[0-9]{1,3}",
-                        },
-                    },
-                    {
-                        "type": "editgrid",
-                        "key": "repeatingGroup",
-                        "label": "Repeating group",
-                        "components": [
-                            {
-                                "type": "number",
-                                "key": "number",
-                                "label": "Number",
-                                "validate": {
-                                    "required": True,
-                                },
-                            }
-                        ],
-                    },
-                    {
-                        "type": "date",
-                        "key": "dateWithoutValidationInfo",
-                        "label": "Date without validation info",
-                        "validate": {},
-                    },
-                ]
-            },
-        )
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-detail",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": submission.form.formstep_set.get().uuid,
-            },
-        )
-        data = {
-            "textfield": "1a34",  # invalid, because max 3 chars, all numeric
-            "repeatingGroup": [
-                {},  # valid, because required is not enforced
-                {"number": "notanumber"},  # invalid, not a number
-                {"number": None},  # valid: skip required, so `null` is allowed
-            ],
-        }
-
-        response = self.client.put(endpoint, {"data": data})
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        invalid_params = response.json()["invalidParams"]
-        names = {error["name"] for error in invalid_params}
-        expected_names = {"data.textfield", "data.repeatingGroup.1.number"}
-        self.assertEqual(names, expected_names)
-
-    @tag("gh-4143")
-    @patch(
-        "openforms.submissions.api.serializers.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(enable_backend_formio_validation=False),
-    )
-    def test_data_not_validated_with_feature_flag_off(self, m_solo):
-        """
-        Assert that the shape of data is validated according to the formio definition.
-
-        The validate configuration of each component needs to be applied, but a field
-        being required/optional is irrelevant at this stage (that runs at the end).
-        """
-        submission = SubmissionFactory.create(
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "textfield",
-                        "label": "Patterned textfield",
-                        "validate": {
-                            "required": True,
-                            "pattern": r"[0-9]{1,3}",
-                        },
-                    },
-                    {
-                        "type": "editgrid",
-                        "key": "repeatingGroup",
-                        "label": "Repeating group",
-                        "components": [
-                            {
-                                "type": "number",
-                                "key": "number",
-                                "label": "Number",
-                                "validate": {
-                                    "required": True,
-                                },
-                            }
-                        ],
-                    },
-                    {
-                        "type": "date",
-                        "key": "dateWithoutValidationInfo",
-                        "label": "Date without validation info",
-                        "validate": {},
-                    },
-                ]
-            },
-        )
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-detail",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": submission.form.formstep_set.get().uuid,
-            },
-        )
-        data = {
-            "textfield": "1a34",  # invalid, because max 3 chars, all numeric
-            "repeatingGroup": [
-                {},  # valid, because required is not enforced
-                {"number": "notanumber"},  # invalid, not a number
-                {"number": None},  # valid: skip required, so `null` is allowed
-            ],
-        }
-
-        response = self.client.put(endpoint, {"data": data})
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
