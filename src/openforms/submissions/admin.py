@@ -86,12 +86,12 @@ class SubmissionTypeListFilter(admin.ListFilter):
 
 
 class SubmissionTimeListFilter(admin.SimpleListFilter):
-    title = _("time")
-    parameter_name = "from_time"
+    title = _("registration time")
+    parameter_name = "registration_time"
 
     def lookups(self, request, model_admin):
         return [
-            ("24hAgo", _("Registered in the past 24 hours")),
+            ("24hAgo", _("In the past 24 hours")),
         ]
 
     def queryset(self, request, queryset):

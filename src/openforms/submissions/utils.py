@@ -338,11 +338,13 @@ def get_report_download_url(request: Request, report: SubmissionReport) -> str:
     return request.build_absolute_uri(download_url)
 
 
-def get_filtered_submission_admin_url(form_id: int, state: int, from_time: str) -> str:
+def get_filtered_submission_admin_url(
+    form_id: int, *, filter_retry: bool, registration_time: str
+) -> str:
     query_params = {
         "form__id__exact": form_id,
-        "needs_on_completion_retry__exact": state,
-        "from_time": from_time,
+        "needs_on_completion_retry__exact": 1 if filter_retry else 0,
+        "registration_time": registration_time,
     }
     submissions_admin_url = furl(reverse("admin:submissions_submission_changelist"))
     return submissions_admin_url.add(query_params).url

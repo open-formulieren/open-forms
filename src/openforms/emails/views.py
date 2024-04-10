@@ -37,10 +37,8 @@ class EmailWrapperTestView(
                     content = strip_tags_plus(content, keep_leading_whitespace=True)
 
             case {"email_digest": True}:
-                interval = timezone.now() - timedelta(days=1)
-                if days_before := self.request.GET.get("days_before"):
-                    interval = timezone.now() - timedelta(days=int(days_before))
-
+                days_before = int(self.request.GET.get("days_before", 1))
+                interval = timezone.now() - timedelta(days=days_before)
                 digest = Digest(since=interval)
                 return digest.render()
 

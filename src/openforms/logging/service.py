@@ -18,7 +18,6 @@ class FailedEmail:
 
 @dataclass
 class FailedRegistration:
-    form_uuid: uuid.UUID
     form_name: str
     failed_submissions_counter: int
     initial_failure_at: datetime
@@ -37,17 +36,18 @@ def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
         return []
 
     failed_emails = [
-        {
-            "submission_uuid": log.content_object.uuid,
-            "event": log.extra_data["event"],
-        }
+        FailedEmail(
+            submission_uuid=log.content_object.uuid, event=log.extra_data["event"]
+        )
         for log in logs
     ]
 
     return failed_emails
 
 
-def collect_failed_registrations(since: datetime) -> Iterable[FailedRegistration]:
+def collect_failed_registrations(
+    since: datetime,
+) -> Iterable[dict[str, FailedRegistration]]:
     logs = TimelineLogProxy.objects.filter(
         timestamp__gt=since,
         extra_data__log_event="registration_failure",
@@ -56,23 +56,22 @@ def collect_failed_registrations(since: datetime) -> Iterable[FailedRegistration
     if not logs:
         return []
 
-    form_sorted_logs = sorted(logs, key=lambda x: x.content_object.form.id)
+    form_sorted_logs = sorted(logs, key=lambda x: x.content_object.form.admin_name)
 
-    grouped_logs = {}
-    for form, logs_group in groupby(
-        form_sorted_logs, key=lambda log: log.content_object.form
-    ):
-        grouped_logs[form] = list(logs_group)
+    grouped_logs = groupby(form_sorted_logs, key=lambda log: log.content_object.form)
 
     failed_registrations = {}
-    for form, submission_logs in grouped_logs.items():
-        timestamps = [log.timestamp for log in submission_logs]
+    for form, submission_logs in grouped_logs:
+        logs = list(submission_logs)
+        timestamps = [log.timestamp for log in logs]
         failed_registrations[str(form.uuid)] = {
             "form_name": form.name,
-            "failed_submissions_counter": len(submission_logs),
+            "failed_submissions_counter": len(logs),
             "initial_failure_at": min(timestamps),
             "last_failure_at": max(timestamps),
-            "admin_link": get_filtered_submission_admin_url(form.id, 1, "24hAgo"),
+            "admin_link": get_filtered_submission_admin_url(
+                form.id, filter_retry=True, registration_time="24hAgo"
+            ),
         }
 
     return list(failed_registrations.values())

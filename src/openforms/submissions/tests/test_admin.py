@@ -242,7 +242,7 @@ class TestSubmissionTimeListFilterAdmin(TestCase):
             model_admin = SubmissionAdmin(Submission, site)
             filter_instance = SubmissionTimeListFilter(
                 request=None,
-                params={"from_time": "24hAgo"},
+                params={"registration_time": "24hAgo"},
                 model=Submission,
                 model_admin=model_admin,
             )
@@ -250,7 +250,5 @@ class TestSubmissionTimeListFilterAdmin(TestCase):
             queryset = Submission.objects.all()
             filtered_queryset = filter_instance.queryset(None, queryset)
 
-        self.assertIn(submission_1, queryset)
-        self.assertIn(submission_2, queryset)
-        self.assertIn(submission_1, filtered_queryset)
-        self.assertNotIn(submission_2, filtered_queryset)
+        self.assertQuerySetEqual(queryset, [submission_1, submission_2], ordered=False)
+        self.assertQuerySetEqual(filtered_queryset, [submission_1], ordered=False)

@@ -62,7 +62,7 @@ class EmailDigestTaskTest(TestCase):
             send_email_digest()
 
         sent_email = mail.outbox[0]
-        submission_occurencies = sent_email.body.count(str(submission.uuid))
+        submission_occurences = sent_email.body.count(str(submission.uuid))
 
         self.assertEqual(
             sent_email.subject, "[Open Forms] Daily summary of detected problems"
@@ -70,7 +70,7 @@ class EmailDigestTaskTest(TestCase):
         self.assertEqual(
             sent_email.recipients(), ["tralala@test.nl", "trblblb@test.nl"]
         )
-        self.assertEqual(submission_occurencies, 1)
+        self.assertEqual(submission_occurences, 1)
 
     def test_that_repeated_failures_are_not_mentioned_multiple_times(self):
         submission = SubmissionFactory.create()

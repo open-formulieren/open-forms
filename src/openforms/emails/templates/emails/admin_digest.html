@@ -9,7 +9,7 @@
     <ul>
         {% for email in failed_emails %}
             <li>
-                {% blocktranslate with event=email.event submission_uuid=email.submission_uuid %}
+                {% blocktranslate with event=email.event submission_uuid=email.submission_uuid trimmed %}
                     Email for the event "{{ event }}" for submission {{ submission_uuid }}.
                 {% endblocktranslate %}
             </li>
@@ -22,15 +22,16 @@
     <ul>
         {% for registration in failed_registrations %}
             <li>
-                {% blocktranslate with form_name=registration.form_name counter=registration.failed_submissions_counter first_failure_at=registration.initial_failure_at|time:"H:i" last_failure_at=registration.last_failure_at|time:"H:i" %}
-                    Form '{{ form_name }}' failed {{ counter }} times between {{ first_failure_at }} and {{ last_failure_at }}.
+                {% blocktranslate with form_name=registration.form_name counter=registration.failed_submissions_counter first_failure_at=registration.initial_failure_at|time:"H:i" last_failure_at=registration.last_failure_at|time:"H:i" trimmed %}
+                    Form '{{ form_name }}' failed {{ counter }} times between {{ first_failure_at }} and {{ last_failure_at }}.</br>
                 {% endblocktranslate %}
+            
+                <a href="{{ registration.admin_link }}">
+                    {% blocktranslate with form_name=registration.form_name %}
+                        View failed '{{ form_name }}' submissions
+                    {% endblocktranslate %}
+                </a>
             </li>
-            <a href="{{ registration.admin_link }}">
-                {% blocktranslate with form_name=registration.form_name %}
-                    View failed '{{ form_name }}' submissions
-                {% endblocktranslate %}
-            </a>
         {% endfor %}
     </ul>
 {% endif %}
