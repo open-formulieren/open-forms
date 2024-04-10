@@ -113,6 +113,12 @@ if settings.DEBUG:  # pragma: nocover
             name="dev-email-wrapper",
         ),
         path(
+            "dev/email/digest",
+            EmailWrapperTestView.as_view(),
+            {"email_digest": True},
+            name="dev-email-digest",
+        ),
+        path(
             "dev/email/confirmation/<int:submission_id>",
             EmailWrapperTestView.as_view(),
             name="dev-email-confirm",

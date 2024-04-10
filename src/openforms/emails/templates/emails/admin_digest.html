@@ -1,10 +1,37 @@
 {% load static i18n %}
 
-<p>
-    {% blocktranslate %}Here is a summary of the emails that failed to send yesterday:{% endblocktranslate %}
-</p>
-<ul>
-    {% for log in logs %}<li>- Email for the event "{{ log.event }}" for submission {{ log.submission_uuid }}.</li>
-    {% endfor %}
-</ul>
+<h3>
+    {% blocktranslate %}Here is a summary of the problems detected in the past 24 hours:{% endblocktranslate %}
+</h3>
 
+{% if failed_emails %}
+    <h5>{% trans "Emails that failed to send" %}</h5>
+    <ul>
+        {% for email in failed_emails %}
+            <li>
+                {% blocktranslate with event=email.event submission_uuid=email.submission_uuid trimmed %}
+                    Email for the event "{{ event }}" for submission {{ submission_uuid }}.
+                {% endblocktranslate %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if failed_registrations %}
+    <h5>{% trans "Registrations" %}</h5>
+    <ul>
+        {% for registration in failed_registrations %}
+            <li>
+                {% blocktranslate with form_name=registration.form_name counter=registration.failed_submissions_counter first_failure_at=registration.initial_failure_at|time:"H:i" last_failure_at=registration.last_failure_at|time:"H:i" trimmed %}
+                    Form '{{ form_name }}' failed {{ counter }} times between {{ first_failure_at }} and {{ last_failure_at }}.</br>
+                {% endblocktranslate %}
+            
+                <a href="{{ registration.admin_link }}">
+                    {% blocktranslate with form_name=registration.form_name %}
+                        View failed '{{ form_name }}' submissions
+                    {% endblocktranslate %}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

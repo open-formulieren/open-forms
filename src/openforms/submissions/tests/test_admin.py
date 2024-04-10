@@ -1,16 +1,22 @@
 from unittest.mock import patch
 
+from django.contrib.admin import AdminSite
+from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from django_webtest import WebTest
+from freezegun import freeze_time
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.models.submission import Submission
 
 from ...config.models import GlobalConfiguration
+from ..admin import SubmissionAdmin, SubmissionTimeListFilter
 from ..constants import PostSubmissionEvents, RegistrationStatuses
 from .factories import SubmissionFactory
 
@@ -213,3 +219,36 @@ class TestSubmissionAdmin(WebTest):
             "admin:submissions_submission_change", kwargs={"object_id": "0"}
         )
         self.app.get(change_url, user=self.user, status=404)
+
+
+class TestSubmissionTimeListFilterAdmin(TestCase):
+    def test_time_filtering(self):
+        with freeze_time("2023-04-02T12:30:00+01:00"):
+            # registered in the past 24 hours
+            submission_1 = SubmissionFactory.create(
+                last_register_date=timezone.now(),
+                registration_status=RegistrationStatuses.failed,
+            )
+
+        with freeze_time("2023-01-02T12:30:00+01:00"):
+            # registered out of filtering bounds
+            submission_2 = SubmissionFactory.create(
+                last_register_date=timezone.now(),
+                registration_status=RegistrationStatuses.failed,
+            )
+
+        with freeze_time("2023-04-02T18:30:00+01:00"):
+            site = AdminSite()
+            model_admin = SubmissionAdmin(Submission, site)
+            filter_instance = SubmissionTimeListFilter(
+                request=None,
+                params={"registration_time": "24hAgo"},
+                model=Submission,
+                model_admin=model_admin,
+            )
+
+            queryset = Submission.objects.all()
+            filtered_queryset = filter_instance.queryset(None, queryset)
+
+        self.assertQuerySetEqual(queryset, [submission_1, submission_2], ordered=False)
+        self.assertQuerySetEqual(filtered_queryset, [submission_1], ordered=False)

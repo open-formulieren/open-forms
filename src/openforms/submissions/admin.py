@@ -1,9 +1,12 @@
+from datetime import timedelta
+
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import Q
 from django.http import Http404
 from django.template.defaultfilters import filesizeformat
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _, ngettext
 
 from privates.admin import PrivateMediaMixin
@@ -80,6 +83,21 @@ class SubmissionTypeListFilter(admin.ListFilter):
 
     def expected_parameters(self):
         return [self.parameter_name]
+
+
+class SubmissionTimeListFilter(admin.SimpleListFilter):
+    title = _("registration time")
+    parameter_name = "registration_time"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("24hAgo", _("In the past 24 hours")),
+        ]
+
+    def queryset(self, request, queryset):
+        yesterday = timezone.now() - timedelta(days=1)
+        if self.value() == "24hAgo":
+            return queryset.filter(last_register_date__gt=yesterday)
 
 
 class SubmissionStepInline(admin.StackedInline):
@@ -170,6 +188,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     )
     list_filter = (
         SubmissionTypeListFilter,
+        SubmissionTimeListFilter,
         "registration_status",
         "needs_on_completion_retry",
         "form",

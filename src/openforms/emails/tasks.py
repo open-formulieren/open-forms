@@ -1,17 +1,42 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import Any
 
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from django_yubin.models import Message
-
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
-from openforms.logging.models import TimelineLogProxy
+from openforms.logging.service import (
+    collect_failed_emails,
+    collect_failed_registrations,
+)
 
 from .utils import send_mail_html
+
+
+class Digest:
+    def __init__(self, since: datetime) -> None:
+        self.since = since
+
+    def get_context_data(self) -> dict[str, Any]:
+        failed_emails = collect_failed_emails(self.since)
+        failed_registrations = collect_failed_registrations(self.since)
+
+        if not (failed_emails or failed_registrations):
+            return {}
+
+        return {
+            "failed_emails": failed_emails,
+            "failed_registrations": failed_registrations,
+        }
+
+    def render(self) -> str:
+        if not (context := self.get_context_data()):
+            return ""
+
+        return render_to_string("emails/admin_digest.html", context)
 
 
 @app.task
@@ -20,32 +45,15 @@ def send_email_digest() -> None:
     if not (recipients := config.recipients_email_digest):
         return
 
-    period_start = timezone.now() - timedelta(days=1)
+    yesterday = timezone.now() - timedelta(days=1)
+    digest = Digest(since=yesterday)
+    content = digest.render()
 
-    logs = TimelineLogProxy.objects.filter(
-        timestamp__gt=period_start,
-        extra_data__status=Message.STATUS_FAILED,
-        extra_data__include_in_daily_digest=True,
-    ).distinct("content_type", "extra_data__status", "extra_data__event")
-
-    if not logs:
+    if not content:
         return
 
-    content = render_to_string(
-        "emails/admin_digest.html",
-        {
-            "logs": [
-                {
-                    "submission_uuid": log.content_object.uuid,
-                    "event": log.extra_data["event"],
-                }
-                for log in logs
-            ],
-        },
-    )
-
     send_mail_html(
-        _("[Open Forms] Daily summary of failed emails"),
+        _("[Open Forms] Daily summary of detected problems"),
         content,
         settings.DEFAULT_FROM_EMAIL,
         recipients,
