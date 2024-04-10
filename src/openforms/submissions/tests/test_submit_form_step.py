@@ -154,8 +154,14 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             form=self.form,
             form_definition__configuration={
                 "components": [
-                    {"key": "foo", "type": "textfield"},
-                    {"key": "modified", "type": "textfield"},
+                    {
+                        "type": "textfield",
+                        "key": "foo",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "modified",
+                    },
                 ]
             },
         )
@@ -196,7 +202,10 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                         ]
                     },
                 },
-                "data": {"modified": "data"},
+                "data": {
+                    "foo": "bar",
+                    "modified": "data",
+                },
                 "isApplicable": True,
                 "completed": True,
                 "canSubmit": True,
