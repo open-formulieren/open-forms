@@ -2913,7 +2913,8 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
                 },
             ],
             submitted_data={"email": "test@test.nl"},
-            with_public_registration_reference=True,
+            completed=True,
+            public_registration_reference="FO-1234",
             confirmation_email_sent=True,
             form__registration_backend="stuf-zds-create-zaak",
             form__registration_backend_options={
@@ -2976,7 +2977,8 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
                 },
             ],
             submitted_data={"email": "test@test.nl"},
-            with_public_registration_reference=True,
+            completed=True,
+            public_registration_reference="FO-1234",
             form__registration_backend="stuf-zds-create-zaak",
             form__registration_backend_options={
                 "zds_zaaktype_code": "zt-code",
@@ -3033,7 +3035,8 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
                 },
             ],
             submitted_data={"email": "test@test.nl"},
-            with_public_registration_reference=True,
+            completed=True,
+            public_registration_reference="FO-1234",
             form__registration_backend="stuf-zds-create-zaak",
             form__registration_backend_options={
                 "zds_zaaktype_code": "zt-code",
