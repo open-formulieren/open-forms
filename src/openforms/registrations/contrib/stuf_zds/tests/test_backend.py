@@ -2,22 +2,27 @@ import dataclasses
 from decimal import Decimal
 from unittest.mock import patch
 
+from django.test import override_settings, tag
+
 import requests_mock
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from requests import ConnectTimeout
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormVariableFactory
 from openforms.logging.models import TimelineLogProxy
+from openforms.payments.constants import PaymentStatus
 from openforms.submissions.constants import PostSubmissionEvents
-from openforms.submissions.tasks import pre_registration
+from openforms.submissions.tasks import on_post_submission_event, pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionValueVariableFactory,
 )
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from stuf.stuf_zds.client import PaymentStatus as StuFPaymentStatus
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
 from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_history
@@ -2876,4 +2881,195 @@ class StufZDSPluginTests(StUFZDSTestBase):
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='extra_number']",
             "2023",
+        )
+
+
+@freeze_time("2020-12-22")
+@temp_private_root()
+@requests_mock.Mocker()
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class StufZDSPluginPaymentTests(StUFZDSTestBase):
+    def setUp(self):
+        super().setUp()
+
+        self.service = StufServiceFactory.create()
+        config = StufZDSConfig.get_solo()
+        config.service = self.service
+        config.save()
+
+    @tag("gh-4145")
+    def test_payment_status_is_correct_on_payment_update(self, m):
+        """
+        #4145:
+        Testing that if 'wait_for_payment_to_register' is True, when the payment is completed and the submission is
+        registered, the right payment status is sent to the StUF-ZDS backend.
+        """
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+            with_public_registration_reference=True,
+            confirmation_email_sent=True,
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            form__name="Pretty Form",
+            with_completed_payment=True,
+            registration_result={"intermediate": {"zaaknummer": "ZAAK-TRALALA"}},
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        with patch(
+            "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+        ):
+            on_post_submission_event(
+                submission.id, PostSubmissionEvents.on_payment_complete
+            )
+
+        submission.refresh_from_db()
+
+        self.assertTrue(
+            submission.payments.filter(status=PaymentStatus.registered).exists()
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+
+        self.assertXPathEquals(
+            xml_doc,
+            "//zkn:betalingsIndicatie",
+            StuFPaymentStatus.FULL,
+        )
+
+    def test_payment_status_is_correct_if_not_waiting_for_payment(self, m):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+            with_public_registration_reference=True,
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            form__name="Pretty Form",
+            form__product__price=Decimal("10.00"),
+            form__payment_backend="demo",
+            registration_result={},
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        with patch(
+            "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(wait_for_payment_to_register=False),
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+
+        xml_doc = xml_from_request_history(m, 0)
+
+        self.assertXPathEquals(
+            xml_doc,
+            "//zkn:betalingsIndicatie",
+            StuFPaymentStatus.NOT_YET,
+        )
+
+    def test_payment_status_is_correct_when_no_payment_required(self, m):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                },
+            ],
+            submitted_data={"email": "test@test.nl"},
+            with_public_registration_reference=True,
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            form__name="Pretty Form",
+            registration_result={},
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+
+        xml_doc = xml_from_request_history(m, 0)
+
+        self.assertXPathEquals(
+            xml_doc,
+            "//zkn:betalingsIndicatie",
+            StuFPaymentStatus.NVT,
         )

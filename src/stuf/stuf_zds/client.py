@@ -223,7 +223,6 @@ class Client(BaseClient):
         zaak_identificatie: str,
         zaak_data: dict,
         extra_data,
-        payment_required=False,
     ) -> None:
         now = timezone.now()
         context = {
@@ -242,9 +241,6 @@ class Client(BaseClient):
             "zaak_omschrijving": self.zds_options["omschrijving"],
             "zaak_identificatie": zaak_identificatie,
             "extra": extra_data,
-            "betalings_indicatie": (
-                PaymentStatus.NOT_YET if payment_required else PaymentStatus.NVT
-            ),
             "global_config": GlobalConfiguration.get_solo(),
             **zaak_data,
         }
