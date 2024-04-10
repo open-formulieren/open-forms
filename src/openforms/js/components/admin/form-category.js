@@ -80,7 +80,6 @@ const loadFormsForCategory = async (node, GETParams) => {
     saveCollapsedState(node, depth);
   });
 
-  // TODO: handle pagination
   const response = await apiCall(`.?${new URLSearchParams(query)}`);
   // handle pagination
   const pageNumbers = response.headers
@@ -103,7 +102,7 @@ const loadFormsForCategory = async (node, GETParams) => {
   const fragment = document.createDocumentFragment();
   for (const htmlBlob of htmlBlobs) {
     const container = document.createElement('div');
-    container.insertAdjacentHTML('afterbegin', htmlBlobs[0]);
+    container.insertAdjacentHTML('afterbegin', htmlBlob);
     const rows = container.querySelectorAll('tbody tr');
     for (const row of rows) {
       row.dataset['depth'] = depth;
