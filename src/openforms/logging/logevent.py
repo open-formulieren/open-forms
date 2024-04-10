@@ -208,17 +208,12 @@ def registration_success(submission: Submission, plugin):
     )
 
 
-def registration_failure(
-    submission: Submission, error: Exception, include_in_daily_digest: bool, plugin=None
-):
+def registration_failure(submission: Submission, error: Exception, plugin=None):
     _create_log(
         submission,
         "registration_failure",
         plugin=plugin,
         error=error,
-        extra_data={
-            "include_in_daily_digest": include_in_daily_digest,
-        },
     )
 
 

@@ -1,4 +1,5 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import Any
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -7,9 +8,35 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
-from openforms.registrations.utils import collect_registrations_failures
+from openforms.logging.service import (
+    collect_failed_emails,
+    collect_failed_registrations,
+)
 
-from .utils import collect_failed_emails, send_mail_html
+from .utils import send_mail_html
+
+
+class Digest:
+    def __init__(self, since: datetime) -> None:
+        self.since = since
+
+    def get_context_data(self) -> dict[str, Any]:
+        failed_emails = collect_failed_emails(self.since)
+        failed_registrations = collect_failed_registrations(self.since)
+
+        if not (failed_emails or failed_registrations):
+            return {}
+
+        return {
+            "failed_emails": failed_emails,
+            "failed_registrations": failed_registrations,
+        }
+
+    def render(self) -> str:
+        if not (context := self.get_context_data()):
+            return ""
+
+        return render_to_string("emails/admin_digest.html", context)
 
 
 @app.task
@@ -19,23 +46,14 @@ def send_email_digest() -> None:
         return
 
     yesterday = timezone.now() - timedelta(days=1)
+    digest = Digest(since=yesterday)
+    content = digest.render()
 
-    failed_emails = collect_failed_emails(yesterday)
-    failed_registrations = collect_registrations_failures(yesterday)
-
-    if not (failed_emails or failed_registrations):
+    if not content:
         return
 
-    content = render_to_string(
-        "emails/admin_digest.html",
-        {
-            "failed_emails": failed_emails,
-            "failed_registrations": failed_registrations,
-        },
-    )
-
     send_mail_html(
-        _("[Open Forms] Daily summary of failed procedures"),
+        _("[Open Forms] Daily summary of detected problems"),
         content,
         settings.DEFAULT_FROM_EMAIL,
         recipients,

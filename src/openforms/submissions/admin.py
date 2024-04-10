@@ -91,7 +91,7 @@ class SubmissionTimeListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return [
-            ("24hAgo", _("In the past 24 hours")),
+            ("24hAgo", _("Registered in the past 24 hours")),
         ]
 
     def queryset(self, request, queryset):

@@ -1,19 +1,16 @@
 import logging
 import re
-from datetime import datetime
 from typing import Any, Sequence
 from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.template.loader import get_template
 
-from django_yubin.models import Message
 from mail_cleaner.mail import send_mail_plus
 from mail_cleaner.sanitizer import sanitize_content as _sanitize_content
 from mail_cleaner.text import strip_tags_plus
 
 from openforms.config.models import GlobalConfiguration, Theme
-from openforms.logging.models import TimelineLogProxy
 from openforms.template import openforms_backend, render_from_string
 
 from .context import get_wrapper_context
@@ -103,23 +100,3 @@ def render_email_template(
         backend=openforms_backend,
         disable_autoescape=disable_autoescape,
     )
-
-
-def collect_failed_emails(since: datetime) -> list[dict[str, str] | None]:
-    logs = TimelineLogProxy.objects.filter(
-        timestamp__gt=since,
-        extra_data__status=Message.STATUS_FAILED,
-        extra_data__include_in_daily_digest=True,
-    ).distinct("content_type", "extra_data__status", "extra_data__event")
-
-    if not logs:
-        return
-    failed_emails = [
-        {
-            "submission_uuid": log.content_object.uuid,
-            "event": log.extra_data["event"],
-        }
-        for log in logs
-    ]
-
-    return failed_emails

@@ -1,14 +1,18 @@
 {% load static i18n %}
 
-<p>
-    {% blocktranslate %}Here is a summary of the failed procedures in the past 24 hours:{% endblocktranslate %}
-</p>
+<h3>
+    {% blocktranslate %}Here is a summary of the problems detected in the past 24 hours:{% endblocktranslate %}
+</h3>
 
 {% if failed_emails %}
-    <h5>{% trans "Emails" %}</h5>
+    <h5>{% trans "Emails that failed to send" %}</h5>
     <ul>
         {% for email in failed_emails %}
-            <li>- Email for the event "{{ email.event }}" for submission {{ email.submission_uuid }}.</li>
+            <li>
+                {% blocktranslate with event=email.event submission_uuid=email.submission_uuid %}
+                    Email for the event "{{ event }}" for submission {{ submission_uuid }}.
+                {% endblocktranslate %}
+            </li>
         {% endfor %}
     </ul>
 {% endif %}
@@ -17,8 +21,16 @@
     <h5>{% trans "Registrations" %}</h5>
     <ul>
         {% for registration in failed_registrations %}
-            <li>- {{ registration.form_name }} failed {{ registration.failed_submissions_counter }} times between {{ registration.initial_failure_at|date:"H:i" }} and {{ registration.last_failure_at|date:"H:i" }}.</li>
-            <a href="{{ registration.admin_link }}">Click here to see all the failed submissions for form {{ registration.form_name }} in the admin</a>
+            <li>
+                {% blocktranslate with form_name=registration.form_name counter=registration.failed_submissions_counter first_failure_at=registration.initial_failure_at|time:"H:i" last_failure_at=registration.last_failure_at|time:"H:i" %}
+                    Form '{{ form_name }}' failed {{ counter }} times between {{ first_failure_at }} and {{ last_failure_at }}.
+                {% endblocktranslate %}
+            </li>
+            <a href="{{ registration.admin_link }}">
+                {% blocktranslate with form_name=registration.form_name %}
+                    View failed '{{ form_name }}' submissions
+                {% endblocktranslate %}
+            </a>
         {% endfor %}
     </ul>
 {% endif %}
