@@ -1,11 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
-const FormObjectTools = ({isLoading, formUrl, historyUrl}) => {
+const FormObjectTools = ({isLoading, isActive, formUrl, historyUrl}) => {
   /* TODO The buttons are disabled if the form page is still loading. Interrupting the fetch of form data
     raises an error which is displayed as 'The form is invalid. Please correct the errors below.'.
      */
+  const intl = useIntl();
+  const showFormStyling = !isActive
+    ? {cursor: 'not-allowed', textDecoration: 'none', background: '#555'}
+    : {};
+
   return (
     <div className="form-object-tools">
       <ul
@@ -15,7 +20,21 @@ const FormObjectTools = ({isLoading, formUrl, historyUrl}) => {
       >
         {formUrl ? (
           <li>
-            <a target="_blank" href={formUrl} className="historylink">
+            <a
+              title={
+                !isActive
+                  ? intl.formatMessage({
+                      defaultMessage: 'The form is not active',
+                      description: 'Show form button disabled title',
+                    })
+                  : undefined
+              }
+              target={isActive ? '_blank' : '_self'}
+              href={isActive ? formUrl : '#'}
+              aria-disabled={!isActive ? true : undefined}
+              style={showFormStyling}
+              className="historylink"
+            >
               <FormattedMessage defaultMessage="Show form" description="Show form button" />
             </a>
           </li>
@@ -32,6 +51,7 @@ const FormObjectTools = ({isLoading, formUrl, historyUrl}) => {
 
 FormObjectTools.propTypes = {
   isLoading: PropTypes.bool.isRequired,
+  isActive: PropTypes.bool.isRequired,
   historyUrl: PropTypes.string.isRequired,
   formUrl: PropTypes.string.isRequired,
 };

@@ -1227,7 +1227,12 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
 
   return (
     <ValidationErrorsProvider errors={state.validationErrors}>
-      <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} formUrl={formUrl} />
+      <FormObjectTools
+        isLoading={loading}
+        isActive={state.form.active}
+        historyUrl={formHistoryUrl}
+        formUrl={formUrl}
+      />
 
       <h1>
         <FormattedMessage defaultMessage="Change form" description="Change form page title" />
