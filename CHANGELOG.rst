@@ -2,6 +2,33 @@
 Changelog
 =========
 
+2.6.3 (2024-04-10)
+==================
+
+Bugfix release following feeback on 2.6.2
+
+* [#4126] Fixed incorrect validation of components inside repeating groups that are
+  conditionally visible (with frontend logic).
+* [#4134] Fixed form designer admin crashes when component/variable keys are edited.
+* [#4131] Fixed bug where component validators all had to be valid rather than at least
+  one.
+* [#4140] Added deploy configuration parameter to not send hidden field values to the
+  Objects API during registration, restoring the old behaviour. Note that this is a
+  workaround and the correct behaviour (see ticket #3890) will be enforced from Open
+  Forms 2.7.0 and newer.
+* [#4072] Fixed not being able to enter an MFA recovery token.
+* [#4143] Added additional backend validation: now when form step data is being saved (
+  including pausing a form), the values are validated against the component
+  configuration too.
+* [#4145] Fixed the payment status not being registered correctly for StUF-ZDS.
+
+2.5.6 (2024-04-10)
+==================
+
+Hotfix release for StUF-ZDS users.
+
+* [#4145] Fixed the payment status not being registered correctly for StUF-ZDS.
+
 2.6.2 (2024-04-05)
 ==================
 
