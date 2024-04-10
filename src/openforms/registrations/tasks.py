@@ -224,7 +224,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
             RegistrationStatuses.failed,
             {"traceback": "".join(traceback.format_exception(exc))},
         )
-        logevent.registration_failure(submission, exc, True)
+        logevent.registration_failure(submission, exc)
         if event == PostSubmissionEvents.on_retry:
             raise exc
         return
@@ -238,7 +238,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
     try:
         options_serializer.is_valid(raise_exception=True)
     except ValidationError as exc:
-        logevent.registration_failure(submission, exc, True, plugin)
+        logevent.registration_failure(submission, exc, plugin)
         logger.warning(
             "Registration using plugin '%r' for submission '%s' failed",
             plugin,
@@ -268,7 +268,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
-        logevent.registration_failure(submission, exc, True, plugin)
+        logevent.registration_failure(submission, exc, plugin)
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
@@ -285,7 +285,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
         )
-        logevent.registration_failure(submission, exc, True, plugin)
+        logevent.registration_failure(submission, exc, plugin)
         if event == PostSubmissionEvents.on_retry:
             raise exc
         return
