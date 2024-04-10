@@ -1,4 +1,3 @@
-import copy
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
@@ -213,7 +212,7 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
 class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     form_step = ContextAwareFormStepSerializer(read_only=True)
     slug = serializers.SlugField(source="form_step.slug", read_only=True)
-    data = serializers.DictField(
+    data = serializers.DictField(  # type: ignore
         label=_("data"),
         required=False,
         allow_null=True,
@@ -265,18 +264,18 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         return data
 
     def _run_formio_validation(self, data: dict) -> None:
+        from ..form_logic import evaluate_form_logic
+
         # Check feature flag to opt out of formio validation first.
         config = GlobalConfiguration.get_solo()
         assert isinstance(config, GlobalConfiguration)
         if not config.enable_backend_formio_validation:
             return
 
-        # take a deep copy because we will be mutating each component validate.required
-        # to massage the validation serializer into a more "relaxed" variant.
-        assert self.instance.form_step is not None
-        fd = self.instance.form_step.form_definition
         submission = self.instance.submission
-        configuration = copy.deepcopy(fd.configuration)
+        # evaluate dynamic configuration
+        configuration = evaluate_form_logic(submission, step=self.instance, data=data)
+
         # mark them all as not required
         for component in iter_components(configuration):
             if "validate" not in component:
