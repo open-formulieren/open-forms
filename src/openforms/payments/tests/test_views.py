@@ -1,15 +1,18 @@
 from decimal import Decimal
 from unittest.mock import patch
 
-from django.http import HttpResponseRedirect
-from django.test import TestCase, override_settings
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.test import TestCase, override_settings, tag
 from django.test.client import RequestFactory
+
+from rest_framework import status
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import BasePlugin, PaymentInfo
+from ..constants import PaymentStatus
 from ..models import SubmissionPayment
 from ..registry import Registry
 from .factories import SubmissionPaymentFactory
@@ -80,6 +83,9 @@ class ViewsTests(TestCase):
             self.assertEqual(response.data["detail"], "unknown plugin")
             self.assertEqual(response.status_code, 404)
 
+        payment.status = PaymentStatus.completed
+        payment.save()
+
         # check the return view
         url = plugin.get_return_url(base_request, payment)
         self.assertRegex(url, r"^http://")
@@ -137,8 +143,9 @@ class ViewsTests(TestCase):
         url = plugin.get_webhook_url(base_request)
         self.assertRegex(url, r"^http://")
 
-        with self.subTest("webhook ok"), patch.object(
-            plugin, "handle_webhook", return_value=payment
+        with (
+            self.subTest("webhook ok"),
+            patch.object(plugin, "handle_webhook", return_value=payment),
         ):
             on_post_submission_event_mock.reset_mock()
 
@@ -205,3 +212,163 @@ class ViewsTests(TestCase):
         self.assertEqual(response.data["code"], "parse_error")
         self.assertEqual(response.data["detail"], "plugin not enabled")
         self.assertFalse(SubmissionPayment.objects.exists())
+
+
+class PaymentPlugin(BasePlugin):
+    def handle_webhook(self, request):
+        order_id = request.data["orderID"]
+        payment = SubmissionPayment.objects.get(public_order_id=order_id)
+        return payment
+
+    def handle_return(
+        self, request: HttpRequest, payment: "SubmissionPayment"
+    ) -> HttpResponse:
+        return HttpResponseRedirect(payment.submission.form_url)
+
+
+@override_settings(
+    CORS_ALLOW_ALL_ORIGINS=False,
+    CORS_ALLOWED_ORIGINS=["http://allowed.foo"],
+)
+class WebhookReturnTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        register = Registry()
+        register("payment-plugin")(PaymentPlugin)
+        cls.plugin = register["payment-plugin"]
+        cls.register = register
+
+    def setUp(self):
+        super().setUp()
+
+        registry_mock = patch("openforms.payments.views.register", new=self.register)
+        registry_mock.start()
+
+        self.addCleanup(registry_mock.stop)
+
+    @tag("gh-4052")
+    def test_payment_cancelled_does_not_trigger_on_completion_in_webhook_endpoint(self):
+        """
+        The webhook can be called also in the case that the payment was cancelled/failed.
+        In this case, we don't want to trigger the task:
+
+            on_post_submission_event(
+                <payment ID>, PostSubmissionEvents.on_payment_complete
+            )
+        """
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="payment-plugin",
+            form_url="http://allowed.foo/my-form",
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.failed
+        )
+
+        base_request = RequestFactory().get("/foo")
+
+        webhook_url = self.plugin.get_webhook_url(base_request)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            with patch(
+                "openforms.payments.views.on_post_submission_event"
+            ) as m_on_post_submission_event:
+                response = self.client.post(
+                    webhook_url, data={"orderID": payment.public_order_id}
+                )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        m_on_post_submission_event.assert_not_called()
+
+    def test_successful_payment_triggers_on_completion_in_webhook_endpoint(self):
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="payment-plugin",
+            form_url="http://allowed.foo/my-form",
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.completed
+        )
+
+        base_request = RequestFactory().get("/foo")
+
+        webhook_url = self.plugin.get_webhook_url(base_request)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            with patch(
+                "openforms.payments.views.on_post_submission_event"
+            ) as m_on_post_submission_event:
+                response = self.client.post(
+                    webhook_url, data={"orderID": payment.public_order_id}
+                )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Payment was successful, so 'transaction.on_commit' is called and triggers the on_post_submission_event
+        m_on_post_submission_event.assert_called_once_with(
+            submission.pk, PostSubmissionEvents.on_payment_complete
+        )
+
+    @tag("gh-4052")
+    def test_payment_cancelled_does_not_trigger_on_completion_in_return_endpoint(self):
+        """
+        The return endpoint can be called also in the case that the payment was cancelled/failed.
+        In this case, we don't want to trigger the task:
+
+            on_post_submission_event(
+                <payment ID>, PostSubmissionEvents.on_payment_complete
+            )
+        """
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="payment-plugin",
+            form_url="http://allowed.foo/my-form",
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.failed
+        )
+
+        base_request = RequestFactory().get("/foo")
+
+        return_url = self.plugin.get_return_url(base_request, payment)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            with patch(
+                "openforms.payments.views.on_post_submission_event"
+            ) as m_on_post_submission_event:
+                response = self.client.get(return_url)
+
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        # Payment status is 'failed', so no 'transaction.on_commit' call that triggers the on_post_submission_event
+        m_on_post_submission_event.assert_not_called()
+
+    def test_successful_payment_triggers_on_completion_in_return_endpoint(self):
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__product__price=Decimal("11.25"),
+            form__payment_backend="payment-plugin",
+            form_url="http://allowed.foo/my-form",
+        )
+        payment = SubmissionPaymentFactory.for_submission(
+            submission, status=PaymentStatus.completed
+        )
+
+        base_request = RequestFactory().get("/foo")
+
+        return_url = self.plugin.get_return_url(base_request, payment)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            with patch(
+                "openforms.payments.views.on_post_submission_event"
+            ) as m_on_post_submission_event:
+                response = self.client.get(return_url)
+
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        # Payment was successful, so 'transaction.on_commit' is called and triggers the on_post_submission_event
+        m_on_post_submission_event.assert_called_once_with(
+            submission.pk, PostSubmissionEvents.on_payment_complete
+        )
