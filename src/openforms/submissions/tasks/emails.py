@@ -63,7 +63,17 @@ def send_confirmation_email(submission_id: int) -> None:
         )
         return
 
-    _send_confirmation_email(submission)
+    if (
+        not submission.confirmation_email_sent
+        or (
+            not submission.cosign_confirmation_email_sent and submission.cosign_complete
+        )
+        or (
+            not submission.payment_complete_confirmation_email_sent
+            and submission.payment_user_has_paid
+        )
+    ):
+        _send_confirmation_email(submission)
 
 
 @app.task()
@@ -152,20 +162,10 @@ def schedule_emails(submission_id: int) -> None:
             # wait a while and check again
             execution_options["countdown"] = settings.PAYMENT_CONFIRMATION_EMAIL_TIMEOUT
 
-        send_confirmation_email.apply_async(
-            args=(submission.id,),
-            **execution_options,
-        )
-        return
-
-    # If the confirmation email has already been sent, it may be that the submission was cosigned, the payment was
-    # completed, we are in a registration-retry flow or we are in a payment-status-update-retry flow. The last 2
-    # cases don't need to send a confirmation email.
-    # Edge case: cosign and payment happen at the same time
-    if (
-        not submission.cosign_confirmation_email_sent and submission.cosign_complete
-    ) or (
-        not submission.payment_complete_confirmation_email_sent
-        and submission.payment_user_has_paid
-    ):
-        send_confirmation_email.delay(submission_id)
+    send_confirmation_email.apply_async(
+        args=(submission.id,),
+        **execution_options,
+    )
+    logevent.confirmation_email_scheduled(
+        submission, scheduling_options=execution_options
+    )
