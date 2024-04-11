@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.2
+        uses: maykinmedia/setup-django-backend@v1.3
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client gdal-bin'
           python-version: '3.10'
@@ -140,7 +140,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.2
+        uses: maykinmedia/setup-django-backend@v1.3
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client gdal-bin'
           python-version: '3.10'
@@ -218,7 +218,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.2
+        uses: maykinmedia/setup-django-backend@v1.3
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client gdal-bin'
           python-version: '3.10'
@@ -289,7 +289,7 @@ jobs:
           path: open-forms
 
       - name: Set up backend environment
-        uses: maykinmedia/setup-django-backend@v1.2
+        uses: maykinmedia/setup-django-backend@v1.3
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gdal-bin'
           python-version: '3.10'
