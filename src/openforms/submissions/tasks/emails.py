@@ -166,3 +166,6 @@ def schedule_emails(submission_id: int) -> None:
         args=(submission.id,),
         **execution_options,
     )
+    logevent.confirmation_email_scheduled(
+        submission, scheduling_options=execution_options
+    )

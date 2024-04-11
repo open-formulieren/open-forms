@@ -1,0 +1,10 @@
+{% load i18n %}
+{% if log.extra_data.countdown %}
+    {% blocktrans trimmed with lead=log.fmt_lead countdown=log.extra_data.countdown %}
+       {{ lead }}: Confirmation email queued with countdown of {{ countdown }} s.
+    {% endblocktrans %}
+{% else %}
+    {% blocktrans trimmed with lead=log.fmt_lead %}
+       {{ lead }}: Confirmation email queued without countdown.
+    {% endblocktrans %}
+{% endif %}
