@@ -22,15 +22,38 @@
     <ul>
         {% for registration in failed_registrations %}
             <li>
-                {% blocktranslate with form_name=registration.form_name counter=registration.failed_submissions_counter first_failure_at=registration.initial_failure_at|time:"H:i" last_failure_at=registration.last_failure_at|time:"H:i" trimmed %}
-                    Form '{{ form_name }}' failed {{ counter }} times between {{ first_failure_at }} and {{ last_failure_at }}.</br>
-                {% endblocktranslate %}
-            
+                <p>
+                    {% blocktranslate with form_name=registration.form_name counter=registration.failed_submissions_counter first_failure_at=registration.initial_failure_at|time:"TIME_FORMAT" last_failure_at=registration.last_failure_at|time:"TIME_FORMAT" trimmed %}
+                        Form '{{ form_name }}' failed {{ counter }} time(s) between {{ first_failure_at }} and {{ last_failure_at }}.</br>
+                    {% endblocktranslate %}
+                </p>
                 <a href="{{ registration.admin_link }}">
                     {% blocktranslate with form_name=registration.form_name %}
                         View failed '{{ form_name }}' submissions
                     {% endblocktranslate %}
                 </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if failed_prefill_plugins %}
+    <h5>{% trans "Prefill plugins" %}</h5>
+    <ul>
+        {% for failed_plugin in failed_prefill_plugins %}
+            <li>
+                
+                <p>
+                    {% blocktranslate with name=failed_plugin.plugin_label counter=failed_plugin.failed_submissions_counter initial_failure_at=failed_plugin.initial_failure_at|time:"TIME_FORMAT" last_failure_at=failed_plugin.last_failure_at|time:"TIME_FORMAT" forms=failed_plugin.form_names|join:"," trimmed %}
+                        '{{ name }}' plugin has failed {{ counter }} time(s) between {{ initial_failure_at }} and {{ last_failure_at }} in the following forms: {{ forms }}
+                    {% endblocktranslate %}
+                </p>
+                
+                <p><a href="{{ failed_plugin.admin_link }}">{% trans "View logs" %}</a></p>
+                
+                {% if failed_plugin.has_errors %}
+                    <i>{% trans "Consider enabling outgoing request logs from the configuration in order to investigate the network traffic." %}</i>       
+                {% endif %} 
             </li>
         {% endfor %}
     </ul>

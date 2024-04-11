@@ -10,6 +10,7 @@ from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
 from openforms.logging.service import (
     collect_failed_emails,
+    collect_failed_prefill_plugins,
     collect_failed_registrations,
 )
 
@@ -23,17 +24,17 @@ class Digest:
     def get_context_data(self) -> dict[str, Any]:
         failed_emails = collect_failed_emails(self.since)
         failed_registrations = collect_failed_registrations(self.since)
-
-        if not (failed_emails or failed_registrations):
-            return {}
+        failed_prefill_plugins = collect_failed_prefill_plugins(self.since)
 
         return {
             "failed_emails": failed_emails,
             "failed_registrations": failed_registrations,
+            "failed_prefill_plugins": failed_prefill_plugins,
         }
 
     def render(self) -> str:
-        if not (context := self.get_context_data()):
+        context = self.get_context_data()
+        if not any(context.values()):
             return ""
 
         return render_to_string("emails/admin_digest.html", context)
