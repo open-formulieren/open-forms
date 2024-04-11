@@ -4,9 +4,14 @@ from datetime import datetime
 from itertools import groupby
 from typing import Iterable
 
+from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
+
 from django_yubin.models import Message
+from furl import furl
 
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
 
 
@@ -23,6 +28,35 @@ class FailedRegistration:
     initial_failure_at: datetime
     last_failure_at: datetime
     admin_link: str
+
+
+@dataclass
+class FailedPrefill:
+    plugin_label: str
+    form_names: list[str]
+    submission_ids: list[str]
+    initial_failure_at: datetime
+    last_failure_at: datetime
+    # whether an uncaught exception has happened or empty data was returned
+    has_errors: bool
+
+    @property
+    def admin_link(self) -> str:
+        content_type = ContentType.objects.get_for_model(Submission).id
+
+        query_params = {
+            "content_type": content_type,
+            "object_id__in": ",".join(self.submission_ids),
+            "extra_data__log_event__in": "prefill_retrieve_empty,prefill_retrieve_failure",
+        }
+        submissions_admin_url = furl(
+            reverse("admin:logging_timelinelogproxy_changelist")
+        )
+        return submissions_admin_url.add(query_params).url
+
+    @property
+    def failed_submissions_counter(self) -> int:
+        return len(self.submission_ids)
 
 
 def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
@@ -75,3 +109,43 @@ def collect_failed_registrations(
         }
 
     return list(failed_registrations.values())
+
+
+def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
+    logs = TimelineLogProxy.objects.filter(
+        timestamp__gt=since,
+        extra_data__log_event__in=[
+            "prefill_retrieve_empty",
+            "prefill_retrieve_failure",
+        ],
+    ).order_by("extra_data__plugin_label")
+
+    grouped_logs = groupby(logs, key=lambda x: x.extra_data["plugin_label"])
+
+    failed_prefill_plugins = []
+    for prefill_plugin, submission_logs in grouped_logs:
+        logs = list(submission_logs)
+
+        timestamps = []
+        forms = set()
+        submission_ids = []
+        has_errors = False
+
+        for log in logs:
+            timestamps.append(log.timestamp)
+            forms.add(log.content_object.form.admin_name)
+            submission_ids.append(log.object_id)
+            has_errors = has_errors or bool(log.extra_data.get("error"))
+
+        failed_prefill_plugins.append(
+            FailedPrefill(
+                plugin_label=prefill_plugin,
+                form_names=sorted(forms),
+                submission_ids=submission_ids,
+                initial_failure_at=min(timestamps),
+                last_failure_at=max(timestamps),
+                has_errors=has_errors,
+            )
+        )
+
+    return failed_prefill_plugins
