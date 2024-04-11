@@ -276,7 +276,8 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         # evaluate dynamic configuration
         configuration = evaluate_form_logic(submission, step=self.instance, data=data)
 
-        # mark them all as not required
+        # mark them all as not required, to support pausing forms where data is very
+        # likely to still be incomplete. See #4144.
         for component in iter_components(configuration):
             if "validate" not in component:
                 continue
