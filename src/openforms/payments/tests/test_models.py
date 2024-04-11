@@ -49,12 +49,12 @@ class SubmissionPaymentTests(TransactionTestCase):
         payment = SubmissionPayment.objects.create_for(
             submission, "plugin1", options, amount
         )
-        self.assertEqual(payment.public_order_id, "OF-123456/3")
+        self.assertEqual(payment.public_order_id, "OF-123456_3")
 
         payment = SubmissionPayment.objects.create_for(
             submission, "plugin1", options, amount
         )
-        self.assertEqual(payment.public_order_id, "OF-123456/4")
+        self.assertEqual(payment.public_order_id, "OF-123456_4")
 
     @freeze_time("2020-01-01")
     @patch(
@@ -79,12 +79,12 @@ class SubmissionPaymentTests(TransactionTestCase):
         payment = SubmissionPayment.objects.create_for(
             submission, "plugin1", options, amount
         )
-        self.assertEqual(payment.public_order_id, "xyz2020/OF-123456/3")
+        self.assertEqual(payment.public_order_id, "xyz2020/OF-123456_3")
 
         payment = SubmissionPayment.objects.create_for(
             submission, "plugin1", options, amount
         )
-        self.assertEqual(payment.public_order_id, "xyz2020/OF-123456/4")
+        self.assertEqual(payment.public_order_id, "xyz2020/OF-123456_4")
 
     def test_queryset_sum_amount(self):
         self.assertEqual(0, SubmissionPayment.objects.none().sum_amount())

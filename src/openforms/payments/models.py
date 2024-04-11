@@ -61,7 +61,7 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
         pk = pk if pk is not None else payment.pk
 
         return (
-            f"{prefix}{payment.submission.public_registration_reference}/{payment.pk}"
+            f"{prefix}{payment.submission.public_registration_reference}_{payment.pk}"
         )
 
 
