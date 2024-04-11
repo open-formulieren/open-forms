@@ -265,6 +265,14 @@ def registration_skipped_not_yet_paid(submission: "Submission"):
 # - - -
 
 
+def confirmation_email_scheduled(
+    submission: Submission, scheduling_options: dict
+) -> None:
+    _create_log(
+        submission, "confirmation_email_scheduled", extra_data=scheduling_options
+    )
+
+
 def confirmation_email_start(submission: "Submission"):
     _create_log(submission, "confirmation_email_start")
 
