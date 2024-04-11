@@ -27,11 +27,16 @@
                         Form '{{ form_name }}' failed {{ counter }} time(s) between {{ first_failure_at }} and {{ last_failure_at }}.</br>
                     {% endblocktranslate %}
                 </p>
-                <a href="{{ registration.admin_link }}">
+                <p>
+                    <a href="{{ registration.admin_link }}">
                     {% blocktranslate with form_name=registration.form_name %}
                         View failed '{{ form_name }}' submissions
                     {% endblocktranslate %}
-                </a>
+                    </a>
+                </p>
+                {% if registration.has_errors %}
+                    <i>{% trans "Consider enabling outgoing request logs from the configuration in order to investigate the network traffic." %}</i>       
+                {% endif %} 
             </li>
         {% endfor %}
     </ul>

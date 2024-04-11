@@ -28,6 +28,7 @@ class FailedRegistration:
     initial_failure_at: datetime
     last_failure_at: datetime
     admin_link: str
+    has_errors: bool
 
 
 @dataclass
@@ -81,34 +82,40 @@ def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
 
 def collect_failed_registrations(
     since: datetime,
-) -> Iterable[dict[str, FailedRegistration]]:
+) -> list[FailedRegistration]:
     logs = TimelineLogProxy.objects.filter(
         timestamp__gt=since,
         extra_data__log_event="registration_failure",
     ).order_by("timestamp")
 
-    if not logs:
-        return []
-
     form_sorted_logs = sorted(logs, key=lambda x: x.content_object.form.admin_name)
 
     grouped_logs = groupby(form_sorted_logs, key=lambda log: log.content_object.form)
 
-    failed_registrations = {}
+    failed_registrations = []
     for form, submission_logs in grouped_logs:
         logs = list(submission_logs)
-        timestamps = [log.timestamp for log in logs]
-        failed_registrations[str(form.uuid)] = {
-            "form_name": form.name,
-            "failed_submissions_counter": len(logs),
-            "initial_failure_at": min(timestamps),
-            "last_failure_at": max(timestamps),
-            "admin_link": get_filtered_submission_admin_url(
-                form.id, filter_retry=True, registration_time="24hAgo"
-            ),
-        }
+        timestamps = []
+        has_errors = False
 
-    return list(failed_registrations.values())
+        for log in logs:
+            timestamps.append(log.timestamp)
+            has_errors = has_errors or bool(log.extra_data.get("error"))
+
+        failed_registrations.append(
+            FailedRegistration(
+                form_name=form.name,
+                failed_submissions_counter=len(logs),
+                initial_failure_at=min(timestamps),
+                last_failure_at=max(timestamps),
+                admin_link=get_filtered_submission_admin_url(
+                    form.id, filter_retry=True, registration_time="24hAgo"
+                ),
+                has_errors=has_errors,
+            )
+        )
+
+    return failed_registrations
 
 
 def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
