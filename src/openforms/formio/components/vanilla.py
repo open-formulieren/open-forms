@@ -408,6 +408,45 @@ class Checkbox(BasePlugin[Component]):
         return serializers.BooleanField(**extra)
 
 
+class SelectboxesField(serializers.Serializer):
+
+    default_error_messages = {
+        "min_selected_count": _(
+            "Ensure this field has at least {min_selected_count} checked options."
+        ),
+        "max_selected_count": _(
+            "Ensure this field has no more than {max_selected_count} checked options."
+        ),
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.min_selected_count: int | None = kwargs.pop("min_selected_count", None)
+        self.max_selected_count: int | None = kwargs.pop("max_selected_count", None)
+        super().__init__(*args, **kwargs)
+
+    def to_internal_value(self, data):
+        validated_data: dict[str, bool] = super().to_internal_value(data)
+        num_checked = len([value for value in validated_data.values() if value is True])
+
+        # min_selected_count trumps required checks
+        if self.min_selected_count is not None:
+            if num_checked < self.min_selected_count:
+                self.fail(
+                    "min_selected_count", min_selected_count=self.min_selected_count
+                )
+        elif self.required and num_checked < 1:
+            self.fail("required")
+
+        # max checked validation is completely independent from min/required
+        if self.max_selected_count is not None:
+            if num_checked > self.max_selected_count:
+                self.fail(
+                    "max_selected_count", max_selected_count=self.max_selected_count
+                )
+
+        return validated_data
+
+
 @register("selectboxes")
 class SelectBoxes(BasePlugin[SelectBoxesComponent]):
     formatter = SelectBoxesFormatter
@@ -426,6 +465,23 @@ class SelectBoxes(BasePlugin[SelectBoxesComponent]):
         if not (options := component.get("values", [])):
             return
         translate_options(options, language_code, enabled)
+
+    def build_serializer_field(
+        self, component: SelectBoxesComponent
+    ) -> serializers.Serializer:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        serializer = SelectboxesField(
+            required=required,
+            allow_null=not required,
+            min_selected_count=validate.get("minSelectedCount"),
+            max_selected_count=validate.get("maxSelectedCount"),
+        )
+        for option in component["values"]:
+            serializer.fields[option["value"]] = serializers.BooleanField(required=True)
+
+        return serializer
 
 
 @register("select")
