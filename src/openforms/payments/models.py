@@ -51,17 +51,15 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
         # TODO it isn't really clear what the required format/max length is
         # for payment providers. Ogone seems to allow up to 40 characters or so,
         # So this might fail at some point.
-        config = GlobalConfiguration.get_solo()
-        prefix = config.payment_order_id_prefix.format(year=payment.created.year)
-        if prefix:
-            prefix = f"{prefix}/"
-
         assert payment.submission.public_registration_reference
 
-        pk = pk if pk is not None else payment.pk
+        config = GlobalConfiguration.get_solo()
+        template: str = config.payment_order_id_template
 
         return (
-            f"{prefix}{payment.submission.public_registration_reference}/{payment.pk}"
+            template.replace("{year}", str(payment.created.year))
+            .replace("{reference}", payment.submission.public_registration_reference)
+            .replace("{uid}", str(pk if pk is not None else payment.pk))
         )
 
 
