@@ -86,8 +86,6 @@ latest          n/a             `ReDoc <https://redocly.github.io/redoc/?url=htt
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.0/src/openapi.yaml>`__
 ==============  ==============  =============================
 
-Previous versions are supported for 6 months after the next version is released.
-
 See: `All versions and changes <https://github.com/open-formulieren/open-forms/blob/master/CHANGELOG.rst>`_
 
 **Unsupported versions**
