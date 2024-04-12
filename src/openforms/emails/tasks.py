@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
+from openforms.config.service import collect_broken_configurations
 from openforms.logging.service import (
     collect_failed_emails,
     collect_failed_prefill_plugins,
@@ -25,11 +26,13 @@ class Digest:
         failed_emails = collect_failed_emails(self.since)
         failed_registrations = collect_failed_registrations(self.since)
         failed_prefill_plugins = collect_failed_prefill_plugins(self.since)
+        broken_configurations = collect_broken_configurations()
 
         return {
             "failed_emails": failed_emails,
             "failed_registrations": failed_registrations,
             "failed_prefill_plugins": failed_prefill_plugins,
+            "broken_configurations": broken_configurations,
         }
 
     def render(self) -> str:
