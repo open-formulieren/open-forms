@@ -15,7 +15,7 @@ from tinymce.models import HTMLField
 
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
-from openforms.payments.validators import validate_payment_order_id_prefix
+from openforms.payments.validators import validate_payment_order_id_template
 from openforms.template import openforms_backend, render_from_string
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.translations.utils import ensure_default_language
@@ -321,15 +321,16 @@ class GlobalConfiguration(SingletonModel):
     )
 
     # global payment settings
-    payment_order_id_prefix = models.CharField(
-        _("Payment Order ID prefix"),
-        max_length=16,
-        default="{year}",
-        blank=True,
+    payment_order_id_template = models.CharField(
+        _("Payment Order ID template"),
+        # A somewhat arbitrary value, should be around 40 characters after template substitutions:
+        max_length=48,
+        default="{year}/{public_reference}/{uid}",
         help_text=_(
-            "Prefix to apply to generated numerical order IDs. Alpha-numerical only, supports placeholder {year}."
+            "Template to use when generating payment order IDs. It should be alpha-numerical and can contain the '/._-' characters. "
+            "You can use the placeholder tokens: {year}, {public_reference}, {uid}.",
         ),
-        validators=[validate_payment_order_id_prefix],
+        validators=[validate_payment_order_id_template],
     )
 
     # Privacy policy related fields
