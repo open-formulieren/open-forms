@@ -29,7 +29,7 @@ class SubmissionPaymentTests(TransactionTestCase):
 
     @patch(
         "openforms.payments.models.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(payment_order_id_prefix=""),
+        return_value=GlobalConfiguration(payment_order_id_template="{reference}/{uid}"),
     )
     def test_create_for(self, m: MagicMock):
         amount = Decimal("11.25")
@@ -59,9 +59,11 @@ class SubmissionPaymentTests(TransactionTestCase):
     @freeze_time("2020-01-01")
     @patch(
         "openforms.payments.models.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(payment_order_id_prefix="xyz{year}"),
+        return_value=GlobalConfiguration(
+            payment_order_id_template="xyz{year}/{reference}/{uid}"
+        ),
     )
-    def test_create_for_with_prefix(self, m: MagicMock):
+    def test_create_for_complete_template(self, m: MagicMock):
         amount = Decimal("11.25")
         options = {
             "foo": 123,
