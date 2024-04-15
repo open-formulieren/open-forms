@@ -21,7 +21,7 @@ class BRKValidatorCheck:
                     {"postcode": "1234AB", "huisnummer": "1"}
                 )
         except NoServiceConfigured as exc:
-            msg = _("{api_name} endpoint is not configured.").format(api_name="KVK")
+            msg = _("{api_name} endpoint is not configured").format(api_name="KVK")
             raise InvalidPluginConfiguration(msg) from exc
         except requests.RequestException as exc:
             raise InvalidPluginConfiguration(

@@ -361,7 +361,7 @@ class EmailDigestTaskTests(TestCase):
         self.assertEqual(sent_email.recipients(), ["user@example.com"])
         self.assertIn(
             _(
-                "Configuration for 'BRK Client' is broken (KVK endpoint is not configured.)"
+                "Configuration for 'BRK Client' is broken (KVK endpoint is not configured)."
             ),
             sent_email.body,
         )
