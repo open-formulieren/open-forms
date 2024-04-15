@@ -271,7 +271,7 @@ html5lib==1.1
     #   weasyprint
 humanize==3.14.0
     # via flower
-idna==2.10
+idna==3.7
     # via requests
 inflection==0.5.1
     # via

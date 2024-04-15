@@ -555,7 +555,7 @@ hypothesis==6.84.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-idna==2.10
+idna==3.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
