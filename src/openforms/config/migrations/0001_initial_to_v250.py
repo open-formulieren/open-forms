@@ -24,6 +24,11 @@ import openforms.utils.fields
 import openforms.utils.translations
 
 
+# Function removed from the code, moved here to not break the migration:
+def validate_payment_order_id_prefix(value: str):
+    pass
+
+
 def load_cookiegroups(*args):
     call_command("loaddata", "cookie_consent", stdout=StringIO())
 
@@ -608,9 +613,7 @@ class Migration(migrations.Migration):
                         default="{year}",
                         help_text="Prefix to apply to generated numerical order IDs. Alpha-numerical only, supports placeholder {year}.",
                         max_length=16,
-                        validators=[
-                            openforms.payments.validators.validate_payment_order_id_prefix
-                        ],
+                        validators=[validate_payment_order_id_prefix],
                         verbose_name="Payment Order ID prefix",
                     ),
                 ),
