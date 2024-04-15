@@ -160,7 +160,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                     "display_sdk_information",
                     "enable_demo_plugins",
                     "allow_empty_initiator",
-                    "payment_order_id_prefix",
+                    "payment_order_id_template",
                     "enable_backend_formio_validation",
                 ),
             },
