@@ -22,7 +22,7 @@ class EnableNewBuilderMigrationTests(TestMigrations):
 class MigrateToOrderIdTemplateExistingMigrationTests(TestMigrations):
     app = "config"
     migrate_from = "0056_globalconfiguration_enable_backend_formio_validation"
-    migrate_to = "0059_remove_globalconfiguration_payment_order_id_prefix"
+    migrate_to = "0057_migrate_to_order_id_template"
     setting_overrides = {"RELEASE": "a_new_release"}
 
     def setUpBeforeMigration(self, apps: StateApps) -> None:
@@ -45,7 +45,7 @@ class MigrateToOrderIdTemplateExistingMigrationTests(TestMigrations):
 class MigrateToOrderIdTemplateNewMigrationTests(TestMigrations):
     app = "config"
     migrate_from = "0056_globalconfiguration_enable_backend_formio_validation"
-    migrate_to = "0059_remove_globalconfiguration_payment_order_id_prefix"
+    migrate_to = "0057_migrate_to_order_id_template"
     setting_overrides = {"RELEASE": "dev"}
 
     def setUpBeforeMigration(self, apps: StateApps) -> None:
@@ -64,4 +64,6 @@ class MigrateToOrderIdTemplateNewMigrationTests(TestMigrations):
         GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
         config = GlobalConfiguration.objects.get()
 
-        self.assertEqual(config.payment_order_id_template, "{year}/{reference}/{uid}")
+        self.assertEqual(
+            config.payment_order_id_template, "{year}/{public_reference}/{uid}"
+        )

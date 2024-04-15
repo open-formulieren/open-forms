@@ -24,7 +24,7 @@ class PaymentOrderIDValidatorTests(SimpleTestCase):
             "{uid}a-.///---_",
             # placeholders:
             "{uid}{year}",
-            "{year}{reference}{uid}",
+            "{year}{public_reference}{uid}",
         ]
 
         for value in valid:

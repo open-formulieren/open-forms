@@ -7,8 +7,6 @@ from django.db import migrations, models
 
 import django_jsonform.models.fields
 import tinymce.models
-from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 
 import openforms.config.models
 import openforms.config.models.config
@@ -21,13 +19,7 @@ import openforms.utils.translations
 
 # Function removed from the code, moved here to not break the migration:
 def validate_payment_order_id_prefix(value: str):
-    value = value.replace("{year}", "")
-    if value and not value.isalnum():
-        raise ValidationError(
-            _(
-                "Prefix must be alpha numeric, no spaces or special characters except {year}"
-            )
-        )
+    pass
 
 
 class Migration(migrations.Migration):

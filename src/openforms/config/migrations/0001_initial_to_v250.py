@@ -7,9 +7,7 @@ import uuid
 from io import StringIO
 
 import django.core.validators
-from django.core.exceptions import ValidationError
 import django.db.migrations.operations.special
-from django.utils.translation import gettext_lazy as _
 import django.db.models.deletion
 from django.core.management import call_command
 from django.db import migrations, models
@@ -28,13 +26,7 @@ import openforms.utils.translations
 
 # Function removed from the code, moved here to not break the migration:
 def validate_payment_order_id_prefix(value: str):
-    value = value.replace("{year}", "")
-    if value and not value.isalnum():
-        raise ValidationError(
-            _(
-                "Prefix must be alpha numeric, no spaces or special characters except {year}"
-            )
-        )
+    pass
 
 
 def load_cookiegroups(*args):

@@ -58,7 +58,9 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
 
         return (
             template.replace("{year}", str(payment.created.year))
-            .replace("{reference}", payment.submission.public_registration_reference)
+            .replace(
+                "{public_reference}", payment.submission.public_registration_reference
+            )
             .replace("{uid}", str(pk if pk is not None else payment.pk))
         )
 

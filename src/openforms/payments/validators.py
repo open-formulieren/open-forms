@@ -4,10 +4,14 @@ from django.utils.translation import gettext as _
 
 def validate_payment_order_id_template(value: str) -> None:
     if "{uid}" not in value:
-        raise ValidationError(_("The template should include the {uid} placeholder."))
+        raise ValidationError(_("The template must include the {uid} placeholder."))
 
-    for allowed in ["{year}", "{reference}", "{uid}", "/", ".", "_", "-"]:
+    for allowed in ["{year}", "{public_reference}", "{uid}", "/", ".", "_", "-"]:
         value = value.replace(allowed, "")
 
     if value and not value.isalnum():
-        raise ValidationError(_("The template should be alphanumeric."))
+        raise ValidationError(
+            _(
+                "The template may only consist of alphanumeric, /, ., _ and - characters."
+            )
+        )

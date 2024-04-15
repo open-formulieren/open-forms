@@ -323,14 +323,12 @@ class GlobalConfiguration(SingletonModel):
     # global payment settings
     payment_order_id_template = models.CharField(
         _("Payment Order ID template"),
+        # A somewhat arbitrary value, should be around 40 characters after template substitutions:
         max_length=48,
-        default="{year}/{reference}/{uid}",
+        default="{year}/{public_reference}/{uid}",
         help_text=_(
             "Template to use when generating payment order IDs. It should be alpha-numerical and can contain the '/._-' characters. "
-            "The following placeholders are supported:\n"
-            "  - {year}: The current year\n"
-            "  - {reference}: The submission reference\n"
-            "  - {uid}: A unique incrementing payment ID."
+            "You can use the placeholder tokens: {year}, {public_reference}, {uid}.",
         ),
         validators=[validate_payment_order_id_template],
     )
