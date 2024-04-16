@@ -74,6 +74,8 @@ def parse_time(value: str) -> None | time:
 
 
 def datetime_in_amsterdam(value: datetime) -> datetime:
+    if timezone.is_naive(value):
+        return value
     return timezone.make_naive(value, timezone=TIMEZONE_AMS)
 
 
