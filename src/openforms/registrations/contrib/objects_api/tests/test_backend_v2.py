@@ -8,17 +8,15 @@ from freezegun import freeze_time
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
-from openforms.registrations.contrib.objects_api.models import (
-    ObjectsAPIRegistrationData,
-)
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig
+from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
 
 
@@ -242,6 +240,15 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         self.assertIsInstance(result["record"]["data"]["multiple_files"], list)
         self.assertEqual(len(result["record"]["data"]["multiple_files"]), 1)
 
+
+class V2HandlerTests(TestCase):
+    """
+    Test V2 registration backend without actual HTTP calls.
+
+    Test the behaviour of the V2 registration handler for producing record data to send
+    to the Objects API.
+    """
+
     def test_submission_with_map_component_inside_data(self):
         """
         A map component can be explicitly mapped to an attribute inside the 'data' key.
@@ -262,13 +269,14 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "location": [52.36673378967122, 4.893164274470299],
             },
         )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
             # See the docker compose fixtures for more info on these values:
-            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705",
+            "objecttype": "-dummy-",
             "objecttype_version": 1,
             "upload_submission_csv": False,
-            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+            "informatieobjecttype_submission_report": "-dummy-",
             "informatieobjecttype_attachment": "",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
@@ -280,13 +288,11 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 # fmt: on
             ],
         }
+        handler = ObjectsAPIV2Handler()
 
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
 
-        # Run the registration
-        result = plugin.register_submission(submission, v2_options)
-
-        record_data = result["record"]["data"]
+        record_data = object_data["record"]["data"]
         self.assertEqual(
             record_data["pointCoordinates"],
             {
@@ -312,10 +318,11 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 },
             },
         )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
             # See the docker compose fixtures for more info on these values:
-            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e",
+            "objecttype": "-dummy-",
             "objecttype_version": 1,
             "upload_submission_csv": False,
             "informatieobjecttype_submission_report": "",
@@ -330,11 +337,9 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 # fmt: on
             ],
         }
+        handler = ObjectsAPIV2Handler()
 
-        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
 
-        # Run the registration
-        result = plugin.register_submission(submission, v2_options)
-
-        record_data = result["record"]["data"]
+        record_data = object_data["record"]["data"]
         self.assertEqual(record_data["textfield"], "some_string")
