@@ -407,7 +407,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
     ) -> dict[str, Any]:
 
         state = submission.load_submission_value_variables_state()
-        dynamic_values = state.get_data()
+        dynamic_values = FormioData(state.get_data())
 
         # For every file upload component, we alter the value of the variable to be
         # the Document API URL(s).
@@ -421,8 +421,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         for o in objects_api_attachments:
             urls_map[o.variable_key].append(o.document_url)
 
-        for key in dynamic_values.keys():
-            variable = state.get_variable(key)
+        for key, variable in state.variables.items():
             submission_value = dynamic_values[key]
 
             # special casing documents - we transform the formio file upload data into
