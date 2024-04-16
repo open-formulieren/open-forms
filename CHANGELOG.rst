@@ -2,6 +2,30 @@
 Changelog
 =========
 
+2.6.4 (2024-04-16)
+==================
+
+Bugfix release
+
+* [#4151] Fixed backend validation error being triggered for radio/select/selectboxes
+  components that get their values/options from another variable.
+* [#4052] Fixed payment (reminder) emails being sent more often than intended.
+* [#4124] Fixed forms being shown multiple times in the admin list overview.
+* [#4156] Fixed the format of order references sent to payment providers. You can now
+  provide your own template.
+* Fixed some bugs in the form builder:
+
+    - Added missing error message codes (for translations) for the selectboxes component.
+    - Fixed the "client-side logic" to take the correct data type into account.
+    - Fixed the validation tab not being marked as invalid in some validation error
+      situations.
+
+* Upgraded some dependencies with their latest (security) patches.
+* [#4172] Fixed a crash while running input validation on date fields when min/max date
+  validations are specified.
+* [#4141] Fixed a crash in the Objects API registration when using periods in component
+  keys.
+
 2.6.3 (2024-04-10)
 ==================
 
