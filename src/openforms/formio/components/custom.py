@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from datetime import datetime
 from typing import Protocol
 
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -13,7 +13,7 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
-from openforms.utils.date import format_date_value
+from openforms.utils.date import datetime_in_amsterdam, format_date_value
 from openforms.validations.service import PluginValidator
 
 from ..dynamic_config.date import mutate as mutate_min_max_validation
@@ -80,10 +80,15 @@ class Date(BasePlugin[DateComponent]):
         required = validate.get("required", False)
         date_picker = component.get("datePicker") or {}
         validators = []
+
         if min_date := date_picker.get("minDate"):
-            validators.append(MinValueValidator(date.fromisoformat(min_date)))
+            min_value = datetime_in_amsterdam(datetime.fromisoformat(min_date)).date()
+            validators.append(MinValueValidator(min_value))
+
         if max_date := date_picker.get("maxDate"):
-            validators.append(MaxValueValidator(date.fromisoformat(max_date)))
+            max_value = datetime_in_amsterdam(datetime.fromisoformat(max_date)).date()
+            validators.append(MaxValueValidator(max_value))
+
         base = FormioDateField(
             required=required,
             allow_null=not required,

@@ -22,5 +22,9 @@ class DateConstraintConfiguration(TypedDict):
 
 
 class DatePickerConfig(TypedDict):
+    # NOTE: these strings can be a date (YYYY-MM-DD) or datetime (YYYY-MM-DDTHH:mm:ss)
+    # ISO-8601 string! Even the date component uses datetimes under the hood because
+    # Javascript only has a Date type that covers both, and that leaks into our form
+    # builder and backend logic doing dynamic things.
     minDate: str | None
     maxDate: str | None
