@@ -235,7 +235,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         "cookie_consent.CookieGroup",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
+        blank=False,
         help_text=_(
             "The cookie group used for analytical cookies. The analytics scripts are "
             "loaded only if this cookie group is accepted by the end-user."
