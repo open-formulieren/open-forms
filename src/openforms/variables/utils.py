@@ -45,9 +45,9 @@ def get_variables_for_context(submission: "Submission") -> dict[str, JSONValue]:
 
     from .service import get_static_variables
 
-    data = submission.data
+    data = submission.data.data
     if settings.ESCAPE_REGISTRATION_OUTPUT:
-        data = html_escape_json(submission.data)
+        data = html_escape_json(submission.data.data)
 
     formio_data = FormioData(
         **{

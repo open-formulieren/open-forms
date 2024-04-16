@@ -60,7 +60,7 @@ class SubmissionValueVariablesState:
         self,
         submission_step: SubmissionStep | None = None,
         return_unchanged_data: bool = True,
-    ) -> DataMapping:
+    ) -> FormioData:
         submission_variables = self.saved_variables
         if submission_step:
             submission_variables = self.get_variables_in_submission_step(
@@ -79,7 +79,8 @@ class SubmissionValueVariablesState:
 
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
                 formio_data[variable_key] = variable.value
-        return formio_data.data
+
+        return formio_data
 
     def get_variables_in_submission_step(
         self,

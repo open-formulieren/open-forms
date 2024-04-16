@@ -18,7 +18,7 @@ from furl import furl
 from glom import glom
 
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.datastructures import FormioConfigurationWrapper, FormioData
 from openforms.forms.models import FormRegistrationBackend, FormStep
 from openforms.logging.logevent import registration_debug
 from openforms.payments.constants import PaymentStatus
@@ -637,7 +637,7 @@ class Submission(models.Model):
         return appointment_data
 
     @property
-    def data(self) -> dict[str, Any]:
+    def data(self) -> FormioData:
         """The filled-in data of the submission.
 
         This is a mapping between variable keys and their corresponding values.

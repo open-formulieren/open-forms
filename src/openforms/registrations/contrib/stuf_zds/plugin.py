@@ -242,7 +242,7 @@ class StufZDSRegistration(BasePlugin):
 
             extra_data = get_unmapped_data(
                 submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
-            )
+            ).data
             # The extraElement tag of StUF-ZDS expects primitive types
             extra_data = flatten_data(extra_data)
 

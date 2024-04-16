@@ -130,7 +130,7 @@ def apply_data_mapping(
 
 
 def get_unmapped_data(
-    submission,
+    submission: Submission,
     mapping_config: Mapping[str, str | FieldConf],
     component_attribute: str,
 ):

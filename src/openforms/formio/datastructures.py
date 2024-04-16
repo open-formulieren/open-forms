@@ -1,7 +1,7 @@
 import re
 from collections import UserDict
-from collections.abc import Hashable
-from typing import Iterator, cast
+from collections.abc import Hashable, ItemsView, Iterable, Iterator, KeysView
+from typing import Any, cast
 
 from glom import PathAccessError, assign, glom
 
@@ -88,7 +88,7 @@ class FormioConfigurationWrapper:
         return all(is_visible_in_frontend(node, values) for node in nodes)
 
 
-class FormioData(UserDict):
+class FormioData(UserDict[str, JSONValue]):
     """
     Handle formio (submission) data transparently.
 
@@ -107,12 +107,24 @@ class FormioData(UserDict):
     details (such as using ``glom`` for this).
     """
 
-    data: dict[str, JSONValue]
+    def _unnest(self, data: dict[str, JSONValue]) -> dict[str, Any]:
 
-    def __getitem__(self, key: Hashable):
+        def unnest_inner(
+            data: dict[str, JSONValue], parent_key: str | None
+        ) -> Iterable[tuple[str, Any]]:
+            for k, v in data.items():
+                key = f"{parent_key}.{k}" if parent_key is not None else k
+                if isinstance(v, dict):
+                    yield from unnest_inner(v, key)
+                else:
+                    yield (key, v)
+
+        return {k: v for k, v in unnest_inner(data, parent_key=None)}
+
+    def __getitem__(self, key: Hashable) -> JSONValue:
         return cast(JSONValue, glom(self.data, key))
 
-    def __setitem__(self, key: Hashable, value: JSONValue):
+    def __setitem__(self, key: Hashable, value: JSONValue) -> None:
         assign(self.data, key, value, missing=dict)
 
     def __contains__(self, key: Hashable) -> bool:
@@ -121,3 +133,12 @@ class FormioData(UserDict):
         except PathAccessError:
             return False
         return True
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._unnest(self.data))
+
+    def keys(self) -> KeysView[str]:
+        return KeysView(self._unnest(self.data))
+
+    def items(self) -> ItemsView[str, JSONValue]:
+        return ItemsView(self._unnest(self.data))

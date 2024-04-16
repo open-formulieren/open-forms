@@ -421,9 +421,8 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         for o in objects_api_attachments:
             urls_map[o.variable_key].append(o.document_url)
 
-        for key in dynamic_values.keys():
+        for key, submission_value in dynamic_values.items():
             variable = state.get_variable(key)
-            submission_value = dynamic_values[key]
 
             # special casing documents - we transform the formio file upload data into
             # the api resource URLs for the uploaded documents in the Documens API.
