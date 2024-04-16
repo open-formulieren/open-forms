@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -294,3 +294,47 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "coordinates": [52.36673378967122, 4.893164274470299],
             },
         )
+
+    @tag("gh-4141")
+    def test_layout_components(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "components": [{"key": "fieldset.textfield", "type": "textfield"}],
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "fieldset": {
+                    "textfield": "some_string",
+                },
+            },
+        )
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e",
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "informatieobjecttype_submission_report": "",
+            "informatieobjecttype_attachment": "",
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                # fmt: off
+                {
+                    "variable_key": "fieldset.textfield",
+                    "target_path": ["textfield"],
+                },
+                # fmt: on
+            ],
+        }
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        record_data = result["record"]["data"]
+        self.assertEqual(record_data["textfield"], "some_string")
