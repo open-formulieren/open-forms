@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e",
+      "record": {"typeVersion": 1, "data": {"textfield": "some_string"}, "startAt":
+      "2024-03-19"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9
+      Connection:
+      - keep-alive
+      Content-Crs:
+      - EPSG:4326
+      Content-Length:
+      - '188'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8002/api/v2/objects
+  response:
+    body:
+      string: '{"url":"http://localhost:8002/api/v2/objects/e28b18d9-9c5e-4be6-9822-935b9784a92a","uuid":"e28b18d9-9c5e-4be6-9822-935b9784a92a","type":"http://objecttypes-web:8000/api/v2/objecttypes/644ab597-e88c-43c0-8321-f12113510b0e","record":{"index":1,"typeVersion":1,"data":{"textfield":"some_string"},"geometry":null,"startAt":"2024-03-19","endAt":null,"registrationAt":"2024-04-16","correctionFor":null,"correctedBy":null}}'
+    headers:
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Crs:
+      - EPSG:4326
+      Content-Length:
+      - '416'
+      Content-Type:
+      - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Location:
+      - http://localhost:8002/api/v2/objects/e28b18d9-9c5e-4be6-9822-935b9784a92a
+      Referrer-Policy:
+      - same-origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 201
+      message: Created
+version: 1

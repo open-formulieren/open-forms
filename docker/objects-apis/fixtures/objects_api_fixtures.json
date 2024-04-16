@@ -27,6 +27,15 @@
     }
 },
 {
+    "model": "core.objecttype",
+    "pk": 4,
+    "fields": {
+        "service": 1,
+        "uuid": "644ab597-e88c-43c0-8321-f12113510b0e",
+        "_name": "Fieldset component"
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
     "fields": {
@@ -67,6 +76,17 @@
     "fields": {
         "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
         "object_type": 3,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 4,
+    "fields": {
+        "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "object_type": 4,
         "mode": "read_and_write",
         "use_fields": false,
         "fields": null
