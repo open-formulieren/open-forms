@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from typing import Any, Callable, Iterator, TypeAlias, TypeGuard
 
 import elasticapm
@@ -356,6 +357,7 @@ def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
             else not conditional_show
         )
 
+    # TODO - Remove this workaround and update formio-builder to use the right input field for checkboxes.
     # Issue #2900 - The values of checkboxes are bools, but in the Formio frontend logic, the compare value is a
     # string ('true'/'false'). In Formio they cast it to a bool.
     if isinstance(trigger_component_value, bool):
