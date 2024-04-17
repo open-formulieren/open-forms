@@ -4,7 +4,7 @@ from django.db import migrations
 import re
 
 from openforms.formio.migration_converters import (
-    convert_simple_conditionals_with_numbers_and_currencies,
+    convert_simple_conditionals,
 )
 
 
@@ -21,7 +21,7 @@ def fix_forms_simple_conditionals(apps, schema_editor):
 
     definitions_to_update = []
     for definition in all_definitions:
-        config_modified = convert_simple_conditionals_with_numbers_and_currencies(
+        config_modified = convert_simple_conditionals(
             definition.configuration, pattern=pattern
         )
 

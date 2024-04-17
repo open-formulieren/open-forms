@@ -180,7 +180,7 @@ def fix_multiple_empty_default_value(component: Component) -> bool:
     return False
 
 
-def convert_simple_conditionals_with_numbers_and_currencies(
+def convert_simple_conditionals(
     configuration: JSONObject, pattern: Pattern = None
 ) -> bool:
     config_modified = False
@@ -207,11 +207,17 @@ def convert_simple_conditionals_with_numbers_and_currencies(
             component["conditional"]["eq"] = json.loads(component["conditional"]["eq"])
             config_modified = True
 
+        if comparison_component["type"] == "checkbox":
+            component["conditional"]["eq"] = {"true": True, "false": False}.get(
+                component["conditional"]["eq"], False
+            )
+            config_modified = True
+
     return config_modified
 
 
 DEFINITION_CONVERTERS = [
-    convert_simple_conditionals_with_numbers_and_currencies,
+    convert_simple_conditionals,
 ]
 
 
