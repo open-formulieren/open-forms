@@ -361,12 +361,12 @@ class EmailDigestTaskTests(TestCase):
         self.assertEqual(sent_email.recipients(), ["user@example.com"])
         self.assertIn(
             _(
-                "Configuration for 'BRK Client' is broken (KVK endpoint is not configured)."
+                "The configuration for 'BRK Client' is invalid (KVK endpoint is not configured)."
             ),
             sent_email.body,
         )
 
-    def test_no_email_sent_when_brk_congiguration_is_valid_for_other_component(self):
+    def test_no_email_sent_when_brk_congiguration_is_invalid_but_unused(self):
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(
             configuration={
@@ -389,6 +389,10 @@ class EmailDigestTaskTests(TestCase):
                 return_value=GlobalConfiguration(
                     recipients_email_digest=["user@example.com"]
                 ),
+            ),
+            patch(
+                "openforms.contrib.brk.client.BRKConfig.get_solo",
+                return_value=BRKConfig(service=None),
             ),
         ):
 

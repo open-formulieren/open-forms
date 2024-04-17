@@ -8,13 +8,13 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
-from openforms.config.service import collect_broken_configurations
-from openforms.logging.service import (
+
+from .digest import (
+    collect_broken_configurations,
     collect_failed_emails,
     collect_failed_prefill_plugins,
     collect_failed_registrations,
 )
-
 from .utils import send_mail_html
 
 

@@ -65,12 +65,12 @@
 {% endif %}
 
 {% if broken_configurations %}
-    <h5>{% trans "Broken configuration" %}</h5>
+    <h5>{% trans "Configuration problems" %}</h5>
     <ul>
         {% for config in broken_configurations %}
             <li>
                 {% blocktranslate with name=config.config_name message=config.exception_message trimmed %}
-                    Configuration for '{{ name }}' is broken (<i>{{ message }}</i>).<br/>
+                    The configuration for '{{ name }}' is invalid (<i>{{ message }}</i>).<br/>
                     Components or plugins which make use of this will not work properly.
                 {% endblocktranslate %}
             </li>
