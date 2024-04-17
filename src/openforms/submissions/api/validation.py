@@ -12,7 +12,7 @@ from rest_framework import serializers
 
 from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.service import build_serializer
+from openforms.formio.service import build_serializer, get_dynamic_configuration
 
 from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
@@ -52,6 +52,7 @@ class CompletionValidationSerializer(serializers.Serializer):
         return attrs
 
     def _run_formio_validation(self) -> None:
+
         # Check feature flag to opt out of formio validation first.
         config = GlobalConfiguration.get_solo()
         assert isinstance(config, GlobalConfiguration)
@@ -67,9 +68,16 @@ class CompletionValidationSerializer(serializers.Serializer):
             assert step.form_step
 
             if step.is_applicable:
-                components = step.form_step.form_definition.configuration["components"]
+                # evaluate dynamic configuration. We avoid calling `evaluate_form_logic`
+                # on purpose to avoid duplicate logic evaluation
+                configuration = get_dynamic_configuration(
+                    step.form_step.form_definition.configuration_wrapper,
+                    self.context["request"],
+                    submission=submission,
+                    data=data,
+                ).configuration
                 step_data_serializer = build_serializer(
-                    components,
+                    configuration["components"],
                     data=data,
                     context={"submission": submission},
                 )

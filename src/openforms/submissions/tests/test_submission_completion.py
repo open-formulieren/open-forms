@@ -630,6 +630,40 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @tag("gh-4187")
+    def test_dynamic_configuration_evaluated(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "someCondition",
+                        "type": "radio",
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "itemsExpression": [
+                                ["a", "A"],
+                            ],
+                        },
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form_step.form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"someCondition": "a"},
+            form_step=form_step,
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.post(
+            reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+            {"privacy_policy_accepted": True},
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
 
 @temp_private_root()
 class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
