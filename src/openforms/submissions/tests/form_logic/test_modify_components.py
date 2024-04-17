@@ -1045,3 +1045,72 @@ class ComponentModificationTests(TestCase):
         evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
 
         self.assertEqual(submission_step.data["textField"], "Test value")
+
+    @tag("gh-3964")
+    def test_number_frontend_logic(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "number",
+                        "type": "number",
+                    },
+                    {
+                        "key": "currency",
+                        "type": "currency",
+                    },
+                    {
+                        "key": "anotherNumber",
+                        "type": "number",
+                    },
+                    {
+                        "key": "textField1",
+                        "type": "textfield",
+                        "clearOnHide": True,
+                        "conditional": {"eq": "1", "show": True, "when": "number"},
+                    },
+                    {
+                        "key": "textField2",
+                        "type": "textfield",
+                        "clearOnHide": True,
+                        "conditional": {"eq": "1", "show": True, "when": "currency"},
+                    },
+                    {
+                        "key": "textField3",
+                        "type": "textfield",
+                        "clearOnHide": True,
+                        "conditional": {
+                            "eq": "1.5",
+                            "show": True,
+                            "when": "anotherNumber",
+                        },
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={
+                "number": 1,
+                "currency": 1,
+                "anotherNumber": 1.5,
+                "textField1": "Test value",
+                "textField2": "Test value",
+                "textField3": "Test value",
+            },
+        )
+
+        self.assertEqual(submission_step.data["textField1"], "Test value")
+        self.assertEqual(submission_step.data["textField2"], "Test value")
+        self.assertEqual(submission_step.data["textField3"], "Test value")
+
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+        self.assertEqual(submission_step.data["textField1"], "Test value")
+        self.assertEqual(submission_step.data["textField2"], "Test value")
+        self.assertEqual(submission_step.data["textField3"], "Test value")
