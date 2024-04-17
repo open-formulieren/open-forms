@@ -2,9 +2,10 @@
 
 from django.db import migrations
 import re
-import json
 
-from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.migration_converters import (
+    convert_simple_conditionals_with_numbers_and_currencies,
+)
 
 
 def fix_forms_simple_conditionals(apps, schema_editor):
@@ -15,35 +16,19 @@ def fix_forms_simple_conditionals(apps, schema_editor):
         return
 
     # Check for simple conditionals where the "when" is not an empty string
-    pattern = r'"conditional": \{[\w\s",:]*"when": "(\w+)"[\w\s",:]*\}'
-    p = re.compile(pattern)
+    raw_pattern = r'"conditional": \{[\w\s",:]*"when": "(\w+)"[\w\s",:]*\}'
+    pattern = re.compile(raw_pattern)
 
+    definitions_to_update = []
     for definition in all_definitions:
-        stringified_config = json.dumps(definition.configuration)
-        if not p.search(stringified_config):
-            continue
-
-        # We know that there are simple conditionals, now let's check if they need fixing
-        config = FormioConfigurationWrapper(definition.configuration)
-
-        config_modified = False
-        for component in config:
-            if not (
-                comparison_component_key := component.get("conditional", {}).get(
-                    "when", ""
-                )
-            ):
-                continue
-
-            comparison_component = config[comparison_component_key]
-            if comparison_component["type"] in ["number", "currency"]:
-                component["conditional"]["eq"] = json.loads(
-                    component["conditional"]["eq"]
-                )
-                config_modified = True
+        config_modified = convert_simple_conditionals_with_numbers_and_currencies(
+            definition.configuration, pattern=pattern
+        )
 
         if config_modified:
-            definition.save()
+            definitions_to_update.append(definition)
+
+    FormDefinition.objects.bulk_update(definitions_to_update, fields=["configuration"])
 
 
 class Migration(migrations.Migration):
