@@ -289,7 +289,7 @@ class FixValidateConfigurationMigrationTests(TestMigrations):
             self.assertNotIn("maxLength", cosign["validate"])
 
 
-class FixSimpleConditionalsMigrationTests(TestMigrations):
+class FixSimpleConditionalsNumbersMigrationTests(TestMigrations):
     app = "forms"
     migrate_from = "0096_fix_invalid_validate_configuration"
     migrate_to = "0097_fix_forms_conditionals"
@@ -375,3 +375,77 @@ class FixSimpleConditionalsMigrationTests(TestMigrations):
         self.assertTrue(
             isinstance(fixed_components[9]["components"][0]["conditional"]["eq"], int)
         )
+
+
+class FixSimpleConditionalsCheckboxesMigrationTests(TestMigrations):
+    app = "forms"
+    migrate_from = "0096_fix_invalid_validate_configuration"
+    migrate_to = "0097_fix_forms_conditionals"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        bad_config = [
+            {"key": "checkbox", "type": "checkbox", "label": "Checkbox"},
+            {"key": "textfield", "type": "textfield", "label": "Text Field"},
+            {
+                "key": "textArea1",
+                "type": "textarea",
+                "label": "Text Area 1",
+                "conditional": {"eq": "true", "show": True, "when": "checkbox"},
+                "clearOnHide": True,
+            },
+            {
+                "key": "textArea2",
+                "type": "textarea",
+                "label": "Text Area 2",
+                "conditional": {"eq": "false", "show": True, "when": "checkbox"},
+                "clearOnHide": True,
+            },
+            {
+                "key": "textArea3",
+                "type": "textarea",
+                "label": "Text Area 3",
+                "conditional": {"eq": "", "show": None, "when": ""},
+                "clearOnHide": True,
+            },
+            {
+                "key": "textArea4",
+                "type": "textarea",
+                "label": "Text Area 4",
+                "conditional": {"eq": "true", "when": "textfield", "show": True},
+                "clearOnHide": True,
+            },
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "label": "Repeating group",
+                "components": [
+                    {
+                        "key": "textArea5",
+                        "type": "textarea",
+                        "label": "Text Area 5",
+                        "conditional": {"eq": "true", "show": True, "when": "checkbox"},
+                        "clearOnHide": True,
+                    },
+                ],
+            },
+        ]
+        FormDefinition.objects.create(
+            name="broken", configuration={"components": bad_config}
+        )
+
+    def test_conditionals_are_fixed(self):
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+        fixed_components = FormDefinition.objects.get().configuration["components"]
+
+        self.assertTrue(isinstance(fixed_components[2]["conditional"]["eq"], bool))
+        self.assertTrue(fixed_components[2]["conditional"]["eq"])
+        self.assertTrue(isinstance(fixed_components[3]["conditional"]["eq"], bool))
+        self.assertFalse(fixed_components[3]["conditional"]["eq"])
+        self.assertEqual(fixed_components[4]["conditional"]["eq"], "")
+        self.assertEqual(fixed_components[5]["conditional"]["eq"], "true")
+        self.assertTrue(
+            isinstance(fixed_components[6]["components"][0]["conditional"]["eq"], bool)
+        )
+        self.assertTrue(fixed_components[6]["components"][0]["conditional"]["eq"])
