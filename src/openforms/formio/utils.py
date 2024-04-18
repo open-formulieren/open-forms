@@ -1,3 +1,4 @@
+import json
 import logging
 from dataclasses import dataclass
 from typing import Any, Callable, Iterator, TypeAlias, TypeGuard
@@ -359,6 +360,12 @@ def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
     # string ('true'/'false'). In Formio they cast it to a bool.
     if isinstance(trigger_component_value, bool):
         compare_value = {"true": True, "false": False}.get(compare_value, False)
+
+    # Issue #3964 - The values of number/currency components are numbers, but in Formio frontend logic they are strings.
+    if isinstance(trigger_component_value, (int, float)) and isinstance(
+        compare_value, str
+    ):
+        compare_value = json.loads(compare_value)
 
     return (
         conditional_show
