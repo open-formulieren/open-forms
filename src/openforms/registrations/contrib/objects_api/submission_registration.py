@@ -8,6 +8,7 @@ from typing import Any, Generic, Iterator, TypeVar, cast
 from django.db.models import F
 
 import glom
+from glom import PathAccessError
 from typing_extensions import override
 
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
@@ -421,7 +422,10 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
             urls_map[o.variable_key].append(o.document_url)
 
         for key, variable in state.variables.items():
-            submission_value = dynamic_values[key]
+            try:
+                submission_value = dynamic_values[key]
+            except PathAccessError:
+                continue
 
             # special casing documents - we transform the formio file upload data into
             # the api resource URLs for the uploaded documents in the Documens API.
