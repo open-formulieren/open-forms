@@ -173,7 +173,9 @@ def validate_uploads(submission_step: SubmissionStep, data: dict | None) -> None
         raise ValidationError(validation_errors)
 
 
-def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
+def attach_uploads_to_submission_step(
+    submission_step: SubmissionStep,
+) -> list[tuple[SubmissionFileAttachment, bool]]:
     # circular import
     from .tasks import resize_submission_attachment
 
