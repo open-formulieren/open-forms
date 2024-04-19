@@ -45,7 +45,7 @@ __all__ = [
 ]
 
 
-def format_value(component: Component, value: Any, as_html: bool = False):
+def format_value(component: Component, value: Any, *, as_html: bool = False):
     """
     Format a submitted value in a way that is most appropriate for the component type.
     """

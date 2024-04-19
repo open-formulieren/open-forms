@@ -26,6 +26,7 @@ def _is_column_component(component: ComponentLike) -> TypeGuard[ColumnsComponent
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def iter_components(
     configuration: ComponentLike,
+    *,
     recursive=True,
     _is_root=True,
     _mark_root=False,
