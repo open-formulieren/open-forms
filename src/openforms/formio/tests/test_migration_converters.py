@@ -3,6 +3,7 @@ from django.test import SimpleTestCase
 from ..migration_converters import (
     ensure_licensplate_validate_pattern,
     ensure_postcode_validate_pattern,
+    fix_multiple_empty_default_value,
     prevent_datetime_components_from_emptying_invalid_values,
 )
 from ..typing import Component
@@ -49,3 +50,37 @@ class DatetimeTests(SimpleTestCase):
 
         self.assertTrue(changed)
         self.assertTrue(component["customOptions"]["allowInvalidPreload"])
+
+
+class SelectTests(SimpleTestCase):
+    def test_no_multiple_noop(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+        }
+        changed = fix_multiple_empty_default_value(component)
+        self.assertFalse(changed)
+
+    def test_default_value_noop(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "multiple": True,
+            "defaultValue": [],
+        }
+        changed = fix_multiple_empty_default_value(component)
+        self.assertFalse(changed)
+
+    def test_default_value_changed(self):
+        component: Component = {
+            "type": "select",
+            "key": "select",
+            "label": "Select",
+            "multiple": True,
+            "defaultValue": [""],
+        }
+        changed = fix_multiple_empty_default_value(component)
+        self.assertTrue(changed)
+        self.assertEqual(component["defaultValue"], [])

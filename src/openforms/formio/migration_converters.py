@@ -162,6 +162,19 @@ def fix_empty_validate_lengths(component: Component) -> bool:
     return changed
 
 
+def fix_multiple_empty_default_value(component: Component) -> bool:
+    # GH-4084
+    if not component.get("multiple", False):
+        return False
+
+    default_value = component.get("defaultValue")
+    if default_value == [""]:
+        component["defaultValue"] = []
+        return True
+
+    return False
+
+
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     # Input components
     "textfield": {
@@ -198,7 +211,10 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "number": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
-    "select": {"set_openforms_datasrc": set_openforms_datasrc},
+    "select": {
+        "set_openforms_datasrc": set_openforms_datasrc,
+        "fix_multiple_empty_default_value": fix_multiple_empty_default_value,
+    },
     "selectboxes": {"set_openforms_datasrc": set_openforms_datasrc},
     "currency": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
