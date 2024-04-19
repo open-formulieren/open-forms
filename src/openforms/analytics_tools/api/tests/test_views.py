@@ -13,8 +13,10 @@ class TestAnalyticsToolsConfigViews(APITestCase):
     def test_get_language_specific_govmetric_source_id(self, m_config):
         m_config.return_value = AnalyticsToolsConfiguration(
             enable_govmetric_analytics=True,
-            govmetric_source_id_en="1234",
-            govmetric_source_id_nl="4321",
+            govmetric_source_id_form_finished_en="1111",
+            govmetric_source_id_form_finished_nl="2222",
+            govmetric_source_id_form_aborted_en="3333",
+            govmetric_source_id_form_aborted_nl="4444",
         )
 
         with override_settings(LANGUAGE_CODE="en"):
@@ -30,5 +32,7 @@ class TestAnalyticsToolsConfigViews(APITestCase):
         data_en = response_en.json()
         data_nl = response_nl.json()
 
-        self.assertEqual(data_en["govmetricSourceId"], "1234")
-        self.assertEqual(data_nl["govmetricSourceId"], "4321")
+        self.assertEqual(data_en["govmetricSourceIdFormFinished"], "1111")
+        self.assertEqual(data_en["govmetricSourceIdFormAborted"], "3333")
+        self.assertEqual(data_nl["govmetricSourceIdFormFinished"], "2222")
+        self.assertEqual(data_nl["govmetricSourceIdFormAborted"], "4444")
