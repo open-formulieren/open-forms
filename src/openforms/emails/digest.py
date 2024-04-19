@@ -6,13 +6,16 @@ from typing import Iterable
 
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from django_yubin.models import Message
 from furl import furl
 
+from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
+from openforms.typing import StrOrPromise
 
 
 @dataclass
@@ -58,6 +61,12 @@ class FailedPrefill:
     @property
     def failed_submissions_counter(self) -> int:
         return len(self.submission_ids)
+
+
+@dataclass
+class BrokenConfiguration:
+    config_name: StrOrPromise
+    exception_message: str
 
 
 def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
@@ -156,3 +165,17 @@ def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
         )
 
     return failed_prefill_plugins
+
+
+def collect_broken_configurations() -> list[BrokenConfiguration]:
+    check_brk_configuration = check_brk_config_for_addressNL()
+
+    broken_configurations = []
+    if check_brk_configuration:
+        broken_configurations.append(
+            BrokenConfiguration(
+                config_name=_("BRK Client"), exception_message=check_brk_configuration
+            )
+        )
+
+    return broken_configurations

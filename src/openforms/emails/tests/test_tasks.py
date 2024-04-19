@@ -2,12 +2,20 @@ from unittest.mock import patch
 
 from django.core import mail
 from django.test import TestCase, override_settings
+from django.utils.translation import gettext as _
 
+import requests_mock
 from django_yubin.models import Message
 from freezegun import freeze_time
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormFactory
+from openforms.contrib.brk.models import BRKConfig
+from openforms.contrib.brk.tests.base import BRK_SERVICE
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 from openforms.logging import logevent
 from openforms.prefill.registry import register
 from openforms.registrations.exceptions import RegistrationFailed
@@ -260,3 +268,134 @@ class EmailDigestTaskTests(TestCase):
         self.assertIn(str(submission_1.id), sent_email.body)
         self.assertIn(str(submission_2.id), sent_email.body)
         self.assertIn(str(submission.id), sent_email.body)
+
+    @requests_mock.Mocker()
+    def test_no_email_sent_when_brk_congiguration_is_valid_for_addressNL(self, m):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                    }
+                ],
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        with (
+            freeze_time("2023-01-03T01:00:00+01:00"),
+            patch(
+                "openforms.emails.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(
+                    recipients_email_digest=["user@example.com"]
+                ),
+            ),
+            patch(
+                "openforms.contrib.brk.client.BRKConfig.get_solo",
+                return_value=BRKConfig(service=BRK_SERVICE),
+            ),
+        ):
+
+            m.get(
+                "https://api.brk.kadaster.nl/esd-eto-apikey/bevragen/v2/kadastraalonroerendezaken?postcode=1234AB&huisnummer=1",
+                json={"_embedded": {}},
+            )
+
+            send_email_digest()
+
+        self.assertEqual(0, len(mail.outbox))
+
+    def test_broken_brk_configuration_for_addressNL_is_sent(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "AddressNL",
+                        "defaultValue": {
+                            "postcode": "",
+                            "houseLetter": "",
+                            "houseNumber": "",
+                            "houseNumberAddition": "",
+                        },
+                    }
+                ],
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        with (
+            freeze_time("2023-01-03T01:00:00+01:00"),
+            patch(
+                "openforms.emails.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(
+                    recipients_email_digest=["user@example.com"]
+                ),
+            ),
+            patch(
+                "openforms.contrib.brk.client.BRKConfig.get_solo",
+                return_value=BRKConfig(service=None),
+            ),
+        ):
+
+            send_email_digest()
+
+        sent_email = mail.outbox[0]
+
+        self.assertEqual(
+            sent_email.subject, "[Open Forms] Daily summary of detected problems"
+        )
+        self.assertEqual(sent_email.recipients(), ["user@example.com"])
+        self.assertIn(
+            _(
+                "The configuration for 'BRK Client' is invalid (KVK endpoint is not configured)."
+            ),
+            sent_email.body,
+        )
+
+    def test_no_email_sent_when_brk_congiguration_is_invalid_but_unused(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "textField",
+                        "type": "textfield",
+                        "label": "Text Field",
+                    }
+                ],
+            }
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        with (
+            freeze_time("2023-01-03T01:00:00+01:00"),
+            patch(
+                "openforms.emails.tasks.GlobalConfiguration.get_solo",
+                return_value=GlobalConfiguration(
+                    recipients_email_digest=["user@example.com"]
+                ),
+            ),
+            patch(
+                "openforms.contrib.brk.client.BRKConfig.get_solo",
+                return_value=BRKConfig(service=None),
+            ),
+        ):
+
+            send_email_digest()
+
+        self.assertEqual(0, len(mail.outbox))
