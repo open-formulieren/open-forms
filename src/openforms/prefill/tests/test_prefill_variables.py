@@ -183,7 +183,6 @@ class PrefillVariablesTests(TestCase):
         submission_value_variables_state = (
             submission_step.submission.load_submission_value_variables_state()
         )
-        submission_value_variables_state.variables
 
         FormVariable.objects.all().delete()
 

@@ -60,7 +60,7 @@ def create_objecttypes_api_service(
         Service = apps.get_model("zgw_consumers", "Service")
 
         try:
-            base, _ = re.split(r"api/v\d", objecttypes_url, 1)
+            base, _ = re.split(r"api/v\d", objecttypes_url, maxsplit=1)
         except ValueError:
             logger.warning(
                 "URL %s is not compliant, skipping migration", objecttypes_url

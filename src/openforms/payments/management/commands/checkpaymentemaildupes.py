@@ -39,10 +39,10 @@ class Command(BaseCommand):
                 del counter[key]
 
         if not counter:
-            print("no duplicates")
+            self.stdout.write("no duplicates")
         else:
-            for subject, messages in counter.items():
+            for messages in counter.values():
                 count = len(messages)
                 ids = ", ".join(f"#{m.id}" for m in messages)
                 m = messages[0]
-                print(count, m.subject, m.date_created, ids)
+                self.stdout.write(" ".join([count, m.subject, m.date_created, ids]))

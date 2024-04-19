@@ -100,7 +100,7 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
         if not form:
             return
 
-        for index, operand in enumerate(logic_test.arguments):
+        for operand in logic_test.arguments:
             if not isinstance(operand, Operation):
                 continue
 

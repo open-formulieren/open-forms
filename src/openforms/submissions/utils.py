@@ -282,7 +282,7 @@ def persist_user_defined_variables(
 
     user_defined_vars_data = {
         variable.key: variable.value
-        for variable_key, variable in variables.items()
+        for variable in variables.values()
         if variable.form_variable
         and variable.form_variable.source == FormVariableSources.user_defined
     }
