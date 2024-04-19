@@ -6570,17 +6570,29 @@ components:
     AnalyticsToolsConfig:
       type: object
       properties:
-        govmetricSourceId:
+        govmetricSourceIdFormFinished:
           type: string
-          description: Your GovMetric source ID - This is created by KLANTINFOCUS
-            when a list of questions is created. It is a numerical value that is unique
-            per set of questions.
-          maxLength: 10
-        govmetricSecureGuid:
-          type: string
-          description: Your GovMetric secure GUID - This is an optional value. It
+          description: Your GovMetric source ID for when a form is finished - This
             is created by KLANTINFOCUS when a list of questions is created. It is
-            a string that is unique per set of questions.
+            a numerical value that is unique per set of questions.
+          maxLength: 10
+        govmetricSourceIdFormAborted:
+          type: string
+          description: Your GovMetric source ID for when a form is aborted - This
+            is created by KLANTINFOCUS when a list of questions is created. It is
+            a numerical value that is unique per set of questions.
+          maxLength: 10
+        govmetricSecureGuidFormFinished:
+          type: string
+          description: Your GovMetric secure GUID for when a form is finished - This
+            is an optional value. It is created by KLANTINFOCUS when a list  of questions
+            is created. It is a string that is unique per set of questions.
+          maxLength: 50
+        govmetricSecureGuidFormAborted:
+          type: string
+          description: Your GovMetric secure GUID for when a form is aborted - This
+            is an optional value. It is created by KLANTINFOCUS when a list  of questions
+            is created. It is a string that is unique per set of questions.
           maxLength: 50
         enableGovmetricAnalytics:
           type: boolean
