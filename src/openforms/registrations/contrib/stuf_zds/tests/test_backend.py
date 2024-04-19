@@ -287,19 +287,19 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
         # extraElementen
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='extra']",
             "BuzzBazz",
         )
 
         # first language_code contains the submission language
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='language_code' and position()=1]",
             "en",
         )
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='language_code' and not(position()=1)]",
             "Dothraki",
@@ -545,7 +545,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         # postcode should also be converted (through template filters) to uppercase (#2977)
         with self.subTest("#2422: postcode must be normalized"):
-            self.assertXPathEquals(
+            self.assertXPathEqual(
                 xml_doc,
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:verblijfsadres/bg:aoa.postcode",
                 "1000AA",
@@ -2096,7 +2096,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         self.assertXPathNotExists(xml_doc, "//zkn:heeft")
 
         # extraElementen
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='extra']",
             "BuzzBazz",
@@ -2291,7 +2291,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # extraElementen
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='extra']",
             "BuzzBazz",
@@ -2484,7 +2484,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         self.assertXPathNotExists(xml_doc, "//zkn:heeft/zkn:gerelateerde/zkn:code")
 
         # extraElementen
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='extra']",
             "BuzzBazz",
@@ -2762,27 +2762,27 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_request_body = xml_from_request_history(m, 0)
 
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_request_body,
             "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarString']",
             "value",
         )
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_request_body,
             "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarArray.0']",
             "value1",
         )
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_request_body,
             "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarArray.1.key1']",
             "value2",
         )
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_request_body,
             "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarJson.key1']",
             "value1",
         )
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_request_body,
             "//stuf:extraElementen/stuf:extraElement[@naam='userDefinedVarJson.key2.0']",
             "value2",
@@ -2851,7 +2851,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         self.assertSoapXMLCommon(xml_doc)
 
         # extraElementen
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='extra_number']",
             "2023",
@@ -2934,7 +2934,7 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
 
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//zkn:betalingsIndicatie",
             StuFPaymentStatus.FULL,
@@ -2991,7 +2991,7 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
 
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//zkn:betalingsIndicatie",
             StuFPaymentStatus.NOT_YET,
@@ -3042,7 +3042,7 @@ class StufZDSPluginPaymentTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
 
-        self.assertXPathEquals(
+        self.assertXPathEqual(
             xml_doc,
             "//zkn:betalingsIndicatie",
             StuFPaymentStatus.NVT,
