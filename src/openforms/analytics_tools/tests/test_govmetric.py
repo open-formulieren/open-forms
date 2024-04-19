@@ -27,7 +27,8 @@ class GovMetricTests(AnalyticsMixin, TestCase):
         ]
 
     def test_govmetric_properly_enabled(self):
-        self.config.govmetric_source_id = "1234"
+        self.config.govmetric_source_id_form_finished = "1234"
+        self.config.govmetric_source_id_form_aborted = "1234"
         self.config.enable_govmetric_analytics = True
         self.config.clean()
         self.config.save()
@@ -51,7 +52,8 @@ class GovMetricTests(AnalyticsMixin, TestCase):
                     self.fail(f"Unexpected exception : {e}")
 
     def test_govmetric_properly_disabled(self):
-        self.config.govmetric_source_id = "1234"
+        self.config.govmetric_source_id_form_finished = "1234"
+        self.config.govmetric_source_id_form_aborted = "1234"
 
         # creation of cookies
         self.config.enable_govmetric_analytics = True
@@ -79,15 +81,18 @@ class GovMetricTests(AnalyticsMixin, TestCase):
 
     def test_govmetric_enabled_but_related_fields_are_not(self):
         self.config.enable_govmetric_analytics = True
-        self.config.govmetric_source_id = ""
+        self.config.govmetric_source_id_form_finished = ""
+        self.config.govmetric_source_id_form_aborted = ""
 
         with self.assertRaises(ValidationError):
             self.config.clean()
 
     def test_govmetric_enabled_in_only_one_language_raises_error(self):
         self.config.enable_govmetric_analytics = True
-        self.config.govmetric_source_id_en = "1234"
-        self.config.govmetric_source_id_nl = ""
+        self.config.govmetric_source_id_form_finished_en = "1234"
+        self.config.govmetric_source_id_form_finished_nl = ""
+        self.config.govmetric_source_id_form_aborted_en = "1234"
+        self.config.govmetric_source_id_form_aborted_nl = ""
 
         with self.assertRaises(ValidationError):
             self.config.clean()

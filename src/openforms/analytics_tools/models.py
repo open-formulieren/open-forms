@@ -87,7 +87,10 @@ DYNAMIC_TOOL_CONFIGURATION = {
         enable_field_name="enable_govmetric_analytics",
         is_enabled_property="is_govmetric_enabled",
         replacements=[
-            StringReplacement(needle="SOURCE_ID", field_name="govmetric_source_id"),
+            StringReplacement(
+                needle="SOURCE_ID_FORM_FINISHED",
+                field_name="govmetric_source_id_form_finished",
+            ),
             StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
         ],
     ),
@@ -204,22 +207,42 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs SiteImprove"),
     )
-    govmetric_source_id = models.CharField(
-        _("GovMetric source ID"),
+    govmetric_source_id_form_aborted = models.CharField(
+        _("GovMetric source ID form aborted"),
         max_length=10,
         blank=True,
         help_text=_(
-            "Your GovMetric source ID - This is created by KLANTINFOCUS when a list of questions is created. "
-            "It is a numerical value that is unique per set of questions."
+            "Your GovMetric source ID for when a form is aborted - This is created by KLANTINFOCUS when a list of "
+            "questions is created. It is a numerical value that is unique per set of questions."
         ),
     )
-    govmetric_secure_guid = models.CharField(
-        _("GovMetric secure GUID"),
+    govmetric_secure_guid_form_aborted = models.CharField(
+        _("GovMetric secure GUID form aborted"),
         blank=True,
         max_length=50,
         help_text=_(
-            "Your GovMetric secure GUID - This is an optional value. It is created by KLANTINFOCUS when a list "
-            "of questions is created. It is a string that is unique per set of questions."
+            "Your GovMetric secure GUID for when a form is aborted - This is an optional value. "
+            "It is created by KLANTINFOCUS when a list  of questions is created. "
+            "It is a string that is unique per set of questions."
+        ),
+    )
+    govmetric_source_id_form_finished = models.CharField(
+        _("GovMetric source ID form finished"),
+        max_length=10,
+        blank=True,
+        help_text=_(
+            "Your GovMetric source ID for when a form is finished - This is created by KLANTINFOCUS when a list of "
+            "questions is created. It is a numerical value that is unique per set of questions."
+        ),
+    )
+    govmetric_secure_guid_form_finished = models.CharField(
+        _("GovMetric secure GUID form finished"),
+        blank=True,
+        max_length=50,
+        help_text=_(
+            "Your GovMetric secure GUID for when a form is finished - This is an optional value. "
+            "It is created by KLANTINFOCUS when a list  of questions is created. "
+            "It is a string that is unique per set of questions."
         ),
     )
     enable_govmetric_analytics = models.BooleanField(
@@ -300,7 +323,11 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
     @property
     def is_govmetric_enabled(self) -> bool:
-        return self.govmetric_source_id and self.enable_govmetric_analytics
+        return (
+            self.govmetric_source_id_form_finished
+            and self.govmetric_source_id_form_aborted
+            and self.enable_govmetric_analytics
+        )
 
     def save(self, *args, **kwargs):
         # If instance is being created, we can't find original values
