@@ -1,10 +1,10 @@
 [
     {
-        "name": "_pk_id.SOURCE_ID.DOMAIN_HASH",
+        "name": "_pk_id.SOURCE_ID_FORM_FINISHED.DOMAIN_HASH",
         "path": "/"
     },
     {
-        "name": "_pk_ses.SOURCE_ID.DOMAIN_HASH",
+        "name": "_pk_ses.SOURCE_ID_FORM_FINISHED.DOMAIN_HASH",
         "path": "/"
     }
 ]
