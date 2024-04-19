@@ -34,7 +34,7 @@ def fix_forms_simple_conditionals(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0096_fix_invalid_validate_configuration"),
+        ("forms", "0097_fix_multiple_empty_default_value"),
     ]
 
     operations = [

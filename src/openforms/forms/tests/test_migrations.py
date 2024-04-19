@@ -291,8 +291,8 @@ class FixValidateConfigurationMigrationTests(TestMigrations):
 
 class FixSimpleConditionalsNumbersMigrationTests(TestMigrations):
     app = "forms"
-    migrate_from = "0096_fix_invalid_validate_configuration"
-    migrate_to = "0097_fix_forms_conditionals"
+    migrate_from = "0097_fix_multiple_empty_default_value"
+    migrate_to = "0098_fix_forms_conditionals"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
@@ -379,8 +379,8 @@ class FixSimpleConditionalsNumbersMigrationTests(TestMigrations):
 
 class FixSimpleConditionalsCheckboxesMigrationTests(TestMigrations):
     app = "forms"
-    migrate_from = "0096_fix_invalid_validate_configuration"
-    migrate_to = "0097_fix_forms_conditionals"
+    migrate_from = "0097_fix_multiple_empty_default_value"
+    migrate_to = "0098_fix_forms_conditionals"
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
