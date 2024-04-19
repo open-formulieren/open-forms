@@ -55,8 +55,10 @@ class AnalyticsToolsConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             _("Analytics: GovMetric"),
             {
                 "fields": (
-                    "govmetric_source_id",
-                    "govmetric_secure_guid",
+                    "govmetric_source_id_form_finished",
+                    "govmetric_source_id_form_aborted",
+                    "govmetric_secure_guid_form_finished",
+                    "govmetric_secure_guid_form_aborted",
                     "enable_govmetric_analytics",
                 )
             },
