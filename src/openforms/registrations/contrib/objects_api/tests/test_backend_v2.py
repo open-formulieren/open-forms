@@ -272,7 +272,6 @@ class V2HandlerTests(TestCase):
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
-            # See the docker compose fixtures for more info on these values:
             "objecttype": "-dummy-",
             "objecttype_version": 1,
             "upload_submission_csv": False,
@@ -280,12 +279,10 @@ class V2HandlerTests(TestCase):
             "informatieobjecttype_attachment": "",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
-                # fmt: off
                 {
                     "variable_key": "location",
                     "target_path": ["pointCoordinates"],
                 },
-                # fmt: on
             ],
         }
         handler = ObjectsAPIV2Handler()
@@ -321,7 +318,6 @@ class V2HandlerTests(TestCase):
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
-            # See the docker compose fixtures for more info on these values:
             "objecttype": "-dummy-",
             "objecttype_version": 1,
             "upload_submission_csv": False,
@@ -329,12 +325,52 @@ class V2HandlerTests(TestCase):
             "informatieobjecttype_attachment": "",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
-                # fmt: off
                 {
                     "variable_key": "fieldset.textfield",
                     "target_path": ["textfield"],
                 },
-                # fmt: on
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
+
+        record_data = object_data["record"]["data"]
+        self.assertEqual(record_data["textfield"], "some_string")
+
+    @tag("gh-4202")
+    def test_hidden_component(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "textfield",
+                    "type": "textfield",
+                },
+                {
+                    "key": "hidden_number",
+                    "type": "number",
+                    "hidden": True,
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "textfield": "some_string",
+            },
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objecttype": "-dummy-",
+            "objecttype_version": 1,
+            "upload_submission_csv": False,
+            "informatieobjecttype_submission_report": "",
+            "informatieobjecttype_attachment": "",
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                {
+                    "variable_key": "textfield",
+                    "target_path": ["textfield"],
+                },
             ],
         }
         handler = ObjectsAPIV2Handler()
