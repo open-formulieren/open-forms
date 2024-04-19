@@ -101,6 +101,11 @@ point for the changelog entry:
         --pretty=format:"* %s %d"
         --reverse
 
+.. note::
+
+   When writing the changelog for a stable release, remember to copy the entry back into the changelog on the master
+   branch.
+
 **Bumping the version**
 
 Use the ``bin/bumpversion.sh`` script, which is a wrapper around ``bump2version``. It
