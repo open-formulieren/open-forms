@@ -295,6 +295,10 @@ class ZGWRegistration(BasePlugin):
         else:
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
 
+        if verblijfsadres := betrokkene_identificatie.get("verblijfsadres"):
+            # GH-4191: Required, can currently be empty.
+            verblijfsadres["aoaIdentificatie"] = ""
+
         with (
             get_documents_client(zgw) as documents_client,
             get_zaken_client(zgw) as zaken_client,
