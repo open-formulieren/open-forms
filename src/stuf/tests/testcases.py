@@ -24,7 +24,7 @@ class StUFAssertionsMixin:
             f"cannot find exactly {count} XML element(s) with xpath {xpath}",
         )
 
-    def assertXPathEquals(self, xml_doc, xpath, text):
+    def assertXPathEqual(self, xml_doc, xpath, text):
         elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
         self.assertGreaterEqual(
             len(elements), 1, f"cannot find XML element(s) with xpath {xpath}"
@@ -44,7 +44,7 @@ class StUFAssertionsMixin:
 
     def assertXPathEqualDict(self, xml_doc, path_value_dict):
         for path, value in path_value_dict.items():
-            self.assertXPathEquals(xml_doc, path, value)
+            self.assertXPathEqual(xml_doc, path, value)
 
     def assertSoapXMLCommon(self, xml_doc):
         self.assertIsNotNone(xml_doc)

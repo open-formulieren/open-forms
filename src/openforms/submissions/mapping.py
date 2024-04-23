@@ -150,7 +150,7 @@ def get_unmapped_data(
             #  aren't setup in the actual mapping structure
             attr_key_lookup[attribute] = key
 
-    for target_path, conf in mapping_config.items():
+    for conf in mapping_config.values():
         if isinstance(conf, str):
             conf = FieldConf(conf)
         if data_key := attr_key_lookup.get(conf.attribute):

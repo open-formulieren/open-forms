@@ -154,7 +154,7 @@ def iter_evaluate_rules(
                 on_rule_check(evaluated_rule)
                 continue
 
-            for i, operation in enumerate(rule.action_operations):
+            for operation in rule.action_operations:
                 if mutations := operation.eval(
                     data_container.data, submission=submission
                 ):

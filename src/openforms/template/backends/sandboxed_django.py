@@ -60,7 +60,7 @@ def get_registration_custom_libraries() -> list[str]:
     # Add any custom templatetags libraries from the registration plugins
     libraries = []
     # Iterate over both enabled/not-enabled plugins, since the backend is initialised once
-    for plugin_name, plugin in registry.items():
+    for plugin in registry:
         libraries += plugin.get_custom_templatetags_libraries()
     return libraries
 

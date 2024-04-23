@@ -345,7 +345,7 @@ class Command(BaseCommand):
 
             if schema["paths"]:
                 self.stdout.write("path:")
-                for path, attrs in schema["paths"].items():
+                for path in schema["paths"].keys():
                     self.stdout.write(f"  {path}")
 
             if schema["components"]["schemas"]:

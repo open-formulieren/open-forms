@@ -62,7 +62,7 @@ class Command(BaseCommand):
         with open(filepath, "r") as f:
             data = f.read()
             data = data.replace("\\'", "OPENFORMS-ESCAPED-SINGLEQUOTE")
-            for separator, pattern in TRANSLATION_REGEX_PATTERNS.items():
+            for pattern in TRANSLATION_REGEX_PATTERNS.values():
                 matches = re.findall(pattern, data)
                 matches = [
                     m.replace("OPENFORMS-ESCAPED-SINGLEQUOTE", "\\'") for m in matches
