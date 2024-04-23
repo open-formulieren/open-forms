@@ -156,3 +156,15 @@ class StufZdsRegressionTests(SimpleTestCase):
                 self.fail("Body encoding should succeed")
             except RegistrationFailed:
                 pass
+
+    @tag("gh-4146")
+    @requests_mock.Mocker()
+    def test_custom_timeout_applied(self, m: requests_mock.Mocker):
+        m.get("https://example.com/path", text="ok")
+        stuf_service = StufServiceFactory.build(
+            soap_service__url="https://example.com", soap_service__timeout=1
+        )
+        with StufZDSClient(stuf_service, {}) as client:  # type: ignore
+            client.get("https://example.com/path")
+
+        assert m.last_request.timeout == 1  # type: ignore
