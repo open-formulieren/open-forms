@@ -117,3 +117,6 @@ class StufService(models.Model):
 
     def get_auth(self) -> tuple[str, str] | None:
         return self.soap_service.get_auth()
+
+    def get_timeout(self) -> int:
+        return self.soap_service.timeout

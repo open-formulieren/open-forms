@@ -23,6 +23,7 @@ class ServiceClientFactory:
             "verify": self.service.get_verify(),
             "cert": self.service.get_cert(),
             "auth": self.service.get_auth(),
+            "timeout": self.service.get_timeout(),
         }
         return kwargs
 
