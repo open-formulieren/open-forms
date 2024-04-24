@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.6.5 (2024-04-24)
+==================
+
+Bugfix release
+
+* [#4165] Require a cookie consent group for analytics
+* [#4115] Add new source ID and secure GUID
+* [#4202] Fix Objects API registration v2 crash with hidden fields
+
 2.6.5-beta.0 (2024-04-17)
 =========================
 
