@@ -25,8 +25,9 @@ See also the :ref:`developers_versioning`.
 Preparing a release
 -------------------
 
-For new releases, a release branch is created, named: ``release/<new-version>``. All
-release-related actions are concentrated in this branch.
+For new releases, a release branch is created, named: ``release/<new-version>``.
+For minor and major releases, checkout from ``master``. For patch releases, checkout
+from ``stable/<major>.<minor>.x``. All release-related actions are concentrated in this branch.
 
 **Updating translation strings**
 
@@ -77,7 +78,7 @@ and then commit the results/changes.
 
 **Updating the changelog**
 
-``Changelog.rst`` contains a summary of changes compared to the previous release. Use
+``CHANGELOG.rst`` contains a summary of changes compared to the previous release. Use
 the new version followed by the (planned) release data as section title.
 
 You may group the changes in logical groups like "New features", "Bug fixes" etc. to
@@ -147,8 +148,12 @@ Push the release branch to Github, create a pull request and assign a peer for r
 Publishing a release
 --------------------
 
-Once the PR has been reviewed and approved, merge it to the ``master`` branch, then
-proceed to tagging the release.
+Once the PR has been reviewed and approved, merge it to:
+
+* the ``master`` branch for minor and major releases
+* the ``stable/<major>.<minor>.x`` branch for patch releases.
+
+Then proceed to tagging the release.
 
 **Maintenance + Docker Hub preparation (new minor versions)**
 
@@ -185,6 +190,12 @@ This is to be fleshed out more, but some existing channels are:
 * Common Ground slack
 * commonground.nl
 * possible email subscribers
+
+**Forward port changelog for patch releases**
+
+For patch releases only, update the ``CHANGELOG.rst`` on the master branch with the new summary of changes.
+Order the entries by date (most recent first). If multiple patch versions are done on the same day, order them by
+version (most recent first).
 
 Stable releases and on-going development
 ----------------------------------------
