@@ -5,6 +5,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import timedelta
+from functools import partial
 from typing import Iterable, Iterator
 from urllib.parse import urlparse
 
@@ -259,7 +260,7 @@ def attach_uploads_to_submission_step(
             # NOTE there is a possible race-condition if user completes a submission before this resize task is done
             # see https://github.com/open-formulieren/open-forms/issues/507
             transaction.on_commit(
-                resize_submission_attachment.si(attachment.id, resize_size).delay
+                partial(resize_submission_attachment.delay, attachment.id, resize_size)
             )
 
     return result
