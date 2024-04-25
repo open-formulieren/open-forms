@@ -1,6 +1,7 @@
 import logging
 import re
 from dataclasses import dataclass
+from functools import partial
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -283,7 +284,7 @@ class StufZDSRegistration(BasePlugin):
             zaak_data.update({"betalings_indicatie": payment_status})
 
             execute_unless_result_exists(
-                lambda: client.create_zaak(zaak_id, zaak_data, LangInjection()),
+                partial(client.create_zaak, zaak_id, zaak_data, LangInjection()),
                 submission,
                 "intermediate.zaak_created",
                 default=False,
@@ -298,7 +299,9 @@ class StufZDSRegistration(BasePlugin):
             )
             submission_report = SubmissionReport.objects.get(submission=submission)
             execute_unless_result_exists(
-                lambda: client.create_zaak_document(zaak_id, doc_id, submission_report),
+                partial(
+                    client.create_zaak_document, zaak_id, doc_id, submission_report
+                ),
                 submission,
                 "intermediate.documents_created.pdf-report",
                 default=False,
@@ -313,8 +316,11 @@ class StufZDSRegistration(BasePlugin):
                     default="",
                 )
                 execute_unless_result_exists(
-                    lambda: client.create_zaak_attachment(
-                        zaak_id, attachment_doc_id, attachment
+                    partial(
+                        client.create_zaak_attachment,
+                        zaak_id,
+                        attachment_doc_id,
+                        attachment,
                     ),
                     submission,
                     f"intermediate.documents_created.{attachment.id}",

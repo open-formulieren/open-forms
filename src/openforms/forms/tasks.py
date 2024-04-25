@@ -1,6 +1,7 @@
 import copy
 import logging
 from datetime import timedelta
+from functools import partial
 
 from django.db import DatabaseError, transaction
 from django.db.utils import IntegrityError
@@ -160,7 +161,7 @@ def activate_forms():
                     extra={"pk": form.pk},
                 )
             else:
-                transaction.on_commit(lambda: logevent.form_activated(form))
+                transaction.on_commit(partial(logevent.form_activated, form))
 
 
 @app.task()
@@ -186,4 +187,4 @@ def deactivate_forms():
                 )
 
             else:
-                transaction.on_commit(lambda: logevent.form_deactivated(form))
+                transaction.on_commit(partial(logevent.form_deactivated, form))
