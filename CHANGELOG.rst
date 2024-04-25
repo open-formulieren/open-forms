@@ -2,6 +2,24 @@
 Changelog
 =========
 
+2.6.5 (2024-04-24)
+==================
+
+Bugfix release
+
+* [#4165] Require a cookie consent group for analytics
+* [#4115] Add new source ID and secure GUID
+* [#4202] Fix Objects API registration v2 crash with hidden fields
+
+2.6.5-beta.0 (2024-04-17)
+=========================
+
+Bugfix beta release
+
+* [#4186] Fix for "client-side logic" in the formio-builder cleared existing values.
+* [#4187] Selectboxes/radio with dynamic options are considered invalid when submitting the form.
+* [#3964] Toggling visibility with frontend logic and number/currency components leads to fields being emptied.
+
 2.6.4 (2024-04-16)
 ==================
 
