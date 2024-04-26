@@ -461,6 +461,7 @@ class Form(models.Model):
 
         form_steps = self.formstep_set.all().select_related("form_definition")
 
+        # form
         copy = deepcopy(self)
         copy.pk = None
         copy.uuid = _uuid.uuid4()
@@ -472,7 +473,9 @@ class Form(models.Model):
         copy.slug = _("{slug}-copy").format(slug=self.slug)
         copy.product = None
 
-        # name translations are handled by modeltranslation library and
+        # name translations
+
+        # these are handled by modeltranslation library and
         # we want to make sure it's translated for all the available languages
         language_codes = [item[0] for item in settings.LANGUAGES]
         for lang in language_codes:
@@ -481,6 +484,7 @@ class Form(models.Model):
 
         copy.save()
 
+        # form steps
         for form_step in form_steps:
             form_step.pk = None
             form_step.uuid = _uuid.uuid4()
@@ -495,6 +499,7 @@ class Form(models.Model):
 
             form_step.save()
 
+        # logic rules
         for logic in self.formlogic_set.all().select_related("trigger_from_step"):
             logic.pk = None
             logic.uuid = _uuid.uuid4()
@@ -507,6 +512,7 @@ class Form(models.Model):
 
             logic.save()
 
+        # form variables
         FormVariable.objects.create_for_form(copy)
         for variable in self.formvariable_set.filter(
             source=FormVariableSources.user_defined
@@ -515,10 +521,17 @@ class Form(models.Model):
             variable.form = copy
             variable.save()
 
+        # confirmation email template
         with suppress(ConfirmationEmailTemplate.DoesNotExist):
             self.confirmation_email_template.pk = None
             self.confirmation_email_template.form = copy
             self.confirmation_email_template.save()
+
+        # registration backends
+        for registration_backend in self.registration_backends.all():
+            registration_backend.pk = None
+            registration_backend.form = copy
+            registration_backend.save()
 
         return copy
 

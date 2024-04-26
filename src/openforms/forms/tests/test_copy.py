@@ -19,6 +19,7 @@ from .factories import (
     FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -193,16 +194,10 @@ class CopyFormAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-
-class CopyFormWithVarsTest(APITestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        user = SuperUserFactory.create()
-        cls.user = user
-        cls.token = TokenFactory(user=user)
-
     def test_copy_form_with_variables(self):
+        super_user = SuperUserFactory.create()
+        token = TokenFactory(user=super_user)
+
         form: Form = FormFactory.create(slug="test-copying-with-vars")
         FormStepFactory.create(
             form=form,
@@ -243,7 +238,7 @@ class CopyFormWithVarsTest(APITestCase):
 
         url = reverse("api:form-copy", args=(form.uuid,))
         response = self.client.post(
-            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+            url, format="json", HTTP_AUTHORIZATION=f"Token {token.key}"
         )
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
@@ -263,3 +258,29 @@ class CopyFormWithVarsTest(APITestCase):
             1, variables_copy.filter(source=FormVariableSources.user_defined).count()
         )
         self.assertEqual(form_copy.formlogic_set.count(), 1)
+
+    def test_copy_form_with_registration_backends(self):
+        super_user = SuperUserFactory.create()
+        token = TokenFactory(user=super_user)
+
+        form = FormFactory.create(slug="test-copying-with-backends")
+        FormRegistrationBackendFactory.create_batch(2, form=form)
+
+        self.assertEqual(Form.objects.count(), 1)
+        self.assertEqual(form.registration_backends.count(), 2)
+
+        url = reverse("api:form-copy", args=(form.uuid,))
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {token.key}"
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        forms = Form.objects.all()
+
+        self.assertEqual(2, forms.count())
+
+        form_copy = forms.get(~Q(slug__in=["test-copying-with-backends"]))
+        registration_backends_copy = form_copy.registration_backends.all()
+
+        self.assertEqual(registration_backends_copy.count(), 2)
