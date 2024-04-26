@@ -58,8 +58,8 @@ def detect_formiojs_configuration_snake_case(
         return
 
     config_now = copy.deepcopy(fd.configuration)
-    remove_key_from_dict(config_now, "time_24hr")
-    remove_key_from_dict(config_now, "invalid_time")
+    for key in ["time_24hr", "invalid_time", "invalid_date", "invalid_datetime"]:
+        remove_key_from_dict(config_now, key)
     camelized_config = camelize(config_now)
 
     if config_now != camelized_config:
