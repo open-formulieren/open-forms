@@ -248,7 +248,10 @@ class SingleBSNTests(ValidationsTestCase):
 
 class SingleDateTests(ValidationsTestCase):
 
-    async def apply_ui_input(self, page: Page, label: str, ui_input: str = "") -> None:
+    async def apply_ui_input(
+        self, page: Page, label: str, ui_input: str | int | float = ""
+    ) -> None:
+        assert isinstance(ui_input, str)
         # fix the input resolution because the formio datepicker is not accessible
         label_node = page.get_by_text(label, exact=True)
         label_parent = label_node.locator("xpath=../..")
@@ -261,10 +264,6 @@ class SingleDateTests(ValidationsTestCase):
             "key": "requiredDate",
             "label": "Required date field",
             "validate": {"required": True},
-            "datepickerMode": "day",
-            "enableDate": True,
-            "enableTime": False,
-            "format": "dd-MM-yyyy",
             "datePicker": {
                 "showWeeks": True,
                 "startingDay": 0,
@@ -293,10 +292,6 @@ class SingleDateTests(ValidationsTestCase):
             "openForms": {
                 "minDate": {"mode": "fixedValue"},
             },
-            "datepickerMode": "day",
-            "enableDate": True,
-            "enableTime": False,
-            "format": "dd-MM-yyyy",
             "datePicker": {
                 "showWeeks": True,
                 "startingDay": 0,
@@ -326,10 +321,6 @@ class SingleDateTests(ValidationsTestCase):
             "openForms": {
                 "maxDate": {"mode": "fixedValue"},
             },
-            "datepickerMode": "day",
-            "enableDate": True,
-            "enableTime": False,
-            "format": "dd-MM-yyyy",
             "datePicker": {
                 "showWeeks": True,
                 "startingDay": 0,
