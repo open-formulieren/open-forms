@@ -20,6 +20,7 @@ from openforms.validations.service import PluginValidator
 from ..dynamic_config.date import mutate as mutate_min_max_validation
 from ..formatters.custom import (
     AddressNLFormatter,
+    CosignFormatter,
     DateFormatter,
     DateTimeFormatter,
     MapFormatter,
@@ -314,3 +315,13 @@ class BSN(BasePlugin[Component]):
 class AddressNL(BasePlugin):
 
     formatter = AddressNLFormatter
+
+
+@register("cosign")
+class Cosign(BasePlugin):
+    formatter = CosignFormatter
+
+    def build_serializer_field(self, component: Component) -> serializers.EmailField:
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        return serializers.EmailField(required=required, allow_blank=not required)
