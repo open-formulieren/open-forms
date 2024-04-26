@@ -509,6 +509,12 @@
       "value": "De maximale toegestane lengte voor dit veld."
     }
   ],
+  "5JNnFB": [
+    {
+      "type": 0,
+      "value": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?"
+    }
+  ],
   "5LxMj7": [
     {
       "type": 0,
@@ -819,6 +825,12 @@
     {
       "type": 0,
       "value": " 1"
+    }
+  ],
+  "7rzPgD": [
+    {
+      "type": 0,
+      "value": "(label ontbreekt)"
     }
   ],
   "833GAg": [
@@ -1939,6 +1951,12 @@
       "value": "JSON"
     }
   ],
+  "JfIB3K": [
+    {
+      "type": 0,
+      "value": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
+    }
+  ],
   "JhdlEg": [
     {
       "type": 0,
@@ -1981,6 +1999,12 @@
     {
       "type": 0,
       "value": "Verwerking"
+    }
+  ],
+  "KGcyn+": [
+    {
+      "type": 0,
+      "value": "The form is not active"
     }
   ],
   "KIy7Wr": [
@@ -2513,6 +2537,12 @@
       "value": "Indien ingeschakeld, gebruik dan de algemene instellingen voor toegestane bestandstypen."
     }
   ],
+  "S4Lvvs": [
+    {
+      "type": 0,
+      "value": "Maak keuze leeg"
+    }
+  ],
   "S6eF5o": [
     {
       "type": 0,
@@ -2857,6 +2887,12 @@
     {
       "type": 0,
       "value": "Automatisch aanvullen"
+    }
+  ],
+  "Vf8vWO": [
+    {
+      "type": 0,
+      "value": "Aangevinkt"
     }
   ],
   "VhCwEK": [
@@ -3218,6 +3254,12 @@
     {
       "type": 0,
       "value": "'Vorige' tekst"
+    }
+  ],
+  "ZMIEED": [
+    {
+      "type": 0,
+      "value": "Uitgevinkt"
     }
   ],
   "ZOytnI": [

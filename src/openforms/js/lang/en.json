@@ -209,6 +209,11 @@
     "description": "Manage process vars component help text",
     "originalDefault": "The value of the selected field will be the process variable value."
   },
+  "5JNnFB": {
+    "defaultMessage": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?",
+    "description": "Objects API registration backend: v1 switch warning message",
+    "originalDefault": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?"
+  },
   "5MiyLE": {
     "defaultMessage": "Configure",
     "description": "Button to open DMN configuration modal",
@@ -869,6 +874,11 @@
     "description": "Successful Submissions Removal Limit field label",
     "originalDefault": "Successful Submissions Removal Limit"
   },
+  "JfIB3K": {
+    "defaultMessage": "Override the minimum Level of Assurance. This is not supported by all authentication plugins.",
+    "description": "Minimal LoA override help text",
+    "originalDefault": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
+  },
   "JhdlEg": {
     "defaultMessage": "There are co-sign components inside repeating groups. This is not supported.",
     "description": "Cosign components in repeating group warning message",
@@ -888,6 +898,11 @@
     "defaultMessage": "Processing",
     "description": "Form processing fieldset title",
     "originalDefault": "Processing"
+  },
+  "KGcyn+": {
+    "defaultMessage": "The form is not active",
+    "description": "Show form button disabled title",
+    "originalDefault": "The form is not active"
   },
   "KIy7Wr": {
     "defaultMessage": "Name/title of the form",

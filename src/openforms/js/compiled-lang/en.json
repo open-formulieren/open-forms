@@ -509,6 +509,12 @@
       "value": "The maximum length requirement this field must meet."
     }
   ],
+  "5JNnFB": [
+    {
+      "type": 0,
+      "value": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?"
+    }
+  ],
   "5LxMj7": [
     {
       "type": 0,
@@ -815,6 +821,12 @@
     {
       "type": 0,
       "value": " 1"
+    }
+  ],
+  "7rzPgD": [
+    {
+      "type": 0,
+      "value": "(missing label)"
     }
   ],
   "833GAg": [
@@ -1935,6 +1947,12 @@
       "value": "JSON"
     }
   ],
+  "JfIB3K": [
+    {
+      "type": 0,
+      "value": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
+    }
+  ],
   "JhdlEg": [
     {
       "type": 0,
@@ -1977,6 +1995,12 @@
     {
       "type": 0,
       "value": "Processing"
+    }
+  ],
+  "KGcyn+": [
+    {
+      "type": 0,
+      "value": "The form is not active"
     }
   ],
   "KIy7Wr": [
@@ -2513,6 +2537,12 @@
       "value": "When this is checked, the filetypes configured in the global settings will be used."
     }
   ],
+  "S4Lvvs": [
+    {
+      "type": 0,
+      "value": "Clear selection"
+    }
+  ],
   "S6eF5o": [
     {
       "type": 0,
@@ -2857,6 +2887,12 @@
     {
       "type": 0,
       "value": "Autocomplete"
+    }
+  ],
+  "Vf8vWO": [
+    {
+      "type": 0,
+      "value": "Checked"
     }
   ],
   "VhCwEK": [
@@ -3217,6 +3253,12 @@
     {
       "type": 0,
       "value": "Previous text"
+    }
+  ],
+  "ZMIEED": [
+    {
+      "type": 0,
+      "value": "Not checked"
     }
   ],
   "ZOytnI": [
