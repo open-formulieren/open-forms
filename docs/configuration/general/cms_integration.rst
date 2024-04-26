@@ -100,9 +100,15 @@ can do with the API token.
 
     .. code:: http
 
-       GET /api/v1/forms  HTTP/1.0
+       GET /api/v2/forms  HTTP/1.0
        Authorization: Token 3f084e81b3d68d52a5f9d1712e3d0eda27d2129f
 
+    Additional endpoints of interest:
+
+    * ``/api/v2/public/categories`` - list of form categories
+    * ``/api/v2/public/categories/{uuid}`` - details of a single form category
+
+    For the API documentation, see :ref:`developers_versioning_api`.
 
 .. warning::
 
