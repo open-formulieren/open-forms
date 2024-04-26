@@ -19,6 +19,7 @@ from .factories import (
     FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
+    FormRegistrationBackendFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -263,3 +264,35 @@ class CopyFormWithVarsTest(APITestCase):
             1, variables_copy.filter(source=FormVariableSources.user_defined).count()
         )
         self.assertEqual(form_copy.formlogic_set.count(), 1)
+
+
+class CopyFormWithRegistrationBackendsTest(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        user = SuperUserFactory.create()
+        cls.user = user
+        cls.token = TokenFactory(user=user)
+
+    def test_copy_form_with_registration_backends(self):
+        form = FormFactory.create(slug="test-copying-with-backends")
+        FormRegistrationBackendFactory.create_batch(2, form=form)
+
+        self.assertEqual(Form.objects.count(), 1)
+        self.assertEqual(form.registration_backends.count(), 2)
+
+        url = reverse("api:form-copy", args=(form.uuid,))
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        forms = Form.objects.all()
+
+        self.assertEqual(2, forms.count())
+
+        form_copy = forms.get(~Q(slug__in=["test-copying-with-backends"]))
+        registration_backends_copy = form_copy.registration_backends.all()
+
+        self.assertEqual(registration_backends_copy.count(), 2)
