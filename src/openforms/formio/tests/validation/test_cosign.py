@@ -1,15 +1,28 @@
 from django.test import SimpleTestCase
 
-
 from openforms.typing import JSONValue
-
 
 from ...typing import Component
 from .helpers import extract_error, validate_formio_data
 
 
 class CosignValidationTests(SimpleTestCase):
-    def test_cosign_required_validation(self):
+    def test_valid_required_cosign(self):
+        component: Component = {
+            "type": "cosign",
+            "key": "foo",
+            "label": "Test",
+            "validate": {"required": True},
+        }
+
+        data: JSONValue = {"foo": "user@example.com"}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+        self.assertDictEqual(errors, {})
+
+    def test_invalid_required_cosign(self):
         component: Component = {
             "type": "cosign",
             "key": "foo",
@@ -32,12 +45,29 @@ class CosignValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
-    def test_cosign_pattern_validation(self):
+    def test_valid_non_required_cosign(self):
         component: Component = {
             "type": "cosign",
             "key": "foo",
             "label": "Test",
+            "validate": {"required": False},
         }
+
+        data: JSONValue = {"foo": "user@example.com"}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+        self.assertDictEqual(errors, {})
+
+    def test_invalid_non_required_cosign(self):
+        component: Component = {
+            "type": "cosign",
+            "key": "foo",
+            "label": "Test",
+            "validate": {"required": False},
+        }
+
         data: JSONValue = {"foo": "invalid-email"}
 
         is_valid, errors = validate_formio_data(component, data)

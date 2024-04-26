@@ -7,8 +7,22 @@ from .helpers import extract_error, validate_formio_data
 
 
 class PasswordFieldValidationTests(SimpleTestCase):
+    def test_valid_required_passwordfield(self):
+        component: Component = {
+            "type": "password",
+            "key": "foo",
+            "label": "Foo",
+            "validate": {"required": True},
+        }
 
-    def test_passwordfield_required_validation(self):
+        data: JSONValue = {"foo": "test"}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+        self.assertDictEqual(errors, {})
+
+    def test_invalid_required_passwordfield(self):
         component: Component = {
             "type": "password",
             "key": "foo",
@@ -30,13 +44,29 @@ class PasswordFieldValidationTests(SimpleTestCase):
                 error = extract_error(errors, component["key"])
                 self.assertEqual(error.code, error_code)
 
-    def test_multiple(self):
+    def test_multiple_enabled(self):
         component: Component = {
             "type": "password",
             "key": "foo",
-            "label": "Test",
+            "label": "Foo",
+            "multiple": True,
+        }
+
+        data: JSONValue = {"foo": ["ghwgG22", "TRshhe33j"]}
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+        self.assertDictEqual(errors, {})
+
+    def test_multiple_disabled(self):
+        component: Component = {
+            "type": "password",
+            "key": "foo",
+            "label": "Foo",
             "multiple": False,
         }
+
         data: JSONValue = {"foo": ["ghwgG22", "TRshhe33j"]}
 
         is_valid, errors = validate_formio_data(component, data)
