@@ -1011,41 +1011,6 @@ class ComponentModificationTests(TestCase):
 
         self.assertNotIn("selectboxes", submission_step.data)
 
-    @tag("gh-2900")
-    def test_checkbox_frontend_logic(self):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "key": "checkBox",
-                        "type": "checkbox",
-                        "hidden": False,
-                    },
-                    {
-                        "key": "textField",
-                        "type": "textfield",
-                        "clearOnHide": True,
-                        "conditional": {"eq": "true", "show": True, "when": "checkBox"},
-                    },
-                ]
-            },
-        )
-
-        submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step,
-            data={"checkBox": True, "textField": "Test value"},
-        )
-
-        self.assertEqual(submission_step.data["textField"], "Test value")
-
-        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
-
-        self.assertEqual(submission_step.data["textField"], "Test value")
-
     @tag("gh-3744")
     def test_postcode_component_made_optional(self):
         form = FormFactory.create()

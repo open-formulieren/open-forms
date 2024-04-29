@@ -1127,3 +1127,161 @@ class ImportExportTests(TestCase):
 
         rule = FormLogic.objects.get(form__slug="old-service-fetch-config", order=0)
         self.assertEqual(rule.actions[0]["action"]["value"], "")
+
+    @tag("gh-3964")
+    def test_import_form_with_old_simple_conditionals_with_numbers(self):
+        """
+        Test for importing a form where simple conditionals in the logic that use the values of
+        number or currency components: {"eq": "0.555", "show": True, "when": "number"}
+        but compare the values to a string ("eq": "0.555") instead of a number ("eq": 0.555).
+        """
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "authentication_backends": [],
+                    "is_deleted": False,
+                    "login_required": False,
+                    "maintenance_mode": False,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "product": None,
+                    "show_progress_indicator": True,
+                    "slug": "old-service-fetch-config",
+                    "url": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                }
+            ],
+            "formSteps": [
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "form_definition": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "index": 0,
+                    "slug": "test-step",
+                    "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+                }
+            ],
+            "formDefinitions": [
+                {
+                    "configuration": {
+                        "components": [
+                            {"key": "number", "type": "number", "label": "Number"},
+                            {
+                                "key": "currency",
+                                "type": "currency",
+                                "label": "Currency",
+                            },
+                            {
+                                "key": "textfield",
+                                "type": "textfield",
+                                "label": "Text Field",
+                            },
+                            {
+                                "key": "textArea1",
+                                "type": "textarea",
+                                "label": "Text Area 1",
+                                "conditional": {
+                                    "eq": "0",
+                                    "show": True,
+                                    "when": "number",
+                                },
+                                "clearOnHide": True,
+                            },
+                            {
+                                "key": "textArea2",
+                                "type": "textarea",
+                                "label": "Text Area 2",
+                                "conditional": {
+                                    "eq": "0.555",
+                                    "show": True,
+                                    "when": "number",
+                                },
+                                "clearOnHide": True,
+                            },
+                            {
+                                "key": "textArea3",
+                                "type": "textarea",
+                                "label": "Text Area 3",
+                                "conditional": {"eq": "", "show": None, "when": ""},
+                                "clearOnHide": True,
+                            },
+                            {
+                                "key": "textArea4",
+                                "type": "textarea",
+                                "label": "Text Area 4",
+                                "conditional": {
+                                    "when": "currency",
+                                    "eq": "0.55",
+                                    "show": True,
+                                },
+                                "clearOnHide": True,
+                            },
+                            {
+                                "key": "textArea5",
+                                "type": "textarea",
+                                "label": "Text Area 5",
+                                "conditional": {
+                                    "eq": "1.00",
+                                    "when": "currency",
+                                    "show": True,
+                                },
+                                "clearOnHide": True,
+                            },
+                            {
+                                "key": "textArea6",
+                                "type": "textarea",
+                                "label": "Text Area 6",
+                                "conditional": {
+                                    "eq": "1.00",
+                                    "when": "textfield",
+                                    "show": True,
+                                },
+                                "clearOnHide": True,
+                            },
+                            {
+                                "key": "repeatingGroup",
+                                "type": "editgrid",
+                                "label": "Repeating group",
+                                "components": [
+                                    {
+                                        "key": "textArea7",
+                                        "type": "textarea",
+                                        "label": "Text Area 7",
+                                        "conditional": {
+                                            "eq": "0",
+                                            "show": True,
+                                            "when": "number",
+                                        },
+                                        "clearOnHide": True,
+                                    },
+                                ],
+                            },
+                        ]
+                    },
+                    "name": "A definition",
+                    "slug": "test-definition",
+                    "url": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                },
+            ],
+            "formLogic": [],
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        form_definition = FormDefinition.objects.get(slug="test-definition")
+        fixed_components = form_definition.configuration["components"]
+
+        self.assertIsInstance(fixed_components[3]["conditional"]["eq"], int)
+        self.assertIsInstance(fixed_components[4]["conditional"]["eq"], float)
+        self.assertIsInstance(fixed_components[5]["conditional"]["eq"], str)
+        self.assertIsInstance(fixed_components[6]["conditional"]["eq"], float)
+        self.assertIsInstance(fixed_components[7]["conditional"]["eq"], float)
+        self.assertIsInstance(fixed_components[8]["conditional"]["eq"], str)
+        self.assertIsInstance(
+            fixed_components[9]["components"][0]["conditional"]["eq"], int
+        )

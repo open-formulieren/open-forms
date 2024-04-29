@@ -5,12 +5,15 @@ This registry is used by the data migrations *and* form import. It guarantees th
 component definitions are rewritten to be compatible with the current code.
 """
 
+import json
 from typing import Protocol, cast
 
 from glom import assign, glom
 
 from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
+from openforms.typing import JSONObject
 
+from .datastructures import FormioConfigurationWrapper
 from .typing import Component
 
 
@@ -173,6 +176,35 @@ def fix_multiple_empty_default_value(component: Component) -> bool:
         return True
 
     return False
+
+
+def convert_simple_conditionals(configuration: JSONObject) -> bool:
+    config_modified = False
+
+    config = FormioConfigurationWrapper(configuration)
+    for component in config:
+        if not (
+            comparison_component_key := component.get("conditional", {}).get("when", "")
+        ):
+            continue
+
+        comparison_component = config[comparison_component_key]
+        if comparison_component["type"] in ["number", "currency"]:
+            component["conditional"]["eq"] = json.loads(component["conditional"]["eq"])
+            config_modified = True
+
+        if comparison_component["type"] == "checkbox":
+            component["conditional"]["eq"] = {"true": True, "false": False}.get(
+                component["conditional"]["eq"], False
+            )
+            config_modified = True
+
+    return config_modified
+
+
+DEFINITION_CONVERTERS = [
+    convert_simple_conditionals,
+]
 
 
 CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
