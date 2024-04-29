@@ -756,6 +756,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.emails.tasks.send_email_digest",
         "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
+    "delete-old-emails": {
+        "task": "django_yubin.tasks.delete_old_emails",
+        "schedule": crontab(hour=0, minute=0, day_of_week="*"),
+    },
 }
 
 RETRY_SUBMISSIONS_TIME_LIMIT = config(
