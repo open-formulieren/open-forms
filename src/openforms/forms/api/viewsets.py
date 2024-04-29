@@ -407,43 +407,6 @@ class FormViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary=_("Copy form"),
-        tags=["forms"],
-        request=None,
-        responses={status.HTTP_201_CREATED: FormSerializer},
-        parameters=[
-            UUID_OR_SLUG_PARAMETER,
-            OpenApiParameter(
-                name="Location",
-                type=OpenApiTypes.URI,
-                location=OpenApiParameter.HEADER,
-                description="URL of the created resource",
-                response=[status.HTTP_201_CREATED],
-            ),
-        ],
-    )
-    @transaction.atomic
-    @action(
-        detail=True, methods=["post"], authentication_classes=(TokenAuthentication,)
-    )
-    def copy(self, request, *args, **kwargs):
-        """
-        Create a copy of a form.
-
-        Copying a form copies the meta-data of the form and the steps included.
-        Referenced form definitions inside the form steps are re-used instead of
-        new copies being created.
-        """
-        instance = self.get_object()
-        copied_form = instance.copy()
-        copied_form.refresh_from_db()  # this clears any prefetch caches
-        serializer = self.get_serializer(instance=copied_form)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
-
-    @extend_schema(
         summary=_("Export form"),
         tags=["forms"],
         parameters=[UUID_OR_SLUG_PARAMETER],
