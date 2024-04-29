@@ -998,13 +998,17 @@ CSP_DEFAULT_SRC = [
     "'self'",
 ] + config("CSP_EXTRA_DEFAULT_SRC", default=[], split=True)
 
-# CORS_ALLOWED_ORIGINS is included because we (likely) need to redirect back to those
-# third party domains that are embedding the SDK after login. Chrome in particular
-# validates the entire redirect chain, see: https://stackoverflow.com/a/69439102
+# Allow any 'https:' host, as we don't know in advance which target is used by eHerkenning.
+# Behavior is also different between browsers regarding redirects, see:
+# https://stackoverflow.com/a/69439102 / https://github.com/w3c/webappsec-csp/issues/8
 CSP_FORM_ACTION = (
-    ["'self'"]
+    config(
+        "CSP_FORM_ACTION",
+        default=["\"'self'\"", "https:"]
+        + config("CSP_EXTRA_FORM_ACTION", default=[], split=True),
+        split=True,
+    )
     + CORS_ALLOWED_ORIGINS
-    + config("CSP_EXTRA_FORM_ACTION", default=[], split=True)
 )
 
 # * service.pdok.nl serves the tiles for the Leaflet maps (PNGs) and must be whitelisted
@@ -1036,7 +1040,6 @@ CSP_BASE_URI = ["'self'"]
 CSP_FRAME_ANCESTORS = ["'none'"]  # equivalent to X-Frame-Options: deny
 CSP_FRAME_SRC = ["'self'"]
 # CSP_NAVIGATE_TO = ["'self'"]  # this will break all outgoing links etc  # too much & tricky, see note on MDN
-# CSP_FORM_ACTION = ["'self'"]  # forms, possibly problematic with payments
 # CSP_SANDBOX # too much
 
 CSP_UPGRADE_INSECURE_REQUESTS = False  # TODO enable on production?
