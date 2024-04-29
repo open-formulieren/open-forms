@@ -1276,12 +1276,12 @@ class ImportExportTests(TestCase):
         form_definition = FormDefinition.objects.get(slug="test-definition")
         fixed_components = form_definition.configuration["components"]
 
-        self.assertTrue(isinstance(fixed_components[3]["conditional"]["eq"], int))
-        self.assertTrue(isinstance(fixed_components[4]["conditional"]["eq"], float))
-        self.assertTrue(isinstance(fixed_components[5]["conditional"]["eq"], str))
-        self.assertTrue(isinstance(fixed_components[6]["conditional"]["eq"], float))
-        self.assertTrue(isinstance(fixed_components[7]["conditional"]["eq"], float))
-        self.assertTrue(isinstance(fixed_components[8]["conditional"]["eq"], str))
-        self.assertTrue(
-            isinstance(fixed_components[9]["components"][0]["conditional"]["eq"], int)
+        self.assertIsInstance(fixed_components[3]["conditional"]["eq"], int)
+        self.assertIsInstance(fixed_components[4]["conditional"]["eq"], float)
+        self.assertIsInstance(fixed_components[5]["conditional"]["eq"], str)
+        self.assertIsInstance(fixed_components[6]["conditional"]["eq"], float)
+        self.assertIsInstance(fixed_components[7]["conditional"]["eq"], float)
+        self.assertIsInstance(fixed_components[8]["conditional"]["eq"], str)
+        self.assertIsInstance(
+            fixed_components[9]["components"][0]["conditional"]["eq"], int
         )

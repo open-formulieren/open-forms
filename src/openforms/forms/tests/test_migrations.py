@@ -366,15 +366,13 @@ class FixSimpleConditionalsNumbersMigrationTests(TestMigrations):
         FormDefinition = self.apps.get_model("forms", "FormDefinition")
         fixed_components = FormDefinition.objects.get().configuration["components"]
 
-        self.assertTrue(isinstance(fixed_components[3]["conditional"]["eq"], int))
-        self.assertTrue(isinstance(fixed_components[4]["conditional"]["eq"], float))
-        self.assertTrue(isinstance(fixed_components[5]["conditional"]["eq"], str))
-        self.assertTrue(isinstance(fixed_components[6]["conditional"]["eq"], float))
-        self.assertTrue(isinstance(fixed_components[7]["conditional"]["eq"], float))
-        self.assertTrue(isinstance(fixed_components[8]["conditional"]["eq"], str))
-        self.assertTrue(
-            isinstance(fixed_components[9]["components"][0]["conditional"]["eq"], int)
-        )
+        self.assertEqual(fixed_components[3]["conditional"]["eq"], 0)
+        self.assertEqual(fixed_components[4]["conditional"]["eq"], 0.555)
+        self.assertEqual(fixed_components[5]["conditional"]["eq"], "")
+        self.assertEqual(fixed_components[6]["conditional"]["eq"], 0.55)
+        self.assertEqual(fixed_components[7]["conditional"]["eq"], 1.0)
+        self.assertEqual(fixed_components[8]["conditional"]["eq"], "1.00")
+        self.assertEqual(fixed_components[9]["components"][0]["conditional"]["eq"], 0)
 
 
 class FixSimpleConditionalsCheckboxesMigrationTests(TestMigrations):
