@@ -563,3 +563,32 @@ class SingleTimeTests(ValidationsTestCase):
             ui_input="15:00",
             expected_ui_error="Alleen tijden tussen 20:00 en 04:00 zijn toegestaan.",
         )
+
+
+class SingleCosignTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "cosign",
+            "key": "requiredCosign",
+            "label": "Required cosign",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required cosign is niet ingevuld.",
+        )
+
+    def test_cosign_format(self):
+        component: Component = {
+            "type": "cosign",
+            "key": "cosign",
+            "label": "Cosign",
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="invalid",
+            expected_ui_error="Ongeldig e-mailadres",
+        )
