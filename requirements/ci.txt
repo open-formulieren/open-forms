@@ -499,6 +499,11 @@ idna==3.7
     #   yarl
 imagesize==1.4.1
     # via sphinx
+importlib-resources==6.4.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   schwifty
 inflection==0.5.1
     # via
     #   -c requirements/base.txt
@@ -507,6 +512,11 @@ inflection==0.5.1
     #   drf-spectacular
 iniconfig==1.1.1
     # via pytest
+iso3166==2.1.1
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   schwifty
 isodate==0.6.1
     # via
     #   -c requirements/base.txt
@@ -713,6 +723,11 @@ psycopg2==2.8.6
     #   -r requirements/base.txt
 pycodestyle==2.10.0
     # via flake8
+pycountry==23.12.11
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   schwifty
 pycparser==2.20
     # via
     #   -c requirements/base.txt
@@ -879,6 +894,10 @@ ruamel-yaml-clib==0.2.7
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   ruamel-yaml
+schwifty==2024.4.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 self-certifi==1.0.0
     # via
     #   -c requirements/base.txt

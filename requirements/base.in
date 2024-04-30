@@ -34,6 +34,7 @@ tabulate
 typing-extensions
 weasyprint
 zeep
+schwifty
 
 # Framework libraries
 django ~= 4.2

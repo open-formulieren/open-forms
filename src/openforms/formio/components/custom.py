@@ -14,7 +14,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import datetime_in_amsterdam, format_date_value
-from openforms.utils.validators import BSNValidator
+from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
 
 from ..dynamic_config.date import mutate as mutate_min_max_validation
@@ -325,3 +325,24 @@ class Cosign(BasePlugin):
         validate = component.get("validate", {})
         required = validate.get("required", False)
         return serializers.EmailField(required=required, allow_blank=not required)
+
+
+@register("iban")
+class Iban(BasePlugin):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        extra = {}
+        validators = [IBANValidator()]
+        extra["validators"] = validators
+
+        base = serializers.CharField(
+            required=required, allow_blank=not required, **extra
+        )
+        return serializers.ListField(child=base) if multiple else base

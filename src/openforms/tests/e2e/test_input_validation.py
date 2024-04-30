@@ -608,3 +608,32 @@ class SinglePasswordTests(ValidationsTestCase):
             ui_input="",
             expected_ui_error="Het verplichte veld Required password is niet ingevuld.",
         )
+
+
+class SingleIbanTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "iban",
+            "key": "requiredIban",
+            "label": "Required iban",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required iban is niet ingevuld.",
+        )
+
+    def test_invalid_field(self):
+        component: Component = {
+            "type": "iban",
+            "key": "requiredIban",
+            "label": "Required iban",
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="NL12 3456 789I I987 6999",
+            expected_ui_error="Ongeldig IBAN",
+        )

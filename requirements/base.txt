@@ -273,10 +273,14 @@ humanize==3.14.0
     # via flower
 idna==3.7
     # via requests
+importlib-resources==6.4.0
+    # via schwifty
 inflection==0.5.1
     # via
     #   django-camunda
     #   drf-spectacular
+iso3166==2.1.1
+    # via schwifty
 isodate==0.6.1
     # via
     #   maykin-json-logic-py
@@ -368,6 +372,8 @@ prompt-toolkit==3.0.27
     # via click-repl
 psycopg2==2.8.6
     # via -r requirements/base.in
+pycountry==23.12.11
+    # via schwifty
 pycparser==2.20
     # via cffi
 pydyf==0.8.0
@@ -451,6 +457,8 @@ ruamel-yaml==0.17.32
     # via prance
 ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
+schwifty==2024.4.0
+    # via -r requirements/base.in
 self-certifi==1.0.0
     # via -r requirements/base.in
 semantic-version==2.10.0

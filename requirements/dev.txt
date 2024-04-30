@@ -560,6 +560,11 @@ imagesize==1.4.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
+importlib-resources==6.4.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   schwifty
 inflection==0.5.1
     # via
     #   -c requirements/ci.txt
@@ -571,6 +576,11 @@ iniconfig==1.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pytest
+iso3166==2.1.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   schwifty
 isodate==0.6.1
     # via
     #   -c requirements/ci.txt
@@ -815,6 +825,11 @@ pycodestyle==2.10.0
     #   -r requirements/ci.txt
     #   autopep8
     #   flake8
+pycountry==23.12.11
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   schwifty
 pycparser==2.20
     # via
     #   -c requirements/ci.txt
@@ -995,6 +1010,10 @@ ruamel-yaml-clib==0.2.7
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   ruamel-yaml
+schwifty==2024.4.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 self-certifi==1.0.0
     # via
     #   -c requirements/ci.txt
