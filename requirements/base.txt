@@ -158,7 +158,7 @@ django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
-django-digid-eherkenning==0.12.0
+django-digid-eherkenning==0.13.1
     # via -r requirements/base.in
 django-filter==23.2
     # via -r requirements/base.in
