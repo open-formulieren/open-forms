@@ -45,7 +45,7 @@ class BAGCheck:
             with get_bag_client() as client:
                 client.get_address("1000AA", "1", reraise_errors=True)
         except NoServiceConfigured as exc:
-            msg = _("{api_name} endpoint is not configured.").format(
+            msg = _("{api_name} endpoint is not configured").format(
                 api_name="bag_service"
             )
             raise InvalidPluginConfiguration(msg) from exc
