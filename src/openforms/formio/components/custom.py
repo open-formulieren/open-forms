@@ -338,11 +338,50 @@ class Iban(BasePlugin):
         validate = component.get("validate", {})
         required = validate.get("required", False)
 
+        base = serializers.CharField(
+            required=required,
+            allow_blank=not required,
+            # FIXME: should always be False, but formio client sends `null` for
+            # untouched fields :( See #4068
+            allow_null=multiple,
+            validators=[IBANValidator()],
+        )
+        return serializers.ListField(child=base) if multiple else base
+
+
+@register("licenseplate")
+class LicensePlate(BasePlugin):
+    formatter = DefaultFormatter
+
+    def build_serializer_field(
+        self, component: Component
+    ) -> serializers.CharField | serializers.ListField:
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
         extra = {}
-        validators = [IBANValidator()]
-        extra["validators"] = validators
+        validators = []
+        # adding in the validator is more explicit than changing to serialiers.RegexField,
+        # which essentially does the same.
+        if pattern := validate.get("pattern"):
+            validators.append(
+                RegexValidator(
+                    _normalize_pattern(pattern),
+                    message=_("This value does not match the required pattern."),
+                )
+            )
+
+        if validators:
+            extra["validators"] = validators
 
         base = serializers.CharField(
-            required=required, allow_blank=not required, **extra
+            required=required,
+            allow_blank=not required,
+            # FIXME: should always be False, but formio client sends `null` for
+            # untouched fields :( See #4068
+            allow_null=multiple,
+            **extra,
         )
+
         return serializers.ListField(child=base) if multiple else base

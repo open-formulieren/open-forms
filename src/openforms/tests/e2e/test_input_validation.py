@@ -637,3 +637,36 @@ class SingleIbanTests(ValidationsTestCase):
             ui_input="NL12 3456 789I I987 6999",
             expected_ui_error="Ongeldig IBAN",
         )
+
+
+class SingleLicenseplateTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "requiredLicenseplate",
+            "label": "Required licenseplate",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required licenseplate is niet ingevuld.",
+        )
+
+    def test_regex_pattern(self):
+        component: Component = {
+            "type": "licenseplate",
+            "key": "regexPatternLicenseplate",
+            "label": "Regex pattern licenseplate",
+            "validate": {
+                "pattern": r"^[a-zA-Z0-9]{1,3}\\-[a-zA-Z0-9]{1,3}\\-[a-zA-Z0-9]{1,3}$"
+            },
+            "errors": {"pattern": "Ongeldig Nederlands kenteken"},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="<h2>test</h2>",
+            expected_ui_error="Ongeldig Nederlands kenteken",
+        )
