@@ -592,3 +592,19 @@ class SingleCosignTests(ValidationsTestCase):
             ui_input="invalid",
             expected_ui_error="Ongeldig e-mailadres",
         )
+
+
+class SinglePasswordTests(ValidationsTestCase):
+    def test_required_field(self):
+        component: Component = {
+            "type": "password",
+            "key": "requiredPassword",
+            "label": "Required password",
+            "validate": {"required": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required password is niet ingevuld.",
+        )
