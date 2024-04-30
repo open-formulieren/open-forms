@@ -418,11 +418,19 @@ idna==3.7
     # via
     #   -r requirements/base.txt
     #   requests
+importlib-resources==6.4.0
+    # via
+    #   -r requirements/base.txt
+    #   schwifty
 inflection==0.5.1
     # via
     #   -r requirements/base.txt
     #   django-camunda
     #   drf-spectacular
+iso3166==2.1.1
+    # via
+    #   -r requirements/base.txt
+    #   schwifty
 isodate==0.6.1
     # via
     #   -r requirements/base.txt
@@ -584,6 +592,10 @@ psycopg2==2.8.6
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
+pycountry==23.12.11
+    # via
+    #   -r requirements/base.txt
+    #   schwifty
 pycparser==2.20
     # via
     #   -r requirements/base.txt
@@ -707,6 +719,10 @@ ruamel-yaml-clib==0.2.7
     # via
     #   -r requirements/base.txt
     #   ruamel-yaml
+schwifty==2024.4.0
+    # via
+    #   -c requirements/base.in
+    #   -r requirements/base.txt
 self-certifi==1.0.0
     # via
     #   -c requirements/base.in

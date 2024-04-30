@@ -4,6 +4,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from schwifty import IBAN
 
 from openforms.utils.redirect import allow_redirect_url
 
@@ -128,3 +129,18 @@ class SerializerValidator:
                 self.message.format(errors=serializer.errors),
                 code=self.code,
             )
+
+
+@deconstructible
+class IBANValidator:
+    message = _("Invalid IBAN")
+    code = "invalid"
+
+    def __call__(self, value):
+        iban = IBAN(value, allow_invalid=True)
+
+        if not iban.is_valid:
+            raise ValidationError(self.message, code=self.code)
+
+
+validate_iban = IBANValidator()
