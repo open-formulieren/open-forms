@@ -84,8 +84,20 @@ class FormioConfigurationWrapper:
         return self._cached_component_map
 
     def __iter__(self) -> Iterator[Component]:
+        """
+        Yield the components in the configuration by looping over this object.
+
+        Each (unique) component is guaranteed to be yielded only once, even though
+        it may be present multiple times in the internal datastructures.
+        """
+        seen = set()
         for component in self.component_map.values():
+            # dicts are not hashable, the memory address is a stable reference
+            component_id = id(component)
+            if component_id in seen:
+                continue
             yield component
+            seen.add(component_id)
 
     def __contains__(self, key: str) -> bool:
         return key in self.component_map
