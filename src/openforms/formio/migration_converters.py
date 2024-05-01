@@ -188,15 +188,28 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
         ):
             continue
 
+        assert "conditional" in component
+
         comparison_component = config[comparison_component_key]
+        eq = component["conditional"].get("eq")
+        if eq is None:
+            continue
+
         if comparison_component["type"] in ["number", "currency"]:
-            component["conditional"]["eq"] = json.loads(component["conditional"]["eq"])
+            # only strings can be loaded
+            if not isinstance(eq, str):
+                continue
+            component["conditional"]["eq"] = json.loads(eq)
             config_modified = True
 
         if comparison_component["type"] == "checkbox":
-            component["conditional"]["eq"] = {"true": True, "false": False}.get(
-                component["conditional"]["eq"], False
-            )
+            if isinstance(eq, bool):
+                continue
+
+            component["conditional"]["eq"] = {
+                "true": True,
+                "false": False,
+            }.get(eq, False)
             config_modified = True
 
     return config_modified

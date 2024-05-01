@@ -1256,6 +1256,17 @@ class ImportExportTests(TestCase):
                                     },
                                 ],
                             },
+                            {
+                                "key": "textArea8",
+                                "type": "textarea",
+                                "label": "Text Area 8",
+                                "conditional": {
+                                    "eq": 0,
+                                    "show": True,
+                                    "when": "number",
+                                },
+                                "clearOnHide": True,
+                            },
                         ]
                     },
                     "name": "A definition",
@@ -1285,3 +1296,4 @@ class ImportExportTests(TestCase):
         self.assertIsInstance(
             fixed_components[9]["components"][0]["conditional"]["eq"], int
         )
+        self.assertIsInstance(fixed_components[10]["conditional"]["eq"], int)

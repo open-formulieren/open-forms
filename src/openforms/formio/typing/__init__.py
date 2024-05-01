@@ -6,7 +6,7 @@ Formio components are JSON blobs adhering to a formio-specific schema. We define
 (parts of) the schema.
 """
 
-from .base import Component, OptionDict
+from .base import Component, FormioConfiguration, OptionDict
 from .custom import DateComponent
 from .vanilla import (
     Column,
@@ -26,6 +26,7 @@ __all__ = [
     # base
     "Component",
     "OptionDict",
+    "FormioConfiguration",
     # standard
     "TextFieldComponent",
     "DateComponent",
