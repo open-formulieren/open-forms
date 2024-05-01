@@ -11,6 +11,7 @@ from ..utils import form_to_json
 
 
 def random_registration_plugin():
+    # TODO: remove database/cache IO on GlobalConfiguration here?
     return random.choice(
         [p.identifier for p in registration_registry.iter_enabled_plugins()]
     )
