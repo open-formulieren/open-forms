@@ -1,9 +1,6 @@
-from django.test import override_settings
+from django.test import TestCase
 from django.utils.translation import gettext as _
 
-from rest_framework.test import APITestCase
-
-from openforms.tests.utils import NOOP_CACHES
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
@@ -18,9 +15,8 @@ from .factories import (
 )
 
 
-class CopyFormTests(APITestCase):
+class CopyFormTests(TestCase):
 
-    @override_settings(CACHES=NOOP_CACHES)
     def test_form_copy_with_reusable_definition(self):
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create(is_reusable=True)
@@ -46,7 +42,6 @@ class CopyFormTests(APITestCase):
         self.assertEqual(copied_form_step.form.pk, copied_form.pk)
         self.assertEqual(copied_form_step.order, form_step.order)
 
-    @override_settings(CACHES=NOOP_CACHES)
     def test_form_copy_with_non_reusable_definition(self):
 
         form = FormFactory.create()
@@ -138,7 +133,7 @@ class CopyFormTests(APITestCase):
 
     def test_copy_form_with_registration_backends(self):
         form = FormFactory.create(slug="test-copying-with-backends")
-        FormRegistrationBackendFactory.create_batch(2, form=form)
+        FormRegistrationBackendFactory.create_batch(2, form=form, backend="email")
 
         self.assertEqual(Form.objects.count(), 1)
         self.assertEqual(form.registration_backends.count(), 2)
