@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-26 18:13+0200\n"
+"POT-Creation-Date: 2024-05-01 12:01+0200\n"
 "PO-Revision-Date: 2024-03-21 09:55+0100\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -4359,13 +4359,13 @@ msgstr ""
 msgid "Formio integration"
 msgstr "Form.io-integratie"
 
-#: openforms/formio/components/custom.py:178
+#: openforms/formio/components/custom.py:179
 #: openforms/formio/components/vanilla.py:107
 #: openforms/formio/components/vanilla.py:268
 msgid "This value does not match the required pattern."
 msgstr "De waarde komt niet overeen met het verwachte patroon."
 
-#: openforms/formio/components/custom.py:233
+#: openforms/formio/components/custom.py:234
 msgid "Selecting family members is currently not available."
 msgstr "Het selecteren van gezinsleden is momenteel niet beschikbaar."
 
@@ -4403,38 +4403,38 @@ msgstr ""
 msgid "Value is not between mininum and maximum time."
 msgstr ""
 
-#: openforms/formio/components/vanilla.py:384
+#: openforms/formio/components/vanilla.py:393
 msgid "Checkbox must be checked."
 msgstr ""
 
-#: openforms/formio/components/vanilla.py:415
+#: openforms/formio/components/vanilla.py:424
 #, python-brace-format
 msgid "Ensure this field has at least {min_selected_count} checked options."
 msgstr ""
 
-#: openforms/formio/components/vanilla.py:418
+#: openforms/formio/components/vanilla.py:427
 #, python-brace-format
 msgid ""
 "Ensure this field has no more than {max_selected_count} checked options."
 msgstr ""
 
-#: openforms/formio/components/vanilla.py:644
+#: openforms/formio/components/vanilla.py:653
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr ""
 
-#: openforms/formio/components/vanilla.py:645
+#: openforms/formio/components/vanilla.py:654
 #, fuzzy
 #| msgid "The variable cannot be empty."
 msgid "This list may not be empty."
 msgstr "De variabele mag niet leeg zijn."
 
-#: openforms/formio/components/vanilla.py:646
+#: openforms/formio/components/vanilla.py:655
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
 msgstr ""
 
-#: openforms/formio/components/vanilla.py:647
+#: openforms/formio/components/vanilla.py:656
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr ""
@@ -11136,40 +11136,46 @@ msgstr "{years}j, {months}m, {days}d, {hours}u, {minutes}min"
 msgid "{years}y, {months}m, {days}d, {hours}h, {minutes}min, {seconds}s"
 msgstr "{years}j, {months}m, {days}d, {hours}u, {minutes}min, {seconds}s"
 
-#: openforms/utils/validators.py:11
+#: openforms/utils/validators.py:12
 msgid "Expected a numerical value."
 msgstr "Waarde moet numeriek zijn."
 
-#: openforms/utils/validators.py:57
+#: openforms/utils/validators.py:58
 #, python-format
 msgid "BSN should have %(size)i characters."
 msgstr "BSN moet %(size)i tekens lang zijn."
 
-#: openforms/utils/validators.py:58
+#: openforms/utils/validators.py:59
 msgid "Invalid BSN."
 msgstr "Ongeldige BSN."
 
-#: openforms/utils/validators.py:70
+#: openforms/utils/validators.py:71
 #, python-format
 msgid "RSIN should have %(size)i characters."
 msgstr "RSIN moet %(size)i tekens lang zijn."
 
-#: openforms/utils/validators.py:71
+#: openforms/utils/validators.py:72
 msgid "Invalid RSIN."
 msgstr "Ongeldige RSIN."
 
-#: openforms/utils/validators.py:85
+#: openforms/utils/validators.py:86
 msgid "Values must be unique"
 msgstr "Waarden moeten uniek zijn"
 
-#: openforms/utils/validators.py:100
+#: openforms/utils/validators.py:101
 msgid "URL is not on the domain whitelist"
 msgstr "URL is niet toegestaan volgens de domeinwhitelist"
 
-#: openforms/utils/validators.py:114
+#: openforms/utils/validators.py:115
 #, python-brace-format
 msgid "The data shape does not match the expected shape: {errors}"
 msgstr "De gegevensstructuur komt niet overeen met de verwachting: {errors}"
+
+#: openforms/utils/validators.py:136
+#, fuzzy
+#| msgid "Invalid BSN."
+msgid "Invalid IBAN"
+msgstr "Ongeldige BSN."
 
 #: openforms/validations/api/serializers.py:15
 msgid "Submission UUID"
