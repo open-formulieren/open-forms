@@ -6,6 +6,7 @@ component definitions are rewritten to be compatible with the current code.
 """
 
 import json
+import logging
 from typing import Protocol, cast
 
 from glom import assign, glom
@@ -15,6 +16,8 @@ from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper
 from .typing import Component
+
+logger = logging.getLogger(__name__)
 
 
 class ComponentConverter(Protocol):
@@ -189,6 +192,14 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
             continue
 
         assert "conditional" in component
+
+        if comparison_component_key not in config:
+            logger.warning(
+                "Couldn't locate component with key %s in configuration %r",
+                comparison_component_key,
+                configuration,
+            )
+            continue
 
         comparison_component = config[comparison_component_key]
         eq = component["conditional"].get("eq")

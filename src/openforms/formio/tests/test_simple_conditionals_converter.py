@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase, tag
 
+from openforms.formio.typing import EditGridComponent
 from openforms.typing import JSONObject
 
 from ..migration_converters import convert_simple_conditionals
@@ -58,6 +59,38 @@ class RegressionTests(SimpleTestCase):
                 }
             ]
         }
+
+        try:
+            convert_simple_conditionals(configuration)
+        except Exception as exc:
+            raise self.failureException("Unexpected crash") from exc
+
+    @tag("gh-4247")
+    def test_broken_references(self):
+        # A conditional can just have a broken reference completely, nothing we can do...
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "medebewonerHGroep",
+            "label": "Broken editgrid",
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "grOntvangenHuur",
+                    "label": "Text field",
+                },
+                {
+                    "type": "textfield",
+                    "key": "periodeHuur",
+                    "label": "Text field",
+                    "conditional": {  # type: ignore
+                        "eq": "whatever",
+                        "show": True,
+                        "when": "medebewonerHGroep.ontvangenHuur",
+                    },
+                },
+            ],
+        }
+        configuration: JSONObject = {"components": [editgrid]}
 
         try:
             convert_simple_conditionals(configuration)
