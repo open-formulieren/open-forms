@@ -1,6 +1,8 @@
 from unittest import TestCase
 
-from ..datastructures import FormioData
+from openforms.formio.typing import Component, EditGridComponent
+
+from ..datastructures import FormioConfiguration, FormioConfigurationWrapper, FormioData
 
 
 class FormioDataTests(TestCase):
@@ -86,3 +88,62 @@ class FormioDataTests(TestCase):
         }
 
         self.assertEqual(formio_data, expected)
+
+
+class FormioConfigurationWrapperTests(TestCase):
+
+    def test_editgrid_lookups_by_key(self):
+        outer_textfield: Component = {
+            "type": "textfield",
+            "key": "outerTextfield",
+            "label": "outer text field",
+        }
+        inner_textfield: Component = {
+            "type": "textfield",
+            "key": "innerTextfield",
+            "label": "inner text field",
+        }
+        editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "editgrid",
+            "label": "Repeating group",
+            "components": [inner_textfield],
+        }
+
+        config: FormioConfiguration = {"components": [outer_textfield, editgrid]}
+        config_wrapper = FormioConfigurationWrapper(config)
+
+        with self.subTest("simple lookups"):
+            self.assertIs(config_wrapper["editgrid"], editgrid)
+            self.assertIs(config_wrapper["outerTextfield"], outer_textfield)
+            self.assertIs(config_wrapper["innerTextfield"], inner_textfield)
+
+        with self.subTest("nested editgrid lookup"):
+            self.assertIs(config_wrapper["editgrid.innerTextfield"], inner_textfield)
+
+    def test_nested_editgrids(self):
+        inner_textfield: Component = {
+            "type": "textfield",
+            "key": "innerTextfield",
+            "label": "inner text field",
+        }
+        inner_editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "innerEditgrid",
+            "label": "Repeating group",
+            "components": [inner_textfield],
+        }
+        outer_editgrid: EditGridComponent = {
+            "type": "editgrid",
+            "key": "outerEditgrid",
+            "label": "Repeating group",
+            "components": [inner_editgrid],
+        }
+
+        config: FormioConfiguration = {"components": [outer_editgrid]}
+        config_wrapper = FormioConfigurationWrapper(config)
+
+        self.assertIs(
+            config_wrapper["outerEditgrid.innerEditgrid.innerTextfield"],
+            inner_textfield,
+        )

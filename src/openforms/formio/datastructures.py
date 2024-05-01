@@ -5,14 +5,34 @@ from typing import Iterator, cast
 
 from glom import PathAccessError, assign, glom
 
-from openforms.typing import DataMapping, JSONObject, JSONValue
+from openforms.typing import DataMapping, JSONValue
 
-from .typing import Component
+from .typing import Component, EditGridComponent, FormioConfiguration
 from .utils import flatten_by_path, is_visible_in_frontend, iter_components
 
 # TODO: mechanism to wrap/mark root components?
 
 RE_PATH = re.compile(r"(components|columns|rows)\.([0-9]+)")
+
+
+def _get_editgrid_component_map(component: EditGridComponent) -> dict[str, Component]:
+    """
+    Given an edit grid component, return a component map with namespaced keys.
+    """
+    component_map: dict[str, Component] = {}
+    for nested in iter_components(component, recursive=False):
+        component_map[f"{component['key']}.{nested['key']}"] = nested
+
+        # and this needs to recurse, of course...
+        if nested["type"] == "editgrid":
+            component_map.update(
+                {
+                    f"{component['key']}.{key}": value
+                    for key, value in _get_editgrid_component_map(nested).items()
+                }
+            )
+
+    return component_map
 
 
 class FormioConfigurationWrapper:
@@ -23,22 +43,44 @@ class FormioConfigurationWrapper:
     formio configuration.
     """
 
-    _configuration: JSONObject
+    _configuration: FormioConfiguration
     # depth-first ordered of all components in the formio configuration tree
     _cached_component_map: dict[str, Component] | None = None
     _flattened_by_path: None | dict[str, Component] = None
     _reverse_flattened: None | dict[str, str] = None
 
-    def __init__(self, configuration: JSONObject):
+    def __init__(self, configuration: FormioConfiguration):
         self._configuration = configuration
 
     @property
     def component_map(self) -> dict[str, Component]:
         if self._cached_component_map is None:
-            self._cached_component_map = {
-                component["key"]: component
-                for component in iter_components(self.configuration, recursive=True)
-            }
+            self._cached_component_map = {}
+
+            for component in iter_components(self.configuration, recursive=True):
+                # first, ensure we add every component by its own key so that we can
+                # look it up. This is okay *because* in our UI we enforce unique keys
+                # across the entire form, even if the key is present in an edit grid
+                # (repeating group). Note that formio is perfectly fine with a root
+                # 'foo' key and 'foo' key inside an editgrid. Our behaviour is different
+                # from that because of historical reasons...
+                self._cached_component_map[component["key"]] = component
+
+                # now, formio itself addresses components inside an edit grid with the
+                # pattern ``<editGridKey>.<componentKey>`` (e.g. in simple conditionals),
+                # which means that we also need to add the editgrid components to our
+                # 'registry' for easy lookups. See GH issue #4247 for one possible way
+                # this can cause crashes. So, we add the nested components with a
+                # namespaced key too.
+                #
+                # NOTE - this could conflict with a component outside the editgrid with
+                # this specific, explicit key. At the time of writing, this crashes on
+                # Formio's own demo site because it can't properly resolve the component,
+                # so we do not need to consider this case (it's broken anyway).
+                if component["type"] == "editgrid":
+                    editgrid_components = _get_editgrid_component_map(component)  # type: ignore
+                    self._cached_component_map.update(editgrid_components)
+
         return self._cached_component_map
 
     def __iter__(self) -> Iterator[Component]:
@@ -59,7 +101,7 @@ class FormioConfigurationWrapper:
         return self
 
     @property
-    def configuration(self) -> JSONObject:
+    def configuration(self) -> FormioConfiguration:
         return self._configuration
 
     @property
