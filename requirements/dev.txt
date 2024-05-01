@@ -1106,6 +1106,10 @@ sphinxcontrib-jsmath==1.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
+sphinxcontrib-mermaid==0.9.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 sphinxcontrib-qthelp==1.0.7
     # via
     #   -c requirements/ci.txt

@@ -25,3 +25,21 @@ The following Django apps are considered core functionality:
   operations
 
 .. _form.io: https://www.form.io/
+
+Data model
+==========
+
+The following is a simplified relationship diagram of the Django models that relates to forms:
+
+.. mermaid:: _assets/forms-models.mmd
+
+Each :class:`~openforms.forms.models.Form` can have multiple :class:`~openforms.forms.models.FormStep`'s
+defined, which acts as a proxy model to a :class:`~openforms.forms.models.FormDefinition`
+(as these can be reusable across forms). The :class:`~openforms.forms.models.FormDefinition` model
+has a ``configuration`` JSON field, holding the form.io configuration.
+
+The submissions data model mirrors this model in some way:
+
+- A :class:`~openforms.submissions.models.Submission` is tied to a :class:`~openforms.forms.models.Form`.
+- A :class:`~openforms.submissions.models.SubmissionStep` is tied to a :class:`~openforms.forms.models.FormStep`.
+- A :class:`~openforms.submissions.models.SubmissionValueVariable` is tied to a :class:`~openforms.forms.models.FormVariable`.
