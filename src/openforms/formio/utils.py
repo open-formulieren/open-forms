@@ -10,13 +10,15 @@ from openforms.utils.glom import _glom_path_to_str
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
 from .constants import COMPONENT_DATATYPES
-from .typing import Column, ColumnsComponent, Component
+from .typing import Column, ColumnsComponent, Component, FormioConfiguration
 
 logger = logging.getLogger(__name__)
 
 # XXX: we should probably be able to narrow this in Python 3.11 with non-total typed
 # dicts.
-ComponentLike: TypeAlias = JSONObject | Component | ColumnsComponent | Column
+ComponentLike: TypeAlias = (
+    FormioConfiguration | JSONObject | Component | ColumnsComponent | Column
+)
 
 
 def _is_column_component(component: ComponentLike) -> TypeGuard[ColumnsComponent]:
