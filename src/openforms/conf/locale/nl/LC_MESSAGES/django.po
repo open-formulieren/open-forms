@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-01 12:01+0200\n"
+"POT-Creation-Date: 2024-05-01 14:07+0200\n"
 "PO-Revision-Date: 2024-03-21 09:55+0100\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -4360,6 +4360,7 @@ msgid "Formio integration"
 msgstr "Form.io-integratie"
 
 #: openforms/formio/components/custom.py:179
+#: openforms/formio/components/custom.py:371
 #: openforms/formio/components/vanilla.py:107
 #: openforms/formio/components/vanilla.py:268
 msgid "This value does not match the required pattern."
@@ -8183,8 +8184,8 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
-"({config_verbose_name})."
+"Het mede-ondertekencomponent vereist de configuratie van "
+"'{field_label}' ({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
 msgid "Retrieve details of a single product"
