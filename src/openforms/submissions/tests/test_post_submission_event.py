@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -5,6 +6,7 @@ from django.core import mail
 from django.test import TestCase, override_settings, tag
 from django.utils.translation import gettext_lazy as _
 
+from freezegun import freeze_time
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
@@ -16,6 +18,10 @@ from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.registrations.base import PreRegistrationResult
+from openforms.registrations.contrib.zgw_apis.tests.factories import (
+    ZGWApiGroupConfigFactory,
+)
 from openforms.utils.tests.logging import ensure_logger_level
 
 from ..constants import PostSubmissionEvents
@@ -1022,6 +1028,76 @@ class TaskOrchestrationPostSubmissionEventTests(TestCase):
             submission.refresh_from_db()
 
             self.assertFalse(submission.needs_on_completion_retry)
+
+    @freeze_time("2024-02-16T18:15:00Z")
+    def test_successful_registration_records_registration_counter_and_date(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
+            completed=True,
+        )
+
+        with (
+            freeze_time("2024-02-16T21:15:00Z"),
+            patch(
+                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission"
+            ) as mock_registration,
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+
+        mock_registration.assert_called()
+        self.assertEqual(
+            submission.last_register_date,
+            datetime(2024, 2, 16, 21, 15).replace(tzinfo=timezone.utc),
+        )
+        self.assertEqual(submission.registration_attempts, 1)
+
+    @freeze_time("2024-02-16T18:15:00Z")
+    def test_preregister_success_and_registration_failure_records_counter_and_date_only_once(
+        self,
+    ):
+        zgw_group = ZGWApiGroupConfigFactory.create()
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zgw_api_group": zgw_group.pk,
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            },
+            completed_not_preregistered=True,
+        )
+
+        with (
+            freeze_time("2024-02-16T21:15:00Z"),
+            patch(
+                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission"
+            ) as mock_registration,
+            patch(
+                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+                return_value=PreRegistrationResult(
+                    reference="ZAAK-ref", data={"zaak": {"some": "data"}}
+                ),
+            ) as mock_pre_registration,
+        ):
+            on_post_submission_event(submission.id, PostSubmissionEvents.on_completion)
+
+        submission.refresh_from_db()
+
+        mock_pre_registration.assert_called()
+        mock_registration.assert_called()
+        self.assertTrue(submission.pre_registration_completed)
+        self.assertEqual(
+            submission.last_register_date,
+            datetime(2024, 2, 16, 21, 15).replace(tzinfo=timezone.utc),
+        )
+        self.assertEqual(submission.registration_attempts, 1)
 
 
 @temp_private_root()

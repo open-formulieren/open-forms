@@ -1,5 +1,6 @@
 import logging
 import traceback
+from contextlib import contextmanager
 
 from django.db import transaction
 from django.utils import timezone
@@ -20,6 +21,36 @@ from .exceptions import RegistrationFailed
 from .service import get_registration_plugin
 
 logger = logging.getLogger(__name__)
+
+
+class ShouldAbort:
+    value = False
+
+    def __bool__(self):
+        return self.value
+
+
+@contextmanager
+def track_error(submission: Submission, event: PostSubmissionEvents):
+    should_abort = ShouldAbort()
+
+    try:
+        yield should_abort
+    except Exception as exc:
+        should_abort.value = True
+
+        if not isinstance(exc, ValidationError):
+            logger.exception("Pre-registration raised %s", exc)
+
+        set_submission_reference(submission)
+        submission.save_registration_status(
+            RegistrationStatuses.failed,
+            {"traceback": traceback.format_exc()},
+            record_attempt=True,
+        )
+
+        if event == PostSubmissionEvents.on_retry:
+            raise exc
 
 
 @app.task()
@@ -56,15 +87,10 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             context={"validate_business_logic": False},
         )
 
-        try:
+        with track_error(submission, event) as should_abort:
             options_serializer.is_valid(raise_exception=True)
-        except ValidationError as exc:
-            set_submission_reference(submission)
-            submission.save_registration_status(
-                RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
-            )
-            if event == PostSubmissionEvents.on_retry:
-                raise exc
+
+        if should_abort:
             return
 
         # If we are retrying, then an internal registration reference has been set. We keep track of it.
@@ -80,18 +106,12 @@ def pre_registration(submission_id: int, event: PostSubmissionEvents) -> None:
             )
             submission.save()
 
-    try:
+    with track_error(submission, event) as should_abort:
         result = registration_plugin.pre_register_submission(
             submission, options_serializer.validated_data
         )
-    except Exception as exc:
-        logger.exception("Pre-registration raised %s", exc)
-        submission.save_registration_status(
-            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
-        )
-        set_submission_reference(submission)
-        if event == PostSubmissionEvents.on_retry:
-            raise exc
+
+    if should_abort:
         return
 
     if not result.reference:
