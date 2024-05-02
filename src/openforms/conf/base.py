@@ -981,6 +981,8 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
     os.path.join(BASE_DIR, "src/openforms/contrib/haal_centraal/tests/files"),
 ]
 
+ZGW_CONSUMERS_IGNORE_OAS_FIELDS = True
+
 #
 # Django Solo
 #
