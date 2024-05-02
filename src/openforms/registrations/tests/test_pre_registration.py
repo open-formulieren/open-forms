@@ -48,6 +48,8 @@ class PreRegistrationTests(TestCase):
         pre_registration(submission.id, PostSubmissionEvents.on_completion)
         submission.refresh_from_db()
 
+        self.assertIsNone(submission.last_register_date)
+        self.assertEqual(submission.registration_attempts, 0)
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertTrue(submission.pre_registration_completed)
 
@@ -196,7 +198,11 @@ class PreRegistrationTests(TestCase):
         ) as registration_patch:
             register_submission(submission.id, PostSubmissionEvents.on_completion)
 
+        submission.refresh_from_db()
+
         registration_patch.assert_not_called()
+        self.assertIsNotNone(submission.last_register_date)
+        self.assertEqual(submission.registration_attempts, 1)
 
     def test_retry_doesnt_overwrite_internal_reference(self):
         zgw_group = ZGWApiGroupConfigFactory.create()
