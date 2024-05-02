@@ -12,6 +12,7 @@ from django_yubin.models import Message
 from furl import furl
 
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
+from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
@@ -169,12 +170,20 @@ def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
 
 def collect_broken_configurations() -> list[BrokenConfiguration]:
     check_brk_configuration = check_brk_config_for_addressNL()
+    check_bag_configuration = check_bag_config_for_address_fields()
 
     broken_configurations = []
     if check_brk_configuration:
         broken_configurations.append(
             BrokenConfiguration(
                 config_name=_("BRK Client"), exception_message=check_brk_configuration
+            )
+        )
+
+    if check_bag_configuration:
+        broken_configurations.append(
+            BrokenConfiguration(
+                config_name=_("BAG Client"), exception_message=check_bag_configuration
             )
         )
 
