@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Mapping
 
 from django.conf import settings
 from django.db import models, transaction
+from django.utils import timezone
 from django.utils.formats import localize
 from django.utils.functional import cached_property
 from django.utils.timezone import localtime
@@ -340,7 +341,7 @@ class Submission(models.Model):
             del self._execution_state
 
     def save_registration_status(
-        self, status: RegistrationStatuses, result: dict
+        self, status: RegistrationStatuses, result: dict, record_attempt: bool = False
     ) -> None:
         # combine the new result with existing data, where the new result overwrites
         # on key collisions. This allows storing intermediate results in the plugin
@@ -359,6 +360,11 @@ class Submission(models.Model):
         if status == RegistrationStatuses.failed:
             self.needs_on_completion_retry = True
             update_fields += ["needs_on_completion_retry"]
+
+        if record_attempt:
+            self.last_register_date = timezone.now()
+            self.registration_attempts += 1
+            update_fields += ["last_register_date", "registration_attempts"]
 
         self.save(update_fields=update_fields)
 
