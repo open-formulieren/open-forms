@@ -28,6 +28,7 @@
   "homepage": "https://maykinmedia.nl",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
+    "@jazzband/django-cookie-consent": "^0.5.0-beta0",
     "@open-formulieren/design-tokens": "^0.51.0",
     "@open-formulieren/formio-builder": "^0.19.1",
     "@open-formulieren/leaflet-tools": "^1.0.0",

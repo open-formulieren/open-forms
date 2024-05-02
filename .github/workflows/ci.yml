@@ -44,6 +44,9 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v4
+      - name: Set up GH packages auth
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
       - name: Set up backend environment
         uses: maykinmedia/setup-django-backend@v1.3
         with:

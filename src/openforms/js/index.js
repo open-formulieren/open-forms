@@ -1,4 +1,5 @@
 // via @open-formulieren/formio-builder
+import {showCookieBar} from '@jazzband/django-cookie-consent';
 import ClassicEditor from '@open-formulieren/ckeditor5-build-classic';
 import cssHasPseudo from 'css-has-pseudo/browser';
 import {Formio} from 'react-formio';
