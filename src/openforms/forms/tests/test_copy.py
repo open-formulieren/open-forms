@@ -146,3 +146,28 @@ class CopyFormTests(TestCase):
         registration_backends_copy = form_copy.registration_backends.all()
 
         self.assertEqual(registration_backends_copy.count(), 2)
+
+    def test_copy_form_with_logic_rules_has_correct_formstep_uuid_in_actions(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+        )
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "test-key"}, 1]},
+            actions=[
+                {
+                    "action": {"type": "step-not-applicable"},
+                    "form_step_uuid": str(form_step.uuid),
+                }
+            ],
+        )
+
+        form_copy = form.copy()
+        new_form_step_uuid = form_copy.formstep_set.get().uuid
+        new_form_logic_action = form_copy.formlogic_set.get().actions[0]
+
+        self.assertEqual(
+            new_form_logic_action["form_step_uuid"], str(new_form_step_uuid)
+        )
