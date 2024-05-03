@@ -2,10 +2,7 @@ from django.urls import path
 
 from mozilla_django_oidc.urls import urlpatterns
 
-from .views import (
-    eHerkenningOIDCAuthenticationCallbackView,
-    eHerkenningOIDCAuthenticationRequestView,
-)
+from .views import eHerkenningOIDCAuthenticationCallbackView
 
 app_name = "eherkenning_oidc"
 
@@ -15,10 +12,5 @@ urlpatterns = [
         "callback/",
         eHerkenningOIDCAuthenticationCallbackView.as_view(),
         name="callback",
-    ),
-    path(
-        "authenticate/",
-        eHerkenningOIDCAuthenticationRequestView.as_view(),
-        name="init",
     ),
 ] + urlpatterns
