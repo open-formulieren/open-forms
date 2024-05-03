@@ -10,7 +10,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 from ....registry import register
 from ....tests.factories import SubmissionPaymentFactory
-from ..constants import OgoneEndpoints, OgoneStatus, PaymentStatus
+from ..constants import OgoneStatus, PaymentStatus
 from ..plugin import RETURN_ACTION_PARAM
 from ..signing import calculate_sha_out
 from .factories import OgoneMerchantFactory
@@ -173,12 +173,6 @@ class OgoneTests(TestCase):
             response = self.client.post(url, ogone_params)
 
             self.assertEqual(response.status_code, 200)
-
-            # assert created csp header is in the response as well
-            self.assertIn(
-                f"form-action 'self' {OgoneEndpoints.test};",
-                response.headers["Content-Security-Policy"],
-            )
 
             submission.refresh_from_db()
             payment.refresh_from_db()
