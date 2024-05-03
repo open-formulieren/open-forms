@@ -79,6 +79,8 @@ class OpenIDConnectPublicConfig(OpenIDConnectBaseConfig):
         ),
     )
 
+    oidc_authentication_callback_url = "digid_oidc:callback"
+
     @classproperty
     def custom_oidc_db_prefix(cls):
         return DIGID_CUSTOM_OIDC_DB_PREFIX
@@ -115,6 +117,8 @@ class OpenIDConnectDigiDMachtigenConfig(OpenIDConnectBaseConfig):
         ),
     )
 
+    oidc_authentication_callback_url = "digid_machtigen_oidc:callback"
+
     @classproperty
     def custom_oidc_db_prefix(cls):
         return DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX
@@ -144,6 +148,8 @@ class OpenIDConnectEHerkenningConfig(OpenIDConnectBaseConfig):
             "These scopes are hardcoded and must be supported by the identity provider"
         ),
     )
+
+    oidc_authentication_callback_url = "eherkenning_oidc:callback"
 
     @classproperty
     def custom_oidc_db_prefix(cls):
@@ -180,6 +186,8 @@ class OpenIDConnectEHerkenningBewindvoeringConfig(OpenIDConnectBaseConfig):
             "These scopes are hardcoded and must be supported by the identity provider"
         ),
     )
+
+    oidc_authentication_callback_url = "eherkenning_bewindvoering_oidc:callback"
 
     @classproperty
     def custom_oidc_db_prefix(cls):

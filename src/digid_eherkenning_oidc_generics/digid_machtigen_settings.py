@@ -1,2 +1,1 @@
 DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX = "digid_machtigen_oidc"
-OIDC_AUTHENTICATION_CALLBACK_URL = "digid_machtigen_oidc:callback"
