@@ -1,5 +1,7 @@
+from functools import partial
 from typing import Literal, cast
 
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +13,8 @@ from openforms.validations.base import BasePlugin
 from openforms.validations.registry import register
 
 from .client import NoServiceConfigured, SearchParams, get_kvk_search_client
+
+KVK_LOOKUP_CACHE_TIMEOUT = 5 * 60
 
 
 @deconstructible
@@ -48,6 +52,12 @@ validate_kvk = KVKNumberValidator()
 validate_branchNumber = KVKBranchNumberValidator()
 
 
+def get_kvk_search_results(query: SearchParams) -> dict:
+    with get_kvk_search_client() as client:
+        result = client.get_search_results(query_params=query)
+        return result
+
+
 class KVKRemoteValidatorMixin:
     query_param: Literal["kvkNummer", "rsin", "vestigingsnummer"]
     value_label: str
@@ -64,8 +74,11 @@ class KVKRemoteValidatorMixin:
         )  # isinstance isn't supported
 
         try:
-            with get_kvk_search_client() as client:
-                result = client.get_search_results(query_params=query)
+            result = cache.get_or_set(
+                key=f"KVK|get_search_results|{self.query_param}:{value}",
+                default=partial(get_kvk_search_results, query),
+                timeout=KVK_LOOKUP_CACHE_TIMEOUT,
+            )
         except (RequestException, NoServiceConfigured):
             raise ValidationError(
                 self.error_messages["not_found"],
