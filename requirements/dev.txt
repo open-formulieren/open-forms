@@ -11,7 +11,7 @@ alabaster==0.7.16
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-amqp==5.0.9
+amqp==5.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -58,7 +58,7 @@ beautifulsoup4==4.10.0
     #   -r requirements/ci.txt
     #   o365
     #   webtest
-billiard==3.6.4.0
+billiard==4.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -92,7 +92,7 @@ cbor2==5.6.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   webauthn
-celery==5.2.7
+celery==5.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -415,7 +415,7 @@ django-webtest==1.9.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-yubin==2.0.2
+django-yubin==2.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -495,7 +495,7 @@ flake8==6.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-flower==1.2.0
+flower==2.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -625,7 +625,7 @@ jsonschema-specifications==2023.7.1
     #   -r requirements/ci.txt
     #   jsonschema
     #   openapi-schema-validator
-kombu==5.2.4
+kombu==5.3.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -889,6 +889,7 @@ python-dateutil==2.8.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   celery
     #   django-camunda
     #   django-relativedelta
     #   faker
@@ -911,7 +912,6 @@ pytz==2022.2.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   babel
-    #   celery
     #   django-yubin
     #   djangorestframework
     #   flower
@@ -1191,6 +1191,7 @@ tzdata==2023.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   celery
     #   pytz-deprecation-shim
 tzlocal==4.3.1
     # via
@@ -1217,7 +1218,7 @@ vcrpy==5.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-vine==5.0.0
+vine==5.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

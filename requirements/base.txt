@@ -6,7 +6,7 @@
 #
 --no-binary lxml
 
-amqp==5.0.9
+amqp==5.2.0
     # via kombu
 ape-pie==0.1.0
     # via
@@ -26,7 +26,7 @@ attrs==23.2.0
     #   zeep
 beautifulsoup4==4.10.0
     # via o365
-billiard==3.6.4.0
+billiard==4.2.0
     # via celery
 bleach[css]==5.0.1
     # via
@@ -40,7 +40,7 @@ brotli==1.1.0
     # via fonttools
 cbor2==5.6.2
     # via webauthn
-celery==5.2.7
+celery==5.4.0
     # via
     #   -r requirements/base.in
     #   celery-once
@@ -221,7 +221,7 @@ django-treebeard==4.7
     # via -r requirements/base.in
 django-two-factor-auth[phonenumberslite,webauthn]==1.16.0
     # via maykin-2fa
-django-yubin==2.0.2
+django-yubin==2.0.4
     # via -r requirements/base.in
 djangorestframework==3.14.0
     # via
@@ -248,7 +248,7 @@ et-xmlfile==1.1.0
     # via openpyxl
 face==20.1.1
     # via glom
-flower==1.2.0
+flower==2.0.1
     # via -r requirements/base.in
 fonttools[woff]==4.45.1
     # via
@@ -304,7 +304,7 @@ jsonschema-specifications==2023.7.1
     #   -r requirements/base.in
     #   jsonschema
     #   openapi-schema-validator
-kombu==5.2.4
+kombu==5.3.7
     # via celery
 lazy-object-proxy==1.9.0
     # via openapi-spec-validator
@@ -390,6 +390,7 @@ pypng==0.20220715.0
     # via qrcode
 python-dateutil==2.8.2
     # via
+    #   celery
     #   django-camunda
     #   django-relativedelta
     #   o365
@@ -401,7 +402,6 @@ python-magic==0.4.27
     # via -r requirements/base.in
 pytz==2022.2.1
     # via
-    #   celery
     #   django-yubin
     #   djangorestframework
     #   flower
@@ -507,7 +507,9 @@ typing-extensions==4.9.0
     #   qrcode
     #   zgw-consumers
 tzdata==2023.3
-    # via pytz-deprecation-shim
+    # via
+    #   celery
+    #   pytz-deprecation-shim
 tzlocal==4.3.1
     # via o365
 uritemplate==3.0.1
@@ -519,7 +521,7 @@ urllib3==2.0.7
     #   sentry-sdk
 uwsgi==2.0.23
     # via -r requirements/base.in
-vine==5.0.0
+vine==5.1.0
     # via
     #   amqp
     #   celery
