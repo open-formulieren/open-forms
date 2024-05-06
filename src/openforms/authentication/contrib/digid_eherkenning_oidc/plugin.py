@@ -1,6 +1,11 @@
-from typing import Any
+from typing import Any, ClassVar, Protocol
 
-from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponseBadRequest,
+    HttpResponseBase,
+    HttpResponseRedirect,
+)
 from django.utils.translation import gettext_lazy as _
 
 import requests
@@ -12,6 +17,12 @@ from digid_eherkenning_oidc_generics.models import (
     OpenIDConnectEHerkenningBewindvoeringConfig,
     OpenIDConnectEHerkenningConfig,
     OpenIDConnectPublicConfig,
+)
+from digid_eherkenning_oidc_generics.views import (
+    digid_init,
+    digid_machtigen_init,
+    eherkenning_bewindvoering_init,
+    eherkenning_init,
 )
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
@@ -31,30 +42,41 @@ from .constants import (
 )
 
 
+class AuthInit(Protocol):
+    def __call__(
+        self, request: HttpRequest, return_url: str, *args, **kwargs
+    ) -> HttpResponseBase: ...
+
+
 class OIDCAuthentication(BasePlugin):
     verbose_name = ""
     provides_auth = ""
-    init_url = ""
     session_key = ""
     config_class = None
+    init_view: ClassVar[AuthInit]
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
-        login_url = reverse(self.init_url, request=request)
-
         auth_return_url = reverse(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
         )
-        return_url = furl(auth_return_url).set(
-            {
-                "next": form_url,
-            }
-        )
+        return_url = furl(auth_return_url).set({"next": form_url})
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
             return_url.args[CO_SIGN_PARAMETER] = co_sign_param
 
-        redirect_url = furl(login_url).set({"next": str(return_url)})
-        return HttpResponseRedirect(str(redirect_url))
+        # "evaluate" the view, this achieves two things:
+        #
+        # * we save a browser redirect cycle since we get the redirect to the identity
+        #   provider immediately
+        # * we control the config to apply 100% server side rather than passing it as
+        #   a query parameter, which prevents a malicious user from messing with the
+        #   redirect URL
+        #
+        # This may raise `OIDCProviderOutage`, which bubbles into the generic auth
+        # start_view and gets handled there.
+        response = self.init_view(request, return_url=str(return_url))
+        assert isinstance(response, HttpResponseRedirect)
+        return response
 
     def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any] | None:
         if not (claim := request.session.get(self.session_key)):
@@ -111,10 +133,10 @@ class OIDCAuthentication(BasePlugin):
 class DigiDOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
-    init_url = "digid_oidc:init"
     session_key = DIGID_OIDC_AUTH_SESSION_KEY
     claim_name = ""
     config_class = OpenIDConnectPublicConfig
+    init_view = staticmethod(digid_init)
 
     def get_label(self) -> str:
         return "DigiD"
@@ -127,10 +149,10 @@ class DigiDOIDCAuthentication(OIDCAuthentication):
 class eHerkenningOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
-    init_url = "eherkenning_oidc:init"
     session_key = EHERKENNING_OIDC_AUTH_SESSION_KEY
     claim_name = "kvk"
     config_class = OpenIDConnectEHerkenningConfig
+    init_view = staticmethod(eherkenning_init)
 
     def get_label(self) -> str:
         return "eHerkenning"
@@ -143,9 +165,9 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication):
 class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
-    init_url = "digid_machtigen_oidc:init"
     session_key = DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY
     config_class = OpenIDConnectDigiDMachtigenConfig
+    init_view = staticmethod(digid_machtigen_init)
     is_for_gemachtigde = True
 
     def add_claims_to_sessions_if_not_cosigning(self, claim, request):
@@ -175,9 +197,9 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
 class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
     provides_auth = AuthAttribute.kvk
-    init_url = "eherkenning_bewindvoering_oidc:init"
     session_key = EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
     config_class = OpenIDConnectEHerkenningBewindvoeringConfig
+    init_view = staticmethod(eherkenning_bewindvoering_init)
     is_for_gemachtigde = True
 
     def add_claims_to_sessions_if_not_cosigning(self, claim, request):

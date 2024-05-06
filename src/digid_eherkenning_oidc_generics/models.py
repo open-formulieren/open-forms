@@ -1,18 +1,12 @@
+from typing import ClassVar
+
 from django.db import models
-from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
 from django_jsonform.models.fields import ArrayField
 from mozilla_django_oidc_db.models import CachingMixin, OpenIDConnectConfigBase
 
 from openforms.authentication.constants import AuthAttribute
-
-from .digid_machtigen_settings import DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX
-from .digid_settings import DIGID_CUSTOM_OIDC_DB_PREFIX
-from .eherkenning_bewindvoering_settings import (
-    EHERKENNING_BEWINDVOERING_CUSTOM_OIDC_DB_PREFIX,
-)
-from .eherkenning_settings import EHERKENNING_CUSTOM_OIDC_DB_PREFIX
 
 
 def get_default_scopes_bsn():
@@ -79,9 +73,8 @@ class OpenIDConnectPublicConfig(OpenIDConnectBaseConfig):
         ),
     )
 
-    @classproperty
-    def custom_oidc_db_prefix(cls):
-        return DIGID_CUSTOM_OIDC_DB_PREFIX
+    custom_oidc_db_prefix: ClassVar[str] = "digid_oidc"
+    oidc_authentication_callback_url: ClassVar[str] = "digid_oidc:callback"
 
     class Meta:
         verbose_name = _("OpenID Connect configuration for DigiD")
@@ -115,9 +108,8 @@ class OpenIDConnectDigiDMachtigenConfig(OpenIDConnectBaseConfig):
         ),
     )
 
-    @classproperty
-    def custom_oidc_db_prefix(cls):
-        return DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX
+    custom_oidc_db_prefix: ClassVar[str] = "digid_machtigen_oidc"
+    oidc_authentication_callback_url: ClassVar[str] = "digid_machtigen_oidc:callback"
 
     class Meta:
         verbose_name = _("OpenID Connect configuration for DigiD Machtigen")
@@ -145,9 +137,8 @@ class OpenIDConnectEHerkenningConfig(OpenIDConnectBaseConfig):
         ),
     )
 
-    @classproperty
-    def custom_oidc_db_prefix(cls):
-        return EHERKENNING_CUSTOM_OIDC_DB_PREFIX
+    custom_oidc_db_prefix: ClassVar[str] = "eherkenning_oidc"
+    oidc_authentication_callback_url: ClassVar[str] = "eherkenning_oidc:callback"
 
     class Meta:
         verbose_name = _("OpenID Connect configuration for eHerkenning")
@@ -181,9 +172,10 @@ class OpenIDConnectEHerkenningBewindvoeringConfig(OpenIDConnectBaseConfig):
         ),
     )
 
-    @classproperty
-    def custom_oidc_db_prefix(cls):
-        return EHERKENNING_BEWINDVOERING_CUSTOM_OIDC_DB_PREFIX
+    custom_oidc_db_prefix: ClassVar[str] = "eherkenning_bewindvoering_oidc"
+    oidc_authentication_callback_url: ClassVar[str] = (
+        "eherkenning_bewindvoering_oidc:callback"
+    )
 
     class Meta:
         verbose_name = _("OpenID Connect configuration for eHerkenning Bewindvoering")

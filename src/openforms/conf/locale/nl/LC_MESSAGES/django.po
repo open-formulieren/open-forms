@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-06 12:24+0200\n"
+"POT-Creation-Date: 2024-05-06 13:57+0200\n"
 "PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -84,19 +84,19 @@ msgstr ""
 "{plugin_identifier} wordt gebruikt in één of meerdere formulieren. Haal deze "
 "plugin eerst uit de inlogopties voor je deze backend uitschakelt."
 
-#: digid_eherkenning_oidc_generics/models.py:38
+#: digid_eherkenning_oidc_generics/models.py:32
 msgid "Logout endpoint"
 msgstr "Logout-endpoint"
 
-#: digid_eherkenning_oidc_generics/models.py:40
+#: digid_eherkenning_oidc_generics/models.py:34
 msgid "URL of your OpenID Connect provider logout endpoint"
 msgstr "URL van de OpenID Connect provider uitloggen-endpoint"
 
-#: digid_eherkenning_oidc_generics/models.py:46
+#: digid_eherkenning_oidc_generics/models.py:40
 msgid "Keycloak Identity Provider hint"
 msgstr "Keycloak Identity Provider hint"
 
-#: digid_eherkenning_oidc_generics/models.py:49
+#: digid_eherkenning_oidc_generics/models.py:43
 msgid ""
 "Specific for Keycloak: parameter that indicates which identity provider "
 "should be used (therefore skipping the Keycloak login screen)."
@@ -104,36 +104,36 @@ msgstr ""
 "Keycloak-specifiek: een parameter die aangeeft welke identity-provider "
 "gebruikt moet worden (waardoor het inlogscherm overgeslagen wordt)."
 
-#: digid_eherkenning_oidc_generics/models.py:56
+#: digid_eherkenning_oidc_generics/models.py:50
 msgid "OpenID Connect configuration"
 msgstr "OpenID Connect configuratie"
 
-#: digid_eherkenning_oidc_generics/models.py:66
+#: digid_eherkenning_oidc_generics/models.py:60
 msgid "BSN claim name"
 msgstr "Claimnaam BSN"
 
-#: digid_eherkenning_oidc_generics/models.py:68
+#: digid_eherkenning_oidc_generics/models.py:62
 msgid "The name of the claim in which the BSN of the user is stored"
 msgstr "De naam van de claim die het BSN van de gebruiker bevat"
 
-#: digid_eherkenning_oidc_generics/models.py:72
-#: digid_eherkenning_oidc_generics/models.py:108
-#: digid_eherkenning_oidc_generics/models.py:138
-#: digid_eherkenning_oidc_generics/models.py:174
+#: digid_eherkenning_oidc_generics/models.py:66
+#: digid_eherkenning_oidc_generics/models.py:101
+#: digid_eherkenning_oidc_generics/models.py:130
+#: digid_eherkenning_oidc_generics/models.py:165
 msgid "OpenID Connect scopes"
 msgstr "OpenID Connect scopes"
 
-#: digid_eherkenning_oidc_generics/models.py:73
-#: digid_eherkenning_oidc_generics/models.py:109
-#: digid_eherkenning_oidc_generics/models.py:139
-#: digid_eherkenning_oidc_generics/models.py:175
+#: digid_eherkenning_oidc_generics/models.py:67
+#: digid_eherkenning_oidc_generics/models.py:102
+#: digid_eherkenning_oidc_generics/models.py:131
+#: digid_eherkenning_oidc_generics/models.py:166
 msgid "OpenID Connect scope"
 msgstr "OpenID Connect scope"
 
-#: digid_eherkenning_oidc_generics/models.py:77
-#: digid_eherkenning_oidc_generics/models.py:113
-#: digid_eherkenning_oidc_generics/models.py:143
-#: digid_eherkenning_oidc_generics/models.py:179
+#: digid_eherkenning_oidc_generics/models.py:71
+#: digid_eherkenning_oidc_generics/models.py:106
+#: digid_eherkenning_oidc_generics/models.py:135
+#: digid_eherkenning_oidc_generics/models.py:170
 msgid ""
 "OpenID Connect scopes that are requested during login. These scopes are "
 "hardcoded and must be supported by the identity provider"
@@ -142,67 +142,67 @@ msgstr ""
 "zijn \"hardcoded\" en moeten ondersteund worden door de identity provider. "
 "Stem dit af met de beheerder van de IdP."
 
-#: digid_eherkenning_oidc_generics/models.py:87
+#: digid_eherkenning_oidc_generics/models.py:80
 msgid "OpenID Connect configuration for DigiD"
 msgstr "OpenID Connect configuratie voor DigiD"
 
-#: digid_eherkenning_oidc_generics/models.py:92
+#: digid_eherkenning_oidc_generics/models.py:85
 msgid "vertegenwoordigde claim name"
 msgstr "claimnaam vertegenwoordigde"
 
-#: digid_eherkenning_oidc_generics/models.py:96
+#: digid_eherkenning_oidc_generics/models.py:89
 msgid ""
 "Name of the claim in which the BSN of the person being represented is stored"
 msgstr "De naam van de claim die het BSN van de vertegenwoordigde bevat."
 
-#: digid_eherkenning_oidc_generics/models.py:100
+#: digid_eherkenning_oidc_generics/models.py:93
 msgid "gemachtigde claim name"
 msgstr "claimnaam gemachtigde"
 
-#: digid_eherkenning_oidc_generics/models.py:104
+#: digid_eherkenning_oidc_generics/models.py:97
 msgid ""
 "Name of the claim in which the BSN of the person representing someone else "
 "is stored"
 msgstr "De naam van de claim die het BSN van de gemachtigde bevat."
 
-#: digid_eherkenning_oidc_generics/models.py:123
+#: digid_eherkenning_oidc_generics/models.py:115
 msgid "OpenID Connect configuration for DigiD Machtigen"
 msgstr "OpenID Connect configuratie voor DigiD Machtigen"
 
-#: digid_eherkenning_oidc_generics/models.py:132
+#: digid_eherkenning_oidc_generics/models.py:124
 msgid "KVK claim name"
 msgstr "Claimnaam KVK"
 
-#: digid_eherkenning_oidc_generics/models.py:134
+#: digid_eherkenning_oidc_generics/models.py:126
 msgid "The name of the claim in which the KVK of the user is stored"
 msgstr "De naam van de claim die het KVK-nummer van de gebruiker bevat."
 
-#: digid_eherkenning_oidc_generics/models.py:153
+#: digid_eherkenning_oidc_generics/models.py:144
 msgid "OpenID Connect configuration for eHerkenning"
 msgstr "OpenID Connect configuratie voor eHerkenning"
 
-#: digid_eherkenning_oidc_generics/models.py:158
+#: digid_eherkenning_oidc_generics/models.py:149
 msgid "vertegenwoordigde company claim name"
 msgstr "Claimnaam vertegenwoordigd bedrijf"
 
-#: digid_eherkenning_oidc_generics/models.py:162
+#: digid_eherkenning_oidc_generics/models.py:153
 msgid ""
 "Name of the claim in which the KVK of the company being represented is stored"
 msgstr ""
 "De naam van de claim die het KVK-nummer van het vertegenwoordigd bedrijf "
 "bevat."
 
-#: digid_eherkenning_oidc_generics/models.py:166
+#: digid_eherkenning_oidc_generics/models.py:157
 msgid "gemachtigde person claim name"
 msgstr "Claimnaam gemachtigde persoon"
 
-#: digid_eherkenning_oidc_generics/models.py:170
+#: digid_eherkenning_oidc_generics/models.py:161
 msgid ""
 "Name of the claim in which the ID of the person representing a company is "
 "stored"
 msgstr "De naam van de claim die het ID van de vertegenwoordiger bevat."
 
-#: digid_eherkenning_oidc_generics/models.py:189
+#: digid_eherkenning_oidc_generics/models.py:181
 msgid "OpenID Connect configuration for eHerkenning Bewindvoering"
 msgstr "OpenID Connect configuratie voor eHerkenning Bewindvoering"
 
@@ -1615,9 +1615,9 @@ msgstr "BSN"
 
 #: openforms/authentication/constants.py:16
 #: openforms/authentication/contrib/demo/plugin.py:43
-#: openforms/contrib/kvk/validators.py:38
-#: openforms/contrib/kvk/validators.py:90
-#: openforms/contrib/kvk/validators.py:92
+#: openforms/contrib/kvk/validators.py:42
+#: openforms/contrib/kvk/validators.py:103
+#: openforms/contrib/kvk/validators.py:105
 msgid "KvK number"
 msgstr "KvK-nummer"
 
@@ -1673,19 +1673,19 @@ msgstr "DigiD"
 msgid "DigiD/eHerkenning via OpenID Connect"
 msgstr "DigiD/eHerkenning via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:112
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:134
 msgid "DigiD via OpenID Connect"
 msgstr "DigiD via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:128
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:150
 msgid "eHerkenning via OpenID Connect"
 msgstr "eHerkenning via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:144
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:166
 msgid "DigiD Machtigen via OpenID Connect"
 msgstr "DigiD Machtigen via OpenID Connect"
 
-#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:176
+#: openforms/authentication/contrib/digid_eherkenning_oidc/plugin.py:198
 msgid "eHerkenning bewindvoering via OpenID Connect"
 msgstr "eHerkenning bewindvoering via OpenID Connect"
 
@@ -2946,7 +2946,7 @@ msgstr "Een herkenbare naam om deze stijl te identificeren."
 #: openforms/forms/models/form_version.py:42 openforms/forms/models/logic.py:11
 #: openforms/forms/models/pricing_logic.py:30 openforms/payments/models.py:81
 #: openforms/products/models/product.py:19
-#: openforms/submissions/models/submission.py:107
+#: openforms/submissions/models/submission.py:108
 #: openforms/submissions/models/submission_files.py:50
 #: openforms/submissions/models/submission_files.py:125
 #: openforms/submissions/models/submission_step.py:94
@@ -3133,6 +3133,7 @@ msgid "Validation plugin config: BRK - Zakelijk gerechtigd"
 msgstr "Validatiepluginconfiguratie: BRK - Zakelijk gerechtigde"
 
 #: openforms/contrib/brk/checks.py:24
+#: openforms/contrib/kadaster/config_check.py:48
 #, python-brace-format
 msgid "{api_name} endpoint is not configured"
 msgstr "{api_name} endpoint is niet geconfigureerd"
@@ -3441,13 +3442,6 @@ msgstr "Kadaster API: locatieserver"
 msgid "Kadaster API: BAG"
 msgstr "Kadaster API: BAG"
 
-#: openforms/contrib/kadaster/config_check.py:48
-#: openforms/contrib/kvk/checks.py:23
-#: openforms/registrations/contrib/objects_api/checks.py:52
-#, python-brace-format
-msgid "{api_name} endpoint is not configured."
-msgstr "{api_name} endpoint is niet geconfigureerd."
-
 #: openforms/contrib/kadaster/models.py:42
 msgid "Locatieserver API"
 msgstr "Locatieserver API"
@@ -3475,6 +3469,12 @@ msgstr "KvK code en configuratie"
 #: openforms/contrib/kvk/checks.py:14
 msgid "Validation plugin config: KVK numbers"
 msgstr "Validatiepluginconfiguratie: KVK-nummers"
+
+#: openforms/contrib/kvk/checks.py:23
+#: openforms/registrations/contrib/objects_api/checks.py:52
+#, python-brace-format
+msgid "{api_name} endpoint is not configured."
+msgstr "{api_name} endpoint is niet geconfigureerd."
 
 #: openforms/contrib/kvk/checks.py:39
 #: openforms/prefill/contrib/kvk/plugin.py:124
@@ -3504,31 +3504,31 @@ msgstr ""
 msgid "KvK configuration"
 msgstr "KvK configuratie"
 
-#: openforms/contrib/kvk/validators.py:21
-#: openforms/contrib/kvk/validators.py:57
+#: openforms/contrib/kvk/validators.py:25
+#: openforms/contrib/kvk/validators.py:67
 #, python-format
 msgid "%(type)s should have %(size)i characters."
 msgstr "%(type)s moet %(size)i tekens lang zijn."
 
-#: openforms/contrib/kvk/validators.py:44
-#: openforms/contrib/kvk/validators.py:118
+#: openforms/contrib/kvk/validators.py:48
+#: openforms/contrib/kvk/validators.py:131
 msgid "Branch number"
 msgstr "Vestigingsnummer"
 
-#: openforms/contrib/kvk/validators.py:56
+#: openforms/contrib/kvk/validators.py:66
 #, python-format
 msgid "%(type)s does not exist."
 msgstr "%(type)s bestaat niet."
 
-#: openforms/contrib/kvk/validators.py:104
+#: openforms/contrib/kvk/validators.py:117
 msgid "RSIN"
 msgstr "RSIN"
 
-#: openforms/contrib/kvk/validators.py:106
+#: openforms/contrib/kvk/validators.py:119
 msgid "KvK RSIN"
 msgstr "KvK RSIN"
 
-#: openforms/contrib/kvk/validators.py:120
+#: openforms/contrib/kvk/validators.py:133
 msgid "KvK branch number"
 msgstr "KvK vestigingsnummer"
 
@@ -3806,8 +3806,14 @@ msgstr "Bevestiging"
 msgid "Co-sign confirmation"
 msgstr "Mede-ondertekeningbevestiging"
 
-#: openforms/emails/digest.py:177
+#: openforms/emails/digest.py:179
 msgid "BRK Client"
+msgstr "BRK client"
+
+#: openforms/emails/digest.py:186
+#, fuzzy
+#| msgid "BRK Client"
+msgid "BAG Client"
 msgstr "BRK client"
 
 #: openforms/emails/models.py:26
@@ -5259,73 +5265,69 @@ msgstr ""
 "toegestuurde regels."
 
 #: openforms/forms/api/viewsets.py:410
-msgid "Copy form"
-msgstr "Formulier kopieren"
-
-#: openforms/forms/api/viewsets.py:447
 msgid "Export form"
 msgstr "Formulier exporteren"
 
-#: openforms/forms/api/viewsets.py:482
+#: openforms/forms/api/viewsets.py:445
 msgid "Prepare form edit admin message"
 msgstr "Admin berichten voor formulier bewerken voorbereiden"
 
-#: openforms/forms/api/viewsets.py:561
+#: openforms/forms/api/viewsets.py:524
 msgid "List form variables"
 msgstr "Formuliervariabelen weergeven"
 
-#: openforms/forms/api/viewsets.py:562
+#: openforms/forms/api/viewsets.py:525
 msgid "List all variables defined for a form."
 msgstr "Geef alle variabelen terug die bij een formulier horen"
 
-#: openforms/forms/api/viewsets.py:575
+#: openforms/forms/api/viewsets.py:538
 msgid "Filter by form variable source"
 msgstr "Filteren op oorsprong formuliervariabele"
 
-#: openforms/forms/api/viewsets.py:630
+#: openforms/forms/api/viewsets.py:593
 msgid "List logic rules"
 msgstr "Logicaregels weergeven"
 
-#: openforms/forms/api/viewsets.py:631
+#: openforms/forms/api/viewsets.py:594
 msgid "List all logic rules defined for a form."
 msgstr "Geef een lijst van alle logicaregels van een formulier."
 
-#: openforms/forms/api/viewsets.py:685
+#: openforms/forms/api/viewsets.py:648
 msgid "List price logic rules"
 msgstr "Logicaregels weergeven"
 
-#: openforms/forms/api/viewsets.py:686
+#: openforms/forms/api/viewsets.py:649
 msgid "List all price logic rules defined for a form."
 msgstr "Logica-prijsregels van een formulier weergeven"
 
-#: openforms/forms/api/viewsets.py:721 openforms/forms/api/viewsets.py:738
-#: openforms/forms/api/viewsets.py:757
+#: openforms/forms/api/viewsets.py:684 openforms/forms/api/viewsets.py:701
+#: openforms/forms/api/viewsets.py:720
 msgid "Either a UUID4 or a slug identifying the form."
 msgstr "Een UUID4 of een slug die het formulier identificeert."
 
-#: openforms/forms/api/viewsets.py:727
+#: openforms/forms/api/viewsets.py:690
 msgid "Save form version"
 msgstr "Formulierversie opslaan"
 
-#: openforms/forms/api/viewsets.py:731
+#: openforms/forms/api/viewsets.py:694
 msgid "Restore form version"
 msgstr "Formulierversie terugzetten"
 
-#: openforms/forms/api/viewsets.py:744
+#: openforms/forms/api/viewsets.py:707
 msgid "The UUID of the form version"
 msgstr "Het UUID van de formulierversie"
 
-#: openforms/forms/api/viewsets.py:750
+#: openforms/forms/api/viewsets.py:713
 msgid "List form versions"
 msgstr "Formulierversies weergeven"
 
-#: openforms/forms/api/viewsets.py:798
+#: openforms/forms/api/viewsets.py:761
 #: openforms/forms/templates/admin/forms/form/import_form.html:15
 #: openforms/forms/templates/admin/forms/form/import_form.html:20
 msgid "Import form"
 msgstr "Formulier importeren"
 
-#: openforms/forms/api/viewsets.py:800
+#: openforms/forms/api/viewsets.py:763
 msgid "No response body"
 msgstr "Geen antwoordbericht inhoud"
 
@@ -6192,7 +6194,7 @@ msgstr ""
 
 #: openforms/forms/models/pricing_logic.py:43
 #: openforms/products/models/product.py:26
-#: openforms/submissions/models/submission.py:133
+#: openforms/submissions/models/submission.py:134
 msgid "price"
 msgstr "prijs"
 
@@ -9099,7 +9101,7 @@ msgstr ""
 
 #: openforms/registrations/contrib/objects_api/models.py:212
 #: openforms/submissions/models/post_completion_metadata.py:14
-#: openforms/submissions/models/submission.py:314
+#: openforms/submissions/models/submission.py:315
 #: openforms/submissions/models/submission_files.py:129
 #: openforms/submissions/models/submission_report.py:30
 #: openforms/submissions/models/submission_value_variable.py:262
@@ -9709,7 +9711,7 @@ msgid "Name of the form definition used in the form step."
 msgstr "Naam van de formulierdefinitie horend bij de stap."
 
 #: openforms/submissions/api/serializers.py:526
-#: openforms/submissions/models/submission.py:231
+#: openforms/submissions/models/submission.py:232
 msgid "privacy policy accepted"
 msgstr "Privacybeleid geaccepteerd"
 
@@ -9719,7 +9721,7 @@ msgstr ""
 "Indicator of de mede-ondertekenaar het privacybeleid geaccepteerd heeft."
 
 #: openforms/submissions/api/serializers.py:530
-#: openforms/submissions/models/submission.py:241
+#: openforms/submissions/models/submission.py:242
 msgid "statement of truth accepted"
 msgstr "verklaring van waarheid geaccepteerd"
 
@@ -10051,7 +10053,7 @@ msgstr ""
 "afgevuurd wordt."
 
 #: openforms/submissions/models/post_completion_metadata.py:30
-#: openforms/submissions/models/submission.py:119
+#: openforms/submissions/models/submission.py:120
 #: openforms/submissions/models/submission_files.py:64
 #: openforms/submissions/models/submission_files.py:179
 #: openforms/submissions/models/submission_step.py:105
@@ -10071,31 +10073,31 @@ msgstr "Soort trigger die de achtergrondtaken aangemaakt heeft."
 msgid "post completion metadata"
 msgstr "bij-voltooiingmetagegevens"
 
-#: openforms/submissions/models/submission.py:112
+#: openforms/submissions/models/submission.py:113
 msgid "form URL"
 msgstr "formulier URL"
 
-#: openforms/submissions/models/submission.py:116
+#: openforms/submissions/models/submission.py:117
 msgid "URL where the user initialized the submission."
 msgstr "URL waar de gebruiker de inzending is gestart."
 
-#: openforms/submissions/models/submission.py:120
+#: openforms/submissions/models/submission.py:121
 msgid "completed on"
 msgstr "afgerond op"
 
-#: openforms/submissions/models/submission.py:121
+#: openforms/submissions/models/submission.py:122
 msgid "suspended on"
 msgstr "onderbroken op"
 
-#: openforms/submissions/models/submission.py:124
+#: openforms/submissions/models/submission.py:125
 msgid "co-sign data"
 msgstr "Mede-ondertekenaargegevens"
 
-#: openforms/submissions/models/submission.py:128
+#: openforms/submissions/models/submission.py:129
 msgid "Authentication details of a co-signer."
 msgstr "Authenticatiedetails van een mede-ondertekenaar."
 
-#: openforms/submissions/models/submission.py:140
+#: openforms/submissions/models/submission.py:141
 msgid ""
 "Cost of this submission. Either derived from the related product, or "
 "evaluated from price logic rules. The price is calculated and saved on "
@@ -10105,11 +10107,11 @@ msgstr ""
 "of door logicaregels. De prijs wordt berekend en opgeslagen op de inzending "
 "zodra deze is afgerond."
 
-#: openforms/submissions/models/submission.py:148
+#: openforms/submissions/models/submission.py:149
 msgid "last register attempt date"
 msgstr "laatste poging tot doorzetting"
 
-#: openforms/submissions/models/submission.py:152
+#: openforms/submissions/models/submission.py:153
 msgid ""
 "The last time the submission registration was attempted with the backend.  "
 "Note that this date will be updated even if the registration is not "
@@ -10118,21 +10120,21 @@ msgstr ""
 "De laatste poging waarop de inzending is doorgezet naar de registratie "
 "backend. Deze datum wordt ook bijgewerkt als de doorzetting niet is gelukt."
 
-#: openforms/submissions/models/submission.py:157
+#: openforms/submissions/models/submission.py:158
 msgid "registration backend retry counter"
 msgstr "registratiepogingenteller"
 
-#: openforms/submissions/models/submission.py:160
+#: openforms/submissions/models/submission.py:161
 msgid "Counter to track how often we tried calling the registration backend. "
 msgstr ""
 "Teller die bijhoudt hoe vaak we de registratiebackend probeerden aan te "
 "roepen."
 
-#: openforms/submissions/models/submission.py:164
+#: openforms/submissions/models/submission.py:165
 msgid "registration backend result"
 msgstr "registratie backend resultaat"
 
-#: openforms/submissions/models/submission.py:168
+#: openforms/submissions/models/submission.py:169
 msgid ""
 "Contains data returned by the registration backend while registering the "
 "submission data."
@@ -10140,28 +10142,28 @@ msgstr ""
 "Bevat de gegevens zoals teruggegeven door de registratie backend bij het "
 "versturen van de inzending."
 
-#: openforms/submissions/models/submission.py:172
+#: openforms/submissions/models/submission.py:173
 msgid "registration backend status"
 msgstr "registratie backend status"
 
-#: openforms/submissions/models/submission.py:177
+#: openforms/submissions/models/submission.py:178
 msgid ""
 "Indication whether the registration in the configured backend was successful."
 msgstr "Indicatie of de doorzetting naar de registratie backend succesvol was."
 
-#: openforms/submissions/models/submission.py:181
+#: openforms/submissions/models/submission.py:182
 msgid "pre-registration completed"
 msgstr "preregistratie voltooid"
 
-#: openforms/submissions/models/submission.py:184
+#: openforms/submissions/models/submission.py:185
 msgid "Indicates whether the pre-registration task completed successfully."
 msgstr "Indicatie of de preregistratietaak succesvol voltooid is."
 
-#: openforms/submissions/models/submission.py:188
+#: openforms/submissions/models/submission.py:189
 msgid "public registration reference"
 msgstr "publieke referentie"
 
-#: openforms/submissions/models/submission.py:192
+#: openforms/submissions/models/submission.py:193
 msgid ""
 "The registration reference communicated to the end-user completing the form. "
 "This reference is intended to be unique and the reference the end-user uses "
@@ -10178,27 +10180,27 @@ msgstr ""
 "deze referentie wordt getoond aan de eindgebruiker en gebruikt als "
 "betalingskenmerk!"
 
-#: openforms/submissions/models/submission.py:201
+#: openforms/submissions/models/submission.py:202
 msgid "cosign complete"
 msgstr "mede-ondertekenen voltooid"
 
-#: openforms/submissions/models/submission.py:203
+#: openforms/submissions/models/submission.py:204
 msgid "Indicates whether the submission has been cosigned."
 msgstr "Geeft aan of de inzending is mede-ondertekend."
 
-#: openforms/submissions/models/submission.py:206
+#: openforms/submissions/models/submission.py:207
 msgid "cosign request email sent"
 msgstr "Mede-ondertekenenverzoek-e-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:208
+#: openforms/submissions/models/submission.py:209
 msgid "Has the email to request a co-sign been sent?"
 msgstr "Is de e-mail met het mede-ondertekenenverzoek verstuurd?"
 
-#: openforms/submissions/models/submission.py:211
+#: openforms/submissions/models/submission.py:212
 msgid "cosign confirmation email sent"
 msgstr "Mede-ondertekenenbevestigings-e-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:214
+#: openforms/submissions/models/submission.py:215
 msgid ""
 "Has the confirmation email been sent after the submission has successfully "
 "been cosigned?"
@@ -10206,71 +10208,71 @@ msgstr ""
 "Geeft aan of de bevestigings-e-mail na het succesvol mede-ondertekenen "
 "verstuurd is."
 
-#: openforms/submissions/models/submission.py:219
+#: openforms/submissions/models/submission.py:220
 msgid "confirmation email sent"
 msgstr "Bevestigingse-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:221
+#: openforms/submissions/models/submission.py:222
 msgid "Indicates whether the confirmation email has been sent."
 msgstr "Geeft aan of de bevestigingse-mail al verstuurd is."
 
-#: openforms/submissions/models/submission.py:225
+#: openforms/submissions/models/submission.py:226
 msgid "payment complete confirmation email sent"
 msgstr "Betaling-voltooidbevestigings-e-mail verstuurd"
 
-#: openforms/submissions/models/submission.py:227
+#: openforms/submissions/models/submission.py:228
 msgid "Has the confirmation emails been sent after successful payment?"
 msgstr ""
 "Geeft aan of de bevestigingse-mails na succesvollte betaling al verstuurd "
 "zijn."
 
-#: openforms/submissions/models/submission.py:233
+#: openforms/submissions/models/submission.py:234
 msgid "Has the user accepted the privacy policy?"
 msgstr "Indicator of de gebruiker het privacybeleid geaccepteerd heeft."
 
-#: openforms/submissions/models/submission.py:236
+#: openforms/submissions/models/submission.py:237
 msgid "cosign privacy policy accepted"
 msgstr "Mede-ondertekenenprivacybeleid geaccepteerd"
 
-#: openforms/submissions/models/submission.py:238
+#: openforms/submissions/models/submission.py:239
 msgid "Has the co-signer accepted the privacy policy?"
 msgstr ""
 "Indicator of de mede-ondertekenaar het privacybeleid geaccepteerd heeft."
 
-#: openforms/submissions/models/submission.py:243
+#: openforms/submissions/models/submission.py:244
 msgid "Did the user declare the form to be filled out truthfully?"
 msgstr ""
 "Heeft de gebruiker verklaard dat het formulier naar waarheid ingevuld is?"
 
-#: openforms/submissions/models/submission.py:246
+#: openforms/submissions/models/submission.py:247
 msgid "cosign statement of truth accepted"
 msgstr "mede-ondertekenen verklaring van waarheid geaccepteerd"
 
-#: openforms/submissions/models/submission.py:248
+#: openforms/submissions/models/submission.py:249
 msgid "Did the co-signer declare the form to be filled out truthfully?"
 msgstr ""
 "Heeft de mede-ondertekenaar verklaard dat het formulier naar waarheid "
 "ingevuld is?"
 
-#: openforms/submissions/models/submission.py:252
+#: openforms/submissions/models/submission.py:253
 msgid "is cleaned"
 msgstr "is opgeschoond"
 
-#: openforms/submissions/models/submission.py:255
+#: openforms/submissions/models/submission.py:256
 msgid ""
 "Indicates whether sensitive data (if there was any) has been removed from "
 "this submission."
 msgstr "Geeft aan of gevoelige gegevens verwijders zijn van deze inzending."
 
-#: openforms/submissions/models/submission.py:262
+#: openforms/submissions/models/submission.py:263
 msgid "on completion task ID"
 msgstr "bij voltooiing taak-ID"
 
-#: openforms/submissions/models/submission.py:267
+#: openforms/submissions/models/submission.py:268
 msgid "on completion task IDs"
 msgstr "bij voltooiing taak-ID's"
 
-#: openforms/submissions/models/submission.py:270
+#: openforms/submissions/models/submission.py:271
 msgid ""
 "Celery task IDs of the on_completion workflow. Use this to inspect the state "
 "of the async jobs."
@@ -10278,11 +10280,11 @@ msgstr ""
 "Celery-taak-ID's van de on_completion-workflow. Gebruik dit om de status van "
 "de asynchrone taken te inspecteren. "
 
-#: openforms/submissions/models/submission.py:276
+#: openforms/submissions/models/submission.py:277
 msgid "needs on_completion retry"
 msgstr "verwerking opnieuw proberen"
 
-#: openforms/submissions/models/submission.py:279
+#: openforms/submissions/models/submission.py:280
 msgid ""
 "Flag to track if the on_completion_retry chain should be invoked. This is "
 "scheduled via celery-beat."
@@ -10290,50 +10292,50 @@ msgstr ""
 "Vlag die aangeeft of een nieuwe verwerkingspoging nodig is. Dit wordt "
 "automatisch uitgevoerd op de achtergrond."
 
-#: openforms/submissions/models/submission.py:290
+#: openforms/submissions/models/submission.py:291
 msgid "language code"
 msgstr "taalcode"
 
-#: openforms/submissions/models/submission.py:295
+#: openforms/submissions/models/submission.py:296
 msgid "The code (RFC5646 format) of the language used to fill in the Form."
 msgstr ""
 "De code (RFC5646-formaat) van de taal die gebruikt is tijdens het invullen "
 "van het formulier."
 
-#: openforms/submissions/models/submission.py:300
+#: openforms/submissions/models/submission.py:301
 msgid "final registration backend key"
 msgstr "uiteindelijke registratiebackendsleutel"
 
-#: openforms/submissions/models/submission.py:304
+#: openforms/submissions/models/submission.py:305
 msgid "The key of the registration backend to use."
 msgstr "De sleutel van de backend die voor registratie gebruikt moet worden."
 
-#: openforms/submissions/models/submission.py:315
+#: openforms/submissions/models/submission.py:316
 msgid "submissions"
 msgstr "inzendingen"
 
-#: openforms/submissions/models/submission.py:332
+#: openforms/submissions/models/submission.py:333
 #, python-brace-format
 msgid "{pk} - started on {started}"
 msgstr "{pk} - gestart op {started}"
 
-#: openforms/submissions/models/submission.py:333
+#: openforms/submissions/models/submission.py:334
 msgid "(unsaved)"
 msgstr "(niet bewaard)"
 
-#: openforms/submissions/models/submission.py:334
+#: openforms/submissions/models/submission.py:335
 msgid "(no timestamp yet)"
 msgstr "(nog geen datum)"
 
-#: openforms/submissions/models/submission.py:778
+#: openforms/submissions/models/submission.py:784
 msgid "No registration backends defined on form"
 msgstr "Er zijn geen registratiebackends geconfigureerd op het formulier."
 
-#: openforms/submissions/models/submission.py:787
+#: openforms/submissions/models/submission.py:793
 msgid "Multiple backends defined on form"
 msgstr "Meerdere backends geconfigureerd op het formulier"
 
-#: openforms/submissions/models/submission.py:806
+#: openforms/submissions/models/submission.py:812
 msgid "Unknown registration backend set by form logic. Trying default..."
 msgstr ""
 "Onbekende registratiebackend ingesteld via formulierlogica. We proberen de "
@@ -12030,3 +12032,6 @@ msgstr ""
 msgid "Without any binding addresses, no Suwinet service can be used."
 msgstr ""
 "Zonder enig \"binding address\" kan er geen Suwinet service gebruikt worden."
+
+#~ msgid "Copy form"
+#~ msgstr "Formulier kopieren"
