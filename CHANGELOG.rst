@@ -2,14 +2,156 @@
 Changelog
 =========
 
+2.7.0-alpha.0 (2024-05-06)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Detailed changes
+----------------
+
+**New features**
+
+* Improved backend validation robustness, mainly by validating new components:
+
+   - [#72] Improved validation for the following components: time, selectboxes, textarea, postcode, bsn, select, checkbox,
+     currency, signature, map, cosign, password, iban and licenseplate.
+
+
+* Submission registration:
+
+   - [#4031] Added a warning for the Objects API registration configuration when switching back to the legacy configuration.
+   - [#4041] Improved robustness of document registration in the Documents API.
+
+Other features:
+
+* [#3969] For eHerkenning/eIDAS authentication, the level of assurance can no longer be overridden (as brokers do not support this).
+* [#4009] Improved the representation of submission data in the admin interface.
+* [#4005] Added the ability to search submission reports by public registration reference and submission in the admin.
+* [#4005] Updated title of the PDF submission report to include the public registration reference.
+* [#3725] Expanded email digest by detecting more problems in features actively used, such as:
+
+   - Submissions with failed registration status.
+   - Prefill plugins failures.
+   - Missing or wrong BRK client configuration.
+   - Address autofill (based on postal code and house numer) misconfiguration.
+   - Form logic rules referring to non-existent fields.
+   - Invalid registration backends configuration.
+   - ZGW services: Mutual TLS certificates/certificate pairs and (nearly) expired certificates.
+
+* [#3889] You can now export the audit trails and GDPR log entries.
+* [#3889] Viewing an outgoing request log entry in the admin will now create a GDPR log entry.
+* [#4101] The "Show form" button in the admin is now only displayed for active forms.
+* [#4080] Added generation timestamp to PDF submission report.
+* [#4215] Email logs older than 90 days are now periodically deleted.
+* [#4229] Improved performance of KVK number validation.
+
+**Bugfixes**
+
+* Fixed more backend validation issues:
+
+   - [#4065] Hidden fields/components are not longer taken into account during backend validation.
+   - [#4068] Fixed various backend validation issues:
+
+      * Allow empty string as empty value for date field.
+      * Don't reject textfield (and derivatives) with multiple=True when
+        items inside are null (treat them as empty value/string).
+      * Allow empty lists for edit grid/repeating group when field is
+        not required.
+      * Skip validation for layout components, they never get data.
+      * Ensure that empty string values for optional text fields are
+        allowed (also covers derived fields).
+      * Fixed validation error being returned that doesn't point to
+        a particular component.
+      * Fixed validation being run for form steps that are (conditionally) marked as
+        "not applicable".
+
+   - [#4126] Fixed incorrect validation of components inside repeating groups that are
+     conditionally visible (with frontend logic).
+   - [#4143] Added additional backend validation: now when form step data is being saved
+     (including pausing a form), the values are validated against the component
+     configuration too.
+   - [#4151] Fixed backend validation error being triggered for radio/select/selectboxes
+     components that get their values/options from another variable.
+   - [#4172] Fixed a crash while running input validation on date fields when min/max date
+     validations are specified.
+   - [DH#671] Fixed conditionally making components required/optional via backend logic.
+   - Fixed validation of empty/optional select components.
+   - [#4096] Fixed validation of hidden (with ``clearOnHide: false``) radio components.
+   - [DH#667] Fixed components inside a repeating group causing validation issues when
+     they are nested inside a fieldset or columns.
+
+
+
+* [#4069] Fixed a crash in the form designer when navigating to the variables tab if you
+  use any of the following registration backends: email, MS Graph (OneDrive/Sharepoint)
+  or StUF-ZDS.
+* [#4061] Fixed not all form components being visible in the form builder when other
+  components can be selected.
+* [#4079] Fixed metadata retrieval for DigiD failing when certificates signed by the G1
+  root are used.
+* [#4099] Fixed a crash in the form designer when editing (user defined) variables and
+  the template-based Objects API registration backend is configured.
+* [#4103] Fixed incorrect appointment details being included in the submission PDF.
+* [#4073] Removed unused StUF-ZDS 'gemeentecode'.
+* [#4015] Fixed possible traversal attack in service fetch service.
+* [#4084] Fixed default values of select components set to multiple.
+* [#4134] Fixed form designer admin crashes when component/variable keys are edited.
+* [#4131] Fixed bug where component validators all had to be valid rather than at least
+  one.
+* [#4072] Fixed recovery token flow redirecting back to login screen, making it impossible to use recovery tokens.
+* [#4145] Fixed the payment status not being registered correctly for StUF-ZDS.
+* [#4124] Fixed forms being shown multiple times in the admin list overview.
+* [#4052] Fixed payment (reminder) emails being sent more often than intended.
+* [#4156] Fixed the format of order references sent to payment providers. You can now
+  provide your own template.
+* [#4141] Fixed a crash in the Objects API registration when using periods in component
+  keys.
+* [#4165] A cookie consent group for analytics is now required.
+* [#4187] Selectboxes/radio with dynamic options are considered invalid when submitting the form.
+* [#4202] Fixed Objects API registration v2 crash with hidden fields.
+* [#4115] Support different kinds of GovMetric feedback (aborting the form vs. completing the form).
+* [#4197] Ensured all uploaded images are being resized if necessary.
+* [#4191] Added missing required ``aoaIdentificatie`` field to ZGW registration.
+* [#4173] Fixed registration backends not being included when copying a form.
+* [#4146] Fixed SOAP timeout not being used for Stuf-ZDS client.
+* [#3964] Toggling visibility with frontend logic and number/currency components leads to fields being emptied.
+* [#4247] Fixed migration crash because of particular key-structure with repeating groups.
+* [#4174] Fixed submission pre-registration being stuck in a loop when failing to do so.
+
+**Project maintenance**
+
+* [#4035] Added an E2E test for the file component.
+* Cleaned up logging config: removed unused performance logging config, added tools to mute logging.
+* Cleaned up structure of local setting overrides.
+* [#4057] Upgraded to ``zgw-consumers`` 0.32.0. This drops the dependency on ``gemma-zds-client``.
+* Vendored ``decorator-include``, as it is not maintained anymore.
+* Updated dependencies to drop ``setuptools``.
+* [#3878] Updated some dependencies after the Django 4.2 upgrade.
+* Switched to Docker Compose V2 in CI, as V1 was removed from Github Ubuntu images.
+* Moved EOL changelog to archive.
+* Ordered changelog entries by version instead of date in archive.
+* Added feature to log flaky tests in CI.
+* Documented versioning policy change.
+* Used ``uv`` to install dependencies in Docker build.
+* Improved release process documentation.
+* [#3878] Updated docs dependencies.
+* Added PR checklist template.
+* [#4009, #979] Removed the ``get_merged_data`` of the submission model.
+* [#4044] Improved developer documentation of submission state and component configuration.
+* [#3878] Updated to the latest version of ``django-yubin``, removed the temporary patch.
+* [#3878] Updated to the latest version of ``celery``, including related dependencies.
+* [#4247] Improved robustness of the ``FormioConfigurationWrapper`` with editgrids.
+* [#4236] Removed form copy API endpoint, as it is not used anymore.
+
 2.6.5 (2024-04-24)
 ==================
 
 Bugfix release
 
-* [#4165] Require a cookie consent group for analytics
-* [#4115] Add new source ID and secure GUID
-* [#4202] Fix Objects API registration v2 crash with hidden fields
+* [#4165] A cookie consent group for analytics is now required.
+* [#4115] Added new source ID and secure GUID.
+* [#4202] Fixed Objects API registration v2 crash with hidden fields.
 
 2.6.5-beta.0 (2024-04-17)
 =========================

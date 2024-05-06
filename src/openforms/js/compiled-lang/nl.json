@@ -512,7 +512,7 @@
   "5JNnFB": [
     {
       "type": 0,
-      "value": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?"
+      "value": "Let op! Teruggaan naar het oude configuratieformaat verwijdert de ingestelde variabelekoppelingen. Ben je zeker dat je wil teruggaan?"
     }
   ],
   "5LxMj7": [
@@ -1954,7 +1954,7 @@
   "JfIB3K": [
     {
       "type": 0,
-      "value": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
+      "value": "Overschrijf het vereiste minimale betrouwbaarheidsniveau. Niet alle authenticatieplugins ondersteunen dit."
     }
   ],
   "JhdlEg": [
@@ -2004,7 +2004,7 @@
   "KGcyn+": [
     {
       "type": 0,
-      "value": "The form is not active"
+      "value": "Het formulier is (nog) niet actief."
     }
   ],
   "KIy7Wr": [

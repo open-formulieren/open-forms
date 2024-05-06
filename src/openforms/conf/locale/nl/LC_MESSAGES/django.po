@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-01 12:01+0200\n"
-"PO-Revision-Date: 2024-03-21 09:55+0100\n"
+"POT-Creation-Date: 2024-05-06 12:24+0200\n"
+"PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -515,88 +515,60 @@ msgid "Enabling this installs SiteImprove"
 msgstr "Door dit in te schakelen activeert u SiteImprove"
 
 #: openforms/analytics_tools/models.py:211
-#, fuzzy
-#| msgid "GovMetric source ID"
 msgid "GovMetric source ID form aborted"
-msgstr "GovMetric source ID"
+msgstr "GovMetric source ID (afgebroken formulier)"
 
 #: openforms/analytics_tools/models.py:215
-#, fuzzy
-#| msgid ""
-#| "Your GovMetric source ID - This is created by KLANTINFOCUS when a list of "
-#| "questions is created. It is a numerical value that is unique per set of "
-#| "questions."
 msgid ""
 "Your GovMetric source ID for when a form is aborted - This is created by "
 "KLANTINFOCUS when a list of questions is created. It is a numerical value "
 "that is unique per set of questions."
 msgstr ""
-"Het GovMetric source ID - dit is aangemaakt door KLANTINFOCUS wanneer een "
-"vragenlijst gebouwd wordt. Het is een numerieke waarde die uniek is per "
-"vragenlijst."
+"Het GovMetric source ID voor afgebroken/gestopte formulieren - dit is "
+"aangemaakt door KLANTINFOCUS wanneer een vragenlijst gebouwd wordt. Het is "
+"een numerieke waarde die uniek is per vragenlijst."
 
 #: openforms/analytics_tools/models.py:220
-#, fuzzy
-#| msgid "GovMetric secure GUID"
 msgid "GovMetric secure GUID form aborted"
-msgstr "GovMetric secure GUID"
+msgstr "GovMetric secure GUID (afgebroken formulier)"
 
 #: openforms/analytics_tools/models.py:224
-#, fuzzy
-#| msgid ""
-#| "Your GovMetric secure GUID - This is an optional value. It is created by "
-#| "KLANTINFOCUS when a list of questions is created. It is a string that is "
-#| "unique per set of questions."
 msgid ""
 "Your GovMetric secure GUID for when a form is aborted - This is an optional "
 "value. It is created by KLANTINFOCUS when a list  of questions is created. "
 "It is a string that is unique per set of questions."
 msgstr ""
-"Het GovMetric secure GUID. Deze waarde is niet verplicht en wordt aangemaakt "
-"door KLANTINFOCUS wanneer een vragenlijst gebouwd wordt. Het is een unieke "
-"waarde per vragenlijst."
+"Het GovMetric secure GUID voor afgebroken/gestopte formulieren. Deze waarde "
+"is niet verplicht en wordt aangemaakt door KLANTINFOCUS wanneer een "
+"vragenlijst gebouwd wordt. Het is een unieke waarde per vragenlijst."
 
 #: openforms/analytics_tools/models.py:230
-#, fuzzy
-#| msgid "GovMetric source ID"
 msgid "GovMetric source ID form finished"
-msgstr "GovMetric source ID"
+msgstr "GovMetric source ID (inzending voltooid)"
 
 #: openforms/analytics_tools/models.py:234
-#, fuzzy
-#| msgid ""
-#| "Your GovMetric source ID - This is created by KLANTINFOCUS when a list of "
-#| "questions is created. It is a numerical value that is unique per set of "
-#| "questions."
 msgid ""
 "Your GovMetric source ID for when a form is finished - This is created by "
 "KLANTINFOCUS when a list of questions is created. It is a numerical value "
 "that is unique per set of questions."
 msgstr ""
-"Het GovMetric source ID - dit is aangemaakt door KLANTINFOCUS wanneer een "
-"vragenlijst gebouwd wordt. Het is een numerieke waarde die uniek is per "
-"vragenlijst."
+"Het GovMetric source ID voor voltooide inzendingen- dit is aangemaakt door "
+"KLANTINFOCUS wanneer een vragenlijst gebouwd wordt. Het is een numerieke "
+"waarde die uniek is per vragenlijst."
 
 #: openforms/analytics_tools/models.py:239
-#, fuzzy
-#| msgid "GovMetric secure GUID"
 msgid "GovMetric secure GUID form finished"
-msgstr "GovMetric secure GUID"
+msgstr "GovMetric secure GUID (inzending voltooid)"
 
 #: openforms/analytics_tools/models.py:243
-#, fuzzy
-#| msgid ""
-#| "Your GovMetric secure GUID - This is an optional value. It is created by "
-#| "KLANTINFOCUS when a list of questions is created. It is a string that is "
-#| "unique per set of questions."
 msgid ""
 "Your GovMetric secure GUID for when a form is finished - This is an optional "
 "value. It is created by KLANTINFOCUS when a list  of questions is created. "
 "It is a string that is unique per set of questions."
 msgstr ""
-"Het GovMetric secure GUID. Deze waarde is niet verplicht en wordt aangemaakt "
-"door KLANTINFOCUS wanneer een vragenlijst gebouwd wordt. Het is een unieke "
-"waarde per vragenlijst."
+"Het GovMetric secure GUID voor voltooide inzendingen. Deze waarde is niet "
+"verplicht en wordt aangemaakt door KLANTINFOCUS wanneer een vragenlijst "
+"gebouwd wordt. Het is een unieke waarde per vragenlijst."
 
 #: openforms/analytics_tools/models.py:249
 msgid "enable GovMetric analytics"
@@ -1520,13 +1492,16 @@ msgstr "Het authenticatie attribuut geleverd door deze plugin."
 
 #: openforms/authentication/api/serializers.py:27
 msgid "supports loa override"
-msgstr ""
+msgstr "ondersteunt betrouwbaarheidsniveau-overschrijven"
 
 #: openforms/authentication/api/serializers.py:29
 msgid ""
 "Does the Identity Provider support overriding the minimum Level of Assurance "
 "(LoA) through the authentication request?"
 msgstr ""
+"Biedt de identity provider een mechanisme om het minimale "
+"betrouwbaarheidsniveau te specifiëren binnen een individueel "
+"authenticatieverzoek?"
 
 #: openforms/authentication/api/serializers.py:35
 msgid "Levels of assurance"
@@ -2650,10 +2625,8 @@ msgid ""
 msgstr "Tijd in minuten voordat de sessie van een gebruiker verloopt."
 
 #: openforms/config/models/config.py:325
-#, fuzzy
-#| msgid "Payment Order ID prefix"
 msgid "Payment Order ID template"
-msgstr "Betalings-order ID prefix"
+msgstr "Betaling: bestellingsnummersjabloon"
 
 #: openforms/config/models/config.py:330
 #, python-brace-format
@@ -2662,6 +2635,10 @@ msgid ""
 "numerical and can contain the '/._-' characters. You can use the placeholder "
 "tokens: {year}, {public_reference}, {uid}."
 msgstr ""
+"Sjabloon voor de generatie van unieke betalingsreferenties. Het sjabloon "
+"moet alfanumeriek zijn en mag de karakters '/._-' bevatten. De placeholder "
+"tokens {year}, {public_reference} en {uid} zijn beschikbaar. Het sjabloon "
+"moet de placeholder {uid} bevatten."
 
 #: openforms/config/models/config.py:338 openforms/forms/models/form.py:218
 msgid "ask privacy consent"
@@ -2754,10 +2731,8 @@ msgstr ""
 "Wanneer dit ingeschakeld is wordt informatie over de gebruikte SDK getoond."
 
 #: openforms/config/models/config.py:408
-#, fuzzy
-#| msgid "enable new formio builder"
 msgid "enabled backend formio validation"
-msgstr "nieuwe formio builder inschakelen"
+msgstr "backend-formio-validatie ingeschakeld"
 
 #: openforms/config/models/config.py:414 openforms/forms/models/form.py:262
 msgid "successful submission removal limit"
@@ -3158,10 +3133,9 @@ msgid "Validation plugin config: BRK - Zakelijk gerechtigd"
 msgstr "Validatiepluginconfiguratie: BRK - Zakelijk gerechtigde"
 
 #: openforms/contrib/brk/checks.py:24
-#, fuzzy, python-brace-format
-#| msgid "{api_name} endpoint is not configured."
+#, python-brace-format
 msgid "{api_name} endpoint is not configured"
-msgstr "{api_name} endpoint is niet geconfigureerd."
+msgstr "{api_name} endpoint is niet geconfigureerd"
 
 #: openforms/contrib/brk/checks.py:32 openforms/contrib/kvk/checks.py:31
 msgid "Response data is not a dictionary"
@@ -3834,7 +3808,7 @@ msgstr "Mede-ondertekeningbevestiging"
 
 #: openforms/emails/digest.py:177
 msgid "BRK Client"
-msgstr ""
+msgstr "BRK client"
 
 #: openforms/emails/models.py:26
 msgid "Subject of the email message"
@@ -3878,10 +3852,8 @@ msgid "Confirmation email template - {form}"
 msgstr "Bevestigingse-mail sjabloon - {form}"
 
 #: openforms/emails/tasks.py:60
-#, fuzzy
-#| msgid "[Open Forms] Daily summary of failed emails"
 msgid "[Open Forms] Daily summary of detected problems"
-msgstr "[Open Formulieren] Dagelijks rapport van gefaalde e-mails"
+msgstr "[Open Formulieren] Dagelijks rapport van gedetecteerde problemen"
 
 #: openforms/emails/templates/admin/emails/connection_check.html:13
 msgid ""
@@ -3904,27 +3876,21 @@ msgid "Recipient"
 msgstr "Ontvanger"
 
 #: openforms/emails/templates/emails/admin_digest.html:4
-#, fuzzy
-#| msgid "Here is a summary of the emails that failed to send yesterday:"
 msgid "Here is a summary of the problems detected in the past 24 hours:"
-msgstr ""
-"Dit is een overzicht van de e-mails die gisteren niet succesvol verstuurd "
-"konden worden:"
+msgstr "Dit is een overzicht van automatisch gedetecteerde problemen:"
 
 #: openforms/emails/templates/emails/admin_digest.html:8
 msgid "Emails that failed to send"
-msgstr ""
+msgstr "E-mails die niet verstuurd konden worden"
 
 #: openforms/emails/templates/emails/admin_digest.html:12
 #, python-format
 msgid "Email for the event \"%(event)s\" for submission %(submission_uuid)s."
-msgstr ""
+msgstr "Gebeurtenis \"%(event)s\" voor inzending %(submission_uuid)s."
 
 #: openforms/emails/templates/emails/admin_digest.html:21
-#, fuzzy
-#| msgid "Registration"
 msgid "Registrations"
-msgstr "Registratie"
+msgstr "Registraties"
 
 #: openforms/emails/templates/emails/admin_digest.html:26
 #, python-format
@@ -3932,6 +3898,8 @@ msgid ""
 "Form '%(form_name)s' failed %(counter)s time(s) between %(first_failure_at)s "
 "and %(last_failure_at)s.</br>"
 msgstr ""
+"Formulier '%(form_name)s' faalde %(counter)s keer tussen "
+"%(first_failure_at)s end %(last_failure_at)s.</br>"
 
 #: openforms/emails/templates/emails/admin_digest.html:32
 #, python-format
@@ -3940,6 +3908,8 @@ msgid ""
 "                        View failed '%(form_name)s' submissions\n"
 "                    "
 msgstr ""
+"\n"
+"Toon gefaalde '%(form_name)s' inzendingen"
 
 #: openforms/emails/templates/emails/admin_digest.html:38
 #: openforms/emails/templates/emails/admin_digest.html:60
@@ -3947,6 +3917,8 @@ msgid ""
 "Consider enabling outgoing request logs from the configuration in order to "
 "investigate the network traffic."
 msgstr ""
+"Tip: schakel uitgaande verzoekenlogging in om inzicht te krijgen in het "
+"netwerkverkeer."
 
 #: openforms/emails/templates/emails/admin_digest.html:52
 #, python-format
@@ -3955,16 +3927,16 @@ msgid ""
 "%(initial_failure_at)s and %(last_failure_at)s in the following forms: "
 "%(forms)s"
 msgstr ""
+"De '%(name)s' plugin had %(counter)s fout(en) tussen %(initial_failure_at)s "
+"end %(last_failure_at)s. Dit gebeurde voor de formulieren: %(forms)s"
 
 #: openforms/emails/templates/emails/admin_digest.html:57
 msgid "View logs"
-msgstr ""
+msgstr "Bekijk logs"
 
 #: openforms/emails/templates/emails/admin_digest.html:68
-#, fuzzy
-#| msgid "Configuration"
 msgid "Configuration problems"
-msgstr "Configuratie"
+msgstr "Configuratieproblemen"
 
 #: openforms/emails/templates/emails/admin_digest.html:72
 #, python-format
@@ -3972,6 +3944,8 @@ msgid ""
 "The configuration for '%(name)s' is invalid (<i>%(message)s</i>).<br/> "
 "Components or plugins which make use of this will not work properly."
 msgstr ""
+"De instellingen voor '%(name)s' zijn niet geldig (<i>%(message)s</i>). <br> "
+"Component of plugins die hiervan gebruik maken zullen niet goed werken."
 
 #: openforms/emails/templates/emails/confirmation/content.html:7
 #, python-format
@@ -4360,6 +4334,7 @@ msgid "Formio integration"
 msgstr "Form.io-integratie"
 
 #: openforms/formio/components/custom.py:179
+#: openforms/formio/components/custom.py:371
 #: openforms/formio/components/vanilla.py:107
 #: openforms/formio/components/vanilla.py:268
 msgid "This value does not match the required pattern."
@@ -4390,54 +4365,52 @@ msgid "Family members type configuration"
 msgstr "Familieleden typeconfiguratie"
 
 #: openforms/formio/components/vanilla.py:185
-#, fuzzy
-#| msgid "Values must be unique"
 msgid "Value is before minimum time"
-msgstr "Waarden moeten uniek zijn"
+msgstr "De waarde is voor de minimumtijd"
 
 #: openforms/formio/components/vanilla.py:190
 msgid "Value is after maximum time"
-msgstr ""
+msgstr "De waarde is na de maximale tijd"
 
 #: openforms/formio/components/vanilla.py:198
 msgid "Value is not between mininum and maximum time."
-msgstr ""
+msgstr "De waarde ligt niet tussen de minimale en maximale tijd."
 
 #: openforms/formio/components/vanilla.py:393
 msgid "Checkbox must be checked."
-msgstr ""
+msgstr "Het selectievakje moet aangevinkt zijn."
 
 #: openforms/formio/components/vanilla.py:424
 #, python-brace-format
 msgid "Ensure this field has at least {min_selected_count} checked options."
 msgstr ""
+"Zorg dat dit veld {min_selected_count} of meer opties aangevinkt heeft."
 
 #: openforms/formio/components/vanilla.py:427
 #, python-brace-format
 msgid ""
 "Ensure this field has no more than {max_selected_count} checked options."
 msgstr ""
+"Zorg dat dit veld {max_selected_count} of minder opties aangevinkt heeft."
 
 #: openforms/formio/components/vanilla.py:653
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Een lijst van waarden was verwacht, maar kreeg \"{input_type}\"."
 
 #: openforms/formio/components/vanilla.py:654
-#, fuzzy
-#| msgid "The variable cannot be empty."
 msgid "This list may not be empty."
-msgstr "De variabele mag niet leeg zijn."
+msgstr "De lijst mag niet leeg zijn."
 
 #: openforms/formio/components/vanilla.py:655
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Zorg dat dit veld {min_length} of meer waarden heeft."
 
 #: openforms/formio/components/vanilla.py:656
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Zorg dat dit veld {max_length} of minder waarden heeft."
 
 #: openforms/formio/dynamic_config/dynamic_options.py:62
 #, python-format
@@ -6502,16 +6475,15 @@ msgid "%(lead)s: Confirmation email task failed."
 msgstr "%(lead)s: Bevestigingse-mail taak mislukt."
 
 #: openforms/logging/templates/logging/events/confirmation_email_scheduled.txt:3
-#, fuzzy, python-format
-#| msgid "%(lead)s: Confirmation email sent."
+#, python-format
 msgid "%(lead)s: Confirmation email queued with countdown of %(countdown)s s."
-msgstr "%(lead)s: Bevestigingse-mail verstuurd."
+msgstr ""
+"%(lead)s: Versturen bevestigingsmail is gepland (over %(countdown)s sec)."
 
 #: openforms/logging/templates/logging/events/confirmation_email_scheduled.txt:7
-#, fuzzy, python-format
-#| msgid "%(lead)s: Confirmation email sent."
+#, python-format
 msgid "%(lead)s: Confirmation email queued without countdown."
-msgstr "%(lead)s: Bevestigingse-mail verstuurd."
+msgstr "%(lead)s: Bevestigingsmail is gepland voor onmiddellijke versturing."
 
 #: openforms/logging/templates/logging/events/confirmation_email_skip.txt:2
 #, python-format
@@ -6594,16 +6566,13 @@ msgid "%(lead)s: JSON logic raised an error during evaluation"
 msgstr "%(lead)s: Fout bij het evalueren van de JSON logica"
 
 #: openforms/logging/templates/logging/events/outgoing_request_log_details_view_admin.txt:2
-#, fuzzy, python-format
-#| msgid ""
-#| "%(lead)s: User %(user)s viewed submission %(submission)s for form "
-#| "%(form)s in the admin"
+#, python-format
 msgid ""
 "%(lead)s: User %(user)s viewed outgoing request log %(method)s %(url)s in "
 "the admin"
 msgstr ""
-"%(lead)s: Gebruiker %(user)s bekeek inzending %(submission)s voor formulier "
-"%(form)s in de admin"
+"%(lead)s: Gebruiker %(user)s bekeek de log voor uitgaande verzoek %(method)s "
+"%(url)s in de admin."
 
 #: openforms/logging/templates/logging/events/payment_flow_failure.txt:2
 #, python-format
@@ -7105,12 +7074,14 @@ msgstr "Bedankt!"
 #: openforms/payments/validators.py:7
 #, python-brace-format
 msgid "The template must include the {uid} placeholder."
-msgstr ""
+msgstr "Het sjabloon moet verplicht de {uid} placeholder bevatten."
 
 #: openforms/payments/validators.py:15
 msgid ""
 "The template may only consist of alphanumeric, /, ., _ and - characters."
 msgstr ""
+"Je mag enkel alfanumerieke karakters en de tekens '/', '-', '_' en '.' "
+"gebruiken."
 
 #: openforms/payments/views.py:43
 msgid "Start payment flow"
@@ -8840,7 +8811,7 @@ msgstr "Objecten API plugin"
 #: openforms/registrations/contrib/objects_api/checks.py:21
 #: openforms/registrations/contrib/objects_api/checks.py:29
 msgid "Missing API credentials"
-msgstr ""
+msgstr "Ontbrekende API-authenticatiegegevens"
 
 #: openforms/registrations/contrib/objects_api/checks.py:73
 #, python-brace-format
@@ -9161,22 +9132,17 @@ msgid "submission file attachment"
 msgstr "inzendingsbijlage"
 
 #: openforms/registrations/contrib/objects_api/models.py:235
-#, fuzzy
-#| msgid "submission file attachment"
 msgid "The submission file attachment."
-msgstr "inzendingsbijlage"
+msgstr "De inzendingsbijlage toegevoegd door de formulierinvuller."
 
 #: openforms/registrations/contrib/objects_api/models.py:239
-#, fuzzy
-#| msgid "attachment url"
 msgid "document_url"
-msgstr "API resource URL van bijlage"
+msgstr "Documenten URL"
 
 #: openforms/registrations/contrib/objects_api/models.py:241
-#, fuzzy
-#| msgid "The PDF URL of the document on the Documents API."
 msgid "The URL of the submission attachment registered in the Documents API."
-msgstr "De resource-URL in de Documenten API van de inzendings-PDF."
+msgstr ""
+"De resource-URL in de Documenten API van de geregistreerde inzendingsbijlage."
 
 #: openforms/registrations/contrib/objects_api/plugin.py:49
 msgid "Objects API registration"
@@ -9410,22 +9376,16 @@ msgstr ""
 "instelling beschikbaar."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:143
-#, fuzzy
-#| msgid ""
-#| "The provided Objecttype is not part of the configured Objecttypes API."
 msgid "The provided zaaktype does not exist in the specified Catalogi API."
-msgstr ""
-"Het opgegeven objecttype is niet gevonden in de ingestelde Objecttypen API."
+msgstr "Het opgegeven zaaktype bestaat niet in de ingestelde Catalogi API."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:160
-#, fuzzy
-#| msgid ""
-#| "The provided Objecttype is not part of the configured Objecttypes API."
 msgid ""
 "The provided informatieobjecttype does not exist in the specified Catalogi "
 "API."
 msgstr ""
-"Het opgegeven objecttype is niet gevonden in de ingestelde Objecttypen API."
+"Het opgegeven informatieobjecttype bestaat niet in de ingestelde Catalogi "
+"API."
 
 #: openforms/registrations/contrib/zgw_apis/options.py:180
 #, python-brace-format
@@ -9470,14 +9430,12 @@ msgid "All"
 msgstr "Alle"
 
 #: openforms/submissions/admin.py:89
-#, fuzzy
-#| msgid "Registration"
 msgid "registration time"
-msgstr "Registratie"
+msgstr "Registratiemoment"
 
 #: openforms/submissions/admin.py:94
 msgid "In the past 24 hours"
-msgstr ""
+msgstr "In de afgelopen 24 uur"
 
 #: openforms/submissions/admin.py:252
 msgid "Successfully processed"
@@ -10622,10 +10580,9 @@ msgid "Co-sign request for {form_name}"
 msgstr "Mede-ondertekenverzoek voor {form_name}"
 
 #: openforms/submissions/tasks/pdf.py:26
-#, fuzzy, python-format
-#| msgid "%(title)s: Submission report"
+#, python-format
 msgid "%(title)s: Submission report (%(reference)s)"
-msgstr "%(title)s: Document"
+msgstr "%(title)s: Document (%(reference)s)"
 
 #: openforms/submissions/templates/admin/submissions/submission/change_form.html:8
 msgid "Attachments:"
@@ -10643,7 +10600,7 @@ msgstr "Ingezonden op: %(submission_date)s"
 #: openforms/submissions/templates/report/submission_report.html:40
 #, python-format
 msgid "Report created on: %(now_str)s"
-msgstr ""
+msgstr "Samenvatting gegenereerd op: %(now_str)s"
 
 #: openforms/submissions/templates/report/submission_report.html:43
 #, python-format
@@ -11172,10 +11129,8 @@ msgid "The data shape does not match the expected shape: {errors}"
 msgstr "De gegevensstructuur komt niet overeen met de verwachting: {errors}"
 
 #: openforms/utils/validators.py:136
-#, fuzzy
-#| msgid "Invalid BSN."
 msgid "Invalid IBAN"
-msgstr "Ongeldige BSN."
+msgstr "Ongeldig IBAN"
 
 #: openforms/validations/api/serializers.py:15
 msgid "Submission UUID"
@@ -12075,142 +12030,3 @@ msgstr ""
 msgid "Without any binding addresses, no Suwinet service can be used."
 msgstr ""
 "Zonder enig \"binding address\" kan er geen Suwinet service gebruikt worden."
-
-#, python-brace-format
-#~ msgid ""
-#~ "Prefix to apply to generated numerical order IDs. Alpha-numerical only, "
-#~ "supports placeholder {year}."
-#~ msgstr ""
-#~ "Voorvoegsel voor gegenereerde numerieke bestellingsnummers. Enkel "
-#~ "alfanumerieke karakters toegestaan en de placeholder \"{year}\"."
-
-#, python-brace-format
-#~ msgid ""
-#~ "Prefix must be alpha numeric, no spaces or special characters except "
-#~ "{year}"
-#~ msgstr ""
-#~ "Het voorvoegsel moet alfanumeriek zijn - spaties of speciale karakter "
-#~ "behalve \"{year}\" zijn niet toegelaten."
-
-#~ msgid "The attachment URL on the Documents API."
-#~ msgstr "De resource-URL van de bijlage in de Documenten API."
-
-#~ msgid "attachment urls"
-#~ msgstr "URLs bijlagen"
-
-#~ msgid "The list of attachment URLs on the Documents API."
-#~ msgstr "De lijst van resource-URLs van de bijlagen in de Documenten API."
-
-#~ msgid "Attachment Urls"
-#~ msgstr "URLs bijlagen"
-
-#~ msgid "Municipality code to register zaken"
-#~ msgstr "Gemeentecode om zaken aan te maken"
-
-#, python-brace-format
-#~ msgid "StufService missing setting '{name}'"
-#~ msgstr "StUF-service instelling '{name}' ontbreekt"
-
-#~ msgid "zaaktype"
-#~ msgstr "zaaktype"
-
-#~ msgid "Default URL of the ZAAKTYPE in the Catalogi API"
-#~ msgstr "Standaard URL van het ZAAKTYPE in de Catalogi API"
-
-#~ msgid "informatieobjecttype"
-#~ msgstr "informatieobjecttype"
-
-#~ msgid "Default URL of the INFORMATIEOBJECTTYPE in the Catalogi API"
-#~ msgstr "Standaard URL van het INFORMATIEOBJECTTYPE in de Catalogi API"
-
-#~ msgid "ZAAKTYPE is not part of the Catalogi API"
-#~ msgstr "ZAAKTYPE is geen onderdeel van de Catalogi API"
-
-#~ msgid "INFORMATIEOBJECTTYPE is not part of the Catalogi API"
-#~ msgstr "INFORMATIEOBJECTTYPE is geen onderdeel van de Catalogi API"
-
-#~ msgid "Merged Data:"
-#~ msgstr "Samengevoegde gegevens:"
-
-#~ msgid "Unknown component"
-#~ msgstr "Onbekend veldtype"
-
-#~ msgid "Municipality code"
-#~ msgstr "Gemeentecode"
-
-#~ msgid "Use the new Form.io component builder implementation."
-#~ msgstr "Gebruik de nieuwe Form.io-builder-implementatie."
-
-#~ msgid "Service for API interaction with the KVK."
-#~ msgstr "Service voor interactie met de KVK-API."
-
-#~ msgid "You must provide a non-empty value."
-#~ msgstr "Je moet een niet-lege waarde opgeven."
-
-#~ msgid "Component translations"
-#~ msgstr "Componentvertalingen"
-
-#~ msgid "Translations for literals used in components"
-#~ msgstr "Vertalingen voor teksten/labels die in componenten gebruikt worden."
-
-#~ msgid "Order ID (internal)"
-#~ msgstr "Order ID (intern)"
-
-#~ msgid "Unique tracking across backend"
-#~ msgstr "Unieke ID over externe systemen heen."
-
-#~ msgid "Order ID stored with payment provider."
-#~ msgstr "Bestelling ID meegestuurd naar externe betaalprovider."
-
-#~ msgid "submission logs"
-#~ msgstr "inzendinglogboek"
-
-#, python-brace-format
-#~ msgid "You need to be logged in with {auth_plugin}"
-#~ msgstr "U moet met {auth_plugin} ingelogd zijn"
-
-#~ msgid "Evaluated Logic Logs"
-#~ msgstr "Logboek geëvalueerde logica"
-
-#~ msgid "No logic rules for that submission"
-#~ msgstr "Geen logicaregels gevonden"
-
-#, python-format
-#~ msgid "%(since)s ago"
-#~ msgstr "%(since)s geleden"
-
-#~ msgid "Logic rules"
-#~ msgstr "Logicaregels"
-
-#~ msgid "Rule"
-#~ msgstr "Regel"
-
-#~ msgid "Triggered"
-#~ msgstr "Uitgevoerd"
-
-#~ msgid "Action"
-#~ msgstr "Actie"
-
-#~ msgid "Filter"
-#~ msgstr "Filter"
-
-#~ msgid "Rule is triggered"
-#~ msgstr "Regel uitgevoerd"
-
-#~ msgid "No"
-#~ msgstr "Nee"
-
-#~ msgid "Manage two-factor auth"
-#~ msgstr "Tweestapsauthenticatie beheren"
-
-#~ msgid ""
-#~ "Use the experimental Form.io component builder implementation. Note that "
-#~ "this falls back to the existing builder for components that are not "
-#~ "supported yet."
-#~ msgstr ""
-#~ "Schakel de experimentele Form.io component builder implementatie in. Deze "
-#~ "valt terug op de bestaande builder voor componenttypes die nog niet "
-#~ "geïmplementeerd zijn."
-
-#~ msgid "municipality logo"
-#~ msgstr "gemeentelogo"
