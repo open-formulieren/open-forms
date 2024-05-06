@@ -6,21 +6,29 @@ from django.urls import reverse
 import requests_mock
 from furl import furl
 from rest_framework import status
+from rest_framework.test import APIRequestFactory
 
 from digid_eherkenning_oidc_generics.models import (
-    OpenIDConnectDigiDMachtigenConfig,
     OpenIDConnectEHerkenningBewindvoeringConfig,
-    OpenIDConnectPublicConfig,
 )
+from openforms.authentication.constants import (
+    CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
+    AuthAttribute,
+)
+from openforms.authentication.tests.utils import get_start_form_url, get_start_url
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
 
-default_config = dict(
+from ...constants import EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
+from ...plugin import EHerkenningBewindvoeringOIDCAuthentication
+
+default_config = OpenIDConnectEHerkenningBewindvoeringConfig(
     enabled=True,
     oidc_rp_client_id="testclient",
     oidc_rp_client_secret="secret",
     oidc_rp_sign_algo="RS256",
-    oidc_rp_scopes_list=["openid"],
+    oidc_rp_scopes_list=["openid", "bsn"],
     oidc_op_jwks_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/certs",
     oidc_op_authorization_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/auth",
     oidc_op_token_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/token",
@@ -28,12 +36,21 @@ default_config = dict(
 )
 
 
+class MockConfigMixin:
+    def setUp(self):
+        super().setUp()
+
+        config_patcher = patch(
+            "digid_eherkenning_oidc_generics.models"
+            ".OpenIDConnectEHerkenningBewindvoeringConfig.get_solo",
+            return_value=default_config,
+        )
+        self.mock_config = config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
-@patch(
-    "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningBewindvoeringConfig.get_solo",
-    return_value=OpenIDConnectEHerkenningBewindvoeringConfig(**default_config),
-)
-class EHerkenningBewindvoeringOIDCTests(TestCase):
+class EHerkenningBewindvoeringOIDCTests(MockConfigMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form = FormFactory.create(
@@ -41,140 +58,96 @@ class EHerkenningBewindvoeringOIDCTests(TestCase):
             authentication_backends=["eherkenning_bewindvoering_oidc"],
         )
 
-    def test_redirect_to_eherkenning_bewindvoering_oidc(self, m_get_solo):
-        login_url = reverse(
-            "authentication:start",
-            kwargs={
-                "slug": self.form.slug,
-                "plugin_id": "eherkenning_bewindvoering_oidc",
-            },
-        )
+    def setUp(self):
+        super().setUp()
 
-        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        form_url = furl(f"http://testserver{form_path}").set({"_start": "1"}).url
-        start_url = furl(login_url).set({"next": form_url})
+        self.requests_mocker = requests_mock.Mocker()
+        self.addCleanup(self.requests_mocker.stop)
+        self.requests_mocker.start()
+
+    def test_redirect_to_eherkenning_bewindvoering_oidc(self):
+        self.requests_mocker.get(
+            "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
+            status_code=200,
+        )
+        form_url = get_start_form_url(self.form)
+        start_url = get_start_url(self.form, plugin_id="eherkenning_bewindvoering_oidc")
+
+        response = self.client.get(start_url)
+
+        with self.subTest("Sends user to IdP"):
+            self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+
+            redirect_target = furl(response.url)  # type: ignore
+            query_params = redirect_target.query.params
+
+            self.assertEqual(redirect_target.host, "provider.com")
+            self.assertEqual(
+                redirect_target.path,
+                "/auth/realms/master/protocol/openid-connect/auth",
+            )
+            self.assertEqual(query_params["scope"], "openid bsn")
+            self.assertEqual(query_params["client_id"], "testclient")
+            self.assertEqual(
+                query_params["redirect_uri"],
+                f"http://testserver{reverse('eherkenning_bewindvoering_oidc:oidc_authentication_callback')}",
+            )
+
+        with self.subTest("Return state setup"):
+            oidc_login_next = furl(self.client.session["oidc_login_next"])
+            query_params = oidc_login_next.query.params
+
+            self.assertEqual(
+                oidc_login_next.path,
+                reverse(
+                    "authentication:return",
+                    kwargs={
+                        "slug": self.form.slug,
+                        "plugin_id": "eherkenning_bewindvoering_oidc",
+                    },
+                ),
+            )
+            self.assertEqual(query_params["next"], form_url)
+
+    def test_redirect_to_eherkenning_bewindvoering_oidc_internal_server_error(self):
+        self.requests_mocker.get(
+            "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
+            status_code=500,
+        )
+        start_url = get_start_url(self.form, plugin_id="eherkenning_bewindvoering_oidc")
+
         response = self.client.get(start_url)
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-
-        parsed = furl(response.url)
-        query_params = parsed.query.params
+        assert self.requests_mocker.last_request is not None
+        self.assertEqual(
+            self.requests_mocker.last_request.url,
+            "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
+        )
+        parsed = furl(response.url)  # type: ignore
 
         self.assertEqual(parsed.host, "testserver")
-        self.assertEqual(
-            parsed.path,
-            reverse("eherkenning_bewindvoering_oidc:oidc_authentication_init"),
-        )
-
-        parsed = furl(query_params["next"])
+        self.assertEqual(parsed.path, f"/{self.form.slug}/")
         query_params = parsed.query.params
-
         self.assertEqual(
-            parsed.path,
-            reverse(
-                "authentication:return",
-                kwargs={
-                    "slug": self.form.slug,
-                    "plugin_id": "eherkenning_bewindvoering_oidc",
-                },
-            ),
-        )
-        self.assertEqual(query_params["next"], form_url)
-
-        with requests_mock.Mocker() as m:
-            m.get(
-                "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
-                status_code=200,
-            )
-            response = self.client.get(response.url)
-
-        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-
-        parsed = furl(response.url)
-        query_params = parsed.query.params
-
-        self.assertEqual(parsed.host, "provider.com")
-        self.assertEqual(
-            parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
-        )
-        self.assertEqual(query_params["scope"], "openid")
-        self.assertEqual(query_params["client_id"], "testclient")
-        self.assertEqual(
-            query_params["redirect_uri"],
-            f"http://testserver{reverse('eherkenning_bewindvoering_oidc:oidc_authentication_callback')}",
+            query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER],
+            "eherkenning_bewindvoering_oidc",
         )
 
-        parsed = furl(self.client.session["oidc_login_next"])
-        query_params = parsed.query.params
-
-        self.assertEqual(
-            parsed.path,
-            reverse(
-                "authentication:return",
-                kwargs={
-                    "slug": self.form.slug,
-                    "plugin_id": "eherkenning_bewindvoering_oidc",
-                },
-            ),
+    def test_redirect_to_eherkenning_bewindvoering_oidc_callback_error(self):
+        # set up session/state
+        self.requests_mocker.get(
+            "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
+            status_code=200,
         )
-        self.assertEqual(query_params["next"], form_url)
-
-    def test_redirect_to_eherkenning_bewindvoering_oidc_internal_server_error(
-        self, m_get_solo
-    ):
-        login_url = reverse(
-            "authentication:start",
-            kwargs={
-                "slug": self.form.slug,
-                "plugin_id": "eherkenning_bewindvoering_oidc",
-            },
-        )
-
-        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        form_url = str(furl(f"http://testserver{form_path}").set({"_start": "1"}))
-        start_url = furl(login_url).set({"next": form_url})
+        start_url = get_start_url(self.form, plugin_id="eherkenning_bewindvoering_oidc")
         response = self.client.get(start_url)
-
-        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-
-        with requests_mock.Mocker() as m:
-            m.get(
-                "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
-                status_code=500,
-            )
-            response = self.client.get(response.url)
-
-        parsed = furl(response.url)
-        query_params = parsed.query.params
-
-        self.assertEqual(parsed.host, "testserver")
-        self.assertEqual(parsed.path, form_path)
-        self.assertEqual(
-            query_params["of-auth-problem"], "eherkenning_bewindvoering_oidc"
-        )
-
-    def test_redirect_to_eherkenning_bewindvoering_oidc_callback_error(
-        self, m_get_solo
-    ):
-        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        form_url = f"http://testserver{form_path}"
-        redirect_form_url = furl(form_url).set({"_start": "1"})
-        redirect_url = furl(
-            reverse(
-                "authentication:return",
-                kwargs={
-                    "slug": self.form.slug,
-                    "plugin_id": "eherkenning_bewindvoering_oidc",
-                },
-            )
-        ).set({"next": redirect_form_url})
-
-        session = self.client.session
-        session["of_redirect_next"] = redirect_url.url
-        session.save()
+        assert response.status_code == 302
+        assert response.url.startswith("http://provider.com")  # type: ignore
 
         with patch(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.backends.OIDCAuthenticationEHerkenningBewindvoeringBackend.verify_claims",
+            "openforms.authentication.contrib.digid_eherkenning_oidc.backends"
+            ".OIDCAuthenticationEHerkenningBewindvoeringBackend.verify_claims",
             return_value=False,
         ):
             response = self.client.get(
@@ -186,7 +159,7 @@ class EHerkenningBewindvoeringOIDCTests(TestCase):
         parsed = furl(response.url)
         query_params = parsed.query.params
 
-        self.assertEqual(parsed.path, form_path)
+        self.assertEqual(parsed.path, f"/{self.form.slug}/")
         self.assertEqual(query_params["_start"], "1")
         self.assertEqual(
             query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER],
@@ -194,167 +167,120 @@ class EHerkenningBewindvoeringOIDCTests(TestCase):
         )
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=[])
-    def test_redirect_to_disallowed_domain(self, m_get_solo):
-        login_url = reverse(
-            "eherkenning_bewindvoering_oidc:oidc_authentication_init",
+    def test_redirect_to_disallowed_domain(self):
+        start_url = get_start_url(
+            self.form,
+            plugin_id="eherkenning_bewindvoering_oidc",
+            host="http://example.com",
         )
 
-        form_url = "http://example.com"
-        start_url = furl(login_url).set({"next": form_url})
         response = self.client.get(start_url)
 
-        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
     )
-    def test_redirect_to_allowed_domain(self, m_get_solo):
-        m_get_solo.return_value = OpenIDConnectDigiDMachtigenConfig(
-            enabled=True,
-            oidc_rp_client_id="testclient",
-            oidc_rp_client_secret="secret",
-            oidc_rp_sign_algo="RS256",
-            oidc_rp_scopes_list=["openid"],
-            oidc_op_jwks_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/certs",
-            oidc_op_authorization_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/auth",
-            oidc_op_token_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/token",
-            oidc_op_user_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/userinfo",
+    def test_redirect_to_allowed_domain(self):
+        self.requests_mocker.get(
+            "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
+            status_code=200,
+        )
+        form_url = get_start_form_url(self.form, host="http://example.com")
+        start_url = get_start_url(
+            self.form,
+            plugin_id="eherkenning_bewindvoering_oidc",
+            host="http://example.com",
         )
 
-        login_url = reverse(
-            "authentication:start",
-            kwargs={
-                "slug": self.form.slug,
-                "plugin_id": "eherkenning_bewindvoering_oidc",
-            },
-        )
-
-        form_url = "http://example.com"
-        start_url = furl(login_url).set({"next": form_url})
         response = self.client.get(start_url)
 
-        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+        with self.subTest("Sends user to IdP"):
+            self.assertEqual(status.HTTP_302_FOUND, response.status_code)
+            self.assertTrue(response.url.startswith("http://provider.com/"))  # type: ignore
 
-        parsed = furl(response.url)
-        query_params = parsed.query.params
-
-        self.assertEqual(parsed.host, "testserver")
-        self.assertEqual(
-            parsed.path,
-            reverse("eherkenning_bewindvoering_oidc:oidc_authentication_init"),
-        )
-
-        parsed = furl(query_params["next"])
-        query_params = parsed.query.params
-
-        self.assertEqual(
-            parsed.path,
-            reverse(
+        with self.subTest("Return state setup"):
+            oidc_login_next = furl(self.client.session["oidc_login_next"])
+            expected_next = reverse(
                 "authentication:return",
                 kwargs={
                     "slug": self.form.slug,
                     "plugin_id": "eherkenning_bewindvoering_oidc",
                 },
-            ),
-        )
-        self.assertEqual(query_params["next"], form_url)
-
-        with requests_mock.Mocker() as m:
-            m.get(
-                "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
-                status_code=200,
             )
-            response = self.client.get(response.url)
+            self.assertEqual(oidc_login_next.path, expected_next)
+            query_params = oidc_login_next.query.params
+            self.assertEqual(query_params["next"], form_url)
 
-        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-
-        parsed = furl(response.url)
-        query_params = parsed.query.params
-
-        self.assertEqual(parsed.host, "provider.com")
-        self.assertEqual(
-            parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
+    def test_redirect_with_keycloak_identity_provider_hint(self):
+        self.mock_config.return_value.oidc_keycloak_idp_hint = "oidc-eHerkenning-bewind"
+        self.requests_mocker.get(
+            "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
+            status_code=200,
         )
-        self.assertEqual(query_params["scope"], "openid")
-        self.assertEqual(query_params["client_id"], "testclient")
-        self.assertEqual(
-            query_params["redirect_uri"],
-            f"http://testserver{reverse('eherkenning_bewindvoering_oidc:oidc_authentication_callback')}",
-        )
+        start_url = get_start_url(self.form, plugin_id="eherkenning_bewindvoering_oidc")
 
-    def test_redirect_with_keycloak_identity_provider_hint(self, m_get_solo):
-        m_get_solo.return_value = OpenIDConnectPublicConfig(
-            enabled=True,
-            oidc_rp_client_id="testclient",
-            oidc_rp_client_secret="secret",
-            oidc_rp_sign_algo="RS256",
-            oidc_rp_scopes_list=["openid"],
-            oidc_op_jwks_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/certs",
-            oidc_op_authorization_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/auth",
-            oidc_op_token_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/token",
-            oidc_op_user_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/userinfo",
-            oidc_keycloak_idp_hint="oidc-digid-machtigen",
-        )
-
-        login_url = reverse(
-            "authentication:start",
-            kwargs={
-                "slug": self.form.slug,
-                "plugin_id": "eherkenning_bewindvoering_oidc",
-            },
-        )
-
-        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        form_url = str(furl(f"http://testserver{form_path}").set({"_start": "1"}))
-        start_url = furl(login_url).set({"next": form_url})
         response = self.client.get(start_url)
 
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-
-        parsed = furl(response.url)
+        parsed = furl(response.url)  # type: ignore
         query_params = parsed.query.params
+        self.assertEqual(query_params["kc_idp_hint"], "oidc-eHerkenning-bewind")
 
-        self.assertEqual(parsed.host, "testserver")
-        self.assertEqual(
-            parsed.path,
-            reverse("eherkenning_bewindvoering_oidc:oidc_authentication_init"),
-        )
 
-        parsed = furl(query_params["next"])
-        query_params = parsed.query.params
+class AddClaimsToSessionTests(MockConfigMixin, TestCase):
+    def test_handle_return_without_claim_eherkenning_bewindvoering(self):
+        factory = APIRequestFactory()
+        request = factory.get("/xyz")
+        request.session = {}  # type: ignore
 
-        self.assertEqual(
-            parsed.path,
-            reverse(
-                "authentication:return",
-                kwargs={
-                    "slug": self.form.slug,
-                    "plugin_id": "eherkenning_bewindvoering_oidc",
-                },
+        plugin = EHerkenningBewindvoeringOIDCAuthentication(identifier="boh")
+        plugin.add_claims_to_sessions_if_not_cosigning(claim="", request=request)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, request.session)
+
+    def test_handle_return_with_cosign_param_eherkenning_bewindvoering(self):
+        factory = APIRequestFactory()
+        request = factory.get(f"/xyz?{CO_SIGN_PARAMETER}=tralala")
+        request.session = {}  # type: ignore
+
+        plugin = EHerkenningBewindvoeringOIDCAuthentication(identifier="boh")
+        plugin.add_claims_to_sessions_if_not_cosigning(claim="tralala", request=request)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, request.session)
+
+    def test_handle_return_eherkenning_bewindvoering(self):
+        factory = APIRequestFactory()
+        request = factory.get("/xyz")
+        request.session = {  # type: ignore
+            EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY: {
+                "aanvrager.bsn": "222222222"
+            }
+        }
+
+        plugin = EHerkenningBewindvoeringOIDCAuthentication(identifier="boh")
+
+        with patch(
+            "openforms.authentication.contrib.digid_eherkenning_oidc.plugin.OpenIDConnectEHerkenningBewindvoeringConfig.get_solo",
+            return_value=OpenIDConnectEHerkenningBewindvoeringConfig(
+                vertegenwoordigde_company_claim_name="gemachtige.kvk",
+                gemachtigde_person_claim_name="aanvrager.bsn",
             ),
-        )
-        self.assertEqual(query_params["next"], form_url)
-
-        with requests_mock.Mocker() as m:
-            m.get(
-                "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
-                status_code=200,
+        ):
+            plugin.add_claims_to_sessions_if_not_cosigning(
+                claim={
+                    "gemachtige.kvk": "111111111",
+                },
+                request=request,
             )
-            response = self.client.get(response.url)
 
-        self.assertEqual(status.HTTP_302_FOUND, response.status_code)
-
-        parsed = furl(response.url)
-        query_params = parsed.query.params
-
-        self.assertEqual(parsed.host, "provider.com")
+        self.assertIn(FORM_AUTH_SESSION_KEY, request.session)
         self.assertEqual(
-            parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
+            {
+                "plugin": "boh",
+                "attribute": AuthAttribute.kvk,
+                "value": "111111111",
+                "machtigen": {"identifier_value": "222222222"},
+            },
+            request.session[FORM_AUTH_SESSION_KEY],
         )
-        self.assertEqual(query_params["scope"], "openid")
-        self.assertEqual(query_params["client_id"], "testclient")
-        self.assertEqual(
-            query_params["redirect_uri"],
-            f"http://testserver{reverse('eherkenning_bewindvoering_oidc:oidc_authentication_callback')}",
-        )
-        self.assertEqual(query_params["kc_idp_hint"], "oidc-digid-machtigen")
