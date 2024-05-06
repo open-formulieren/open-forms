@@ -37,6 +37,7 @@ release = openforms.__version__
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.extlinks",
     "sphinx.ext.todo",
     "sphinx.ext.intersphinx",
     "sphinx_tabs.tabs",
@@ -113,3 +114,13 @@ linkcheck_ignore = [
     r"https://hub\.docker\.com/r/.*",  # HTTP 429, presumably docker hub is blocking/limiting Github CI runners
     r"https://stackoverflow\.com/.*",  # SO 403s when running on github actions :/
 ]
+
+extlinks = {
+    "backend": ("https://github.com/open-formulieren/open-forms/issues/%s", "#%s"),
+    "sdk": ("https://github.com/open-formulieren/open-forms-sdk/issues/%s", "#%s"),
+    "cve": ("https://cve.mitre.org/cgi-bin/cvename.cgi?name=%s", "%s"),
+    "ghsa": (
+        "https://github.com/open-formulieren/open-forms/security/advisories/%s",
+        "%s",
+    ),
+}

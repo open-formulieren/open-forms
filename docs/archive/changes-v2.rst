@@ -14,8 +14,8 @@ Changes for major version 2 of Open Forms.
 
 Final release in the 2.2.x series.
 
-* [#3863] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
-* [#3858] Fixed a race condition that would manifest during parallel file uploads,
+* [:backend:`3863`] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [:backend:`3858`] Fixed a race condition that would manifest during parallel file uploads,
   leading to permission errors.
 
 2.2.9 (2024-02-06)
@@ -26,8 +26,8 @@ Bugfix release
 This release addresses a security weakness. We believe there was no way to actually
 exploit it.
 
-* [CVE-2024-24771] Fixed (non-exploitable) multi-factor authentication weakness.
-* [SDK#642] Fixed DigiD error message via SDK patch release.
+* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:sdk:`642`] Fixed DigiD error message via SDK patch release.
 * Upgraded dependencies to their latest available security releases.
 
 2.2.8 (2024-01-12)
@@ -35,16 +35,16 @@ exploit it.
 
 Periodic bugfix release
 
-* [#3656] Fixed incorrect DigiD error messages being shown when using OIDC-based plugins.
-* [#3692] Fixed crash when using OIDC DigiD login while logged into the admin interface.
-* [#3744] Fixed conditionally marking a postcode component as required/optional.
+* [:backend:`3656`] Fixed incorrect DigiD error messages being shown when using OIDC-based plugins.
+* [:backend:`3692`] Fixed crash when using OIDC DigiD login while logged into the admin interface.
+* [:backend:`3744`] Fixed conditionally marking a postcode component as required/optional.
 
   .. note:: We cannot automatically fix existing logic rules. For affected forms, you
      can remove and re-add the logic rule action to modify the 'required' state.
 
-* [#3704] Fixed the family members component not retrieving the partners when using
+* [:backend:`3704`] Fixed the family members component not retrieving the partners when using
   StUF-BG as data source.
-* [#2710] Added missing initials (voorletters) prefill option for StUF-BG plugin.
+* [:backend:`2710`] Added missing initials (voorletters) prefill option for StUF-BG plugin.
 * Fixed failing docs build by disabling/changing some link checks.
 
 2.2.7 (2023-12-12)
@@ -52,10 +52,10 @@ Periodic bugfix release
 
 Periodic bugfix release
 
-* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+* [:backend:`3625`] Fixed crashes during StUF response parsing when certain ``nil`` values are
   present.
-* [#3605] Fixed unintended number localization in StUF/SOAP messages.
-* [#3613] Fixed submission resume flow not sending the user through the authentication
+* [:backend:`3605`] Fixed unintended number localization in StUF/SOAP messages.
+* [:backend:`3613`] Fixed submission resume flow not sending the user through the authentication
   flow again when they authenticated for forms that have optional authentication. This
   unfortunately resulted in hashed BSNs being sent to registration backends, which we
   can not recover/translate back to the plain-text values.
@@ -66,7 +66,7 @@ Periodic bugfix release
 Hotfix release
 
 * Upgraded bundled SDK version
-* [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
+* [:backend:`3580`] Fixed incorrect attributes being sent in ZWG registration backend when
   creating the rol/betrokkene.
 
 2.2.5 (2023-10-30)
@@ -74,7 +74,7 @@ Hotfix release
 
 Periodic bugfix release
 
-* [#3279] Added robustness to the admin that retrieves data from external APIs.
+* [:backend:`3279`] Added robustness to the admin that retrieves data from external APIs.
 * Bumped dependencies to their latest security fixes.
 
 2.2.4 (2023-09-29)
@@ -82,7 +82,7 @@ Periodic bugfix release
 
 Hotfix for WebKit based browsers
 
-* [#3511] Fixed user input "flickering" in forms with certain (backend) logic on Safari
+* [:backend:`3511`] Fixed user input "flickering" in forms with certain (backend) logic on Safari
   & other WebKit based browsers (via SDK patch).
 
 2.2.3 (2023-09-25)
@@ -90,16 +90,16 @@ Hotfix for WebKit based browsers
 
 Periodic bugfix release
 
-* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* [:backend:`3139`] Fixed form designers/admins not being able to start forms in maintenance mode.
 * Fixed the version of openapi-generator.
 * Bumped to latest Django patch release.
-* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
-* [#3423] Fixed import crash with forms using service fetch.
-* [#3420] Fixed styling of cookie overview page.
-* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+* [:backend:`3447`] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [:backend:`3423`] Fixed import crash with forms using service fetch.
+* [:backend:`3420`] Fixed styling of cookie overview page.
+* [:backend:`3378`] Fixed copying forms with logic that triggers from a particular step crashing
   the logic tab.
-* [#3470] Fixed form names with slashes breaking submission generation.
-* [#3437] Improved robustness of outgoing request logging solution.
+* [:backend:`3470`] Fixed form names with slashes breaking submission generation.
+* [:backend:`3437`] Improved robustness of outgoing request logging solution.
 * Included latest SDK bugfix release.
 
 2.2.2 (2023-08-24)
@@ -107,10 +107,10 @@ Periodic bugfix release
 
 Periodic bugfix release
 
-* [#3319] Fixed forms possibly sending a DigiD SAML request without assurance level due
+* [:backend:`3319`] Fixed forms possibly sending a DigiD SAML request without assurance level due
   to misconfiguration.
-* [#3358] Fixed display of appointment time in correct timezone.
-* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+* [:backend:`3358`] Fixed display of appointment time in correct timezone.
+* [:backend:`3368`] Fixed a crash when empty values are returned from StUF-BG.
 * Fixed JQ documentation URL for sorting.
 
 2.2.1 (2023-07-26)
@@ -119,24 +119,24 @@ Periodic bugfix release
 Periodic bugfix release
 
 * Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
-* [#3195] Fixed hardcoded ``productaanvraag_type`` in default Objects API template to
+* [:backend:`3195`] Fixed hardcoded ``productaanvraag_type`` in default Objects API template to
   use configuration option.
-* [#3182] Fixed importing forms from before 2.2.0 due to missing
+* [:backend:`3182`] Fixed importing forms from before 2.2.0 due to missing
   ``{% cosign_information %}`` tag in confirmation email templates.
-* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
-* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+* [:backend:`3216`] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
+* [:backend:`3211`] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
   tracked.
-* [#3161] Fixed not being able to reset form-specific data removal settings to the
+* [:backend:`3161`] Fixed not being able to reset form-specific data removal settings to the
   empty value so that the global configuration is used again.
-* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+* [:backend:`3219`] Fixed saved uploads not being deleted when the user goes back to the file and
   removes the upload again.
 * Fixed CI builds (bump PyYAML, docs build).
-* [#3258] Fixed labels for Haal Centraal prefill attributes.
-* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
-* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
+* [:backend:`3258`] Fixed labels for Haal Centraal prefill attributes.
+* [:backend:`3301`] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
+* [:backend:`3144`] Fixed missing links to uploads in the registration e-mails when the field is
   inside a container (fieldset, repeating group).
-* [#3302] Fixed an issue causing uploaded images not to be resized.
-* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
+* [:backend:`3302`] Fixed an issue causing uploaded images not to be resized.
+* [:backend:`3084`] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
 * Bumped dependencies to get their latest security fixes
 * Fixed the broken Token Exchange extension (pre-request plugins) in the Haal Centraal
   plugin.
@@ -235,13 +235,13 @@ Detailed changes
 
 * Retrieve data from external registrations (aka service fetch):
 
-  * [#2680] Added API endpoint to expose available services for service fetch.
-  * [#2661, #2693, #2834, #2835] Added user friendly UI to configure "external data retrieval".
-  * [#2681] Added logic logging of service fetch to allow better debugging of form logic.
-  * [#2694] Updated interpolation format to double bracket, making it possible to use
+  * [:backend:`2680`] Added API endpoint to expose available services for service fetch.
+  * [:backend:`2661`, :backend:`2693`, :backend:`2834`, :backend:`2835`] Added user friendly UI to configure "external data retrieval".
+  * [:backend:`2681`] Added logic logging of service fetch to allow better debugging of form logic.
+  * [:backend:`2694`] Updated interpolation format to double bracket, making it possible to use
     Django template engine filters.
 
-* [#1530] Introduced a new co-sign component
+* [:backend:`1530`] Introduced a new co-sign component
 
   * Implemented a new flow for co-signing so that the co-signer receives a request via
     email.
@@ -251,126 +251,126 @@ Detailed changes
 
 * Background task processing
 
-  * [#2927] Added Celery worker monitoring tooling (for devops/infra).
-  * [#3068] Added soft and hard task timeout settings for background workers.
+  * [:backend:`2927`] Added Celery worker monitoring tooling (for devops/infra).
+  * [:backend:`3068`] Added soft and hard task timeout settings for background workers.
 
-* [#2826] The form builder now validates the format of dates in logic rules.
-* [#2789] The submission pause/save modal text is now configurable.
-* [#2872] The registration flow is reworked to have a pre-registration step, e.g. to
+* [:backend:`2826`] The form builder now validates the format of dates in logic rules.
+* [:backend:`2789`] The submission pause/save modal text is now configurable.
+* [:backend:`2872`] The registration flow is reworked to have a pre-registration step, e.g. to
   reserve a "zaaknummer" before creating the case.
-* [#2872] The email registration plugin can now include the registration reference and
+* [:backend:`2872`] The email registration plugin can now include the registration reference and
   any other submission variables.
-* [#2872] You can now override subject and body templates for the registration email
-* [#2957] Added editor to simplify theming an instance instead of editing JSON.
-* [#2444] It's now possible to hide non-applicable steps in the progress indicator
+* [:backend:`2872`] You can now override subject and body templates for the registration email
+* [:backend:`2957`] Added editor to simplify theming an instance instead of editing JSON.
+* [:backend:`2444`] It's now possible to hide non-applicable steps in the progress indicator
   rather than greying them out.
-* [#2946] It's now possible to overwrite the confirmation email subject and content
+* [:backend:`2946`] It's now possible to overwrite the confirmation email subject and content
   templates individually.
-* [#2343] Added option to hide the label of a repeating group.
-* [#3004] You can now disable form pausing.
-* [#1879] Relevant validation plugins are now filtered per component type in the form
+* [:backend:`2343`] Added option to hide the label of a repeating group.
+* [:backend:`3004`] You can now disable form pausing.
+* [:backend:`1879`] Relevant validation plugins are now filtered per component type in the form
   designer.
-* [#3031] Increased the size of Objects API registration plugin configuration form fields.
-* [#2918] Added alternative Formio builder implementation, opt-in via a feature flag.
-* [#1424] The form submission reference is now included in the confirmation PDF.
-* [#2845] Added option to include content component in submission summary.
-* [#2809] Made the link title for downloading the submission report configurable.
-* [#2762] Added (opt-in) logging for outgoing requests to assist with configuration
+* [:backend:`3031`] Increased the size of Objects API registration plugin configuration form fields.
+* [:backend:`2918`] Added alternative Formio builder implementation, opt-in via a feature flag.
+* [:backend:`1424`] The form submission reference is now included in the confirmation PDF.
+* [:backend:`2845`] Added option to include content component in submission summary.
+* [:backend:`2809`] Made the link title for downloading the submission report configurable.
+* [:backend:`2762`] Added (opt-in) logging for outgoing requests to assist with configuration
   troubleshooting.
-* [#2859] You can now configure multiple sets of ZGW APIs and configure per form where
+* [:backend:`2859`] You can now configure multiple sets of ZGW APIs and configure per form where
   documents need to be uploaded.
-* [#2606] Added support for Haal Centraal BRP Personen v2.
-* [#2852] The Objects API registration backend data is now a template, configurable per
+* [:backend:`2606`] Added support for Haal Centraal BRP Personen v2.
+* [:backend:`2852`] The Objects API registration backend data is now a template, configurable per
   form.
-* [#2860] Level of assurance for DigiD and eHerkenning/eIDAS is now configurable per form.
+* [:backend:`2860`] Level of assurance for DigiD and eHerkenning/eIDAS is now configurable per form.
 
 **Bugfixes**
 
-* [#2804] Fixed the "static variables" not being available in confirmation template
+* [:backend:`2804`] Fixed the "static variables" not being available in confirmation template
   rendering.
-* [#2821] Fixed broken "Map" component configuration screen.
-* [#2819] Fixed the key and translations of the password field not automatically
+* [:backend:`2821`] Fixed broken "Map" component configuration screen.
+* [:backend:`2819`] Fixed the key and translations of the password field not automatically
   updating with entered content (label and other translatable fields).
-* [#2785] Fixed attribute hashing on submission suspend
-* [#2822] Fixed date components being interpreted as datetimes instead of dates.
+* [:backend:`2785`] Fixed attribute hashing on submission suspend
+* [:backend:`2822`] Fixed date components being interpreted as datetimes instead of dates.
 * Fixed misalignment for file upload preview in form builder.
-* [#2820] Fixed translations not registering initially when adding a component to a new
+* [:backend:`2820`] Fixed translations not registering initially when adding a component to a new
   form step.
-* [#2838] Fixed hidden selectboxes field triggering premature validation of required fields.
-* [#2791] Fixed long words overflowing in the confirmation PDF.
-* [#2842] Fixed analytics CSP-integration resulting in a misconfigured policy.
-* [#2851] Fixed importing a form while the admin UI is set to English resulting in
+* [:backend:`2838`] Fixed hidden selectboxes field triggering premature validation of required fields.
+* [:backend:`2791`] Fixed long words overflowing in the confirmation PDF.
+* [:backend:`2842`] Fixed analytics CSP-integration resulting in a misconfigured policy.
+* [:backend:`2851`] Fixed importing a form while the admin UI is set to English resulting in
   incorrect form translation mappings.
-* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+* [:backend:`2850`] Fixed a crash in the AVG log viewer when certain log records of deleted
   submissions are displayed.
-* [#2844] Fixed validation errors for submission confirmation email not being displayed
+* [:backend:`2844`] Fixed validation errors for submission confirmation email not being displayed
   in the form designer.
 * Fixed unique component key suffix generation on a newly added component.
-* [#2874] Fixed "repeating group" component group label not being translated.
-* [#2888] Fixed a crash when using file fields and hidden repeating groups at the same
+* [:backend:`2874`] Fixed "repeating group" component group label not being translated.
+* [:backend:`2888`] Fixed a crash when using file fields and hidden repeating groups at the same
   time
-* [#2888] Fixed a crash when using file fields and repeating groups with numbers inside
-* [#2889] Fix the focus jumps of the content component in the admin by re-implement the
+* [:backend:`2888`] Fixed a crash when using file fields and repeating groups with numbers inside
+* [:backend:`2889`] Fix the focus jumps of the content component in the admin by re-implement the
   component translations machinery.
-* [#2911] Make validation of .heic and .heif files more lenient.
-* [#2893] A minimal fix to prevent crashes of the celery task logging the evaluation of
+* [:backend:`2911`] Make validation of .heic and .heif files more lenient.
+* [:backend:`2893`] A minimal fix to prevent crashes of the celery task logging the evaluation of
   logic rules.
-* [#2942] Fixed "undefined" being displayed in the co-signing component configuration.
-* [#2945] Fixed logic rule variables inadvertedly being cleared when adding a new
+* [:backend:`2942`] Fixed "undefined" being displayed in the co-signing component configuration.
+* [:backend:`2945`] Fixed logic rule variables inadvertedly being cleared when adding a new
   user defined variable
-* [#2947] Added missing translatable error messages for number components.
-* [#2877] Fixed admin crash on misconfigured ZGW services.
-* [#2900] Fixed inconsistent frontend logic involving checkboxes.
-* [#2716] Added missing co-sign identifier (BSN) to PDF submission report.
-* [#2849] Restored ability to import forms using form logic in the pre-2.0 format.
-* [#2632] Fixed crash during submission data pruning when submissions point to form
+* [:backend:`2947`] Added missing translatable error messages for number components.
+* [:backend:`2877`] Fixed admin crash on misconfigured ZGW services.
+* [:backend:`2900`] Fixed inconsistent frontend logic involving checkboxes.
+* [:backend:`2716`] Added missing co-sign identifier (BSN) to PDF submission report.
+* [:backend:`2849`] Restored ability to import forms using form logic in the pre-2.0 format.
+* [:backend:`2632`] Fixed crash during submission data pruning when submissions point to form
   steps that have been deleted
-* [#2980] Fixed file upload component not using config overwrites when registering
+* [:backend:`2980`] Fixed file upload component not using config overwrites when registering
   with the objects API backend.
-* [#2983] Fixed broken StUF-ZDS registration for some vendors due to bad refactor
-* [#2977] Fixed StUF postcode not being uppercase.
-* [#2963] Fixed global configuration templates being reset to their default values.
-* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
-* [#2875] Fixed another SiteImprove analytics bug where only the path was sent instead
+* [:backend:`2983`] Fixed broken StUF-ZDS registration for some vendors due to bad refactor
+* [:backend:`2977`] Fixed StUF postcode not being uppercase.
+* [:backend:`2963`] Fixed global configuration templates being reset to their default values.
+* [:backend:`3007`] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
+* [:backend:`2875`] Fixed another SiteImprove analytics bug where only the path was sent instead
   of the full URL.
-* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
-* [#3025] Fixed resuming a form redirecting to an invalid URL.
-* [#2895] Fixed WYSIWYG colors missing when filling out a form while logged in as staff user.
-* [#3015] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
-* [#3040] Fixed file-upload validation errors being user-unfriendly.
-* [#2970] Fixed design token being ignored in confirmation and suspension emails.
-* [#2808] Fixed filenames in upload validation errors overflowing.
-* [#2651] Fixed analytics cookies receiving incorrect domain information after enabling
+* [:backend:`1959`] Fixed invalid link to resume form after pausing and resuming multiple times.
+* [:backend:`3025`] Fixed resuming a form redirecting to an invalid URL.
+* [:backend:`2895`] Fixed WYSIWYG colors missing when filling out a form while logged in as staff user.
+* [:backend:`3015`] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
+* [:backend:`3040`] Fixed file-upload validation errors being user-unfriendly.
+* [:backend:`2970`] Fixed design token being ignored in confirmation and suspension emails.
+* [:backend:`2808`] Fixed filenames in upload validation errors overflowing.
+* [:backend:`2651`] Fixed analytics cookies receiving incorrect domain information after enabling
   the provider via the admin.
-* [#2879] Fixed the available zaaktypen not refreshing the admin when the catalogi API
+* [:backend:`2879`] Fixed the available zaaktypen not refreshing the admin when the catalogi API
   is changed.
-* [#3097] Fixed invalid phone numbers example in validation error messages.
-* [#3123] Added support for deploying Open Forms on a subpath (e.g. ``/formulieren``).
-* [#3012] Fixed select, radio and checboxes options not being translated in the UI.
-* [#3070] Fixed the confirmation email template not being copied along when copying a form.
+* [:backend:`3097`] Fixed invalid phone numbers example in validation error messages.
+* [:backend:`3123`] Added support for deploying Open Forms on a subpath (e.g. ``/formulieren``).
+* [:backend:`3012`] Fixed select, radio and checboxes options not being translated in the UI.
+* [:backend:`3070`] Fixed the confirmation email template not being copied along when copying a form.
 * Fixed Matomo not using the configured Site ID correctly.
-* [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
-* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+* [:backend:`3114`] Fixed the "next" button not becoming active if you're not logged in as admin user.
+* [:backend:`3132`] Fixed replacing form steps in the designer with another step having overlapping
   variable names.
 
 **Documentation**
 
 * Improved Storybook documentation in the backend.
 * Add instruction for Postgres 15 DB initialization (with docker-compose).
-* [#2362] Documented known Ogone payment simulator limitation.
+* [:backend:`2362`] Documented known Ogone payment simulator limitation.
 * Added more details to the release flow and backporting documentation.
 * Documented the possible use of soft hyphens in the form name.
-* [#2908] Documented limitations of import/export for forms with service fetch config.
+* [:backend:`2908`] Documented limitations of import/export for forms with service fetch config.
 * Added a note on refactor and small changes for contributors.
-* [#2940] Improved SDK embedding configuration documentation.
+* [:backend:`2940`] Improved SDK embedding configuration documentation.
 * Documented solution for "IDP not found" DigiD error.
-* [#2884] Documented how to set up service fetch.
+* [:backend:`2884`] Documented how to set up service fetch.
 
 **Project maintenance**
 
 * Added management command to check component usage for usage analytics.
 * Ignore coverage on type checking branches.
-* [#2814] Added additional robustness tests for possible glom crashes.
+* [:backend:`2814`] Added additional robustness tests for possible glom crashes.
 * Removed postcss-selector-lint.
 * Add 2.1.x release series to Docker Hub generation config
 * Add 2.2.x release series to Docker Hub generation config
@@ -379,11 +379,11 @@ Detailed changes
 * Started preparing the upgrade to Django 4.2 LTS.
 * Added tests for and refined intended behaviour of ``AllOrNoneRequiredFieldsValidator``.
 * Added tests for ``ModelValidator``.
-* [#3016] Fixed the MacOS CI build.
+* [:backend:`3016`] Fixed the MacOS CI build.
 * Removed the 1.1.x series from supported versions.
 * Support sufficiently modern browsers, reducing the JS bundle sizes a bit.
-* [#2999] Fixed broken test isolation.
-* [#2784] Introduced and refactored code to use ``FormioDate`` interface.
+* [:backend:`2999`] Fixed broken test isolation.
+* [:backend:`2784`] Introduced and refactored code to use ``FormioDate`` interface.
 * Tests are now also run in reverse order in CI to catch test isolation problems.
 
 2.1.11 (2023-12-28)
@@ -393,9 +393,9 @@ Final release in the 2.1.x series.
 
 Upgrade to Open Forms 2.2 or higher to continue receiving support/bugfixes.
 
-* [#3656] Fixed an incorrect DigiD error message being shown with OIDC authentication
+* [:backend:`3656`] Fixed an incorrect DigiD error message being shown with OIDC authentication
   plugins.
-* [#3692] Fixed a crash when cancelling DigiD authentication while logged in as admin
+* [:backend:`3692`] Fixed a crash when cancelling DigiD authentication while logged in as admin
   user.
 
 2.1.10 (2023-12-12)
@@ -403,10 +403,10 @@ Upgrade to Open Forms 2.2 or higher to continue receiving support/bugfixes.
 
 Periodic bugfix release
 
-* [#3625] Fixed crashes during StUF response parsing when certain ``nil`` values are
+* [:backend:`3625`] Fixed crashes during StUF response parsing when certain ``nil`` values are
   present.
-* [#3605] Fixed unintended number localization in StUF/SOAP messages.
-* [#3613] Fixed submission resume flow not sending the user through the authentication
+* [:backend:`3605`] Fixed unintended number localization in StUF/SOAP messages.
+* [:backend:`3613`] Fixed submission resume flow not sending the user through the authentication
   flow again when they authenticated for forms that have optional authentication. This
   unfortunately resulted in hashed BSNs being sent to registration backends, which we
   can not recover/translate back to the plain-text values.
@@ -417,7 +417,7 @@ Periodic bugfix release
 Hotfix release
 
 * Upgraded bundled SDK version
-* [#3580] Fixed incorrect attributes being sent in ZWG registration backend when
+* [:backend:`3580`] Fixed incorrect attributes being sent in ZWG registration backend when
   creating the rol/betrokkene.
 
 2.1.8 (2023-10-30)
@@ -432,14 +432,14 @@ Periodic bugfix release
 
 Periodic bugfix release
 
-* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* [:backend:`3139`] Fixed form designers/admins not being able to start forms in maintenance mode.
 * Fixed the version of openapi-generator.
 * Bumped to latest Django patch release.
-* [#3447] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
-* [#3420] Fixed styling of cookie overview page.
-* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+* [:backend:`3447`] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [:backend:`3420`] Fixed styling of cookie overview page.
+* [:backend:`3378`] Fixed copying forms with logic that triggers from a particular step crashing
   the logic tab.
-* [#3470] Fixed form names with slashes breaking submission generation.
+* [:backend:`3470`] Fixed form names with slashes breaking submission generation.
 * Included latest SDK bugfix release.
 
 2.1.6 (2023-08-24)
@@ -447,33 +447,33 @@ Periodic bugfix release
 
 Periodic bugfix release
 
-* [#3319] Fixed forms possibly sending a DigiD SAML request without assurance level due
+* [:backend:`3319`] Fixed forms possibly sending a DigiD SAML request without assurance level due
   to misconfiguration.
-* [#3358] Fixed display of appointment time in correct timezone.
-* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+* [:backend:`3358`] Fixed display of appointment time in correct timezone.
+* [:backend:`3368`] Fixed a crash when empty values are returned from StUF-BG.
 
 2.1.5 (2023-07-26)
 ==================
 
 Periodic bugfix release
 
-* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+* [:backend:`3132`] Fixed replacing form steps in the designer with another step having overlapping
   variable names.
 * Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
-* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
-* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+* [:backend:`3216`] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
+* [:backend:`3211`] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
   tracked.
-* [#3161] Fixed not being able to reset form-specific data removal settings to the
+* [:backend:`3161`] Fixed not being able to reset form-specific data removal settings to the
   empty value so that the global configuration is used again.
-* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+* [:backend:`3219`] Fixed saved uploads not being deleted when the user goes back to the file and
   removes the upload again.
 * Fixed CI builds (bump PyYAML, docs build).
-* [#3258] Fixed labels for Haal Centraal prefill attributes.
-* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
-* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
+* [:backend:`3258`] Fixed labels for Haal Centraal prefill attributes.
+* [:backend:`3301`] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
+* [:backend:`3144`] Fixed missing links to uploads in the registration e-mails when the field is
   inside a container (fieldset, repeating group).
-* [#3302] Fixed an issue causing uploaded images not to be resized.
-* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
+* [:backend:`3302`] Fixed an issue causing uploaded images not to be resized.
+* [:backend:`3084`] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
 * Bumped dependencies to get their latest security fixes
 
 2.1.4 (2023-06-21)
@@ -481,43 +481,43 @@ Periodic bugfix release
 
 Periodic bugfix release
 
-* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
-* [#3025] Fixed resuming a form redirecting to an invalid URL.
-* [#3015] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
-* [#2927] Added Celery worker monitoring tooling (for devops/infra).
-* [#3068] Added soft and hard task timeout settings for background workers.
-* [#3077] Use public (instead of private) form name for ``form_name`` variable in templates.
-* [#3012] Fixed select, radio and checboxes options not being translated in the UI.
-* [#3136] Fixed wrong Site ID being used for Matomo analytics.
-* [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
-* [#3103] Fixed DigiD/eHerkenning-metadata missing the XML declaration.
+* [:backend:`1959`] Fixed invalid link to resume form after pausing and resuming multiple times.
+* [:backend:`3025`] Fixed resuming a form redirecting to an invalid URL.
+* [:backend:`3015`] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
+* [:backend:`2927`] Added Celery worker monitoring tooling (for devops/infra).
+* [:backend:`3068`] Added soft and hard task timeout settings for background workers.
+* [:backend:`3077`] Use public (instead of private) form name for ``form_name`` variable in templates.
+* [:backend:`3012`] Fixed select, radio and checboxes options not being translated in the UI.
+* [:backend:`3136`] Fixed wrong Site ID being used for Matomo analytics.
+* [:backend:`3114`] Fixed the "next" button not becoming active if you're not logged in as admin user.
+* [:backend:`3103`] Fixed DigiD/eHerkenning-metadata missing the XML declaration.
 
 2.1.3 (2023-04-19)
 ==================
 
 Hotfix - 2.1.2 unfortunately broke saving forms from previous minor version exports
 
-* [#2877] Backported admin crash on misconfigured ZGW services.
-* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
-* [#2875] Fixed SiteImprove analytics integration (for real now)
-* [#2895] Fixed WYSIWYG colors missing when filling out a form while logged in as staff user.
+* [:backend:`2877`] Backported admin crash on misconfigured ZGW services.
+* [:backend:`3007`] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
+* [:backend:`2875`] Fixed SiteImprove analytics integration (for real now)
+* [:backend:`2895`] Fixed WYSIWYG colors missing when filling out a form while logged in as staff user.
 
 2.1.2 (2023-04-18)
 ==================
 
 Periodic bugfix release
 
-* [#2947] Added missing translatable error messages for number components
-* [#2908] Documented limitations of import/export for forms with service fetch config
-* [#2900] Fixed inconsistent frontend logic involving checkboxes
-* [#2632] Fixed crash during submission data pruning when submissions point to form
+* [:backend:`2947`] Added missing translatable error messages for number components
+* [:backend:`2908`] Documented limitations of import/export for forms with service fetch config
+* [:backend:`2900`] Fixed inconsistent frontend logic involving checkboxes
+* [:backend:`2632`] Fixed crash during submission data pruning when submissions point to form
   steps that have been deleted
-* [#2849] Restored ability to import forms using form logic in the pre-2.0 format
-* [#2983] Fixed broken StUF-ZDS registration for some vendors due to bad refactor
-* [#2963] Fixed global configuration templates being reset to their default values
-* [#2977] Fixed StUF postcode not being uppercase
+* [:backend:`2849`] Restored ability to import forms using form logic in the pre-2.0 format
+* [:backend:`2983`] Fixed broken StUF-ZDS registration for some vendors due to bad refactor
+* [:backend:`2963`] Fixed global configuration templates being reset to their default values
+* [:backend:`2977`] Fixed StUF postcode not being uppercase
 * Updated the bundled SDK version to 1.3.2
-* [#2980] Fixed file upload component not using config overwrites when registering
+* [:backend:`2980`] Fixed file upload component not using config overwrites when registering
   with the objects API backend.
 
 2.1.1 (2023-03-31)
@@ -525,14 +525,14 @@ Periodic bugfix release
 
 Periodic maintenance release
 
-* [#2945] Prevent the addition of user defined variables from breaking the logic rules.
-* [#2893] A minimal fix to prevent crashes of the celery task logging the evaluation of logic rules.
+* [:backend:`2945`] Prevent the addition of user defined variables from breaking the logic rules.
+* [:backend:`2893`] A minimal fix to prevent crashes of the celery task logging the evaluation of logic rules.
 * Upgrade of the SDK version
-* [#2911] Make validation of .heic and .heif files more lenient.
-* [#2889] Fix the focus jumps of the content component in the admin by re-implement the component translations machinery.
-* [#2888] Change the validation of BSN components from 'on change' to 'on blur'.
-* [#2888] Fix uploading documents inside a repeating group when a number component is also present in the repeating group.
-* [#2888] Fix uploading documents when there is a hidden repeating group.
+* [:backend:`2911`] Make validation of .heic and .heif files more lenient.
+* [:backend:`2889`] Fix the focus jumps of the content component in the admin by re-implement the component translations machinery.
+* [:backend:`2888`] Change the validation of BSN components from 'on change' to 'on blur'.
+* [:backend:`2888`] Fix uploading documents inside a repeating group when a number component is also present in the repeating group.
+* [:backend:`2888`] Fix uploading documents when there is a hidden repeating group.
 * Change the type of mutation from "T" to "W" when making Zaak update calls in the StUF registration backend.
 * A note was added to the documentation on how to use soft hyphens when configuring form or form step names.
 
@@ -627,22 +627,22 @@ Please review the changelog entries for the release candidate and alpha versions
 
 **Bugfixes**
 
-* [#2804] Fixed the "static variables" not being available in confirmation template
+* [:backend:`2804`] Fixed the "static variables" not being available in confirmation template
   rendering.
-* [#2821] Fixed broken "Map" component configuration screen.
-* [#2822] Fixed date components being interpreted as datetimes instead of dates.
-* [#2819] Fixed the key and translations of the password field not automatically
+* [:backend:`2821`] Fixed broken "Map" component configuration screen.
+* [:backend:`2822`] Fixed date components being interpreted as datetimes instead of dates.
+* [:backend:`2819`] Fixed the key and translations of the password field not automatically
   updating with entered content (label and other translatable fields).
-* [#2820] Fixed translations not registering initially when adding a component to a new
+* [:backend:`2820`] Fixed translations not registering initially when adding a component to a new
   form step.
-* [#2791] Fixed long words overflowing in the confirmation PDF.
-* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+* [:backend:`2791`] Fixed long words overflowing in the confirmation PDF.
+* [:backend:`2850`] Fixed a crash in the AVG log viewer when certain log records of deleted
   submissions are displayed.
-* [#2842] Fixed analytics CSP-integration resulting in a misconfigured policy.
-* [#2851] Fixed importing a form while the admin UI is set to English resulting in
+* [:backend:`2842`] Fixed analytics CSP-integration resulting in a misconfigured policy.
+* [:backend:`2851`] Fixed importing a form while the admin UI is set to English resulting in
   incorrect form translation mappings.
-* [#2838] Fixed hidden selectboxes field triggering premature validation of required fields.
-* [#2874] Fixed "repeating group" component group label not being translated.
+* [:backend:`2838`] Fixed hidden selectboxes field triggering premature validation of required fields.
+* [:backend:`2874`] Fixed "repeating group" component group label not being translated.
 
 2.1.0-rc.0 (2023-03-03)
 =======================
@@ -659,14 +659,14 @@ Detailed changes
 
 * Multilingual support
 
-  * [#2493] Display warnings for missing translations in the form designer when form
+  * [:backend:`2493`] Display warnings for missing translations in the form designer when form
     translations are enabled.
-  * [#2685] Staff users can now configure their admin UI language preferences.
+  * [:backend:`2685`] Staff users can now configure their admin UI language preferences.
 
-* [#2623] Improved implementation of dynamic options (select, radio, checkboxes).
-* [#2663] Added ClamAV cirus scanning support. This is disabled by default - you need to
+* [:backend:`2623`] Improved implementation of dynamic options (select, radio, checkboxes).
+* [:backend:`2663`] Added ClamAV cirus scanning support. This is disabled by default - you need to
   deploy a ClamAV service instance and then enable it in the Open Forms configuration.
-* [#2653] Allow more configuration in the ZGW registration plugin:
+* [:backend:`2653`] Allow more configuration in the ZGW registration plugin:
 
   * Specify a default bronorganisatie RSIN + allow overriding it per file-component.
   * Specify a default documentation vertrouwelijkheidaanduiding + allow overriding it
@@ -675,59 +675,59 @@ Detailed changes
 
 * Data retrieval from external registrations
 
-  * [#2454] Implemented retrieving and processing data from external JSON services.
-  * [#2753] Added opt-in feature flag.
+  * [:backend:`2454`] Implemented retrieving and processing data from external JSON services.
+  * [:backend:`2753`] Added opt-in feature flag.
 
- [#2786] Improved phone number validation error messages.
+ [:backend:`2786`] Improved phone number validation error messages.
 
 **Bugfixes**
 
-* [#2601] Disabled autocomplete for username/password in (services) admin.
-* [#2635] Fixed component key not being updated anymore with label changes.
-* [#2643] Fixed description generation for empty ``var`` operations and the ``map``
+* [:backend:`2601`] Disabled autocomplete for username/password in (services) admin.
+* [:backend:`2635`] Fixed component key not being updated anymore with label changes.
+* [:backend:`2643`] Fixed description generation for empty ``var`` operations and the ``map``
   operation.
-* [#2641] Relaxed email URL stripping for subdomains of allow-listed domains.
-* [#2549] Fixed cookie banner overlapping footer links
-* [#2673] Fixed mobile styling (spacing + location of language selection component).
-* [#2676] Fixed more mobile styling spacing issues (header/footer, logo).
-* [#2636] Fixed a number of bugs that appeared in the previous version
+* [:backend:`2641`] Relaxed email URL stripping for subdomains of allow-listed domains.
+* [:backend:`2549`] Fixed cookie banner overlapping footer links
+* [:backend:`2673`] Fixed mobile styling (spacing + location of language selection component).
+* [:backend:`2676`] Fixed more mobile styling spacing issues (header/footer, logo).
+* [:backend:`2636`] Fixed a number of bugs that appeared in the previous version
 
   * Fixed saving user defined variables with a falsy initial value.
   * Fixed broken display of logic rule "trigger from step" selected choice.
 
 * Fixed the API forcing the default language in the admin when a form does not have
   translations enabled.
-* [#2646] Fixed "privacy policy acceptance" not being recorded/validated in the backend.
-* [#2699] Fixed uploads in repeating groups not being registered in the backend.
-* [#2682] Fixed some date/datetime component issues
+* [:backend:`2646`] Fixed "privacy policy acceptance" not being recorded/validated in the backend.
+* [:backend:`2699`] Fixed uploads in repeating groups not being registered in the backend.
+* [:backend:`2682`] Fixed some date/datetime component issues
 
   * Fixed editor options not refreshing when selecting a validation method.
   * Fixed validation min/max value tab settings not having any effect.
 
-* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
-* [#2671] Fixed QR code not being readable in dark mode.
-* [#2742] Fixed the key of file upload components not updating with the label.
-* [#2721] Updated django-simple-certmanager version
-* [#2734] Validate that component keys inside repeating groups cannot duplicate existing
+* [:backend:`2709`] Fixed (bandaid) inconsistent dynamic product price logic
+* [:backend:`2671`] Fixed QR code not being readable in dark mode.
+* [:backend:`2742`] Fixed the key of file upload components not updating with the label.
+* [:backend:`2721`] Updated django-simple-certmanager version
+* [:backend:`2734`] Validate that component keys inside repeating groups cannot duplicate existing
   form keys.
-* [#2096] Prevented users from being able to bypass steps blocked by logic.
-* [#2781] Fixed the data-clearing/data extraction of (hidden) nested components.
-* [#2770] Fixed formio unique component key generation to take into account keys from
+* [:backend:`2096`] Prevented users from being able to bypass steps blocked by logic.
+* [:backend:`2781`] Fixed the data-clearing/data extraction of (hidden) nested components.
+* [:backend:`2770`] Fixed formio unique component key generation to take into account keys from
   other steps.
-* [#2805] Fixed form builder crash when enabling translations and adding a new form step.
-* [#2798] Fixed select/radio/checkboxes option values not being derived from labels
+* [:backend:`2805`] Fixed form builder crash when enabling translations and adding a new form step.
+* [:backend:`2798`] Fixed select/radio/checkboxes option values not being derived from labels
   anymore.
-* [#2769] Fixed date/datetime components relative validation settings not being
+* [:backend:`2769`] Fixed date/datetime components relative validation settings not being
   registered correctly.
 
 **Documentation**
 
 * Improved SharePoint registration backend documentation.
-* [#2619] Added Storybook documentation for the backend JS/CSS components.
-* [#2481] Updated the screenshots of the translations UI in the manual.
-* [#2696] Updated documentation about dynamic form options and unsupported JSON-logic
+* [:backend:`2619`] Added Storybook documentation for the backend JS/CSS components.
+* [:backend:`2481`] Updated the screenshots of the translations UI in the manual.
+* [:backend:`2696`] Updated documentation about dynamic form options and unsupported JSON-logic
   operators.
-* [#2735] Documented functionalities that don't work (yet) in repeating groups.
+* [:backend:`2735`] Documented functionalities that don't work (yet) in repeating groups.
 * Added patch release changelog entries from stable branches.
 * Documented Django changelist component in Storybook.
 * Reorganized the component groups in Storybook.
@@ -735,17 +735,17 @@ Detailed changes
 **Project maintenance**
 
 * Bumped dependencies to their latest (security) releases
-* [#2471] Add preparations for new appointments flow.
-* [#388, #965] Refactored the StUF client implementations.
+* [:backend:`2471`] Add preparations for new appointments flow.
+* [:backend:`388`, :backend:`965`] Refactored the StUF client implementations.
 * Updated Github Actions workflows to use composite actions for duplicated steps.
-* [#2657] Replaced Selenium end-to-end tests with Playwright.
-* [#2665] Update coverage reporting configuration to exclude test files themselves.
+* [:backend:`2657`] Replaced Selenium end-to-end tests with Playwright.
+* [:backend:`2665`] Update coverage reporting configuration to exclude test files themselves.
 * Fixed ``generate_minimal_setup`` factory trait by adding label to generated components.
-* [#2700] Replaced the last Github dependencies with PyPI versions of them.
+* [:backend:`2700`] Replaced the last Github dependencies with PyPI versions of them.
 * Enabled opt-in to use X-Forwarded-Host headers [infrastructure].
-* [#2711] Moved ``openforms.utils.api`` utilities to the ``openforms.api`` package.
-* [#2748] Pinned the project to Python 3.10.9 due to a CPython regression.
-* [#2712] Replaced django-choices usage with core Django equivalents.
+* [:backend:`2711`] Moved ``openforms.utils.api`` utilities to the ``openforms.api`` package.
+* [:backend:`2748`] Pinned the project to Python 3.10.9 due to a CPython regression.
+* [:backend:`2712`] Replaced django-choices usage with core Django equivalents.
 * Fixed a test failing between 00:00-01:00 AM.
 
 2.1.0-alpha.2 (2023-02-01)
@@ -763,70 +763,70 @@ Detailed changes
 
 * Multilingual support
 
-  * [#2478] Implemented UI/UX for form designers to manage component-level translations.
-  * [#2390] PDF reports and confirmation emails are now rendered in the submission
+  * [:backend:`2478`] Implemented UI/UX for form designers to manage component-level translations.
+  * [:backend:`2390`] PDF reports and confirmation emails are now rendered in the submission
     language.
-  * [#2286] Ensured that the API endpoints for the SDK return the translations
+  * [:backend:`2286`] Ensured that the API endpoints for the SDK return the translations
     according to the active language.
-  * [#2546] Added language metadata to MS Graph, Objects API, ZGW API, StUF-ZDS and
+  * [:backend:`2546`] Added language metadata to MS Graph, Objects API, ZGW API, StUF-ZDS and
     email registration backends.
-  * [#1242] The form designer component edit form and preview are now properly localized.
+  * [:backend:`1242`] The form designer component edit form and preview are now properly localized.
 
 * Accessibility improvements
 
-  * [#2268] Added support for the autocomplete property in the form designer. This
+  * [:backend:`2268`] Added support for the autocomplete property in the form designer. This
     comes with a set of pre-configured form fields having the correct autocomplete
     attribute set out of the box.
-  * [#2490] Login logo objects in the API now contain meta-information about their
+  * [:backend:`2490`] Login logo objects in the API now contain meta-information about their
     appearance for appropriate focus-styling in the SDK.
-  * [#2534] Added support for custom errors per-component in the form designer,
+  * [:backend:`2534`] Added support for custom errors per-component in the form designer,
     including translation options.
-  * [#2273] Improved accessibility of error messages for required fields.
+  * [:backend:`2273`] Improved accessibility of error messages for required fields.
 
 * Registration plugins
 
-  * [#2494] Added ability to add identifying person details in StUF-ZDS registration
+  * [:backend:`2494`] Added ability to add identifying person details in StUF-ZDS registration
     even if the person did not authenticate via DigiD (or similar).
-  * [#2511] Added more options for the Microsoft Graph registration plugin, such as
+  * [:backend:`2511`] Added more options for the Microsoft Graph registration plugin, such as
     base folder path, drive ID and year/month/day interpolation.
 
-* [#1902] Added support for sourcing choice widget values from variables.
-* [#2504] Improved performance in form designer initial load when you have many
+* [:backend:`1902`] Added support for sourcing choice widget values from variables.
+* [:backend:`2504`] Improved performance in form designer initial load when you have many
   forms/form definitions.
-* [#2450] Added "description" field to logic rules in the form designer. The description
+* [:backend:`2450`] Added "description" field to logic rules in the form designer. The description
   can be specified manually or is automatically generated from the logic expression.
-* [#2143] Added option to exclude confirmation page content from PDF.
-* [#2539] Added support for ``.msg`` and ``.dwg`` file uploads.
+* [:backend:`2143`] Added option to exclude confirmation page content from PDF.
+* [:backend:`2539`] Added support for ``.msg`` and ``.dwg`` file uploads.
 * [security#20] Use fully qualified URLs in analytics config for maximum CSP strictness.
-* [#2591] Added rate limits to API endpoints for pausing and submitting forms.
-* [#2557] Implemented comparing date and times with the ``now +- someDelta`` variable.
+* [:backend:`2591`] Added rate limits to API endpoints for pausing and submitting forms.
+* [:backend:`2557`] Implemented comparing date and times with the ``now +- someDelta`` variable.
 
 **Bugfixes**
 
-* [#2520] Fixed MIME type validation error for ``.doc`` files.
-* [#2577] Fixed MIME type validation regression for OpenOffice and dwg files.
-* [#2377] Fixed link-hover design token not being applied consistently.
-* [#2519] Only perform upgrade checks when not upgrading between patch versions.
-* [#2120] Fixed layout components inadvertedly getting the ``validate.required=true``
+* [:backend:`2520`] Fixed MIME type validation error for ``.doc`` files.
+* [:backend:`2577`] Fixed MIME type validation regression for OpenOffice and dwg files.
+* [:backend:`2377`] Fixed link-hover design token not being applied consistently.
+* [:backend:`2519`] Only perform upgrade checks when not upgrading between patch versions.
+* [:backend:`2120`] Fixed layout components inadvertedly getting the ``validate.required=true``
   configuration.
-* [#2396] Fixed auto-login setting not resetting when the authentication option is
+* [:backend:`2396`] Fixed auto-login setting not resetting when the authentication option is
   removed from the form.
 * Add missing ``br`` tag to allowed WYSIWYG tag list.
-* [#2550] Removed ``role=img`` from logo in header.
-* [#2525] Fixed clearing the date component min/max validation configuration.
-* [#2538] Normalize radio components to always be string type.
-* [#2576] Fix crash on components with prefill attribute names > 50 chars.
-* [#2012] Fixed missing ``script-src`` CSP directive for SiteImprove analytics.
-* [#2541] Fixed a crash in the logic editor when changing the key of selectboxes
+* [:backend:`2550`] Removed ``role=img`` from logo in header.
+* [:backend:`2525`] Fixed clearing the date component min/max validation configuration.
+* [:backend:`2538`] Normalize radio components to always be string type.
+* [:backend:`2576`] Fix crash on components with prefill attribute names > 50 chars.
+* [:backend:`2012`] Fixed missing ``script-src`` CSP directive for SiteImprove analytics.
+* [:backend:`2541`] Fixed a crash in the logic editor when changing the key of selectboxes
   components.
-* [#2587] Fixed inadvertedly HTML escaping while templating out email subjects.
-* [#2599] Fixed typo in registration constants.
-* [#2607] Fixed crash in logic editor when specifying a "trigger-from" step.
-* [#2581] Fixed bug in logic where dates and datetimes were being mixed.
+* [:backend:`2587`] Fixed inadvertedly HTML escaping while templating out email subjects.
+* [:backend:`2599`] Fixed typo in registration constants.
+* [:backend:`2607`] Fixed crash in logic editor when specifying a "trigger-from" step.
+* [:backend:`2581`] Fixed bug in logic where dates and datetimes were being mixed.
 
 **Documentation**
 
-* [#2198] Added examples and documentation for highly-available setups with regard to
+* [:backend:`2198`] Added examples and documentation for highly-available setups with regard to
   the background task message queue.
 * Updated installation documentation to mention the correct Python version.
 * Documented the flow to register a form on behalf of a customer.
@@ -836,25 +836,25 @@ Detailed changes
 **Project maintenance**
 
 * Removed some obsolete/unnecessary assets on error pages.
-* [#2377] Refactored links to make use of the NL DS ``utrecht-link`` component - you can
+* [:backend:`2377`] Refactored links to make use of the NL DS ``utrecht-link`` component - you can
   now use all the design tokens from that component in Open Forms too.
-* [#2454] Upgraded black and flake8 versions for Python 3.10 support.
-* [#2450] Moved JSON-logic expression processing into maykin-json-logic-py library.
+* [:backend:`2454`] Upgraded black and flake8 versions for Python 3.10 support.
+* [:backend:`2450`] Moved JSON-logic expression processing into maykin-json-logic-py library.
 * Upgraded a number of dependencies.
-* [#2471] Refactored appointments module to bring the plugin structure in line with the
+* [:backend:`2471`] Refactored appointments module to bring the plugin structure in line with the
   rest of the project.
-* [#1439] The Docker Hub readme/description is now automatically updated via Github
+* [:backend:`1439`] The Docker Hub readme/description is now automatically updated via Github
   Actions.
-* [#2555] Removed dead code.
-* [#1904] Refactored existing code to make use of the sandboxed template backends.
-* [#1898] Refactored template validators to use the sandboxed template backends.
+* [:backend:`2555`] Removed dead code.
+* [:backend:`1904`] Refactored existing code to make use of the sandboxed template backends.
+* [:backend:`1898`] Refactored template validators to use the sandboxed template backends.
 * Tweaked CI for speed so we spend less time waiting for CI builds to complete.
 * Delete explicitly setting the template loaders.
-* [#2583] Fixed a case of broken test isolation.
+* [:backend:`2583`] Fixed a case of broken test isolation.
 * Upgraded drf-spectacular to the latest version.
 * Added omg.org and jccsoftware.nl to docs link-check ignore list.
 * Added CI job to install dev deps on MacOS.
-* [#2478] Added frontend code test infrastructure.
+* [:backend:`2478`] Added frontend code test infrastructure.
 
 2.1.0-alpha.1 (2022-12-20)
 ==========================
@@ -863,68 +863,68 @@ Second alpha version of the 2.1.0 release.
 
 **New features**
 
-* [#2332] Added ``ServiceFetchConfiguration`` data model
-* [#2348] Added audit logging for empty prefill plugin values
-* [#2313] Added ``translations`` keys to API endpoints to store/read field translations
-* [#2402] Updated JSON-structure of "ProductAanvraag" registration
-* [#2314] Added UI in form designer to manage form/form step translations
-* [#2287] Confirmed support for multi-language forms in import/export
-* [#1862] Include "rol" metadata when an employee registers a case on behalf of a customer
-* [#2389] Add submission language code to submission exports
-* [#2390] Render documents in submission language: PDF report and confirmation email
-* [#2463] Improved repeating groups error messages
-* [#2447] Expose meta-information if an authentication plugin is for 'machtigen'
-* [#2458] Added option to extract OIDC user information from ID-token instead of
+* [:backend:`2332`] Added ``ServiceFetchConfiguration`` data model
+* [:backend:`2348`] Added audit logging for empty prefill plugin values
+* [:backend:`2313`] Added ``translations`` keys to API endpoints to store/read field translations
+* [:backend:`2402`] Updated JSON-structure of "ProductAanvraag" registration
+* [:backend:`2314`] Added UI in form designer to manage form/form step translations
+* [:backend:`2287`] Confirmed support for multi-language forms in import/export
+* [:backend:`1862`] Include "rol" metadata when an employee registers a case on behalf of a customer
+* [:backend:`2389`] Add submission language code to submission exports
+* [:backend:`2390`] Render documents in submission language: PDF report and confirmation email
+* [:backend:`2463`] Improved repeating groups error messages
+* [:backend:`2447`] Expose meta-information if an authentication plugin is for 'machtigen'
+* [:backend:`2458`] Added option to extract OIDC user information from ID-token instead of
   info endpoint
-* [#2430] Added HEIC and TXT to filetypes for upload
-* [#2428] Added organization name configuration option, displayed in various
+* [:backend:`2430`] Added HEIC and TXT to filetypes for upload
+* [:backend:`2428`] Added organization name configuration option, displayed in various
   labels/titles.
-* [#2315] Implementing UI for entering and storing formio.js component translations
+* [:backend:`2315`] Implementing UI for entering and storing formio.js component translations
 
 **Bugfixes**
 
-* [#2367] Fixed upgrade/migration crash when dealing with selectboxes frontend logic
-* [#2251] Fixed broken logic when comparing to dates
-* [#2385] Fixed a crash when processing incomplete frontend logic
-* [#2219] Updated fix for CSS-unit issue with design tokens in email header logo
-* [#2400] Clean up cached execution state
-* [#2340] Added bandaid fix to clear data that isn't visible if the parent component is
+* [:backend:`2367`] Fixed upgrade/migration crash when dealing with selectboxes frontend logic
+* [:backend:`2251`] Fixed broken logic when comparing to dates
+* [:backend:`2385`] Fixed a crash when processing incomplete frontend logic
+* [:backend:`2219`] Updated fix for CSS-unit issue with design tokens in email header logo
+* [:backend:`2400`] Clean up cached execution state
+* [:backend:`2340`] Added bandaid fix to clear data that isn't visible if the parent component is
   hidden
-* [#2397] Fixed some duplicate labels in admin
-* [#2413] Fixed fields made visible by selectboxes type components not showing up in
+* [:backend:`2397`] Fixed some duplicate labels in admin
+* [:backend:`2413`] Fixed fields made visible by selectboxes type components not showing up in
   summary/pdf/email
-* [#1302] Fixed family members component crash when no BSN is known
-* [#2422] remove spaces from postcodes in StUF messages
-* [#2250] Fixed broken analytics scripts not loading/executing
-* [#2436] Fixed broken default value of copied fields inside fieldsets
-* [#2445] Ensure that removing a fieldset in the form designer also removes the variables
-* [#2398] Fixed upgrade/migration crash when formio logic references non-existing
+* [:backend:`1302`] Fixed family members component crash when no BSN is known
+* [:backend:`2422`] remove spaces from postcodes in StUF messages
+* [:backend:`2250`] Fixed broken analytics scripts not loading/executing
+* [:backend:`2436`] Fixed broken default value of copied fields inside fieldsets
+* [:backend:`2445`] Ensure that removing a fieldset in the form designer also removes the variables
+* [:backend:`2398`] Fixed upgrade/migration crash when formio logic references non-existing
   component keys
-* [#2432] Fixed backwards-compatibility layer for pre-2.0 form exports with actions
+* [:backend:`2432`] Fixed backwards-compatibility layer for pre-2.0 form exports with actions
   targetting form steps
-* [#2484] Fixed unexpected fallbacks to NL for form literals instead of using the
+* [:backend:`2484`] Fixed unexpected fallbacks to NL for form literals instead of using the
   global configuration
-* [#2488] Disable inline edit for repeating groups again
-* [#2449] Fixed server-side logic interpretation inside repeating groups
+* [:backend:`2488`] Disable inline edit for repeating groups again
+* [:backend:`2449`] Fixed server-side logic interpretation inside repeating groups
 * Fixed import crash due to performance optimization
-* [#1790] Fixed broken "form definition used in forms" modal in production builds
-* [#2373] Remove (unintended) multiple option for map component
+* [:backend:`1790`] Fixed broken "form definition used in forms" modal in production builds
+* [:backend:`2373`] Remove (unintended) multiple option for map component
 
 **Documentation**
 
 * Updated examples and example form exports to 2.0
 * Provide best-practices for securing OF installations
-* [#2394] Removed digid/eherkenning envvars config from docs
-* [#2477] Added new page for multi-language configuration to the manual
+* [:backend:`2394`] Removed digid/eherkenning envvars config from docs
+* [:backend:`2477`] Added new page for multi-language configuration to the manual
 * Removed ambiguity about staff/non-staff fields in certain API endpoints
 
 **Project maintenance**
 
 * Upgraded Pillow to the latest version
-* [#1068] Finalized refactor for formio integration in the backend
+* [:backend:`1068`] Finalized refactor for formio integration in the backend
 * removed unused UI template tags/options
-* [#2312] Upgraded base docker images to Debian bullseye
-* [#2487] Add import sorting plugin for prettier
+* [:backend:`2312`] Upgraded base docker images to Debian bullseye
+* [:backend:`2487`] Add import sorting plugin for prettier
 * Catch invalid appointment configs in management command
 * Bumped frontend/build dependency versions
 
@@ -938,91 +938,91 @@ the end of a sprint) and putting out a new minor or major version every quarter.
 
 **New features**
 
-* [#1861, #1862] Added organization member authentication for forms. Using OIDC, employees of
+* [:backend:`1861`, :backend:`1862`] Added organization member authentication for forms. Using OIDC, employees of
   the organization can now log in to (internal) forms and submit them. It is also
   possible for employees (e.g. service desk staff) to start forms on behalf of customers.
-* [#2042] Optimized component mutations (by logic) by using a caching datastructure
-* [#2209] Simplified number component validation error messages
+* [:backend:`2042`] Optimized component mutations (by logic) by using a caching datastructure
+* [:backend:`2209`] Simplified number component validation error messages
 * Ensured that upgrading to 2.1 enforces upgrading to 2.0 first
-* [#2225] Emit openforms-theme as default theme unless an explicit theme is configured
-* [#2197] Implemented plugin hooks to modify requests that are about to be made to
+* [:backend:`2225`] Emit openforms-theme as default theme unless an explicit theme is configured
+* [:backend:`2197`] Implemented plugin hooks to modify requests that are about to be made to
   third party services
-* [#2197] Added container image tag/version including all official extensions
+* [:backend:`2197`] Added container image tag/version including all official extensions
   (including token-exchange authorization)
-* [#1929] Added early file type/extension validation for file uploads
+* [:backend:`1929`] Added early file type/extension validation for file uploads
 * Added ``reverse_plus()`` utility function
-* [#1849] DigiD/eHerkenning/eIDAS metadata can now be configured and generated from the admin
+* [:backend:`1849`] DigiD/eHerkenning/eIDAS metadata can now be configured and generated from the admin
 * First steps for translatable content/forms:
 
-  * [#2228] Enabled run-time language preference detection
-  * [#2229] Added endpoint to expose available (and currently activated) language(s)
-  * [#2230] Expose translatable properties for forms (in the admin)
-  * [#2231] API endpoints return content in the currently activated/requested language
-  * [#2232] Expose whether form translations are enabled (and enforce the default
+  * [:backend:`2228`] Enabled run-time language preference detection
+  * [:backend:`2229`] Added endpoint to expose available (and currently activated) language(s)
+  * [:backend:`2230`] Expose translatable properties for forms (in the admin)
+  * [:backend:`2231`] API endpoints return content in the currently activated/requested language
+  * [:backend:`2232`] Expose whether form translations are enabled (and enforce the default
     language if they're not)
-  * [#2278, #2279] Store the language for a form submission when it's created
-  * [#2255] SDK: use the correct locale for static translations
+  * [:backend:`2278`, :backend:`2279`] Store the language for a form submission when it's created
+  * [:backend:`2255`] SDK: use the correct locale for static translations
 
-* [#2289] Create NNP/Vestiging depending on the available properties (registration backends)
-* [#2329] The CSP post-processor now performs HTML sanitation too, stripping tags and
+* [:backend:`2289`] Create NNP/Vestiging depending on the available properties (registration backends)
+* [:backend:`2329`] The CSP post-processor now performs HTML sanitation too, stripping tags and
   attributes that are not on the allowlist.
 * Optimized form list endpoint
 * Upgraded to Python 3.10
 
 **Bugfixes**
 
-* [#2062] Fixed "Print this page" CSP violation
-* [#1180] Fixed Google Analytics not measuring form steps correctly
-* [#2208] Fixed JSON-logic expressions with primitives (number, string...)
-* [#1924] Various fixes to the dark mode theme for the form designer
-* [#2206] Fixed a race condition related to prefill variables
-* [#2213] Fixed inconsistent default values for copied components in the form designer
-* [#2246] Fixed invalid error styling in form designer
-* [#1901] Fixed image inline styles in content components by CSP post-processing them
-* [#1957] Fixes admin ``retry_processing_submissions()`` action to reset
+* [:backend:`2062`] Fixed "Print this page" CSP violation
+* [:backend:`1180`] Fixed Google Analytics not measuring form steps correctly
+* [:backend:`2208`] Fixed JSON-logic expressions with primitives (number, string...)
+* [:backend:`1924`] Various fixes to the dark mode theme for the form designer
+* [:backend:`2206`] Fixed a race condition related to prefill variables
+* [:backend:`2213`] Fixed inconsistent default values for copied components in the form designer
+* [:backend:`2246`] Fixed invalid error styling in form designer
+* [:backend:`1901`] Fixed image inline styles in content components by CSP post-processing them
+* [:backend:`1957`] Fixes admin ``retry_processing_submissions()`` action to reset
   submission registration attempts counter
-* [#2148] Changed VertrouwelijkheidsAanduidingen translatable choice labels to Dutch
-* [#2245] Changed privacy policy link in summary page to open in new window
-* [#2277] Fixed Ogone feedback URL
-* [#2301] Fixed identifying attributes still being hashed after a submission is resumed
-* [#2135] Fixed submission step data being cascade deleted in certain edge cases
-* [#2244] Fixed 'content' component and components not marked as ``showInSummary``
+* [:backend:`2148`] Changed VertrouwelijkheidsAanduidingen translatable choice labels to Dutch
+* [:backend:`2245`] Changed privacy policy link in summary page to open in new window
+* [:backend:`2277`] Fixed Ogone feedback URL
+* [:backend:`2301`] Fixed identifying attributes still being hashed after a submission is resumed
+* [:backend:`2135`] Fixed submission step data being cascade deleted in certain edge cases
+* [:backend:`2244`] Fixed 'content' component and components not marked as ``showInSummary``
   showing up in server rendered summary
 * Fixed pattern for formio key validation
-* [#2337] Fixed crash on data prefill for certain multi-step forms
-* [#2304] Refactored form logic action "mark step as not applicable" to use ID references
+* [:backend:`2337`] Fixed crash on data prefill for certain multi-step forms
+* [:backend:`2304`] Refactored form logic action "mark step as not applicable" to use ID references
   rather than API paths.
-* [#1899] Apply prefill data normalization before saving into variables
-* [#2352] Removed permissions to delete user from standard groups as those cascade
+* [:backend:`1899`] Apply prefill data normalization before saving into variables
+* [:backend:`2352`] Removed permissions to delete user from standard groups as those cascade
   delete admin log entries.
-* [#2344] Fixed out-of-place repeating groups required-field asterisk
-* [#2145] Removed copy-paste snippets from form change page as they are not guaranteed
+* [:backend:`2344`] Fixed out-of-place repeating groups required-field asterisk
+* [:backend:`2145`] Removed copy-paste snippets from form change page as they are not guaranteed
   to be correct to your use-case.
 
 **Documentation**
 
-* [#2163] Document file upload storage flow
+* [:backend:`2163`] Document file upload storage flow
 * Installation docs: configure db *before* migrate and runserver
 * Installation docs: added missing OS-level dependencies
-* [#2205] Documented unsupported JSON-logic operators
+* [:backend:`2205`] Documented unsupported JSON-logic operators
 
 **Project maintenance**
 
-* [#2050] Removed ``SubmissionFileAttachment.form_key`` field and using variables instead
-* [#2117] Fixed spelling 'organisation' -> 'organization'
+* [:backend:`2050`] Removed ``SubmissionFileAttachment.form_key`` field and using variables instead
+* [:backend:`2117`] Fixed spelling 'organisation' -> 'organization'
 * Fixed example dotenv file
 * Emit deprecation warning for openforms.formio.utils.get_component
 * Update Django to latest patch/security releases
-* [#2221] Removed code for warning about duplicate keys
+* [:backend:`2221`] Removed code for warning about duplicate keys
 * Converted squashed migration into regular migrations
 * Updated github workflows to action versions following some deprecations
 * Fixed private media and add media mount in examples/docker-compose file
 * Upgraded to latest lxml version
 * Dropped django-capture-on-commit-callbacks as Django provides it now
 * Pin postgres version to 14 in docker-compose
-* [#2166] Modified Dockerfile with Volumes hint to prevent writing to container layer
-* [#2165] Upgrade django-simple-certmanager
-* [#2280] Removed ``SubmissionValueVariable.language``
+* [:backend:`2166`] Modified Dockerfile with Volumes hint to prevent writing to container layer
+* [:backend:`2165`] Upgrade django-simple-certmanager
+* [:backend:`2280`] Removed ``SubmissionValueVariable.language``
 * Refactored mail cleaning utilities into separate library
 * Parametrize workflows/dockerfile for extensions build
 
@@ -1031,12 +1031,12 @@ the end of a sprint) and putting out a new minor or major version every quarter.
 
 Final bugfix release in the ``2.0.x`` series.
 
-* [#3139] Fixed form designers/admins not being able to start forms in maintenance mode.
+* [:backend:`3139`] Fixed form designers/admins not being able to start forms in maintenance mode.
 * Fixed the version of openapi-generator.
 * Bumped to latest Django patch release.
-* [#3378] Fixed copying forms with logic that triggers from a particular step crashing
+* [:backend:`3378`] Fixed copying forms with logic that triggers from a particular step crashing
   the logic tab.
-* [#3470] Fixed form names with slashes breaking submission generation.
+* [:backend:`3470`] Fixed form names with slashes breaking submission generation.
 * Included latest SDK bugfix release.
 
 2.0.10 (2023-08-24)
@@ -1044,30 +1044,30 @@ Final bugfix release in the ``2.0.x`` series.
 
 Periodic bugfix release
 
-* [#3358] Fixed display of appointment time in correct timezone.
-* [#3368] Fixed a crash when empty values are returned from StUF-BG.
+* [:backend:`3358`] Fixed display of appointment time in correct timezone.
+* [:backend:`3368`] Fixed a crash when empty values are returned from StUF-BG.
 
 2.0.9 (2023-07-26)
 ==================
 
 Periodic bugfix release
 
-* [#3132] Fixed replacing form steps in the designer with another step having overlapping
+* [:backend:`3132`] Fixed replacing form steps in the designer with another step having overlapping
   variable names.
-* [#3216] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
-* [#3211] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+* [:backend:`3216`] Fixed setting the Piwik Pro SiteID parameter in the analytics scripts.
+* [:backend:`3211`] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
   tracked.
-* [#3161] Fixed not being able to reset form-specific data removal settings to the
+* [:backend:`3161`] Fixed not being able to reset form-specific data removal settings to the
   empty value so that the global configuration is used again.
-* [#3219] Fixed saved uploads not being deleted when the user goes back to the file and
+* [:backend:`3219`] Fixed saved uploads not being deleted when the user goes back to the file and
   removes the upload again.
 * Fixed CI builds (bump PyYAML, docs build).
-* [#3258] Fixed labels for Haal Centraal prefill attributes.
-* [#3301] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
-* [#3144] Fixed missing links to uploads in the registration e-mails when the field is
+* [:backend:`3258`] Fixed labels for Haal Centraal prefill attributes.
+* [:backend:`3301`] Fixed crash on DigiD authentication with brokers not returning sectoral codes.
+* [:backend:`3144`] Fixed missing links to uploads in the registration e-mails when the field is
   inside a container (fieldset, repeating group).
-* [#3302] Fixed an issue causing uploaded images not to be resized.
-* [#3084] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
+* [:backend:`3302`] Fixed an issue causing uploaded images not to be resized.
+* [:backend:`3084`] Fixed ``inp.heeftAlsKinderen`` missing from certain StUF-BG requests.
 * Bumped dependencies to include latest security fixes.
 
 2.0.8 (2023-06-21)
@@ -1075,18 +1075,18 @@ Periodic bugfix release
 
 Periodic bugfix release
 
-* [#3015] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
-* [#2927] Added Celery worker monitoring tooling (for devops/infra).
-* [#3068] Added soft and hard task timeout settings for background workers.
-* [#3077] Use public (instead of private) form name for ``form_name`` variable in templates.
-* [#3136] Fixed wrong Site ID being used for Matomo analytics.
-* [#3117] Fixed a crash in migrations preventing upgrading from older versions.
-* [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
-* [#3128] Fixed hidden (file) components triggering validation too early.
+* [:backend:`3015`] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
+* [:backend:`2927`] Added Celery worker monitoring tooling (for devops/infra).
+* [:backend:`3068`] Added soft and hard task timeout settings for background workers.
+* [:backend:`3077`] Use public (instead of private) form name for ``form_name`` variable in templates.
+* [:backend:`3136`] Fixed wrong Site ID being used for Matomo analytics.
+* [:backend:`3117`] Fixed a crash in migrations preventing upgrading from older versions.
+* [:backend:`3114`] Fixed the "next" button not becoming active if you're not logged in as admin user.
+* [:backend:`3128`] Fixed hidden (file) components triggering validation too early.
 
 .. note::
 
-    The fix for premature validation triggering (#3128) only applies to new
+    The fix for premature validation triggering (:backend:`3128`) only applies to new
     components/forms.
 
     To fix this for existing file components, it's recommended to remove and re-add the
@@ -1097,8 +1097,8 @@ Periodic bugfix release
 
 Periodic bugfix release
 
-* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
-* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
+* [:backend:`1959`] Fixed invalid link to resume form after pausing and resuming multiple times.
+* [:backend:`3007`] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
 
 2.0.6 (2023-04-17)
 ==================
@@ -1108,24 +1108,24 @@ Periodic bugfix release
 Note that there is a manual intervention below if you make use of analytics providers
 integration.
 
-* [#2791] Fixed long words overflowing in the confirmation PDF.
-* [#2838] Fixed hidden selectboxes triggering validation of required fields too early
-* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+* [:backend:`2791`] Fixed long words overflowing in the confirmation PDF.
+* [:backend:`2838`] Fixed hidden selectboxes triggering validation of required fields too early
+* [:backend:`2850`] Fixed a crash in the AVG log viewer when certain log records of deleted
   submissions are displayed.
-* [#2842] Fixed the Content Security Policy breaking when enabling analytics provider
+* [:backend:`2842`] Fixed the Content Security Policy breaking when enabling analytics provider
   configurations
-* [#2888] Fixed a crash when using file fields and hidden repeating groups at the same
+* [:backend:`2888`] Fixed a crash when using file fields and hidden repeating groups at the same
   time
-* [#2888] Fixed a crash when using file fields and repeating groups with numbers inside
-* [#2945] Fixed logic rule variables inadvertedly being cleared when adding a new
+* [:backend:`2888`] Fixed a crash when using file fields and repeating groups with numbers inside
+* [:backend:`2945`] Fixed logic rule variables inadvertedly being cleared when adding a new
   user defined variable
 * Fixed mutatiesoort when doing StUF ``UpdateZaak`` calls
-* [#2716] Added missing co-sign identifier (BSN) to PDF submission report
-* [#2900] Fixed inconsistent frontend logic involving checkboxes
-* [#2632] Fixed crash during submission data pruning when submissions point to form
+* [:backend:`2716`] Added missing co-sign identifier (BSN) to PDF submission report
+* [:backend:`2900`] Fixed inconsistent frontend logic involving checkboxes
+* [:backend:`2632`] Fixed crash during submission data pruning when submissions point to form
   steps that have been deleted
-* [#2977] Fixed StUF postcode not being uppercase
-* [#2849] Restored ability to import forms using form logic in the pre-2.0 format
+* [:backend:`2977`] Fixed StUF postcode not being uppercase
+* [:backend:`2849`] Restored ability to import forms using form logic in the pre-2.0 format
 * Updated the bundled SDK version to 1.2.8
 * CI no longer installs the codecov package from PyPI (obsolete)
 
@@ -1147,40 +1147,40 @@ integration.
 
 Hotfix release
 
-* [#2804] Fixed static variables not being included in template context for submission
+* [:backend:`2804`] Fixed static variables not being included in template context for submission
   confirmation template.
-* [#2400] Clean up cached execution state
+* [:backend:`2400`] Clean up cached execution state
 
 2.0.4 (2023-02-28)
 ==================
 
 Periodic maintenance release
 
-* [#2607] Fixed crash when selecting trigger-from-step in logic editor
+* [:backend:`2607`] Fixed crash when selecting trigger-from-step in logic editor
 * Fixed crash when importing forms
-* [#2699] Fixed file uploads not resolving when inside fieldsets/repeating groups
+* [:backend:`2699`] Fixed file uploads not resolving when inside fieldsets/repeating groups
 * Stopped link checking JCC links in CI since we're actively being blocked
-* [#2671] Fixed QR code background in dark mode
-* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
-* [#2724] Ensure backport of negative-numbers (#1351) is correctly included
-* [#2734] Added bandaid fix for non-unique keys inside repeating groups
+* [:backend:`2671`] Fixed QR code background in dark mode
+* [:backend:`2709`] Fixed (bandaid) inconsistent dynamic product price logic
+* [:backend:`2724`] Ensure backport of negative-numbers (:backend:`1351`) is correctly included
+* [:backend:`2734`] Added bandaid fix for non-unique keys inside repeating groups
 * Updated to SDK 1.2.6
-* [#2717] Fixed crash on StUF-ZDS when updating the payment status
-* [#2781] Fixed clearing the value of hidden components with a nested key (``nested.key``).
-* [#2759] Fixed handling of file uploads with a nested key (``nested.key``).
+* [:backend:`2717`] Fixed crash on StUF-ZDS when updating the payment status
+* [:backend:`2781`] Fixed clearing the value of hidden components with a nested key (``nested.key``).
+* [:backend:`2759`] Fixed handling of file uploads with a nested key (``nested.key``).
 
 2.0.3 (2023-01-24)
 ==================
 
 Bugfix release addressing some more upgrade issues
 
-* [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
-* [#2519] Skip 2.0.x upgrade checks if we're already on 2.0.x
-* [#2576] Fix upgrade crash on components with prefill attribute names > 50 chars
+* [:backend:`2520`] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
+* [:backend:`2519`] Skip 2.0.x upgrade checks if we're already on 2.0.x
+* [:backend:`2576`] Fix upgrade crash on components with prefill attribute names > 50 chars
 * [security#20] Fixed CSP configuration for Matomo, Piwik and Piwik PRO analytics
-* [#2012] Fixed CSP mechanisms in SiteImprove analytics provider snippet
-* [#2396] Fixed "auto login authentication" option not properly resetting
-* [#2541] Fixed a crash in the logic editor when changing the key of selectboxes components
+* [:backend:`2012`] Fixed CSP mechanisms in SiteImprove analytics provider snippet
+* [:backend:`2396`] Fixed "auto login authentication" option not properly resetting
+* [:backend:`2541`] Fixed a crash in the logic editor when changing the key of selectboxes components
 
 .. warning:: Manual intervention required for Matomo, Piwik and Piwik PRO users.
 
@@ -1208,17 +1208,17 @@ Bugfix release addressing some more upgrade issues
 
 Periodic bugfix release, addressing some blocking defects and upgrade issues.
 
-* [#2331] Fixed incorrect key validation problem which would block upgrades to 2.0+
-* [#2385] Fixed incomplete logic handling which would block upgrades to 2.0+
-* [#2398] Fixed logic trigger processing which could crash upgrades to 2.0+
-* [#2413] Fixed fields being made visible by selectboxes in frontend logic not being
+* [:backend:`2331`] Fixed incorrect key validation problem which would block upgrades to 2.0+
+* [:backend:`2385`] Fixed incomplete logic handling which would block upgrades to 2.0+
+* [:backend:`2398`] Fixed logic trigger processing which could crash upgrades to 2.0+
+* [:backend:`2413`] Fixed fields being made visible by selectboxes in frontend logic not being
   visible in summary/pdf/emails
-* [#2422] Fixed invalid postcode format being sent to StUF-ZDS
-* [#2289] Fixed StUF-ZDS: now a ``Vestiging`` is created if vestigingsnummer is present,
+* [:backend:`2422`] Fixed invalid postcode format being sent to StUF-ZDS
+* [:backend:`2289`] Fixed StUF-ZDS: now a ``Vestiging`` is created if vestigingsnummer is present,
   falling back to ``NietNatuurlijkPersoon`` otherwise.
-* [#2494] Fixed person details not being sent to StUF-ZDS if the submitter was not
+* [:backend:`2494`] Fixed person details not being sent to StUF-ZDS if the submitter was not
   authenticated but instead filled out details manually.
-* [#2432] Fixed importing pre-2.0 forms with legacy form step references in actions
+* [:backend:`2432`] Fixed importing pre-2.0 forms with legacy form step references in actions
 * Fix docs build due to legacy renegotiation being disabled in openssl 3
 
 2.0.1 (2022-11-23)
@@ -1230,20 +1230,20 @@ This patch fixes a couple of bugs encountered when upgrading from 1.1 to 2.0.
 
 **Bugfixes**
 
-* [#2301] Fixed identifying attributes still being hashed after a submission is resumed
-* [#2135] Fixed submission step data being cascade deleted in certain edge cases
-* [#2219] A fix was also attempted for bad CSS unit usage in confirmation emails, but
+* [:backend:`2301`] Fixed identifying attributes still being hashed after a submission is resumed
+* [:backend:`2135`] Fixed submission step data being cascade deleted in certain edge cases
+* [:backend:`2219`] A fix was also attempted for bad CSS unit usage in confirmation emails, but
   this caused other problems. As a workaround you should use the correctly sized images
   for the time being.
-* [#2244] Fixed 'content' component and components not marked as showInSummary showing
+* [:backend:`2244`] Fixed 'content' component and components not marked as showInSummary showing
   up in server rendered summary
 * Fixed pattern for formio key validation
-* [#2304] Refactored form logic action "mark step as not applicable" to use ID
+* [:backend:`2304`] Refactored form logic action "mark step as not applicable" to use ID
   references rather than API paths, which affected some logic actions.
-* [#2262] Fixed upgrade from < 2.0 crash when corrupt prefill configuration was present
+* [:backend:`2262`] Fixed upgrade from < 2.0 crash when corrupt prefill configuration was present
   in existing forms
-* [#1899] Apply prefill data normalization before saving into variables
-* [#2367] Fixed automatic conversion of advanced frontend logic when using selectboxes
+* [:backend:`1899`] Apply prefill data normalization before saving into variables
+* [:backend:`2367`] Fixed automatic conversion of advanced frontend logic when using selectboxes
   component type
 
 2.0.0 "Règâh" (2022-10-26)
@@ -1338,7 +1338,7 @@ double check with the list of breaking changes in mind.
 
 *Core*
 
-* [#1325] Introduced the concept of "form variables", enabling a greater flexibility
+* [:backend:`1325`] Introduced the concept of "form variables", enabling a greater flexibility
   for form designers
 
   * Every form field is automatically a form variable
@@ -1350,7 +1350,7 @@ double check with the list of breaking changes in mind.
   * Added API endpoint to list the static variables
   * The static variables interface is extensible
 
-* [#1546] Reworked form logic rules
+* [:backend:`1546`] Reworked form logic rules
 
   * Rules now have explicit ordering, which you can modify in the UI
   * You can now specify that a rule should only be evaluated from a particular form
@@ -1361,7 +1361,7 @@ double check with the list of breaking changes in mind.
     will be added in the future, such as DMN.
   * You can now use all form variables in logic rules
 
-* [#1708] Reworked the logic evaluation for a submission
+* [:backend:`1708`] Reworked the logic evaluation for a submission
 
   * Implemented isolated/sandboxed template environment
   * Form components now support template expressions using the form variables
@@ -1369,7 +1369,7 @@ double check with the list of breaking changes in mind.
     updated values of variables, then all other logic actions are evaluated using
     those variable values
 
-* [#1661] Submission authentication is now tracked differently
+* [:backend:`1661`] Submission authentication is now tracked differently
 
   * Removed the authentication identifier fields on the ``Submission`` model
   * Added a new, generic model to track authentication information:
@@ -1377,80 +1377,80 @@ double check with the list of breaking changes in mind.
   * Exposed the submission authentication details as static form variables - you now
     no longer need to add hidden form fields to access this information.
 
-* [#1967] Reworked form publishing tools
+* [:backend:`1967`] Reworked form publishing tools
 
   * Deactivated forms are deactivated for everyone
   * Forms in maintenance mode are not available, unless you're a staff member
   * The API endpoints now return HTTP 422 or HTTP 503 errors when a form is deactivated
     or in maintenance mode
-  * [#2014] Documented the recommended workflows
+  * [:backend:`2014`] Documented the recommended workflows
 
-* [#1682] Logic rules evaluation is now logged with the available context. This should
+* [:backend:`1682`] Logic rules evaluation is now logged with the available context. This should
   help in debugging your form logic.
-* [#1616] Define extra CSP directives in the admin
-* [#1680] Laid the groundwork for DMN engine support. Note that this is not exposed
+* [:backend:`1616`] Define extra CSP directives in the admin
+* [:backend:`1680`] Laid the groundwork for DMN engine support. Note that this is not exposed
   anywhere yet, but this will come in the future.
-* [#1687] There is now an explicit validate endpoint for submisisons and possible error
+* [:backend:`1687`] There is now an explicit validate endpoint for submisisons and possible error
   responses are documented in the API spec.
-* [#1739] (API) endpoints now emit headers to prevent browser caching
-* [#1719] Submission reports can now be downloaded for a limited time instead of only once
-* [#1835] Added bulk endpoints for form and price logic rules
-* [#1944] API responses now include more headers to expose staff-only functionality to
+* [:backend:`1739`] (API) endpoints now emit headers to prevent browser caching
+* [:backend:`1719`] Submission reports can now be downloaded for a limited time instead of only once
+* [:backend:`1835`] Added bulk endpoints for form and price logic rules
+* [:backend:`1944`] API responses now include more headers to expose staff-only functionality to
   the SDK, and permissions are now checked to block/allow navigating between form
   steps without the previous steps being completed.
-* [#1922] First passes at profiling and optimizing the API endpoints performance
+* [:backend:`1922`] First passes at profiling and optimizing the API endpoints performance
 * Enabled Cross-Site-Request-Forgery protections for *anonymous* users
-* [#2042] Various performance improvements
+* [:backend:`2042`] Various performance improvements
 
 *Form designer*
 
-* [#1642] Forms can now be assigned to categories in a folder structure
-* [#1710] Added "repeating group" functionality/component
-* [#1878] Added more validation options for date components
+* [:backend:`1642`] Forms can now be assigned to categories in a folder structure
+* [:backend:`1710`] Added "repeating group" functionality/component
+* [:backend:`1878`] Added more validation options for date components
 
   * Specify a fixed min or max date; or
   * Specify a minimum date in the future; or
   * Specify a maximum date in the past; or
   * Specify a min/max date relative to a form variable
 
-* [#1921] You can now specify a global default for allowed file types
-* [#1621] The save/save-and-continue buttons are now always visible on the page in
+* [:backend:`1921`] You can now specify a global default for allowed file types
+* [:backend:`1621`] The save/save-and-continue buttons are now always visible on the page in
   large forms
-* [#1651] Added 'Show Form' button on form admin page
-* [#1643] There is now a default maximum amount of characters (1000) for text areas
-* [#1325] Added management command to check number of forms with duplicate component keys
-* [#1611] Improved the UX when saving a form which still has validation errors somewhere.
-* [#1771] When a form step is deleted and the form definition is not reusable, the form
+* [:backend:`1651`] Added 'Show Form' button on form admin page
+* [:backend:`1643`] There is now a default maximum amount of characters (1000) for text areas
+* [:backend:`1325`] Added management command to check number of forms with duplicate component keys
+* [:backend:`1611`] Improved the UX when saving a form which still has validation errors somewhere.
+* [:backend:`1771`] When a form step is deleted and the form definition is not reusable, the form
   definition is now deleted as well
-* [#1702] Added validation for re-usable form definitions - you can no longer mark a
+* [:backend:`1702`] Added validation for re-usable form definitions - you can no longer mark a
   form definition as not-reusable if it's used in multiple forms
-* [#1708] We now keep track of the number of formio components used in a form step for
+* [:backend:`1708`] We now keep track of the number of formio components used in a form step for
   statistical/performance analysis
-* [#1806] Ensure that logic variable references are updated
-* [#1933] Replaced hardcoded SDK start (login) message with text in form explanation
+* [:backend:`1806`] Ensure that logic variable references are updated
+* [:backend:`1933`] Replaced hardcoded SDK start (login) message with text in form explanation
   template.
-* [#2078] field labels are now compulsory (a11y)
-* [#2124] Added message to file-upload component informing the user of the maximum
+* [:backend:`2078`] field labels are now compulsory (a11y)
+* [:backend:`2124`] Added message to file-upload component informing the user of the maximum
   allowed file upload size.
-* [#2113] added option to control column size on mobile viewports
-* [#1351] Allow negative currency and number components
+* [:backend:`2113`] added option to control column size on mobile viewports
+* [:backend:`1351`] Allow negative currency and number components
 
 *Registrations*
 
-* [#1007] you can now specify the document type for every upload component (applies to
+* [:backend:`1007`] you can now specify the document type for every upload component (applies to
   Objects API and ZGW registration)
-* [#1723] StUF-ZDS: Most of the configuration options are now optional
-* [#1745] StUF: file content is now sent with the ``contenttype`` attribute
-* [#1769] StUF-ZDS: you can now specify the ``vertrouwelijkheidaanduiding``
-* [#1183] Intermediate registration results are now properly tracked and re-used,
+* [:backend:`1723`] StUF-ZDS: Most of the configuration options are now optional
+* [:backend:`1745`] StUF: file content is now sent with the ``contenttype`` attribute
+* [:backend:`1769`] StUF-ZDS: you can now specify the ``vertrouwelijkheidaanduiding``
+* [:backend:`1183`] Intermediate registration results are now properly tracked and re-used,
   preventing the same objects being created over and over again if registration is being
   retried. This especially affects StUF-ZDS and ZGW API's registration backends.
-* [#1877] Registration email subject is now configurable
-* [#1867] StUF-ZDS & ZGW: Added more registration fields
+* [:backend:`1877`] Registration email subject is now configurable
+* [:backend:`1867`] StUF-ZDS & ZGW: Added more registration fields
 
 *Prefill*
 
-* [#1693] Added normalization of the postcode format according to the specified
+* [:backend:`1693`] Added normalization of the postcode format according to the specified
   comonent mask
 * The prefill machinery is updated to work with variables. A bunch of (private API) code
   in the ``openforms.prefill`` module was deleted.
@@ -1459,90 +1459,90 @@ double check with the list of breaking changes in mind.
 
 *Other*
 
-* [#1620] Text colors in content component can now be configured with your own presets
-* [#1659] Added configuration options for theme class name and external stylesheet to load
+* [:backend:`1620`] Text colors in content component can now be configured with your own presets
+* [:backend:`1659`] Added configuration options for theme class name and external stylesheet to load
 * Renamed design tokens to align with NL Design System style design tokens
-* [#1716] Added support for Piwik Pro analytics provider
-* [#1803] Form versions and exports now record the Open Forms version they were created
+* [:backend:`1716`] Added support for Piwik Pro analytics provider
+* [:backend:`1803`] Form versions and exports now record the Open Forms version they were created
   with, showing warnings when restoring a form from another Open Forms version.
-* [#1672] Improved error feedback on OIDC login failures
-* [#1320] Reworked the configuration checks for plugins
+* [:backend:`1672`] Improved error feedback on OIDC login failures
+* [:backend:`1320`] Reworked the configuration checks for plugins
 * You can now use separate DigiD/eHerkenning certificates
-* [#1294] Reworked analytics integration - enabling/disabling an analytics provider now
+* [:backend:`1294`] Reworked analytics integration - enabling/disabling an analytics provider now
   automatically updates the cookies and CSP configuration
-* [#1787] You can now configure the "form pause" email template to use
-* [#1971] Added config option to disable search engine indexing
-* [#1895] Removed deprecated functionality
+* [:backend:`1787`] You can now configure the "form pause" email template to use
+* [:backend:`1971`] Added config option to disable search engine indexing
+* [:backend:`1895`] Removed deprecated functionality
 * Improved search fields in Form/Form Definition admin pages
-* [#2055] Added management command to check for invalid keys
-* [#2058] Added endpoint to collect submission summary data
-* [#2141] Set up stable SDK asset URLs
-* [#2209] Improved validation errors for min/max values in number components
+* [:backend:`2055`] Added management command to check for invalid keys
+* [:backend:`2058`] Added endpoint to collect submission summary data
+* [:backend:`2141`] Set up stable SDK asset URLs
+* [:backend:`2209`] Improved validation errors for min/max values in number components
 
 **Bugfixes**
 
-* [#1657] Fixed content component configuration options
+* [:backend:`1657`] Fixed content component configuration options
 * Fixed support for non-white background colors in PDFs with organization logos
-* [CVE-2022-31041] Perform proper upload file type validation
-* [CVE-2022-31040] Fixed open redirect in cookie-consent 'close' button
-* [#1670] Update error message for number validation
-* [#1681] Use a unique reference number every time for StUF-ZDS requests
-* [#1724] Content fields must not automatically be marked as required
-* [#1475] Fixed crash when setting an empty value in logic action editor
-* [#1715] Fixed logo sizing for PDFs (again)
-* [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
-* [#1737] Fixed typo in email translations
-* [#1729] Applied workaround for ``defaultValue`` Formio bug
-* [#1730] Fixed CORS policy to allow CSP nonce header
-* [#1617] Fixed crash on StUF onvolledige datum
-* [GHSA-g936-w68m-87j8] Do additional permission checks for forms requiring login
-* [#1783] Upgraded formiojs to fix searching in dropdowns
-* Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
-* [#1839] Fixed tooltip text not being displayed entirely
-* [#1880] Fixed some validation errors not being displayed properly
-* [#1842] Ensured prefill errors via StUF-BG are visible in logs
-* [#1832] Fixed address lookup problems because of rate-limiting
-* [#1871] Fixed respecting simple client-side visibility logic
-* [#1755] Fixed removing field data for fields that are made visible/hidden by logic
-* [#1957] Fixed submission retry for submissions that failed registration, but exceeded
+* [:cve:`CVE-2022-31041`] Perform proper upload file type validation
+* [:cve:`CVE-2022-31040`] Fixed open redirect in cookie-consent 'close' button
+* [:backend:`1670`] Update error message for number validation
+* [:backend:`1681`] Use a unique reference number every time for StUF-ZDS requests
+* [:backend:`1724`] Content fields must not automatically be marked as required
+* [:backend:`1475`] Fixed crash when setting an empty value in logic action editor
+* [:backend:`1715`] Fixed logo sizing for PDFs (again)
+* [:backend:`1731`] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
+* [:backend:`1737`] Fixed typo in email translations
+* [:backend:`1729`] Applied workaround for ``defaultValue`` Formio bug
+* [:backend:`1730`] Fixed CORS policy to allow CSP nonce header
+* [:backend:`1617`] Fixed crash on StUF onvolledige datum
+* [:ghsa:`GHSA-g936-w68m-87j8`] Do additional permission checks for forms requiring login
+* [:backend:`1783`] Upgraded formiojs to fix searching in dropdowns
+* Bumped Django and django-sendfile2 versions with fixes for :cve:`CVE-2022-36359`
+* [:backend:`1839`] Fixed tooltip text not being displayed entirely
+* [:backend:`1880`] Fixed some validation errors not being displayed properly
+* [:backend:`1842`] Ensured prefill errors via StUF-BG are visible in logs
+* [:backend:`1832`] Fixed address lookup problems because of rate-limiting
+* [:backend:`1871`] Fixed respecting simple client-side visibility logic
+* [:backend:`1755`] Fixed removing field data for fields that are made visible/hidden by logic
+* [:backend:`1957`] Fixed submission retry for submissions that failed registration, but exceeded
   the automatic retry limit
-* [#1984] Normalize the show/hide logic for components and only expose simple variants.
+* [:backend:`1984`] Normalize the show/hide logic for components and only expose simple variants.
   The complex logic was not intended to be exposed.
-* [#2066] Re-add key validation in form builder
+* [:backend:`2066`] Re-add key validation in form builder
 * Fixed some translation mistakes
 * Only display application version for authenticated staff users, some pages still
   leaked this information
 * Fixed styling of the password reset pages
-* [#2154] Fixed coloured links email rendering crash
-* [#2117] Fixed submission export for submissions with filled out subset of
+* [:backend:`2154`] Fixed coloured links email rendering crash
+* [:backend:`2117`] Fixed submission export for submissions with filled out subset of
   available fields
-* [#1899] Fixed validation problem on certain types of prefilled fields during
+* [:backend:`1899`] Fixed validation problem on certain types of prefilled fields during
   anti-tampering check due to insufficient data normalization
-* [#2062] Fixed "print this page" CSP violation
+* [:backend:`2062`] Fixed "print this page" CSP violation
 
 **Project maintenance**
 
 * Upgraded icon fonts version
 * Upgraded CSS toolchain
 * Frontend code is now formatted using ``prettier``
-* [#1646] Tweaked django-axes configuration
+* [:backend:`1646`] Tweaked django-axes configuration
 * Updated examples in the documentation
 * Made Docker build smaller/more efficient
 * Added the open-forms design-tokens package
 * Bumped a number of (dev) dependencies that had security releases
-* [#1615] documented the CORS policy requirement for font files
+* [:backend:`1615`] documented the CORS policy requirement for font files
 * Added and improved the developer installation documentation
 * Added pretty formatting of ``flake8`` errors in CI
 * Configured webpack for 'absolute' imports
 * Replaced deprected ``defusedxml.lxml`` usage
-* [#1781] Implemented script to dump the instance configuration for import into another
+* [:backend:`1781`] Implemented script to dump the instance configuration for import into another
   environment
 * Added APM instrumentation for better insights in endpoint performance
 * Upgrade to zgw-consumers and django-simple-certmanager
 * Improved documentation on embedding the SDK
-* [#921] Added decision tree docs
+* [:backend:`921`] Added decision tree docs
 * Removed noise from test output in CI
-* [#1979] documented the upgrade process and added checks to verify consistency/state
+* [:backend:`1979`] documented the upgrade process and added checks to verify consistency/state
   BEFORE migrating the database when upgrading versions
-* [#2004] Add post-processing hook to add CSRF token parameter
-* [#2221] Remove code for duplicated component key warnings
+* [:backend:`2004`] Add post-processing hook to add CSRF token parameter
+* [:backend:`2221`] Remove code for duplicated component key warnings
