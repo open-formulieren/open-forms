@@ -1,1 +1,0 @@
-EHERKENNING_BEWINDVOERING_CUSTOM_OIDC_DB_PREFIX = "eherkenning_bewindvoering_oidc"

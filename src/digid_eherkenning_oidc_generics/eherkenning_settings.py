@@ -1,1 +1,0 @@
-EHERKENNING_CUSTOM_OIDC_DB_PREFIX = "eherkenning_oidc"

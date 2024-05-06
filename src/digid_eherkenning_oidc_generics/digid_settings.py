@@ -1,1 +1,0 @@
-DIGID_CUSTOM_OIDC_DB_PREFIX = "digid_oidc"

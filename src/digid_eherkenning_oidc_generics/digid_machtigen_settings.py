@@ -1,1 +1,0 @@
-DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX = "digid_machtigen_oidc"
