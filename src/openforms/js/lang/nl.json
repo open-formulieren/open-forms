@@ -211,7 +211,7 @@
     "originalDefault": "The value of the selected field will be the process variable value."
   },
   "5JNnFB": {
-    "defaultMessage": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?",
+    "defaultMessage": "Let op! Teruggaan naar het oude configuratieformaat verwijdert de ingestelde variabelekoppelingen. Ben je zeker dat je wil teruggaan?",
     "description": "Objects API registration backend: v1 switch warning message",
     "originalDefault": "Switching to the legacy registration options will remove the existing variables mapping. Are you sure you want to continue?"
   },
@@ -881,7 +881,7 @@
     "originalDefault": "Successful Submissions Removal Limit"
   },
   "JfIB3K": {
-    "defaultMessage": "Override the minimum Level of Assurance. This is not supported by all authentication plugins.",
+    "defaultMessage": "Overschrijf het vereiste minimale betrouwbaarheidsniveau. Niet alle authenticatieplugins ondersteunen dit.",
     "description": "Minimal LoA override help text",
     "originalDefault": "Override the minimum Level of Assurance. This is not supported by all authentication plugins."
   },
@@ -906,7 +906,7 @@
     "originalDefault": "Processing"
   },
   "KGcyn+": {
-    "defaultMessage": "The form is not active",
+    "defaultMessage": "Het formulier is (nog) niet actief.",
     "description": "Show form button disabled title",
     "originalDefault": "The form is not active"
   },
