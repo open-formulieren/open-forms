@@ -485,7 +485,10 @@ class Form(models.Model):
         copy.save()
 
         # form steps
+        form_step_uuid_mappings: dict[str, str] = {}
         for form_step in form_steps:
+            original_uuid = form_step.uuid
+
             form_step.pk = None
             form_step.uuid = _uuid.uuid4()
             form_step.form = copy
@@ -496,6 +499,8 @@ class Form(models.Model):
                 copy_form_definition.uuid = _uuid.uuid4()
                 copy_form_definition.save()
                 form_step.form_definition = copy_form_definition
+
+            form_step_uuid_mappings[str(original_uuid)] = str(form_step.uuid)
 
             form_step.save()
 
@@ -509,6 +514,13 @@ class Form(models.Model):
                 logic.trigger_from_step = logic.form.formstep_set.get(
                     order=logic.trigger_from_step.order
                 )
+
+            # make sure we have the new uuids of the copied form steps
+            for action in logic.actions:
+                if "form_step_uuid" in action:
+                    action["form_step_uuid"] = form_step_uuid_mappings[
+                        action["form_step_uuid"]
+                    ]
 
             logic.save()
 
