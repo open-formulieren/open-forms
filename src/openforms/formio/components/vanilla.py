@@ -10,6 +10,7 @@ from collections.abc import Mapping
 from datetime import time
 from typing import TYPE_CHECKING, Any
 
+from django.core.files.uploadedfile import UploadedFile
 from django.core.validators import (
     MaxLengthValidator,
     MaxValueValidator,
@@ -19,6 +20,7 @@ from django.core.validators import (
 )
 from django.utils.translation import gettext_lazy as _
 
+from glom import glom
 from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
@@ -27,6 +29,8 @@ from rest_framework.utils.formatting import lazy_format
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.api.validators import MimeTypeValidator
+from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
@@ -287,6 +291,70 @@ class PhoneNumber(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
 
+class RelatedFileUploadValidator:
+    def __init__(self, mime_type_validator: MimeTypeValidator) -> None:
+        self.mime_type_validator = mime_type_validator
+
+    def __call__(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        temporary_upload = temporary_upload_from_url(attrs["url"])
+        if temporary_upload is None:
+            raise serializers.ValidationError({"url": _("Invalid URL.")})
+
+        if attrs["size"] != temporary_upload.file_size:
+            raise serializers.ValidationError(
+                {"size": _("Size does not match the uploaded file.")}
+            )
+
+        if attrs["originalName"] != temporary_upload.file_name:
+            raise serializers.ValidationError(
+                {"originalName": _("Name does not match the uploaded file.")}
+            )
+
+        if attrs["data"]["name"] != temporary_upload.file_name:
+            raise serializers.ValidationError(
+                {"data": {"name": _("Name does not match the uploaded file.")}}
+            )
+
+        with temporary_upload.content.open("rb") as infile:
+            # wrap in UploadedFile just to reuse DRF validator
+            uploaded_file = UploadedFile(
+                file=infile,
+                name=temporary_upload.file_name,
+                content_type=temporary_upload.content_type,
+            )
+            self.mime_type_validator(uploaded_file)
+
+        return attrs
+
+
+class FileDataSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    form = serializers.ChoiceField(choices=[""])
+    name = serializers.CharField()
+    size = serializers.IntegerField(min_value=0)
+    baseUrl = serializers.URLField()
+    project = serializers.ChoiceField(choices=[""])
+
+
+class FileSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    originalName = serializers.CharField()
+    size = serializers.IntegerField(min_value=0)
+    storage = serializers.ChoiceField(choices=["url"])
+    type = serializers.CharField()
+    url = serializers.URLField()
+    data = FileDataSerializer()  # type: ignore
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        for k in ["url", "size"]:
+            if attrs[k] != attrs["data"][k]:
+                raise serializers.ValidationError(
+                    {k: _("The root value must be equal to the one in 'data'.")}
+                )
+
+        return attrs
+
+
 @register("file")
 class File(BasePlugin[FileComponent]):
     formatter = FileFormatter
@@ -310,6 +378,28 @@ class File(BasePlugin[FileComponent]):
                     ],
                 }
             )
+
+    def build_serializer_field(self, component: FileComponent) -> serializers.ListField:
+        multiple = component.get("multiple", False)
+        max_number_of_files = component.get("maxNumberOfFiles", None if multiple else 1)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        if component.get("useConfigFiletypes"):
+            config = GlobalConfiguration.get_solo()
+            allowed_mime_types = config.form_upload_default_file_types
+        else:
+            allowed_mime_types = glom(component, "file.type", default=[])
+
+        return serializers.ListField(
+            max_length=max_number_of_files,
+            child=FileSerializer(
+                validators=[
+                    RelatedFileUploadValidator(MimeTypeValidator(allowed_mime_types))
+                ]
+            ),
+            required=required,
+        )
 
 
 @register("textarea")
