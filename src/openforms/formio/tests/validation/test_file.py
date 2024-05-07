@@ -1,13 +1,20 @@
-from django.test import TestCase
+from pathlib import Path
+from unittest.mock import Mock, patch
+
+from django.core.files import File
+from django.test import TestCase, tag
 from django.utils.translation import gettext_lazy as _
 
 import factory
 from furl import furl
 
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import TemporaryFileUploadFactory
 
 from ...typing import FileComponent
 from .helpers import extract_error, validate_formio_data
+
+TEST_FILES_DIR = Path(__file__).parents[1] / "files"
 
 
 class _SubmittedFileDataFactory(factory.DictFactory):
@@ -251,3 +258,209 @@ class FileValidationTests(TestCase):
         is_valid, _ = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
 
         self.assertTrue(is_valid)
+
+
+class FileValidationMimeTypeTests(TestCase):
+
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_malicious_content(self):
+        """
+        Regression test for CVE-2022-31041 to ensure the file content is validated
+        against the formio configuration.
+
+        We cannot rely on file extension or browser mime-type. Therefore, we have a test
+        file that claims to be a PDF but is actually an image that we put in the upload
+        data. The step attaching the uploads to the form data must validate the
+        configuration.
+        """
+        with open(TEST_FILES_DIR / "image-256x256.pdf", "rb") as infile:
+            upload1 = TemporaryFileUploadFactory.create(
+                file_name="my-pdf.pdf",
+                content=File(infile),
+                content_type="application/pdf",
+            )
+            upload2 = TemporaryFileUploadFactory.create(
+                file_name="my-pdf2.pdf", content=File(infile), content_type="image/png"
+            )
+
+        data = {
+            "foo": [
+                SubmittedFileFactory.create(
+                    with_temporary_upload=upload1,
+                    type="application/pdf",  # we are lying!
+                ),
+                SubmittedFileFactory.create(
+                    with_temporary_upload=upload2,
+                    type="application/pdf",  # we are lying!
+                ),
+            ],
+        }
+
+        component: FileComponent = {
+            "key": "foo",
+            "type": "file",
+            "label": "Test",
+            "multiple": True,
+            "storage": "url",
+            "url": "",
+            "useConfigFiletypes": False,
+            "filePattern": "applicaton/pdf",
+            "file": {"type": ["application/pdf"], "allowedTypesLabels": []},
+        }
+
+        is_valid, errors = validate_formio_data(component, data)
+        self.assertFalse(is_valid)
+        self.assertEqual(len(errors["foo"]), 2)
+
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_ok(self):
+        """
+        Regression test for CVE-2022-31041 to ensure the file content is validated
+        against the formio configuration.
+
+        We cannot rely on file extension or browser mime-type. Therefore, we have a test
+        file that claims to be a PDF but is actually an image that we put in the upload
+        data. The step attaching the uploads to the form data must validate the
+        configuration.
+        """
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload1 = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+            upload2 = TemporaryFileUploadFactory.create(
+                file_name="my-img2.png", content=File(infile), content_type="image/png"
+            )
+
+        data = {
+            "foo": [
+                SubmittedFileFactory.create(
+                    with_temporary_upload=upload1, type="image/png"
+                ),
+                SubmittedFileFactory.create(
+                    with_temporary_upload=upload2, type="image/png"
+                ),
+            ],
+        }
+
+        component: FileComponent = {
+            "key": "foo",
+            "type": "file",
+            "label": "Test",
+            "multiple": True,
+            "storage": "url",
+            "url": "",
+            "useConfigFiletypes": False,
+            "filePattern": "image/png,image/jpeg",
+            "file": {"type": ["image/png", "image/jpeg"], "allowedTypesLabels": []},
+        }
+
+        is_valid, _ = validate_formio_data(component, data)
+        self.assertTrue(is_valid)
+
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_implicit_wildcard(self):
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+
+        data = {
+            "foo": [
+                SubmittedFileFactory.create(
+                    with_temporary_upload=upload, type="image/png"
+                ),
+            ],
+        }
+
+        component: FileComponent = {
+            "key": "foo",
+            "type": "file",
+            "label": "Test",
+            "storage": "url",
+            "url": "",
+            "useConfigFiletypes": False,
+            "filePattern": "",
+            "file": {"allowedTypesLabels": []},
+        }
+
+        is_valid, _ = validate_formio_data(component, data)
+        self.assertTrue(is_valid)
+
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_wildcard(self):
+        """
+        Regression test for the initial CVE-2022-31041 patch.
+
+        Assert that file uploads are allowed if the "All" file types in the file
+        configuration tab is used, which presents as a '*' entry.
+        """
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+
+        data = {
+            "foo": [
+                SubmittedFileFactory.create(
+                    with_temporary_upload=upload, type="image/png"
+                ),
+            ],
+        }
+
+        component: FileComponent = {
+            "key": "foo",
+            "type": "file",
+            "label": "Test",
+            "storage": "url",
+            "url": "",
+            "useConfigFiletypes": False,
+            "filePattern": "*",
+            "file": {"type": ["*"], "allowedTypesLabels": []},
+        }
+
+        is_valid, _ = validate_formio_data(component, data)
+        self.assertTrue(is_valid)
+
+    @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
+    def test_attach_upload_validates_file_content_types_default_configuration(
+        self, m_solo: Mock
+    ):
+        m_solo.return_value = GlobalConfiguration(
+            form_upload_default_file_types=["application/pdf", "image/jpeg"],
+        )
+
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+
+        data = {
+            "foo": [
+                SubmittedFileFactory.create(
+                    with_temporary_upload=upload, type="image/png"
+                ),
+            ],
+        }
+
+        component: FileComponent = {
+            "key": "foo",
+            "type": "file",
+            "label": "Test",
+            "storage": "url",
+            "url": "",
+            "useConfigFiletypes": True,
+            "filePattern": "*",
+            "file": {"type": ["*"], "allowedTypesLabels": []},
+        }
+
+        is_valid, errors = validate_formio_data(component, data)
+        self.assertFalse(is_valid)
+        self.assertEqual(len(errors["foo"]), 1)

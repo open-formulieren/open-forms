@@ -6,8 +6,6 @@ submitted to a submission step. Existing data can be overwritten and new data is
 by using HTTP PUT.
 """
 
-from unittest.mock import patch
-
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
@@ -95,22 +93,6 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         self.assertEqual("test-key", variable.key)
         self.assertEqual("example data", variable.value)
         self.assertEqual("2022-05-25T10:53:19+00:00", variable.created_at.isoformat())
-
-    @patch("openforms.submissions.api.serializers.validate_uploads")
-    def test_validation_hook_called(self, mock_validate):
-        self._add_submission_to_session(self.submission)
-        endpoint = reverse(
-            "api:submission-steps-detail",
-            kwargs={
-                "submission_uuid": self.submission.uuid,
-                "step_uuid": self.step1.uuid,
-            },
-        )
-        body = {"data": {"test-key": "example data"}}
-
-        self.client.put(endpoint, body)
-
-        mock_validate.assert_called_once()
 
     def test_create_step_wrong_step_id(self):
         """
