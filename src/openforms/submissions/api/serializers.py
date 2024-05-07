@@ -26,7 +26,6 @@ from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
 from openforms.utils.urls import build_absolute_uri
 
-from ..attachments import validate_uploads
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
@@ -259,7 +258,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         return super().to_representation(instance)
 
     def validate_data(self, data: dict):
-        validate_uploads(self.instance, data=data)
         self._run_formio_validation(data)
         return data
 

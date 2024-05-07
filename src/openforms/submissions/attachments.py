@@ -2,7 +2,6 @@ import logging
 import os.path
 import pathlib
 import re
-from collections import defaultdict
 from dataclasses import dataclass
 from datetime import timedelta
 from functools import partial
@@ -11,7 +10,6 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.files.temp import NamedTemporaryFile
-from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 from django.urls import Resolver404, resolve
 from django.utils.translation import gettext as _
@@ -19,12 +17,9 @@ from django.utils.translation import gettext as _
 import PIL
 from glom import Path, glom
 from PIL import Image
-from rest_framework.exceptions import ValidationError
 
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
-from openforms.config.models import GlobalConfiguration
-from openforms.formio.api.validators import MimeTypeValidator
 from openforms.formio.service import iterate_data_with_components
 from openforms.formio.typing import Component
 from openforms.submissions.models import (
@@ -129,49 +124,6 @@ def iter_step_uploads(
                 data_path=data_path,
                 configuration_path=configuration_path,
             )
-
-
-def validate_uploads(submission_step: SubmissionStep, data: dict | None) -> None:
-    """
-    Validate the file uploads in the submission step data.
-
-    File uploads are stored in a temporary file uploads table and the references to them
-    are included in the step submission data. This function validates that the actual
-    content and metadata of files conforms to the configured file upload components.
-    """
-    validation_errors = defaultdict(list)
-    config = GlobalConfiguration.get_solo()
-    for upload_context in iter_step_uploads(submission_step, data=data):
-        upload, component, key = (
-            upload_context.upload,
-            upload_context.component,
-            upload_context.form_key,
-        )
-
-        if component.get("useConfigFiletypes"):
-            allowed_mime_types = config.form_upload_default_file_types
-        else:
-            allowed_mime_types = glom(component, "file.type", default=[])
-
-        validate_file = MimeTypeValidator(allowed_mime_types)
-
-        # perform content type validation
-        with upload.content.open("rb") as infile:
-            # wrap in UploadedFile just to reuse DRF validator
-            uploaded_file = UploadedFile(
-                file=infile, name=upload.file_name, content_type=upload.content_type
-            )
-            try:
-                validate_file(uploaded_file)
-            except ValidationError as e:
-                logger.warning(
-                    "Blocking submission upload %d because of invalid mime type check",
-                    upload.id,
-                )
-                validation_errors[key].append(e.detail)
-
-    if validation_errors:
-        raise ValidationError(validation_errors)
 
 
 def attach_uploads_to_submission_step(
