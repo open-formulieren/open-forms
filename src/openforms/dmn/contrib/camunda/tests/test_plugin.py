@@ -160,14 +160,14 @@ class CamundaDMNTests(TestCase):
         outputs = params.outputs
 
         self.assertEqual(len(inputs), 2)
-        self.assertEqual(inputs[0]["label"], "Invoice Amount")
-        self.assertEqual(inputs[0]["expression"], "amount")
-        self.assertEqual(inputs[1]["label"], "Invoice Category")
-        self.assertEqual(inputs[1]["expression"], "invoiceCategory")
+        self.assertEqual(inputs[0].label, "Invoice Amount")
+        self.assertEqual(inputs[0].expression, "amount")
+        self.assertEqual(inputs[1].label, "Invoice Category")
+        self.assertEqual(inputs[1].expression, "invoiceCategory")
 
         self.assertEqual(len(outputs), 1)
-        self.assertEqual(outputs[0]["label"], "Classification")
-        self.assertEqual(outputs[0]["name"], "invoiceClassification")
+        self.assertEqual(outputs[0].label, "Classification")
+        self.assertEqual(outputs[0].name, "invoiceClassification")
 
     def test_get_inputs_outputs_table_with_dependency(self):
         # This decision ID depends on the invoiceClassification table
@@ -179,11 +179,11 @@ class CamundaDMNTests(TestCase):
         outputs = params.outputs
 
         self.assertEqual(len(inputs), 2)
-        self.assertEqual(inputs[0]["label"], "Invoice Amount")
-        self.assertEqual(inputs[0]["expression"], "amount")
-        self.assertEqual(inputs[1]["label"], "Invoice Category")
-        self.assertEqual(inputs[1]["expression"], "invoiceCategory")
+        self.assertEqual(inputs[0].label, "Invoice Amount")
+        self.assertEqual(inputs[0].expression, "amount")
+        self.assertEqual(inputs[1].label, "Invoice Category")
+        self.assertEqual(inputs[1].expression, "invoiceCategory")
 
         self.assertEqual(len(outputs), 1)
-        self.assertEqual(outputs[0]["label"], "Approver Group")
-        self.assertEqual(outputs[0]["name"], "result")
+        self.assertEqual(outputs[0].label, "Approver Group")
+        self.assertEqual(outputs[0].name, "result")
