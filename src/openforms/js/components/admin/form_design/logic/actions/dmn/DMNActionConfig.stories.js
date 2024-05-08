@@ -25,6 +25,7 @@ export default {
       {type: 'textfield', key: 'surname', name: 'Surname'},
       {type: 'number', key: 'income', name: 'Income'},
       {type: 'checkbox', key: 'canApply', name: 'Can apply?'},
+      {type: 'postcode', key: 'postcode', name: 'Postcode'},
     ],
   },
   parameters: {
@@ -39,6 +40,10 @@ export default {
             {
               id: 'invoiceClassification',
               label: 'Invoice Classification',
+            },
+            {
+              id: 'withComplexExpressions',
+              label: 'Complex expression in inputs',
             },
           ],
           'some-other-engine': [{id: 'some-definition-id', label: 'Some definition id'}],
@@ -112,6 +117,30 @@ export default {
                 label: 'Approver Group',
                 name: 'result',
                 type_ref: 'string',
+              },
+            ],
+          },
+          withComplexExpressions: {
+            inputs: [
+              {
+                label: 'Sum of a and b',
+                id: '',
+                type_ref: 'integer',
+                expression: 'a + b',
+              },
+              {
+                label: 'Numeric part postcode',
+                id: '',
+                type_ref: 'integer',
+                expression: 'number(substring(postcode, 1, 4))',
+              },
+            ],
+            outputs: [
+              {
+                id: 'OutputClause_1cthd0w',
+                label: 'Sole output',
+                type_ref: 'string',
+                name: 'result',
               },
             ],
           },
@@ -317,5 +346,21 @@ export const OnePluginAvailable = {
     const pluginDropdown = canvas.getByLabelText('Plugin');
 
     await expect(pluginDropdown.value).toBe('camunda7');
+  },
+};
+
+export const ComplexInputExpressions = {
+  args: {
+    initialValues: {
+      pluginId: 'camunda7',
+      decisionDefinitionId: 'withComplexExpressions',
+      decisionDefinitionVersion: '1',
+      inputMapping: [
+        {formVariable: 'postcode', dmnVariable: 'postcode'},
+        {formVariable: 'income', dmnVariable: 'a'},
+        {formVariable: 'income', dmnVariable: 'b'},
+      ],
+      outputMapping: [],
+    },
   },
 };
