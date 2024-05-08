@@ -78,6 +78,13 @@
     margin-block-end: 0;
   }
 
+  &__section-title {
+    font-weight: 300;
+    font-size: 1rem;
+    margin-block-start: 0;
+    margin-block-end: 0;
+  }
+
   &__form {
     display: flex;
     flex-direction: column;

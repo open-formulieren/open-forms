@@ -7,6 +7,7 @@ import {FormContext} from 'components/admin/form_design/Context';
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';
 import {get} from 'utils/fetch';
 
+import InputsOverview from './InputsOverview';
 import VariableMapping from './VariableMapping';
 
 const EMPTY_DMN_PARAMS = {inputs: [], outputs: []};
@@ -34,7 +35,8 @@ const DMNParametersForm = () => {
     const response = await get(DMN_DECISION_DEFINITIONS_PARAMS_LIST, queryParams);
 
     return {
-      inputs: response.data.inputs.map(inputParam => [inputParam.expression, inputParam.label]),
+      inputClauses: response.data.inputs,
+      inputs: inputs,
       outputs: response.data.outputs.map(outputParam => [outputParam.name, outputParam.label]),
     };
   }, [pluginId, decisionDefinitionId, decisionDefinitionVersion]);
@@ -43,8 +45,10 @@ const DMNParametersForm = () => {
 
   return (
     <div className="mappings">
+      <InputsOverview inputClauses={dmnParams.inputClauses} />
+
       <div className="mappings__mapping">
-        <h3 className="react-modal__title">
+        <h3 className="react-modal__section-title">
           <FormattedMessage defaultMessage="Input mapping" description="Input mapping title" />
         </h3>
         <VariableMapping
@@ -55,7 +59,7 @@ const DMNParametersForm = () => {
         />
       </div>
       <div className="mappings__mapping">
-        <h3 className="react-modal__title">
+        <h3 className="react-modal__section-title">
           <FormattedMessage defaultMessage="Output mapping" description="Output mapping title" />
         </h3>
         <VariableMapping

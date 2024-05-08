@@ -1,10 +1,17 @@
 @use 'microscope-sass/lib/bem';
 
 .mappings {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @include bem.element('info') {
+    padding-block-start: 20px;
+  }
+
   @include bem.element('mapping') {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-block-start: 20px;
   }
 }
