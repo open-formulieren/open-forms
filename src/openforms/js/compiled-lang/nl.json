@@ -469,6 +469,12 @@
       "value": "Geboortedatum veld"
     }
   ],
+  "4sFGgA": [
+    {
+      "type": 0,
+      "value": "De opgelijste expressies komen uit de beslisdefinities-XML. Het kan gebeuren dat bepaalde inputs al berekend zijn via een beslistabel die als input dient voor de geselecteerde beslistabel, maar door de complexiteit van de expressie is deze er niet uitgefilterd."
+    }
+  ],
   "5/5LjA": [
     {
       "type": 1,
@@ -669,6 +675,12 @@
       "value": "Ingelogd blijven"
     }
   ],
+  "6jv6nd": [
+    {
+      "type": 0,
+      "value": "Datatype"
+    }
+  ],
   "6k14SS": [
     {
       "type": 0,
@@ -797,6 +809,12 @@
     {
       "type": 0,
       "value": "Jaren"
+    }
+  ],
+  "7cfkp6": [
+    {
+      "type": 0,
+      "value": "Verwachtte input-expressies"
     }
   ],
   "7di6Fm": [
@@ -2453,6 +2471,12 @@
       "value": "Vertrouwelijkheidaanduiding"
     }
   ],
+  "R8/zGm": [
+    {
+      "type": 0,
+      "value": "Formuliervariable"
+    }
+  ],
   "RN628y": [
     {
       "type": 0,
@@ -4010,6 +4034,12 @@
       "value": "Tabnaam"
     }
   ],
+  "i7Vmcf": [
+    {
+      "type": 0,
+      "value": "Label"
+    }
+  ],
   "iHpAYZ": [
     {
       "type": 0,
@@ -4076,6 +4106,12 @@
       "value": "jaren"
     }
   ],
+  "ipGvSb": [
+    {
+      "type": 0,
+      "value": "Expressie"
+    }
+  ],
   "iq0ppL": [
     {
       "type": 0,
@@ -4132,6 +4168,12 @@
     {
       "type": 0,
       "value": "Huisnummercomponent"
+    }
+  ],
+  "jLv6k8": [
+    {
+      "type": 0,
+      "value": "DMN-variabele"
     }
   ],
   "jU/t8O": [

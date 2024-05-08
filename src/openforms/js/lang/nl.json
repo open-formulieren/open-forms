@@ -190,6 +190,11 @@
     "description": "Birth Date Component field label",
     "originalDefault": "Birth Date Component"
   },
+  "4sFGgA": {
+    "defaultMessage": "De opgelijste expressies komen uit de beslisdefinities-XML. Het kan gebeuren dat bepaalde inputs al berekend zijn via een beslistabel die als input dient voor de geselecteerde beslistabel, maar door de complexiteit van de expressie is deze er niet uitgefilterd.",
+    "description": "DMN input expressions warning about extraction accuracy",
+    "originalDefault": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression."
+  },
   "5/5LjA": {
     "defaultMessage": "{plugin} inschakelen",
     "description": "Plugin enabled label",
@@ -272,6 +277,11 @@
     "description": "Extend session button",
     "originalDefault": "Stay logged in"
   },
+  "6jv6nd": {
+    "defaultMessage": "Datatype",
+    "description": "DMN Input clause data type header",
+    "originalDefault": "Data type"
+  },
   "6k14SS": {
     "defaultMessage": "Sleutel",
     "description": "Variable table key title",
@@ -321,6 +331,11 @@
     "defaultMessage": "'Volgende' tekst",
     "description": "Form step next text label",
     "originalDefault": "Next text"
+  },
+  "7cfkp6": {
+    "defaultMessage": "Verwachtte input-expressies",
+    "description": "DMN input expressions title",
+    "originalDefault": "Expected input expressions"
   },
   "7di6Fm": {
     "defaultMessage": "is kleiner dan of gelijk aan",
@@ -1179,6 +1194,11 @@
     "description": "Indication of the level to which extend the dossier of the ZAAK is meant to be public",
     "originalDefault": "Confidentiality"
   },
+  "R8/zGm": {
+    "defaultMessage": "Formuliervariable",
+    "description": "Accessible label for (form) variable dropdown",
+    "originalDefault": "Form variable"
+  },
   "RcVlPF": {
     "defaultMessage": "Interne naam van het formulier voor onderscheid in overzichten",
     "description": "Form name field help text",
@@ -1858,6 +1878,12 @@
     "description": "Name of the tab in the Form admin",
     "originalDefault": "Tab name"
   },
+  "i7Vmcf": {
+    "defaultMessage": "Label",
+    "description": "DMN Input clause label header",
+    "isTranslated": true,
+    "originalDefault": "Label"
+  },
   "iHpAYZ": {
     "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsvariabelen en de resulterende JSON wordt vervolgens naar de Objecten API gestuurd met een PATCH call om de betalingsvelden bij te werken.",
     "description": "Objects API registration options \"Payment status update JSON template\" description",
@@ -1877,6 +1903,11 @@
     "defaultMessage": "jaren",
     "description": "Logic trigger number of years",
     "originalDefault": "years"
+  },
+  "ipGvSb": {
+    "defaultMessage": "Expressie",
+    "description": "DMN Input clause expression header",
+    "originalDefault": "Expression"
   },
   "iq0ppL": {
     "defaultMessage": "Bij het inschakelen van de afsprakenmodus doorloopt de gebruiker een vaste flow.",
@@ -1907,6 +1938,11 @@
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies.",
     "description": "Objects API registrations options API error",
     "originalDefault": "Something went wrong when fectching the available Objecttypes and versions"
+  },
+  "jLv6k8": {
+    "defaultMessage": "DMN-variabele",
+    "description": "Accessible label for DMN variable dropdown",
+    "originalDefault": "DMN variable"
   },
   "jU/t8O": {
     "defaultMessage": "Wijzig complexe waarde",

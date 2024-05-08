@@ -189,6 +189,11 @@
     "description": "Birth Date Component field label",
     "originalDefault": "Birth Date Component"
   },
+  "4sFGgA": {
+    "defaultMessage": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression.",
+    "description": "DMN input expressions warning about extraction accuracy",
+    "originalDefault": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression."
+  },
   "5/5LjA": {
     "defaultMessage": "Enable {plugin}",
     "description": "Plugin enabled label",
@@ -269,6 +274,11 @@
     "description": "Extend session button",
     "originalDefault": "Stay logged in"
   },
+  "6jv6nd": {
+    "defaultMessage": "Data type",
+    "description": "DMN Input clause data type header",
+    "originalDefault": "Data type"
+  },
   "6k14SS": {
     "defaultMessage": "Key",
     "description": "Variable table key title",
@@ -318,6 +328,11 @@
     "defaultMessage": "Next text",
     "description": "Form step next text label",
     "originalDefault": "Next text"
+  },
+  "7cfkp6": {
+    "defaultMessage": "Expected input expressions",
+    "description": "DMN input expressions title",
+    "originalDefault": "Expected input expressions"
   },
   "7di6Fm": {
     "defaultMessage": "is less than or equal to",
@@ -1169,6 +1184,11 @@
     "description": "Indication of the level to which extend the dossier of the ZAAK is meant to be public",
     "originalDefault": "Confidentiality"
   },
+  "R8/zGm": {
+    "defaultMessage": "Form variable",
+    "description": "Accessible label for (form) variable dropdown",
+    "originalDefault": "Form variable"
+  },
   "RcVlPF": {
     "defaultMessage": "Internal name/title of the form",
     "description": "Form name field help text",
@@ -1844,6 +1864,11 @@
     "description": "Name of the tab in the Form admin",
     "originalDefault": "Tab name"
   },
+  "i7Vmcf": {
+    "defaultMessage": "Label",
+    "description": "DMN Input clause label header",
+    "originalDefault": "Label"
+  },
   "iHpAYZ": {
     "defaultMessage": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field.",
     "description": "Objects API registration options \"Payment status update JSON template\" description",
@@ -1863,6 +1888,11 @@
     "defaultMessage": "years",
     "description": "Logic trigger number of years",
     "originalDefault": "years"
+  },
+  "ipGvSb": {
+    "defaultMessage": "Expression",
+    "description": "DMN Input clause expression header",
+    "originalDefault": "Expression"
   },
   "iq0ppL": {
     "defaultMessage": "Experimental mode. Indicates whether appointments are enabled for this form.",
@@ -1893,6 +1923,11 @@
     "defaultMessage": "Something went wrong when fectching the available Objecttypes and versions",
     "description": "Objects API registrations options API error",
     "originalDefault": "Something went wrong when fectching the available Objecttypes and versions"
+  },
+  "jLv6k8": {
+    "defaultMessage": "DMN variable",
+    "description": "Accessible label for DMN variable dropdown",
+    "originalDefault": "DMN variable"
   },
   "jU/t8O": {
     "defaultMessage": "Edit complex variable",

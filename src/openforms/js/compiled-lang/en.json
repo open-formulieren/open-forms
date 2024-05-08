@@ -469,6 +469,12 @@
       "value": "Birth Date Component"
     }
   ],
+  "4sFGgA": [
+    {
+      "type": 0,
+      "value": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression."
+    }
+  ],
   "5/5LjA": [
     {
       "type": 0,
@@ -669,6 +675,12 @@
       "value": "Stay logged in"
     }
   ],
+  "6jv6nd": [
+    {
+      "type": 0,
+      "value": "Data type"
+    }
+  ],
   "6k14SS": [
     {
       "type": 0,
@@ -793,6 +805,12 @@
     {
       "type": 0,
       "value": "Years"
+    }
+  ],
+  "7cfkp6": [
+    {
+      "type": 0,
+      "value": "Expected input expressions"
     }
   ],
   "7di6Fm": [
@@ -2453,6 +2471,12 @@
       "value": "Confidentiality"
     }
   ],
+  "R8/zGm": [
+    {
+      "type": 0,
+      "value": "Form variable"
+    }
+  ],
   "RN628y": [
     {
       "type": 0,
@@ -4005,6 +4029,12 @@
       "value": "Tab name"
     }
   ],
+  "i7Vmcf": [
+    {
+      "type": 0,
+      "value": "Label"
+    }
+  ],
   "iHpAYZ": [
     {
       "type": 0,
@@ -4071,6 +4101,12 @@
       "value": "years"
     }
   ],
+  "ipGvSb": [
+    {
+      "type": 0,
+      "value": "Expression"
+    }
+  ],
   "iq0ppL": [
     {
       "type": 0,
@@ -4127,6 +4163,12 @@
     {
       "type": 0,
       "value": "House number component"
+    }
+  ],
+  "jLv6k8": [
+    {
+      "type": 0,
+      "value": "DMN variable"
     }
   ],
   "jU/t8O": [

@@ -142,7 +142,7 @@ django-autoslug==1.9.9
     # via -r requirements/base.in
 django-axes[ipware]==6.0.5
     # via -r requirements/base.in
-django-camunda==0.14.0
+django-camunda==0.15.0
     # via -r requirements/base.in
 django-capture-tag==1.0
     # via -r requirements/base.in

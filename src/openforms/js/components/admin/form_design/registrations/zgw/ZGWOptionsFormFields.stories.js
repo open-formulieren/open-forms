@@ -6,7 +6,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 
 import ZGWFormFields from './ZGWOptionsFormFields';
-import VariablePropertyModal from './ZGWOptionsVariablesProperties';
+import {VariablePropertyModal} from './ZGWOptionsVariablesProperties';
 
 const render = ({index, label, name, schema}) => {
   const [{formData}, updateArgs] = useArgs();

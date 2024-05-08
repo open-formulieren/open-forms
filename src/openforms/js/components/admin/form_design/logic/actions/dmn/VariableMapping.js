@@ -7,8 +7,9 @@ import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
+import VariableSelection from 'components/admin/forms/VariableSelection';
 
-const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) => {
+const VariableMapping = ({loading, mappingName, dmnVariables, includeStaticVariables = false}) => {
   const intl = useIntl();
   const {getFieldProps, values} = useFormikContext();
 
@@ -21,7 +22,7 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
     <FieldArray
       name={mappingName}
       render={arrayHelpers => (
-        <div className="mappings__mapping-table">
+        <div className="logic-dmn__mapping-table">
           <table>
             <thead>
               <tr>
@@ -48,11 +49,14 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
                       name={`${mappingName}.${index}.formVariable`}
                       htmlFor={`${mappingName}.${index}.formVariable`}
                     >
-                      <Select
+                      <VariableSelection
                         id={`${mappingName}.${index}.formVariable`}
-                        allowBlank
-                        choices={formVariables}
+                        includeStaticVariables={includeStaticVariables}
                         {...getFieldProps(`${mappingName}.${index}.formVariable`)}
+                        aria-label={intl.formatMessage({
+                          description: 'Accessible label for (form) variable dropdown',
+                          defaultMessage: 'Form variable',
+                        })}
                       />
                     </Field>
                   </td>
@@ -67,6 +71,10 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
                         disabled={loading}
                         choices={dmnVariables}
                         {...getFieldProps(`${mappingName}.${index}.dmnVariable`)}
+                        aria-label={intl.formatMessage({
+                          description: 'Accessible label for DMN variable dropdown',
+                          defaultMessage: 'DMN variable',
+                        })}
                       />
                     </Field>
                   </td>
@@ -96,7 +104,7 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
 VariableMapping.propTypes = {
   loading: PropTypes.bool,
   mappingName: PropTypes.string,
-  formVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  includeStaticVariables: PropTypes.bool,
   dmnVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
 };
 
