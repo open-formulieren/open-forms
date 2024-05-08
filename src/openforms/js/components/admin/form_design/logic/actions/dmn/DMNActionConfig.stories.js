@@ -59,19 +59,19 @@ export default {
               {
                 label: 'Direction',
                 id: 'Input_1',
-                type_ref: 'string',
+                typeRef: 'string',
                 expression: 'direction',
               },
               {
                 label: 'Port number',
                 id: 'InputClause_1cn8gp3',
-                type_ref: 'integer',
+                typeRef: 'integer',
                 expression: 'port',
               },
               {
                 label: 'Camunda variable',
                 id: 'InputClause_1f09wt8',
-                type_ref: 'string',
+                typeRef: 'string',
                 expression: 'camundaVar',
               },
             ],
@@ -79,13 +79,13 @@ export default {
               {
                 id: 'Output_1',
                 label: 'Policy',
-                type_ref: 'string',
+                typeRef: 'string',
                 name: 'policy',
               },
               {
                 id: 'OutputClause_0lzmnio',
                 label: 'Reason',
-                type_ref: 'string',
+                typeRef: 'string',
                 name: 'reason',
               },
             ],
@@ -96,13 +96,13 @@ export default {
                 id: 'clause1',
                 label: 'Invoice Amount',
                 expression: 'amount',
-                type_ref: 'double',
+                typeRef: 'double',
               },
               {
                 id: 'InputClause_15qmk0v',
                 label: 'Invoice Category',
                 expression: 'invoiceCategory',
-                type_ref: 'string',
+                typeRef: 'string',
               },
             ],
             outputs: [
@@ -110,36 +110,48 @@ export default {
                 id: 'clause3',
                 label: 'Classification',
                 name: 'invoiceClassification',
-                type_ref: 'string',
+                typeRef: 'string',
               },
               {
                 id: 'OutputClause_1cthd0w',
                 label: 'Approver Group',
                 name: 'result',
-                type_ref: 'string',
+                typeRef: 'string',
               },
             ],
           },
           withComplexExpressions: {
             inputs: [
               {
+                label: 'Simple variable',
+                id: '',
+                typeRef: 'string',
+                expression: 'foo',
+              },
+              {
                 label: 'Sum of a and b',
                 id: '',
-                type_ref: 'integer',
+                typeRef: 'integer',
                 expression: 'a + b',
               },
               {
                 label: 'Numeric part postcode',
                 id: '',
-                type_ref: 'integer',
+                typeRef: 'integer',
                 expression: 'number(substring(postcode, 1, 4))',
+              },
+              {
+                label: 'Weird but valid syntax',
+                id: '',
+                typeRef: 'integer',
+                expression: 'a+b',
               },
             ],
             outputs: [
               {
                 id: 'OutputClause_1cthd0w',
                 label: 'Sole output',
-                type_ref: 'string',
+                typeRef: 'string',
                 name: 'result',
               },
             ],
@@ -189,7 +201,7 @@ export const Empty = {
       await waitFor(async () => {
         const renderedOptions = within(decisionDefDropdown).getAllByRole('option');
 
-        await expect(renderedOptions.length).toBe(3);
+        await expect(renderedOptions.length).toBe(4);
       });
 
       await userEvent.selectOptions(decisionDefDropdown, 'Approve payment');
@@ -218,7 +230,7 @@ export const Empty = {
 
       const [formVarsDropdowns, dmnVarsDropdown] = dropdowns;
 
-      await userEvent.selectOptions(formVarsDropdowns, 'Name');
+      await userEvent.selectOptions(formVarsDropdowns, 'Name (name)');
       await userEvent.selectOptions(dmnVarsDropdown, 'camundaVar');
 
       await expect(formVarsDropdowns.value).toBe('name');
