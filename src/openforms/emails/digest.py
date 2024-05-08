@@ -1,15 +1,18 @@
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import groupby
 from typing import Iterable
 
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from django_yubin.models import Message
 from furl import furl
+from simple_certmanager.models import Certificate
 
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
@@ -68,6 +71,23 @@ class FailedPrefill:
 class BrokenConfiguration:
     config_name: StrOrPromise
     exception_message: str
+
+
+@dataclass
+class InvalidCertificate:
+    id: int
+    label: str
+    error_message: str
+    is_valid_pair: bool
+    expiry_date: datetime | None = None
+
+    @property
+    def admin_link(self) -> str:
+        form_admin_url = reverse(
+            "admin:simple_certmanager_certificate_change",
+            kwargs={"object_id": self.id},
+        )
+        return form_admin_url
 
 
 def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
@@ -188,3 +208,52 @@ def collect_broken_configurations() -> list[BrokenConfiguration]:
         )
 
     return broken_configurations
+
+
+def collect_invalid_certificates() -> list[InvalidCertificate]:
+    today = timezone.now()
+    error_messages = {
+        "expiring": _("will expire soon"),
+        "invalid": _("has invalid keypair"),
+        "invalid_expiring": _("invalid keypair, will expire soon"),
+    }
+
+    invalid_certs = []
+    # filter only on the certificates that are used by services
+    configured_certificates = Certificate.objects.filter(
+        Q(soap_services_client__isnull=False)
+        | Q(soap_services_server__isnull=False)
+        | Q(service_client__isnull=False)
+        | Q(service_server__isnull=False)
+    )
+    for cert in configured_certificates:
+        time_until_expiry = cert.expiry_date - today
+        error_message = ""
+        is_valid_pair = False
+
+        match (time_until_expiry <= timedelta(days=14), cert.is_valid_key_pair()):
+
+            case (True, True) | (True, None):
+                error_message = error_messages["expiring"]
+                is_valid_pair = True
+
+            case (False, False):
+                error_message = error_messages["invalid"]
+                is_valid_pair = False
+
+            case (True, False):
+                error_message = error_messages["invalid_expiring"]
+                is_valid_pair = False
+
+        if error_message:
+            invalid_certs.append(
+                InvalidCertificate(
+                    id=cert.id,
+                    label=cert.label,
+                    error_message=error_message,
+                    is_valid_pair=is_valid_pair,
+                    expiry_date=cert.expiry_date,
+                )
+            )
+
+    return invalid_certs

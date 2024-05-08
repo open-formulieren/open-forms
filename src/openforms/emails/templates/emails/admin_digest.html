@@ -77,3 +77,33 @@
         {% endfor %}
     </ul>
 {% endif %}
+
+{% if invalid_certificates %}
+    <h5>{% trans "Found invalid certificates" %}</h5>
+    <ul>
+        {% for invalid_certificate in invalid_certificates %}
+            <li>
+                <p>
+                    <!-- Expiring certificates -->
+                    {% if invalid_certificate.is_valid_pair %}
+                        {% blocktranslate with certificate_label=invalid_certificate.label message=invalid_certificate.error_message expiry_date=invalid_certificate.expiry_date trimmed %}
+                            {{ certificate_label }}: {{ message }} ({{ expiry_date }}).
+                        {% endblocktranslate %}
+                    {% else %}
+                        {% blocktranslate with certificate_label=invalid_certificate.label message=invalid_certificate.error_message trimmed %}
+                            {{ certificate_label }}: {{ message }}.
+                        {% endblocktranslate %}
+                    {% endif %}
+                </p>
+                <p>
+                    <a href="{{ invalid_certificate.admin_link }}">
+                    {% blocktranslate with certificate_label=invalid_certificate.label %}
+                        View invalid certificate '{{ certificate_label }}'
+                    {% endblocktranslate %}
+                    </a>
+                </p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+

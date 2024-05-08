@@ -1,13 +1,17 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from django_yubin.models import Message
 from freezegun import freeze_time
 from furl import furl
+from simple_certmanager.test.factories import CertificateFactory
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.brk.models import BRKConfig
@@ -20,6 +24,8 @@ from openforms.submissions.models.submission import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..tasks import send_email_digest
+
+TEST_FILES = Path(__file__).parent / "data"
 
 
 @patch(
@@ -100,10 +106,11 @@ class EmailDigestTaskIntegrationTests(TestCase):
     def test_email_sent_when_there_are_failures(self, mock_global_config, brk_config):
         """Integration test for all the possible failures
 
-        - failed_emails
-        - failed_registrations
-        - failed_prefill_plugins
-        - broken_configurations
+        - failed emails
+        - failed registrations
+        - failed prefill_plugins
+        - broken configurations
+        - invalid certificates
         """
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -145,6 +152,19 @@ class EmailDigestTaskIntegrationTests(TestCase):
             logevent.prefill_retrieve_empty(
                 submission, hc_plugin, ["burgerservicenummer"]
             )
+
+            with (
+                open(TEST_FILES / "test2.certificate", "r") as client_certificate_f,
+                open(TEST_FILES / "test.key", "r") as key_f,
+            ):
+                certificate = CertificateFactory.create(
+                    label="Test certificate",
+                    public_certificate=File(
+                        client_certificate_f, name="test.certificate"
+                    ),
+                    private_key=File(key_f, name="test.key"),
+                )
+                ServiceFactory.create(client_certificate=certificate)
 
         # send the email digest
         send_email_digest()
@@ -193,3 +213,14 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 "The configuration for 'BRK Client' is invalid (KVK endpoint is not configured).",
                 sent_email.body,
             )
+
+        with self.subTest("invalid certificates"):
+            admin_certificate_url = furl(
+                reverse(
+                    "admin:simple_certmanager_certificate_change",
+                    kwargs={"object_id": certificate.id},
+                )
+            )
+
+            self.assertIn("Test certificate: has invalid keypair.", sent_email.body)
+            self.assertIn(admin_certificate_url.url, sent_email.body)

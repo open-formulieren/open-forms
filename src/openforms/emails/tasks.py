@@ -14,6 +14,7 @@ from .digest import (
     collect_failed_emails,
     collect_failed_prefill_plugins,
     collect_failed_registrations,
+    collect_invalid_certificates,
 )
 from .utils import send_mail_html
 
@@ -27,12 +28,14 @@ class Digest:
         failed_registrations = collect_failed_registrations(self.since)
         failed_prefill_plugins = collect_failed_prefill_plugins(self.since)
         broken_configurations = collect_broken_configurations()
+        invalid_certificates = collect_invalid_certificates()
 
         return {
             "failed_emails": failed_emails,
             "failed_registrations": failed_registrations,
             "failed_prefill_plugins": failed_prefill_plugins,
             "broken_configurations": broken_configurations,
+            "invalid_certificates": invalid_certificates,
         }
 
     def render(self) -> str:
