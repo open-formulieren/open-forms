@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.3.9 (2024-05-08)
+==================
+
+Final bugfix release in the ``2.3.x`` series.
+
+* Upgraded Pillow to latest bugfix release.
+* [#4145] Fixed StUF-ZDS not sending up-to-date payment status on registration after payment.
+
 2.3.8 (2024-03-14)
 ==================
 
