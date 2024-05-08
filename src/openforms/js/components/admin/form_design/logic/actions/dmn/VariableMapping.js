@@ -22,7 +22,7 @@ const VariableMapping = ({loading, mappingName, dmnVariables, includeStaticVaria
     <FieldArray
       name={mappingName}
       render={arrayHelpers => (
-        <div className="mappings__mapping-table">
+        <div className="logic-dmn__mapping-table">
           <table>
             <thead>
               <tr>

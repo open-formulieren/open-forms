@@ -1,0 +1,22 @@
+@use 'microscope-sass/lib/bem';
+
+.logic-dmn {
+  @include bem.element('mapping-config') {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+  }
+
+  @include bem.element('mapping') {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @include bem.element('mapping-table') {
+    @include bem.modifier('stretch') {
+      table-layout: fixed;
+      inline-size: 100%;
+    }
+  }
+}

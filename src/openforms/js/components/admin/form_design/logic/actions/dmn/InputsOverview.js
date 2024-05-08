@@ -3,7 +3,7 @@ import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 const InputsOverview = ({inputClauses}) => (
-  <section className="mappings__info">
+  <section className="logic-dmn__info">
     <h2 className="react-modal__section-title">
       <FormattedMessage
         description="DMN input expressions title"
@@ -21,7 +21,7 @@ const InputsOverview = ({inputClauses}) => (
       />
     </p>
 
-    <table className="mappings__mapping-table">
+    <table className="logic-dmn__mapping-table logic-dmn__mapping-table--stretch">
       <thead>
         <tr>
           <th>

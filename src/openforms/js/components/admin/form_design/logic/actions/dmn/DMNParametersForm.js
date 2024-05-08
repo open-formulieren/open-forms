@@ -130,30 +130,33 @@ const DMNParametersForm = () => {
   }, [pluginId, decisionDefinitionId, decisionDefinitionVersion]);
 
   return (
-    <div className="mappings">
-      <InputsOverview inputClauses={dmnParams.inputClauses} />
+    <div className="logic-dmn">
+      <div className="logic-dmn__mapping-config">
+        <div className="logic-dmn__mapping">
+          <h3 className="react-modal__section-title">
+            <FormattedMessage defaultMessage="Input mapping" description="Input mapping title" />
+          </h3>
+          <VariableMapping
+            loading={loading}
+            mappingName="inputMapping"
+            dmnVariables={dmnParams.inputs}
+            includeStaticVariables
+          />
+        </div>
 
-      <div className="mappings__mapping">
-        <h3 className="react-modal__section-title">
-          <FormattedMessage defaultMessage="Input mapping" description="Input mapping title" />
-        </h3>
-        <VariableMapping
-          loading={loading}
-          mappingName="inputMapping"
-          dmnVariables={dmnParams.inputs}
-          includeStaticVariables
-        />
+        <div className="logic-dmn__mapping">
+          <h3 className="react-modal__section-title">
+            <FormattedMessage defaultMessage="Output mapping" description="Output mapping title" />
+          </h3>
+          <VariableMapping
+            loading={loading}
+            mappingName="outputMapping"
+            dmnVariables={dmnParams.outputs}
+          />
+        </div>
       </div>
-      <div className="mappings__mapping">
-        <h3 className="react-modal__section-title">
-          <FormattedMessage defaultMessage="Output mapping" description="Output mapping title" />
-        </h3>
-        <VariableMapping
-          loading={loading}
-          mappingName="outputMapping"
-          dmnVariables={dmnParams.outputs}
-        />
-      </div>
+
+      <InputsOverview inputClauses={dmnParams.inputClauses} />
     </div>
   );
 };
