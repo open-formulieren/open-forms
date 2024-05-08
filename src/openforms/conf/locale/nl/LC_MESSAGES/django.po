@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-06 13:57+0200\n"
+"POT-Creation-Date: 2024-05-08 18:50+0200\n"
 "PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -284,7 +284,7 @@ msgstr ""
 "De voorkeurstaal voor de (beheer) gebruikersinterface. Wanneer geen waarde "
 "ingesteld is, worden de browserinstellingen gebruikt."
 
-#: openforms/accounts/models.py:81 openforms/forms/models/form.py:643
+#: openforms/accounts/models.py:81 openforms/forms/models/form.py:655
 #: openforms/forms/models/form_version.py:62 soap/models.py:50
 msgid "user"
 msgstr "gebruiker"
@@ -1214,7 +1214,7 @@ msgstr "Ongeldig antwoord: {exception}"
 #: openforms/config/templates/admin/config/overview.html:4
 #: openforms/config/templates/admin/config/overview.html:9
 #: openforms/config/templates/admin/config/overview.html:15
-#: openforms/config/views.py:158 openforms/config/views.py:174
+#: openforms/config/views.py:50 openforms/config/views.py:66
 #: openforms/contrib/brk/checks.py:42
 #: openforms/contrib/kadaster/config_check.py:30
 #: openforms/contrib/kadaster/config_check.py:61
@@ -2183,6 +2183,40 @@ msgstr "Lijst van beschikbare stijlen"
 msgid "Retrieve theme details"
 msgstr "Stijldetails weergeven"
 
+#: openforms/config/checks.py:52
+msgid "Address lookup plugins"
+msgstr "Adresopzoekplugins"
+
+#: openforms/config/checks.py:65
+msgid "Validator plugins"
+msgstr "Validatieplugins"
+
+#: openforms/config/checks.py:76
+msgid "Appointment plugins"
+msgstr "Afspraakplugins"
+
+#: openforms/config/checks.py:77
+msgid "Registration plugins"
+msgstr "Registratieplugins"
+
+#: openforms/config/checks.py:78
+#: openforms/emails/templates/emails/admin_digest.html:46
+msgid "Prefill plugins"
+msgstr "Prefillplugins"
+
+#: openforms/config/checks.py:79
+msgid "Payment plugins"
+msgstr "Betaalproviderplugins"
+
+#: openforms/config/checks.py:80
+msgid "DMN plugins"
+msgstr "DMN plugins"
+
+#: openforms/config/checks.py:124
+#, python-brace-format
+msgid "Internal error: {exception}"
+msgstr "Interne fout: {exception}"
+
 #: openforms/config/constants.py:67
 msgid "any filetype"
 msgstr "elk bestandstype"
@@ -2940,7 +2974,7 @@ msgid "An easily recognizable name for the theme, used to identify it."
 msgstr "Een herkenbare naam om deze stijl te identificeren."
 
 #: openforms/config/models/theme.py:26 openforms/forms/models/category.py:10
-#: openforms/forms/models/form.py:57 openforms/forms/models/form.py:630
+#: openforms/forms/models/form.py:57 openforms/forms/models/form.py:642
 #: openforms/forms/models/form_definition.py:41
 #: openforms/forms/models/form_step.py:24
 #: openforms/forms/models/form_version.py:42 openforms/forms/models/logic.py:11
@@ -3089,40 +3123,6 @@ msgstr "Bekijk een stijl"
 #: openforms/config/templatetags/privacy_policy.py:19
 msgid "privacy policy"
 msgstr "privacybeleid"
-
-#: openforms/config/views.py:62
-msgid "Address lookup plugins"
-msgstr "Adresopzoekplugins"
-
-#: openforms/config/views.py:73
-msgid "Validator plugins"
-msgstr "Validatieplugins"
-
-#: openforms/config/views.py:84
-msgid "Appointment plugins"
-msgstr "Afspraakplugins"
-
-#: openforms/config/views.py:85
-msgid "Registration plugins"
-msgstr "Registratieplugins"
-
-#: openforms/config/views.py:86
-#: openforms/emails/templates/emails/admin_digest.html:46
-msgid "Prefill plugins"
-msgstr "Prefillplugins"
-
-#: openforms/config/views.py:87
-msgid "Payment plugins"
-msgstr "Betaalproviderplugins"
-
-#: openforms/config/views.py:88
-msgid "DMN plugins"
-msgstr "DMN plugins"
-
-#: openforms/config/views.py:135
-#, python-brace-format
-msgid "Internal error: {exception}"
-msgstr "Interne fout: {exception}"
 
 #: openforms/contrib/brk/apps.py:8 openforms/contrib/brk/models.py:36
 msgid "BRK configuration"
@@ -3610,7 +3610,7 @@ msgid "The (unique) identifier pointing to a particular decision definition."
 msgstr "De (unieke) identifier voor een beslisdefinitie"
 
 #: openforms/dmn/api/serializers.py:23 openforms/dmn/api/serializers.py:36
-#: openforms/payments/contrib/ogone/models.py:12
+#: openforms/payments/contrib/ogone/models.py:10
 #: openforms/plugins/api/serializers.py:14
 #: openforms/prefill/api/serializers.py:64
 #: openforms/registrations/api/serializers.py:36
@@ -5776,40 +5776,40 @@ msgstr "{name} (kopie)"
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
 
-#: openforms/forms/models/form.py:581
+#: openforms/forms/models/form.py:593
 #, python-brace-format
 msgid "Restored form version {version} (from {created})."
 msgstr "Formulierversie {version} hersteld (van {created})."
 
-#: openforms/forms/models/form.py:632
+#: openforms/forms/models/form.py:644
 msgid "export content"
 msgstr "Exportinhoud"
 
-#: openforms/forms/models/form.py:634
+#: openforms/forms/models/form.py:646
 msgid "Zip file containing all the exported forms."
 msgstr "Het ZIP-bestand met daarin alle geëxporteerde formulieren."
 
-#: openforms/forms/models/form.py:637
+#: openforms/forms/models/form.py:649
 msgid "date time requested"
 msgstr "Moment van aanvraag"
 
-#: openforms/forms/models/form.py:638
+#: openforms/forms/models/form.py:650
 msgid "The date and time on which the bulk export was requested."
 msgstr "De datum en tijdstip waarop de bulk export aangevraagd is."
 
-#: openforms/forms/models/form.py:644
+#: openforms/forms/models/form.py:656
 msgid "The user that requested the download."
 msgstr "De gebruiker die de download heeft aangevraagd."
 
-#: openforms/forms/models/form.py:651
+#: openforms/forms/models/form.py:663
 msgid "forms export"
 msgstr "formulierenexport"
 
-#: openforms/forms/models/form.py:652
+#: openforms/forms/models/form.py:664
 msgid "forms exports"
 msgstr "Formulierexports"
 
-#: openforms/forms/models/form.py:655
+#: openforms/forms/models/form.py:667
 #, python-format
 msgid "Bulk export requested by %(username)s on %(datetime)s"
 msgstr "Bulk-export aangevraagd door %(username)s op %(datetime)s"
@@ -6942,55 +6942,55 @@ msgstr "Ogone testomgeving"
 msgid "Ogone Live"
 msgstr "Ogone productieomgeving"
 
-#: openforms/payments/contrib/ogone/models.py:14
+#: openforms/payments/contrib/ogone/models.py:12
 msgid "Human readable label"
 msgstr "Eenvoudige naam"
 
-#: openforms/payments/contrib/ogone/models.py:18
+#: openforms/payments/contrib/ogone/models.py:16
 msgid "PSPID"
 msgstr "PSPID"
 
-#: openforms/payments/contrib/ogone/models.py:20
+#: openforms/payments/contrib/ogone/models.py:18
 msgid "Ogone PSPID"
 msgstr "Ogone PSPID"
 
-#: openforms/payments/contrib/ogone/models.py:23
+#: openforms/payments/contrib/ogone/models.py:21
 msgid "SHA-IN passphrase"
 msgstr "SHA-IN wachtwoord"
 
-#: openforms/payments/contrib/ogone/models.py:25
-#: openforms/payments/contrib/ogone/models.py:30
-#: openforms/payments/contrib/ogone/models.py:36
+#: openforms/payments/contrib/ogone/models.py:23
+#: openforms/payments/contrib/ogone/models.py:28
+#: openforms/payments/contrib/ogone/models.py:34
 msgid "This must match with the Ogone backend"
 msgstr "Deze moet overeenkomen met de Ogone backend"
 
-#: openforms/payments/contrib/ogone/models.py:28
+#: openforms/payments/contrib/ogone/models.py:26
 msgid "SHA-OUT passphrase"
 msgstr "SHA-OUT wachtwoord"
 
-#: openforms/payments/contrib/ogone/models.py:33
+#: openforms/payments/contrib/ogone/models.py:31
 msgid "Hash algorithm"
 msgstr "Hash algorithme"
 
-#: openforms/payments/contrib/ogone/models.py:40
-#: openforms/payments/contrib/ogone/models.py:60
+#: openforms/payments/contrib/ogone/models.py:38
+#: openforms/payments/contrib/ogone/models.py:58
 msgid "Preset endpoint"
 msgstr "Vooraf ingestelde URL"
 
-#: openforms/payments/contrib/ogone/models.py:43
+#: openforms/payments/contrib/ogone/models.py:41
 msgid "Select a common preset endpoint"
 msgstr "Selecteer een gemeenschappelijk vooraf ingestelde URL"
 
-#: openforms/payments/contrib/ogone/models.py:46
-#: openforms/payments/contrib/ogone/models.py:60
+#: openforms/payments/contrib/ogone/models.py:44
+#: openforms/payments/contrib/ogone/models.py:58
 msgid "Custom endpoint"
 msgstr "Aangepaste URL"
 
-#: openforms/payments/contrib/ogone/models.py:48
+#: openforms/payments/contrib/ogone/models.py:46
 msgid "Optionally override the preset endpoint"
 msgstr "Optioneel de vooraf ingestelde URL overschrijven"
 
-#: openforms/payments/contrib/ogone/models.py:59
+#: openforms/payments/contrib/ogone/models.py:57
 #, python-brace-format
 msgid "Specify either '{preset}' or '{custom}'"
 msgstr "Specificeer '{preset}' of '{custom}'"
