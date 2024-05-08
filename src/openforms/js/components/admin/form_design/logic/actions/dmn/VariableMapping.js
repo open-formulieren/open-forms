@@ -9,7 +9,7 @@ import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
-const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) => {
+const VariableMapping = ({loading, mappingName, dmnVariables, includeStaticVariables = false}) => {
   const intl = useIntl();
   const {getFieldProps, values} = useFormikContext();
 
@@ -51,6 +51,7 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
                     >
                       <VariableSelection
                         id={`${mappingName}.${index}.formVariable`}
+                        includeStaticVariables={includeStaticVariables}
                         {...getFieldProps(`${mappingName}.${index}.formVariable`)}
                         aria-label={intl.formatMessage({
                           description: 'Accessible label for (form) variable dropdown',
@@ -103,7 +104,7 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
 VariableMapping.propTypes = {
   loading: PropTypes.bool,
   mappingName: PropTypes.string,
-  formVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  includeStaticVariables: PropTypes.bool,
   dmnVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
 };
 

@@ -1,10 +1,9 @@
 import {parseExpression} from 'feelin';
 import {useFormikContext} from 'formik';
-import React, {useContext} from 'react';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
-import {FormContext} from 'components/admin/form_design/Context';
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';
 import {get} from 'utils/fetch';
 
@@ -104,7 +103,6 @@ const DMNParametersForm = () => {
   const {
     values: {pluginId, decisionDefinitionId, decisionDefinitionVersion},
   } = useFormikContext();
-  const {formVariables} = useContext(FormContext);
 
   const {loading, value: dmnParams = EMPTY_DMN_PARAMS} = useAsync(async () => {
     if (!pluginId || !decisionDefinitionId) {
@@ -131,8 +129,6 @@ const DMNParametersForm = () => {
     };
   }, [pluginId, decisionDefinitionId, decisionDefinitionVersion]);
 
-  const variablesChoices = formVariables.map(variable => [variable.key, variable.name]);
-
   return (
     <div className="mappings">
       <InputsOverview inputClauses={dmnParams.inputClauses} />
@@ -144,8 +140,8 @@ const DMNParametersForm = () => {
         <VariableMapping
           loading={loading}
           mappingName="inputMapping"
-          formVariables={variablesChoices}
           dmnVariables={dmnParams.inputs}
+          includeStaticVariables
         />
       </div>
       <div className="mappings__mapping">
@@ -155,7 +151,6 @@ const DMNParametersForm = () => {
         <VariableMapping
           loading={loading}
           mappingName="outputMapping"
-          formVariables={variablesChoices}
           dmnVariables={dmnParams.outputs}
         />
       </div>
