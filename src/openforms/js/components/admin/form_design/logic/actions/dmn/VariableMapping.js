@@ -7,6 +7,7 @@ import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
+import VariableSelection from 'components/admin/forms/VariableSelection';
 
 const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) => {
   const intl = useIntl();
@@ -48,11 +49,13 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
                       name={`${mappingName}.${index}.formVariable`}
                       htmlFor={`${mappingName}.${index}.formVariable`}
                     >
-                      <Select
+                      <VariableSelection
                         id={`${mappingName}.${index}.formVariable`}
-                        allowBlank
-                        choices={formVariables}
                         {...getFieldProps(`${mappingName}.${index}.formVariable`)}
+                        aria-label={intl.formatMessage({
+                          description: 'Accessible label for (form) variable dropdown',
+                          defaultMessage: 'Form variable',
+                        })}
                       />
                     </Field>
                   </td>
@@ -67,6 +70,10 @@ const VariableMapping = ({loading, mappingName, formVariables, dmnVariables}) =>
                         disabled={loading}
                         choices={dmnVariables}
                         {...getFieldProps(`${mappingName}.${index}.dmnVariable`)}
+                        aria-label={intl.formatMessage({
+                          description: 'Accessible label for DMN variable dropdown',
+                          defaultMessage: 'DMN variable',
+                        })}
                       />
                     </Field>
                   </td>

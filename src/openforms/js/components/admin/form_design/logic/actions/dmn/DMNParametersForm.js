@@ -1,6 +1,6 @@
 import {parseExpression} from 'feelin';
 import {useFormikContext} from 'formik';
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
