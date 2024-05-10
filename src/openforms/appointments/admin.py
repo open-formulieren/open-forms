@@ -67,6 +67,8 @@ class AppointmentInfoAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "start_time")
     date_hierarchy = "created"
+    raw_id_fields = ("submission",)
+    search_fields = ("submission__id", "submission__uuid", "appointment_id")
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("submission")
