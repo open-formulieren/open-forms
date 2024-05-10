@@ -9,6 +9,383 @@ Changes for major version 2 of Open Forms.
    The versions listed here no longer receive bugfixes, they are end-of-life. For
    maintained versions, see :ref:`changelog`.
 
+2.3.9 (2024-05-08)
+==================
+
+Final bugfix release in the ``2.3.x`` series.
+
+* Upgraded Pillow to latest bugfix release.
+* [:backend:`4145`] Fixed StUF-ZDS not sending up-to-date payment status on registration after payment.
+
+2.3.8 (2024-03-14)
+==================
+
+Bugfix release
+
+* [:backend:`3863`] Fixed the generated XML for StUF-BG requests when retrieving partners/children.
+* [:backend:`3858`] Fixed a race condition that would manifest during parallel file uploads,
+  leading to permission errors.
+* [:backend:`3975`, :backend:`3052`] Fixed legacy service fetch configuration being picked over the intended
+  format.
+* [:backend:`3881`] Fixed updating a re-usable form definition in one form causing issues in other
+  forms that also use this same form definition.
+
+2.3.7 (2024-02-06)
+==================
+
+Bugfix release
+
+This release addresses a security weakness. We believe there was no way to actually
+exploit it.
+
+* [:cve:`CVE-2024-24771`] Fixed (non-exploitable) multi-factor authentication weakness.
+* [:sdk:`642`] Fixed DigiD error message via SDK patch release.
+* Upgraded dependencies to their latest available security releases.
+
+2.3.6 (2024-01-12)
+==================
+
+Periodic bugfix release
+
+* [:backend:`3656`] Fixed incorrect DigiD error messages being shown when using OIDC-based plugins.
+* [:backend:`3692`] Fixed crash when using OIDC DigiD login while logged into the admin interface.
+* [:backend:`3744`] Fixed conditionally marking a postcode component as required/optional.
+
+  .. note:: We cannot automatically fix existing logic rules. For affected forms, you
+     can remove and re-add the logic rule action to modify the 'required' state.
+
+* [:backend:`3704`] Fixed the family members component not retrieving the partners when using
+  StUF-BG as data source.
+* [:backend:`2710`] Added missing initials (voorletters) prefill option for StUF-BG plugin.
+* Fixed failing docs build by disabling/changing some link checks.
+
+2.3.5 (2023-12-12)
+==================
+
+Periodic bugfix release
+
+* [:backend:`3625`] Fixed crashes during StUF response parsing when certain ``nil`` values are
+  present.
+* [:backend:`3605`] Fixed unintended number localization in StUF/SOAP messages.
+* [:backend:`3613`] Fixed submission resume flow not sending the user through the authentication
+  flow again when they authenticated for forms that have optional authentication. This
+  unfortunately resulted in hashed BSNs being sent to registration backends, which we
+  can not recover/translate back to the plain-text values.
+
+2.3.4 (2023-11-09)
+==================
+
+Hotfix release
+
+* Upgraded bundled SDK version
+* [:backend:`3585`] Fixed a race condition when trying to send emails that haven't been saved to
+  the DB yet.
+* [:backend:`3580`] Fixed incorrect attributes being sent in ZWG registration backend when
+  creating the rol/betrokkene.
+
+2.3.3 (2023-10-30)
+==================
+
+Periodic bugfix release
+
+* [:backend:`3279`] Added robustness to the admin that retrieves data from external APIs.
+* [:backend:`3527`] Added duplicated form steps detection script and added it to the upgrade check
+  configuration.
+* [:backend:`3448`] Applied mail-queue library patches ahead of their patch release.
+* [:backend:`3557`] Fixed a bug that would not display the available document types when
+  configuring the file upload component.
+* Bumped dependencies to their latest security fixes.
+
+2.3.2 (2023-09-29)
+==================
+
+Hotfix for WebKit based browsers
+
+* [:backend:`3511`] Fixed user input "flickering" in forms with certain (backend) logic on Safari
+  & other WebKit based browsers (via SDK patch).
+
+2.3.1 (2023-09-25)
+==================
+
+Periodic bugfix release
+
+* [:backend:`3139`] Fixed form designers/admins not being able to start forms in maintenance mode.
+* Fixed the version of openapi-generator.
+* Bumped to latest Django patch release.
+* [:backend:`3447`] Fixed flash of unstyled form visible during DigiD/eHerkenning login flow.
+* [:backend:`3445`] Fixed not being able to enter more decimals for latitude/longitude in the map
+  component configuration.
+* [:backend:`3423`] Fixed import crash with forms using service fetch.
+* [:backend:`3420`] Fixed styling of cookie overview page.
+* [:backend:`3378`] Fixed copying forms with logic that triggers from a particular step crashing
+  the logic tab.
+* [:backend:`3470`] Fixed form names with slashes breaking submission generation.
+* [:backend:`3437`] Improved robustness of outgoing request logging solution.
+* Included latest SDK bugfix release.
+
+2.3.0 "Cruquius" (2023-08-24)
+=============================
+
+.. epigraph::
+
+   **Cruquius** is a village in Haarlemmermeer. It gets its name from Nicolaas Kruik, one
+   of the many promotors of a plan to pump the Haarlem lake (Haarlemmermeer) dry.
+
+   -- "Cruquius, Netherlands", Wikipedia
+
+Upgrade procedure
+-----------------
+
+Ensure that your current version of Open Forms is at least version 2.1.3 before
+upgrading.
+
+Version 2.3.0 does not contain breaking changes and therefore upgrading should be
+straightforward.
+
+Major features
+--------------
+
+**📅 Appointments**
+
+We are introducing an all-new, optimized appointment booking flow, allowing you to make
+appointments for multiple products and/or people in one go! The new user interface
+focuses on better accessibility and a more fluent experience, while increasing the
+flexibility for the organization managing appointments.
+
+The JCC plugin is fully updated, while the Qmatic plugin is compatible. Please get in
+touch if you use Qmatic and wish to use the multi-product flow.
+
+The old appointment flow is now deprecated and will be removed in Open Forms 3.0.
+
+**🧐 Prefill with DigiD Machtigen/Bewindvoering**
+
+Open Forms supports logging in with your own credentials on behalf of someone else (
+you are then the authorisee, while "someone else" is the authoriser). Up until now,
+prefill could only retrieve the data of the authoriser. Starting now, you can select
+from which role the data should be prefilled, so you can retrieve this for all roles
+at the same time!
+
+**🗺️ Map component**
+
+We've improved the map component and/or geo integration:
+
+* Configure the initial coordinates and zoom level of the map instead of the center of
+  the Netherlands. This is even configurable *per component*, which can be useful if your
+  organization has multiple districts, for example.
+* Users now have a search box to look up their/an address, which autocompletes the
+  addresses from the BAG. Clicking a suggestion places the marker on the coordinates of
+  the selected address.
+* Clicking a location in the map looks up the nearest address and displays this for
+  extra confirmation.
+
+**🧠 Dynamic registration backends**
+
+Registration backends are now dynamic - you can configure one, none or multiple
+registration backends on a form and use logic to decide which to use. If no or only one
+backend is configured, the existing behaviour applies. However, if you have multiple
+possible backends, you must create a logic rule to select the appropriate backend.
+
+Detailed changes
+----------------
+
+The 2.3.0-alpha.0 changes are included as well, see the earlier changelog entry.
+
+**New features**
+
+* [:backend:`2174`] Added geo-search (using the Kadaster Locatieserver by default) for the map
+  component.
+* [:backend:`2017`] The form step slug is now moved from the form definition to the form step
+  itself, allowing you to use the same slug for a step in different forms.
+* [:backend:`3332`] Use the JCC configuration for the latest available appointment date.
+* [:backend:`3332`] When selecting a product, this choice is now taken into account to populate
+  the list of available additional products.
+* [:backend:`3321`] Added support for new appointment flow to confirmation emails.
+* [:backend:`1884`] Added custom error message support for invalid times.
+* [:backend:`3203`, :backend:`3372`] Added an additional checkbox for truth declaration before submitting a
+  form, in addition to the privacy policy. You can now also configure these requirements
+  per-form instead of only the global configuration.
+* [:backend:`1889`] Added the ``current_year`` static variable.
+* [:backend:`3179`] You can now use logic to select an appropriate registration backend.
+* [:backend:`3299`] Added Qmatic support for the new appointments.
+
+**Bugfixes**
+
+* [:backend:`3223`] Fixed some content translations not being properly translated when copying a form.
+* [:backend:`3144`] Fixed file download links being absent in registration emails when the file
+  upload is nested inside a group.
+* [:backend:`3278`] Fixed a crash when the DigiD provider does not provide a sector code in the
+  SAML Artifact. We now assume it's BSN (as opposed to sofinummer).
+* [:backend:`3084`] Fixed ``inp.heeftAlsKinderen`` missing in scope of StUF-BG request.
+* [:backend:`3302`] Fixed race condition causing uploaded images not be resized.
+* [:backend:`3332`] Ensured that naive, localized appointment times are sent to JCC.
+* [:backend:`3309`] Added a missing automatic appointment configuration upgrade.
+* Fixed broken inline images in outgoing emails and loss of additional parameters.
+* [:backend:`3322`] Fixed the cancel-appointment flow for new appointments.
+* [:backend:`3327`] Fixed the backend markup and styling of radio fields.
+* [:backend:`3319`] Fixed forms possibly sending a DigiD SAML request without assurance level due
+  to misconfiguration.
+* Fixed passing querystring parameter to service fetch.
+* [:backend:`3277`] Added a workaround to use form variable values containing spaces in templates.
+* [:backend:`3292`] Fixed dark mode suffixes in the form builder.
+* [:backend:`3286`] Fixed data normalization for customer details in new appointments.
+* [:backend:`3368`] Fixed a crash when empty values are returned from StUF-BG.
+* [:backend:`3310`] Fixed alignment issue in confirmation PDF for accepted privacy policy statement.
+
+**Project maintenance**
+
+* Changed the fail-fast behaviour of the end-to-end tests to reduce the flakiness impact.
+* We now build Docker images based on the latest available Python patch release again.
+* [:backend:`3242`] Added more profiling to investigate test flakiness.
+* Upgraded the container base image from Debian Bullseye to Bookworm.
+* [:backend:`3127`] Rework developer tooling to generate code from an API specification.
+* Fixed JQ documentation URL for sorting.
+* Bump dependencies reported to have vulnerabilities (via @dependabot).
+* Improved typing of plugins and plugin registries.
+* Fixed incorrect Authentication header in the Objects API documentation.
+* [:backend:`3049`] Upgraded more libraries to prepare for Django 4.2
+
+2.3.0-alpha.0 (2023-07-24)
+==========================
+
+Upgrade procedure
+-----------------
+
+Ensure that your current version of Open Forms is at least version 2.1.3 before
+upgrading.
+
+Version 2.3.0 does not contain breaking changes and therefore upgrading should be
+straightforward.
+
+Major features
+--------------
+
+**📅 Appointments**
+
+We are introducing an all-new, optimized appointment booking flow, allowing you to make
+appointments for multiple products and/or people in one go! The new user interface
+focuses on better accessibility and a more fluent experience, while increasing the
+flexibility for the organization managing appointments.
+
+This feature is currently in preview and only JCC is operational - but we're aiming to
+finish support for QMatic in the full release.
+
+**🧐 Prefill with DigiD Machtigen/Bewindvoering**
+
+Open Forms supports logging in with your own credentials on behalf of someone else (
+you are then the authorisee, while "someone else" is the authoriser). Up until now,
+prefill could only retrieve the data of the authoriser. Starting now, you can select
+from which role the data should be prefilled, so you can retrieve this for all roles
+at the same time!
+
+**🗺️ Map component**
+
+We are giving some the geo integration/map component some well-deserved love. The first
+steps allow configuring the maps to your organization by setting a default initial
+center and zoom level (global defaults), rather than initializing on the middle of the
+Netherlands. You can even customize these defaults on a *per component* basis, for
+example when your organization handles multiple districts.
+
+More is coming!
+
+Detailed changes
+----------------
+
+**New features**
+
+* [:backend:`2471`] Added a new appointments flow next to the existing one.
+
+  .. note::
+
+     You can opt-in to this flow by enabling the feature flag in the global
+     configuration and then mark a form as being an "appointment form". Currently
+     only JCC is fully implemented. Note that the entire feature has "preview"
+     status and is only suitable for testing (with known issues).
+
+  * [:backend:`3193`] Added API endpoint to retrieve required customer fields meta-information.
+
+    * Implemented retrieving this for JCC plugin.
+    * Implemented configuring the fields in the admin for QMatic.
+
+  * Added appointment meta-information to form detail enpdoint.
+  * Validate the input data against the configured plugin.
+  * Appointment submissions now have their own data model and entry in the admin.
+  * Extended existing endpoints to support retrieving locations/dates/times for
+    multiple products.
+  * Defining an appointment form disables/clears the irrelevant form designer aspects.
+  * [:backend:`3275`] Added support for multi-product appointments in JCC.
+
+* [:backend:`3215`] Support prefilling data of the authorisee with DigiD machtigen and
+  eHerkenning Bewindvoering.
+
+* Form designer
+
+  * [:backend:`1508`] Added hidden option for legacy cosign component.
+  * [:backend:`1882`] Added minimum/maximum value options to the currency component.
+  * [:backend:`1892`] Added tooltips to (relevant) form components in the designer.
+  * [:backend:`1890`] Added support for upload file name templating, you can now add pre- and
+    suffixes.
+  * [:backend:`2175`] You can now configure the default zoom level and initial map center for the
+    map component, with a global default.
+  * [:backend:`3045`] You can now provide a suffix for number components, e.g. to hint about the
+    expected unit.
+
+* [:backend:`3238`] The StUF-ZDS registration backend now has well-defined behaviour for
+  non-primitive variable values, including user-defined variables.
+
+**Bugfixes**
+
+* Fixed testing availability of OIDC auth endpoint with HEAD requests (now uses GET).
+* [:backend:`3195`] Fixed hardcoded ``productaanvraag_type`` in default Objects API template to
+  use configuration option.
+* [:backend:`3182`] Fixed importing forms from before 2.2.0 due to missing
+  ``{% cosign_information %}`` tag in confirmation email templates.
+* [:backend:`3211`] Fixed CSP violation in Piwik Pro analytics script, causing no analytics to be
+  tracked.
+* [:backend:`3161`] Fixed not being able to reset form-specific data removal settings to the
+  empty value so that the global configuration is used again.
+* [:backend:`3219`] Fixed saved uploads not being deleted when the user goes back to the file and
+  removes the upload again.
+* Fixed CI builds (bump PyYAML, docs build).
+* [:backend:`3258`] Fixed labels for Haal Centraal prefill attributes.
+* Fixed the broken Token Exchange extension (pre-request plugins) in the Haal Centraal
+  plugin.
+* [:backend:`3130`] Fixed a crash when copying form-definitions with very long names.
+* [:backend:`3166`] Fixed Haal Centraal plugin configuration test.
+*
+
+**Project maintenance**
+
+* Bumped dependencies to get their latest security fixes.
+* Removed MacOS CI job due to broken system-level dependencies.
+* Added utility to profile code with ``cProfile``.
+* Sped up tests by pre-loading the OAS schema and worked on other flakiness issues.
+* [:backend:`3242`] Set up a CI profile for hypothesis.
+* [:backend:`586`] Extracted the SOAP service configuration from the StUF app into its own app.
+* [:backend:`3189`] Refactored authentication plugins ``provides_auth`` datatypes.
+* [:backend:`3049`] Upgraded a number of dependencies in preparation for Django 4.2:
+
+  * django-autoslug
+  * django-yubin
+  * django-axes
+  * django-colorfield
+  * django-hijack
+  * django-redis
+  * django-treebeard
+  * django-filter
+  * elastic-apm
+  * sentry-sdk
+  * django-solo
+  * django-timeline-logger
+  * drf-jsonschema-serializer
+  * django-admin-index
+  * django-tinymce
+  * djangorestframework-camel-case
+
+
+.. note:: We only provided best-effort developer environment support for the MacOS
+   platform. This is now costing too much resources as there are no actual MacOS users
+   in the development team.
+
 2.2.10 (2024-02-27)
 ===================
 
