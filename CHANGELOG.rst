@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.6.6 (2024-05-13)
+==================
+
+Bugfix release
+
+* [#4146] Fixed SOAP timeout not being used for Stuf-ZDS client.
+* [#4205] The CSP ``form-action`` directive now allows any ``https:`` target,
+  to avoid errors on eHerkenning login redirects.
+* [#4269] Fixed DMN integration for real-world decision definitions.
+
 2.6.5 (2024-04-24)
 ==================
 
