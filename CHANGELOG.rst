@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.4.7 (2024-05-13)
+==================
+
+* [#4079] Fixed metadata retrieval for DigiD failing when certificates signed by the G1 root are used.
+* [#4103] Fixed incorrect appointment details being included in the submission PDF.
+* [#4145] Fixed the payment status not being registered correctly for StUF-ZDS.
+* [#3964] Toggling visibility with frontend logic and number/currency components leads to fields being emptied.
+* [#4205] The CSP ``form-action`` directive now allows any ``https:`` target,
+  to avoid errors on eHerkenning login redirects.
+
 2.4.6 (2024-03-14)
 ==================
 
