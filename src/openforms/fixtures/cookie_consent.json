@@ -1,7 +1,6 @@
 [
 {
     "model": "cookie_consent.cookiegroup",
-    "pk": 1,
     "fields": {
         "varname": "required",
         "name": "Functionele cookies",
@@ -14,7 +13,6 @@
 },
 {
     "model": "cookie_consent.cookiegroup",
-    "pk": 2,
     "fields": {
         "varname": "analytical",
         "name": "Analytische cookies",
@@ -27,9 +25,10 @@
 },
 {
     "model": "cookie_consent.cookie",
-    "pk": 1,
     "fields": {
-        "cookiegroup": 1,
+        "cookiegroup": [
+            "required"
+        ],
         "name": "openforms_sessionid",
         "description": "",
         "path": "/",
@@ -39,9 +38,10 @@
 },
 {
     "model": "cookie_consent.cookie",
-    "pk": 2,
     "fields": {
-        "cookiegroup": 2,
+        "cookiegroup": [
+            "analytical"
+        ],
         "name": "_utma",
         "description": "",
         "path": "/",
@@ -51,9 +51,10 @@
 },
 {
     "model": "cookie_consent.cookie",
-    "pk": 3,
     "fields": {
-        "cookiegroup": 2,
+        "cookiegroup": [
+            "analytical"
+        ],
         "name": "_utmb",
         "description": "",
         "path": "/",
@@ -63,9 +64,10 @@
 },
 {
     "model": "cookie_consent.cookie",
-    "pk": 4,
     "fields": {
-        "cookiegroup": 2,
+        "cookiegroup": [
+            "analytical"
+        ],
         "name": "_utmc",
         "description": "",
         "path": "/",
@@ -75,9 +77,10 @@
 },
 {
     "model": "cookie_consent.cookie",
-    "pk": 5,
     "fields": {
-        "cookiegroup": 2,
+        "cookiegroup": [
+            "analytical"
+        ],
         "name": "_utmz",
         "description": "",
         "path": "/",
