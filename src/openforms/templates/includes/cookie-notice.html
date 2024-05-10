@@ -1,6 +1,5 @@
-{% load i18n static cookie_consent_tags %}
+{% load i18n cookie_consent_tags %}
 
-{% static "cookie_consent/cookiebar.module.js" as cookiebar_src %}
 {% url 'cookie_consent_cookie_group_list' as manage_url %}
 {% url 'cookie_consent_status' as status_url %}
 
@@ -8,7 +7,11 @@
 
     {% all_cookie_groups 'cookie-consent__cookie-groups' %}
 
-    <template id="cookie-consent__cookie-bar">
+    <template
+        id="cookie-consent__cookie-bar"
+        data-var-name="{{ analytics_varname }}"
+        data-status-url="{{ status_url }}"
+    >
         <section class="cookie-notice" aria-label="{% trans 'Cookie notice' %}">
 
             <span class="cookie-notice__text">
@@ -36,26 +39,4 @@
             </div>
         </section>
     </template>
-
-    <script type="module" nonce="{{ request.csp_nonce }}">
-        import {showCookieBar} from '{{ cookiebar_src }}';
-        const varName = '{{ analytics_varname|escapejs }}';
-        showCookieBar({
-          statusUrl: '{{ status_url|escapejs }}',
-          templateSelector: '#cookie-consent__cookie-bar',
-          cookieGroupsSelector: '#cookie-consent__cookie-groups',
-          acceptSelector: '.cookie-notice__accept',
-          declineSelector: '.cookie-notice__decline',
-          insertBefore: '#cookie-consent__cookie-bar',
-          onAccept: (groups) => {
-            const isAnalyticsEnabled = groups.find(group => group.varname === varName);
-            if (!isAnalyticsEnabled) return;
-            const analyticsTemplateNodes = document.querySelectorAll('.analytics-scripts');
-            analyticsTemplateNodes.forEach(templateNode => {
-                const clone = templateNode.content.cloneNode(true);
-                templateNode.parentNode.insertBefore(clone, templateNode);
-            })
-          },
-        });
-    </script>
 {% endif %}

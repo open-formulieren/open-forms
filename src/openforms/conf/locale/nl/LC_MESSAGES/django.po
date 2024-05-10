@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-10 18:09+0200\n"
+"POT-Creation-Date: 2024-05-10 18:14+0200\n"
 "PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -10742,11 +10742,11 @@ msgstr "Pagina afdrukken"
 msgid "Back to top"
 msgstr "Terug naar boven"
 
-#: openforms/templates/includes/cookie-notice.html:12
+#: openforms/templates/includes/cookie-notice.html:15
 msgid "Cookie notice"
 msgstr "Cookie-informatie"
 
-#: openforms/templates/includes/cookie-notice.html:15
+#: openforms/templates/includes/cookie-notice.html:18
 #, python-format
 msgid ""
 "We use cookies to optimize and improve our website and services. You can <a "
@@ -10757,11 +10757,11 @@ msgstr ""
 "kunt hier <a class=\"utrecht-link utrecht-link--openforms\" "
 "href=\"%(manage_url)s\">uw voorkeuren</a> beheren."
 
-#: openforms/templates/includes/cookie-notice.html:27
+#: openforms/templates/includes/cookie-notice.html:30
 msgid "Accept all"
 msgstr "Alles toestaan"
 
-#: openforms/templates/includes/cookie-notice.html:33
+#: openforms/templates/includes/cookie-notice.html:36
 msgid "Decline all"
 msgstr "Alles weigeren"
 
