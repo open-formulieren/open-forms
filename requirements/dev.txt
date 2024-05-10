@@ -259,7 +259,7 @@ django-axes[ipware]==6.4.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-axes
-django-camunda==0.14.0
+django-camunda==0.15.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

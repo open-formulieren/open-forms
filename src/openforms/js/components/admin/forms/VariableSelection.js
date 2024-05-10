@@ -14,11 +14,12 @@ const VariableSelection = ({
   onChange,
   includeStaticVariables = false,
   filter = allowAny,
+  ...props
 }) => {
   const {formSteps, formVariables, staticVariables} = useContext(FormContext);
 
   let formDefinitionsNames = {};
-  formSteps.map(step => {
+  formSteps.forEach(step => {
     formDefinitionsNames[step.formDefinition || step._generatedId] = step.internalName || step.name;
   });
 
@@ -36,7 +37,15 @@ const VariableSelection = ({
     /*TODO: This should be a searchable select for when there are a billion variables -> react-select */
   }
   return (
-    <Select id={id} name={name} choices={choices} allowBlank onChange={onChange} value={value} />
+    <Select
+      id={id}
+      name={name}
+      choices={choices}
+      allowBlank
+      onChange={onChange}
+      value={value}
+      {...props}
+    />
   );
 };
 
