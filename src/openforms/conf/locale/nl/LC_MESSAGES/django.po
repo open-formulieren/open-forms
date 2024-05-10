@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-08 18:51+0200\n"
+"POT-Creation-Date: 2024-05-10 18:09+0200\n"
 "PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -767,16 +767,16 @@ msgstr ""
 msgid "Please configure the plugin first"
 msgstr "Stel eerst de plugin in"
 
-#: openforms/appointments/admin.py:88
+#: openforms/appointments/admin.py:90
 #: openforms/config/templates/admin/config/overview.html:57
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: openforms/appointments/admin.py:94 openforms/config/models/config.py:146
+#: openforms/appointments/admin.py:96 openforms/config/models/config.py:146
 msgid "Change"
 msgstr "Wijzigen"
 
-#: openforms/appointments/admin.py:102
+#: openforms/appointments/admin.py:104
 msgid "Appointment actions"
 msgstr "Afspraakacties"
 
