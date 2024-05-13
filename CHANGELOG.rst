@@ -2,6 +2,39 @@
 Changelog
 =========
 
+2.6.6 (2024-05-13)
+==================
+
+Bugfix release
+
+* [:backend:`4146`] Fixed SOAP timeout not being used for Stuf-ZDS client.
+* [:backend:`4205`] The CSP ``form-action`` directive now allows any ``https:`` target,
+  to avoid errors on eHerkenning login redirects.
+* [:backend:`4269`] Fixed DMN integration for real-world decision definitions.
+
+2.5.7 (2024-05-13)
+==================
+
+Bugfix release
+
+* [:backend:`4052`] Fixed payment (reminder) emails being sent more often than intended.
+* [:backend:`4124`] Fixed forms being shown multiple times in the admin list overview.
+* [:backend:`3964`] Toggling visibility with frontend logic and number/currency components leads to fields being emptied.
+* [:backend:`4205`] The CSP ``form-action`` directive now allows any ``https:`` target,
+  to avoid errors on eHerkenning login redirects.
+
+2.4.7 (2024-05-13)
+==================
+
+Bugfix release
+
+* [:backend:`4079`] Fixed metadata retrieval for DigiD failing when certificates signed by the G1 root are used.
+* [:backend:`4103`] Fixed incorrect appointment details being included in the submission PDF.
+* [:backend:`4145`] Fixed the payment status not being registered correctly for StUF-ZDS.
+* [:backend:`3964`] Toggling visibility with frontend logic and number/currency components leads to fields being emptied.
+* [:backend:`4205`] The CSP ``form-action`` directive now allows any ``https:`` target,
+  to avoid errors on eHerkenning login redirects.
+
 2.7.0-alpha.0 (2024-05-06)
 ==========================
 
