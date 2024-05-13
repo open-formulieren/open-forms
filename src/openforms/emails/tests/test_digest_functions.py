@@ -1,12 +1,15 @@
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import patch
 
+from django.core.files import File
 from django.test import TestCase, override_settings
 from django.utils.timezone import utc
 
 import requests_mock
 from django_yubin.models import Message
 from freezegun import freeze_time
+from simple_certmanager.test.factories import CertificateFactory
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.brk.models import BRKConfig
@@ -25,8 +28,11 @@ from ..digest import (
     collect_failed_emails,
     collect_failed_prefill_plugins,
     collect_failed_registrations,
+    collect_invalid_certificates,
 )
 from ..tasks import Digest
+
+TEST_FILES = Path(__file__).parent / "data"
 
 
 @freeze_time("2023-02-02T12:30:00+01:00")
@@ -392,3 +398,92 @@ class BrokenConfigurationTests(TestCase):
         broken_configuration = collect_broken_configurations()
 
         self.assertEqual(broken_configuration, [])
+
+
+@override_settings(LANGUAGE_CODE="en")
+class InvalidCertificatesTests(TestCase):
+
+    def test_expiring_certificates_not_used_by_a_service_are_not_collected(self):
+        # the certificate (test.certificate) expires on Apr 22 13:02:55 2025 GMT
+        with open(TEST_FILES / "test.certificate", "r") as client_certificate_f:
+            CertificateFactory.create(
+                label="Test certificate",
+                public_certificate=File(client_certificate_f, name="test.certificate"),
+            )
+
+        with freeze_time("2025-04-15T21:15:00Z"):
+            invalid_certificates = collect_invalid_certificates()
+
+        self.assertEqual(len(invalid_certificates), 0)
+
+    def test_not_expiring_and_valid_certificates_are_not_collected(self):
+        # the certificate (test.certificate) expires on Apr 22 13:02:55 2025 GMT
+        with open(TEST_FILES / "test.certificate", "r") as client_certificate_f:
+            certificate = CertificateFactory.create(
+                label="Test certificate",
+                public_certificate=File(client_certificate_f, name="test.certificate"),
+            )
+            ServiceFactory.create(client_certificate=certificate)
+
+        with freeze_time("2024-04-15T21:15:00Z"):
+            invalid_certificates = collect_invalid_certificates()
+
+        self.assertEqual(len(invalid_certificates), 0)
+
+    def test_expiring_certificates_are_collected(self):
+        # the certificate (test.certificate) expires on Apr 22 13:02:55 2025 GMT
+        with open(TEST_FILES / "test.certificate", "r") as client_certificate_f:
+            certificate = CertificateFactory.create(
+                label="Test certificate",
+                public_certificate=File(client_certificate_f, name="test.certificate"),
+            )
+            ServiceFactory.create(client_certificate=certificate)
+
+        with freeze_time("2025-04-15T21:15:00Z"):
+            invalid_certificates = collect_invalid_certificates()
+
+        self.assertEqual(len(invalid_certificates), 1)
+        self.assertEqual(invalid_certificates[0].error_message, "will expire soon")
+
+    def test_invalid_certificates_are_collected(self):
+        # the certificate (test.certificate) expires on Apr 22 13:02:55 2025 GMT and
+        # test2.certificate on Apr 22 13:05:26 2025 GMT. Here the test.key is not valid
+        # for test2.certificate which causes an invalid keypair error
+        with (
+            open(TEST_FILES / "test2.certificate", "r") as client_certificate_f,
+            open(TEST_FILES / "test.key", "r") as key_f,
+        ):
+            certificate = CertificateFactory.create(
+                label="Test certificate",
+                public_certificate=File(client_certificate_f, name="test.certificate"),
+                private_key=File(key_f, name="test.key"),
+            )
+            ServiceFactory.create(client_certificate=certificate)
+
+        invalid_certificates = collect_invalid_certificates()
+
+        self.assertEqual(len(invalid_certificates), 1)
+        self.assertEqual(invalid_certificates[0].error_message, "has invalid keypair")
+
+    def test_both_expiring_and_invalid_certificates_are_collected(self):
+        # the certificate (test.certificate) expires on Apr 22 13:02:55 2025 GMT and
+        # test2.certificate on Apr 22 13:05:26 2025 GMT. Here the test.key is not valid
+        # for test2.certificate which causes an invalid keypair error
+        with (
+            open(TEST_FILES / "test2.certificate", "r") as client_certificate_f,
+            open(TEST_FILES / "test.key", "r") as key_f,
+        ):
+            certificate = CertificateFactory.create(
+                label="Test certificate",
+                public_certificate=File(client_certificate_f, name="test.certificate"),
+                private_key=File(key_f, name="test.key"),
+            )
+            ServiceFactory.create(client_certificate=certificate)
+
+        with freeze_time("2025-04-15T21:15:00Z"):
+            invalid_certificates = collect_invalid_certificates()
+
+        self.assertEqual(len(invalid_certificates), 1)
+        self.assertEqual(
+            invalid_certificates[0].error_message, "invalid keypair, will expire soon"
+        )
