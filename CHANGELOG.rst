@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.5.7 (2024-05-13)
+==================
+
+Bugfix release
+
+* [#4052] Fixed payment (reminder) emails being sent more often than intended.
+* [#4124] Fixed forms being shown multiple times in the admin list overview.
+* [#3964] Toggling visibility with frontend logic and number/currency components leads to fields being emptied.
+* [#4205] The CSP ``form-action`` directive now allows any ``https:`` target,
+  to avoid errors on eHerkenning login redirects.
+
 2.5.6 (2024-04-10)
 ==================
 
