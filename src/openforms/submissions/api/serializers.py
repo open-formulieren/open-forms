@@ -266,12 +266,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     def _run_formio_validation(self, data: dict) -> None:
         from ..form_logic import evaluate_form_logic
 
-        # Check feature flag to opt out of formio validation first.
-        config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
-        if not config.enable_backend_formio_validation:
-            return
-
         submission = self.instance.submission
         # evaluate dynamic configuration
         configuration = evaluate_form_logic(submission, step=self.instance, data=data)

@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.7.0-alpha.1 (2024-XX-XX)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade notes
+-------------
+
+* ⚠️ The feature flag to disable backend validation is now removed, instances relying
+  on it should verify that their existing forms works with the validation enforced.
+
 2.6.6 (2024-05-13)
 ==================
 
