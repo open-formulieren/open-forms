@@ -159,4 +159,6 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
                 invalid_params = response.json()["invalidParams"]
                 names = [param["name"] for param in invalid_params]
                 expected_name = f"data.{key}"
-                self.assertIn(expected_name, names)
+                # For complex components (i.e. fileuploads), the error can
+                # be a nested key, so we check for `.startswith`:
+                self.assertTrue(any(name.startswith(expected_name) for name in names))

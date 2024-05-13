@@ -106,6 +106,21 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         )
         self.assertEqual(response.content_type, "text/plain")
 
+    def test_content_inconsistent_with_mime_type(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:formio:temporary-file-upload")
+        file = SimpleUploadedFile("pixel.png", b"GIF89a", content_type="image/png")
+        response = self.client.post(url, {"file": file}, format="multipart")
+
+        self.assertContains(
+            response,
+            _("The provided file is not a {file_type}.").format(
+                **{"file_type": ".png"}
+            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
     @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
     def test_upload_too_large(self):
         self._add_submission_to_session(self.submission)

@@ -29,12 +29,12 @@ from rest_framework.utils.formatting import lazy_format
 from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.api.validators import MimeTypeValidator
 from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
 
+from ..api.validators import MimeTypeValidator
 from ..datastructures import FormioData
 from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
@@ -291,42 +291,6 @@ class PhoneNumber(BasePlugin):
         return serializers.ListField(child=base) if multiple else base
 
 
-class RelatedFileUploadValidator:
-    def __init__(self, mime_type_validator: MimeTypeValidator) -> None:
-        self.mime_type_validator = mime_type_validator
-
-    def __call__(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        temporary_upload = temporary_upload_from_url(attrs["url"])
-        if temporary_upload is None:
-            raise serializers.ValidationError({"url": _("Invalid URL.")})
-
-        if attrs["size"] != temporary_upload.file_size:
-            raise serializers.ValidationError(
-                {"size": _("Size does not match the uploaded file.")}
-            )
-
-        if attrs["originalName"] != temporary_upload.file_name:
-            raise serializers.ValidationError(
-                {"originalName": _("Name does not match the uploaded file.")}
-            )
-
-        if attrs["data"]["name"] != temporary_upload.file_name:
-            raise serializers.ValidationError(
-                {"data": {"name": _("Name does not match the uploaded file.")}}
-            )
-
-        with temporary_upload.content.open("rb") as infile:
-            # wrap in UploadedFile just to reuse DRF validator
-            uploaded_file = UploadedFile(
-                file=infile,
-                name=temporary_upload.file_name,
-                content_type=temporary_upload.content_type,
-            )
-            self.mime_type_validator(uploaded_file)
-
-        return attrs
-
-
 class FileDataSerializer(serializers.Serializer):
     url = serializers.URLField()
     form = serializers.ChoiceField(choices=[""])
@@ -345,12 +309,48 @@ class FileSerializer(serializers.Serializer):
     url = serializers.URLField()
     data = FileDataSerializer()  # type: ignore
 
+    def __init__(self, *args, **kwargs) -> None:
+        self.mime_type_validator = MimeTypeValidator(kwargs.pop("allowed_mime_types"))
+        super().__init__(*args, **kwargs)
+
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        for k in ["url", "size"]:
-            if attrs[k] != attrs["data"][k]:
+        for root_key, nested_key in (
+            ("url", "url"),
+            ("size", "size"),
+            ("originalName", "name"),
+        ):
+            if attrs[root_key] != attrs["data"][nested_key]:
                 raise serializers.ValidationError(
-                    {k: _("The root value must be equal to the one in 'data'.")}
+                    _(
+                        "The value of {root_key} must match the value of {nested_key} in 'data'."
+                    ).format(
+                        root_key=root_key,
+                        nested_key=nested_key,
+                    )
                 )
+
+        temporary_upload = temporary_upload_from_url(attrs["url"])
+        if temporary_upload is None:
+            raise serializers.ValidationError({"url": _("Invalid URL.")})
+
+        if attrs["size"] != temporary_upload.file_size:
+            raise serializers.ValidationError(
+                {"size": _("Size does not match the uploaded file.")}
+            )
+
+        if attrs["originalName"] != temporary_upload.file_name:
+            raise serializers.ValidationError(
+                {"originalName": _("Name does not match the uploaded file.")}
+            )
+
+        with temporary_upload.content.open("rb") as infile:
+            # wrap in UploadedFile just to reuse DRF validator
+            uploaded_file = UploadedFile(
+                file=infile,
+                name=temporary_upload.file_name,
+                content_type=temporary_upload.content_type,
+            )
+            self.mime_type_validator(uploaded_file)
 
         return attrs
 
@@ -393,11 +393,8 @@ class File(BasePlugin[FileComponent]):
 
         return serializers.ListField(
             max_length=max_number_of_files,
-            child=FileSerializer(
-                validators=[
-                    RelatedFileUploadValidator(MimeTypeValidator(allowed_mime_types))
-                ]
-            ),
+            min_length=1 if required else None,
+            child=FileSerializer(allowed_mime_types=allowed_mime_types),
             required=required,
         )
 

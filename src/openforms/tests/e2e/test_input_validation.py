@@ -8,14 +8,25 @@ input_validation subdirectory.
 """
 
 from pathlib import Path
+from typing import Any
 
+from django.core.files import File
+from django.urls import reverse
+
+from asgiref.sync import async_to_sync
+from furl import furl
 from playwright.async_api import Page, expect
 
+from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.formio.typing import Component, DateComponent, RadioComponent
+from openforms.forms.models import Form
+from openforms.submissions.tests.factories import TemporaryFileUploadFactory
 
-from .input_validation_base import ValidationsTestCase
+from .base import browser_page
+from .input_validation_base import ValidationsTestCase, create_form
 
 TEST_CASES = (Path(__file__).parent / "input_validation").resolve()
+TEST_FILES = Path(__file__).parent / "data"
 
 
 class SingleTextFieldTests(ValidationsTestCase):
@@ -669,4 +680,134 @@ class SingleLicenseplateTests(ValidationsTestCase):
             component,
             ui_input="<h2>test</h2>",
             expected_ui_error="Ongeldig Nederlands kenteken",
+        )
+
+
+class SingleFileTests(ValidationsTestCase):
+
+    def assertFileValidationIsAligned(
+        self,
+        component: Component,
+        ui_files: list[Path],
+        expected_ui_error: str,
+        api_value: list[dict[str, Any]],
+    ) -> None:
+        form = create_form(component)
+
+        with self.subTest("frontend validation"):
+            self._assertFileFrontendValidation(form, ui_files, expected_ui_error)
+
+        with self.subTest("backend validation"):
+            self._assertBackendValidation(form, component["key"], api_value)
+
+    @async_to_sync
+    async def _assertFileFrontendValidation(
+        self, form: Form, ui_files: list[Path], expected_ui_error: str
+    ) -> None:
+        frontend_path = reverse("forms:form-detail", kwargs={"slug": form.slug})
+        url = str(furl(self.live_server_url) / frontend_path)
+
+        async with browser_page() as page:
+            await page.goto(url)
+            await page.get_by_role("button", name="Formulier starten").click()
+
+            async with page.expect_file_chooser() as fc_info:
+                await page.get_by_text("blader").click()
+
+            file_chooser = await fc_info.value
+            await file_chooser.set_files(ui_files)
+            await page.wait_for_load_state("networkidle")
+
+            # try to submit the step which should be invalid, so we expect this to
+            # render the error message.
+            await page.get_by_role("button", name="Volgende").click()
+            await expect(page.get_by_text(expected_ui_error)).to_be_visible()
+
+    def test_required_field(self):
+        component = {
+            "type": "file",
+            "key": "requiredFile",
+            "label": "Required file",
+            "validate": {"required": True},
+            "storage": "url",
+        }
+
+        self.assertFileValidationIsAligned(
+            component,
+            ui_files=[],
+            expected_ui_error="Het verplichte veld Required file is niet ingevuld.",
+            api_value=[],
+        )
+
+    def test_bad_pdf(self):
+        component = {
+            "type": "file",
+            "key": "badPdf",
+            "label": "Bad PDF",
+            "validate": {"required": True},
+            "storage": "url",
+        }
+
+        # The frontend validation will *not* create a TemporaryFileUpload,
+        # as the endpoint will return a 400 because of the bad content type.
+        # For this reason, we manually create an invalid TemporaryFileUpload
+        # and use it for the `api_value`:
+        with open(TEST_FILES / "image-256x256.pdf", "rb") as infile:
+            temporary_upload = TemporaryFileUploadFactory.create(
+                file_name="image-256x256.pdf",
+                content=File(infile),
+                content_type="application/pdf",
+            )
+
+        self.assertFileValidationIsAligned(
+            component,
+            ui_files=[TEST_FILES / "image-256x256.pdf"],
+            expected_ui_error="Het bestand is geen .pdf.",
+            api_value=[
+                SubmittedFileFactory.create(
+                    temporary_upload=temporary_upload,
+                    type="application/pdf",
+                )
+            ],
+        )
+
+    def test_forbidden_file_type(self):
+        component = {
+            "type": "file",
+            "key": "badPdf",
+            "label": "Bad PDF",
+            "validate": {"required": True},
+            "storage": "url",
+            "file": {
+                "type": [
+                    "application/pdf",
+                ],
+                "allowedTypesLabels": [
+                    ".pdf",
+                ],
+            },
+            "filePattern": "application/pdf",
+        }
+
+        # The frontend validation will *not* create a TemporaryFileUpload,
+        # as the endpoint will return a 400 because of the forbidden file type.
+        # For this reason, we manually create an invalid TemporaryFileUpload
+        # and use it for the `api_value`:
+        with open(TEST_FILES / "image-256x256.png", "rb") as infile:
+            temporary_upload = TemporaryFileUploadFactory.create(
+                file_name="image-256x256.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+
+        self.assertFileValidationIsAligned(
+            component,
+            ui_files=[TEST_FILES / "image-256x256.png"],
+            expected_ui_error="Het geuploaded bestand is niet van een toegestaan type. Het moet .pdf zijn.",
+            api_value=[
+                SubmittedFileFactory.create(
+                    temporary_upload=temporary_upload,
+                    type="image/png",
+                )
+            ],
         )
