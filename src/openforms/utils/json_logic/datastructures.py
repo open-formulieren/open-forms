@@ -24,11 +24,16 @@ class ComponentMeta:
 
 
 @dataclass(slots=True)
-class InputVar:
+class InputComponentVar:
     key: str
     value: JSON
     step_name: str
     label: str
+
+
+@dataclass
+class InputVar:
+    key: str
 
 
 @dataclass
@@ -40,11 +45,26 @@ class ExpressionIntrospection:
     def description(self) -> str:
         return _generate_description(self.tree, root=True)
 
+    def get_input_keys(self) -> list[InputVar]:
+        inputs = []
+        for node in iter_tree(self.tree):
+            if isinstance(node, Primitive):
+                continue
+            if node.operator != "var":
+                continue
+            if not isinstance(node.arguments[0], str):
+                continue
+
+            key = cast(str, node.arguments[0])
+            inputs.append(InputVar(key=key))
+
+        return inputs
+
     def get_input_components(
         self,
         components_map: ComponentsMap,
         input_data: dict[str, JSON],
-    ) -> list[InputVar]:
+    ) -> list[InputComponentVar]:
         inputs = []
 
         for node in iter_tree(self.tree):
@@ -60,7 +80,7 @@ class ExpressionIntrospection:
                 step_name = component_meta.form_step.form_definition.name
                 label = component_meta.component.get("label", "")
             inputs.append(
-                InputVar(
+                InputComponentVar(
                     key=key,
                     value=glom(input_data, key, default=""),
                     step_name=step_name,

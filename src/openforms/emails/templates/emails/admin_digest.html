@@ -24,7 +24,7 @@
             <li>
                 <p>
                     {% blocktranslate with form_name=registration.form_name counter=registration.failed_submissions_counter first_failure_at=registration.initial_failure_at|time:"TIME_FORMAT" last_failure_at=registration.last_failure_at|time:"TIME_FORMAT" trimmed %}
-                        Form '{{ form_name }}' failed {{ counter }} time(s) between {{ first_failure_at }} and {{ last_failure_at }}.</br>
+                        Form '{{ form_name }}' failed {{ counter }} time(s) between {{ first_failure_at }} and {{ last_failure_at }}.<br>
                     {% endblocktranslate %}
                 </p>
                 <p>
@@ -107,3 +107,42 @@
     </ul>
 {% endif %}
 
+{% if invalid_registration_backends %}
+    <h5>{% trans "Registration backends problems" %}</h5>
+    <ul>
+        <ul>
+        {% for failed_backend in invalid_registration_backends %}
+            <li>
+                <p>
+                    {% blocktranslate with name=failed_backend.config_name message=failed_backend.exception_message trimmed %}
+                        The configuration for plugin '{{ name }}' is invalid.<br>
+                        ({{ message }})<br>
+                    {% endblocktranslate %}
+                </p>
+                <p>
+                    {% blocktranslate with form_name=failed_backend.form_name trimmed %}
+                        This affects form '{{ form_name }}'
+                    {% endblocktranslate %}
+                </p>
+                <p><a href="{{ failed_backend.admin_link }}">{% trans "View form" %}</a></p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if invalid_logic_rules %}
+    <h5>{% trans "Logic rules problems" %}</h5>
+    <ul>
+        <ul>
+        {% for logic_rule in invalid_logic_rules %}
+            <li>
+                <p>
+                    {% blocktranslate with var=logic_rule.variable form_name=logic_rule.form_name trimmed %}
+                        Logic rule for variable '{{ var }}' is invalid in form '{{ form_name }}'.<br>
+                    {% endblocktranslate %}
+                </p>
+                <p><a href="{{ logic_rule.admin_link }}">{% trans "View form" %}</a></p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

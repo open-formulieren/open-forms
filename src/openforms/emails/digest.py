@@ -12,14 +12,24 @@ from django.utils.translation import gettext_lazy as _
 
 from django_yubin.models import Message
 from furl import furl
+from rest_framework import serializers
 from simple_certmanager.models import Certificate
 
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
+from openforms.forms.models import Form
+from openforms.forms.models.form_registration_backend import FormRegistrationBackend
+from openforms.forms.models.logic import FormLogic
+from openforms.logging import logevent
 from openforms.logging.models import TimelineLogProxy
+from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.registrations.registry import register
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
 from openforms.typing import StrOrPromise
+from openforms.utils.json_logic.introspection import introspect_json_logic
+from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.service import get_static_variables
 
 
 @dataclass
@@ -88,6 +98,36 @@ class InvalidCertificate:
             kwargs={"object_id": self.id},
         )
         return form_admin_url
+
+
+@dataclass
+class InvalidRegistrationBackend:
+    config_name: StrOrPromise
+    exception_message: str
+    form_name: str
+    form_id: int | None = None
+
+    @property
+    def admin_link(self) -> str:
+        form_admin_url = reverse(
+            "admin:forms_form_change", kwargs={"object_id": self.form_id}
+        )
+        return form_admin_url
+
+    @property
+    def form_level(self) -> bool:
+        return bool(self.form_id)
+
+
+@dataclass
+class InvalidLogicRule:
+    variable: str
+    form_name: str
+    form_id: int
+
+    @property
+    def admin_link(self) -> str:
+        return reverse("admin:forms_form_change", kwargs={"object_id": self.form_id})
 
 
 def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
@@ -257,3 +297,119 @@ def collect_invalid_certificates() -> list[InvalidCertificate]:
             )
 
     return invalid_certs
+
+
+def collect_invalid_registration_backends() -> list[InvalidRegistrationBackend]:
+    registration_backends = (
+        backend
+        for backend in FormRegistrationBackend.objects.select_related("form").iterator()
+        if backend.form.is_available
+    )
+
+    checked_plugins = set()
+    invalid_registration_backends = []
+    for registration_backend in registration_backends:
+        form_name = registration_backend.form.admin_name
+        form = registration_backend.form
+        backend_options = registration_backend.options
+        backend_type = registration_backend.backend
+        plugin = register[backend_type]
+
+        # errors in general configuration are more straightforward for the user,
+        # so we show the exact ones
+        plugin_cls = type(plugin)
+        if plugin_cls not in checked_plugins:
+            try:
+                plugin.check_config()
+            # we always raise an InvalidPluginConfiguration exception even when we have
+            # errors like HTTPError
+            except InvalidPluginConfiguration as e:
+                invalid_registration_backends.append(
+                    InvalidRegistrationBackend(
+                        config_name=plugin.verbose_name,
+                        exception_message=e.args[0],
+                        form_name=form_name,
+                        form_id=form.id,
+                    )
+                )
+                checked_plugins.add(plugin_cls)
+
+        # errors in the form level can be more detailed so here we want to show
+        # a more general error and the link to the broken form to investigate
+        serializer = plugin.configuration_options(
+            data=backend_options,
+            context={"validate_business_logic": True},
+        )
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError:
+            invalid_registration_backends.append(
+                InvalidRegistrationBackend(
+                    config_name=plugin.verbose_name,
+                    exception_message=_(
+                        "Invalid registration backend configuration detected"
+                    ),
+                    form_name=form_name,
+                    form_id=form.id,
+                )
+            )
+
+    return invalid_registration_backends
+
+
+def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
+    forms = Form.objects.live().prefetch_related("formvariable_set")
+    static_variables = {
+        var.key: {"source": var.source, "type": var.data_type}
+        for var in get_static_variables()
+    }
+
+    invalid_logic_rules = []
+    for form in forms:
+        form_variables = {
+            form_variable.key: {
+                "source": form_variable.source,
+                "type": form_variable.data_type,
+            }
+            for form_variable in form.formvariable_set.all()
+        }
+
+        all_keys = list(static_variables) + list(form_variables)
+
+        form_logics = FormLogic.objects.filter(form=form)
+        form_logics_vars = [
+            var
+            for logic in form_logics
+            for var in introspect_json_logic(logic.json_logic_trigger).get_input_keys()
+        ]
+
+        for var in form_logics_vars:
+            outer, *nested = var.key.split(".")
+
+            if var.key not in all_keys:
+                if nested and (
+                    (
+                        outer in form_variables
+                        and form_variables[outer]["type"]
+                        in [FormVariableDataTypes.object, FormVariableDataTypes.array]
+                        and form_variables[outer]["source"] == "user_defined"
+                    )
+                    or (
+                        outer in static_variables
+                        and static_variables[outer]["type"]
+                        in [FormVariableDataTypes.object, FormVariableDataTypes.array]
+                    )
+                ):
+                    logevent.invalid_variable_reference_in_logic(form, var.key)
+
+                else:
+                    invalid_logic_rules.append(
+                        InvalidLogicRule(
+                            variable=var.key,
+                            form_name=form.admin_name,
+                            form_id=form.id,
+                        )
+                    )
+
+    return invalid_logic_rules

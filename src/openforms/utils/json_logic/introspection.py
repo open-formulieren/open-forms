@@ -1,5 +1,5 @@
 """
-Introspection of sonLogic expression, based on our json_logic.meta extension.
+Introspection of JsonLogic expression, based on our json_logic.meta extension.
 """
 
 from json_logic.meta import JSONLogicExpression
