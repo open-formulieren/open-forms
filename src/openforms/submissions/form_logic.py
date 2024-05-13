@@ -14,7 +14,7 @@ from openforms.typing import DataMapping
 
 from .logic.actions import ActionOperation
 from .logic.datastructures import DataContainer
-from .logic.rules import EvaluatedRule, get_rules_to_evaluate, iter_evaluate_rules
+from .logic.rules import get_rules_to_evaluate, iter_evaluate_rules
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:
@@ -88,7 +88,6 @@ def evaluate_form_logic(
 
     # 5. Evaluate the logic rules in order
     mutation_operations = []
-    evaluated_rules: list[EvaluatedRule] = []
 
     # 5.1 - if the action type is to set a variable, update the variable state. This
     # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed
@@ -99,7 +98,6 @@ def evaluate_form_logic(
         for operation in iter_evaluate_rules(
             rules,
             data_container,
-            on_rule_check=evaluated_rules.append,
             submission=submission,
         ):
             mutation_operations.append(operation)

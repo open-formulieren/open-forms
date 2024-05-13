@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from typing import Callable, Iterable, Iterator
+from typing import Iterable, Iterator
 
 import elasticapm
 from json_logic import jsonLogic
@@ -107,17 +106,10 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
     return step
 
 
-@dataclass()
-class EvaluatedRule:
-    rule: FormLogic
-    triggered: bool
-
-
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
     data_container: DataContainer,
     submission: Submission,
-    on_rule_check: Callable[[EvaluatedRule], None] = lambda noop: None,
 ) -> Iterator[ActionOperation]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations.
@@ -148,10 +140,7 @@ def iter_evaluate_rules(
                     jsonLogic(rule.json_logic_trigger, data_container.data)
                 )
 
-            evaluated_rule = EvaluatedRule(rule=rule, triggered=triggered)
-
             if not triggered:
-                on_rule_check(evaluated_rule)
                 continue
 
             for operation in rule.action_operations:
@@ -160,4 +149,3 @@ def iter_evaluate_rules(
                 ):
                     data_container.update(mutations)
                 yield operation
-            on_rule_check(evaluated_rule)
