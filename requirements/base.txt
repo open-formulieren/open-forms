@@ -279,8 +279,6 @@ inflection==0.5.1
     # via
     #   django-camunda
     #   drf-spectacular
-iso3166==2.1.1
-    # via schwifty
 isodate==0.6.1
     # via
     #   maykin-json-logic-py
@@ -453,11 +451,13 @@ rpds-py==0.18.0
     # via
     #   jsonschema
     #   referencing
+rstr==3.2.2
+    # via schwifty
 ruamel-yaml==0.17.32
     # via prance
 ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
-schwifty==2024.4.0
+schwifty==2024.5.3
     # via -r requirements/base.in
 self-certifi==1.0.0
     # via -r requirements/base.in
@@ -505,6 +505,7 @@ typing-extensions==4.9.0
     #   -r requirements/base.in
     #   asgiref
     #   qrcode
+    #   schwifty
     #   zgw-consumers
 tzdata==2023.3
     # via

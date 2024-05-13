@@ -576,11 +576,6 @@ iniconfig==1.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pytest
-iso3166==2.1.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   schwifty
 isodate==0.6.1
     # via
     #   -c requirements/ci.txt
@@ -1000,6 +995,11 @@ rpds-py==0.18.0
     #   -r requirements/ci.txt
     #   jsonschema
     #   referencing
+rstr==3.2.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   schwifty
 ruamel-yaml==0.17.32
     # via
     #   -c requirements/ci.txt
@@ -1010,7 +1010,7 @@ ruamel-yaml-clib==0.2.7
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   ruamel-yaml
-schwifty==2024.4.0
+schwifty==2024.5.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1186,6 +1186,7 @@ typing-extensions==4.9.0
     #   black
     #   pyee
     #   qrcode
+    #   schwifty
     #   zgw-consumers
 tzdata==2023.3
     # via
