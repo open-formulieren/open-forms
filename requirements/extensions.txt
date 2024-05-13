@@ -427,10 +427,6 @@ inflection==0.5.1
     #   -r requirements/base.txt
     #   django-camunda
     #   drf-spectacular
-iso3166==2.1.1
-    # via
-    #   -r requirements/base.txt
-    #   schwifty
 isodate==0.6.1
     # via
     #   -r requirements/base.txt
@@ -711,6 +707,10 @@ rpds-py==0.18.0
     #   -r requirements/base.txt
     #   jsonschema
     #   referencing
+rstr==3.2.2
+    # via
+    #   -r requirements/base.txt
+    #   schwifty
 ruamel-yaml==0.17.32
     # via
     #   -r requirements/base.txt
@@ -719,7 +719,7 @@ ruamel-yaml-clib==0.2.7
     # via
     #   -r requirements/base.txt
     #   ruamel-yaml
-schwifty==2024.4.0
+schwifty==2024.5.3
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -793,6 +793,7 @@ typing-extensions==4.9.0
     #   -r requirements/base.txt
     #   asgiref
     #   qrcode
+    #   schwifty
     #   zgw-consumers
 tzdata==2023.3
     # via
