@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-13 16:29+0200\n"
+"POT-Creation-Date: 2024-05-13 17:04+0200\n"
 "PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -3802,15 +3802,27 @@ msgstr "Bevestiging"
 msgid "Co-sign confirmation"
 msgstr "Mede-ondertekeningbevestiging"
 
-#: openforms/emails/digest.py:179
+#: openforms/emails/digest.py:199
 msgid "BRK Client"
 msgstr "BRK client"
 
-#: openforms/emails/digest.py:186
+#: openforms/emails/digest.py:206
 #, fuzzy
 #| msgid "BRK Client"
 msgid "BAG Client"
 msgstr "BRK client"
+
+#: openforms/emails/digest.py:216
+msgid "will expire soon"
+msgstr ""
+
+#: openforms/emails/digest.py:217
+msgid "has invalid keypair"
+msgstr ""
+
+#: openforms/emails/digest.py:218
+msgid "invalid keypair, will expire soon"
+msgstr ""
 
 #: openforms/emails/models.py:26
 msgid "Subject of the email message"
@@ -3853,7 +3865,7 @@ msgstr "(formulier onbekend)"
 msgid "Confirmation email template - {form}"
 msgstr "Bevestigingse-mail sjabloon - {form}"
 
-#: openforms/emails/tasks.py:60
+#: openforms/emails/tasks.py:63
 msgid "[Open Forms] Daily summary of detected problems"
 msgstr "[Open Formulieren] Dagelijks rapport van gedetecteerde problemen"
 
@@ -3948,6 +3960,34 @@ msgid ""
 msgstr ""
 "De instellingen voor '%(name)s' zijn niet geldig (<i>%(message)s</i>). <br> "
 "Component of plugins die hiervan gebruik maken zullen niet goed werken."
+
+#: openforms/emails/templates/emails/admin_digest.html:82
+msgid "Found invalid certificates"
+msgstr ""
+
+#: openforms/emails/templates/emails/admin_digest.html:89
+#, python-format
+msgid "%(certificate_label)s: %(message)s (%(expiry_date)s)."
+msgstr ""
+
+#: openforms/emails/templates/emails/admin_digest.html:93
+#, python-format
+msgid "%(certificate_label)s: %(message)s."
+msgstr ""
+
+#: openforms/emails/templates/emails/admin_digest.html:100
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "                        View failed '%(form_name)s' submissions\n"
+#| "                    "
+msgid ""
+"\n"
+"                        View invalid certificate '%(certificate_label)s'\n"
+"                    "
+msgstr ""
+"\n"
+"Toon gefaalde '%(form_name)s' inzendingen"
 
 #: openforms/emails/templates/emails/confirmation/content.html:7
 #, python-format
@@ -8152,8 +8192,8 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-ondertekencomponent vereist de configuratie van "
-"'{field_label}' ({config_verbose_name})."
+"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
+"({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
 msgid "Retrieve details of a single product"
