@@ -404,11 +404,6 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("When enabled, information about the used SDK is displayed."),
     )
 
-    enable_backend_formio_validation = models.BooleanField(
-        _("enabled backend formio validation"),
-        default=True,
-    )
-
     # Removing data configurations
     successful_submissions_removal_limit = models.PositiveIntegerField(
         _("successful submission removal limit"),

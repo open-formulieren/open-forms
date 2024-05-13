@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.7.0-alpha.1 (2024-XX-XX)
+==========================
+
+This is an alpha release, meaning it is not finished yet or suitable for production use.
+
+Upgrade notes
+-------------
+
+* ⚠️ The feature flag to disable backend validation is now removed, instances relying
+  on it should verify that their existing forms works with the validation enforced.
+
 2.6.6 (2024-05-13)
 ==================
 
@@ -222,7 +233,7 @@ Bugfix release
 2.6.3 (2024-04-10)
 ==================
 
-Bugfix release following feeback on 2.6.2
+Bugfix release following feedback on 2.6.2
 
 * [:backend:`4126`] Fixed incorrect validation of components inside repeating groups that are
   conditionally visible (with frontend logic).
@@ -635,7 +646,7 @@ Detailed changes
 
 **Project maintenance**
 
-* Updated to Python 3.10+ typing syntax
+* Updated to Python 3.10+ typing syntax.
 * Update contributing documentation regarding type annotations.
 * [:backend:`3806`] Added email field to customer detail fields for demo appointments plugin.
 * Updated CI action versions to use the latest NodeJS version.
