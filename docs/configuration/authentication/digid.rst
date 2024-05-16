@@ -69,7 +69,7 @@ Step by step overview
    details.
 
 .. _`PKIoverheid Private Services Server G1`: https://cert.pkioverheid.nl/
-.. _`PKIO SSL certificate supplier`: https://logius.nl/diensten/pkioverheid/aanvragen
+.. _`PKIO SSL certificate supplier`: https://www.logius.nl/domeinen/toegang/pkioverheidcertificaat-aanvragen
 .. _`DigiD`: https://www.digid.nl/
 .. _`Logius`: https://www.logius.nl/diensten/digid
 
