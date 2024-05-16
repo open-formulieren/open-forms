@@ -17,8 +17,8 @@ def get_wrapper_context(html_content="", theme: Theme | None = None):
         "main_website_url": config.main_website,
         "style": _get_design_token_values(design_tokens),
     }
-    if theme.logo:
-        ctx["logo_url"] = build_absolute_uri(theme.logo.url)
+    if email_logo := theme.email_logo or theme.logo:
+        ctx["logo_url"] = build_absolute_uri(email_logo.url)
 
     return ctx
 

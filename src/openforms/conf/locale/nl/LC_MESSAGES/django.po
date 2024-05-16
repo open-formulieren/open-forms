@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-13 17:04+0200\n"
+"POT-Creation-Date: 2024-05-16 16:38+0200\n"
 "PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -2995,24 +2995,42 @@ msgstr ""
 "Upload het logo van de gemeente dat zichtbaar is op de formulierwebsite. We "
 "adviseren de dimensies van 150 x 75 pixels. SVG-bestanden zijn toegestaan."
 
+#: openforms/config/models/theme.py:51
+#, fuzzy
+#| msgid "theme logo"
+msgid "email logo"
+msgstr "logo"
+
 #: openforms/config/models/theme.py:55
+#, fuzzy
+#| msgid ""
+#| "Upload the theme/orgnization logo, visible to users filling out forms. We "
+#| "advise dimensions around 150px by 75px. SVG's are permitted."
+msgid ""
+"Upload the email logo, visible to users who receive an email. We advise "
+"dimensions around 150px by 75px. SVG's are not permitted."
+msgstr ""
+"Upload het logo van de gemeente dat zichtbaar is op de formulierwebsite. We "
+"adviseren de dimensies van 150 x 75 pixels. SVG-bestanden zijn toegestaan."
+
+#: openforms/config/models/theme.py:64
 msgid "theme CSS class name"
 msgstr "Thema CSS class name"
 
-#: openforms/config/models/theme.py:57
+#: openforms/config/models/theme.py:66
 msgid "If provided, this class name will be set on the <html> element."
 msgstr ""
 "Indien ingevuld, dan wordt deze class name aan het <html> element toegevoegd."
 
-#: openforms/config/models/theme.py:60
+#: openforms/config/models/theme.py:69
 msgid "theme stylesheet URL"
 msgstr "Stylesheet-URL thema"
 
-#: openforms/config/models/theme.py:66
+#: openforms/config/models/theme.py:75
 msgid "The URL must point to a CSS resource (.css extension)."
 msgstr "De URL moet naar een CSS bestand wijzen (.css extensie)."
 
-#: openforms/config/models/theme.py:70
+#: openforms/config/models/theme.py:79
 msgid ""
 "The URL stylesheet with theme-specific rules for your organization. This "
 "will be included as final stylesheet, overriding previously defined styles. "
@@ -3026,11 +3044,11 @@ msgstr ""
 "`style-src` CSP configuratie moet toevoegen. Voorbeeldwaarde: https://unpkg."
 "com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
 
-#: openforms/config/models/theme.py:77
+#: openforms/config/models/theme.py:86
 msgid "theme stylesheet"
 msgstr "Stylesheet thema"
 
-#: openforms/config/models/theme.py:82
+#: openforms/config/models/theme.py:91
 msgid ""
 "A stylesheet with theme-specific rules for your organization. This will be "
 "included as final stylesheet, overriding previously defined styles. If both "
@@ -3042,11 +3060,11 @@ msgstr ""
 "stylesheet-URL en -bestand opgeeft, dan wordt het bestand na de URL "
 "ingeladen."
 
-#: openforms/config/models/theme.py:106
+#: openforms/config/models/theme.py:115
 msgid "design token values"
 msgstr "design token waarden"
 
-#: openforms/config/models/theme.py:110
+#: openforms/config/models/theme.py:119
 msgid ""
 "Values of various style parameters, such as border radii, background "
 "colors... Note that this is advanced usage. Any available but un-specified "
@@ -3060,12 +3078,12 @@ msgstr ""
 "latest/installation/form_hosting.html#run-time-configuration voor "
 "documentatie."
 
-#: openforms/config/models/theme.py:118
+#: openforms/config/models/theme.py:127
 #: openforms/forms/api/serializers/form.py:150
 msgid "theme"
 msgstr "stijl"
 
-#: openforms/config/models/theme.py:119
+#: openforms/config/models/theme.py:128
 msgid "themes"
 msgstr "stijlen"
 
@@ -8192,8 +8210,8 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
-"({config_verbose_name})."
+"Het mede-ondertekencomponent vereist de configuratie van "
+"'{field_label}' ({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
 msgid "Retrieve details of a single product"
