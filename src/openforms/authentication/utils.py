@@ -1,5 +1,3 @@
-from typing import Literal, TypedDict
-
 from furl import furl
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
@@ -10,17 +8,7 @@ from openforms.submissions.models import Submission
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
-
-
-class BaseAuth(TypedDict):
-    plugin: str
-    attribute: Literal[
-        AuthAttribute.bsn,
-        AuthAttribute.kvk,
-        AuthAttribute.pseudo,
-        AuthAttribute.employee_id,
-    ]
-    value: str
+from .typing import BaseAuth
 
 
 class FormAuth(BaseAuth):
