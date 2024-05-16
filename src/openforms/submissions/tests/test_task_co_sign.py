@@ -9,8 +9,39 @@ from openforms.logging.models import TimelineLogProxy
 from ..tasks import send_email_cosigner
 from .factories import SubmissionFactory
 
+CO_SIGN_REQUEST_TEMPLATE = r"""
+<p>
+    This is a request to co-sign form "{{ form_name }}".
+</p>
+
+<p>
+Please visit the form page by navigating to the following link: {{ form_url }}.
+</p>
+
+<p>
+    You will then be redirected to authenticate yourself. After authentication, fill in
+    the following code to retrieve the form submission:
+    <br>
+    <br>
+    <strong>{{ code }}</strong>
+</p>
+"""
+
 
 class OnCompletionTests(TestCase):
+
+    def setUp(self):
+        super().setUp()
+
+        patcher = patch(
+            "openforms.submissions.tasks.emails.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                cosign_request_template=CO_SIGN_REQUEST_TEMPLATE
+            ),
+        )
+        self.m_get_solo = patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_no_cosigner_component_in_form(self):
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -98,11 +129,7 @@ class OnCompletionTests(TestCase):
 
         self.assertEqual(email.recipients(), ["test@test.nl"])
 
-    @patch("openforms.submissions.tasks.emails.GlobalConfiguration.get_solo")
-    def test_form_link_allowed_in_email(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(
-            show_form_link_in_cosign_email=True
-        )
+    def test_form_link_allowed_in_email(self):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -122,11 +149,13 @@ class OnCompletionTests(TestCase):
 
         self.assertIn(form_link, email.body)
 
-    @patch("openforms.submissions.tasks.emails.GlobalConfiguration.get_solo")
-    def test_form_link_not_allowed_in_email(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(
-            show_form_link_in_cosign_email=False
-        )
+    def test_form_link_not_allowed_in_email(self):
+        self.m_get_solo.return_value.cosign_request_template = r"""
+            {{ form_name }}
+            <br>
+            {{ code }}
+        """
+
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -145,3 +174,4 @@ class OnCompletionTests(TestCase):
         form_link = submission.form_url
 
         self.assertNotIn(form_link, email.body)
+        self.assertIn(submission.public_registration_reference, email.body)
