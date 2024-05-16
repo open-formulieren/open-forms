@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from django.utils.translation import gettext_lazy as _
 
+from openforms.authentication.service import AuthAttribute, BaseAuth
 from openforms.plugins.registry import BaseRegistry
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
@@ -77,3 +79,73 @@ class PaymentPublicOrderIds(BaseStaticVariable):
         if submission is None:
             return None
         return submission.payments.get_completed_public_order_ids()
+
+
+@register("cosign_data")
+class Cosign(BaseStaticVariable):
+    name = _("Co-sign data")
+    data_type = FormVariableDataTypes.object
+
+    def get_initial_value(
+        self, submission: Submission | None = None
+    ) -> BaseAuth | None:
+        if not submission or not submission.cosign_complete:
+            return None
+
+        return submission.co_sign_data
+
+
+def get_cosign_value(submission: Submission | None, attribute: AuthAttribute) -> str:
+    if not submission or not submission.cosign_complete:
+        return ""
+
+    if submission.co_sign_data["attribute"] == attribute:
+        return submission.co_sign_data["value"]
+
+    return ""
+
+
+@register("cosign_date")
+class CosignDate(BaseStaticVariable):
+    name = _("Co-sign date")
+    data_type = FormVariableDataTypes.datetime
+
+    def get_initial_value(
+        self, submission: Submission | None = None
+    ) -> datetime | None:
+        if not submission or not submission.cosign_complete:
+            return None
+
+        if (cosign_date := submission.co_sign_data.get("cosign_date")) is None:
+            # Can be the case on existing submissions, at some point we can switch back to
+            # `__getitem__` ([...]).
+            return None
+
+        return datetime.fromisoformat(cosign_date)
+
+
+@register("cosign_bsn")
+class CosignBSN(BaseStaticVariable):
+    name = _("Co-sign BSN")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        return get_cosign_value(submission, AuthAttribute.bsn)
+
+
+@register("cosign_kvk")
+class CosignKvK(BaseStaticVariable):
+    name = _("Co-sign KvK")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        return get_cosign_value(submission, AuthAttribute.kvk)
+
+
+@register("cosign_pseudo")
+class CosignPseudo(BaseStaticVariable):
+    name = _("Co-sign pseudo")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        return get_cosign_value(submission, AuthAttribute.pseudo)
