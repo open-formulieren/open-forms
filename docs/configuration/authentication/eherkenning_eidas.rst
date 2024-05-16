@@ -72,7 +72,7 @@ Step by step overview
 4. Your eHerkenning supplier will inform you when everything is set up.
 
 .. _`PKIoverheid Private Services Server G1`: https://cert.pkioverheid.nl/
-.. _`PKIO SSL certificate supplier`: https://logius.nl/diensten/pkioverheid/aanvragen
+.. _`PKIO SSL certificate supplier`: https://www.logius.nl/domeinen/toegang/pkioverheidcertificaat-aanvragen
 .. _`eHerkenning`: https://www.logius.nl/diensten/eherkenning
 .. _`eIDAS`: https://www.logius.nl/diensten/eidas
 .. _`approved eHerkenning supplier`: https://eherkenning.nl/nl/eherkenning-gebruiken/leveranciersoverzicht
