@@ -20,6 +20,7 @@ from playwright.async_api import Page, expect
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.formio.typing import Component, DateComponent, RadioComponent
 from openforms.forms.models import Form
+from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.tests.factories import TemporaryFileUploadFactory
 
 from .base import browser_page
@@ -684,6 +685,7 @@ class SingleLicenseplateTests(ValidationsTestCase):
 
 
 class SingleFileTests(ValidationsTestCase):
+    fuzzy_match_invalid_param_names = True
 
     def assertFileValidationIsAligned(
         self,
@@ -750,26 +752,23 @@ class SingleFileTests(ValidationsTestCase):
 
         # The frontend validation will *not* create a TemporaryFileUpload,
         # as the endpoint will return a 400 because of the bad content type.
-        # For this reason, we manually create an invalid TemporaryFileUpload
-        # and use it for the `api_value`:
-        with open(TEST_FILES / "image-256x256.pdf", "rb") as infile:
-            temporary_upload = TemporaryFileUploadFactory.create(
-                file_name="image-256x256.pdf",
-                content=File(infile),
-                content_type="application/pdf",
-            )
+        # For this reason, we use a random UUID for the `api_value`
 
         self.assertFileValidationIsAligned(
             component,
             ui_files=[TEST_FILES / "image-256x256.pdf"],
             expected_ui_error="Het bestand is geen .pdf.",
             api_value=[
-                SubmittedFileFactory.create(
-                    temporary_upload=temporary_upload,
+                SubmittedFileFactory.build(
                     type="application/pdf",
+                    url="http://localhost/api/v2/submissions/files/d4c97feb-68f6-4b85-9b78-7a74ee48b072",
+                    data__url="http://localhost/api/v2/submissions/files/d4c97feb-68f6-4b85-9b78-7a74ee48b072",
                 )
             ],
         )
+
+        # Make sure the frontend did not create one:
+        self.assertFalse(TemporaryFileUpload.objects.exists())
 
     def test_forbidden_file_type(self):
         component = {
@@ -790,7 +789,8 @@ class SingleFileTests(ValidationsTestCase):
         }
 
         # The frontend validation will *not* create a TemporaryFileUpload,
-        # as the endpoint will return a 400 because of the forbidden file type.
+        # as the frontend will block the upload because of the invalid file type.
+        # However the user could do an handcrafted API call.
         # For this reason, we manually create an invalid TemporaryFileUpload
         # and use it for the `api_value`:
         with open(TEST_FILES / "image-256x256.png", "rb") as infile:
@@ -811,3 +811,6 @@ class SingleFileTests(ValidationsTestCase):
                 )
             ],
         )
+
+        # Make sure the frontend did not create one:
+        self.assertEqual(TemporaryFileUpload.objects.count(), 1)

@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import ClassVar, TypedDict
 
 from django.test import override_settings, tag
 from django.urls import reverse
@@ -52,6 +52,13 @@ class ValidationKwargs(TypedDict):
 # allow all origins, since we don't know exactly the generated live server port number
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
+    fuzzy_match_invalid_param_names: ClassVar[bool] = False
+    """Whether the key of the component under test should match strictly against the invalid param names or not.
+
+    For complex components (i.e. fileuploads), the error can happen on a nested key. Setting
+    this attribute to ``True`` will result in the checking if any of the invalid param names starts with
+    the component key.
+    """
 
     def assertValidationIsAligned(
         self,
@@ -133,7 +140,7 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
         # step data validation is run *if* a value is provided - it ignores empty data
         # for fields that are required. So we accept an HTTP 400, or if a 200/201 is
         # returned, then we apply additional checks with the _complete endpoint.
-        assert response.status_code in [201, 200, 400]
+        assert response.status_code in (201, 200, 400)
 
         match response.status_code:
             case 201 | 200:
@@ -159,6 +166,11 @@ class ValidationsTestCase(SubmissionsMixin, E2ETestCase):
                 invalid_params = response.json()["invalidParams"]
                 names = [param["name"] for param in invalid_params]
                 expected_name = f"data.{key}"
-                # For complex components (i.e. fileuploads), the error can
-                # be a nested key, so we check for `.startswith`:
-                self.assertTrue(any(name.startswith(expected_name) for name in names))
+
+        if self.fuzzy_match_invalid_param_names:
+            self.assertTrue(
+                expected_name in names
+                or any(name.startswith(f"{expected_name}.") for name in names)
+            )
+        else:
+            self.assertIn(expected_name, names)
