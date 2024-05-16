@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -129,6 +130,10 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 {
                     "variable_key": "payment_public_order_ids",
                     "target_path": ["submission_payment_public_ids"],
+                },
+                {
+                    "variable_key": "cosign_date",
+                    "target_path": ["cosign_date"],
                 },
                 # fmt: on
             ],
@@ -274,10 +279,6 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": "-dummy-",
             "objecttype_version": 1,
-            "upload_submission_csv": False,
-            "informatieobjecttype_submission_report": "-dummy-",
-            "informatieobjecttype_attachment": "",
-            "organisatie_rsin": "000000000",
             "variables_mapping": [
                 {
                     "variable_key": "location",
@@ -320,10 +321,6 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": "-dummy-",
             "objecttype_version": 1,
-            "upload_submission_csv": False,
-            "informatieobjecttype_submission_report": "",
-            "informatieobjecttype_attachment": "",
-            "organisatie_rsin": "000000000",
             "variables_mapping": [
                 {
                     "variable_key": "fieldset.textfield",
@@ -362,10 +359,6 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": "-dummy-",
             "objecttype_version": 1,
-            "upload_submission_csv": False,
-            "informatieobjecttype_submission_report": "",
-            "informatieobjecttype_attachment": "",
-            "organisatie_rsin": "000000000",
             "variables_mapping": [
                 {
                     "variable_key": "textfield",
@@ -379,3 +372,148 @@ class V2HandlerTests(TestCase):
 
         record_data = object_data["record"]["data"]
         self.assertEqual(record_data["textfield"], "some_string")
+
+    def test_cosign_info_available(self):
+        now = timezone.now().isoformat()
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "validate": {"required": False},
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "cosign": "example@localhost",
+            },
+            cosign_complete=True,
+            co_sign_data={
+                "value": "123456789",
+                "attribute": AuthAttribute.bsn,
+                "cosign_date": now,
+            },
+        )
+
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objecttype": "-dummy-",
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "cosign_data",
+                    "target_path": ["cosign_data"],
+                },
+                {
+                    "variable_key": "cosign_date",
+                    "target_path": ["cosign_date"],
+                },
+                {
+                    "variable_key": "cosign_bsn",
+                    "target_path": ["cosign_bsn"],
+                },
+                {
+                    "variable_key": "cosign_kvk",  # Will be empty string as bsn was used.
+                    "target_path": ["cosign_kvk"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
+
+        record_data = object_data["record"]["data"]
+        self.assertEqual(
+            record_data["cosign_data"],
+            {
+                "value": "123456789",
+                "attribute": AuthAttribute.bsn,
+                "cosign_date": now,
+            },
+        )
+        self.assertEqual(record_data["cosign_date"], now)
+        self.assertEqual(record_data["cosign_bsn"], "123456789")
+        self.assertEqual(record_data["cosign_kvk"], "")
+
+    def test_cosign_info_not_available(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "validate": {"required": False},
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "cosign": "example@localhost",
+            },
+            cosign_complete=False,
+        )
+
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objecttype": "-dummy-",
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "cosign_date",
+                    "target_path": ["cosign_date"],
+                },
+                {
+                    "variable_key": "cosign_bsn",
+                    "target_path": ["cosign_bsn"],
+                },
+                {
+                    "variable_key": "cosign_pseudo",  # Will be empty string as bsn was used.
+                    "target_path": ["cosign_pseudo"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
+
+        record_data = object_data["record"]["data"]
+        self.assertEqual(record_data["cosign_date"], None)
+        self.assertEqual(record_data["cosign_pseudo"], "")
+
+    def test_cosign_info_no_cosign_date(self):
+        """The cosign date might not be available on existing submissions."""
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "validate": {"required": False},
+                },
+            ],
+            completed=True,
+            submitted_data={
+                "cosign": "example@localhost",
+            },
+            cosign_complete=False,
+        )
+
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objecttype": "-dummy-",
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "cosign_date",
+                    "target_path": ["cosign_date"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
+
+        record_data = object_data["record"]["data"]
+        self.assertEqual(record_data["cosign_date"], None)
