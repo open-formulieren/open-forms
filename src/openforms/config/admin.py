@@ -34,11 +34,7 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
         (
             _("Confirmation Email"),
             {
-                "fields": (
-                    "confirmation_email_subject",
-                    "confirmation_email_content",
-                    "show_form_link_in_cosign_email",
-                ),
+                "fields": ("confirmation_email_subject", "confirmation_email_content"),
             },
         ),
         (
@@ -48,6 +44,12 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                     "save_form_email_subject",
                     "save_form_email_content",
                 ),
+            },
+        ),
+        (
+            _("Co-sign emails"),
+            {
+                "fields": ("cosign_request_template",),
             },
         ),
         (_("General Email settings"), {"fields": ("recipients_email_digest",)}),

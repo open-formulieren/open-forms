@@ -67,3 +67,31 @@ class MigrateToOrderIdTemplateNewMigrationTests(TestMigrations):
         self.assertEqual(
             config.payment_order_id_template, "{year}/{public_reference}/{uid}"
         )
+
+
+class MigrateToCoSignRequestTemplateWithNoLinksOption(TestMigrations):
+    app = "config"
+    migrate_from = "0057_migrate_to_order_id_template"
+    migrate_to = "0058_globalconfiguration_cosign_request_template_and_more"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+        GlobalConfiguration.objects.create(show_form_link_in_cosign_email=False)
+
+    def test_template_does_not_contain_form_url_var(self):
+        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
+        config = GlobalConfiguration.objects.get()
+
+        with self.subTest("Link setting respected"):
+            self.assertNotIn(r"{{ form_url }}", config.cosign_request_template_en)
+            self.assertNotIn(r"{{ form_url }}", config.cosign_request_template_nl)
+
+        with self.subTest("Translated in migrations"):
+            self.assertTrue(
+                config.cosign_request_template_en.startswith(
+                    "<p>This is a request to co-sign"
+                )
+            )
+            self.assertTrue(
+                config.cosign_request_template_nl.startswith("<p>Dit is een verzoek")
+            )
