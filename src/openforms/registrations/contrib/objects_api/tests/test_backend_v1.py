@@ -1299,7 +1299,7 @@ class V1HandlerTests(TestCase):
             "content_json": textwrap.dedent(
                 """
                 {
-                    "cosign_date": "{{ cosign_data.date }}",
+                    "cosign_date": "{{ cosign_data.date.isoformat }}",
                     "cosign_bsn": "{{ cosign_data.bsn }}",
                     "cosign_kvk": "{{ cosign_data.kvk }}",
                     "cosign_pseudo": "{{ cosign_data.pseudo }}"

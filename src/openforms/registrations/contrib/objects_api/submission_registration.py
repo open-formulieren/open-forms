@@ -280,21 +280,23 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         }
 
     @staticmethod
-    def get_cosign_context_data(submission: Submission) -> dict[str, Any]:
+    def get_cosign_context_data(
+        submission: Submission,
+    ) -> dict[str, str | datetime] | None:
         if not submission.cosign_complete:
-            return {
-                "bsn": "",
-                "kvk": "",
-                "pseudo": "",
-                "date": "",
-            }
+            return None
         else:
+            # date can be missing on existing submissions, so fallback to an empty string
+            date = (
+                datetime.fromisoformat(submission.co_sign_data["cosign_date"])
+                if "cosign_date" in submission.co_sign_data
+                else ""
+            )
             return {
                 "bsn": get_cosign_value(submission, AuthAttribute.bsn),
                 "kvk": get_cosign_value(submission, AuthAttribute.kvk),
                 "pseudo": get_cosign_value(submission, AuthAttribute.pseudo),
-                # date can be missing on existing submissions, so fallback to an empty string
-                "date": submission.co_sign_data.get("cosign_date", ""),
+                "date": date,
             }
 
     @override
