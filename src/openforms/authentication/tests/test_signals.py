@@ -4,7 +4,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.test import override_settings, tag
 from django.test.client import RequestFactory
-from django.utils import timezone
 
 from freezegun import freeze_time
 from rest_framework.request import Request
@@ -306,7 +305,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         )
 
 
-@freeze_time("2021-11-26T17:00:00+01:00")
+@freeze_time("2021-11-26T17:00:00+00:00")
 class SetCosignDataTests(APITestCase):
     def test_set_cosigner_data(self):
         submission = SubmissionFactory.create(completed=True)
@@ -330,6 +329,6 @@ class SetCosignDataTests(APITestCase):
                 "plugin": "digid",
                 "attribute": "bsn",
                 "value": "123456782",
-                "cosign_date": timezone.localtime().isoformat(),
+                "cosign_date": "2021-11-26T17:00:00+00:00",
             },
         )

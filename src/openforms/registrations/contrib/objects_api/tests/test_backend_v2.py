@@ -496,7 +496,11 @@ class V2HandlerTests(TestCase):
             submitted_data={
                 "cosign": "example@localhost",
             },
-            cosign_complete=False,
+            cosign_complete=True,
+            co_sign_data={
+                "value": "123456789",
+                "attribute": AuthAttribute.bsn,
+            },
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
