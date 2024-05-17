@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-16 16:38+0200\n"
+"POT-Creation-Date: 2024-05-17 14:59+0200\n"
 "PO-Revision-Date: 2024-05-06 12:23+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -954,12 +954,12 @@ msgid "Products"
 msgstr "Producten"
 
 #: openforms/appointments/api/serializers.py:161
-#: openforms/submissions/api/serializers.py:383
+#: openforms/submissions/api/serializers.py:381
 msgid "status check endpoint"
 msgstr "status controle endpoint"
 
 #: openforms/appointments/api/serializers.py:164
-#: openforms/submissions/api/serializers.py:385
+#: openforms/submissions/api/serializers.py:383
 msgid ""
 "The API endpoint where the background processing status can be checked. "
 "After calling the completion endpoint, this status URL should be polled to "
@@ -4395,8 +4395,8 @@ msgstr "Form.io-integratie"
 
 #: openforms/formio/components/custom.py:179
 #: openforms/formio/components/custom.py:371
-#: openforms/formio/components/vanilla.py:107
-#: openforms/formio/components/vanilla.py:268
+#: openforms/formio/components/vanilla.py:111
+#: openforms/formio/components/vanilla.py:272
 msgid "This value does not match the required pattern."
 msgstr "De waarde komt niet overeen met het verwachte patroon."
 
@@ -4424,50 +4424,72 @@ msgstr "Welke API gebruikt wordt om familiegegevens op te halen."
 msgid "Family members type configuration"
 msgstr "Familieleden typeconfiguratie"
 
-#: openforms/formio/components/vanilla.py:185
+#: openforms/formio/components/vanilla.py:189
 msgid "Value is before minimum time"
 msgstr "De waarde is voor de minimumtijd"
 
-#: openforms/formio/components/vanilla.py:190
+#: openforms/formio/components/vanilla.py:194
 msgid "Value is after maximum time"
 msgstr "De waarde is na de maximale tijd"
 
-#: openforms/formio/components/vanilla.py:198
+#: openforms/formio/components/vanilla.py:202
 msgid "Value is not between mininum and maximum time."
 msgstr "De waarde ligt niet tussen de minimale en maximale tijd."
 
-#: openforms/formio/components/vanilla.py:393
+#: openforms/formio/components/vanilla.py:325
+#, python-brace-format
+msgid "The value of {root_key} must match the value of {nested_key} in 'data'."
+msgstr ""
+
+#: openforms/formio/components/vanilla.py:334
+#: openforms/registrations/contrib/objects_api/api/views.py:83
+msgid "Invalid URL."
+msgstr "Ongeldige URL."
+
+#: openforms/formio/components/vanilla.py:338
+#, fuzzy
+#| msgid "Size in bytes of the uploaded file."
+msgid "Size does not match the uploaded file."
+msgstr "Bestandsgrootte in bytes."
+
+#: openforms/formio/components/vanilla.py:343
+#, fuzzy
+#| msgid "Size in bytes of the uploaded file."
+msgid "Name does not match the uploaded file."
+msgstr "Bestandsgrootte in bytes."
+
+#: openforms/formio/components/vanilla.py:480
 msgid "Checkbox must be checked."
 msgstr "Het selectievakje moet aangevinkt zijn."
 
-#: openforms/formio/components/vanilla.py:424
+#: openforms/formio/components/vanilla.py:511
 #, python-brace-format
 msgid "Ensure this field has at least {min_selected_count} checked options."
 msgstr ""
 "Zorg dat dit veld {min_selected_count} of meer opties aangevinkt heeft."
 
-#: openforms/formio/components/vanilla.py:427
+#: openforms/formio/components/vanilla.py:514
 #, python-brace-format
 msgid ""
 "Ensure this field has no more than {max_selected_count} checked options."
 msgstr ""
 "Zorg dat dit veld {max_selected_count} of minder opties aangevinkt heeft."
 
-#: openforms/formio/components/vanilla.py:653
+#: openforms/formio/components/vanilla.py:740
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Een lijst van waarden was verwacht, maar kreeg \"{input_type}\"."
 
-#: openforms/formio/components/vanilla.py:654
+#: openforms/formio/components/vanilla.py:741
 msgid "This list may not be empty."
 msgstr "De lijst mag niet leeg zijn."
 
-#: openforms/formio/components/vanilla.py:655
+#: openforms/formio/components/vanilla.py:742
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
 msgstr "Zorg dat dit veld {min_length} of meer waarden heeft."
 
-#: openforms/formio/components/vanilla.py:656
+#: openforms/formio/components/vanilla.py:743
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr "Zorg dat dit veld {max_length} of minder waarden heeft."
@@ -5603,7 +5625,7 @@ msgstr ""
 "dan wordt de globale bevestingspagina gebruikt."
 
 #: openforms/forms/models/form.py:128
-#: openforms/submissions/api/serializers.py:129
+#: openforms/submissions/api/serializers.py:128
 msgid "submission allowed"
 msgstr "inzenden toegestaan"
 
@@ -7090,7 +7112,7 @@ msgstr ""
 "opgebouwd met een (optionele) globale prefix, publieke "
 "inzendingsreferentienummer en een uniek nummer."
 
-#: openforms/payments/models.py:106 openforms/submissions/api/serializers.py:98
+#: openforms/payments/models.py:106 openforms/submissions/api/serializers.py:97
 msgid "payment amount"
 msgstr "bedrag"
 
@@ -8210,8 +8232,8 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-ondertekencomponent vereist de configuratie van "
-"'{field_label}' ({config_verbose_name})."
+"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
+"({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
 msgid "Retrieve details of a single product"
@@ -8855,10 +8877,6 @@ msgstr "JSON-schema van variabele"
 #: openforms/registrations/contrib/objects_api/api/serializers.py:55
 msgid "The JSON Schema of the form variable."
 msgstr "De JSON-schemadefinitie van de formuliervariabele."
-
-#: openforms/registrations/contrib/objects_api/api/views.py:83
-msgid "Invalid URL."
-msgstr "Ongeldige URL."
 
 #: openforms/registrations/contrib/objects_api/apps.py:8
 msgid "Objects API plugin"
@@ -9567,32 +9585,32 @@ msgstr "U moet akkoord gaan met het privacybeleid."
 msgid "Submission of this form is not allowed."
 msgstr "Het is niet mogelijk om dit formulier in te zenden."
 
-#: openforms/submissions/api/serializers.py:86
+#: openforms/submissions/api/serializers.py:85
 msgid "payment required"
 msgstr "betaling benodigd"
 
-#: openforms/submissions/api/serializers.py:87
+#: openforms/submissions/api/serializers.py:86
 msgid "Whether the registration requires payment."
 msgstr "Geeft aan of de registratie betaling vereist."
 
-#: openforms/submissions/api/serializers.py:92
+#: openforms/submissions/api/serializers.py:91
 msgid "user has paid"
 msgstr "gebruiker heeft betaald"
 
-#: openforms/submissions/api/serializers.py:94
+#: openforms/submissions/api/serializers.py:93
 msgid "Whether the user has completed the required payment."
 msgstr "Indicatie of de gebruiker de betaling heeft voldaan."
 
-#: openforms/submissions/api/serializers.py:103
+#: openforms/submissions/api/serializers.py:102
 msgid "Amount (to be) paid"
 msgstr "Het te betalen bedrag"
 
-#: openforms/submissions/api/serializers.py:119
+#: openforms/submissions/api/serializers.py:118
 #: openforms/submissions/models/submission_step.py:126
 msgid "Submission steps"
 msgstr "Inzendingsstappen"
 
-#: openforms/submissions/api/serializers.py:123
+#: openforms/submissions/api/serializers.py:122
 msgid ""
 "Details of every form step of this submission's form, tracking the progress "
 "and other meta-data of each particular step."
@@ -9600,7 +9618,7 @@ msgstr ""
 "Details van elke formulierstap van deze inzending waarmee de voortgang en "
 "andere gegevens van elke stap bekeken kan worden."
 
-#: openforms/submissions/api/serializers.py:132
+#: openforms/submissions/api/serializers.py:131
 msgid ""
 "Whether the user is allowed to submit this form and whether the user should "
 "see the overview page."
@@ -9608,30 +9626,30 @@ msgstr ""
 "Geeft aan of de gebruiker het formulier kan verzenden en of de gebruiker de "
 "overzichtspagina kan zien."
 
-#: openforms/submissions/api/serializers.py:139
+#: openforms/submissions/api/serializers.py:138
 msgid "payment information"
 msgstr "betaalinformatie"
 
-#: openforms/submissions/api/serializers.py:145
+#: openforms/submissions/api/serializers.py:144
 msgid "is authenticated"
 msgstr "Is geauthenticeerd"
 
-#: openforms/submissions/api/serializers.py:147
+#: openforms/submissions/api/serializers.py:146
 msgid "Whether the user was authenticated when creating this submission."
 msgstr ""
 "Geeft aan of de gebruiker geauthenticeerd was bij het starten van de "
 "inzending."
 
-#: openforms/submissions/api/serializers.py:216
+#: openforms/submissions/api/serializers.py:215
 #: openforms/submissions/models/submission_step.py:102
 msgid "data"
 msgstr "gegevens"
 
-#: openforms/submissions/api/serializers.py:292
+#: openforms/submissions/api/serializers.py:290
 msgid "form data"
 msgstr "Formuliergegevens"
 
-#: openforms/submissions/api/serializers.py:295
+#: openforms/submissions/api/serializers.py:293
 msgid ""
 "The Form.io submission data object. This will be merged with the full form "
 "submission data, including data from other steps, to evaluate the configured "
@@ -9641,20 +9659,20 @@ msgstr ""
 "inzendingsgegevens, inclusief de gegevens van de andere stappen, om de "
 "geconfigureerde formulier logica uit te voeren."
 
-#: openforms/submissions/api/serializers.py:306
+#: openforms/submissions/api/serializers.py:304
 msgid "Contact email address"
 msgstr "Contact e-mailadres"
 
-#: openforms/submissions/api/serializers.py:308
+#: openforms/submissions/api/serializers.py:306
 msgid "The email address where the 'magic' resume link should be sent to"
 msgstr ""
 "Het e-mailadres waar de 'magische' vervolg link naar toe gestuurd moet worden"
 
-#: openforms/submissions/api/serializers.py:396
+#: openforms/submissions/api/serializers.py:394
 msgid "background processing status"
 msgstr "achtergrondproces status"
 
-#: openforms/submissions/api/serializers.py:400
+#: openforms/submissions/api/serializers.py:398
 msgid ""
 "The async task state, managed by the async task queue. Once the status is "
 "`done`, check the `result` field for the outcome."
@@ -9662,11 +9680,11 @@ msgstr ""
 "De asynchrone taakstatus, beheerd door de asynchrone taakwachtrij. Zodra de "
 "status 'klaar' is, controleert u het veld 'resultaat' voor de uitkomst."
 
-#: openforms/submissions/api/serializers.py:405
+#: openforms/submissions/api/serializers.py:403
 msgid "background processing result"
 msgstr "achtergrondproces resultaat"
 
-#: openforms/submissions/api/serializers.py:410
+#: openforms/submissions/api/serializers.py:408
 msgid ""
 "The result from the background processing. This field only has a value if "
 "the processing has completed (both successfully or with errors)."
@@ -9674,19 +9692,19 @@ msgstr ""
 "Het resultaat van de achtergrondverwerking. Dit veld heeft alleen een waarde "
 "als de verwerking is voltooid (zowel met succes als met fouten)."
 
-#: openforms/submissions/api/serializers.py:417
+#: openforms/submissions/api/serializers.py:415
 msgid "Error information"
 msgstr "Fout informatie"
 
-#: openforms/submissions/api/serializers.py:421
+#: openforms/submissions/api/serializers.py:419
 msgid "Error feedback in case the processing did not complete successfully."
 msgstr "Foutfeedback in het geval de verwerking niet succesvol is voltooid."
 
-#: openforms/submissions/api/serializers.py:427
+#: openforms/submissions/api/serializers.py:425
 msgid "Public reference"
 msgstr "Publieke referentie"
 
-#: openforms/submissions/api/serializers.py:432
+#: openforms/submissions/api/serializers.py:430
 msgid ""
 "The public registration reference, sourced from the registration backend or "
 "otherwise uniquely generated in case the backend could not provide it."
@@ -9695,20 +9713,20 @@ msgstr ""
 "anderszins uniek gegenereerd voor het geval de backend deze niet kan "
 "verstrekken."
 
-#: openforms/submissions/api/serializers.py:438
+#: openforms/submissions/api/serializers.py:436
 msgid "Confirmation page content"
 msgstr "Bevestigingspagina tekst"
 
-#: openforms/submissions/api/serializers.py:440
+#: openforms/submissions/api/serializers.py:438
 msgid "Body text of the confirmation page. May contain HTML!"
 msgstr ""
 "Inhoud van de bevestigingspagina. Hierin mogen HTML-karakers woren opgenomen."
 
-#: openforms/submissions/api/serializers.py:443
+#: openforms/submissions/api/serializers.py:441
 msgid "Report download URL"
 msgstr "Document download URL"
 
-#: openforms/submissions/api/serializers.py:447
+#: openforms/submissions/api/serializers.py:445
 msgid ""
 "Download URL for the generated PDF report. Note that this contain a "
 "timestamped token generated by the backend."
@@ -9716,11 +9734,11 @@ msgstr ""
 "Download-URL voor het gegenereerde PDF document. Let op: Deze URL bevat een "
 "tijdgebaseerd token dat door de backend wordt gegenereerd."
 
-#: openforms/submissions/api/serializers.py:452
+#: openforms/submissions/api/serializers.py:450
 msgid "Payment URL"
 msgstr "Betaalpagina URL"
 
-#: openforms/submissions/api/serializers.py:456
+#: openforms/submissions/api/serializers.py:454
 msgid ""
 "URL to retrieve the payment information. Note that this (will) contain(s) a "
 "timestamped token generated by the backend."
@@ -9728,69 +9746,69 @@ msgstr ""
 "URL om de betalingsinformatie op te halen. Let op: Deze URL bevat een "
 "tijdgebaseerd token dat door de backend wordt gegenereerd."
 
-#: openforms/submissions/api/serializers.py:470
+#: openforms/submissions/api/serializers.py:468
 msgid "is co-signed?"
 msgstr "Is mede-ondertekend?"
 
-#: openforms/submissions/api/serializers.py:471
+#: openforms/submissions/api/serializers.py:469
 msgid "Indicator whether the submission has been co-signed or not."
 msgstr "Geeft aan of de inzending is mede-ondertekend."
 
-#: openforms/submissions/api/serializers.py:474
+#: openforms/submissions/api/serializers.py:472
 msgid "Co-signer display"
 msgstr "Mede-ondertekenaar weergave"
 
-#: openforms/submissions/api/serializers.py:475
+#: openforms/submissions/api/serializers.py:473
 msgid "Co-signer representation string for the UI."
 msgstr "Mede-ondertekenaar weergave in de UI."
 
-#: openforms/submissions/api/serializers.py:492
+#: openforms/submissions/api/serializers.py:490
 msgid "Display name of the component."
 msgstr "Weergavenaam van de component"
 
-#: openforms/submissions/api/serializers.py:496
+#: openforms/submissions/api/serializers.py:494
 msgid "Raw value of the component."
 msgstr "JSON-waarde van de component"
 
-#: openforms/submissions/api/serializers.py:500
+#: openforms/submissions/api/serializers.py:498
 msgid "Configuration of the component."
 msgstr "Componentconfiguratie"
 
-#: openforms/submissions/api/serializers.py:507
+#: openforms/submissions/api/serializers.py:505
 msgid "Slug of the form definition used in the form step."
 msgstr "Slug van de formulierdefinitie horend bij de stap."
 
-#: openforms/submissions/api/serializers.py:511
+#: openforms/submissions/api/serializers.py:509
 msgid "Name of the form definition used in the form step."
 msgstr "Naam van de formulierdefinitie horend bij de stap."
 
-#: openforms/submissions/api/serializers.py:520
+#: openforms/submissions/api/serializers.py:518
 #: openforms/submissions/models/submission.py:232
 msgid "privacy policy accepted"
 msgstr "Privacybeleid geaccepteerd"
 
-#: openforms/submissions/api/serializers.py:521
+#: openforms/submissions/api/serializers.py:519
 msgid "Whether the co-signer has accepted the privacy policy"
 msgstr ""
 "Indicator of de mede-ondertekenaar het privacybeleid geaccepteerd heeft."
 
-#: openforms/submissions/api/serializers.py:524
+#: openforms/submissions/api/serializers.py:522
 #: openforms/submissions/models/submission.py:242
 msgid "statement of truth accepted"
 msgstr "verklaring van waarheid geaccepteerd"
 
-#: openforms/submissions/api/serializers.py:526
+#: openforms/submissions/api/serializers.py:524
 msgid ""
 "Whether the co-signer has declared the form to be filled out truthfully."
 msgstr ""
 "Indicator of de mede-ondertekenaar het formulier naar waarheid ingevuld "
 "heeft."
 
-#: openforms/submissions/api/serializers.py:541
+#: openforms/submissions/api/serializers.py:539
 msgid "download report url"
 msgstr "Download-URL PDF"
 
-#: openforms/submissions/api/serializers.py:543
+#: openforms/submissions/api/serializers.py:541
 msgid ""
 "The URL where the submission report can be downloaded. Note that this "
 "contain a timestamped token generated by the backend."
@@ -9997,7 +10015,7 @@ msgid "Apply/check the logic rules specified on the form step."
 msgstr ""
 "Pas de logische regels toe die zijn gespecificeerd in de formulierstap."
 
-#: openforms/submissions/attachments.py:232
+#: openforms/submissions/attachments.py:184
 #, python-brace-format
 msgid "Upload {uuid} exceeds the maximum upload size of {max_size}b"
 msgstr ""
