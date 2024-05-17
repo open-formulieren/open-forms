@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-17 14:59+0200\n"
-"PO-Revision-Date: 2024-05-06 12:23+0200\n"
+"POT-Creation-Date: 2024-05-17 15:23+0200\n"
+"PO-Revision-Date: 2024-05-17 15:22+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -772,7 +772,7 @@ msgstr "Stel eerst de plugin in"
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: openforms/appointments/admin.py:96 openforms/config/models/config.py:146
+#: openforms/appointments/admin.py:96 openforms/config/models/config.py:155
 msgid "Change"
 msgstr "Wijzigen"
 
@@ -2050,81 +2050,85 @@ msgstr "Inzendingen"
 msgid "Confirmation Email"
 msgstr "Bevestigingse-mail"
 
-#: openforms/config/admin.py:45
+#: openforms/config/admin.py:41
 msgid "Save Form Email"
 msgstr "Sjabloon \"pauzeer\"-email"
 
-#: openforms/config/admin.py:53
+#: openforms/config/admin.py:50
+msgid "Co-sign emails"
+msgstr "Mede-ondertekenen e-mails"
+
+#: openforms/config/admin.py:55
 msgid "General Email settings"
 msgstr "Algemene e-mailinstellingen"
 
-#: openforms/config/admin.py:55
+#: openforms/config/admin.py:57
 msgid "Button labels"
 msgstr "Knop labels"
 
-#: openforms/config/admin.py:69
+#: openforms/config/admin.py:71
 msgid "General form options"
 msgstr "Standaardformulieropties"
 
-#: openforms/config/admin.py:85
+#: openforms/config/admin.py:87
 msgid "Organization configuration"
 msgstr "Organisatie configuratie"
 
-#: openforms/config/admin.py:97
+#: openforms/config/admin.py:99
 msgid "Statement of truth"
 msgstr "Verklaring van waarheid"
 
-#: openforms/config/admin.py:106
+#: openforms/config/admin.py:108
 msgid "Privacy"
 msgstr "Privacy"
 
-#: openforms/config/admin.py:116
+#: openforms/config/admin.py:118
 msgid "Sessions"
 msgstr "Sessies"
 
-#: openforms/config/admin.py:125
+#: openforms/config/admin.py:127
 msgid "Data removal"
 msgstr "Gegevens schonen"
 
-#: openforms/config/admin.py:138
+#: openforms/config/admin.py:140
 msgid "Search engines"
 msgstr "Zoekmachines"
 
-#: openforms/config/admin.py:139
+#: openforms/config/admin.py:141
 msgid "Plugin configuration"
 msgstr "Pluginconfiguratie"
 
-#: openforms/config/admin.py:141 openforms/emails/constants.py:10
+#: openforms/config/admin.py:143 openforms/emails/constants.py:10
 #: openforms/submissions/rendering/constants.py:11
 msgid "Registration"
 msgstr "Registratie"
 
-#: openforms/config/admin.py:145
+#: openforms/config/admin.py:147
 msgid "Virus scan"
 msgstr "Virusscan"
 
-#: openforms/config/admin.py:156
+#: openforms/config/admin.py:158
 msgid "Feature flags & fields for testing"
 msgstr "Feature flags, test- en ontwikkelinstellingen"
 
-#: openforms/config/admin.py:213
+#: openforms/config/admin.py:215
 msgid "Content type"
 msgstr "inhoudstype"
 
-#: openforms/config/admin.py:224
+#: openforms/config/admin.py:226
 msgid "Logo"
 msgstr "Logo"
 
-#: openforms/config/admin.py:226
+#: openforms/config/admin.py:228
 msgid "Appearance"
 msgstr "Weergave"
 
-#: openforms/config/admin.py:249
+#: openforms/config/admin.py:251
 #: openforms/config/templates/admin/config/theme/preview.html:33
 msgid "Preview"
 msgstr "Voorvertoning"
 
-#: openforms/config/admin.py:252
+#: openforms/config/admin.py:254
 msgid "Show preview"
 msgstr "Toon voorvertoning"
 
@@ -2315,11 +2319,11 @@ msgstr "WYSIWYG-editor tekstkleuren"
 msgid "Example"
 msgstr "Voorbeeld"
 
-#: openforms/config/models/config.py:49
+#: openforms/config/models/config.py:50
 msgid "allowed email domain names"
 msgstr "toegestane e-maildomeinen"
 
-#: openforms/config/models/config.py:51
+#: openforms/config/models/config.py:52
 msgid ""
 "Provide a list of allowed domains (without 'https://www').Hyperlinks in a "
 "(confirmation) email are removed, unless the domain is provided here."
@@ -2328,11 +2332,11 @@ msgstr ""
 "Hyperlinks in (bevestigings)e-mails worden verwijderd, tenzij het domein "
 "hier opgegeven is."
 
-#: openforms/config/models/config.py:60 openforms/forms/models/form.py:117
+#: openforms/config/models/config.py:61 openforms/forms/models/form.py:117
 msgid "submission confirmation template"
 msgstr "Bevestigingspagina tekst"
 
-#: openforms/config/models/config.py:62
+#: openforms/config/models/config.py:63
 msgid ""
 "The content of the submission confirmation page. It can contain variables "
 "that will be templated from the submitted form data."
@@ -2340,29 +2344,29 @@ msgstr ""
 "De inhoud van bevestigingspagina kan variabelen bevatten die op basis van de "
 "ingediende formuliergegevens worden weergegeven. "
 
-#: openforms/config/models/config.py:65
+#: openforms/config/models/config.py:66
 msgid "Thank you for submitting this form."
 msgstr "Wij hebben uw inzending ontvangen. "
 
-#: openforms/config/models/config.py:69
+#: openforms/config/models/config.py:70
 msgid "submission report download link title"
 msgstr "titel downloadlink inzendings-PDF"
 
-#: openforms/config/models/config.py:71
+#: openforms/config/models/config.py:72
 msgid "The title of the link to download the report of a submission."
 msgstr "Titel/tekst van de downloadlink om de inzending als PDF te downloaden."
 
-#: openforms/config/models/config.py:72
+#: openforms/config/models/config.py:73
 msgid "Download PDF"
 msgstr "Download het document."
 
-#: openforms/config/models/config.py:76 openforms/config/models/config.py:108
+#: openforms/config/models/config.py:77 openforms/config/models/config.py:104
 #: openforms/emails/models.py:23
 #: openforms/registrations/contrib/email/models.py:52
 msgid "subject"
 msgstr "onderwerp"
 
-#: openforms/config/models/config.py:79
+#: openforms/config/models/config.py:80
 msgid ""
 "Subject of the confirmation email message. Can be overridden on the form "
 "level"
@@ -2370,7 +2374,7 @@ msgstr ""
 "Onderwerp van de bevestigingsmail. Bij het formulier kan een afwijkend "
 "onderwerp worden opgegeven."
 
-#: openforms/config/models/config.py:85 openforms/config/models/config.py:115
+#: openforms/config/models/config.py:86 openforms/config/models/config.py:111
 #: openforms/emails/models.py:30
 #: openforms/submissions/models/submission_files.py:52
 #: openforms/submissions/models/submission_files.py:168
@@ -2378,7 +2382,7 @@ msgstr ""
 msgid "content"
 msgstr "inhoud"
 
-#: openforms/config/models/config.py:87
+#: openforms/config/models/config.py:88
 msgid ""
 "Content of the confirmation email message. Can be overridden on the form "
 "level"
@@ -2386,29 +2390,31 @@ msgstr ""
 "Inhoud van de bevestigingsmail. Bij het formulier kan een afwijkende inhoud "
 "worden opgegeven."
 
-#: openforms/config/models/config.py:103
-msgid "show form link in co-sign email"
-msgstr "toon formulierlink in mede-ondertekenenmail"
-
-#: openforms/config/models/config.py:105
-msgid "When enabled, a link to the form is shown in the co-sign email."
-msgstr ""
-"Indien aangevinkt, dan wordt een hyperlink naar het formulier opgenomen in "
-"de mede-ondertekenen-e-mail."
-
-#: openforms/config/models/config.py:110
+#: openforms/config/models/config.py:106
 msgid "Subject of the save form email message."
 msgstr "Onderwerp van de \"pauzeer\"-email"
 
-#: openforms/config/models/config.py:116
+#: openforms/config/models/config.py:112
 msgid "Content of the save form email message."
 msgstr "Inhoud van de \"pauzeer\"-email"
 
-#: openforms/config/models/config.py:125
+#: openforms/config/models/config.py:121
+msgid "co-sign request template"
+msgstr "mede-ondertekenenverzoeksjabloon"
+
+#: openforms/config/models/config.py:123
+msgid ""
+"Content of the co-sign request email. The available template variables are: "
+"'form_name', 'form_url' and 'code'."
+msgstr ""
+"De inhoud van de e-mail voor het mede-ondertekenenverzoek. De beschikbare "
+"sjabloonvariabelen zijn: 'form_name', 'form_url' en 'code'."
+
+#: openforms/config/models/config.py:134
 msgid "allow empty initiator"
 msgstr "Lege initiator toestaan"
 
-#: openforms/config/models/config.py:128
+#: openforms/config/models/config.py:137
 msgid ""
 "When enabled and the submitter is not authenticated, a case is created "
 "without any initiator. Otherwise, a fake initiator is added with BSN "
@@ -2418,113 +2424,113 @@ msgstr ""
 "aangemaakt zonder initiator. Indien uitgevinkt, dan zal een nep-initiator "
 "worden toegevoegd met BSN 111222333."
 
-#: openforms/config/models/config.py:135
+#: openforms/config/models/config.py:144
 msgid "back to form text"
 msgstr "\"terug naar formulier\"-tekst"
 
-#: openforms/config/models/config.py:137 openforms/config/models/config.py:174
+#: openforms/config/models/config.py:146 openforms/config/models/config.py:183
 msgid "Previous page"
 msgstr "Vorige stap"
 
-#: openforms/config/models/config.py:139
+#: openforms/config/models/config.py:148
 msgid ""
 "The text that will be displayed in the overview page to go to the previous "
 "step"
 msgstr ""
 "Het label van de knop op de overzichtspagina om naar de vorige stap te gaan."
 
-#: openforms/config/models/config.py:144 openforms/forms/models/form.py:189
+#: openforms/config/models/config.py:153 openforms/forms/models/form.py:189
 msgid "change text"
 msgstr "Stap wijzigen-label"
 
-#: openforms/config/models/config.py:148
+#: openforms/config/models/config.py:157
 msgid ""
 "The text that will be displayed in the overview page to change a certain step"
 msgstr ""
 "Het label de link op de overzichtspagina om een bepaalde stap te wijzigen"
 
-#: openforms/config/models/config.py:153 openforms/forms/models/form.py:199
+#: openforms/config/models/config.py:162 openforms/forms/models/form.py:199
 msgid "confirm text"
 msgstr "Formulier verzenden-label"
 
-#: openforms/config/models/config.py:155
+#: openforms/config/models/config.py:164
 msgid "Confirm"
 msgstr "Verzenden"
 
-#: openforms/config/models/config.py:157
+#: openforms/config/models/config.py:166
 msgid ""
 "The text that will be displayed in the overview page to confirm the form is "
 "filled in correctly"
 msgstr ""
 "Het label van de knop op de overzichtspagina om het formulier in te dienen"
 
-#: openforms/config/models/config.py:162 openforms/forms/models/form.py:169
+#: openforms/config/models/config.py:171 openforms/forms/models/form.py:169
 msgid "begin text"
 msgstr "Formulier starten-label"
 
-#: openforms/config/models/config.py:164
+#: openforms/config/models/config.py:173
 msgid "Begin form"
 msgstr "Formulier starten"
 
-#: openforms/config/models/config.py:166
+#: openforms/config/models/config.py:175
 msgid ""
 "The text that will be displayed at the start of the form to indicate the "
 "user can begin to fill in the form"
 msgstr "Het label van de knop om het formulier te starten."
 
-#: openforms/config/models/config.py:172
+#: openforms/config/models/config.py:181
 msgid "previous step text"
 msgstr "\"vorige stap\"-tekst"
 
-#: openforms/config/models/config.py:176
+#: openforms/config/models/config.py:185
 msgid ""
 "The text that will be displayed in the form step to go to the previous step"
 msgstr ""
 "Het label van de knop om naar de vorige stap binnen het formulier te gaan"
 
-#: openforms/config/models/config.py:180 openforms/forms/models/form_step.py:48
+#: openforms/config/models/config.py:189 openforms/forms/models/form_step.py:48
 msgid "step save text"
 msgstr "Opslaan-label"
 
-#: openforms/config/models/config.py:182
+#: openforms/config/models/config.py:191
 msgid "Save current information"
 msgstr "Tussentijds opslaan"
 
-#: openforms/config/models/config.py:184
+#: openforms/config/models/config.py:193
 msgid ""
 "The text that will be displayed in the form step to save the current "
 "information"
 msgstr "Het label van de knop om het formulier tussentijds op te slaan"
 
-#: openforms/config/models/config.py:188 openforms/forms/models/form_step.py:57
+#: openforms/config/models/config.py:197 openforms/forms/models/form_step.py:57
 msgid "step next text"
 msgstr "Volgende stap-label"
 
-#: openforms/config/models/config.py:190
+#: openforms/config/models/config.py:199
 msgid "Next"
 msgstr "Volgende"
 
-#: openforms/config/models/config.py:192
+#: openforms/config/models/config.py:201
 msgid "The text that will be displayed in the form step to go to the next step"
 msgstr ""
 "Het label van de knop om naar de volgende stap binnen het formulier te gaan"
 
-#: openforms/config/models/config.py:196
+#: openforms/config/models/config.py:205
 msgid "Mark form fields 'required' by default"
 msgstr "Formulierenvelden zijn standaard 'verplicht'"
 
-#: openforms/config/models/config.py:199
+#: openforms/config/models/config.py:208
 msgid ""
 "Whether the checkbox 'required' on form fields should be checked by default."
 msgstr ""
 "Configureer of formuliervelden standaard 'verplicht' moeten zijn bij het "
 "ontwerpen van een formulier."
 
-#: openforms/config/models/config.py:203
+#: openforms/config/models/config.py:212
 msgid "Mark required fields with asterisks"
 msgstr "Markeer verplichte velden met een asterisk"
 
-#: openforms/config/models/config.py:206
+#: openforms/config/models/config.py:215
 msgid ""
 "If checked, required fields are marked with an asterisk and optional fields "
 "are unmarked. If unchecked, optional fields will be marked with '(optional)' "
@@ -2534,11 +2540,11 @@ msgstr ""
 "optionele velden niet gemarkeerd. Indien uitgevinkt, dan zijn optionele "
 "velden gemarkeerd met '(niet verplicht)' en verplichte velden ongemarkeerd."
 
-#: openforms/config/models/config.py:213
+#: openforms/config/models/config.py:222
 msgid "Default allowed file upload types"
 msgstr "Standaard-toegestane upload-bestandstypen"
 
-#: openforms/config/models/config.py:215
+#: openforms/config/models/config.py:224
 msgid ""
 "Provide a list of default allowed file upload types. If empty, all "
 "extensions are allowed."
@@ -2546,11 +2552,11 @@ msgstr ""
 "Geef aan welke bestandstypen standaard toegestaan zijn. Indien deze waarde "
 "leeg is, dan zijn alle bestandstypen toegelaten."
 
-#: openforms/config/models/config.py:221
+#: openforms/config/models/config.py:230
 msgid "Hide non-applicable form steps"
 msgstr "Verberg formulierstappen die niet van toepassing zijn"
 
-#: openforms/config/models/config.py:224
+#: openforms/config/models/config.py:233
 msgid ""
 "If checked, form steps that become non-applicable as a result of user input "
 "are hidden from the progress indicator display (by default, they are "
@@ -2560,27 +2566,27 @@ msgstr ""
 "toepassing zijn verborgen. Standaard zijn deze zichtbaar maar gemarkeerd als "
 "n.v.t."
 
-#: openforms/config/models/config.py:230
+#: openforms/config/models/config.py:239
 msgid "The default zoom level for the leaflet map."
 msgstr "Standaard zoomniveau voor kaartmateriaal."
 
-#: openforms/config/models/config.py:235
+#: openforms/config/models/config.py:244
 msgid "The default latitude for the leaflet map."
 msgstr ""
 "Standaard latitude voor kaartmateriaal (in coördinatenstelsel EPSG:4326/WGS "
 "84)."
 
-#: openforms/config/models/config.py:243
+#: openforms/config/models/config.py:252
 msgid "The default longitude for the leaflet map."
 msgstr ""
 "Standaard longitude voor kaartmateriaal (in coördinatenstelsel EPSG:4326/WGS "
 "84)."
 
-#: openforms/config/models/config.py:256
+#: openforms/config/models/config.py:265
 msgid "default theme"
 msgstr "Standaardstijl"
 
-#: openforms/config/models/config.py:258
+#: openforms/config/models/config.py:267
 msgid ""
 "If no explicit theme is configured, the configured default theme will be "
 "used as a fallback."
@@ -2588,33 +2594,33 @@ msgstr ""
 "Indien geen expliciete stijl ingesteld is, dan wordt de standaardstijl "
 "gebruikt."
 
-#: openforms/config/models/config.py:264
+#: openforms/config/models/config.py:273
 msgid "favicon"
 msgstr "favicon"
 
-#: openforms/config/models/config.py:268
+#: openforms/config/models/config.py:277
 msgid ""
 "Allow the uploading of a favicon, .png .jpg .svg and .ico are compatible."
 msgstr ""
 "Upload het favicon voor de applicatie. Enkel .png, .jpg, .svg en .ico "
 "bestanden zijn toegestaan."
 
-#: openforms/config/models/config.py:272
+#: openforms/config/models/config.py:281
 msgid "main website link"
 msgstr "hoofdsite link"
 
-#: openforms/config/models/config.py:275
+#: openforms/config/models/config.py:284
 msgid ""
 "URL to the main website. Used for the 'back to municipality website' link."
 msgstr ""
 "URL naar de hoofdsite van de organisatie. Wordt gebruikt voor 'terug naar de "
 "gemeente website' link."
 
-#: openforms/config/models/config.py:279
+#: openforms/config/models/config.py:288
 msgid "organization name"
 msgstr "organisatienaam"
 
-#: openforms/config/models/config.py:283
+#: openforms/config/models/config.py:292
 msgid ""
 "The name of your organization that will be used as label for elements like "
 "the logo."
@@ -2622,29 +2628,29 @@ msgstr ""
 "De naam van de organisatie/gemeente - dit wordt gebruikt in label bij "
 "elementen zoals het logo en de link terug naar de website."
 
-#: openforms/config/models/config.py:290
+#: openforms/config/models/config.py:299
 msgid "organization OIN"
 msgstr "organisatie-OIN"
 
-#: openforms/config/models/config.py:293
+#: openforms/config/models/config.py:302
 msgid "The OIN of the organization."
 msgstr "Het (door Logius toegekende) organisatie-identificatienummer (OIN)."
 
-#: openforms/config/models/config.py:299
+#: openforms/config/models/config.py:308
 msgid "admin session timeout"
 msgstr "beheersessie time-out"
 
-#: openforms/config/models/config.py:303
+#: openforms/config/models/config.py:312
 msgid ""
 "Amount of time in minutes the admin can be inactive for before being logged "
 "out"
 msgstr "Tijd in minuten voordat de sessie van een beheerder verloopt."
 
-#: openforms/config/models/config.py:307
+#: openforms/config/models/config.py:316
 msgid "form session timeout"
 msgstr "formuliersessie time-out"
 
-#: openforms/config/models/config.py:314
+#: openforms/config/models/config.py:323
 #, python-format
 msgid ""
 "Due to DigiD requirements this value has to be less than or equal to "
@@ -2652,17 +2658,17 @@ msgid ""
 msgstr ""
 "Om veiligheidsredenen mag de waarde niet groter zijn %(limit_value)s minuten."
 
-#: openforms/config/models/config.py:319
+#: openforms/config/models/config.py:328
 msgid ""
 "Amount of time in minutes a user filling in a form can be inactive for "
 "before being logged out"
 msgstr "Tijd in minuten voordat de sessie van een gebruiker verloopt."
 
-#: openforms/config/models/config.py:325
+#: openforms/config/models/config.py:334
 msgid "Payment Order ID template"
 msgstr "Betaling: bestellingsnummersjabloon"
 
-#: openforms/config/models/config.py:330
+#: openforms/config/models/config.py:339
 #, python-brace-format
 msgid ""
 "Template to use when generating payment order IDs. It should be alpha-"
@@ -2674,11 +2680,11 @@ msgstr ""
 "tokens {year}, {public_reference} en {uid} zijn beschikbaar. Het sjabloon "
 "moet de placeholder {uid} bevatten."
 
-#: openforms/config/models/config.py:338 openforms/forms/models/form.py:218
+#: openforms/config/models/config.py:347 openforms/forms/models/form.py:218
 msgid "ask privacy consent"
 msgstr "vraag toestemming om gegevens te verwerken"
 
-#: openforms/config/models/config.py:341 openforms/forms/models/form.py:223
+#: openforms/config/models/config.py:350 openforms/forms/models/form.py:223
 msgid ""
 "If enabled, the user will have to agree to the privacy policy before "
 "submitting a form."
@@ -2686,19 +2692,19 @@ msgstr ""
 "Indien ingeschakeld, moet de gebruiker akkoord gaan met het privacybeleid "
 "voordat hij een formulier indient."
 
-#: openforms/config/models/config.py:345
+#: openforms/config/models/config.py:354
 msgid "privacy policy URL"
 msgstr "Privacybeleid URL"
 
-#: openforms/config/models/config.py:345
+#: openforms/config/models/config.py:354
 msgid "URL to the privacy policy"
 msgstr "URL naar het privacybeleid op uw eigen website"
 
-#: openforms/config/models/config.py:348
+#: openforms/config/models/config.py:357
 msgid "privacy policy label"
 msgstr "Privacybeleid label"
 
-#: openforms/config/models/config.py:351
+#: openforms/config/models/config.py:360
 msgid ""
 "The label of the checkbox that prompts the user to agree to the privacy "
 "policy."
@@ -2706,7 +2712,7 @@ msgstr ""
 "Het label van het selectievakje dat de gebruiker vraagt om akkoord te gaan "
 "met het privacybeleid. "
 
-#: openforms/config/models/config.py:355
+#: openforms/config/models/config.py:364
 msgid ""
 "Yes, I have read the {% privacy_policy %} and explicitly agree to the "
 "processing of my submitted information."
@@ -2714,11 +2720,11 @@ msgstr ""
 "Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk "
 "toestemming voor het verwerken van de door mij opgegeven gegevens."
 
-#: openforms/config/models/config.py:371 openforms/forms/models/form.py:227
+#: openforms/config/models/config.py:380 openforms/forms/models/form.py:227
 msgid "ask statement of truth"
 msgstr "vraag waarheidsverklaring"
 
-#: openforms/config/models/config.py:374 openforms/forms/models/form.py:232
+#: openforms/config/models/config.py:383 openforms/forms/models/form.py:232
 msgid ""
 "If enabled, the user will have to agree that they filled out the form "
 "truthfully before submitting it."
@@ -2726,11 +2732,11 @@ msgstr ""
 "Indien verplicht dient de gebruiker de verklaring naar waarheid te "
 "accepteren voor die het formulier indient."
 
-#: openforms/config/models/config.py:379
+#: openforms/config/models/config.py:388
 msgid "statement of truth label"
 msgstr "waarheidsverklaringtekst"
 
-#: openforms/config/models/config.py:382
+#: openforms/config/models/config.py:391
 msgid ""
 "The label of the checkbox that prompts the user to agree that they filled "
 "out the form truthfully. Note that this field does not have templating "
@@ -2739,7 +2745,7 @@ msgstr ""
 "Het label van het selectievakje dat de gebruiker vraagt om akkoord te gaan "
 "met de waarheidsverklaring. Merk op dat dit veld geen sjablonen ondersteunt."
 
-#: openforms/config/models/config.py:388
+#: openforms/config/models/config.py:397
 msgid ""
 "I declare that I have filled out the form truthfully and have not omitted "
 "any information."
@@ -2747,92 +2753,92 @@ msgstr ""
 "Ik verklaar dat ik deze aanvraag naar waarheid heb ingevuld en geen "
 "informatie heb verzwegen."
 
-#: openforms/config/models/config.py:396
+#: openforms/config/models/config.py:405
 msgid "enable demo plugins"
 msgstr "demo plugins inschakelen"
 
-#: openforms/config/models/config.py:398
+#: openforms/config/models/config.py:407
 msgid "If enabled, the admin allows selection of demo backend plugins."
 msgstr "Indien ingeschakeld kunnen demo plugins worden worden geselecteerd."
 
-#: openforms/config/models/config.py:402
+#: openforms/config/models/config.py:411
 msgid "display SDK information"
 msgstr "toon SDK informatie"
 
-#: openforms/config/models/config.py:404
+#: openforms/config/models/config.py:413
 msgid "When enabled, information about the used SDK is displayed."
 msgstr ""
 "Wanneer dit ingeschakeld is wordt informatie over de gebruikte SDK getoond."
 
-#: openforms/config/models/config.py:409 openforms/forms/models/form.py:262
+#: openforms/config/models/config.py:418 openforms/forms/models/form.py:262
 msgid "successful submission removal limit"
 msgstr "bewaartermijn voor voltooide inzendingen."
 
-#: openforms/config/models/config.py:413
+#: openforms/config/models/config.py:422
 msgid "Amount of days successful submissions will remain before being removed"
 msgstr "Aantal dagen dat een voltooide inzending bewaard blijft."
 
-#: openforms/config/models/config.py:417 openforms/forms/models/form.py:272
+#: openforms/config/models/config.py:426 openforms/forms/models/form.py:272
 msgid "successful submissions removal method"
 msgstr "opschoonmethode voor voltooide inzendingen"
 
-#: openforms/config/models/config.py:421
+#: openforms/config/models/config.py:430
 msgid "How successful submissions will be removed after the limit"
 msgstr ""
 "Geeft aan hoe voltooide inzendingen worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models/config.py:424 openforms/forms/models/form.py:282
+#: openforms/config/models/config.py:433 openforms/forms/models/form.py:282
 msgid "incomplete submission removal limit"
 msgstr "bewaartermijn voor sessies"
 
-#: openforms/config/models/config.py:428
+#: openforms/config/models/config.py:437
 msgid "Amount of days incomplete submissions will remain before being removed"
 msgstr "Aantal dagen dat een sessie bewaard blijft."
 
-#: openforms/config/models/config.py:432 openforms/forms/models/form.py:292
+#: openforms/config/models/config.py:441 openforms/forms/models/form.py:292
 msgid "incomplete submissions removal method"
 msgstr "opschoonmethode voor sessies."
 
-#: openforms/config/models/config.py:436
+#: openforms/config/models/config.py:445
 msgid "How incomplete submissions will be removed after the limit"
 msgstr "Geeft aan hoe sessies worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models/config.py:439 openforms/forms/models/form.py:302
+#: openforms/config/models/config.py:448 openforms/forms/models/form.py:302
 #: openforms/forms/models/form.py:312
 msgid "errored submission removal limit"
 msgstr "bewaartermijn voor niet voltooide inzendingen inzendingen"
 
-#: openforms/config/models/config.py:443
+#: openforms/config/models/config.py:452
 msgid "Amount of days errored submissions will remain before being removed"
 msgstr ""
 "Aantal dagen dat een niet voltooide inzendingen (door fouten in de "
 "afhandeling) bewaard blijft."
 
-#: openforms/config/models/config.py:447
+#: openforms/config/models/config.py:456
 msgid "errored submissions removal method"
 msgstr "opschoonmethode voor niet voltooide inzendingen"
 
-#: openforms/config/models/config.py:451
+#: openforms/config/models/config.py:460
 msgid "How errored submissions will be removed after the"
 msgstr ""
 "Geeft aan hoe niet voltooide inzendingen (door fouten in de afhandeling) "
 "worden opgeschoond na de bewaartermijn."
 
-#: openforms/config/models/config.py:454 openforms/forms/models/form.py:322
+#: openforms/config/models/config.py:463 openforms/forms/models/form.py:322
 msgid "all submissions removal limit"
 msgstr "bewaartermijn van inzendingen"
 
-#: openforms/config/models/config.py:457
+#: openforms/config/models/config.py:466
 msgid "Amount of days when all submissions will be permanently deleted"
 msgstr ""
 "Aantal dagen dat een inzending bewaard blijft voordat deze definitief "
 "verwijderd wordt."
 
-#: openforms/config/models/config.py:461
+#: openforms/config/models/config.py:470
 msgid "default registration backend attempt limit"
 msgstr "limiet aantal registratiepogingen"
 
-#: openforms/config/models/config.py:465
+#: openforms/config/models/config.py:474
 msgid ""
 "How often we attempt to register the submission at the registration backend "
 "before giving up"
@@ -2840,11 +2846,11 @@ msgstr ""
 "Stel in hoe vaak het systeem een inzending probeert af te leveren bij de "
 "registratie-backend voor er opgegeven wordt."
 
-#: openforms/config/models/config.py:470
+#: openforms/config/models/config.py:479
 msgid "plugin configuration"
 msgstr "pluginconfiguratie"
 
-#: openforms/config/models/config.py:474
+#: openforms/config/models/config.py:483
 msgid ""
 "Configuration of plugins for authentication, payments, prefill, "
 "registrations and validation"
@@ -2852,11 +2858,11 @@ msgstr ""
 "Configuratie van plugins voor authenticatie, betaalproviders, prefill, "
 "registraties en validaties."
 
-#: openforms/config/models/config.py:481
+#: openforms/config/models/config.py:490
 msgid "Allow form page indexing"
 msgstr "Laat indexeren van formulierpagina's toe"
 
-#: openforms/config/models/config.py:484
+#: openforms/config/models/config.py:493
 msgid ""
 "Whether form detail pages may be indexed and displayed in search engine "
 "result lists. Disable this to prevent listing."
@@ -2864,11 +2870,11 @@ msgstr ""
 "Geeft aan of formulierpagina's geïndexeerd én getoond mogen worden in de "
 "resultaten van zoekmachines. Schakel dit uit om weergave te voorkomen."
 
-#: openforms/config/models/config.py:490
+#: openforms/config/models/config.py:499
 msgid "Enable virus scan"
 msgstr "Virusscan inschakelen"
 
-#: openforms/config/models/config.py:493
+#: openforms/config/models/config.py:502
 msgid ""
 "Whether the files uploaded by the users should be scanned by ClamAV virus "
 "scanner.In case a file is found to be infected, the file is deleted."
@@ -2876,35 +2882,35 @@ msgstr ""
 "Indien aangevinkt, dan worden uploads van eindgebruikers op virussen "
 "gescand. Geïnfecteerde bestanden worden meteen verwijdered en geblokkeerd."
 
-#: openforms/config/models/config.py:498
+#: openforms/config/models/config.py:507
 msgid "ClamAV server hostname"
 msgstr "ClamAV server hostname"
 
-#: openforms/config/models/config.py:500
+#: openforms/config/models/config.py:509
 msgid "Hostname or IP address where ClamAV is running."
 msgstr "Hostname of IP-adres waarop de ClamAV service bereikbaar is."
 
-#: openforms/config/models/config.py:505
+#: openforms/config/models/config.py:514
 msgid "ClamAV port number"
 msgstr "ClamAV poortnummer"
 
-#: openforms/config/models/config.py:506
+#: openforms/config/models/config.py:515
 msgid "The TCP port on which ClamAV is listening."
 msgstr "Poortnummer (TCP) waarop de ClamAV service luistert."
 
-#: openforms/config/models/config.py:514
+#: openforms/config/models/config.py:523
 msgid "ClamAV socket timeout"
 msgstr "ClamAV-connectie timeout"
 
-#: openforms/config/models/config.py:515
+#: openforms/config/models/config.py:524
 msgid "ClamAV socket timeout expressed in seconds (optional)."
 msgstr "ClamAV socket timeout, in seconden."
 
-#: openforms/config/models/config.py:523
+#: openforms/config/models/config.py:532
 msgid "recipients email digest"
 msgstr "ontvangers (probleem)rapportage"
 
-#: openforms/config/models/config.py:525
+#: openforms/config/models/config.py:534
 msgid ""
 "The email addresses that should receive a daily report of items requiring "
 "attention."
@@ -2912,27 +2918,27 @@ msgstr ""
 "Geef de e-mailaddressen op van beheerders die een dagelijkse rapportage "
 "dienen te ontvangen van eventuele problemen die actie vereisen."
 
-#: openforms/config/models/config.py:531
+#: openforms/config/models/config.py:540
 msgid "wait for payment to register"
 msgstr "wacht tot betalingen voltoooid zijn om inzendingen te verwerken"
 
-#: openforms/config/models/config.py:533
+#: openforms/config/models/config.py:542
 msgid ""
 "Should a submission be processed (sent to the registration backend) only "
 "after payment has been received?"
 msgstr "Mag een inzending pas verwerkt worden nadat de betaling ontvangen is?"
 
-#: openforms/config/models/config.py:541
+#: openforms/config/models/config.py:550
 msgid "General configuration"
 msgstr "Algemene configuratie"
 
-#: openforms/config/models/config.py:567
+#: openforms/config/models/config.py:576
 msgid "ClamAV host and port need to be configured if virus scan is enabled."
 msgstr ""
 "De ClamAV host en poortnummer moeten ingesteld zijn om virusscannen in te "
 "schakelen."
 
-#: openforms/config/models/config.py:578
+#: openforms/config/models/config.py:587
 #, python-format
 msgid "Cannot connect to ClamAV: %(error)s"
 msgstr "Kon niet verbinden met de antivirus-service: %(error)s"
@@ -2996,10 +3002,8 @@ msgstr ""
 "adviseren de dimensies van 150 x 75 pixels. SVG-bestanden zijn toegestaan."
 
 #: openforms/config/models/theme.py:51
-#, fuzzy
-#| msgid "theme logo"
 msgid "email logo"
-msgstr "logo"
+msgstr "emaillogo"
 
 #: openforms/config/models/theme.py:55
 #, fuzzy
@@ -4007,6 +4011,62 @@ msgstr ""
 "\n"
 "Toon gefaalde '%(form_name)s' inzendingen"
 
+#: openforms/emails/templates/emails/co_sign/request.html:7
+msgid ""
+"Please visit the form page on our website and click on the 'co-sign' button."
+msgstr ""
+"Gelieve de webpagina van het formulier op onze website te openen en klik "
+"vervolgens op de \"mede-ondertekenen\"-knop."
+
+#: openforms/emails/templates/emails/co_sign/request.html:8
+#, fuzzy, python-format
+#| msgid ""
+#| "Submission payment received for %(tt_openvariable)s form_name "
+#| "%(tt_closevariable)s (submitted on %(tt_openvariable)s completed_on "
+#| "%(tt_closevariable)s)"
+msgid ""
+"\n"
+"Please visit the form page by navigating to the following link:\n"
+"<a href=\"%(tt_openvariable)s form_url "
+"%(tt_closevariable)s\">%(tt_openvariable)s form_url %(tt_closevariable)s</"
+"a>.\n"
+msgstr ""
+"\n"
+"Betaling ontvangen voor %(tt_openvariable)s form_name %(tt_closevariable)s "
+"(ingezonden op %(tt_openvariable)s datetime %(tt_closevariable)s)\n"
+
+#: openforms/emails/templates/emails/co_sign/request.html:13
+#, python-format
+msgid ""
+"\n"
+"<p>This is a request to co-sign form \"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\".</p>\n"
+"\n"
+"<p>%(instruction)s</p>\n"
+"\n"
+"<p>\n"
+"    You will then be redirected to authenticate yourself. After "
+"authentication, fill in\n"
+"    the following code to retrieve the form submission:\n"
+"    <br>\n"
+"    <br>\n"
+"    <strong>%(tt_openvariable)s code %(tt_closevariable)s</strong>\n"
+"</p>\n"
+msgstr ""
+"\n"
+"<p>Dit is een verzoek om het formulier \\\"%(tt_openvariable)s form_name "
+"%(tt_closevariable)s\\\" mede te ondertekenen.</p>\n"
+"\n"
+"<p>%(instruction)s</p>\n"
+"\n"
+"<p>\n"
+"  Daarna word je doorgestuurd naar een pagina waar je moet inloggen. Nadat "
+"je bent ingelogd, haal je het formulier op met de volgende code:\n"
+"  <br>\n"
+"  <br>\n"
+"  <strong>%(tt_openvariable)s code %(tt_closevariable)s</strong>\n"
+"</p>\n"
+
 #: openforms/emails/templates/emails/confirmation/content.html:7
 #, python-format
 msgid ""
@@ -4061,41 +4121,6 @@ msgid ""
 msgstr ""
 "Bevestiging van uw inzending van %(tt_openvariable)s form_name "
 "%(tt_closevariable)s"
-
-#: openforms/emails/templates/emails/cosign.html:4
-#, python-format
-msgid ""
-"\n"
-"        This is a request to co-sign form \"%(form_name)s\".<br />\n"
-"    "
-msgstr ""
-"\n"
-"Dit is een verzoek om het formulier \"%(form_name)s\" mede te ondertekenen."
-"<br />"
-
-#: openforms/emails/templates/emails/cosign.html:9
-#, python-format
-msgid ""
-"Please visit the form page by navigating to the following link: %(form_url)s."
-"<br />"
-msgstr "Klik op deze link: %(form_url)s om het formulier te openen."
-
-#: openforms/emails/templates/emails/cosign.html:13
-msgid ""
-"Please visit the form page on our website and click on the 'co-sign' button."
-msgstr ""
-"Gelieve de webpagina van het formulier op onze website te openen en klik "
-"vervolgens op de \"mede-ondertekenen\"-knop."
-
-#: openforms/emails/templates/emails/cosign.html:16
-#, python-format
-msgid ""
-"You will then be redirected to authenticate yourself. After authentication, "
-"fill in the following code to retrieve the form submission:<br /><br /> "
-"%(code)s <br /><br />"
-msgstr ""
-"Daarna wordt u doorgestuurd naar een pagina waar u moet inloggen. Nadat u "
-"bent ingelogd, voert u de volgende code in:<br /><br /> %(code)s <br /><br />"
 
 #: openforms/emails/templates/emails/save_form/content.html:5
 #, python-format
@@ -10648,7 +10673,7 @@ msgstr "Inzendingen-export"
 msgid "{representation} ({auth_attribute}: {identifier})"
 msgstr "{representation} ({auth_attribute}: {identifier})"
 
-#: openforms/submissions/tasks/emails.py:105
+#: openforms/submissions/tasks/emails.py:104
 #, python-brace-format
 msgid "Co-sign request for {form_name}"
 msgstr "Mede-ondertekenverzoek voor {form_name}"
@@ -12104,9 +12129,3 @@ msgstr ""
 msgid "Without any binding addresses, no Suwinet service can be used."
 msgstr ""
 "Zonder enig \"binding address\" kan er geen Suwinet service gebruikt worden."
-
-#~ msgid "enabled backend formio validation"
-#~ msgstr "backend-formio-validatie ingeschakeld"
-
-#~ msgid "Copy form"
-#~ msgstr "Formulier kopieren"
