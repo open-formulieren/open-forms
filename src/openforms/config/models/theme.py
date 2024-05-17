@@ -47,6 +47,15 @@ class Theme(models.Model):
             "advise dimensions around 150px by 75px. SVG's are permitted."
         ),
     )
+    email_logo = models.ImageField(
+        _("email logo"),
+        upload_to="logo/",
+        blank=True,
+        help_text=_(
+            "Upload the email logo, visible to users who receive an email. We "
+            "advise dimensions around 150px by 75px. SVG's are not permitted."
+        ),
+    )
 
     #
     # Theme configuration

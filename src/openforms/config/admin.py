@@ -215,13 +215,13 @@ class CSPSettingAdmin(admin.ModelAdmin):
 
 @admin.register(Theme)
 class ThemeAdmin(admin.ModelAdmin):
-    list_display = ("name", "logo", "classname", "get_preview_url")
+    list_display = ("name", "logo", "email_logo", "classname", "get_preview_url")
     search_fields = ("name", "classname")
 
     form = ThemeAdminForm
     fieldsets = (
         (None, {"fields": ("name",)}),
-        (_("Logo"), {"fields": ("logo",)}),
+        (_("Logo"), {"fields": ("logo", "email_logo")}),
         (
             _("Appearance"),
             {
