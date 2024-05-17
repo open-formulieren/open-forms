@@ -491,6 +491,72 @@ Voorbeeld
 
          Mede-ondertekend door: N. Doe (BSN: 123456789)
 
+E-mail mede-ondertekenverzoek
+=============================
+
+De mede-ondertekenverzoek-e-mail wordt verstuurd naar de persoon die aangeduid is als
+mede-ondertekenaar als er een mede-ondertekencomponent aan het formulier toegevoegd is.
+
+Deze e-mail bevat de instructies om de inzending te ondertekenen.
+
+**Variabelen**
+
+Enkel de volgende variabelen zijn beschikbaar in dit sjabloon. Geen van deze variabelen
+zijn verplicht - je kan bijvoorbeeld instructies opnemen dat de persoon die het
+formulier ingevuld heeft de relevante informatie handmatig zal doorgeven.
+
+==================================  ===========================================================================
+Variabele                           Beschrijving
+==================================  ===========================================================================
+``{{ form_name }}``                 De naam van het formulier.
+``{{ form_url }}``                  De directe link naar het formulier.
+``{{ code }}``                      De code om de inzending mee op te halen.
+==================================  ===========================================================================
+
+Voorbeeld
+---------
+
+.. tabs::
+
+   .. tab:: Sjabloon (zonder opmaak)
+
+      .. code:: django
+
+         <p>Dit is een verzoek om het formulier "{{ form_name }}" mede te ondertekenen.</p>
+
+         <p>
+           Gelieve het formulier te openen met de volgende link:
+           <a href="{{ form_url }}">{{ form_url }}</a>.
+         </p>
+
+         <p>
+           Daarna word je doorgestuurd naar een pagina waar je moet inloggen. Nadat je
+           bent ingelogd, haal je het formulier op met de volgende code:
+           <br>
+           <br>
+           <strong>{{ code }}</strong>
+         </p>
+
+
+   .. tab:: Weergave (impressie)
+
+      .. code:: html
+
+         <p>Dit is een verzoek om het formulier "Voorbeeld" mede te ondertekenen.</p>
+
+         <p>
+           Gelieve het formulier te openen met de volgende link:
+           <a href="https://example.com/voorbeeld-formulier">https://example.com/voorbeeld-formulier</a>.
+         </p>
+
+         <p>
+           Daarna word je doorgestuurd naar een pagina waar je moet inloggen. Nadat je
+           bent ingelogd, haal je het formulier op met de volgende code:
+           <br>
+           <br>
+           <strong>OF-123456</strong>
+         </p>
+
 .. _objecten_api_registratie:
 
 Objecten API registratie

@@ -1,0 +1,25 @@
+{% load i18n capture_tags %}
+
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+
+{% capture as instruction silent %}
+{% if omit_form_link %}{% blocktranslate %}Please visit the form page on our website and click on the 'co-sign' button.{% endblocktranslate %}
+{% else %}{% blocktranslate %}
+Please visit the form page by navigating to the following link:
+<a href="{{ tt_openvariable }} form_url {{ tt_closevariable }}">{{ tt_openvariable }} form_url {{ tt_closevariable }}</a>.
+{% endblocktranslate %}{% endif %}{% endcapture %}
+
+{% blocktranslate %}
+<p>This is a request to co-sign form "{{ tt_openvariable }} form_name {{ tt_closevariable }}".</p>
+
+<p>{{ instruction }}</p>
+
+<p>
+    You will then be redirected to authenticate yourself. After authentication, fill in
+    the following code to retrieve the form submission:
+    <br>
+    <br>
+    <strong>{{ tt_openvariable }} code {{ tt_closevariable }}</strong>
+</p>
+{% endblocktranslate %}

@@ -6,6 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str
+from django.utils.functional import lazystr
 from django.utils.translation import gettext_lazy as _
 
 from django_jsonform.models.fields import ArrayField
@@ -30,8 +31,8 @@ logger = logging.getLogger(__name__)
 
 
 @ensure_default_language()
-def _render(filename):
-    return render_to_string(filename).strip()
+def _render(filename: str, *args, **kwargs):
+    return lazystr(render_to_string(filename, *args, **kwargs).strip())
 
 
 get_confirmation_email_subject = partial(_render, "emails/confirmation/subject.txt")
@@ -99,11 +100,6 @@ class GlobalConfiguration(SingletonModel):
             URLSanitationValidator(),
         ],
     )
-    show_form_link_in_cosign_email = models.BooleanField(
-        _("show form link in co-sign email"),
-        default=True,
-        help_text=_("When enabled, a link to the form is shown in the co-sign email."),
-    )
     save_form_email_subject = models.CharField(
         _("subject"),
         max_length=1000,
@@ -115,6 +111,19 @@ class GlobalConfiguration(SingletonModel):
         _("content"),
         help_text=_("Content of the save form email message."),
         default=partial(_render, "emails/save_form/content.html"),
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend"),
+            URLSanitationValidator(),
+        ],
+    )
+
+    cosign_request_template = HTMLField(
+        _("co-sign request template"),
+        help_text=_(
+            "Content of the co-sign request email. The available template "
+            "variables are: 'form_name', 'form_url' and 'code'."
+        ),
+        default=partial(_render, "emails/co_sign/request.html"),
         validators=[
             DjangoTemplateValidator(backend="openforms.template.openforms_backend"),
             URLSanitationValidator(),

@@ -2,7 +2,6 @@ import logging
 
 from django.conf import settings
 from django.db import DatabaseError, transaction
-from django.template.loader import get_template
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +11,7 @@ from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html
 from openforms.logging import logevent
+from openforms.template import render_from_string
 
 from ..models import Submission
 from ..utils import send_confirmation_email as _send_confirmation_email
@@ -90,14 +90,13 @@ def send_email_cosigner(submission_id: int) -> None:
             )
             return
 
-        template = get_template("emails/cosign.html")
-        content = template.render(
+        content = render_from_string(
+            config.cosign_request_template,
             {
                 "code": submission.public_registration_reference,
                 "form_name": submission.form.name,
                 "form_url": submission.cleaned_form_url,
-                "show_form_link": config.show_form_link_in_cosign_email,
-            }
+            },
         )
 
         try:
