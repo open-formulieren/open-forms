@@ -556,6 +556,10 @@ Variabele                              Beschrijving
 ``{{ payment.completed }}``            Indicatie of de betaling voltooid is.
 ``{{ payment.amount }}``               Bedrag dat betaald moet worden.
 ``{{ payment.public_order_ids }}``     Lijst van bestelling IDs die naar de externe betaalprovider meegestuurd zijn.
+``{{ cosign_data.date }}``             De datum waarop de inzending mede is ondertekend.
+``{{ cosign_data.bsn }}``              Het BSN van de medeondertekenaar, indien beschikbaar.
+``{{ cosign_data.kvk }}``              Het KvK van de medeondertekenaar, indien beschikbaar.
+``{{ cosign_data.pseudo }}``           Het pseudo van de medeondertekenaar, indien beschikbaar.
 =====================================  ===========================================================================
 
 
@@ -576,7 +580,11 @@ Voorbeeld
            "attachments": {% uploaded_attachment_urls %},
            "submission_id": "{{ submission.kenmerk }}",
            "language_code": "{{ submission.language_code }}",
-           "public_reference": "{{ submission.public_reference }}"
+           "public_reference": "{{ submission.public_reference }}",
+           {% if cosign_data %}
+           "cosign_date": "{{ cosign_data.date.isoformat }}",
+           "cosign_bsn": "{{ cosign_data.bsn }}"
+           {% endif %}
          }
 
    .. tab:: Resultaat
@@ -594,5 +602,7 @@ Voorbeeld
            "attachments": ["http://some-url.nl/to/attachment1", "http://some-url.nl/to/attachment2"],
            "submission_id": "c305a56f-c56c-49bc-9d94-3e301d0b8bf8",
            "language_code": "nl",
-           "public_reference": "OF-12345"
+           "public_reference": "OF-12345",
+           "cosign_date": "2024-01-01T12:00:00.037672+00:00",
+           "cosign_bsn": "123456783"
          }
