@@ -642,61 +642,129 @@ class InvalidLogicRulesTests(TestCase):
         )
         FormLogicFactory(
             form=form,
-            json_logic_trigger={"==": [{"var": "foo.bar"}, "apple"]},
+            json_logic_trigger={
+                "and": [
+                    {"<": [{"var": "foo.bar"}, "apple"]},
+                    {"<": [{"var": "foo.0.bar"}, "apple"]},
+                ]
+            },
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "d"},
+                    "variable": "foo.wrong",
+                    "component": "",
+                    "form_step": "",
+                    "form_step_uuid": "c490b80f-05fe-4006-884d-f631c8abe968",
+                },
+            ],
         )
 
-        invalid_logic_rules = collect_invalid_logic_rules()
+        with self.assertLogs() as logs:
+            collect_invalid_logic_rules()
 
-        log = TimelineLogProxy.objects.last()
+        logs_messages = [log.getMessage() for log in logs.records]
 
-        self.assertEqual(len(invalid_logic_rules), 0)
-        self.assertEqual(
-            log.extra_data,
-            {
-                "log_event": "invalid_variable_reference_in_logic",
-                "logic_variable": "foo.bar",
-            },
+        self.assertEqual(len(logs.records), 3)
+        self.assertIn(
+            f"possible invalid variable reference (foo.wrong) in logic of form {form.admin_name}",
+            logs_messages,
+        )
+        self.assertIn(
+            f"possible invalid variable reference (foo.bar) in logic of form {form.admin_name}",
+            logs_messages,
+        )
+        self.assertIn(
+            f"possible invalid variable reference (foo.0.bar) in logic of form {form.admin_name}",
+            logs_messages,
         )
 
     def test_invalid_logic_rules_are_collected_and_not_logged(self):
         form = FormFactory.create()
+        FormVariableFactory.create(
+            form=form,
+            name="Variable str",
+            key="fooStr",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+        )
+        FormVariableFactory.create(
+            form=form,
+            name="Variable array",
+            key="fooArray",
+            user_defined=True,
+            data_type=FormVariableDataTypes.array,
+        )
         FormLogicFactory(
             form=form,
             json_logic_trigger={
                 "and": [
                     {"<": [{"var": "temp"}, 110]},
+                    {">": [{"var": "fooStr.nested"}, 110]},
+                    {">": [{"var": "fooArray.bar"}, 110]},
+                    {"<": [{"var": "temp.0.other"}, 110]},
                     {"<": [{"var": {"var": "another"}}, 110]},
                     {"<": [{"var": ""}, 110]},
                     {"==": [{"var": "pie.filling"}, "apple"]},
                 ]
             },
+            actions=[
+                {
+                    "action": {"type": "variable", "value": "d"},
+                    "variable": "foo.wrong",
+                    "component": "",
+                    "form_step": "",
+                    "form_step_uuid": "c490b80f-05fe-4006-884d-f631c8abe968",
+                },
+            ],
         )
 
-        invalid_logic_rules = collect_invalid_logic_rules()
+        with self.assertNoLogs():
+            invalid_logic_rules = collect_invalid_logic_rules()
 
-        logs_exist = TimelineLogProxy.objects.exists()
-
-        self.assertEqual(len(invalid_logic_rules), 4)
-        self.assertFalse(logs_exist)
-        self.assertEqual(
-            invalid_logic_rules[0],
+        self.assertEqual(len(invalid_logic_rules), 8)
+        self.assertIn(
             InvalidLogicRule(
                 variable="temp", form_name=form.admin_name, form_id=form.id
             ),
+            invalid_logic_rules,
         )
-        self.assertEqual(
-            invalid_logic_rules[1],
+        self.assertIn(
+            InvalidLogicRule(
+                variable="fooStr.nested", form_name=form.admin_name, form_id=form.id
+            ),
+            invalid_logic_rules,
+        )
+        self.assertIn(
+            InvalidLogicRule(
+                variable="fooArray.bar", form_name=form.admin_name, form_id=form.id
+            ),
+            invalid_logic_rules,
+        )
+        self.assertIn(
+            InvalidLogicRule(
+                variable="foo.wrong", form_name=form.admin_name, form_id=form.id
+            ),
+            invalid_logic_rules,
+        )
+        self.assertIn(
+            InvalidLogicRule(
+                variable="temp.0.other", form_name=form.admin_name, form_id=form.id
+            ),
+            invalid_logic_rules,
+        )
+        self.assertIn(
             InvalidLogicRule(
                 variable="another", form_name=form.admin_name, form_id=form.id
             ),
+            invalid_logic_rules,
         )
-        self.assertEqual(
-            invalid_logic_rules[2],
+        self.assertIn(
             InvalidLogicRule(variable="", form_name=form.admin_name, form_id=form.id),
+            invalid_logic_rules,
         )
-        self.assertEqual(
-            invalid_logic_rules[3],
+        self.assertIn(
             InvalidLogicRule(
                 variable="pie.filling", form_name=form.admin_name, form_id=form.id
             ),
+            invalid_logic_rules,
         )

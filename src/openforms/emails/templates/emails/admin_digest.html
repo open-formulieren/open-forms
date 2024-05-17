@@ -121,7 +121,7 @@
                 </p>
                 <p>
                     {% blocktranslate with form_name=failed_backend.form_name trimmed %}
-                        This affects form '{{ form_name }}'
+                        This affects form '{{ form_name }}', possibly other forms are affected too.
                     {% endblocktranslate %}
                 </p>
                 <p><a href="{{ failed_backend.admin_link }}">{% trans "View form" %}</a></p>

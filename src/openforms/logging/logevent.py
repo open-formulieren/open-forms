@@ -693,12 +693,3 @@ def email_status_change(
             "include_in_daily_digest": include_in_daily_digest,
         },
     )
-
-
-# - - -
-def invalid_variable_reference_in_logic(form: Form, logic_variable: str):
-    _create_log(
-        form,
-        "invalid_variable_reference_in_logic",
-        extra_data={"logic_variable": logic_variable},
-    )
