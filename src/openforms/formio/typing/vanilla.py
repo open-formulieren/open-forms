@@ -12,6 +12,7 @@ class TextFieldComponent(Component):
 
 class FileConfig(TypedDict):
     allowedTypesLabels: list[str]
+    type: NotRequired[list[str]]
 
 
 class FileComponent(Component):
@@ -20,6 +21,7 @@ class FileComponent(Component):
     useConfigFiletypes: bool
     filePattern: str
     file: FileConfig
+    maxNumberOfFiles: NotRequired[int]
 
 
 class SelectData(TypedDict, total=False):

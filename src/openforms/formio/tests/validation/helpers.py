@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from unittest.mock import patch
 
+from rest_framework.exceptions import ErrorDetail
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -23,7 +24,7 @@ def validate_formio_data(
     return is_valid, serializer.errors
 
 
-def extract_error(errors: ReturnDict, key: str, index: int = 0):
+def extract_error(errors: ReturnDict, key: str, index: int = 0) -> ErrorDetail:
     return errors[key][index]
 
 
