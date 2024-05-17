@@ -3,17 +3,18 @@ from datetime import datetime
 from typing import Protocol
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
-from rest_framework import serializers
+from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
-from openforms.utils.date import datetime_in_amsterdam, format_date_value
+from openforms.utils.date import TIMEZONE_AMS, datetime_in_amsterdam, format_date_value
 from openforms.utils.validators import BSNValidator, IBANValidator
 from openforms.validations.service import PluginValidator
 
@@ -100,6 +101,39 @@ class Date(BasePlugin[DateComponent]):
         return serializers.ListField(child=base) if multiple else base
 
 
+class FormioDateTimeField(serializers.DateTimeField):
+    def validate_empty_values(self, data):
+        is_empty, data = super().validate_empty_values(data)
+        # base field only treats `None` as empty, but formio uses empty strings
+        if data == "":
+            if self.required:
+                self.fail("required")
+            return (True, "")
+        return is_empty, data
+
+    def to_internal_value(self, value):
+        # we *only* accept datetimes in ISO-8601 format. Python will happily parse a
+        # YYYY-MM-DD string as a datetime (with hours/minutes set to 0). For a component
+        # specifically aimed at datetimes, this is not a valid input.
+        if value and isinstance(value, str) and "T" not in value:
+            self.fail("invalid", format="YYYY-MM-DDTHH:mm:ss+XX:YY")
+        return super().to_internal_value(value)
+
+
+def _normalize_validation_datetime(value: str) -> datetime:
+    """
+    Takes a string expected to contain an ISO-8601 datetime and normalizes it.
+
+    Seconds and time zone information may be missing. If it is, assume Europe/Amsterdam.
+
+    :return: Time-zone aware datetime.
+    """
+    parsed = datetime.fromisoformat(value)
+    if timezone.is_naive(parsed):
+        parsed = timezone.make_aware(parsed, timezone=TIMEZONE_AMS)
+    return parsed
+
+
 @register("datetime")
 class Datetime(BasePlugin):
     formatter = DateTimeFormatter
@@ -114,6 +148,38 @@ class Datetime(BasePlugin):
         Implement the behaviour for our custom datetime component options.
         """
         mutate_min_max_validation(component, data)
+
+    def build_serializer_field(
+        self, component: DateComponent
+    ) -> FormioDateTimeField | serializers.ListField:
+        """
+        Accept datetime values.
+
+        Additional validation is taken from the datePicker configuration, which is also
+        set dynamically through our own backend (see :meth:`mutate_config_dynamically`).
+        """
+        # relevant validators: required, datePicker.minDate and datePicker.maxDate
+        multiple = component.get("multiple", False)
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+        date_picker = component.get("datePicker") or {}
+        validators = []
+
+        if min_date := date_picker.get("minDate"):
+            min_value = _normalize_validation_datetime(min_date)
+            validators.append(MinValueValidator(min_value))
+
+        if max_date := date_picker.get("maxDate"):
+            max_value = _normalize_validation_datetime(max_date)
+            validators.append(MaxValueValidator(max_value))
+
+        base = FormioDateTimeField(
+            input_formats=[ISO_8601],
+            required=required,
+            allow_null=not required,
+            validators=validators,
+        )
+        return serializers.ListField(child=base) if multiple else base
 
 
 @register("map")
