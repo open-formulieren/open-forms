@@ -2,6 +2,7 @@ import logging
 
 from django.core.exceptions import PermissionDenied
 from django.dispatch import Signal, receiver
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.request import Request
@@ -142,4 +143,5 @@ def set_cosign_data_on_submission(
     form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
 
     instance.co_sign_data = form_auth
+    instance.co_sign_data["cosign_date"] = timezone.now().isoformat()
     instance.save()

@@ -527,7 +527,7 @@ class CosignValidationSerializer(serializers.Serializer):
     )
 
     def save(self, **kwargs):
-        submission = self.context["submission"]
+        submission: Submission = self.context["submission"]
         submission.cosign_complete = True
         submission.cosign_privacy_policy_accepted = True
         submission.cosign_statement_of_truth_accepted = True
