@@ -130,10 +130,14 @@ class FormDefinitionSerializer(
         #    for the dynamic formio configuration in the context of a submission.
         # 2. The serializers/API endpoints of :module:`openforms.forms.api` for
         #    'standalone' use/introspection.
-        rewrite_formio_components_for_request(
-            instance.configuration_wrapper,
-            request=self.context["request"],
-        )
+        is_export = self.context.get("is_export", False)
+
+        if not is_export:
+            rewrite_formio_components_for_request(
+                instance.configuration_wrapper,
+                request=self.context["request"],
+            )
+
         representation["configuration"] = instance.configuration_wrapper.configuration
 
         return representation

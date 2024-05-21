@@ -96,7 +96,7 @@ def form_to_json(form_id: int) -> dict:
     form_definitions = FormDefinitionSerializer(
         instance=form_definitions,
         many=True,
-        context={"request": request},
+        context={"request": request, "is_export": True},
     ).data
     form_steps = FormStepSerializer(
         instance=form_steps, many=True, context={"request": request}
