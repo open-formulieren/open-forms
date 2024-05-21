@@ -1,4 +1,5 @@
-from .constants import FORM_AUTH_SESSION_KEY
+from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from .typing import BaseAuth
 from .utils import (
     is_authenticated_with_an_allowed_plugin,
     is_authenticated_with_plugin,
@@ -7,6 +8,8 @@ from .utils import (
 
 __all__ = [
     "FORM_AUTH_SESSION_KEY",
+    "AuthAttribute",
+    "BaseAuth",
     "store_auth_details",
     "is_authenticated_with_plugin",
     "is_authenticated_with_an_allowed_plugin",

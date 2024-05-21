@@ -11,6 +11,7 @@ import glom
 from glom import PathAccessError
 from typing_extensions import override
 
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
 from openforms.contrib.zgw.service import (
@@ -36,7 +37,7 @@ from openforms.variables.utils import get_variables_for_context
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from .client import DocumentenClient, get_documents_client
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
-from .registration_variables import register as variables_registry
+from .registration_variables import get_cosign_value, register as variables_registry
 from .typing import (
     ConfigVersion,
     ObjecttypeVariableMapping,
@@ -277,6 +278,26 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             "public_order_ids": submission.payments.get_completed_public_order_ids(),
         }
 
+    @staticmethod
+    def get_cosign_context_data(
+        submission: Submission,
+    ) -> dict[str, str | datetime] | None:
+        if not submission.cosign_complete:
+            return None
+        else:
+            # date can be missing on existing submissions, so fallback to an empty string
+            date = (
+                datetime.fromisoformat(submission.co_sign_data["cosign_date"])
+                if "cosign_date" in submission.co_sign_data
+                else ""
+            )
+            return {
+                "bsn": get_cosign_value(submission, AuthAttribute.bsn),
+                "kvk": get_cosign_value(submission, AuthAttribute.kvk),
+                "pseudo": get_cosign_value(submission, AuthAttribute.pseudo),
+                "date": date,
+            }
+
     @override
     def get_object_data(
         self,
@@ -297,6 +318,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             "_submission": submission,
             "productaanvraag_type": options["productaanvraag_type"],
             "payment": self.get_payment_context_data(submission),
+            "cosign_data": self.get_cosign_context_data(submission),
             "variables": get_variables_for_context(submission),
             # Github issue #661, nested for namespacing note: other templates and context expose all submission
             # variables in the top level namespace, but that is due for refactor
