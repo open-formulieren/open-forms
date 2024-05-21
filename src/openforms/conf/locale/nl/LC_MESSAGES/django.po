@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-17 15:23+0200\n"
+"POT-Creation-Date: 2024-05-21 10:26+0200\n"
 "PO-Revision-Date: 2024-05-17 15:22+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -1849,11 +1849,11 @@ msgstr "Authenticatiedetails van de registrator"
 msgid "Can register submission for customers"
 msgstr "Mag inzendingen opvoeren voor klanten"
 
-#: openforms/authentication/signals.py:65
+#: openforms/authentication/signals.py:66
 msgid "You must be logged in to start this form."
 msgstr "Je moet ingelogd zijn om dit formulier te starten."
 
-#: openforms/authentication/signals.py:79 openforms/authentication/views.py:181
+#: openforms/authentication/signals.py:80 openforms/authentication/views.py:181
 #: openforms/authentication/views.py:316
 msgid "Demo plugins require an active admin session."
 msgstr "Om demo-plugins te gebruiken moet je als beheerder ingelogd zijn."
@@ -9247,25 +9247,55 @@ msgstr ""
 msgid "Objects API registration"
 msgstr "Objecten API registratie"
 
-#: openforms/registrations/contrib/objects_api/registration_variables.py:29
+#: openforms/registrations/contrib/objects_api/registration_variables.py:31
 msgid "PDF Url"
 msgstr "URL PDF"
 
-#: openforms/registrations/contrib/objects_api/registration_variables.py:40
+#: openforms/registrations/contrib/objects_api/registration_variables.py:42
 msgid "CSV Url"
 msgstr "URL CSV"
 
-#: openforms/registrations/contrib/objects_api/registration_variables.py:51
+#: openforms/registrations/contrib/objects_api/registration_variables.py:53
 msgid "Payment completed"
 msgstr "Betaling voltooid"
 
-#: openforms/registrations/contrib/objects_api/registration_variables.py:62
+#: openforms/registrations/contrib/objects_api/registration_variables.py:64
 msgid "Payment amount"
 msgstr "Betalingsbedrag"
 
-#: openforms/registrations/contrib/objects_api/registration_variables.py:73
+#: openforms/registrations/contrib/objects_api/registration_variables.py:75
 msgid "Payment public order IDs"
 msgstr "Publieke order-ID's van betaling"
+
+#: openforms/registrations/contrib/objects_api/registration_variables.py:86
+#, fuzzy
+#| msgid "co-sign data"
+msgid "Co-sign data"
+msgstr "Mede-ondertekenaargegevens"
+
+#: openforms/registrations/contrib/objects_api/registration_variables.py:110
+#, fuzzy
+#| msgid "co-sign data"
+msgid "Co-sign date"
+msgstr "Mede-ondertekenaargegevens"
+
+#: openforms/registrations/contrib/objects_api/registration_variables.py:129
+#, fuzzy
+#| msgid "Co-signed by"
+msgid "Co-sign BSN"
+msgstr "Mede-ondertekend door"
+
+#: openforms/registrations/contrib/objects_api/registration_variables.py:138
+#, fuzzy
+#| msgid "Co-signed by"
+msgid "Co-sign KvK"
+msgstr "Mede-ondertekend door"
+
+#: openforms/registrations/contrib/objects_api/registration_variables.py:147
+#, fuzzy
+#| msgid "Co-signed by"
+msgid "Co-sign pseudo"
+msgstr "Mede-ondertekend door"
 
 #: openforms/registrations/contrib/stuf_zds/plugin.py:47
 msgid "Zaaktype code for newly created Zaken in StUF-ZDS"
