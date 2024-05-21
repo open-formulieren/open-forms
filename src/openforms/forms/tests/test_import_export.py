@@ -122,6 +122,43 @@ class ImportExportTests(TestCase):
                 FormVariableSources.user_defined, form_variables[0]["source"]
             )
 
+    @tag("gh-1906")
+    def test_export_reusable_form_definition_uuid_already_exists(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "file"}]},
+            is_reusable=True,
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        call_command("export", form.pk, self.filepath)
+
+        with zipfile.ZipFile(self.filepath, "r") as f:
+            self.assertEqual(
+                f.namelist(),
+                [
+                    "forms.json",
+                    "formSteps.json",
+                    "formDefinitions.json",
+                    "formLogic.json",
+                    "formVariables.json",
+                    f"{EXPORT_META_KEY}.json",
+                ],
+            )
+
+            form_definitions = json.loads(f.read("formDefinitions.json"))
+            self.assertEqual(len(form_definitions), 1)
+            self.assertEqual(form_definitions[0]["uuid"], str(form_definition.uuid))
+            self.assertEqual(form_definitions[0]["name"], form_definition.name)
+            self.assertEqual(
+                form_definitions[0]["internal_name"], form_definition.internal_name
+            )
+            self.assertEqual(form_definitions[0]["slug"], form_definition.slug)
+            self.assertEqual(
+                form_definitions[0]["configuration"],
+                form_definition.configuration,
+            )
+
     def test_import(self):
         product = ProductFactory.create()
         merchant = OgoneMerchantFactory.create()
@@ -437,6 +474,30 @@ class ImportExportTests(TestCase):
         self.assertEqual(form_logics.count(), 2)
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
         self.assertEqual(imported_form.pk, form_logic_2.form.pk)
+
+    @tag("gh-1906")
+    def test_import_reusable_form_definition_uuid_already_exists(self):
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "file"}]},
+            is_reusable=True,
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        call_command("export", form.pk, self.filepath)
+
+        call_command("import", import_file=self.filepath)
+
+        form_definitions = FormDefinition.objects.all()
+        fd2 = form_definitions.last()
+        self.assertEqual(form_definitions.count(), 1)
+        self.assertEqual(fd2.pk, form_definition.pk)
+        self.assertEqual(fd2.uuid, form_definition.uuid)
+        self.assertEqual(fd2.configuration, form_definition.configuration)
+        self.assertEqual(fd2.login_required, form_definition.login_required)
+        self.assertEqual(fd2.name, form_definition.name)
+        self.assertEqual(fd2.internal_name, form_definition.internal_name)
+        self.assertEqual(fd2.slug, form_definition.slug)
 
     def test_import_form_with_category(self):
         """
