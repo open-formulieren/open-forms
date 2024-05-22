@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-21 13:43+0200\n"
+"POT-Creation-Date: 2024-05-22 10:57+0200\n"
 "PO-Revision-Date: 2024-05-17 15:22+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -4464,14 +4464,14 @@ msgstr ""
 msgid "Formio integration"
 msgstr "Form.io-integratie"
 
-#: openforms/formio/components/custom.py:179
-#: openforms/formio/components/custom.py:371
+#: openforms/formio/components/custom.py:245
+#: openforms/formio/components/custom.py:437
 #: openforms/formio/components/vanilla.py:111
 #: openforms/formio/components/vanilla.py:272
 msgid "This value does not match the required pattern."
 msgstr "De waarde komt niet overeen met het verwachte patroon."
 
-#: openforms/formio/components/custom.py:234
+#: openforms/formio/components/custom.py:300
 msgid "Selecting family members is currently not available."
 msgstr "Het selecteren van gezinsleden is momenteel niet beschikbaar."
 
@@ -8303,8 +8303,8 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-ondertekencomponent vereist de configuratie van "
-"'{field_label}' ({config_verbose_name})."
+"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
+"({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
 msgid "Retrieve details of a single product"
