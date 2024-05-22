@@ -381,16 +381,16 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
 
         form_logics_vars = []
         for logic in form_logics:
-            for var in introspect_json_logic(logic.json_logic_trigger).get_input_keys():
-                form_logics_vars.append(var)
+            form_logics_vars += introspect_json_logic(
+                logic.json_logic_trigger
+            ).get_input_keys()
             for action in logic.actions:
                 if action["action"]["type"] == LogicActionTypes.variable:
                     form_logics_vars.append(InputVar(key=action["variable"]))
                     expression = action["action"]["value"]
-                    form_logics_vars += [
-                        var
-                        for var in introspect_json_logic(expression).get_input_keys()
-                    ]
+                    form_logics_vars += introspect_json_logic(
+                        expression
+                    ).get_input_keys()
 
         for var in set(form_logics_vars):
             # there is a variable with this exact key, it is a valid reference
