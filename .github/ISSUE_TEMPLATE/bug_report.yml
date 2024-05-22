@@ -12,6 +12,14 @@ body:
       placeholder: "1.1.0"
     validations:
       required: true
+  - type: input
+    id: customer-reference
+    attributes:
+      label: Customer reference
+      description: Om welke klant/instantie gaat het? Which customer/instance is affected?
+      placeholder: "Taiga Maykin #123"
+    validations:
+      required: false
   - type: textarea
     id: what-happened
     attributes:
