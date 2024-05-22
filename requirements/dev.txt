@@ -1178,7 +1178,7 @@ tornado==6.3.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   flower
-typing-extensions==4.9.0
+typing-extensions==4.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
