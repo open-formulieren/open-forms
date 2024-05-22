@@ -1,7 +1,9 @@
-from typing import Any, Generator, Protocol, TypeGuard
+from typing import Any, Generator, Protocol
 
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
+
+from typing_extensions import TypeIs
 
 from openforms.appointments.registry import register as appointments_register
 from openforms.contrib.brk.checks import BRKValidatorCheck
@@ -30,7 +32,7 @@ def _subset_match(requested: str | None, checking: str) -> bool:
     return requested == checking
 
 
-def is_plugin(plugin: Any) -> TypeGuard[AbstractBasePlugin]:
+def is_plugin(plugin: Any) -> TypeIs[AbstractBasePlugin]:
     if hasattr(plugin, "identifier"):
         return True
     return False
