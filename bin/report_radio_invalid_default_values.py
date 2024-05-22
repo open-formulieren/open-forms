@@ -1,7 +1,13 @@
 #!/usr/bin/env python
+import sys
+from pathlib import Path
+
 import django
 
 from tabulate import tabulate
+
+SRC_DIR = Path(__file__).parent.parent / "src"
+sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
 def report_null_values() -> bool:
@@ -12,6 +18,8 @@ def report_null_values() -> bool:
     form_definitions = FormDefinition.objects.iterator()
     for fd in form_definitions:
         for component in fd.iter_components():
+            if "defaultValue" not in component:
+                continue
             default_value = component["defaultValue"]
 
             if (
