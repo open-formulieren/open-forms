@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.6.7 (2024-05-22)
+==================
+
+Bugfix release
+
+* [#3807] Made the co-sign request email template configurable.
+* [#4302] Made co-sign data (date and co-sign attribute) available in the Objects API registration.
+
 2.6.6 (2024-05-13)
 ==================
 
