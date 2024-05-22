@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-21 10:26+0200\n"
+"POT-Creation-Date: 2024-05-21 13:43+0200\n"
 "PO-Revision-Date: 2024-05-17 15:22+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -4920,11 +4920,11 @@ msgstr "Form.io configuratie"
 msgid "The form definition as Form.io JSON schema"
 msgstr "De formulier definitie als Form.io JSON schema"
 
-#: openforms/forms/api/serializers/form_definition.py:168
+#: openforms/forms/api/serializers/form_definition.py:172
 msgid "Used in forms"
 msgstr "Gebruikt in formulieren"
 
-#: openforms/forms/api/serializers/form_definition.py:170
+#: openforms/forms/api/serializers/form_definition.py:174
 msgid ""
 "The collection of forms making use of this definition. This includes both "
 "active and inactive forms."
