@@ -174,6 +174,12 @@ class FormDefinition(models.Model):
 
         return FormioConfigurationWrapper(self.configuration)
 
+    @cached_property
+    def formio_config(self):
+        from openforms.formio.datastructures import FormioConfig
+
+        return FormioConfig(self.configuration["components"])
+
     def iter_components(self, configuration=None, recursive=True, **kwargs):
         if configuration is None:
             configuration = self.configuration

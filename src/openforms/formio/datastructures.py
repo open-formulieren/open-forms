@@ -1,12 +1,16 @@
 import re
 from collections import UserDict
-from collections.abc import Hashable
+from collections.abc import Collection, Hashable
+from functools import cached_property
 from typing import Iterator, cast
 
 from glom import PathAccessError, assign, glom
+from nutree import Node, Tree
+from typing_extensions import TypeIs
 
 from openforms.typing import DataMapping, JSONValue
 
+from .registry import ComponentRegistry, register as default_component_registry
 from .typing import Component, EditGridComponent, FormioConfiguration
 from .utils import flatten_by_path, is_visible_in_frontend, iter_components
 
@@ -33,6 +37,10 @@ def _get_editgrid_component_map(component: EditGridComponent) -> dict[str, Compo
             )
 
     return component_map
+
+
+def _is_editgrid(component: Component) -> TypeIs[EditGridComponent]:
+    return component["type"] == "editgrid"
 
 
 class FormioConfigurationWrapper:
@@ -175,3 +183,168 @@ class FormioData(UserDict):
         except PathAccessError:
             return False
         return True
+
+
+class ComponentNode(Node):
+
+    @property
+    def name(self) -> str:
+        return self.data["key"]
+
+    # @cached_property
+    @property
+    def editgrid_path(self) -> str:
+        editgrid_keys = [
+            parent.data["key"]
+            for parent in self.get_parent_list()
+            if _is_editgrid(parent.data)
+        ]
+
+        return ".".join(editgrid_keys + [self.data["key"]])
+
+    @property
+    def configuration_path(self) -> str:
+        return self.get_meta("configuration_path")
+
+    @property
+    def is_visible(self) -> bool:
+        return all(
+            not parent.data.get("hidden", False)
+            for parent in self.get_parent_list(add_self=True)
+        )
+
+
+class FormioConfig:
+    def __init__(
+        self,
+        configuration: list[Component],
+        /,
+        *,
+        component_registry: ComponentRegistry = default_component_registry,
+        skip_recurse: Collection[str] = (),
+    ) -> None:
+        self._configuration = configuration
+        self.component_registry = component_registry
+        self._skip_recurse = set(skip_recurse)
+
+    @cached_property
+    def key_map(self) -> dict[str, Component]:
+        """A mapping between the component keys and their corresponding definition.
+
+        The mapping is flattened, meaning all components were parsed recursively.
+
+        .. code-block:: pycon
+
+            >>> config = FormioConfig(
+            ...     [
+            ...         {
+            ...             "type": "fieldset",
+            ...             "key": "myFieldSet",
+            ...             "components": [{"type": "textfield", "key": "myTextField"}],
+            ...         }
+            ...     ]
+            >>> )
+            >>> config.key_map
+            {"myFieldSet": ..., "myTextField": ...}
+
+        .. warning::
+
+            Due to the way Formio refers to editgrid components, the mapping might contain
+            duplicate component entries but with different keys. It is thus *not* safe
+            to iterate over this mapping.
+        """
+
+        key_map: dict[str, Component] = {}
+        for node in self._configuration_tree:
+            component = node.data
+            # first, ensure we add every component by its own key so that we can
+            # look it up. This is okay *because* in our UI we enforce unique keys
+            # across the entire form, even if the key is present in an edit grid
+            # (repeating group). Note that formio is perfectly fine with a root
+            # 'foo' key and 'foo' key inside an editgrid. Our behaviour is different
+            # from that because of historical reasons...
+            key_map[component["key"]] = component
+
+            # now, formio itself addresses components inside an edit grid with the
+            # pattern ``<editGridKey>.<componentKey>`` (e.g. in simple conditionals),
+            # which means that we also need to add the editgrid components to our
+            # 'registry' for easy lookups. See GH issue #4247 for one possible way
+            # this can cause crashes. So, we add the nested components with a
+            # namespaced key too.
+            #
+            # NOTE - this could conflict with a component outside the editgrid with
+            # this specific, explicit key. At the time of writing, this crashes on
+            # Formio's own demo site because it can't properly resolve the component,
+            # so we do not need to consider this case (it's broken anyway).
+            if node.editgrid_path != component["key"]:
+                key_map[node.editgrid_path] = component
+
+        return key_map
+
+    @cached_property
+    def path_map(self) -> dict[str, Component]:
+        """A mapping between the dotted path of the components and their corresponding definition.
+
+        The mapping is flattened, meaning all components were parsed recursively.
+
+        .. code-block:: pycon
+
+            >>> config = FormioConfig(
+            ...     [
+            ...         {
+            ...             "type": "fieldset",
+            ...             "key": "myFieldSet",
+            ...             "components": [{"type": "textfield", "key": "myTextField"}],
+            ...         }
+            ...     ]
+            >>> )
+            >>> config.path_map
+            {"0": {"key": "myFieldSet", ...}, "0.components.0": {"key": "myTextField", ...}}
+        """
+        path_map: dict[str, Component] = {}
+
+        for node in self._configuration_tree:
+            path_map[node.configuration_path] = node.data
+
+        return path_map
+
+    def __iter__(self) -> Iterator[Component]:
+        """Iterate over the components of the configuration.
+
+        The components are iterated over depth-first, pre-order.
+        """
+        # yield from self.path_map.values()  # 10x faster
+        for node in self._configuration_tree:
+            yield node.data
+
+    @cached_property
+    def _configuration_tree(self) -> Tree:
+
+        def _add_children(parent_node: ComponentNode, component: Component) -> None:
+            for (
+                configuration_path,
+                child_component,
+            ) in self.component_registry.iter_children(component):
+                node = cast(ComponentNode, parent_node.add(child_component))
+                node.set_meta(
+                    "configuration_path",
+                    f"{parent_node.configuration_path}.{configuration_path}",
+                )
+
+                if component["key"] not in self._skip_recurse:
+                    _add_children(node, child_component)
+
+        tree = Tree(
+            "Components",
+            calc_data_id=lambda _, data: data["key"],
+            factory=ComponentNode,
+        )
+
+        for i, component in enumerate(self._configuration):
+            root_node = cast(ComponentNode, tree.add(component))
+            root_node.set_meta("configuration_path", i)
+
+            if component["key"] not in self._skip_recurse:
+                _add_children(root_node, component)
+
+        return tree
