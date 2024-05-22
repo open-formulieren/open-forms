@@ -509,6 +509,10 @@ mozilla-django-oidc-db==0.15.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
+nutree==0.8.0
+    # via
+    #   -c requirements/base.in
+    #   -r requirements/base.txt
 o365==2.0.31
     # via
     #   -c requirements/base.in

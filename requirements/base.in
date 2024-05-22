@@ -17,6 +17,7 @@ html5lib
 # against the system libxml2
 --no-binary lxml
 lxml
+nutree
 O365  # microsoft graph
 Pillow  # handle images
 portalocker[redis]

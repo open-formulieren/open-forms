@@ -697,6 +697,10 @@ mypy-extensions==0.4.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   black
+nutree==0.8.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 o365==2.0.31
     # via
     #   -c requirements/ci.txt

@@ -616,6 +616,10 @@ multidict==6.0.4
     # via yarl
 mypy-extensions==0.4.3
     # via black
+nutree==0.8.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 o365==2.0.31
     # via
     #   -c requirements/base.txt
