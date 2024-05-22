@@ -1,7 +1,9 @@
-from typing import Any, Generator, Protocol, TypeGuard
+from typing import Any, Generator, Protocol
 
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
+
+from typing_extensions import TypeIs
 
 from openforms.appointments.registry import register as appointments_register
 from openforms.contrib.brk.checks import BRKValidatorCheck
@@ -19,9 +21,11 @@ from .data import Action, Entry
 class ConfigCheckable(Protocol):
     verbose_name: str
 
-    def check_config(self) -> None: ...
+    @staticmethod
+    def check_config() -> None: ...
 
-    def get_config_actions(self) -> list[Action]: ...
+    @staticmethod
+    def get_config_actions() -> list[Action]: ...
 
 
 def _subset_match(requested: str | None, checking: str) -> bool:
@@ -30,14 +34,14 @@ def _subset_match(requested: str | None, checking: str) -> bool:
     return requested == checking
 
 
-def is_plugin(plugin: Any) -> TypeGuard[AbstractBasePlugin]:
+def is_plugin(plugin: Any) -> TypeIs[AbstractBasePlugin]:
     if hasattr(plugin, "identifier"):
         return True
     return False
 
 
 class ConfigurationCheck:
-    def __init__(self, requested_plugin: AbstractBasePlugin = None) -> None:
+    def __init__(self, requested_plugin: str = "") -> None:
         self.requested_plugin = requested_plugin
 
     def get_configuration_results(
@@ -99,7 +103,9 @@ class ConfigurationCheck:
             else:
                 yield self.get_plugin_entry(plugin)
 
-    def get_plugin_entry(self, plugin: AbstractBasePlugin | ConfigCheckable) -> Entry:
+    def get_plugin_entry(
+        self, plugin: AbstractBasePlugin | type[ConfigCheckable]
+    ) -> Entry:
         # undocumented query string support - helps for developers ;)
         status, error = True, ""
         if is_plugin(plugin) and not _subset_match(
@@ -119,7 +125,7 @@ class ConfigurationCheck:
         try:
             actions = plugin.get_config_actions()
         except Exception as e:
-            actions = [
+            actions: list[Action] = [
                 (
                     _("Internal error: {exception}").format(exception=e),
                     "",

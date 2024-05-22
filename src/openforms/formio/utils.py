@@ -1,9 +1,10 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Callable, Iterator, TypeAlias, TypeGuard
+from typing import Any, Callable, Iterator, TypeAlias
 
 import elasticapm
 from glom import Coalesce, Path, glom
+from typing_extensions import TypeIs
 
 from openforms.typing import DataMapping, JSONObject, JSONValue
 from openforms.utils.glom import _glom_path_to_str
@@ -21,7 +22,7 @@ ComponentLike: TypeAlias = (
 )
 
 
-def _is_column_component(component: ComponentLike) -> TypeGuard[ColumnsComponent]:
+def _is_column_component(component: ComponentLike) -> TypeIs[ColumnsComponent]:
     return component.get("type") == "columns"
 
 
@@ -155,7 +156,7 @@ def get_readable_path_from_configuration_path(
     return " > ".join(keys_path)
 
 
-def is_layout_component(component):
+def is_layout_component(component: Component) -> bool:
     # Adapted from isLayoutComponent util function in Formio
     # https://github.com/formio/formio.js/blob/4.13.x/src/utils/formUtils.js#L25
     column = component.get("columns")

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-22 10:57+0200\n"
+"POT-Creation-Date: 2024-05-22 12:22+0200\n"
 "PO-Revision-Date: 2024-05-17 15:22+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -2187,36 +2187,36 @@ msgstr "Lijst van beschikbare stijlen"
 msgid "Retrieve theme details"
 msgstr "Stijldetails weergeven"
 
-#: openforms/config/checks.py:52
+#: openforms/config/checks.py:54
 msgid "Address lookup plugins"
 msgstr "Adresopzoekplugins"
 
-#: openforms/config/checks.py:65
+#: openforms/config/checks.py:67
 msgid "Validator plugins"
 msgstr "Validatieplugins"
 
-#: openforms/config/checks.py:76
+#: openforms/config/checks.py:78
 msgid "Appointment plugins"
 msgstr "Afspraakplugins"
 
-#: openforms/config/checks.py:77
+#: openforms/config/checks.py:79
 msgid "Registration plugins"
 msgstr "Registratieplugins"
 
-#: openforms/config/checks.py:78
+#: openforms/config/checks.py:80
 #: openforms/emails/templates/emails/admin_digest.html:46
 msgid "Prefill plugins"
 msgstr "Prefillplugins"
 
-#: openforms/config/checks.py:79
+#: openforms/config/checks.py:81
 msgid "Payment plugins"
 msgstr "Betaalproviderplugins"
 
-#: openforms/config/checks.py:80
+#: openforms/config/checks.py:82
 msgid "DMN plugins"
 msgstr "DMN plugins"
 
-#: openforms/config/checks.py:124
+#: openforms/config/checks.py:126
 #, python-brace-format
 msgid "Internal error: {exception}"
 msgstr "Interne fout: {exception}"
@@ -8303,8 +8303,8 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
-"({config_verbose_name})."
+"Het mede-ondertekencomponent vereist de configuratie van "
+"'{field_label}' ({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
 msgid "Retrieve details of a single product"
