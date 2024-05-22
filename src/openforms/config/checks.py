@@ -21,9 +21,11 @@ from .data import Action, Entry
 class ConfigCheckable(Protocol):
     verbose_name: str
 
-    def check_config(self) -> None: ...
+    @staticmethod
+    def check_config() -> None: ...
 
-    def get_config_actions(self) -> list[Action]: ...
+    @staticmethod
+    def get_config_actions() -> list[Action]: ...
 
 
 def _subset_match(requested: str | None, checking: str) -> bool:
@@ -39,7 +41,7 @@ def is_plugin(plugin: Any) -> TypeIs[AbstractBasePlugin]:
 
 
 class ConfigurationCheck:
-    def __init__(self, requested_plugin: AbstractBasePlugin = None) -> None:
+    def __init__(self, requested_plugin: str = "") -> None:
         self.requested_plugin = requested_plugin
 
     def get_configuration_results(
@@ -101,7 +103,9 @@ class ConfigurationCheck:
             else:
                 yield self.get_plugin_entry(plugin)
 
-    def get_plugin_entry(self, plugin: AbstractBasePlugin | ConfigCheckable) -> Entry:
+    def get_plugin_entry(
+        self, plugin: AbstractBasePlugin | type[ConfigCheckable]
+    ) -> Entry:
         # undocumented query string support - helps for developers ;)
         status, error = True, ""
         if is_plugin(plugin) and not _subset_match(
@@ -121,7 +125,7 @@ class ConfigurationCheck:
         try:
             actions = plugin.get_config_actions()
         except Exception as e:
-            actions = [
+            actions: list[Action] = [
                 (
                     _("Internal error: {exception}").format(exception=e),
                     "",

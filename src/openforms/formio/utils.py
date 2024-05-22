@@ -156,7 +156,7 @@ def get_readable_path_from_configuration_path(
     return " > ".join(keys_path)
 
 
-def is_layout_component(component):
+def is_layout_component(component: Component) -> bool:
     # Adapted from isLayoutComponent util function in Formio
     # https://github.com/formio/formio.js/blob/4.13.x/src/utils/formUtils.js#L25
     column = component.get("columns")
