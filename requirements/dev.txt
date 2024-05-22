@@ -530,7 +530,7 @@ glom==20.11.0
     #   mozilla-django-oidc-db
 gprof2dot==2021.2.21
     # via django-silk
-greenlet==2.0.2
+greenlet==3.0.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -779,7 +779,7 @@ platformdirs==2.2.0
     #   -r requirements/ci.txt
     #   black
     #   zeep
-playwright==1.38.0
+playwright==1.44.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -835,7 +835,7 @@ pydyf==0.8.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-pyee==9.0.4
+pyee==11.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

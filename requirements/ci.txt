@@ -477,7 +477,7 @@ glom==20.11.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
-greenlet==2.0.2
+greenlet==3.0.3
     # via playwright
 html5lib==1.1
     # via
@@ -688,7 +688,7 @@ platformdirs==2.2.0
     #   -r requirements/base.txt
     #   black
     #   zeep
-playwright==1.38.0
+playwright==1.44.0
     # via -r requirements/test-tools.in
 pluggy==0.13.1
     # via pytest
@@ -733,7 +733,7 @@ pydyf==0.8.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-pyee==9.0.4
+pyee==11.1.0
     # via playwright
 pyflakes==3.0.1
     # via flake8

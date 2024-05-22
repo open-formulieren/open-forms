@@ -18,7 +18,12 @@ from furl import furl
 from playwright.async_api import Page, expect
 
 from openforms.formio.tests.factories import SubmittedFileFactory
-from openforms.formio.typing import Component, DateComponent, RadioComponent
+from openforms.formio.typing import (
+    Component,
+    DateComponent,
+    DatetimeComponent,
+    RadioComponent,
+)
 from openforms.forms.models import Form
 from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.tests.factories import TemporaryFileUploadFactory
@@ -351,6 +356,121 @@ class SingleDateTests(ValidationsTestCase):
             component,
             ui_input="01-01-2025",
             api_value="2025-01-01",
+            expected_ui_error="De opgegeven datum ligt te ver in de toekomst.",
+        )
+
+
+class SingleDatetimeTests(ValidationsTestCase):
+    # Component configuration set via js/components/form/datetime.js
+    JS_CONFIG = {
+        "format": "dd-MM-yyyy HH:mm",
+        "placeholder": "dd-MM-yyyy HH:mm",
+        "enableTime": True,
+        "time_24hr": True,
+        "timePicker": {
+            "hourStep": 1,
+            "minuteStep": 1,
+            "showMeridian": False,
+            "readonlyInput": False,
+            "mousewheel": True,
+            "arrowkeys": True,
+        },
+    }
+
+    async def apply_ui_input(
+        self, page: Page, label: str, ui_input: str | int | float = ""
+    ) -> None:
+        assert isinstance(ui_input, str)
+        # fix the input resolution because the formio datepicker is not accessible
+        label_node = page.get_by_text(label, exact=True)
+        label_parent = label_node.locator("xpath=../..")
+        input_node = label_parent.get_by_role("textbox", include_hidden=False)
+        await input_node.fill(ui_input)
+
+    def test_required_field(self):
+        component: DatetimeComponent = {
+            "type": "datetime",
+            "key": "requiredDatetime",
+            "label": "Required datetime field",
+            **self.JS_CONFIG,
+            "validate": {"required": True},
+            "datePicker": {
+                "showWeeks": True,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "minDate": None,
+                "maxDate": None,
+            },
+            "customOptions": {"allowInvalidPreload": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="",
+            expected_ui_error="Het verplichte veld Required datetime field is niet ingevuld.",
+        )
+
+    def test_min_date_fixed_value(self):
+        component: DatetimeComponent = {
+            "type": "datetime",
+            "key": "minDatetime",
+            "label": "Minimum date",
+            **self.JS_CONFIG,
+            "openForms": {
+                "minDate": {"mode": "fixedValue"},
+            },
+            "datePicker": {
+                "showWeeks": True,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "minDate": "2024-03-13T11:00",  # Europe/Amsterdam timezone?
+                "maxDate": None,
+            },
+            "customOptions": {"allowInvalidPreload": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="13-03-2024 10:59",
+            api_value="2024-03-13T10:59:00+01:00",
+            expected_ui_error="De opgegeven datum ligt te ver in het verleden.",
+        )
+
+    def test_max_date_fixed_value(self):
+        component: DatetimeComponent = {
+            "type": "datetime",
+            "key": "maxDatetime",
+            "label": "Maximum date",
+            **self.JS_CONFIG,
+            "openForms": {
+                "maxDate": {"mode": "fixedValue"},
+            },
+            "datePicker": {
+                "showWeeks": True,
+                "startingDay": 0,
+                "initDate": "",
+                "minMode": "day",
+                "maxMode": "year",
+                "yearRows": 4,
+                "yearColumns": 5,
+                "maxDate": "2024-03-13T12:00:00+00:00",
+                "minDate": None,
+            },
+            "customOptions": {"allowInvalidPreload": True},
+        }
+
+        self.assertValidationIsAligned(
+            component,
+            ui_input="13-03-2024 13:01",
+            api_value="2024-03-13T13:01:00+01:00",
             expected_ui_error="De opgegeven datum ligt te ver in de toekomst.",
         )
 
