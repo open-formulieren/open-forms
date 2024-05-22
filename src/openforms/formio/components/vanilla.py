@@ -8,7 +8,7 @@ adjacent custom.py module.
 import logging
 from collections.abc import Mapping
 from datetime import time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Iterator
 
 from django.core.files.uploadedfile import UploadedFile
 from django.core.validators import (
@@ -57,9 +57,11 @@ from ..formatters.formio import (
 from ..registry import BasePlugin, register
 from ..serializers import build_serializer
 from ..typing import (
+    ColumnsComponent,
     Component,
     ContentComponent,
     EditGridComponent,
+    FieldsetComponent,
     FileComponent,
     RadioComponent,
     SelectBoxesComponent,
@@ -832,3 +834,28 @@ class EditGrid(BasePlugin[EditGridComponent]):
             allow_empty=not required,
             **kwargs,
         )
+
+    def iter_children(
+        self, component: EditGridComponent
+    ) -> Iterator[tuple[str, Component]]:
+        for i, child in enumerate(component["components"]):
+            yield (f"components.{i}", child)
+
+
+@register("columns")
+class Columns(BasePlugin[ColumnsComponent]):
+    def iter_children(
+        self, component: ColumnsComponent
+    ) -> Iterator[tuple[str, Component]]:
+        for column_idx, column in enumerate(component["columns"]):
+            for child_idx, child in enumerate(column["components"]):
+                yield (f"columns.{column_idx}.components.{child_idx}", child)
+
+
+@register("fieldset")
+class Fieldset(BasePlugin[FieldsetComponent]):
+    def iter_children(
+        self, component: FieldsetComponent
+    ) -> Iterator[tuple[str, Component]]:
+        for i, child in enumerate(component["components"]):
+            yield (f"components.{i}", child)

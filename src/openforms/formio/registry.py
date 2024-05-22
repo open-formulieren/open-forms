@@ -13,7 +13,7 @@ the public API better defined and smaller.
 """
 
 import warnings
-from typing import TYPE_CHECKING, Any, Generic, Protocol, TypeVar
+from typing import TYPE_CHECKING, Any, Collection, Generic, Iterator, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
 
@@ -106,6 +106,17 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         # Allow anything that is valid JSON, taking into account the 'required'
         # validation which is common for most components.
         return serializers.JSONField(required=required, allow_null=True)
+
+    def iter_children(self, component: ComponentT) -> Iterator[tuple[str, Component]]:
+        """Iterate over the children of the provided component, if any.
+
+        This yields a two-tuple, the first element being the relative dotted path and
+        the second one being the component itself.
+
+        The default implementation assumes no children exists, thus yielding nothing.
+        """
+
+        yield from ()
 
 
 class ComponentRegistry(BaseRegistry[BasePlugin]):
@@ -213,6 +224,16 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
 
         component_plugin = self[component_type]
         return component_plugin.build_serializer_field(component)
+
+    def iter_children(self, component: Component) -> Iterator[tuple[str, Component]]:
+        """Iterate over the children of the provided component, if any.
+
+        This yields a two-tuple, the first element being the relative dotted path and
+        the second one being the component itself.
+        """
+        if (component_type := component["type"]) in self:
+            component_plugin = self[component_type]
+            yield from component_plugin.iter_children(component)
 
 
 # Sentinel to provide the default registry. You can easily instantiate another
