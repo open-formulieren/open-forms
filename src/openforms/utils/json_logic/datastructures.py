@@ -1,34 +1,15 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterator, cast
+from typing import Iterator, cast
 
-from glom import glom
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
 
-from openforms.formio.typing import Component
-
 from .descriptions import _generate_description
 
-if TYPE_CHECKING:
-    from openforms.forms.models import FormStep
 
-__all__ = ["ComponentMeta"]
-
-ComponentsMap = dict[str, "ComponentMeta"]
-
-
-@dataclass
-class ComponentMeta:
-    form_step: "FormStep"
-    component: "Component"
-
-
-@dataclass(slots=True)
+@dataclass(frozen=True)
 class InputVar:
     key: str
-    value: JSON
-    step_name: str
-    label: str
 
 
 @dataclass
@@ -40,34 +21,18 @@ class ExpressionIntrospection:
     def description(self) -> str:
         return _generate_description(self.tree, root=True)
 
-    def get_input_components(
-        self,
-        components_map: ComponentsMap,
-        input_data: dict[str, JSON],
-    ) -> list[InputVar]:
+    def get_input_keys(self) -> list[InputVar]:
         inputs = []
-
         for node in iter_tree(self.tree):
             if isinstance(node, Primitive):
                 continue
             if node.operator != "var":
                 continue
+            if not isinstance(node.arguments[0], str):
+                continue
 
-            # TODO: this *may* be nested var.var expressions
             key = cast(str, node.arguments[0])
-            step_name = label = ""
-            if component_meta := components_map.get(key):
-                step_name = component_meta.form_step.form_definition.name
-                label = component_meta.component.get("label", "")
-            inputs.append(
-                InputVar(
-                    key=key,
-                    value=glom(input_data, key, default=""),
-                    step_name=step_name,
-                    # TODO: take translations into account?
-                    label=label,
-                )
-            )
+            inputs.append(InputVar(key=key))
 
         return inputs
 

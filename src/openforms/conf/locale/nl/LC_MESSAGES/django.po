@@ -3824,27 +3824,33 @@ msgstr "Bevestiging"
 msgid "Co-sign confirmation"
 msgstr "Mede-ondertekeningbevestiging"
 
-#: openforms/emails/digest.py:199
+#: openforms/emails/digest.py:239
 msgid "BRK Client"
 msgstr "BRK client"
 
-#: openforms/emails/digest.py:206
+#: openforms/emails/digest.py:246
 #, fuzzy
 #| msgid "BRK Client"
 msgid "BAG Client"
 msgstr "BRK client"
 
-#: openforms/emails/digest.py:216
+#: openforms/emails/digest.py:256
 msgid "will expire soon"
 msgstr ""
 
-#: openforms/emails/digest.py:217
+#: openforms/emails/digest.py:257
 msgid "has invalid keypair"
 msgstr ""
 
-#: openforms/emails/digest.py:218
+#: openforms/emails/digest.py:258
 msgid "invalid keypair, will expire soon"
 msgstr ""
+
+#: openforms/emails/digest.py:351
+#, fuzzy
+#| msgid "Email registration configuration"
+msgid "Invalid registration backend configuration detected"
+msgstr "E-mailregistratieconfiguratie"
 
 #: openforms/emails/models.py:26
 msgid "Subject of the email message"
@@ -3887,7 +3893,7 @@ msgstr "(formulier onbekend)"
 msgid "Confirmation email template - {form}"
 msgstr "Bevestigingse-mail sjabloon - {form}"
 
-#: openforms/emails/tasks.py:63
+#: openforms/emails/tasks.py:69
 msgid "[Open Forms] Daily summary of detected problems"
 msgstr "[Open Formulieren] Dagelijks rapport van gedetecteerde problemen"
 
@@ -3929,10 +3935,13 @@ msgid "Registrations"
 msgstr "Registraties"
 
 #: openforms/emails/templates/emails/admin_digest.html:26
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Form '%(form_name)s' failed %(counter)s time(s) between "
+#| "%(first_failure_at)s and %(last_failure_at)s.</br>"
 msgid ""
 "Form '%(form_name)s' failed %(counter)s time(s) between %(first_failure_at)s "
-"and %(last_failure_at)s.</br>"
+"and %(last_failure_at)s.<br>"
 msgstr ""
 "Formulier '%(form_name)s' faalde %(counter)s keer tussen "
 "%(first_failure_at)s end %(last_failure_at)s.</br>"
@@ -4010,6 +4019,43 @@ msgid ""
 msgstr ""
 "\n"
 "Toon gefaalde '%(form_name)s' inzendingen"
+
+#: openforms/emails/templates/emails/admin_digest.html:111
+#, fuzzy
+#| msgid "registration backend result"
+msgid "Registration backends problems"
+msgstr "registratie backend resultaat"
+
+#: openforms/emails/templates/emails/admin_digest.html:117
+#, python-format
+msgid ""
+"The configuration for plugin '%(name)s' is invalid.<br> (%(message)s)<br>"
+msgstr ""
+
+#: openforms/emails/templates/emails/admin_digest.html:123
+#, python-format
+msgid ""
+"This affects form '%(form_name)s', possibly other forms are affected too."
+msgstr ""
+
+#: openforms/emails/templates/emails/admin_digest.html:127
+#: openforms/emails/templates/emails/admin_digest.html:144
+#, fuzzy
+#| msgid "Show form"
+msgid "View form"
+msgstr "Toon formulier"
+
+#: openforms/emails/templates/emails/admin_digest.html:134
+#, fuzzy
+#| msgid "List logic rules"
+msgid "Logic rules problems"
+msgstr "Logicaregels weergeven"
+
+#: openforms/emails/templates/emails/admin_digest.html:140
+#, python-format
+msgid ""
+"Logic rule for variable '%(var)s' is invalid in form '%(form_name)s'.<br>"
+msgstr ""
 
 #: openforms/emails/templates/emails/co_sign/request.html:7
 msgid ""
@@ -8257,8 +8303,8 @@ msgid ""
 "The co-sign component requires the '{field_label}' ({config_verbose_name}) "
 "to be configured."
 msgstr ""
-"Het mede-ondertekencomponent vereist de configuratie van '{field_label}' "
-"({config_verbose_name})."
+"Het mede-ondertekencomponent vereist de configuratie van "
+"'{field_label}' ({config_verbose_name})."
 
 #: openforms/products/api/viewsets.py:15
 msgid "Retrieve details of a single product"

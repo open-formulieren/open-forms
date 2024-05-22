@@ -15,10 +15,17 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.brk.models import BRKConfig
-from openforms.forms.tests.factories import FormFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormRegistrationBackendFactory,
+)
 from openforms.logging import logevent
-from openforms.prefill.registry import register
+from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.prefill.registry import register as prefill_register
+from openforms.registrations.base import BasePlugin
 from openforms.registrations.exceptions import RegistrationFailed
+from openforms.registrations.registry import register as register_register
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -26,6 +33,17 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from ..tasks import send_email_digest
 
 TEST_FILES = Path(__file__).parent / "data"
+
+
+@register_register("integration-test-invalid-backend")
+class InvalidBackend(BasePlugin):
+    verbose_name = "Invalid backend"
+
+    def register_submission(self, submission, options):
+        pass
+
+    def check_config(self):
+        raise InvalidPluginConfiguration("Invalid")
 
 
 @patch(
@@ -111,6 +129,8 @@ class EmailDigestTaskIntegrationTests(TestCase):
         - failed prefill_plugins
         - broken configurations
         - invalid certificates
+        - invalid registration backends
+        - invalid logic rules
         """
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -134,7 +154,7 @@ class EmailDigestTaskIntegrationTests(TestCase):
         submission = SubmissionFactory.create(
             form=form, registration_status=RegistrationStatuses.failed
         )
-        hc_plugin = register["haalcentraal"]
+        hc_plugin = prefill_register["haalcentraal"]
 
         # trigger failures
         with freeze_time("2023-01-02T12:30:00+01:00"):
@@ -151,6 +171,15 @@ class EmailDigestTaskIntegrationTests(TestCase):
             )
             logevent.prefill_retrieve_empty(
                 submission, hc_plugin, ["burgerservicenummer"]
+            )
+            FormRegistrationBackendFactory.create(
+                form=form,
+                key="plugin1",
+                backend="integration-test-invalid-backend",
+            )
+            FormLogicFactory(
+                form=form,
+                json_logic_trigger={"==": [{"var": "foo"}, "apple"]},
             )
 
             with (
@@ -224,3 +253,19 @@ class EmailDigestTaskIntegrationTests(TestCase):
 
             self.assertIn("Test certificate: has invalid keypair.", sent_email.body)
             self.assertIn(admin_certificate_url.url, sent_email.body)
+
+        with self.subTest("invalid registration backends"):
+            admin_form_url = reverse(
+                "admin:forms_form_change", kwargs={"object_id": form.id}
+            )
+            self.assertIn(
+                f"The configuration for plugin '{InvalidBackend.verbose_name}' is invalid.",
+                sent_email.body,
+            )
+            self.assertIn(admin_form_url, sent_email.body)
+
+        with self.subTest("invalid logic rules"):
+            self.assertIn(
+                f"Logic rule for variable 'foo' is invalid in form '{form.admin_name}'.",
+                sent_email.body,
+            )

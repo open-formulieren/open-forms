@@ -15,6 +15,8 @@ from .digest import (
     collect_failed_prefill_plugins,
     collect_failed_registrations,
     collect_invalid_certificates,
+    collect_invalid_logic_rules,
+    collect_invalid_registration_backends,
 )
 from .utils import send_mail_html
 
@@ -29,6 +31,8 @@ class Digest:
         failed_prefill_plugins = collect_failed_prefill_plugins(self.since)
         broken_configurations = collect_broken_configurations()
         invalid_certificates = collect_invalid_certificates()
+        invalid_registration_backends = collect_invalid_registration_backends()
+        invalid_logic_rules = collect_invalid_logic_rules()
 
         return {
             "failed_emails": failed_emails,
@@ -36,6 +40,8 @@ class Digest:
             "failed_prefill_plugins": failed_prefill_plugins,
             "broken_configurations": broken_configurations,
             "invalid_certificates": invalid_certificates,
+            "invalid_registration_backends": invalid_registration_backends,
+            "invalid_logic_rules": invalid_logic_rules,
         }
 
     def render(self) -> str:
