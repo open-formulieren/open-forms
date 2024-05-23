@@ -293,6 +293,14 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
       default:
         firstOperand = {var: triggerVariableKey};
     }
+  } else if (
+    triggerVariable?.source === VARIABLE_SOURCES.userDefined &&
+    triggerVariable.dataType === 'boolean'
+  ) {
+    firstOperand = {var: triggerVariableKey};
+    // cast from string to actual boolean
+    if (compareValue === 'true') compareValue = true;
+    if (compareValue === 'false') compareValue = false;
   } else {
     firstOperand = {var: triggerVariableKey};
   }
