@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-22 12:22+0200\n"
+"POT-Creation-Date: 2024-05-23 10:18+0200\n"
 "PO-Revision-Date: 2024-05-17 15:22+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -2187,36 +2187,36 @@ msgstr "Lijst van beschikbare stijlen"
 msgid "Retrieve theme details"
 msgstr "Stijldetails weergeven"
 
-#: openforms/config/checks.py:54
+#: openforms/config/checks.py:56
 msgid "Address lookup plugins"
 msgstr "Adresopzoekplugins"
 
-#: openforms/config/checks.py:67
+#: openforms/config/checks.py:69
 msgid "Validator plugins"
 msgstr "Validatieplugins"
 
-#: openforms/config/checks.py:78
+#: openforms/config/checks.py:80
 msgid "Appointment plugins"
 msgstr "Afspraakplugins"
 
-#: openforms/config/checks.py:79
+#: openforms/config/checks.py:81
 msgid "Registration plugins"
 msgstr "Registratieplugins"
 
-#: openforms/config/checks.py:80
+#: openforms/config/checks.py:82
 #: openforms/emails/templates/emails/admin_digest.html:46
 msgid "Prefill plugins"
 msgstr "Prefillplugins"
 
-#: openforms/config/checks.py:81
+#: openforms/config/checks.py:83
 msgid "Payment plugins"
 msgstr "Betaalproviderplugins"
 
-#: openforms/config/checks.py:82
+#: openforms/config/checks.py:84
 msgid "DMN plugins"
 msgstr "DMN plugins"
 
-#: openforms/config/checks.py:126
+#: openforms/config/checks.py:130
 #, python-brace-format
 msgid "Internal error: {exception}"
 msgstr "Interne fout: {exception}"
@@ -3824,29 +3824,29 @@ msgstr "Bevestiging"
 msgid "Co-sign confirmation"
 msgstr "Mede-ondertekeningbevestiging"
 
-#: openforms/emails/digest.py:239
+#: openforms/emails/digest.py:247
 msgid "BRK Client"
 msgstr "BRK client"
 
-#: openforms/emails/digest.py:246
+#: openforms/emails/digest.py:254
 #, fuzzy
 #| msgid "BRK Client"
 msgid "BAG Client"
 msgstr "BRK client"
 
-#: openforms/emails/digest.py:256
+#: openforms/emails/digest.py:264
 msgid "will expire soon"
 msgstr ""
 
-#: openforms/emails/digest.py:257
+#: openforms/emails/digest.py:265
 msgid "has invalid keypair"
 msgstr ""
 
-#: openforms/emails/digest.py:258
+#: openforms/emails/digest.py:266
 msgid "invalid keypair, will expire soon"
 msgstr ""
 
-#: openforms/emails/digest.py:351
+#: openforms/emails/digest.py:359
 #, fuzzy
 #| msgid "Email registration configuration"
 msgid "Invalid registration backend configuration detected"
