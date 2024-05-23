@@ -25,6 +25,7 @@ from openforms.emails.utils import (
 )
 from openforms.forms.models import Form
 from openforms.logging import logevent
+from openforms.utils.urls import build_absolute_uri
 from openforms.variables.constants import FormVariableSources
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
@@ -346,5 +347,9 @@ def get_filtered_submission_admin_url(
         "needs_on_completion_retry__exact": 1 if filter_retry else 0,
         "registration_time": registration_time,
     }
-    submissions_admin_url = furl(reverse("admin:submissions_submission_changelist"))
-    return submissions_admin_url.add(query_params).url
+    submissions_relative_admin_url = furl(
+        reverse("admin:submissions_submission_changelist")
+    )
+    submissions_relative_admin_url.add(query_params)
+
+    return build_absolute_uri(submissions_relative_admin_url.url)

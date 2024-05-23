@@ -30,6 +30,7 @@ from openforms.submissions.utils import get_filtered_submission_admin_url
 from openforms.typing import StrOrPromise
 from openforms.utils.json_logic.datastructures import InputVar
 from openforms.utils.json_logic.introspection import introspect_json_logic
+from openforms.utils.urls import build_absolute_uri
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
 
@@ -71,10 +72,12 @@ class FailedPrefill:
             "object_id__in": ",".join(self.submission_ids),
             "extra_data__log_event__in": "prefill_retrieve_empty,prefill_retrieve_failure",
         }
-        submissions_admin_url = furl(
+        submissions_relative_admin_url = furl(
             reverse("admin:logging_timelinelogproxy_changelist")
         )
-        return submissions_admin_url.add(query_params).url
+        submissions_relative_admin_url.add(query_params)
+
+        return build_absolute_uri(submissions_relative_admin_url.url)
 
     @property
     def failed_submissions_counter(self) -> int:
@@ -97,11 +100,12 @@ class InvalidCertificate:
 
     @property
     def admin_link(self) -> str:
-        form_admin_url = reverse(
+        form_relative_admin_url = reverse(
             "admin:simple_certmanager_certificate_change",
             kwargs={"object_id": self.id},
         )
-        return form_admin_url
+
+        return build_absolute_uri(form_relative_admin_url)
 
 
 @dataclass
@@ -113,10 +117,10 @@ class InvalidRegistrationBackend:
 
     @property
     def admin_link(self) -> str:
-        form_admin_url = reverse(
+        form_relative_admin_url = reverse(
             "admin:forms_form_change", kwargs={"object_id": self.form_id}
         )
-        return form_admin_url
+        return build_absolute_uri(form_relative_admin_url)
 
 
 @dataclass
@@ -127,7 +131,11 @@ class InvalidLogicRule:
 
     @property
     def admin_link(self) -> str:
-        return reverse("admin:forms_form_change", kwargs={"object_id": self.form_id})
+        form_relative_admin_url = reverse(
+            "admin:forms_form_change", kwargs={"object_id": self.form_id}
+        )
+
+        return build_absolute_uri(form_relative_admin_url)
 
 
 def collect_failed_emails(since: datetime) -> Iterable[FailedEmail]:
@@ -289,7 +297,7 @@ def collect_invalid_certificates() -> list[InvalidCertificate]:
             invalid_certs.append(
                 InvalidCertificate(
                     id=cert.id,
-                    label=cert.label,
+                    label=str(cert),
                     error_message=error_message,
                     is_valid_pair=is_valid_pair,
                     expiry_date=cert.expiry_date,
