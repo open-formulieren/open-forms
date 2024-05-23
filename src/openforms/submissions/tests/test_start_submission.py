@@ -16,7 +16,7 @@ See ``test_disabled_forms.py`` for more extensive tests around maintenance mode.
 
 from unittest.mock import patch
 
-from django.test import override_settings
+from django.test import override_settings, tag
 
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
@@ -124,6 +124,48 @@ class SubmissionStartTests(APITestCase):
         submission = Submission.objects.get()
         self.assertEqual(submission.auth_info.value, "123456782")
         self.assertEqual(submission.auth_info.plugin, "digid")
+
+        # Auth info should be removed from session after the submission is started
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+
+    @tag("gh-4199")
+    def test_two_submissions_within_same_session(self):
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
+        session.save()
+
+        body = {
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://testserver.com/my-form",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        submission = Submission.objects.get()
+        self.assertEqual(submission.auth_info.value, "123456782")
+        self.assertEqual(submission.auth_info.plugin, "digid")
+
+        # Auth info should be removed from session after the submission is started
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+
+        body = {
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://testserver.com/my-form",
+            "anonymous": True,
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        submission = Submission.objects.last()
+        with self.assertRaises(Submission.auth_info.RelatedObjectDoesNotExist):
+            submission.auth_info
 
     def test_start_submission_on_deleted_form(self):
         form = FormFactory.create(deleted_=True)

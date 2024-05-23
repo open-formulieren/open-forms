@@ -11,6 +11,8 @@ did not authenticate. This applies to:
 If authentication is optional, then this behaviour does not apply.
 """
 
+from unittest.mock import patch
+
 from django.test import override_settings, tag
 
 from rest_framework import status
@@ -51,15 +53,20 @@ class AuthOptionalTests(SubmissionsMixin, APITestCase):
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
         )
 
-    def test_start_submission_is_allowed(self):
+    @patch("openforms.submissions.api.viewsets.submission_start.send", autospec=True)
+    def test_start_submission_is_allowed(self, mock_signal):
         body = {
             "form": f"http://testserver.com{self.form_url}",
             "formUrl": "http://testserver.com/my-form",
+            "anonymous": True,
         }
 
         response = self.client.post(self.endpoint, body, HTTP_HOST="testserver.com")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        mock_signal.assert_called_once()
+        self.assertEqual(mock_signal.call_args_list[0].kwargs["anonymous"], True)
 
     def test_submitting_step_data_is_allowed_anon_user(self):
         submission = SubmissionFactory.create(form=self.form)
