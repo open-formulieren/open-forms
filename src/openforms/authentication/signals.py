@@ -53,8 +53,11 @@ Provides:
     [submission_start, submission_resumed], dispatch_uid="auth.set_submission_form_auth"
 )
 def set_auth_attribute_on_session(
-    sender, instance: Submission, request: Request, **kwargs
+    sender, instance: Submission, request: Request, anonymous=False, **kwargs
 ):
+    if anonymous:
+        return
+
     # form_auth has information from an authentication backend, so could be a client or employee
     form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
 

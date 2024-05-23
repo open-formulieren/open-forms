@@ -9600,6 +9600,11 @@ components:
           format: uri
           description: URL where the user initialized the submission.
           maxLength: 1000
+        anonymous:
+          type: boolean
+          writeOnly: true
+          default: false
+          description: Whether the submission was started anonymously or not.
       required:
       - form
       - formUrl

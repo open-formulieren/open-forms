@@ -166,7 +166,10 @@ class SubmissionViewSet(
 
         # dispatch signal for modules to tap into
         submission_start.send(
-            sender=self.__class__, instance=serializer.instance, request=self.request
+            sender=self.__class__,
+            instance=serializer.instance,
+            request=self.request,
+            anonymous=serializer.validated_data["anonymous"],
         )
 
         # store the submission ID in the session, so that only the session owner can
