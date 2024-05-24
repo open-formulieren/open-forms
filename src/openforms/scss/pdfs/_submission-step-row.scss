@@ -1,10 +1,6 @@
 @import '~microscope-sass/lib/typography';
 
 .submission-step-row {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-
   & + & {
     margin-top: 1mm;
   }
@@ -42,12 +38,17 @@
     @include body();
     width: 40%;
     padding-right: 2em;
+    // float is used here, because flexbox/grid/tables are really slow with
+    // weasyprint, especially if large textareas are used
+    // see: https://github.com/open-formulieren/open-forms/issues/4255
+    float: left;
   }
 
   &__value {
     @include body();
     width: 60%;
     word-break: break-all;
+    margin-left: 40%;
 
     // wysiwyg content
     p {
