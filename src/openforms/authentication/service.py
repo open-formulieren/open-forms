@@ -3,6 +3,7 @@ from .typing import BaseAuth
 from .utils import (
     is_authenticated_with_an_allowed_plugin,
     is_authenticated_with_plugin,
+    remove_auth_info_from_session,
     store_auth_details,
 )
 
@@ -13,4 +14,5 @@ __all__ = [
     "store_auth_details",
     "is_authenticated_with_plugin",
     "is_authenticated_with_an_allowed_plugin",
+    "remove_auth_info_from_session",
 ]

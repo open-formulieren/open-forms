@@ -4,6 +4,7 @@ from rest_framework.reverse import reverse
 
 from openforms.forms.models import Form
 from openforms.submissions.models import Submission
+from openforms.typing import AnyRequest
 
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
@@ -81,3 +82,8 @@ def get_cosign_login_url(request: Request, form: Form, plugin_id: str) -> str:
     auth_page = furl(auth_url)
     auth_page.args.set("next", next_url)
     return auth_page.url
+
+
+def remove_auth_info_from_session(request: AnyRequest) -> None:
+    if FORM_AUTH_SESSION_KEY in request.session:
+        del request.session[FORM_AUTH_SESSION_KEY]

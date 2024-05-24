@@ -148,6 +148,14 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
     )
 
+    anonymous = serializers.BooleanField(
+        label=_("Anonymous"),
+        help_text=_("Whether the submission was started anonymously or not."),
+        required=False,
+        write_only=True,
+        default=False,  # type: ignore
+    )
+
     class Meta:
         model = Submission
         fields = (
@@ -159,6 +167,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "is_authenticated",
             "payment",
             "form_url",
+            "anonymous",
         )
         extra_kwargs = {
             "id": {
@@ -182,6 +191,10 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
                 "required": True,
             },
         }
+
+    def create(self, validated_data):
+        validated_data.pop("anonymous", None)
+        return super().create(validated_data)
 
     def to_representation(self, instance):
         check_submission_logic(instance, unsaved_data=self.context.get("unsaved_data"))

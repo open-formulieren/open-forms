@@ -525,7 +525,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         acs_response_2 = self.client.get(acs_url_2.url, follow=True)
 
         # we are logged in
-        self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        self.assertTrue(submission.is_authenticated)
         # and we end up starting the form
         self.assertEqual(acs_response_2.resolver_match.view_name, "core:form-detail")
         self.assertEqual(acs_response_2.resolver_match.kwargs["slug"], "slurm")

@@ -18,7 +18,11 @@ from openforms.submissions.signals import (
 
 from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
-from .utils import store_auth_details, store_registrator_details
+from .utils import (
+    remove_auth_info_from_session,
+    store_auth_details,
+    store_registrator_details,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +57,11 @@ Provides:
     [submission_start, submission_resumed], dispatch_uid="auth.set_submission_form_auth"
 )
 def set_auth_attribute_on_session(
-    sender, instance: Submission, request: Request, **kwargs
+    sender, instance: Submission, request: Request, anonymous=False, **kwargs
 ):
+    if anonymous:
+        return
+
     # form_auth has information from an authentication backend, so could be a client or employee
     form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
 
@@ -123,6 +130,11 @@ def set_auth_attribute_on_session(
     else:
         store_auth_details(instance, form_auth)
 
+    # After the authentication details have been attached to the submission, the session
+    # no longer has to keep track of this information, because the user could start another
+    # form with different / no authentication
+    remove_auth_info_from_session(request)
+
 
 @receiver(
     [submission_complete, authentication_logout],
@@ -145,3 +157,5 @@ def set_cosign_data_on_submission(
     instance.co_sign_data = form_auth
     instance.co_sign_data["cosign_date"] = timezone.now().isoformat()
     instance.save()
+
+    remove_auth_info_from_session(request)
