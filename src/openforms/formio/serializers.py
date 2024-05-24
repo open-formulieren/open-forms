@@ -18,7 +18,7 @@ from openforms.typing import DataMapping, JSONObject
 
 from .datastructures import FormioConfigurationWrapper
 from .typing import Component
-from .utils import iter_components
+from .utils import is_layout_component, iter_components
 
 if TYPE_CHECKING:
     from .registry import ComponentRegistry
@@ -60,6 +60,10 @@ class StepDataSerializer(serializers.Serializer):
             # we don't have to do anything when the component is visible, regular
             # validation rules apply
             if is_visible:
+                continue
+
+            # Layout components do not have serializer fields associated with them
+            if is_layout_component(component):
                 continue
 
             # when it's not visible, grab the field from the serializer and remove all
@@ -149,6 +153,9 @@ def build_serializer(
 
     config: JSONObject = {"components": components}
     for component in iter_components(config, recurse_into_editgrid=False):
+        if is_layout_component(component):
+            continue
+
         field = register.build_serializer_field(component)
         assign(obj=fields, path=component["key"], val=field, missing=dict)
 

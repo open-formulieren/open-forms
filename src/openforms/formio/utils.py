@@ -159,6 +159,10 @@ def get_readable_path_from_configuration_path(
 def is_layout_component(component: Component) -> bool:
     # Adapted from isLayoutComponent util function in Formio
     # https://github.com/formio/formio.js/blob/4.13.x/src/utils/formUtils.js#L25
+    # FIXME ideally there would be a cleaner fix for this
+    if component["type"] == "editgrid":
+        return False
+
     column = component.get("columns")
     components = component.get("components")
     rows = component.get("rows")
