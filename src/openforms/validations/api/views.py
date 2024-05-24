@@ -12,6 +12,7 @@ from openforms.api.drf_spectacular.plumbing import extend_inline_serializer
 from openforms.api.views import ListMixin
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.models import Submission
+from openforms.submissions.parsers import IgnoreValueFieldCamelCaseJSONParser
 from openforms.validations.api.serializers import (
     ValidationInputSerializer,
     ValidationPluginSerializer,
@@ -59,6 +60,7 @@ class ValidationView(APIView):
     """
 
     authentication_classes = (AnonCSRFSessionAuthentication,)
+    parser_classes = [IgnoreValueFieldCamelCaseJSONParser]
 
     @extend_schema(
         operation_id="validation_run",

@@ -31,7 +31,7 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
             ValidationError, _("No BSN is available to validate your address.")
         ):
             validator(
-                {"postcode": "not_relevant", "house_number": "same"}, submission_no_auth
+                {"postcode": "not_relevant", "houseNumber": "same"}, submission_no_auth
             )
 
     def test_brk_validator_no_bsn(self):
@@ -48,7 +48,7 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
             ValidationError, _("No BSN is available to validate your address.")
         ):
             validator(
-                {"postcode": "not_relevant", "house_number": "same"}, submission_no_bsn
+                {"postcode": "not_relevant", "houseNumber": "same"}, submission_no_bsn
             )
 
     def test_brk_validator_wrong_bsn(self):
@@ -68,9 +68,7 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
             ValidationError,
             _("According to our records, you are not a legal owner of this property."),
         ):
-            validator(
-                {"postcode": "7361EW", "house_number": "21"}, submission_wrong_bsn
-            )
+            validator({"postcode": "7361EW", "houseNumber": "21"}, submission_wrong_bsn)
 
     def test_brk_validator_bsn(self):
         validator = BRKZakelijkGerechtigdeValidator("brk_validator")
@@ -88,7 +86,7 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
         with self.assertRaisesMessage(
             ValidationError, _("No property found for this address.")
         ):
-            validator({"postcode": "1234AA", "house_number": "1"}, submission_bsn)
+            validator({"postcode": "1234AA", "houseNumber": "1"}, submission_bsn)
 
         with self.assertRaisesMessage(
             ValidationError, _("No property found for this address.")
@@ -96,15 +94,15 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
             validator(
                 {
                     "postcode": "7361EW",
-                    "house_number": "21",
-                    "house_letter": "A",
-                    "house_number_addition": "B",
+                    "houseNumber": "21",
+                    "houseLetter": "A",
+                    "houseNumberAddition": "B",
                 },
                 submission_bsn,
             )
 
         try:
-            validator({"postcode": "7361EW", "house_number": "21"}, submission_bsn)
+            validator({"postcode": "7361EW", "houseNumber": "21"}, submission_bsn)
         except ValidationError as exc:
             raise self.failureException(
                 "Input data unexpectedly did not validate"
@@ -135,7 +133,7 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
                 "There was an error while retrieving the available properties. Please try again later."
             ),
         ):
-            validator({"postcode": "1234AA", "house_number": "1"}, submission_bsn)
+            validator({"postcode": "1234AA", "houseNumber": "1"}, submission_bsn)
 
 
 class BRKValidatorNotConfiguredTestCase(TestCase):
@@ -168,4 +166,4 @@ class BRKValidatorNotConfiguredTestCase(TestCase):
                 "There was an error while retrieving the available properties. Please try again later."
             ),
         ):
-            validator({"postcode": "1234AA", "house_number": "1"}, submission_bsn)
+            validator({"postcode": "1234AA", "houseNumber": "1"}, submission_bsn)
