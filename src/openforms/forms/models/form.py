@@ -2,6 +2,7 @@ import logging
 import uuid as _uuid
 from contextlib import suppress
 from copy import deepcopy
+from functools import cached_property
 from typing import Literal
 
 from django.conf import settings
@@ -11,6 +12,7 @@ from django.db import models, transaction
 from django.db.models import F, Window
 from django.db.models.functions import RowNumber
 from django.utils.translation import gettext_lazy as _, override
+from openforms.formio.datastructures import FormioConfig
 
 from autoslug import AutoSlugField
 from privates.fields import PrivateMediaFileField
@@ -560,6 +562,15 @@ class Form(models.Model):
         # the FormStep.Meta configuration
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
+
+    @cached_property
+    def formio_config(self) -> FormioConfig:
+
+        components: list[Component] = []
+        for form_step in self.formstep_set.select_related("form_definition"):
+            components.append(form_step.form_definition.configuration["components"])
+
+        return FormioConfig(components)
 
     @transaction.atomic
     def restore_old_version(

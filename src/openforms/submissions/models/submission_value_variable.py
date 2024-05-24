@@ -15,7 +15,7 @@ from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
 from openforms.typing import DataMapping, JSONEncodable, JSONSerializable
 from openforms.utils.date import format_date_value, parse_datetime, parse_time
-from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.service import get_static_variables
 
 from ..constants import SubmissionValueVariableSources
@@ -29,6 +29,251 @@ class ValueEncoder(DjangoJSONEncoder):
     def default(self, obj: JSONEncodable | JSONSerializable) -> JSONEncodable:
         to_json = getattr(obj, "__json__", None)
         return to_json() if callable(to_json) else super().default(obj)
+
+
+from typing import Iterator, Literal, cast, Collection
+
+if TYPE_CHECKING:
+    from _typeshed import Incomplete
+from functools import cached_property
+from contextlib import contextmanager
+from openforms.forms.models import FormStep, FormDefinition, FormVariable
+from openforms.formio.datastructures import FormioConfig
+from django.db.models import QuerySet
+from ..logic.actions import ActionOperation
+
+class SubmissionState:
+    def __init__(self, submission: Submission) -> None:
+        self.submission = submission
+        self._form_steps, self._submission_steps = self._load_state()
+
+    def _load_state(self) -> tuple[list[FormStep], list[SubmissionStep]]:
+        form_steps: list[FormStep] = list(
+            self.submission.form.formstep_set.select_related(
+                "form_definition"
+            ).order_by("order")
+        )
+
+        # ⚡️ no select_related/prefetch ON PURPOSE - while processing the form steps,
+        # we're doing this in python as we have the objects already from the query
+        # above.
+        _submission_steps = cast(
+            QuerySet[SubmissionStep], self.submissionstep_set.all()
+        )
+        cached_submission_steps: dict[int, SubmissionStep] = {}
+        for submission_step in _submission_steps:
+            # non-empty value implies that the form_step FK was (cascade) deleted
+            if submission_step.form_step_history:
+                # deleted formstep FKs are loaded from history
+                if submission_step.form_step not in form_steps:
+                    form_steps.append(submission_step.form_step)
+            cached_submission_steps[submission_step.form_step_id] = submission_step
+
+        # sort the steps again in case steps from history were inserted
+        form_steps = sorted(form_steps, key=lambda s: s.order)
+
+        # build the resulting list - some SubmissionStep instances will probably not exist
+        # in the database yet - this is on purpose!
+        submission_steps: list[SubmissionStep] = []
+        for form_step in form_steps:
+            if form_step.pk in cached_submission_steps:
+                submission_step = cached_submission_steps[form_step.pk]
+                # replace the python objects to avoid extra queries and/or joins in the
+                # submission step query.
+                submission_step.form_step = form_step
+                submission_step.submission = self.submission
+            else:
+                # there's no known DB record for this, so we create a fresh, unsaved
+                # instance and return this
+                submission_step = SubmissionStep(uuid=None, submission=self, form_step=form_step)
+            submission_steps.append(submission_step)
+
+        return form_steps, submission_steps
+
+    @property
+    def form_steps(self) -> list[FormStep]:
+        """The list of form steps related to the submission.
+
+        TODO Add note about form steps being created from history.
+        """
+        return self._form_steps
+
+    @property
+    def submission_steps(self) -> list[SubmissionStep]:
+        """The list of submission steps related to the submission.
+
+        TODO Add note about submission steps not necessarily persisted in DB.
+        """
+        return self._submission_steps
+
+
+class VariableDoesNotExist(Exception): ...
+
+
+class VariableReadOnly(Exception): ...
+
+
+class VariableTypeError(Exception): ...
+
+
+class VariablesState:
+    def __init__(self, submission_state: SubmissionState) -> None:
+        self.submission_state = submission_state
+        self.submission = submission_state.submission
+        self.formio_config = self.submission.form.formio_config
+        self._data_mutations: FormioData | None = None
+
+        self.variables = self._collect_variables()
+
+    @cached_property
+    def _static_data(self) -> dict[str, Any]:
+        return {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(submission=self.submission)
+        }
+
+    #@cached_property?
+    @property
+    def data(self) -> FormioData:
+        formio_data = FormioData()
+
+        for variable_key, variable in self.variables.items():
+            if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
+                formio_data[variable_key] = variable.value
+
+        # TODO check if `update` behaves as expected
+        formio_data.update(self._static_data)
+        # if self._data_mutations is not None:
+        #     formio_data.update(self._data_mutations)
+        return formio_data
+
+    # TODO add filter to `persist`: only persist user defined vars, etc.
+    def persist(self, *, limit_to: Literal["component"]):
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data_v2(
+            self.data,
+            {k: var for k, var in self.variables.items() if var.source == SubmissionValueVariableSources.user_input},
+        )
+
+    # TODO rename: `mutate`/`mutate_data`?
+    @contextmanager
+    def enter_evaluation_context(
+        self,
+        *,
+        mutation_operations: list[ActionOperation],
+        for_submission_step: SubmissionStep,
+    ) -> Iterator[FormioData]:
+        self._data_mutations = FormioData()
+        try:
+            yield self._data_mutations
+        finally:
+            formio_config = for_submission_step.form_step.form_definition.formio_config
+
+            self._update_configuration(formio_config)
+
+            for mutation in mutation_operations:
+                mutation.apply(for_submission_step, formio_config)
+
+            self._apply_hidden_state()
+
+            self._data_mutations = None
+
+
+    def __getitem__(self, key: str, /) -> Incomplete:
+        try:
+            return self.data[key]
+        except Exception:  # TODO good exception class
+            raise VariableDoesNotExist
+
+    def __setitem__(self, key: str, value: Incomplete, /) -> None:
+        # TODO: Should it be readonly by default, unless
+        # inside `enter_evaluation_context`?
+        # Or should we allow persist by default if not inside?
+        try:
+            submission_variable = self.variables[key]
+        except KeyError:
+            if key in self._static_data:
+                # TODO: better way to know if it is a static variable? With a source?
+                raise VariableReadOnly
+            raise VariableDoesNotExist
+
+        # TODO: check data type, raise `VariableTypeError`
+
+        if self._data_mutations is not None and self.data[key] != value:
+            # TODO only record mutation if `self.data[key] != value`?
+            # Maybe both?
+            self._data_mutations[key] = value
+            submission_variable.value = value
+        else:
+            submission_variable.value = value
+            self._update_configuration(self.formio_config)
+            self._apply_hidden_state()
+
+    def _collect_variables(self) -> dict[str, SubmissionValueVariable]:
+        # leverage the (already populated) submission state to get access to form
+        # steps and form definitions
+        form_definition_map: dict[int, FormDefinition] = {
+            form_step.form_definition.pk: form_step.form_definition
+            for form_step in self.submission_state.form_steps
+        }
+
+        # Build a collection of all form variables
+        all_form_variables: dict[str, FormVariable] = {
+            form_variable.key: form_variable
+            for form_variable in self.submission.form.formvariable_set.all()
+        }
+        # optimize the access from form_variable.form_definition using the already
+        # existing map, saving a `select_related` call on data we (probably) already
+        # have
+        for form_variable in all_form_variables.values():
+            if not (form_def_id := form_variable.form_definition_id):
+                # No related form definition for non-component form variables (user defined, ...)
+                continue
+            form_variable.form_definition = form_definition_map[form_def_id]
+
+        # now retrieve the persisted variables from the submission - avoiding select_related
+        # calls since we already have the relevant data
+        all_submission_variables: dict[str, SubmissionValueVariable] = {
+            submission_value_variables.key: submission_value_variables
+            for submission_value_variables in self.submission.submissionvaluevariable_set.all()
+        }
+        # do the join by `key`, which is unique across the form
+        for variable_key, submission_value_variable in all_submission_variables.items():
+            if variable_key not in all_form_variables:
+                continue
+            submission_value_variable.form_variable = all_form_variables[variable_key]
+
+        # finally, add in the unsaved variables from default values
+        for variable_key, form_variable in all_form_variables.items():
+            # if the key exists from the saved values in the DB, do nothing
+            if variable_key in all_submission_variables:
+                continue
+            # TODO Fill source field
+            unsaved_submission_var = SubmissionValueVariable(
+                submission=self.submission,
+                form_variable=form_variable,
+                key=variable_key,
+                value=form_variable.get_initial_value(),
+                is_initially_prefilled=(form_variable.prefill_plugin != ""),
+            )
+            all_submission_variables[variable_key] = unsaved_submission_var
+
+        return all_submission_variables
+
+    def _update_configuration(self, configuration: FormioConfig):
+        for component in configuration:
+            pass
+            # Call:
+            # rewrite_formio_component(configuration, self.submission, self.data)
+            # get_translated_custom_error_messages
+            # localize_components
+            # inject_prefill
+            # ... it should be possible to have these functions
+            # for each component, and avoid having them to iterate
+            # over all the components over and over.
+
+    def _apply_hidden_state(self):
+        ...
+
 
 
 @dataclass
@@ -205,7 +450,24 @@ class SubmissionValueVariablesState:
             variable.value = new_value
 
 
-class SubmissionValueVariableManager(models.Manager):
+class SubmissionValueVariableManager(models.Manager["SubmissionValueVariable"]):
+    def bulk_create_or_update_from_data_v2(
+        self,
+        data: FormioData,
+        # TODO might use list instead:
+        submission_variables: dict[str, SubmissionValueVariable],
+    ) -> None:
+        variables_to_create = []
+        variables_to_update = []
+        variables_keys_to_delete = []
+
+        for key, variable in submission_variables.items():
+            try:
+                variable.value = data[key]
+            except KeyError: # TODO same, find proper exception
+                ...
+
+
     def bulk_create_or_update_from_data(
         self,
         data: DataMapping,
@@ -309,7 +571,7 @@ class SubmissionValueVariable(models.Model):
         blank=True,
     )
 
-    objects = SubmissionValueVariableManager()
+    objects: SubmissionValueVariableManager = SubmissionValueVariableManager()
 
     class Meta:
         verbose_name = _("Submission value variable")

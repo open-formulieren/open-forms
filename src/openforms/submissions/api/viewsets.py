@@ -623,19 +623,17 @@ class SubmissionStepViewSet(
         data = form_data_serializer.validated_data["data"]
         if data:
             merged_data = FormioData({**submission.data, **data})
-            submission_step.data = DirtyData(data)
 
-            new_configuration = evaluate_form_logic(
+            evaluate_form_logic(
                 submission,
                 submission_step,
                 merged_data.data,
                 dirty=True,
                 request=request,
             )
-            submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(submission=submission, step=submission_step),
-            context={"request": request, "unsaved_data": data},
+            context={"request": request},
         )
         return Response(submission_state_logic_serializer.data)

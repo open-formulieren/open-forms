@@ -313,9 +313,9 @@ class FormioConfig:
 
         The components are iterated over depth-first, pre-order.
         """
-        # yield from self.path_map.values()  # 10x faster
-        for node in self._configuration_tree:
-            yield node.data
+        yield from self.path_map.values()  # 10x faster
+        # for node in self._configuration_tree:
+        #     yield node.data
 
     @cached_property
     def _configuration_tree(self) -> Tree:

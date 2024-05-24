@@ -87,7 +87,7 @@ def evaluate_form_logic(
     data_container = DataContainer(state=submission_variables_state)
 
     # 5. Evaluate the logic rules in order
-    mutation_operations = []
+    mutation_operations: list[ActionOperation] = []
 
     # 5.1 - if the action type is to set a variable, update the variable state. This
     # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed
