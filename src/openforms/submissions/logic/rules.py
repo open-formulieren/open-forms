@@ -4,10 +4,11 @@ import elasticapm
 from json_logic import jsonLogic
 
 from openforms.forms.models import FormLogic, FormStep
+from openforms.submissions.models.submission_value_variable import VariablesState
+from openforms.formio.datastructures import FormioData
 
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation
-from .datastructures import DataContainer
 from .log_utils import log_errors
 
 
@@ -108,7 +109,7 @@ def get_current_step(submission: Submission) -> SubmissionStep | None:
 
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
-    data_container: DataContainer,
+    variables_state: VariablesState,
     submission: Submission,
 ) -> Iterator[ActionOperation]:
     """
@@ -137,7 +138,7 @@ def iter_evaluate_rules(
             triggered = False
             with log_errors(rule.json_logic_trigger, rule):
                 triggered = bool(
-                    jsonLogic(rule.json_logic_trigger, data_container.data)
+                    jsonLogic(rule.json_logic_trigger, variables_state.data.data)
                 )
 
             if not triggered:
@@ -145,7 +146,7 @@ def iter_evaluate_rules(
 
             for operation in rule.action_operations:
                 if mutations := operation.eval(
-                    data_container.data, submission=submission
+                    variables_state.data.data, submission=submission
                 ):
-                    data_container.update(mutations)
+                    variables_state.bulk_assign(FormioData(mutations))
                 yield operation

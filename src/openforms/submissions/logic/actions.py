@@ -12,7 +12,7 @@ from json_logic import jsonLogic
 from typing_extensions import Self
 
 from openforms.dmn.service import evaluate_dmn
-from openforms.formio.datastructures import FormioData
+from openforms.formio.datastructures import FormioData, FormioConfig
 from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
@@ -57,7 +57,7 @@ class ActionOperation:
         pass
 
     def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+        self, step: SubmissionStep, configuration: FormioConfig
     ) -> None:
         """
         Implements the side effects of the action operation.
@@ -91,11 +91,11 @@ class PropertyAction(ActionOperation):
         )
 
     def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+        self, step: SubmissionStep, configuration: FormioConfig
     ) -> None:
-        if self.component not in configuration:
+        if self.component not in configuration.key_map:
             return None
-        component = configuration[self.component]
+        component = configuration.key_map[self.component]
         assign(component, self.property, self.value, missing=dict)
 
 
@@ -105,7 +105,7 @@ class DisableNextAction(ActionOperation):
         return cls()
 
     def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+        self, step: SubmissionStep, configuration: FormioConfig
     ) -> None:
         step._can_submit = False
 
@@ -121,7 +121,7 @@ class StepNotApplicableAction(ActionOperation):
         )
 
     def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+        self, step: SubmissionStep, configuration: FormioConfig
     ) -> None:
         execution_state = (
             step.submission.load_execution_state()
@@ -150,7 +150,7 @@ class StepApplicableAction(ActionOperation):
         )
 
     def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+        self, step: SubmissionStep, configuration: FormioConfig
     ) -> None:
         execution_state = (
             step.submission.load_execution_state()
@@ -273,7 +273,7 @@ class SetRegistrationBackendAction(ActionOperation):
         return cls(registration_backend_key=action["action"]["value"])
 
     def apply(
-        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+        self, step: SubmissionStep, configuration: FormioConfig
     ) -> None:
         step.submission.finalised_registration_backend_key = (
             self.registration_backend_key

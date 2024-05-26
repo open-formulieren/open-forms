@@ -206,11 +206,47 @@ class ComponentNode(Node):
     def configuration_path(self) -> str:
         return self.get_meta("configuration_path")
 
-    @property
-    def is_visible(self) -> bool:
-        return all(
-            not parent.data.get("hidden", False)
-            for parent in self.get_parent_list(add_self=True)
+    def is_visible(self, data: FormioData | None = None) -> bool:
+        if data is None:
+            # Shortcut if not data is provided, we exclusively rely on config:
+            return all(
+                not parent.data.get("hidden", False)
+                for parent in self.get_parent_list(add_self=True)
+            )
+
+        hidden: bool = self.data.get("hidden", False)
+        conditional = self.data.get("conditional")
+
+        if not conditional or (conditional_show := conditional.get("show")) is None:
+            return not hidden
+
+        if not (trigger_component_key := conditional.get("when")):
+            return not hidden
+
+        trigger_component_value = data.get(trigger_component_key)
+        compare_value = conditional.get("eq")
+
+        if (
+            isinstance(trigger_component_value, dict)
+            and compare_value in trigger_component_value
+        ):
+            is_visible = (
+                conditional_show
+                if trigger_component_value[compare_value]
+                else not conditional_show
+            )
+        else:
+            is_visible = (
+                conditional_show
+                if trigger_component_value == compare_value
+                else not conditional_show
+            )
+
+        # TODO: move this to a separate function
+        # that does not check parents.
+        return is_visible and all(
+            parent.is_visible(data)
+            for parent in self.get_parent_list()
         )
 
 
@@ -255,7 +291,7 @@ class FormioConfig:
         """
 
         key_map: dict[str, Component] = {}
-        for node in self._configuration_tree:
+        for node in self.configuration_tree:
             component = node.data
             # first, ensure we add every component by its own key so that we can
             # look it up. This is okay *because* in our UI we enforce unique keys
@@ -303,7 +339,7 @@ class FormioConfig:
         """
         path_map: dict[str, Component] = {}
 
-        for node in self._configuration_tree:
+        for node in self.configuration_tree:
             path_map[node.configuration_path] = node.data
 
         return path_map
@@ -314,11 +350,11 @@ class FormioConfig:
         The components are iterated over depth-first, pre-order.
         """
         yield from self.path_map.values()  # 10x faster
-        # for node in self._configuration_tree:
+        # for node in self.configuration_tree:
         #     yield node.data
 
     @cached_property
-    def _configuration_tree(self) -> Tree:
+    def configuration_tree(self) -> Tree:
 
         def _add_children(parent_node: ComponentNode, component: Component) -> None:
             for (

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from django.utils.functional import empty
@@ -20,6 +22,40 @@ from .models.submission_step import DirtyData
 if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
 
+
+def evaluate_form_logic_new(
+    submission: Submission,
+    step: SubmissionStep,
+    data: DataMapping,
+):
+    formio_config = step.form_step.form_definition.formio_config
+
+    variables_state = submission.variables_state
+
+    with variables_state.enter_mutation_context(update_configuration=False):
+        variables_state.bulk_assign(FormioData(data))
+
+    rules = get_rules_to_evaluate(submission, step)
+
+    mutation_operations: list[ActionOperation] = []
+
+    with variables_state.enter_mutation_context(update_configuration=False) as mutated_data:
+        for operation in iter_evaluate_rules(
+            rules,
+            variables_state,
+            submission=submission,
+        ):
+            mutation_operations.append(operation)
+
+    variables_state.update_configuration(formio_config)
+
+    for mutation_operation in mutation_operations:
+        mutation_operation.apply(step, formio_config)
+
+    variables_state.apply_hidden_state(formio_config)
+
+
+    # inject_variables(formio_config, variables_state.data.data)
 
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(

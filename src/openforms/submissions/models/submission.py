@@ -44,7 +44,7 @@ if TYPE_CHECKING:
         SubmissionFileAttachment,
         SubmissionFileAttachmentQuerySet,
     )
-    from .submission_value_variable import SubmissionValueVariablesState
+    from .submission_value_variable import SubmissionValueVariablesState, VariablesState
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +98,71 @@ class SubmissionState:
 
     def resolve_step(self, form_step_uuid: str) -> SubmissionStep:
         return self.get_submission_step(form_step_uuid=form_step_uuid)
+
+
+class NewSubmissionState:
+    def __init__(self, submission: Submission) -> None:
+        self.submission = submission
+        self._form_steps, self._submission_steps = self._load_state()
+
+    def _load_state(self) -> tuple[list[FormStep], list[SubmissionStep]]:
+        form_steps: list[FormStep] = list(
+            self.submission.form.formstep_set.select_related(
+                "form_definition"
+            ).order_by("order")
+        )
+
+        # ⚡️ no select_related/prefetch ON PURPOSE - while processing the form steps,
+        # we're doing this in python as we have the objects already from the query
+        # above.
+        _submission_steps = cast(
+            QuerySet[SubmissionStep], self.submissionstep_set.all()
+        )
+        cached_submission_steps: dict[int, SubmissionStep] = {}
+        for submission_step in _submission_steps:
+            # non-empty value implies that the form_step FK was (cascade) deleted
+            if submission_step.form_step_history:
+                # deleted formstep FKs are loaded from history
+                if submission_step.form_step not in form_steps:
+                    form_steps.append(submission_step.form_step)
+            cached_submission_steps[submission_step.form_step_id] = submission_step
+
+        # sort the steps again in case steps from history were inserted
+        form_steps = sorted(form_steps, key=lambda s: s.order)
+
+        # build the resulting list - some SubmissionStep instances will probably not exist
+        # in the database yet - this is on purpose!
+        submission_steps: list[SubmissionStep] = []
+        for form_step in form_steps:
+            if form_step.pk in cached_submission_steps:
+                submission_step = cached_submission_steps[form_step.pk]
+                # replace the python objects to avoid extra queries and/or joins in the
+                # submission step query.
+                submission_step.form_step = form_step
+                submission_step.submission = self.submission
+            else:
+                # there's no known DB record for this, so we create a fresh, unsaved
+                # instance and return this
+                submission_step = SubmissionStep(uuid=None, submission=self, form_step=form_step)
+            submission_steps.append(submission_step)
+
+        return form_steps, submission_steps
+
+    @property
+    def form_steps(self) -> list[FormStep]:
+        """The list of form steps related to the submission.
+
+        TODO Add note about form steps being created from history.
+        """
+        return self._form_steps
+
+    @property
+    def submission_steps(self) -> list[SubmissionStep]:
+        """The list of submission steps related to the submission.
+
+        TODO Add note about submission steps not necessarily persisted in DB.
+        """
+        return self._submission_steps
 
 
 class Submission(models.Model):
@@ -468,6 +533,14 @@ class Submission(models.Model):
             )
 
         self.save()
+
+    @cached_property
+    def submission_state(self) -> NewSubmissionState:
+        return NewSubmissionState(self)
+
+    @cached_property
+    def variables_state(self) -> VariablesState:
+        return VariablesState(self.submission_state)
 
     @elasticapm.capture_span(span_type="app.data.loading")
     def load_submission_value_variables_state(

@@ -38,73 +38,11 @@ if TYPE_CHECKING:
 from functools import cached_property
 from contextlib import contextmanager
 from openforms.forms.models import FormStep, FormDefinition, FormVariable
-from openforms.formio.datastructures import FormioConfig
+from openforms.formio.datastructures import FormioConfig, ComponentNode
+from openforms.formio.utils import get_component_empty_value
 from django.db.models import QuerySet
-from ..logic.actions import ActionOperation
-
-class SubmissionState:
-    def __init__(self, submission: Submission) -> None:
-        self.submission = submission
-        self._form_steps, self._submission_steps = self._load_state()
-
-    def _load_state(self) -> tuple[list[FormStep], list[SubmissionStep]]:
-        form_steps: list[FormStep] = list(
-            self.submission.form.formstep_set.select_related(
-                "form_definition"
-            ).order_by("order")
-        )
-
-        # ⚡️ no select_related/prefetch ON PURPOSE - while processing the form steps,
-        # we're doing this in python as we have the objects already from the query
-        # above.
-        _submission_steps = cast(
-            QuerySet[SubmissionStep], self.submissionstep_set.all()
-        )
-        cached_submission_steps: dict[int, SubmissionStep] = {}
-        for submission_step in _submission_steps:
-            # non-empty value implies that the form_step FK was (cascade) deleted
-            if submission_step.form_step_history:
-                # deleted formstep FKs are loaded from history
-                if submission_step.form_step not in form_steps:
-                    form_steps.append(submission_step.form_step)
-            cached_submission_steps[submission_step.form_step_id] = submission_step
-
-        # sort the steps again in case steps from history were inserted
-        form_steps = sorted(form_steps, key=lambda s: s.order)
-
-        # build the resulting list - some SubmissionStep instances will probably not exist
-        # in the database yet - this is on purpose!
-        submission_steps: list[SubmissionStep] = []
-        for form_step in form_steps:
-            if form_step.pk in cached_submission_steps:
-                submission_step = cached_submission_steps[form_step.pk]
-                # replace the python objects to avoid extra queries and/or joins in the
-                # submission step query.
-                submission_step.form_step = form_step
-                submission_step.submission = self.submission
-            else:
-                # there's no known DB record for this, so we create a fresh, unsaved
-                # instance and return this
-                submission_step = SubmissionStep(uuid=None, submission=self, form_step=form_step)
-            submission_steps.append(submission_step)
-
-        return form_steps, submission_steps
-
-    @property
-    def form_steps(self) -> list[FormStep]:
-        """The list of form steps related to the submission.
-
-        TODO Add note about form steps being created from history.
-        """
-        return self._form_steps
-
-    @property
-    def submission_steps(self) -> list[SubmissionStep]:
-        """The list of submission steps related to the submission.
-
-        TODO Add note about submission steps not necessarily persisted in DB.
-        """
-        return self._submission_steps
+from django.utils.functional import empty
+from .submission import NewSubmissionState as SubmissionState
 
 
 class VariableDoesNotExist(Exception): ...
@@ -120,10 +58,10 @@ class VariablesState:
     def __init__(self, submission_state: SubmissionState) -> None:
         self.submission_state = submission_state
         self.submission = submission_state.submission
-        self.formio_config = self.submission.form.formio_config
+        self.global_formio_config = self.submission.form.formio_config
         self._data_mutations: FormioData | None = None
 
-        self.variables = self._collect_variables()
+        self.submission_variables = self._collect_variables()
 
     @cached_property
     def _static_data(self) -> dict[str, Any]:
@@ -137,7 +75,7 @@ class VariablesState:
     def data(self) -> FormioData:
         formio_data = FormioData()
 
-        for variable_key, variable in self.variables.items():
+        for variable_key, variable in self.submission_variables.items():
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
                 formio_data[variable_key] = variable.value
 
@@ -151,32 +89,19 @@ class VariablesState:
     def persist(self, *, limit_to: Literal["component"]):
         SubmissionValueVariable.objects.bulk_create_or_update_from_data_v2(
             self.data,
-            {k: var for k, var in self.variables.items() if var.source == SubmissionValueVariableSources.user_input},
+            {k: var for k, var in self.submission_variables.items() if var.source == SubmissionValueVariableSources.user_input},
         )
 
-    # TODO rename: `mutate`/`mutate_data`?
     @contextmanager
-    def enter_evaluation_context(
-        self,
-        *,
-        mutation_operations: list[ActionOperation],
-        for_submission_step: SubmissionStep,
-    ) -> Iterator[FormioData]:
+    def enter_mutation_context(self, *, update_configuration: bool) -> Iterator[FormioData]:
         self._data_mutations = FormioData()
         try:
             yield self._data_mutations
         finally:
-            formio_config = for_submission_step.form_step.form_definition.formio_config
-
-            self._update_configuration(formio_config)
-
-            for mutation in mutation_operations:
-                mutation.apply(for_submission_step, formio_config)
-
-            self._apply_hidden_state()
-
-            self._data_mutations = None
-
+                if update_configuration:
+                    self.update_configuration(self.global_formio_config)
+                    self.apply_hidden_state(self.global_formio_config)
+                self._data_mutations = None
 
     def __getitem__(self, key: str, /) -> Incomplete:
         try:
@@ -185,11 +110,8 @@ class VariablesState:
             raise VariableDoesNotExist
 
     def __setitem__(self, key: str, value: Incomplete, /) -> None:
-        # TODO: Should it be readonly by default, unless
-        # inside `enter_evaluation_context`?
-        # Or should we allow persist by default if not inside?
         try:
-            submission_variable = self.variables[key]
+            submission_variable = self.submission_variables[key]
         except KeyError:
             if key in self._static_data:
                 # TODO: better way to know if it is a static variable? With a source?
@@ -199,14 +121,32 @@ class VariablesState:
         # TODO: check data type, raise `VariableTypeError`
 
         if self._data_mutations is not None and self.data[key] != value:
-            # TODO only record mutation if `self.data[key] != value`?
+            # TODO also record mutation if `self.data[key] == value`?
             # Maybe both?
+            # TODO this could lead to an inconsistent _data_mutations if
+            # two logic rules are applied one after the other:
+            # - the first one mutates data[key] from "initial" to "some_val"
+            # - the second one mutates data[key] from "some_val" to "initial"
+            # For that, we either need to:
+            # - Only update every submission_variable.value once we leave the evaluation context.
+            #   However, ordered evaluation of logic rules will work on stale data.
+            # - Do the same thing, but self.data includes self._data_mutations.
+            # - Make a deepcopy of self.data, as a reference to compare with.
             self._data_mutations[key] = value
             submission_variable.value = value
         else:
             submission_variable.value = value
-            self._update_configuration(self.formio_config)
-            self._apply_hidden_state()
+            self.update_configuration(self.global_formio_config)
+            self.apply_hidden_state(self.global_formio_config)
+
+    def bulk_assign(self, data: FormioData):
+        for key, variable in self.submission_variables.items():
+            new_value = data.get(key, empty)
+            if new_value is empty:
+                continue
+            # TODO if not in evaluation_context, this is inefficient
+            # due to all the configuration updates.
+            self[key] = new_value
 
     def _collect_variables(self) -> dict[str, SubmissionValueVariable]:
         # leverage the (already populated) submission state to get access to form
@@ -259,7 +199,7 @@ class VariablesState:
 
         return all_submission_variables
 
-    def _update_configuration(self, configuration: FormioConfig):
+    def update_configuration(self, configuration: FormioConfig):
         for component in configuration:
             pass
             # Call:
@@ -269,10 +209,25 @@ class VariablesState:
             # inject_prefill
             # ... it should be possible to have these functions
             # for each component, and avoid having them to iterate
-            # over all the components over and over.
+            # over all the components over and over (as it is currently).
 
-    def _apply_hidden_state(self):
-        ...
+    def apply_hidden_state(self, configuration: FormioConfig):
+        configuration_tree = configuration.configuration_tree
+
+        for variable_key, variable in self.submission_variables.items():
+            if not variable.source == SubmissionValueVariableSources.user_input:
+                continue
+
+            component_node = configuration_tree.find(data_id=variable_key)
+            assert isinstance(component_node, ComponentNode)
+            component = component_node.data
+
+            if component.get("clearOnHide", False) and not component_node.is_visible(self.data):
+                empty_value = get_component_empty_value(component)
+                if self._data_mutations is not None:
+                    # TODO same issue as in `__getitem__`
+                    self._data_mutations = empty_value
+                variable.value = empty_value
 
 
 
