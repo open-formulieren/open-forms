@@ -121,8 +121,6 @@ class VariablesState:
         # TODO: check data type, raise `VariableTypeError`
 
         if self._data_mutations is not None and self.data[key] != value:
-            # TODO also record mutation if `self.data[key] == value`?
-            # Maybe both?
             # TODO this could lead to an inconsistent _data_mutations if
             # two logic rules are applied one after the other:
             # - the first one mutates data[key] from "initial" to "some_val"
@@ -132,7 +130,11 @@ class VariablesState:
             #   However, ordered evaluation of logic rules will work on stale data.
             # - Do the same thing, but self.data includes self._data_mutations.
             # - Make a deepcopy of self.data, as a reference to compare with.
-            self._data_mutations[key] = value
+
+            # TODO also record mutation if `self.data[key] == value`?
+            # Maybe both?
+            if self.data[key] != value:
+                self._data_mutations[key] = value
             submission_variable.value = value
         else:
             submission_variable.value = value
@@ -140,7 +142,7 @@ class VariablesState:
             self.apply_hidden_state(self.global_formio_config)
 
     def bulk_assign(self, data: FormioData):
-        for key, variable in self.submission_variables.items():
+        for key in self.submission_variables.keys():
             new_value = data.get(key, empty)
             if new_value is empty:
                 continue

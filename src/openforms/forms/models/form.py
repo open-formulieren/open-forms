@@ -568,7 +568,7 @@ class Form(models.Model):
 
         components: list[Component] = []
         for form_step in self.formstep_set.select_related("form_definition"):
-            components.append(form_step.form_definition.configuration["components"])
+            components.extend(form_step.form_definition.configuration["components"])
 
         return FormioConfig(components)
 

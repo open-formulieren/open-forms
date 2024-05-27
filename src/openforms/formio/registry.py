@@ -108,7 +108,7 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
         return serializers.JSONField(required=required, allow_null=True)
 
     def iter_children(self, component: ComponentT) -> Iterator[tuple[str, Component]]:
-        """Iterate over the children of the provided component, if any.
+        """Iterate over the children of the provided component instance, if any.
 
         This yields a two-tuple, the first element being the relative dotted path and
         the second one being the component itself.

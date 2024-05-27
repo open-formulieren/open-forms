@@ -365,9 +365,50 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         )
 
 
+class NewSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
+    form_step = ContextAwareFormStepSerializer(read_only=True)
+    slug = serializers.SlugField(source="form_step.slug", read_only=True)
+    data = serializers.DictField(  # type: ignore
+        label=_("data"),
+        required=False,
+        allow_null=True,
+    )
+
+    parent_lookup_kwargs = {
+        "submission_uuid": "submission__uuid",
+    }
+
+    instance: SubmissionStep
+
+    class Meta:
+        model = SubmissionStep
+        fields = (
+            "id",
+            "slug",
+            "form_step",
+            "data",
+            "is_applicable",
+            "completed",
+            "can_submit",
+        )
+
+        extra_kwargs = {
+            "id": {
+                "read_only": True,
+                "source": "uuid",
+                "allow_null": True,
+            },
+        }
+
+    def validate_data(self, data: dict):
+        return self.context["data"].data
+
+
+
 class SubmissionStateLogicSerializer(serializers.Serializer):
     submission = SubmissionSerializer()
-    step = SubmissionStepSerializer()
+    step = NewSubmissionStepSerializer()
+
 
 
 @dataclass

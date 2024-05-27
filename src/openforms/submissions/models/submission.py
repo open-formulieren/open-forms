@@ -100,6 +100,13 @@ class SubmissionState:
         return self.get_submission_step(form_step_uuid=form_step_uuid)
 
 
+from typing import cast
+
+from functools import cached_property
+from django.db.models import QuerySet
+
+
+
 class NewSubmissionState:
     def __init__(self, submission: Submission) -> None:
         self.submission = submission
@@ -116,7 +123,7 @@ class NewSubmissionState:
         # we're doing this in python as we have the objects already from the query
         # above.
         _submission_steps = cast(
-            QuerySet[SubmissionStep], self.submissionstep_set.all()
+            QuerySet[SubmissionStep], self.submission.submissionstep_set.all()
         )
         cached_submission_steps: dict[int, SubmissionStep] = {}
         for submission_step in _submission_steps:
@@ -143,7 +150,7 @@ class NewSubmissionState:
             else:
                 # there's no known DB record for this, so we create a fresh, unsaved
                 # instance and return this
-                submission_step = SubmissionStep(uuid=None, submission=self, form_step=form_step)
+                submission_step = SubmissionStep(uuid=None, submission=self.submission, form_step=form_step)
             submission_steps.append(submission_step)
 
         return form_steps, submission_steps
@@ -540,6 +547,9 @@ class Submission(models.Model):
 
     @cached_property
     def variables_state(self) -> VariablesState:
+
+        from .submission_value_variable import VariablesState
+
         return VariablesState(self.submission_state)
 
     @elasticapm.capture_span(span_type="app.data.loading")

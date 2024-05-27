@@ -30,7 +30,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from ..attachments import attach_uploads_to_submission_step
 from ..constants import PostSubmissionEvents
 from ..exceptions import FormDeactivated, FormMaintenance
-from ..form_logic import check_submission_logic, evaluate_form_logic
+from ..form_logic import check_submission_logic, evaluate_form_logic, evaluate_form_logic_new
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from ..parsers import (
@@ -622,18 +622,26 @@ class SubmissionStepViewSet(
 
         data = form_data_serializer.validated_data["data"]
         if data:
-            merged_data = FormioData({**submission.data, **data})
+            # merged_data = FormioData({**submission.data, **data})
 
-            evaluate_form_logic(
+            # evaluate_form_logic(
+            #     submission,
+            #     submission_step,
+            #     merged_data.data,
+            #     dirty=True,
+            #     request=request,
+            # )
+
+            data_mutations = evaluate_form_logic_new(
                 submission,
                 submission_step,
-                merged_data.data,
-                dirty=True,
-                request=request,
+                data
             )
+        else:
+            data_mutations = FormioData()
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
             instance=SubmissionStateLogic(submission=submission, step=submission_step),
-            context={"request": request},
+            context={"request": request, "data": data_mutations},
         )
         return Response(submission_state_logic_serializer.data)

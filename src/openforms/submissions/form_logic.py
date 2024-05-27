@@ -54,6 +54,8 @@ def evaluate_form_logic_new(
 
     variables_state.apply_hidden_state(formio_config)
 
+    return mutated_data
+
 
     # inject_variables(formio_config, variables_state.data.data)
 
