@@ -224,7 +224,9 @@ export const Empty = {
 
       await userEvent.click(buttons[0]);
 
-      const dropdowns = within(document.querySelector('.mappings')).getAllByRole('combobox');
+      const dropdowns = within(document.querySelector('.logic-dmn__mapping-config')).getAllByRole(
+        'combobox'
+      );
 
       await expect(dropdowns.length).toBe(2);
 
@@ -243,7 +245,7 @@ export const Empty = {
       await waitFor(async () => {
         const renderedOptions = within(decisionDefDropdown).getAllByRole('option');
         const [formVarsDropdowns, dmnVarsDropdown] = within(
-          document.querySelector('.mappings')
+          document.querySelector('.logic-dmn__mapping-config')
         ).getAllByRole('combobox');
 
         await expect(renderedOptions.length).toBe(2);
@@ -258,8 +260,12 @@ export const Empty = {
 
       await userEvent.click(button);
 
-      const varsDropdowns = within(document.querySelector('.mappings')).queryAllByRole('combobox');
-      const textInput = within(document.querySelector('.mappings')).queryAllByRole('textbox');
+      const varsDropdowns = within(
+        document.querySelector('.logic-dmn__mapping-config')
+      ).queryAllByRole('combobox');
+      const textInput = within(document.querySelector('.logic-dmn__mapping-config')).queryAllByRole(
+        'textbox'
+      );
 
       await expect(varsDropdowns.length).toBe(0);
       await expect(textInput.length).toBe(0);
@@ -301,7 +307,9 @@ export const withInitialValues = {
       await expect(decisionDefVersionDropdown.value).toBe('1');
     });
 
-    const varsDropdowns = within(document.querySelector('.mappings')).getAllByRole('combobox');
+    const varsDropdowns = within(document.querySelector('.logic-dmn__mapping-config')).getAllByRole(
+      'combobox'
+    );
 
     // Form vars
     await expect(varsDropdowns[0].value).toBe('name');

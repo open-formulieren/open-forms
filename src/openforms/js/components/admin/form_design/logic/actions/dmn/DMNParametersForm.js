@@ -101,7 +101,13 @@ const processInputParams = params => {
 
 const DMNParametersForm = () => {
   const {
-    values: {pluginId, decisionDefinitionId, decisionDefinitionVersion},
+    values: {
+      pluginId,
+      decisionDefinitionId,
+      decisionDefinitionVersion,
+      inputMapping,
+      outputMapping,
+    },
   } = useFormikContext();
 
   const {loading, value: dmnParams = EMPTY_DMN_PARAMS} = useAsync(async () => {
@@ -140,6 +146,7 @@ const DMNParametersForm = () => {
             loading={loading}
             mappingName="inputMapping"
             dmnVariables={dmnParams.inputs}
+            alreadyMapped={inputMapping.map(mapping => mapping.dmnVariable)}
             includeStaticVariables
           />
         </div>
@@ -152,6 +159,7 @@ const DMNParametersForm = () => {
             loading={loading}
             mappingName="outputMapping"
             dmnVariables={dmnParams.outputs}
+            alreadyMapped={outputMapping.map(mapping => mapping.dmnVariable)}
           />
         </div>
       </div>
