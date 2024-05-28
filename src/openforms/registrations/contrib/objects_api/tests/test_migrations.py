@@ -338,3 +338,84 @@ class NoObjectsAPIConfigDoesntCreateObjectsAPIGroupMigrationTest(TestMigrations)
         )
 
         self.assertFalse(ObjectsAPIGroupConfig.objects.exists())
+
+
+class AddDefaultToSoloModelTests(TestMigrations):
+    app = "registrations_objects_api"
+    migrate_from = "0018_alter_objectsapiconfig_options_and_more"
+    migrate_to = "0019_add_default"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        ObjectsAPIGroupConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+        ObjectsAPIConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+        Service = apps.get_model("zgw_consumers", "Service")
+
+        objects_api = Service.objects.create(
+            label="Objects API",
+            api_root="http://objectsapi.nl/api/v1/",
+            api_type=APITypes.orc,
+        )
+        objecttypes_api = Service.objects.create(
+            label="Objecttypes API",
+            api_root="http://objecttypesapi.nl/api/v1/",
+            api_type=APITypes.orc,
+        )
+        documents_api = Service.objects.create(
+            label="Documents API",
+            api_root="http://documentsapi.nl/api/v1/",
+            api_type=APITypes.drc,
+        )
+        catalogi_api = Service.objects.create(
+            label="Catalogi API",
+            api_root="http://catalogiapi.nl/api/v1/",
+            api_type=APITypes.ztc,
+        )
+
+        ObjectsAPIConfig.objects.create()
+        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            name="Objects API",
+            objects_service=objects_api,
+            objecttypes_service=objecttypes_api,
+            drc_service=documents_api,
+            catalogi_service=catalogi_api,
+        )
+
+    def test_services_migrated_correctly(self):
+        ObjectsAPIConfig = self.apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+
+        solo = ObjectsAPIConfig.objects.get()
+
+        self.assertEqual(solo.default_objects_api_group.pk, self.objects_api_group.pk)
+
+
+class NoObjectsAPIGroupLeavesConfigEmptyMigrationTest(TestMigrations):
+    app = "registrations_objects_api"
+    migrate_from = "0018_alter_objectsapiconfig_options_and_more"
+    migrate_to = "0019_add_default"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        ObjectsAPIGroupConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+        ObjectsAPIConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+
+        self.assertFalse(ObjectsAPIGroupConfig.objects.exists())
+
+        ObjectsAPIConfig.objects.create()
+
+    def test_no_zgw_api_group_created(self):
+        ObjectsAPIConfig = self.apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+
+        solo = ObjectsAPIConfig.objects.get()
+
+        self.assertIsNone(solo.default_objects_api_group)
