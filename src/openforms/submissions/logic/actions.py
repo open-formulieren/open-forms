@@ -218,6 +218,9 @@ class EvaluateDMNAction(ActionOperation):
     decision_definition_id: str
     plugin_id: str
     decision_definition_version: str = ""
+    # DigiD sessions expire after 15 mins of inactivity, so we multiply that a couple
+    # times for a long-enought-but-still-soon-expiring cache entry.
+    cache_timeout: int = 60 * 15 * 4  # 1 hour
 
     @classmethod
     def from_action(cls, action: ActionDict) -> Self:
@@ -254,7 +257,11 @@ class EvaluateDMNAction(ActionOperation):
             + self.plugin_id
             + inputs
         )
-        dmn_outputs = cache.get_or_set(cache_key, default=_evaluate_dmn)
+        dmn_outputs = cache.get_or_set(
+            cache_key,
+            default=_evaluate_dmn,
+            timeout=self.cache_timeout,
+        )
 
         # Map DMN output to form variables
         return {
