@@ -19,7 +19,7 @@ from openforms.submissions.tests.factories import (
 )
 
 from ....constants import RegistrationAttribute
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV1Handler
 from ..typing import RegistrationOptionsV1
@@ -50,51 +50,53 @@ class ObjectsAPIBackendV1Tests(TestCase):
         super().setUp()
 
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
-            objecttype_version=1,
-            productaanvraag_type="terugbelnotitie",
-            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
-            informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
-            organisatie_rsin="000000000",
-            content_json=textwrap.dedent(
-                """
-                {
-                    "bron": {
-                        "naam": "Open Formulieren",
-                        "kenmerk": "{{ submission.kenmerk }}"
-                    },
-                    "type": "{{ productaanvraag_type }}",
-                    "aanvraaggegevens": {% json_summary %},
-                    "taal": "{{ submission.language_code  }}",
-                    "betrokkenen": [
-                        {
-                            "inpBsn" : "{{ variables.auth_bsn }}",
-                            "rolOmschrijvingGeneriek" : "initiator"
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                drc_service=ServiceFactory.build(
+                    api_root="https://documenten.nl/api/v1/",
+                    api_type=APITypes.drc,
+                ),
+                objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
+                objecttype_version=1,
+                productaanvraag_type="terugbelnotitie",
+                informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
+                informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
+                organisatie_rsin="000000000",
+                content_json=textwrap.dedent(
+                    """
+                    {
+                        "bron": {
+                            "naam": "Open Formulieren",
+                            "kenmerk": "{{ submission.kenmerk }}"
+                        },
+                        "type": "{{ productaanvraag_type }}",
+                        "aanvraaggegevens": {% json_summary %},
+                        "taal": "{{ submission.language_code  }}",
+                        "betrokkenen": [
+                            {
+                                "inpBsn" : "{{ variables.auth_bsn }}",
+                                "rolOmschrijvingGeneriek" : "initiator"
+                            }
+                        ],
+                        "pdf": "{{ submission.pdf_url }}",
+                        "csv": "{{ submission.csv_url }}",
+                        "bijlagen": {% uploaded_attachment_urls %},
+                        "payment": {
+                            "completed": {% if payment.completed %}true{% else %}false{% endif %},
+                            "amount": {{ payment.amount }},
+                            "public_order_ids": {{ payment.public_order_ids }}
                         }
-                    ],
-                    "pdf": "{{ submission.pdf_url }}",
-                    "csv": "{{ submission.csv_url }}",
-                    "bijlagen": {% uploaded_attachment_urls %},
-                    "payment": {
-                        "completed": {% if payment.completed %}true{% else %}false{% endif %},
-                        "amount": {{ payment.amount }},
-                        "public_order_ids": {{ payment.public_order_ids }}
-                    }
-                }"""
-            ),
+                    }"""
+                ),
+            )
         )
 
         config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            "openforms.registrations.contrib.objects_api.plugin.ObjectsAPIConfig.get_solo",
             return_value=config,
         )
         self.mock_get_config = config_patcher.start()

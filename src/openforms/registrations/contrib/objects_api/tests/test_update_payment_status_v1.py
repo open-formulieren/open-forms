@@ -12,7 +12,7 @@ from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..models import ObjectsAPIConfig
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
 
@@ -41,20 +41,22 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
         )
 
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            payment_status_update_json=textwrap.dedent(
-                """
-                {
-                    "payment": {
-                        "completed": {% if payment.completed %}true{% else %}false{% endif %},
-                        "amount": {{ payment.amount }},
-                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
-                    }
-                }"""
-            ),
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                payment_status_update_json=textwrap.dedent(
+                    """
+                    {
+                        "payment": {
+                            "completed": {% if payment.completed %}true{% else %}false{% endif %},
+                            "amount": {{ payment.amount }},
+                            "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+                        }
+                    }"""
+                ),
+            )
         )
 
         m.patch(
@@ -110,10 +112,12 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
         )
 
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+            )
         )
 
         m.patch(
@@ -182,11 +186,13 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
         )
 
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            payment_status_update_json="",
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                payment_status_update_json="",
+            )
         )
 
         m.patch(

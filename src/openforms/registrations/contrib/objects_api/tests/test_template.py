@@ -16,7 +16,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ..models import ObjectsAPIConfig
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
 
@@ -38,15 +38,17 @@ class JSONTemplatingTests(TestCase):
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
-            productaanvraag_type="terugbelnotitie",
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                drc_service=ServiceFactory.build(
+                    api_root="https://documenten.nl/api/v1/",
+                    api_type=APITypes.drc,
+                ),
+                productaanvraag_type="terugbelnotitie",
+            )
         )
         m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -109,35 +111,37 @@ class JSONTemplatingTests(TestCase):
     @freeze_time("2022-09-12")
     def test_custom_template(self, m):
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
-            content_json=textwrap.dedent(
-                """
-                {
-                    "bron": {
-                        "naam": "Open Formulieren",
-                        "kenmerk": "{{ submission.kenmerk }}"
-                    },
-                    "type": "{{ productaanvraag_type }}",
-                    "aanvraaggegevens": {% json_summary %},
-                    "taal": "{{ submission.language_code  }}",
-                    "betrokkenen": [
-                        {
-                            "inpBsn" : "{{ variables.auth_bsn }}",
-                            "rolOmschrijvingGeneriek" : "initiator"
-                        }
-                    ],
-                    "pdf": "{{ submission.pdf_url }}",
-                    "csv": "{{ submission.csv_url }}",
-                    "bijlagen": {% uploaded_attachment_urls %}
-                }"""
-            ),
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                drc_service=ServiceFactory.build(
+                    api_root="https://documenten.nl/api/v1/",
+                    api_type=APITypes.drc,
+                ),
+                content_json=textwrap.dedent(
+                    """
+                    {
+                        "bron": {
+                            "naam": "Open Formulieren",
+                            "kenmerk": "{{ submission.kenmerk }}"
+                        },
+                        "type": "{{ productaanvraag_type }}",
+                        "aanvraaggegevens": {% json_summary %},
+                        "taal": "{{ submission.language_code  }}",
+                        "betrokkenen": [
+                            {
+                                "inpBsn" : "{{ variables.auth_bsn }}",
+                                "rolOmschrijvingGeneriek" : "initiator"
+                            }
+                        ],
+                        "pdf": "{{ submission.pdf_url }}",
+                        "csv": "{{ submission.csv_url }}",
+                        "bijlagen": {% uploaded_attachment_urls %}
+                    }"""
+                ),
+            )
         )
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -227,39 +231,41 @@ class JSONTemplatingTests(TestCase):
     def test_submission_with_objects_api_content_json_exceed_max_file_limit(self):
         submission = SubmissionFactory.create(with_report=True)
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
-            content_json=textwrap.dedent(
-                """
-                {
-                "bron": {
-                    "naam": "Open Formulieren",
-                    "kenmerk": "{{ submission.kenmerk }}"
-                },
-                "type": "{{ productaanvraag_type }}",
-                "aanvraaggegevens": {% json_summary %},
-                "taal": "{{ submission.language_code  }}",
-                "betrokkenen": [
-                {
-                "inpBsn" : "{{ variables.auth_bsn }}",
-                "rolOmschrijvingGeneriek" : "initiator"
-                }
-                ],
-                "pdf": "{{ submission.pdf_url }}",
-                "csv": "{{ submission.csv_url }}",
-                "bijlagen": [
-                {% for attachment in submission.attachments %}
-                "{{ attachment }}"{% if not forloop.last %},{% endif %}
-                {% endfor %}
-                ]
-                }"""
-            ),
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                drc_service=ServiceFactory.build(
+                    api_root="https://documenten.nl/api/v1/",
+                    api_type=APITypes.drc,
+                ),
+                content_json=textwrap.dedent(
+                    """
+                    {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": "{{ submission.kenmerk }}"
+                    },
+                    "type": "{{ productaanvraag_type }}",
+                    "aanvraaggegevens": {% json_summary %},
+                    "taal": "{{ submission.language_code  }}",
+                    "betrokkenen": [
+                    {
+                    "inpBsn" : "{{ variables.auth_bsn }}",
+                    "rolOmschrijvingGeneriek" : "initiator"
+                    }
+                    ],
+                    "pdf": "{{ submission.pdf_url }}",
+                    "csv": "{{ submission.csv_url }}",
+                    "bijlagen": [
+                    {% for attachment in submission.attachments %}
+                    "{{ attachment }}"{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                    ]
+                    }"""
+                ),
+            )
         )
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -282,15 +288,17 @@ class JSONTemplatingTests(TestCase):
     def test_submission_with_objects_api_content_json_not_valid_json(self):
         submission = SubmissionFactory.create(with_report=True)
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
-            content_json='{"key": "value",}',  # Invalid JSON,
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                drc_service=ServiceFactory.build(
+                    api_root="https://documenten.nl/api/v1/",
+                    api_type=APITypes.drc,
+                ),
+                content_json='{"key": "value",}',  # Invalid JSON,
+            )
         )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -352,9 +360,11 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(),
-            drc_service=ServiceFactory.build(),
-            content_json="{% json_summary %}",
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(),
+                drc_service=ServiceFactory.build(),
+                content_json="{% json_summary %}",
+            )
         )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         prefix = "openforms.registrations.contrib.objects_api"

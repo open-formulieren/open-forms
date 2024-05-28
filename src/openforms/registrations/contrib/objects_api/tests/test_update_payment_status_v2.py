@@ -15,7 +15,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_objects_client
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV2
 
@@ -28,7 +28,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        config = ObjectsAPIConfig(
+        self.config_group = ObjectsAPIGroupConfig(
             objects_service=ServiceFactory.build(
                 api_root="http://localhost:8002/api/v2/",
                 api_type=APITypes.orc,
@@ -38,6 +38,10 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                 header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
                 auth_type=AuthTypes.api_key,
             ),
+        )
+
+        config = ObjectsAPIConfig(
+            default_objects_api_group=self.config_group,
         )
 
         config_patcher = patch(
@@ -50,7 +54,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
     def test_update_payment_status(self):
         # We manually create the objects instance, to be in the same state after
         # `plugin.register_submission` was called:
-        with get_objects_client() as client:
+        with get_objects_client(self.config_group) as client:
             data = client.create_object(
                 object_data=prepare_data_for_registration(
                     record_data={

@@ -17,7 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 
-from ..models import ObjectsAPIConfig
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
 
@@ -34,18 +34,20 @@ class ObjectsAPIBackendTests(TestCase):
         super().setUp()
 
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                drc_service=ServiceFactory.build(
+                    api_root="https://documenten.nl/api/v1/",
+                    api_type=APITypes.drc,
+                ),
+            )
         )
 
         config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            "openforms.registrations.contrib.objects_api.plugin.ObjectsAPIConfig.get_solo",
             return_value=config,
         )
         self.mock_get_config = config_patcher.start()

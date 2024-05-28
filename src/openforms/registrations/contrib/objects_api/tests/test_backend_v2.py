@@ -15,7 +15,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
@@ -35,27 +35,29 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         super().setUp()
 
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="http://localhost:8002/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-                auth_type=AuthTypes.api_key,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="http://localhost:8003/documenten/api/v1/",
-                api_type=APITypes.drc,
-                # See the docker compose fixtures:
-                client_id="test_client_id",
-                secret="test_secret_key",
-                auth_type=AuthTypes.zgw,
-            ),
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="http://localhost:8002/api/v2/",
+                    api_type=APITypes.orc,
+                    oas="https://example.com/",
+                    header_key="Authorization",
+                    # See the docker compose fixtures:
+                    header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+                    auth_type=AuthTypes.api_key,
+                ),
+                drc_service=ServiceFactory.build(
+                    api_root="http://localhost:8003/documenten/api/v1/",
+                    api_type=APITypes.drc,
+                    # See the docker compose fixtures:
+                    client_id="test_client_id",
+                    secret="test_secret_key",
+                    auth_type=AuthTypes.zgw,
+                ),
+            )
         )
 
         config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            "openforms.registrations.contrib.objects_api.plugin.ObjectsAPIConfig.get_solo",
             return_value=config,
         )
         self.mock_get_config = config_patcher.start()
