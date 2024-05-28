@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest.mock import patch
 
 from django.test import TestCase
 
@@ -9,12 +8,13 @@ from zgw_consumers.models import Service
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_objecttypes_client
-from ..models import ObjectsAPIConfig
+from ..models import ObjectsAPIGroupConfig
 
 
-def get_test_config() -> ObjectsAPIConfig:
-    """Returns a preconfigured ``ObjectsAPIConfig`` instance matching the docker compose configuration."""
-    return ObjectsAPIConfig(
+def get_test_config() -> ObjectsAPIGroupConfig:
+    """Returns a preconfigured ``ObjectsAPIGroupConfig`` instance matching the docker compose configuration."""
+
+    return ObjectsAPIGroupConfig(
         objecttypes_service=Service(
             api_root="http://localhost:8001/api/v2/",
             api_type=APITypes.orc,
@@ -30,31 +30,25 @@ class ObjecttypesClientTest(OFVCRMixin, TestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
 
-    def setUp(self) -> None:
-        super().setUp()
-
-        patcher = patch(
-            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=get_test_config(),
-        )
-
-        self.config_mock = patcher.start()
-        self.addCleanup(patcher.stop)
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+        cls.test_config = get_test_config()
 
     def test_list_objecttypes(self):
-        with get_objecttypes_client() as client:
+        with get_objecttypes_client(self.test_config) as client:
             data = client.list_objecttypes()
 
         self.assertEqual(len(data), 2)
 
     def test_list_objectypes_pagination(self):
-        with get_objecttypes_client() as client:
+        with get_objecttypes_client(self.test_config) as client:
             data = client.list_objecttypes(page=1, page_size=1)
 
         self.assertEqual(len(data), 1)
 
     def test_list_objecttype_versions(self):
-        with get_objecttypes_client() as client:
+        with get_objecttypes_client(self.test_config) as client:
             data = client.list_objecttype_versions(
                 "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"
             )
@@ -62,7 +56,7 @@ class ObjecttypesClientTest(OFVCRMixin, TestCase):
         self.assertEqual(len(data), 3)
 
     def test_get_objecttype_version(self):
-        with get_objecttypes_client() as client:
+        with get_objecttypes_client(self.test_config) as client:
             data = client.get_objecttype_version(
                 "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 version=1,
