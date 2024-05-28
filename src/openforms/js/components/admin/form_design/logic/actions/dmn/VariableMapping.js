@@ -9,7 +9,81 @@ import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
-const VariableMapping = ({loading, mappingName, dmnVariables, includeStaticVariables = false}) => {
+const VariableMappingRow = ({
+  loading,
+  prefix,
+  onRemove,
+  includeStaticVariables = false,
+  dmnVariables,
+  alreadyMapped = [],
+}) => {
+  const intl = useIntl();
+  const {getFieldProps} = useFormikContext();
+
+  const confirmationMessage = intl.formatMessage({
+    description: 'Confirmation message to remove a mapping',
+    defaultMessage: 'Are you sure that you want to remove this mapping?',
+  });
+
+  const dmnVariableProps = getFieldProps(`${prefix}.dmnVariable`);
+
+  const dmnVariableChoices = dmnVariables.filter(
+    ([value]) => value === dmnVariableProps.value || !alreadyMapped.includes(value)
+  );
+
+  return (
+    <tr>
+      <td>
+        <Field name={`${prefix}.formVariable`} htmlFor={`${prefix}.formVariable`}>
+          <VariableSelection
+            id={`${prefix}.formVariable`}
+            includeStaticVariables={includeStaticVariables}
+            {...getFieldProps(`${prefix}.formVariable`)}
+            aria-label={intl.formatMessage({
+              description: 'Accessible label for (form) variable dropdown',
+              defaultMessage: 'Form variable',
+            })}
+          />
+        </Field>
+      </td>
+      <td>
+        <Field htmlFor={`${prefix}.dmnVariable`} name={`${prefix}.dmnVariable`}>
+          <Select
+            id={`${prefix}.dmnVariable`}
+            allowBlank
+            disabled={loading}
+            choices={dmnVariableChoices}
+            {...dmnVariableProps}
+            aria-label={intl.formatMessage({
+              description: 'Accessible label for DMN variable dropdown',
+              defaultMessage: 'DMN variable',
+            })}
+          />
+        </Field>
+      </td>
+      <td>
+        <DeleteIcon onConfirm={onRemove} message={confirmationMessage} />
+      </td>
+    </tr>
+  );
+};
+
+VariableMappingRow.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  prefix: PropTypes.string.isRequired,
+  dmnVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  onRemove: PropTypes.func.isRequired,
+  includeStaticVariables: PropTypes.bool,
+  alreadyMapped: PropTypes.arrayOf(PropTypes.string),
+};
+
+const VariableMapping = ({
+  loading,
+  mappingName,
+  dmnVariables,
+  includeStaticVariables = false,
+  alreadyMapped = [],
+}) => {
   const intl = useIntl();
   const {getFieldProps, values} = useFormikContext();
 
@@ -42,49 +116,16 @@ const VariableMapping = ({loading, mappingName, dmnVariables, includeStaticVaria
               </tr>
             </thead>
             <tbody>
-              {values[mappingName].map((item, index) => (
-                <tr key={index}>
-                  <td>
-                    <Field
-                      name={`${mappingName}.${index}.formVariable`}
-                      htmlFor={`${mappingName}.${index}.formVariable`}
-                    >
-                      <VariableSelection
-                        id={`${mappingName}.${index}.formVariable`}
-                        includeStaticVariables={includeStaticVariables}
-                        {...getFieldProps(`${mappingName}.${index}.formVariable`)}
-                        aria-label={intl.formatMessage({
-                          description: 'Accessible label for (form) variable dropdown',
-                          defaultMessage: 'Form variable',
-                        })}
-                      />
-                    </Field>
-                  </td>
-                  <td>
-                    <Field
-                      htmlFor={`${mappingName}.${index}.dmnVariable`}
-                      name={`${mappingName}.${index}.dmnVariable`}
-                    >
-                      <Select
-                        id={`${mappingName}.${index}.dmnVariable`}
-                        allowBlank
-                        disabled={loading}
-                        choices={dmnVariables}
-                        {...getFieldProps(`${mappingName}.${index}.dmnVariable`)}
-                        aria-label={intl.formatMessage({
-                          description: 'Accessible label for DMN variable dropdown',
-                          defaultMessage: 'DMN variable',
-                        })}
-                      />
-                    </Field>
-                  </td>
-                  <td>
-                    <DeleteIcon
-                      onConfirm={() => arrayHelpers.remove(index)}
-                      message={confirmationMessage}
-                    />
-                  </td>
-                </tr>
+              {values[mappingName].map((_, index) => (
+                <VariableMappingRow
+                  key={index}
+                  prefix={`${mappingName}.${index}`}
+                  onRemove={() => arrayHelpers.remove(index)}
+                  loading={loading}
+                  includeStaticVariables={includeStaticVariables}
+                  dmnVariables={dmnVariables}
+                  alreadyMapped={alreadyMapped}
+                />
               ))}
             </tbody>
           </table>
@@ -106,6 +147,7 @@ VariableMapping.propTypes = {
   mappingName: PropTypes.string,
   includeStaticVariables: PropTypes.bool,
   dmnVariables: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  alreadyMapped: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default VariableMapping;
