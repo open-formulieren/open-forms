@@ -3,6 +3,15 @@ import React from 'react';
 // TODO This is duplicated from the ZGW registration, but will be cleaned up
 // with the backend UI refactor.
 
+const getChoicesFromSchema = (enums, enumNames) => {
+  let finalChoices = {};
+  Object.keys(enums).forEach(key => {
+    finalChoices[enums[key]] = enumNames[key];
+  });
+
+  return finalChoices;
+};
+
 const getFieldErrors = (name, index, errors, field) => {
   const errorMessages = [];
 
@@ -29,6 +38,8 @@ const getErrorMarkup = errorMessages => {
     </ul>
   );
 };
+
+// End TODO
 
 const VARIABLE_TYPE_MAP = {
   boolean: 'boolean',
@@ -89,4 +100,4 @@ const asJsonSchema = (variable, components) => {
   };
 };
 
-export {getErrorMarkup, getFieldErrors, asJsonSchema};
+export {getChoicesFromSchema, getErrorMarkup, getFieldErrors, asJsonSchema};

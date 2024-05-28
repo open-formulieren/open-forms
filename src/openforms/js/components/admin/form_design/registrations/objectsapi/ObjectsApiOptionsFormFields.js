@@ -99,6 +99,7 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
             <LegacyConfigFields
               index={index}
               name={name}
+              schema={schema}
               formData={formData}
               onChange={onFieldChange}
             />
@@ -111,6 +112,7 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
             <V2ConfigFields
               index={index}
               name={name}
+              schema={schema}
               formData={formData}
               onChange={onFieldChange}
             />
@@ -126,6 +128,7 @@ ObjectsApiOptionsFormFields.propTypes = {
   name: PropTypes.string,
   schema: PropTypes.any,
   formData: PropTypes.shape({
+    objectsApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     version: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,

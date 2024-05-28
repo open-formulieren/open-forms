@@ -4,15 +4,17 @@ import {useIntl} from 'react-intl';
 
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import {Checkbox, NumberInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
-import {getErrorMarkup, getFieldErrors} from './utils';
+import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
 
-const LegacyConfigFields = ({index, name, formData, onChange}) => {
+const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
   const intl = useIntl();
   const validationErrors = useContext(ValidationErrorContext);
 
   const {
+    objectsApiGroup = '',
     objecttype = '',
     objecttypeVersion = '',
     productaanvraagType = '',
@@ -32,6 +34,33 @@ const LegacyConfigFields = ({index, name, formData, onChange}) => {
 
   return (
     <>
+      <CustomFieldTemplate
+        id="root_objectsApiGroup"
+        label={intl.formatMessage({
+          defaultMessage: 'Objects API group',
+          description: 'Objects API group',
+        })}
+        rawDescription={intl.formatMessage({
+          description: 'Objects API group selection',
+          defaultMessage:
+            'Which Objects API group to use. If not provided, the default Objects API group will be used.',
+        })}
+        rawErrors={null}
+        errors={null}
+        displayLabel
+      >
+        <Select
+          id="root_objectsApiGroup"
+          name="objectsApiGroup"
+          choices={getChoicesFromSchema(
+            schema?.properties?.objectsApiGroup?.enum,
+            schema?.properties?.objectsApiGroup?.enumNames
+          )}
+          value={objectsApiGroup}
+          onChange={onChange}
+          allowBlank
+        />
+      </CustomFieldTemplate>
       <CustomFieldTemplate
         id="root_objecttype"
         label={intl.formatMessage({
@@ -269,7 +298,9 @@ const LegacyConfigFields = ({index, name, formData, onChange}) => {
 LegacyConfigFields.propTypes = {
   index: PropTypes.number,
   name: PropTypes.string,
+  schema: PropTypes.any,
   formData: PropTypes.shape({
+    objectsApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     version: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
