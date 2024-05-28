@@ -7,12 +7,13 @@ Formulier met Camunda en DMN evaluatie
 In dit voorbeeld maken we een fictief formulier bestaande uit 1 stap, waarbij een logica regel gebruik maakt van Camunda
 om een beslistabel te evalueren.
 
-Beslissingsdefinitie maken
+Beslisdefinitie maken
 ==========================
 
-Volg de `Camunda tutorial`_ om een beslissingsdefinitie aan te maken in de Camunda Modeller. De beslissingsdefinitie moet
-ID **mag-formulier-indienen** en naam **Mag formulier indienen?** hebben.
-De beslistabel moet de volgende input kolommen hebben:
+Volg de `Camunda tutorial`_ om een beslisdefinitie aan te maken in de
+`Camunda Modeller <https://camunda.com/download/modeler/>`_. De beslisdefinitie moet ID
+**mag-formulier-indienen** en naam **Mag formulier indienen?** hebben. De beslistabel
+moet de volgende input kolommen hebben:
 
 #. **Leeftijd**:
 
@@ -41,7 +42,8 @@ Voeg deze regels toe:
 
 .. image:: _assets/decision_table.png
 
-Rol dan de beslissingsdefinitie uit op Camunda.
+Rol dan de beslisdefinitie uit op Camunda - in de Camunda Modeler doe je dit via het
+raketicoon linksonder.
 
 .. _Camunda tutorial: https://docs.camunda.org/get-started/dmn/model/
 
@@ -50,15 +52,15 @@ Formulier maken
 
 #. Maak een formulier aan met de volgende componenten in een formulier stap:
 
-   * Nummer component met label **Leeftijd** en eigenschapsnaam **leeftijd**
-   * Nummer component met label **Inkomen** en eigenschapsnaam **inkomen**
+   * Getal-component met label **Leeftijd** en eigenschapsnaam **leeftijd**
+   * Getal-component met label **Inkomen** en eigenschapsnaam **inkomen**
 
 #. Maak een gebruikersvariabele aan met label **Mag formulier indienen?** en eigenschapsnaam **magFormulierIndienen**.
 #. Maak een geavanceerde logica regelen aan waar de trigger ``true`` is (deze regel wordt altijd geëvalueerd).
 #. Voeg een actie aan de regel toe, van type **Evalueer DMN** en klik op de **Instellen** knop.
 
    #. Selecter de plugin **Camunda 7**.
-   #. Selecteer de **Mag formulier indienen?** beslissingsdefinitie.
+   #. Selecteer de **Mag formulier indienen?** beslisdefinitie.
    #. In de **Input Mapping** tabel, voeg twee variabelen toe:
 
       - **Leeftijd**: **leeftijd**
