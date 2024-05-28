@@ -219,7 +219,7 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
         submission_attachments: list[ObjectsAPISubmissionAttachment] = []
 
         with (
-            get_documents_client() as documents_client,
+            get_documents_client(options["objects_api_group"]) as documents_client,
             save_and_raise(registration_data, submission_attachments),
         ):
             if not registration_data.pdf_url:

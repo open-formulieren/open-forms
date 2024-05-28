@@ -17,7 +17,7 @@ from ...registry import register
 from .checks import check_config
 from .client import get_objects_client
 from .config import ObjectsAPIOptionsSerializer
-from .models import ObjectsAPIConfig
+from .models import ObjectsAPIConfig, ObjectsAPIGroupConfig
 from .registration_variables import register as variables_registry
 from .submission_registration import HANDLER_MAPPING
 from .typing import RegistrationOptions
@@ -49,6 +49,15 @@ class ObjectsAPIRegistration(BasePlugin):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
 
+    @staticmethod
+    def get_objects_api_config(options: RegistrationOptions) -> ObjectsAPIGroupConfig:
+        objects_api_group = options.get("objects_api_group")
+        if objects_api_group is None:
+            config = ObjectsAPIConfig.get_solo()
+            assert isinstance(config, ObjectsAPIConfig)
+            objects_api_group = config.default_objects_api_group
+        return objects_api_group  # type: ignore | can it really be None?
+
     @override
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
@@ -59,8 +68,7 @@ class ObjectsAPIRegistration(BasePlugin):
         will be created differently. The actual logic lives in the ``submission_registration`` submodule.
         """
 
-        config = ObjectsAPIConfig.get_solo()
-        assert isinstance(config, ObjectsAPIConfig)
+        config = self.get_objects_api_config(options)
         config.apply_defaults_to(options)
 
         handler = HANDLER_MAPPING[options["version"]]
@@ -72,7 +80,7 @@ class ObjectsAPIRegistration(BasePlugin):
             options=options,
         )
 
-        with get_objects_client() as objects_client:
+        with get_objects_client(config) as objects_client:
             response = execute_unless_result_exists(
                 partial(objects_client.create_object, object_data=object_data),
                 submission,
@@ -108,8 +116,7 @@ class ObjectsAPIRegistration(BasePlugin):
     def update_payment_status(
         self, submission: Submission, options: RegistrationOptions
     ) -> dict[str, Any] | None:
-        config = ObjectsAPIConfig.get_solo()
-        assert isinstance(config, ObjectsAPIConfig)
+        config = self.get_objects_api_config(options)
         config.apply_defaults_to(options)
 
         handler = HANDLER_MAPPING[options["version"]]
@@ -121,7 +128,7 @@ class ObjectsAPIRegistration(BasePlugin):
             return
 
         object_url = submission.registration_result["url"]
-        with get_objects_client() as objects_client:
+        with get_objects_client(config) as objects_client:
             response = objects_client.patch(
                 url=object_url,
                 json=updated_object_data,

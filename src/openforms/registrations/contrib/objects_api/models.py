@@ -196,6 +196,7 @@ class ObjectsAPIGroupConfig(models.Model):
             )
 
     def apply_defaults_to(self, options):
+        options.setdefault("objects_api_group", self)
         options.setdefault("version", 1)
         options.setdefault("objecttype", self.objecttype)
         options.setdefault("objecttype_version", self.objecttype_version)

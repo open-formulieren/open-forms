@@ -1,11 +1,17 @@
-from typing import Literal, TypeAlias, TypedDict
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal, TypeAlias, TypedDict
 
 from typing_extensions import Required
+
+if TYPE_CHECKING:
+    from .models import ObjectsAPIGroupConfig
 
 ConfigVersion: TypeAlias = Literal[1, 2]
 
 
 class _BaseRegistrationOptions(TypedDict, total=False):
+    objects_api_group: ObjectsAPIGroupConfig
     objecttype: Required[str]
     objecttype_version: Required[int]
     informatieobjecttype_submission_report: str
