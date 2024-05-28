@@ -384,3 +384,31 @@ export const ComplexInputExpressions = {
     },
   },
 };
+
+export const DefinitionChangeResetsMapping = {
+  args: {
+    initialValues: {
+      pluginId: 'camunda7',
+      decisionDefinitionId: 'approve-payment',
+      decisionDefinitionVersion: '1',
+      inputMapping: [
+        {formVariable: 'name', dmnVariable: 'camundaVar'},
+        {formVariable: 'surname', dmnVariable: 'port'},
+      ],
+      outputMapping: [{formVariable: 'canApply', dmnVariable: 'reason'}],
+    },
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    await canvas.findByRole('option', {name: 'Invoice Classification'});
+
+    const formVariableDropdowns = canvas.getAllByRole('combobox', {name: 'Form variable'});
+    expect(formVariableDropdowns).toHaveLength(3);
+
+    const definitionDropdown = canvas.getByLabelText('Beslisdefinitie-ID');
+    await userEvent.selectOptions(definitionDropdown, 'invoiceClassification');
+
+    expect(canvas.queryAllByRole('combobox', {name: 'Form variable'})).toHaveLength(0);
+  },
+};
