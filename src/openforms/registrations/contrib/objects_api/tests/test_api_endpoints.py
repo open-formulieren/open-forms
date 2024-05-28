@@ -8,6 +8,7 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
+from ..models import ObjectsAPIConfig
 from .test_objecttypes_client import get_test_config
 
 
@@ -21,8 +22,8 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
         self.endpoint = reverse_lazy("api:objects_api:object-types")
 
         patcher = patch(
-            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=get_test_config(),
+            "openforms.registrations.contrib.objects_api.api.views.ObjectsAPIConfig.get_solo",
+            return_value=ObjectsAPIConfig(default_objects_api_group=get_test_config()),
         )
 
         self.config_mock = patcher.start()
@@ -51,31 +52,50 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_list_objecttypes(self):
+    def test_list_objecttypes_default_objects_api_group(self):
+        # As no `ObjectsAPIGroupConfig` is persisted, the endpoint implementation
+        # will default to the `ObjectsAPIConfig.default_objects_api_group`.
+        # This test is not duplicated for the other endpoints.
         staff_user = StaffUserFactory.create()
         self.client.force_authenticate(user=staff_user)
 
         response = self.client.get(self.endpoint)
+        tree_objecttype = next(obj for obj in response.json() if obj["name"] == "Tree")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.json(),
-            [
-                {
-                    "dataClassification": "confidential",
-                    "name": "Tree",
-                    "namePlural": "Trees",
-                    "url": "http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                    "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                },
-                {
-                    "dataClassification": "open",
-                    "name": "Person",
-                    "namePlural": "Persons",
-                    "url": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                    "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                },
-            ],
+            tree_objecttype,
+            {
+                "dataClassification": "confidential",
+                "name": "Tree",
+                "namePlural": "Trees",
+                "url": "http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+            },
+        )
+
+    def test_list_objecttypes_explicit_objects_api_group(self):
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
+
+        config = get_test_config()
+        config.objecttypes_service.save()
+        config.save()
+
+        response = self.client.get(self.endpoint, data={"objects_api_group": config.pk})
+
+        tree_objecttype = next(obj for obj in response.json() if obj["name"] == "Tree")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            tree_objecttype,
+            {
+                "dataClassification": "confidential",
+                "name": "Tree",
+                "namePlural": "Trees",
+                "url": "http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+            },
         )
 
 
@@ -91,8 +111,8 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
         )
 
         patcher = patch(
-            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=get_test_config(),
+            "openforms.registrations.contrib.objects_api.api.views.ObjectsAPIConfig.get_solo",
+            return_value=ObjectsAPIConfig(default_objects_api_group=get_test_config()),
         )
 
         self.config_mock = patcher.start()
@@ -130,7 +150,7 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [{"status": "published", "version": 1}])
 
-    def test_list_objecttype_verions_unknown_objecttype(self):
+    def test_list_objecttype_versions_unknown_objecttype(self):
         staff_user = StaffUserFactory.create()
         self.client.force_authenticate(user=staff_user)
 
@@ -158,8 +178,8 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
         self.endpoint = reverse_lazy("api:objects_api:target-paths")
 
         patcher = patch(
-            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=get_test_config(),
+            "openforms.registrations.contrib.objects_api.api.views.ObjectsAPIConfig.get_solo",
+            return_value=ObjectsAPIConfig(default_objects_api_group=get_test_config()),
         )
 
         self.config_mock = patcher.start()
