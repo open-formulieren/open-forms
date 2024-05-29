@@ -1,6 +1,7 @@
 import {parseExpression} from 'feelin';
 import {useFormikContext} from 'formik';
-import React from 'react';
+import produce from 'immer';
+import React, {useEffect} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
 
@@ -100,15 +101,9 @@ const processInputParams = params => {
 };
 
 const DMNParametersForm = () => {
-  const {
-    values: {
-      pluginId,
-      decisionDefinitionId,
-      decisionDefinitionVersion,
-      inputMapping,
-      outputMapping,
-    },
-  } = useFormikContext();
+  const {values, setValues} = useFormikContext();
+  const {pluginId, decisionDefinitionId, decisionDefinitionVersion, inputMapping, outputMapping} =
+    values;
 
   const {loading, value: dmnParams = EMPTY_DMN_PARAMS} = useAsync(async () => {
     if (!pluginId || !decisionDefinitionId) {
@@ -134,6 +129,48 @@ const DMNParametersForm = () => {
       outputs: response.data.outputs.map(outputParam => [outputParam.name, outputParam.label]),
     };
   }, [pluginId, decisionDefinitionId, decisionDefinitionVersion]);
+
+  // synchronize the input/output mappings in case that parameter references have
+  // become stale
+  useEffect(() => {
+    if (loading || !pluginId || !decisionDefinitionId) return;
+
+    // nothing to do if we don't have any mappings
+    if (!(values.inputMapping.length || values.outputMapping.length)) {
+      return;
+    }
+
+    const {inputs, outputs} = dmnParams;
+    const _inputs = inputs.map(([value]) => value);
+    const _outputs = outputs.map(([value]) => value);
+
+    let needsUpdate = false;
+
+    const newValues = produce(values, draft => {
+      for (const mapping of draft.inputMapping) {
+        if (_inputs.includes(mapping.dmnVariable)) continue;
+        needsUpdate = true;
+        mapping.dmnVariable = '';
+      }
+
+      for (const mapping of draft.outputMapping) {
+        if (_outputs.includes(mapping.dmnVariable)) continue;
+        needsUpdate = true;
+        mapping.dmnVariable = '';
+      }
+    });
+    if (needsUpdate) {
+      setValues(newValues);
+    }
+  }, [
+    loading,
+    values,
+    setValues,
+    pluginId,
+    decisionDefinitionId,
+    decisionDefinitionVersion,
+    dmnParams,
+  ]);
 
   return (
     <div className="logic-dmn">
