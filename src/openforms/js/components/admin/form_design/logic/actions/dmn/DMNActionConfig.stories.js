@@ -412,3 +412,125 @@ export const DefinitionChangeResetsMapping = {
     expect(canvas.queryAllByRole('combobox', {name: 'Form variable'})).toHaveLength(0);
   },
 };
+
+export const VersionChangePartiallyResetsMapping = {
+  args: {
+    availableDMNPlugins: [{id: 'camunda7', label: 'Camunda 7'}],
+    availableFormVariables: [
+      {type: 'textfield', key: 'name', name: 'Name'},
+      {type: 'textfield', key: 'surname', name: 'Surname'},
+      {type: 'postcode', key: 'postcode', name: 'Postcode'},
+    ],
+    initialValues: {
+      pluginId: 'camunda7',
+      decisionDefinitionId: 'decision1',
+      decisionDefinitionVersion: '1',
+      inputMapping: [
+        {formVariable: 'name', dmnVariable: 'firstName'},
+        {formVariable: 'surname', dmnVariable: 'surname'},
+      ],
+      outputMapping: [{formVariable: 'postcode', dmnVariable: 'postcodeOutput'}],
+    },
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        mockDMNDecisionDefinitionsGet({camunda7: [{id: 'decision1', label: 'A decision'}]}),
+        mockDMNDecisionDefinitionVersionsGet,
+        mockDMNParametersGet({
+          decision1: {
+            _versions: {
+              1: {
+                inputs: [
+                  {
+                    label: 'First name',
+                    id: 'Input_1',
+                    typeRef: 'string',
+                    expression: 'firstName',
+                  },
+                  {
+                    label: 'Surname',
+                    id: 'InputClause_1cn8gp3',
+                    typeRef: 'string',
+                    expression: 'surname',
+                  },
+                ],
+                outputs: [
+                  {
+                    id: 'Output_1',
+                    label: 'Postcode',
+                    typeRef: 'string',
+                    name: 'postcodeOutput',
+                  },
+                ],
+              },
+              2: {
+                inputs: [
+                  {
+                    label: 'Full name',
+                    id: 'Input_1',
+                    typeRef: 'string',
+                    expression: 'name',
+                  },
+                ],
+                outputs: [
+                  {
+                    id: 'Output_1',
+                    label: 'Postcode',
+                    typeRef: 'string',
+                    name: 'postcodeOutput',
+                  },
+                ],
+              },
+            },
+          },
+        }),
+      ],
+    },
+  },
+  play: async ({canvasElement, step, args}) => {
+    const canvas = within(canvasElement);
+
+    await step('initial state', async () => {
+      // wait until options have loaded/rendered
+      await canvas.findAllByRole('option', {name: 'Surname'});
+
+      const dmnVarDropdowns = canvas.getAllByRole('combobox', {name: 'DMN variable'});
+      expect(dmnVarDropdowns).toHaveLength(3);
+      // check their values
+      expect(dmnVarDropdowns[0]).toHaveValue('firstName');
+      expect(dmnVarDropdowns[1]).toHaveValue('surname');
+      expect(dmnVarDropdowns[2]).toHaveValue('postcodeOutput');
+    });
+
+    await step('Change definition version', async () => {
+      const definitionDropdown = canvas.getByLabelText('Beslisdefinitieversie');
+      await userEvent.selectOptions(definitionDropdown, '2');
+
+      // wait until options have loaded/rendered
+      await canvas.findAllByRole('option', {name: 'Full name'});
+
+      const dmnVarDropdowns = canvas.getAllByRole('combobox', {name: 'DMN variable'});
+      expect(dmnVarDropdowns).toHaveLength(3);
+      // check their values
+      expect(dmnVarDropdowns[0]).toHaveValue('');
+      expect(dmnVarDropdowns[1]).toHaveValue('');
+      expect(dmnVarDropdowns[2]).toHaveValue('postcodeOutput');
+    });
+
+    await step('Submit form', async () => {
+      await userEvent.click(canvas.getByRole('button', {name: 'Save'}));
+
+      expect(args.onSave).toHaveBeenCalledWith({
+        pluginId: 'camunda7',
+        decisionDefinitionId: 'decision1',
+        decisionDefinitionVersion: '2',
+        inputMapping: [
+          {dmnVariable: '', formVariable: 'name'},
+          {dmnVariable: '', formVariable: 'surname'},
+        ],
+        outputMapping: [{dmnVariable: 'postcodeOutput', formVariable: 'postcode'}],
+      });
+    });
+  },
+};
