@@ -153,9 +153,44 @@ export const FullFunctionality = {
             },
 
             component: '',
-            formStep: null,
             formStepUuid: null,
             variable: 'bar',
+          },
+        ],
+      },
+      {
+        uuid: 'bar',
+        _generatedId: 'bar',
+        _logicType: 'advanced',
+        form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+        description: 'DMN: missing form variable reference',
+        _mayGenerateDescription: false,
+        order: 1,
+        jsonLogicTrigger: true,
+
+        isAdvanced: true,
+
+        actions: [
+          {
+            action: {
+              type: 'evaluate-dmn',
+              config: {
+                // clicking "Instellen" is known to crash, no mocks are set up to keep
+                // the stories simple
+                pluginId: 'camunda7',
+                decisionDefinitionId: 'decision1',
+                decisionDefinitionVersion: '',
+                inputMapping: [
+                  // empty form var, triggers a warning
+                  {formVariable: '', dmnVariable: 'someInput'},
+                ],
+                outputMapping: [],
+              },
+            },
+
+            component: '',
+            formStepUuid: null,
+            variable: '',
           },
         ],
       },
