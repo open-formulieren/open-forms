@@ -839,6 +839,11 @@
     "description": "Decision definition ID label",
     "originalDefault": "Decision definition ID"
   },
+  "Ijrbrp": {
+    "defaultMessage": "Which Objects API group to use. If not provided, the default Objects API group will be used.",
+    "description": "Objects API group selection",
+    "originalDefault": "Which Objects API group to use. If not provided, the default Objects API group will be used."
+  },
   "Ika4IH": {
     "defaultMessage": "Submissions will be deleted",
     "description": "delete_permanently removal method option label",
@@ -2078,6 +2083,11 @@
     "defaultMessage": "Form field",
     "description": "JSON variable type \"Form field\" representation",
     "originalDefault": "Form field"
+  },
+  "mgs/Xe": {
+    "defaultMessage": "Objects API group",
+    "description": "Objects API group",
+    "originalDefault": "Objects API group"
   },
   "myvtu0": {
     "defaultMessage": "Manage process variables",
