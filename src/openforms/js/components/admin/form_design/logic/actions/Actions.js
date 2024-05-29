@@ -353,7 +353,7 @@ export const detectProblems = (action, intl) => {
     case 'evaluate-dmn': {
       const problems = [];
 
-      const hasInputMappingProblems = action.action.config.inputMapping.some(
+      const hasInputMappingProblems = action.action.config?.inputMapping?.some(
         mapping => detectDMNMappingProblems(mapping, intl).length > 0
       );
       if (hasInputMappingProblems) {
@@ -364,7 +364,7 @@ export const detectProblems = (action, intl) => {
           })
         );
       }
-      const hasOutputMappingProblems = action.action.config.outputMapping.some(
+      const hasOutputMappingProblems = action.action.config?.outputMapping?.some(
         mapping => detectDMNMappingProblems(mapping, intl).length > 0
       );
       if (hasOutputMappingProblems) {

@@ -594,6 +594,11 @@
     "description": "Move down icon title",
     "originalDefault": "Move down"
   },
+  "DRG6XN": {
+    "defaultMessage": "invalid input mapping(s)",
+    "description": "Warning message: DMN input mapping problems detected",
+    "originalDefault": "invalid input mapping(s)"
+  },
   "DRidde": {
     "defaultMessage": "Er ging iets fout bij het ophalen van de beschikbare beslisdefinities. Is de geselecteerde DMN-plugin goed ingesteld en beschikbaar?",
     "description": "Admin error for API error when configuring Camunda actions",
@@ -719,6 +724,11 @@
     "defaultMessage": "Resetten naar standaardomschrijving",
     "description": "Reset logic expression icon title",
     "originalDefault": "Reset to default description"
+  },
+  "GBsms3": {
+    "defaultMessage": "No form variable specified (anymore).",
+    "description": "DMN in/output mapping: detected empty form variable",
+    "originalDefault": "No form variable specified (anymore)."
   },
   "GFXEAX": {
     "defaultMessage": "Interne naam",
@@ -1823,6 +1833,11 @@
     "description": "Confirmation message to remove a mapping",
     "originalDefault": "Are you sure that you want to remove this mapping?"
   },
+  "gheRkp": {
+    "defaultMessage": "Detected some problems in this action: {problems}.",
+    "description": "Logic action warning icon text",
+    "originalDefault": "Detected some problems in this action: {problems}."
+  },
   "gr7edY": {
     "defaultMessage": "Applicatieversie",
     "description": "App version column header",
@@ -2315,6 +2330,11 @@
     "description": "URL of the INFORMATIEOBJECTTYPE in the Catalogi API",
     "isTranslated": true,
     "originalDefault": "Informatieobjecttype"
+  },
+  "sCkGL9": {
+    "defaultMessage": "invalid output mapping(s)",
+    "description": "Warning message: DMN output mapping problems detected",
+    "originalDefault": "invalid output mapping(s)"
   },
   "sFHD3/": {
     "defaultMessage": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier.",

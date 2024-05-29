@@ -50,7 +50,8 @@ export const namePattern = new RegExp(`^[${nameStartChars}][${namePartChars}]*$`
 
 export const detectMappingProblems = ({formVariable, dmnVariable}, intl) => {
   const problems = [];
-  if (!formVariable) {
+
+  if (!formVariable && dmnVariable) {
     problems.push(
       intl.formatMessage({
         description: 'DMN in/output mapping: detected empty form variable',

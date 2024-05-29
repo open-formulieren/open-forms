@@ -534,3 +534,15 @@ export const VersionChangePartiallyResetsMapping = {
     });
   },
 };
+
+export const WarningForEmptyFormVar = {
+  args: {
+    initialValues: {
+      pluginId: 'camunda7',
+      decisionDefinitionId: 'approve-payment',
+      decisionDefinitionVersion: '1',
+      inputMapping: [{formVariable: '', dmnVariable: 'camundaVar'}],
+      outputMapping: [{formVariable: '', dmnVariable: 'reason'}],
+    },
+  },
+};

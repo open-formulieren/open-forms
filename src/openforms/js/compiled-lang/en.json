@@ -1413,6 +1413,12 @@
       "value": "The values that can be picked for this field. Values are the text that is submitted with the form data. Labels are the text next to radio buttons, checkboxes and options in dropdowns."
     }
   ],
+  "DRG6XN": [
+    {
+      "type": 0,
+      "value": "invalid input mapping(s)"
+    }
+  ],
   "DRidde": [
     {
       "type": 0,
@@ -1695,6 +1701,12 @@
     {
       "type": 0,
       "value": "Reset to default description"
+    }
+  ],
+  "GBsms3": [
+    {
+      "type": 0,
+      "value": "No form variable specified (anymore)."
     }
   ],
   "GFXEAX": [
@@ -3951,6 +3963,20 @@
       "value": "Are you sure that you want to remove this mapping?"
     }
   ],
+  "gheRkp": [
+    {
+      "type": 0,
+      "value": "Detected some problems in this action: "
+    },
+    {
+      "type": 1,
+      "value": "problems"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
   "gr7edY": [
     {
       "type": 0,
@@ -4931,6 +4957,12 @@
     {
       "type": 0,
       "value": "Informatieobjecttype"
+    }
+  ],
+  "sCkGL9": [
+    {
+      "type": 0,
+      "value": "invalid output mapping(s)"
     }
   ],
   "sFHD3/": [

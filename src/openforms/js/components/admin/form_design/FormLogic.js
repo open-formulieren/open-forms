@@ -11,7 +11,6 @@ import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
 import MessageList from 'components/admin/MessageList';
-import WarningIcon from 'components/admin/WarningIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
