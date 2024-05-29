@@ -4,23 +4,33 @@ import React from 'react';
 import {useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
+import WarningIcon from 'components/admin/WarningIcon';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
 import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
 import Select from 'components/admin/forms/Select';
 
-import {ActionComponent} from './Actions';
+import {ActionComponent, detectProblems} from './Actions';
 import {ActionError, Action as ActionType} from './types';
 
 const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
   const intl = useIntl();
   const hasErrors = Object.entries(errors).length > 0;
+  const problems = detectProblems(action, intl);
+  const warningText = intl.formatMessage(
+    {
+      description: 'Logic action warning icon text',
+      defaultMessage: 'Detected some problems in this action: {problems}.',
+    },
+    {problems: problems.join(', ')}
+  );
   return (
     <div className="logic-action">
       <div
         className={`logic-action__row ${classNames({'logic-action__row--has-errors': hasErrors})}`}
       >
-        <div className="logic-action__actions">
+        <div className="actions actions-horizontal">
+          {problems.length ? <WarningIcon text={warningText} /> : null}
           <DeleteIcon
             onConfirm={onDelete}
             message={intl.formatMessage({

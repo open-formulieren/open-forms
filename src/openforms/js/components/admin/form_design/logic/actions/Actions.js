@@ -21,6 +21,7 @@ import VariableSelection from 'components/admin/forms/VariableSelection';
 import Modal from 'components/admin/modals/Modal';
 
 import DMNActionConfig from './dmn/DMNActionConfig';
+import {detectMappingProblems as detectDMNMappingProblems} from './dmn/utils';
 import {ActionError, Action as ActionType} from './types';
 
 const ActionProperty = ({action, errors, onChange}) => {
@@ -346,5 +347,38 @@ ActionComponent.propTypes =
       errors: ActionError,
       onChange: PropTypes.func.isRequired,
     };
+
+export const detectProblems = (action, intl) => {
+  switch (action.action.type) {
+    case 'evaluate-dmn': {
+      const problems = [];
+
+      const hasInputMappingProblems = action.action.config.inputMapping.some(
+        mapping => detectDMNMappingProblems(mapping, intl).length > 0
+      );
+      if (hasInputMappingProblems) {
+        problems.push(
+          intl.formatMessage({
+            description: 'Warning message: DMN input mapping problems detected',
+            defaultMessage: 'invalid input mapping(s)',
+          })
+        );
+      }
+      const hasOutputMappingProblems = action.action.config.outputMapping.some(
+        mapping => detectDMNMappingProblems(mapping, intl).length > 0
+      );
+      if (hasOutputMappingProblems) {
+        problems.push(
+          intl.formatMessage({
+            description: 'Warning message: DMN output mapping problems detected',
+            defaultMessage: 'invalid output mapping(s)',
+          })
+        );
+      }
+      return problems;
+    }
+  }
+  return [];
+};
 
 export {ActionComponent};
