@@ -7,12 +7,13 @@ import sortBy from 'lodash/sortBy';
 import zip from 'lodash/zip';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 import useAsync from 'react-use/esm/useAsync';
 import {useImmerReducer} from 'use-immer';
 
 import Loader from 'components/admin/Loader';
+import WarningIcon from 'components/admin/WarningIcon';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import {APIError, NotAuthenticatedError} from 'utils/exception';
@@ -26,7 +27,7 @@ import DataRemoval from './DataRemoval';
 import FormAdvancedConfiguration from './FormAdvancedConfiguration';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
-import {EMPTY_RULE, FormLogic} from './FormLogic';
+import {EMPTY_RULE, FormLogic, detectLogicProblems} from './FormLogic';
 import FormObjectTools from './FormObjectTools';
 import FormSteps from './FormSteps';
 import FormSubmit from './FormSubmit';
@@ -978,6 +979,7 @@ StepsFieldSet.propTypes = {
  */
 const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   const {csrftoken} = useContext(APIContext);
+  const intl = useIntl();
   const initialState = {
     ...initialFormState,
     form: {
@@ -1225,6 +1227,17 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
 
   const {isAppointment = false} = state.form.appointmentOptions;
 
+  const numRulesWithProblems = state.logicRules.filter(
+    rule => detectLogicProblems(rule, intl).length > 0
+  ).length;
+  const formLogicWarningMessage = intl.formatMessage(
+    {
+      description: 'Logic tab warning icon message',
+      defaultMessage: 'Detected problems in {count} logic rule(s).',
+    },
+    {count: numRulesWithProblems}
+  );
+
   return (
     <ValidationErrorsProvider errors={state.validationErrors}>
       <FormObjectTools
@@ -1317,6 +1330,9 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             {!isAppointment && (
               <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
                 <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
+                {numRulesWithProblems > 0 ? (
+                  <WarningIcon asLead text={formLogicWarningMessage} />
+                ) : null}
               </Tab>
             )}
             {!isAppointment && (
