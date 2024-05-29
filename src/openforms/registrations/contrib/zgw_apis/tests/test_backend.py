@@ -15,7 +15,10 @@ from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.registrations.contrib.objects_api.models import (
+    ObjectsAPIConfig,
+    ObjectsAPIGroupConfig,
+)
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tasks import pre_registration
@@ -1495,31 +1498,33 @@ class ZGWBackendTests(TestCase):
     )
     def test_submission_with_zgw_and_objects_api_backends(self, m, obj_api_config):
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
-            objecttype_version=1,
-            organisatie_rsin="000000000",
-            content_json=textwrap.dedent(
-                """
-                {
-                    "bron": {
-                        "naam": "Open Formulieren",
-                        "kenmerk": "{{ submission.kenmerk }}"
-                    },
-                    "type": "{{ productaanvraag_type }}",
-                    "aanvraaggegevens": {% json_summary %},
-                    "taal": "{{ submission.language_code  }}",
-                    "betrokkenen": [
-                        {
-                            "inpBsn" : "{{ variables.auth_bsn }}",
-                            "rolOmschrijvingGeneriek" : "initiator"
-                        }
-                    ],
-                }"""
-            ),
+            default_objects_api_group=ObjectsAPIGroupConfig(
+                objects_service=ServiceFactory.build(
+                    api_root="https://objecten.nl/api/v1/",
+                    api_type=APITypes.orc,
+                ),
+                objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
+                objecttype_version=1,
+                organisatie_rsin="000000000",
+                content_json=textwrap.dedent(
+                    """
+                    {
+                        "bron": {
+                            "naam": "Open Formulieren",
+                            "kenmerk": "{{ submission.kenmerk }}"
+                        },
+                        "type": "{{ productaanvraag_type }}",
+                        "aanvraaggegevens": {% json_summary %},
+                        "taal": "{{ submission.language_code  }}",
+                        "betrokkenen": [
+                            {
+                                "inpBsn" : "{{ variables.auth_bsn }}",
+                                "rolOmschrijvingGeneriek" : "initiator"
+                            }
+                        ],
+                    }"""
+                ),
+            )
         )
 
         def get_create_json_for_object(req, ctx):

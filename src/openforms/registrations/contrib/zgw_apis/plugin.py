@@ -18,6 +18,7 @@ from openforms.contrib.zgw.service import (
     create_report_document,
 )
 from openforms.registrations.contrib.objects_api.client import get_objects_client
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.variables.utils import get_variables_for_context
@@ -498,7 +499,12 @@ class ZGWRegistration(BasePlugin):
             submission, object_mapping, REGISTRATION_ATTRIBUTE, object_data
         )
 
-        with get_objects_client() as objects_client:
+        objects_api_config = ObjectsAPIConfig.get_solo()
+        assert isinstance(objects_api_config, ObjectsAPIConfig)
+
+        with get_objects_client(
+            objects_api_config.default_objects_api_group
+        ) as objects_client:
             response = execute_unless_result_exists(
                 partial(objects_client.create_object, object_data=object_data),
                 submission,
