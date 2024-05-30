@@ -90,13 +90,7 @@ const VariableMapping = ({
   includeStaticVariables = false,
   alreadyMapped = [],
 }) => {
-  const intl = useIntl();
   const {values} = useFormikContext();
-
-  const confirmationMessage = intl.formatMessage({
-    description: 'Confirmation message to remove a mapping',
-    defaultMessage: 'Are you sure that you want to remove this mapping?',
-  });
 
   return (
     <FieldArray
