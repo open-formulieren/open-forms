@@ -9,7 +9,7 @@ of personal information through a SOAP service from municipalities and
 government organizations. Open Forms can be configured to use this service to
 prefill personal data of the person filling out the form.
 
-.. _`StUF-BG`: https://www.gemmaonline.nl/index.php/Sectormodel_Basisgegevens:_StUF-BG
+.. _`StUF-BG`: https://vng-realisatie.github.io/StUF-BG/
 
 .. note::
 
