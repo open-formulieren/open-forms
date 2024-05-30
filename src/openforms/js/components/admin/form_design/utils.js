@@ -70,14 +70,35 @@ const updateKeyReferencesInLogic = (existingLogicRules, originalKey, newKey) => 
 
     // Replace the key in the actions
     for (const action of rule.actions) {
-      // component references
-      if (action.component === originalKey) {
-        action.component = newKey;
-      }
+      switch (action.action.type) {
+        // component references
+        case 'property': {
+          if (action.component === originalKey) {
+            action.component = newKey;
+          }
+          break;
+        }
 
-      // variable references
-      if (action.variable === originalKey) {
-        action.variable = newKey;
+        // variable references
+        case 'variable':
+        case 'fetch-from-service': {
+          if (action.variable === originalKey) {
+            action.variable = newKey;
+          }
+          break;
+        }
+
+        case 'evaluate-dmn': {
+          const {config} = action.action;
+          if (!config) break;
+          const {inputMapping = [], outputMapping = []} = config;
+          for (const mapping of [...inputMapping, outputMapping]) {
+            if (mapping.formVariable === originalKey) {
+              mapping.formVariable = newKey;
+            }
+          }
+          break;
+        }
       }
     }
   }
@@ -95,6 +116,7 @@ const updateRemovedKeyInLogic = (existingLogicRules, key) => {
             if (mapping.formVariable !== key) continue;
             mapping.formVariable = '';
           }
+          break;
         }
       }
     }
