@@ -1,7 +1,7 @@
 """
 Provide a StUF client base class.
 
-`StUF <https://www.gemmaonline.nl/index.php/StUF_Berichtenstandaard>`_ is an information
+`StUF <https://vng-realisatie.github.io/StUF-onderlaag/>`_ is an information
 exchange message format defined by VNG/GEMMA. It extends SOAP/XML, in particular by
 providing a base XML schema and XSDs to validate these schema's. Domain "koppelvlakken"
 use StUF as base by further extending it with domain-specific schema's for the actual
