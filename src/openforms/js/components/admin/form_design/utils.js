@@ -58,33 +58,29 @@ const checkKeyChange = (mutationType, newComponent, oldComponent) => {
 };
 
 const updateKeyReferencesInLogic = (existingLogicRules, originalKey, newKey) => {
-  return existingLogicRules.map((rule, index) => {
-    if (!JSON.stringify(rule).includes(originalKey)) {
-      return rule;
-    }
+  for (const rule of existingLogicRules) {
+    if (!JSON.stringify(rule).includes(originalKey)) continue;
 
-    let newRule = {...rule};
     // Replace the key in the JSON trigger
     const stringJsonTrigger = JSON.stringify(rule.jsonLogicTrigger);
     const patternToReplace = new RegExp(`{"var":"${originalKey}(\\.)?([0-9a-zA-Z_\\-]+?)?"}`, 'g');
-    newRule.jsonLogicTrigger = JSON.parse(
+    rule.jsonLogicTrigger = JSON.parse(
       stringJsonTrigger.replaceAll(patternToReplace, `\{"var":"${newKey}$1$2"\}`)
     );
-    // Replace the key in the actions
-    newRule.actions = newRule.actions.map((action, index) => {
-      // component references
-      if (action.component && action.component === originalKey) {
-        return {...action, component: newKey};
-      }
-      // variable references
-      if (action.variable && action.variable === originalKey) {
-        return {...action, variable: newKey};
-      }
-      return action;
-    });
 
-    return newRule;
-  });
+    // Replace the key in the actions
+    for (const action of rule.actions) {
+      // component references
+      if (action.component === originalKey) {
+        action.component = newKey;
+      }
+
+      // variable references
+      if (action.variable === originalKey) {
+        action.variable = newKey;
+      }
+    }
+  }
 };
 
 const updateRemovedKeyInLogic = (existingLogicRules, key) => {

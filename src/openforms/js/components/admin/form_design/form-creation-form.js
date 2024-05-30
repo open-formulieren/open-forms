@@ -458,11 +458,7 @@ function reducer(draft, action) {
       // Check if a key has been changed and if the logic rules need updating
       const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
       if (mutationType === 'changed' && hasKeyChanged) {
-        draft.logicRules = updateKeyReferencesInLogic(
-          draft.logicRules,
-          originalComp.key,
-          schema.key
-        );
+        updateKeyReferencesInLogic(draft.logicRules, originalComp.key, schema.key);
       } else if (mutationType === 'removed') {
         updateRemovedKeyInLogic(draft.logicRules, schema.key);
       }
@@ -802,7 +798,7 @@ function reducer(draft, action) {
 
         // update logic rules with updated keys, only if the original key was not ""
         if (key !== '') {
-          draft.logicRules = updateKeyReferencesInLogic(draft.logicRules, key, propertyValue);
+          updateKeyReferencesInLogic(draft.logicRules, key, propertyValue);
         }
       }
 
