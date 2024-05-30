@@ -11,6 +11,7 @@ from requests import RequestException
 from rest_framework import serializers
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.formio.components.custom import AddressValueSerializer
 from openforms.submissions.models import Submission
 from openforms.validations.base import BasePlugin
 from openforms.validations.registry import register
@@ -30,27 +31,6 @@ def suppress_api_errors(error_message: str) -> Iterator[None]:
             "An exception occured when trying to fetch the BRK API", exc_info=e
         )
         raise ValidationError(error_message) from e
-
-
-class AddressValueSerializer(serializers.Serializer):
-    postcode = serializers.RegexField(
-        "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
-    )
-    house_number = serializers.RegexField(
-        r"^\d{1,5}$",
-    )
-    house_letter = serializers.RegexField(
-        "^[a-zA-Z]$", required=False, allow_blank=True
-    )
-    house_number_addition = serializers.RegexField(
-        "^([a-z,A-Z,0-9]){1,4}$",
-        required=False,
-        allow_blank=True,
-    )
-
-    def validate_postcode(self, value: str) -> str:
-        """Normalize the postcode so that it matches the regex from the BRK API."""
-        return value.upper().replace(" ", "")
 
 
 class ValueSerializer(serializers.Serializer):
@@ -97,12 +77,12 @@ class BRKZakelijkGerechtigdeValidator(BasePlugin[AddressValue]):
 
         address_query: SearchParams = {
             "postcode": value["postcode"],
-            "huisnummer": value["house_number"],
+            "huisnummer": value["houseNumber"],
         }
-        if "house_letter" in value:
-            address_query["huisletter"] = value["house_letter"]
-        if "house_number_addition" in value:
-            address_query["huisnummertoevoeging"] = value["house_number_addition"]
+        if "houseLetter" in value:
+            address_query["huisletter"] = value["houseLetter"]
+        if "houseNumberAddition" in value:
+            address_query["huisnummertoevoeging"] = value["houseNumberAddition"]
 
         with client, suppress_api_errors(self.error_messages["retrieving_error"]):
             real_estate_objects_resp = client.get_real_estate_by_address(address_query)

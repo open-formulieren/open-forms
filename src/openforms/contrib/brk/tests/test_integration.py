@@ -48,9 +48,9 @@ class BRKValidatorIntegrationTestCase(
             {
                 "value": {
                     "postcode": "1234 aB",
-                    "house_number": "1",
-                    "house_letter": "A",
-                    "house_number_addition": "Add",
+                    "houseNumber": "1",
+                    "houseLetter": "A",
+                    "houseNumberAddition": "Add",
                 },
                 "submission_uuid": str(submission.uuid),
             },

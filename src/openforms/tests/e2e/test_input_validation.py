@@ -934,3 +934,117 @@ class SingleFileTests(ValidationsTestCase):
 
         # Make sure the frontend did not create one:
         self.assertEqual(TemporaryFileUpload.objects.count(), 1)
+
+
+class SingleAddressNLTests(ValidationsTestCase):
+    fuzzy_match_invalid_param_names = True
+
+    def assertAddressNLValidationIsAligned(
+        self,
+        component: Component,
+        ui_inputs: dict[str, str],
+        expected_ui_error: str,
+        api_value: dict[str, Any],
+    ) -> None:
+        form = create_form(component)
+
+        with self.subTest("frontend validation"):
+            self._assertAddressNLFrontendValidation(form, ui_inputs, expected_ui_error)
+
+        with self.subTest("backend validation"):
+            self._assertBackendValidation(form, component["key"], api_value)
+
+    @async_to_sync
+    async def _assertAddressNLFrontendValidation(
+        self, form: Form, ui_inputs: dict[str, str], expected_ui_error: str
+    ) -> None:
+        frontend_path = reverse("forms:form-detail", kwargs={"slug": form.slug})
+        url = str(furl(self.live_server_url) / frontend_path)
+
+        async with browser_page() as page:
+            await page.goto(url)
+            await page.get_by_role("button", name="Formulier starten").click()
+
+            for field, value in ui_inputs.items():
+                await page.fill(f"input[name='{field}']", value)
+
+            # try to submit the step which should be invalid, so we expect this to
+            # render the error message.
+            await page.get_by_role("button", name="Volgende").click()
+
+            await expect(page.get_by_text(expected_ui_error)).to_be_visible()
+
+    def test_required_field(self):
+        component: Component = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "Required AddressNL",
+            "validate": {"required": True},
+        }
+
+        self.assertAddressNLValidationIsAligned(
+            component,
+            ui_inputs={},
+            api_value={
+                "postcode": "",
+                "houseNumber": "",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+            },
+            expected_ui_error="Het verplichte veld Required AddressNL is niet ingevuld.",
+        )
+
+    def test_regex_failure(self):
+        component: Component = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL invalid regex",
+        }
+
+        test_cases = [
+            (
+                "postcode",
+                {
+                    "postcode": "1223456Wrong",
+                    "houseNumber": "23",
+                    "houseLetter": "A",
+                    "houseNumberAddition": "",
+                },
+            ),
+            (
+                "houseNumber",
+                {
+                    "postcode": "1234AA",
+                    "houseNumber": "A",
+                    "houseLetter": "A",
+                    "houseNumberAddition": "",
+                },
+            ),
+            (
+                "houseLetter",
+                {
+                    "postcode": "1234AA",
+                    "houseNumber": "33",
+                    "houseLetter": "89",
+                    "houseNumberAddition": "",
+                },
+            ),
+            (
+                "houseNumberAddition",
+                {
+                    "postcode": "1234AA",
+                    "houseNumber": "33",
+                    "houseLetter": "A",
+                    "houseNumberAddition": "9999A",
+                },
+            ),
+        ]
+
+        for field_name, invalid_data in test_cases:
+            with self.subTest(field_name):
+                self.assertAddressNLValidationIsAligned(
+                    component,
+                    ui_inputs=invalid_data,
+                    api_value=invalid_data,
+                    expected_ui_error="Ongeldig.",
+                )

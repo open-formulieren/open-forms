@@ -377,10 +377,45 @@ class BSN(BasePlugin[Component]):
         return serializers.ListField(child=base) if multiple else base
 
 
+class AddressValueSerializer(serializers.Serializer):
+    postcode = serializers.RegexField(
+        "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+    )
+    houseNumber = serializers.RegexField(
+        r"^\d{1,5}$",
+    )
+    houseLetter = serializers.RegexField("^[a-zA-Z]$", required=False, allow_blank=True)
+    houseNumberAddition = serializers.RegexField(
+        "^([a-z,A-Z,0-9]){1,4}$",
+        required=False,
+        allow_blank=True,
+    )
+
+    def validate_postcode(self, value: str) -> str:
+        """Normalize the postcode so that it matches the regex from the BRK API."""
+        return value.upper().replace(" ", "")
+
+
 @register("addressNL")
 class AddressNL(BasePlugin):
 
     formatter = AddressNLFormatter
+
+    def build_serializer_field(self, component: Component) -> AddressValueSerializer:
+
+        validate = component.get("validate", {})
+        required = validate.get("required", False)
+
+        extra = {}
+        validators = []
+        if plugin_ids := validate.get("plugins", []):
+            validators.append(PluginValidator(plugin_ids))
+
+        extra["validators"] = validators
+
+        return AddressValueSerializer(
+            required=required, allow_null=not required, **extra
+        )
 
 
 @register("cosign")
