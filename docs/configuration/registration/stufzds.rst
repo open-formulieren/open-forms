@@ -8,7 +8,7 @@ The `StUF-ZDS`_ (StUF Zaak- en Documentservices) is a SOAP based Zaak and
 Documents service. Open Forms can be configured to access this SOAP-service to
 register form submissions.
 
-.. _`StUF-ZDS`: https://www.gemmaonline.nl/index.php/Zaak-_en_Documentservices
+.. _`StUF-ZDS`: https://vng-realisatie.github.io/Zaak-en-Documentservices/
 
 .. note::
 
