@@ -47,5 +47,10 @@ export const mockDMNDecisionDefinitionVersionsGet = rest.get(
 export const mockDMNParametersGet = definitionsParams =>
   rest.get(`${BASE_URL}${DMN_DECISION_DEFINITIONS_PARAMS_LIST}`, (req, res, ctx) => {
     const definition = req.url.searchParams.get('definition');
-    return res(ctx.json(definitionsParams[definition]));
+    const version = req.url.searchParams.get('version');
+
+    const versionedParams = definitionsParams[definition]?._versions?.[version];
+    const unVersionedParams = definitionsParams[definition];
+    const {inputs, outputs} = versionedParams ?? unVersionedParams;
+    return res(ctx.json({inputs, outputs}));
   });

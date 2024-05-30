@@ -4,10 +4,13 @@ import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
+import WarningIcon from 'components/admin/WarningIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
+
+import {detectMappingProblems} from './utils';
 
 const VariableMappingRow = ({
   loading,
@@ -31,6 +34,8 @@ const VariableMappingRow = ({
     ([value]) => value === dmnVariableProps.value || !alreadyMapped.includes(value)
   );
 
+  const mapping = getFieldProps(prefix).value;
+  const errors = detectMappingProblems(mapping, intl).join(', ');
   return (
     <tr>
       <td>
@@ -63,6 +68,7 @@ const VariableMappingRow = ({
       </td>
       <td>
         <DeleteIcon onConfirm={onRemove} message={confirmationMessage} />
+        {errors && <WarningIcon text={errors} />}
       </td>
     </tr>
   );
@@ -84,13 +90,7 @@ const VariableMapping = ({
   includeStaticVariables = false,
   alreadyMapped = [],
 }) => {
-  const intl = useIntl();
-  const {getFieldProps, values} = useFormikContext();
-
-  const confirmationMessage = intl.formatMessage({
-    description: 'Confirmation message to remove a mapping',
-    defaultMessage: 'Are you sure that you want to remove this mapping?',
-  });
+  const {values} = useFormikContext();
 
   return (
     <FieldArray

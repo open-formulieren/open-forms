@@ -47,3 +47,17 @@ const namePartChars = [
  * \u{...} syntax above).
  */
 export const namePattern = new RegExp(`^[${nameStartChars}][${namePartChars}]*$`, 'u');
+
+export const detectMappingProblems = ({formVariable, dmnVariable}, intl) => {
+  const problems = [];
+
+  if (!formVariable && dmnVariable) {
+    problems.push(
+      intl.formatMessage({
+        description: 'DMN in/output mapping: detected empty form variable',
+        defaultMessage: 'No form variable specified (anymore).',
+      })
+    );
+  }
+  return problems;
+};

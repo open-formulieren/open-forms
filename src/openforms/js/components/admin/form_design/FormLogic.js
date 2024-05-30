@@ -27,6 +27,7 @@ import LogicDescriptionInput from './logic/LogicDescription';
 import LogicTypeSelection from './logic/LogicTypeSelection';
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/actions/ActionSet';
+import {detectProblems} from './logic/actions/Actions';
 import {parseValidationErrors} from './utils';
 
 const EMPTY_RULE = {
@@ -499,4 +500,18 @@ Rule.propTypes = {
   errors: PropTypes.object,
 };
 
-export {FormLogic, EMPTY_RULE};
+const detectLogicProblems = (rule, intl) => {
+  const problems = [];
+  const hasActionProblems = rule.actions.some(action => detectProblems(action, intl).length > 0);
+  if (hasActionProblems) {
+    problems.push(
+      intl.formatMessage({
+        description: 'Logic rule warning message about problematic actions.',
+        defaultMessage: 'one or more actions are invalid',
+      })
+    );
+  }
+  return problems;
+};
+
+export {FormLogic, EMPTY_RULE, detectLogicProblems};

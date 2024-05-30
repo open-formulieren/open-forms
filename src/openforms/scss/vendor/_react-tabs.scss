@@ -22,6 +22,11 @@
       border-color: var(--react-tab-border-color);
       background: var(--body-bg);
     }
+
+    > .icon {
+      margin-inline-start: 8px;
+      padding-inline-end: 0;
+    }
   }
 
   @include element('error-badge') {

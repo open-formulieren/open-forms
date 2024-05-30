@@ -579,6 +579,11 @@
     "description": "Form submissionAllowed field label",
     "originalDefault": "Submission allowed"
   },
+  "D6NRQk": {
+    "defaultMessage": "Detected problems in {count} logic rule(s).",
+    "description": "Logic tab warning icon message",
+    "originalDefault": "Detected problems in {count} logic rule(s)."
+  },
   "DEAqyQ": {
     "defaultMessage": "Boolean",
     "description": "JSON variable type \"boolean\" representation",
@@ -588,6 +593,11 @@
     "defaultMessage": "Move down",
     "description": "Move down icon title",
     "originalDefault": "Move down"
+  },
+  "DRG6XN": {
+    "defaultMessage": "invalid input mapping(s)",
+    "description": "Warning message: DMN input mapping problems detected",
+    "originalDefault": "invalid input mapping(s)"
   },
   "DRidde": {
     "defaultMessage": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?",
@@ -713,6 +723,11 @@
     "defaultMessage": "Reset to default description",
     "description": "Reset logic expression icon title",
     "originalDefault": "Reset to default description"
+  },
+  "GBsms3": {
+    "defaultMessage": "No form variable specified (anymore).",
+    "description": "DMN in/output mapping: detected empty form variable",
+    "originalDefault": "No form variable specified (anymore)."
   },
   "GFXEAX": {
     "defaultMessage": "Internal step name",
@@ -1809,6 +1824,11 @@
     "description": "Confirmation message to remove a mapping",
     "originalDefault": "Are you sure that you want to remove this mapping?"
   },
+  "gheRkp": {
+    "defaultMessage": "Detected some problems in this action: {problems}.",
+    "description": "Logic action warning icon text",
+    "originalDefault": "Detected some problems in this action: {problems}."
+  },
   "gr7edY": {
     "defaultMessage": "App version",
     "description": "App version column header",
@@ -2299,6 +2319,11 @@
     "description": "URL of the INFORMATIEOBJECTTYPE in the Catalogi API",
     "originalDefault": "Informatieobjecttype"
   },
+  "sCkGL9": {
+    "defaultMessage": "invalid output mapping(s)",
+    "description": "Warning message: DMN output mapping problems detected",
+    "originalDefault": "invalid output mapping(s)"
+  },
   "sFHD3/": {
     "defaultMessage": "Whether to send a confirmation email to the end-user who submitted the form.",
     "description": "Help text of form field 'Send the confirmation email'",
@@ -2313,6 +2338,11 @@
     "defaultMessage": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?",
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
+  },
+  "t5fg/K": {
+    "defaultMessage": "one or more actions are invalid",
+    "description": "Logic rule warning message about problematic actions.",
+    "originalDefault": "one or more actions are invalid"
   },
   "t9+e9k": {
     "defaultMessage": "Are you sure you want to remove this mapping?",

@@ -9,7 +9,7 @@
 
   &__preview {
     display: block;
-    background: #eee;
+    background: var(--json-data-preview-background-color, #eee);
     padding: 0.5em;
   }
 }

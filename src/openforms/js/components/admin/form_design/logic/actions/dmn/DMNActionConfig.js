@@ -84,6 +84,9 @@ const DecisionDefinitionIdField = () => {
         onChange={(...args) => {
           // Otherwise the field is set as 'touched' only on the blur event
           setFieldTouched('decisionDefinitionId');
+          // If decisionDefinitionId has changed, reset the input/output mappings
+          setFieldValue('inputMapping', []);
+          setFieldValue('outputMapping', []);
           handleChange(...args);
         }}
       />

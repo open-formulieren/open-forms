@@ -5,9 +5,9 @@ import useAsync from 'react-use/esm/useAsync';
 import semverDiff from 'semver/functions/diff';
 import semverValid from 'semver/functions/valid';
 
-import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
 import User from 'components/admin/User';
+import WarningIcon from 'components/admin/WarningIcon';
 import {APIContext} from 'components/admin/form_design/Context';
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import {get, post} from 'utils/fetch';
@@ -69,10 +69,9 @@ const FormVersionsTable = ({formUuid, currentRelease}) => {
         <td>{version.description}</td>
         <td>
           {showVersionWarning && (
-            <FAIcon
-              icon="exclamation-triangle"
-              extraClassname="icon icon--warning icon--no-pointer icon--as-lead"
-              title={intl.formatMessage({
+            <WarningIcon
+              asLead
+              text={intl.formatMessage({
                 description: 'FormVersion: Warning message different application versions',
                 defaultMessage: `This form version was created in an application version different
                 from the current version. There may be missing configuration after restoring.`,
