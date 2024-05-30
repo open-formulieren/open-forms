@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import AuthInfo, RegistratorInfo
 
@@ -36,10 +37,49 @@ class AuthInfoInline(admin.TabularInline):
 
 @admin.register(AuthInfo)
 class AuthInfoAdmin(admin.ModelAdmin):
-    list_display = ("submission", "plugin", "attribute")
+    list_display = ("submission", "plugin", "attribute", "loa")
     list_filter = ("plugin", "attribute")
     search_fields = ("submission__pk",)
     raw_id_fields = ("submission",)
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "submission",
+                    "attribute",
+                    "value",
+                )
+            },
+        ),
+        (
+            _("Means"),
+            {"fields": ("plugin", "loa")},
+        ),
+        (
+            _("Acting subject"),
+            {
+                "fields": (
+                    "acting_subject_identifier_type",
+                    "acting_subject_identifier_value",
+                )
+            },
+        ),
+        (
+            _("Legal subject"),
+            {
+                "fields": (
+                    "legal_subject_identifier_type",
+                    "legal_subject_identifier_value",
+                )
+            },
+        ),
+        (_("Mandate"), {"fields": ("mandate_context", "machtigen")}),
+        (
+            _("Misc"),
+            {"fields": ("attribute_hashed",), "classes": ("collapse in",)},
+        ),
+    )
 
 
 class RegistratorInfoAdminForm(forms.ModelForm):
