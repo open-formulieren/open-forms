@@ -87,6 +87,24 @@ const updateKeyReferencesInLogic = (existingLogicRules, originalKey, newKey) => 
   });
 };
 
+const updateRemovedKeyInLogic = (existingLogicRules, key) => {
+  for (const rule of existingLogicRules) {
+    for (const action of rule.actions) {
+      switch (action.action.type) {
+        case 'evaluate-dmn': {
+          const {config} = action.action;
+          if (!config) break;
+          const {inputMapping = [], outputMapping = []} = config;
+          for (const mapping of [...inputMapping, outputMapping]) {
+            if (mapping.formVariable !== key) continue;
+            mapping.formVariable = '';
+          }
+        }
+      }
+    }
+  }
+};
+
 const getUniqueKey = (key, existingKeys) => {
   if (!existingKeys.includes(key)) return key;
 
@@ -184,6 +202,7 @@ export {
   findComponent,
   checkKeyChange,
   updateKeyReferencesInLogic,
+  updateRemovedKeyInLogic,
   getUniqueKey,
   getFormStep,
   parseValidationErrors,

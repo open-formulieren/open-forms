@@ -584,6 +584,11 @@
     "description": "Form submissionAllowed field label",
     "originalDefault": "Submission allowed"
   },
+  "D6NRQk": {
+    "defaultMessage": "Detected problems in {count} logic rule(s).",
+    "description": "Logic tab warning icon message",
+    "originalDefault": "Detected problems in {count} logic rule(s)."
+  },
   "DEAqyQ": {
     "defaultMessage": "Waar/Niet waar (boolean)",
     "description": "JSON variable type \"boolean\" representation",
@@ -2350,6 +2355,11 @@
     "defaultMessage": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?",
     "description": "Objects API registration backend: v2 switch warning message",
     "originalDefault": "Switching to the new registration options will remove the existing JSON templates. You will also not be able to save the form until the variables are correctly mapped. Are you sure you want to continue?"
+  },
+  "t5fg/K": {
+    "defaultMessage": "one or more actions are invalid",
+    "description": "Logic rule warning message about problematic actions.",
+    "originalDefault": "one or more actions are invalid"
   },
   "t9+e9k": {
     "defaultMessage": "Ben je zeker dat je deze koppeling wil verwijderen?",

@@ -71,6 +71,7 @@ import {
   parseValidationErrors,
   slugify,
   updateKeyReferencesInLogic,
+  updateRemovedKeyInLogic,
 } from './utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
@@ -462,6 +463,8 @@ function reducer(draft, action) {
           originalComp.key,
           schema.key
         );
+      } else if (mutationType === 'removed') {
+        updateRemovedKeyInLogic(draft.logicRules, schema.key);
       }
 
       // Issue #1729 - Workaround for bug in FormIO
@@ -760,6 +763,9 @@ function reducer(draft, action) {
 
         return {...configuredBackend, options: updatedOptions};
       });
+
+      // Clear any references in DMN mappings
+      updateRemovedKeyInLogic(draft.logicRules, key);
 
       draft.formVariables = draft.formVariables.filter(variable => variable.key !== key);
       break;

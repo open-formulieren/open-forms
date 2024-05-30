@@ -1399,6 +1399,20 @@
       "value": "Foutmeldingen specifiek voor dit component, inclusief vertalingen"
     }
   ],
+  "D6NRQk": [
+    {
+      "type": 0,
+      "value": "Detected problems in "
+    },
+    {
+      "type": 1,
+      "value": "count"
+    },
+    {
+      "type": 0,
+      "value": " logic rule(s)."
+    }
+  ],
   "DEAqyQ": [
     {
       "type": 0,
@@ -5047,6 +5061,12 @@
     {
       "type": 0,
       "value": "Let op! Migreren naar het nieuwe configuratieformaat maakt de bestaande JSON-sjablonen leeg. Daarnaast kan je het formulier pas opslaan als alle verplichte variabelen goed gekoppeld zijn. Ben je zeker dat je wil migreren?"
+    }
+  ],
+  "t5fg/K": [
+    {
+      "type": 0,
+      "value": "one or more actions are invalid"
     }
   ],
   "t9+e9k": [
