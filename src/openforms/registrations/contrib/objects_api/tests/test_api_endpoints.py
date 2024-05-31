@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest.mock import patch
 
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
@@ -14,19 +13,14 @@ from .test_objecttypes_client import get_test_config
 class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
+    endpoint = reverse_lazy("api:objects_api:object-types")
 
-    def setUp(self) -> None:
-        super().setUp()
-
-        self.endpoint = reverse_lazy("api:objects_api:object-types")
-
-        patcher = patch(
-            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=get_test_config(),
-        )
-
-        self.config_mock = patcher.start()
-        self.addCleanup(patcher.stop)
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+        cls.config = get_test_config()
+        cls.config.objecttypes_service.save()
+        cls.config.save()
 
     def test_auth_required(self):
         response = self.client.get(self.endpoint)
@@ -35,7 +29,6 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
     def test_staff_user_required(self):
         user = UserFactory.create()
-        staff_user = StaffUserFactory.create()
 
         with self.subTest(staff=False):
             self.client.force_authenticate(user=user)
@@ -43,60 +36,52 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
             response = self.client.get(self.endpoint)
 
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-        with self.subTest(staff=True):
-            self.client.force_authenticate(user=staff_user)
-
-            response = self.client.get(self.endpoint)
-
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_objecttypes(self):
         staff_user = StaffUserFactory.create()
         self.client.force_authenticate(user=staff_user)
 
-        response = self.client.get(self.endpoint)
+        response = self.client.get(
+            self.endpoint, data={"objects_api_group": self.config.pk}
+        )
+
+        tree_objecttype = next(obj for obj in response.json() if obj["name"] == "Tree")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.json(),
-            [
-                {
-                    "dataClassification": "confidential",
-                    "name": "Tree",
-                    "namePlural": "Trees",
-                    "url": "http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                    "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
-                },
-                {
-                    "dataClassification": "open",
-                    "name": "Person",
-                    "namePlural": "Persons",
-                    "url": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                    "uuid": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-                },
-            ],
+            tree_objecttype,
+            {
+                "dataClassification": "confidential",
+                "name": "Tree",
+                "namePlural": "Trees",
+                "url": "http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+            },
         )
+
+    def test_list_objecttypes_missing_api_group(self):
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
+
+        response = self.client.get(self.endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
+    endpoint = reverse_lazy(
+        "api:objects_api:object-type-versions",
+        args=["3edfdaf7-f469-470b-a391-bb7ea015bd6f"],
+    )
 
-    def setUp(self) -> None:
-        super().setUp()
-        self.objecttype_uuid = "3edfdaf7-f469-470b-a391-bb7ea015bd6f"
-        self.endpoint = reverse_lazy(
-            "api:objects_api:object-type-versions", args=[self.objecttype_uuid]
-        )
-
-        patcher = patch(
-            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=get_test_config(),
-        )
-
-        self.config_mock = patcher.start()
-        self.addCleanup(patcher.stop)
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+        cls.config = get_test_config()
+        cls.config.objecttypes_service.save()
+        cls.config.save()
 
     def test_auth_required(self):
         response = self.client.get(self.endpoint)
@@ -105,7 +90,6 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
     def test_staff_user_required(self):
         user = UserFactory.create()
-        staff_user = StaffUserFactory.create()
 
         with self.subTest(staff=False):
             self.client.force_authenticate(user=user)
@@ -114,23 +98,18 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        with self.subTest(staff=True):
-            self.client.force_authenticate(user=staff_user)
-
-            response = self.client.get(self.endpoint)
-
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     def test_list_objecttype_versions(self):
         staff_user = StaffUserFactory.create()
         self.client.force_authenticate(user=staff_user)
 
-        response = self.client.get(self.endpoint)
+        response = self.client.get(
+            self.endpoint, data={"objects_api_group": self.config.pk}
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [{"status": "published", "version": 1}])
 
-    def test_list_objecttype_verions_unknown_objecttype(self):
+    def test_list_objecttype_versions_unknown_objecttype(self):
         staff_user = StaffUserFactory.create()
         self.client.force_authenticate(user=staff_user)
 
@@ -139,7 +118,8 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
             reverse_lazy(
                 "api:objects_api:object-type-versions",
                 args=["39da819c-ac6c-4037-ae2b-6bfc39f6564b"],
-            )
+            ),
+            data={"objects_api_group": self.config.pk},
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -149,21 +129,14 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
+    endpoint = reverse_lazy("api:objects_api:target-paths")
 
-    def setUp(self) -> None:
-        super().setUp()
-        self.user = UserFactory.create()
-        self.staff_user = StaffUserFactory.create()
-
-        self.endpoint = reverse_lazy("api:objects_api:target-paths")
-
-        patcher = patch(
-            "openforms.registrations.contrib.objects_api.client.ObjectsAPIConfig.get_solo",
-            return_value=get_test_config(),
-        )
-
-        self.config_mock = patcher.start()
-        self.addCleanup(patcher.stop)
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+        cls.config = get_test_config()
+        cls.config.objecttypes_service.save()
+        cls.config.save()
 
     def test_auth_required(self):
         response = self.client.post(self.endpoint)
@@ -171,32 +144,26 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_staff_user_required(self):
+        user = UserFactory.create()
 
         with self.subTest(staff=False):
-            self.client.force_authenticate(user=self.user)
+            self.client.force_authenticate(user=user)
 
-            response = self.client.post(self.endpoint)
+            response = self.client.get(self.endpoint)
 
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        with self.subTest(staff=True):
-            self.client.force_authenticate(user=self.staff_user)
-
-            response = self.client.post(self.endpoint)
-
-            # Should be a 400 as permissions are ok but missing body
-            # (but this is tested in `test_missing_body` and not relevant for this test)
-            self.assertNotEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
     def test_missing_body(self):
-        self.client.force_authenticate(user=self.staff_user)
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
 
         response = self.client.post(self.endpoint, data={})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_wrong_uuid_parsing(self):
-        self.client.force_authenticate(user=self.staff_user)
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
 
         response = self.client.post(
             self.endpoint,
@@ -204,6 +171,7 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
                 "objecttypeUrl": "http://localhost:8001/api/v2/objecttypes/bad_uuid",
                 "objecttypeVersion": 1,
                 "variableJsonSchema": {"type": "string"},
+                "objects_api_group": self.config.pk,
             },
         )
 
@@ -211,7 +179,8 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
         self.assertEqual("objecttypeUrl", response.json()["invalidParams"][0]["name"])
 
     def test_list_target_paths(self):
-        self.client.force_authenticate(user=self.staff_user)
+        staff_user = StaffUserFactory.create()
+        self.client.force_authenticate(user=staff_user)
 
         response = self.client.post(
             self.endpoint,
@@ -219,12 +188,13 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
                 "objecttypeUrl": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttypeVersion": 2,
                 "variableJsonSchema": {"type": "string"},
+                "objects_api_group": self.config.pk,
             },
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # The list of targets is constructed from a JSON mapping, which isn't guaranteed
-        # to be ordered. So `assertCountEqual` is used (horrible naming, but is <=> unordered `assertListEqual`)
+        # to be ordered. So `assertCountEqual` is used (a.k.a. unordered `assertListEqual`).
         self.assertCountEqual(
             response.json(),
             [
