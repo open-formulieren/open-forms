@@ -27,3 +27,13 @@ class ModeChoices(models.TextChoices):
     citizen = "citizen", _("Citizen")
     company = "company", _("Company")
     employee = "employee", _("Employee")
+
+
+class ActingSubjectIdentifierType(models.TextChoices):
+    opaque = "opaque", _("Opaque")
+
+
+class LegalSubjectIdentifierType(models.TextChoices):
+    bsn = "bsn", _("BSN")
+    kvk = "kvk", _("KvK number")
+    rsin = "rsin", _("RSIN")
