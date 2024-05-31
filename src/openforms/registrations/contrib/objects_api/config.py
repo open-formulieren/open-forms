@@ -7,11 +7,14 @@ from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
+
+from .models import ObjectsAPIGroupConfig
 
 
 class VersionChoices(models.IntegerChoices):
@@ -49,7 +52,14 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
 
 
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-
+    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ObjectsAPIGroupConfig.objects.all(),
+        label=("Objects API group"),
+        help_text=_(
+            "Which Objects API group to use. If not provided, the default Objects API group will be used."
+        ),
+        required=False,
+    )
     version = serializers.ChoiceField(
         label=_("options version"),
         help_text=_(
