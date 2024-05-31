@@ -15,6 +15,7 @@ const getObjecttypeVersionsEndpoint = objecttype => {
 };
 
 const ObjectTypeVersionSelect = ({
+  objectsApiGroup,
   availableObjecttypes = [],
   selectedObjecttype,
   selectedVersion,
@@ -27,17 +28,20 @@ const ObjectTypeVersionSelect = ({
     value: availableVersions = [],
     error,
   } = useAsync(async () => {
+    if (!objectsApiGroup) return [];
     const objecttype = availableObjecttypes.find(ot => ot.url === selectedObjecttype);
     // no match -> no versions to retrieve;
     if (!objecttype) return [];
 
-    const response = await get(getObjecttypeVersionsEndpoint(objecttype));
+    const params = {};
+    if (objectsApiGroup) params.objects_api_group = objectsApiGroup;
+    const response = await get(getObjecttypeVersionsEndpoint(objecttype), params);
     if (!response.ok) {
       throw new Error('Loading available object types failed');
     }
     const versions = response.data;
     return versions.sort((v1, v2) => v2.version - v1.version);
-  }, [selectedObjecttype, objecttypeUrls]);
+  }, [selectedObjecttype, objecttypeUrls, objectsApiGroup]);
 
   const choices =
     loading || error
@@ -76,6 +80,7 @@ const ObjectTypeVersionSelect = ({
 };
 
 ObjectTypeVersionSelect.propTypes = {
+  objectsApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   availableObjecttypes: PropTypes.array,
   selectedObjecttype: PropTypes.string.isRequired,
   selectedVersion: PropTypes.string.isRequired,
