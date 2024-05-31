@@ -199,6 +199,104 @@ class ObjectsAPIConfig(SingletonModel):
         options.setdefault("auteur", "Aanvrager")
 
 
+class ObjectsAPIGroupConfig(models.Model):
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        help_text=_("A recognisable name for this set of Objects APIs."),
+    )
+    objects_service = models.ForeignKey(
+        "zgw_consumers.Service",
+        verbose_name=_("Objects API"),
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.orc},
+        null=True,
+        related_name="+",
+    )
+    objecttypes_service = models.ForeignKey(
+        "zgw_consumers.Service",
+        verbose_name=_("Objecttypes API"),
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.orc},
+        null=True,
+        related_name="+",
+    )
+    drc_service = models.ForeignKey(
+        "zgw_consumers.Service",
+        verbose_name=_("Documenten API"),
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.drc},
+        null=True,
+        related_name="+",
+    )
+    catalogi_service = models.ForeignKey(
+        "zgw_consumers.Service",
+        verbose_name=_("Catalogi API"),
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.ztc},
+        null=True,
+        related_name="+",
+    )
+
+    # Overridable defaults
+    informatieobjecttype_submission_report = models.URLField(
+        _("submission report informatieobjecttype"),
+        max_length=1000,
+        blank=True,
+        help_text=_(
+            "Default URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission report PDF"
+        ),
+    )
+    informatieobjecttype_submission_csv = models.URLField(
+        _("submission report CSV informatieobjecttype"),
+        max_length=1000,
+        blank=True,
+        help_text=_(
+            "Default URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission report CSV"
+        ),
+    )
+    informatieobjecttype_attachment = models.URLField(
+        _("attachment informatieobjecttype"),
+        max_length=1000,
+        blank=True,
+        help_text=_(
+            "Default URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission attachments"
+        ),
+    )
+    organisatie_rsin = models.CharField(
+        _("organisation RSIN"),
+        max_length=9,
+        blank=True,
+        validators=[validate_rsin],
+        help_text=_("Default RSIN of organization, which creates the INFORMATIEOBJECT"),
+    )
+
+    class Meta:
+        verbose_name = _("Objects API group")
+        verbose_name_plural = _("Objects API groups")
+
+    def __str__(self) -> str:
+        return self.name
+
+    def apply_defaults_to(self, options) -> None:
+        options.setdefault("version", 1)
+        options.setdefault(
+            "informatieobjecttype_submission_report",
+            self.informatieobjecttype_submission_report,
+        )
+        options.setdefault(
+            "informatieobjecttype_submission_csv",
+            self.informatieobjecttype_submission_csv,
+        )
+        options.setdefault(
+            "informatieobjecttype_attachment", self.informatieobjecttype_attachment
+        )
+        options.setdefault("organisatie_rsin", self.organisatie_rsin)
+
+
 class ObjectsAPIRegistrationData(models.Model):
     """Holds the temporary data available when registering a submission to the Objects API.
 
