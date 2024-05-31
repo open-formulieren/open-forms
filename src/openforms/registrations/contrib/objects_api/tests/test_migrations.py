@@ -1,6 +1,6 @@
 from django.db.migrations.state import StateApps
 
-from zgw_consumers.constants import AuthTypes
+from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.registrations.contrib.objects_api.plugin import (
     PLUGIN_IDENTIFIER as OBJECTS_API_PLUGIN_IDENTIFIER,
@@ -177,3 +177,101 @@ class NoObjecttypesServiceMigrationTests(TestMigrations):
             "registrations_objects_api", "ObjectsAPIConfig"
         )
         self.assertRaises(ObjectsAPIConfig.DoesNotExist, ObjectsAPIConfig.objects.get)
+
+
+class MoveExistingObjectsAPIConfigMigrationTests(TestMigrations):
+    app = "registrations_objects_api"
+    migrate_from = "0016_objectsapigroupconfig"
+    migrate_to = "0017_move_singleton_data"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        ObjectsAPIConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+        Service = apps.get_model("zgw_consumers", "Service")
+
+        objects_api = Service.objects.create(
+            label="Objects API",
+            api_root="http://objectsapi.nl/api/v1/",
+            api_type=APITypes.orc,
+        )
+        objecttypes_api = Service.objects.create(
+            label="Objecttypes API",
+            api_root="http://objecttypesapi.nl/api/v1/",
+            api_type=APITypes.orc,
+        )
+        documents_api = Service.objects.create(
+            label="Documents API",
+            api_root="http://documentsapi.nl/api/v1/",
+            api_type=APITypes.drc,
+        )
+        catalogi_api = Service.objects.create(
+            label="Catalogi API",
+            api_root="http://catalogiapi.nl/api/v1/",
+            api_type=APITypes.ztc,
+        )
+
+        ObjectsAPIConfig.objects.create(
+            objects_service=objects_api,
+            objecttypes_service=objecttypes_api,
+            drc_service=documents_api,
+            catalogi_service=catalogi_api,
+            objecttype="http://objecttypesapi.nl/api/v1/objecttypes/1",
+            objecttype_version=1,
+            informatieobjecttype_attachment="https://catalogiapi.nl/api/v1/informatieobjecttypen/1",
+            informatieobjecttype_submission_csv="https://catalogiapi.nl/api/v1/informatieobjecttypen/2",
+            informatieobjecttype_submission_report="https://catalogiapi.nl/api/v1/informatieobjecttypen/3",
+            organisatie_rsin="100000009",
+            productaanvraag_type="testproduct",
+            content_json="{{ content_json }}",
+            payment_status_update_json="{{ payment_status_update_json }}",
+        )
+
+    def test_services_migrated_correctly(self):
+        ObjectsAPIGroupConfig = self.apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+
+        migrated_services = ObjectsAPIGroupConfig.objects.all()
+
+        self.assertEqual(1, migrated_services.count())
+
+        group = migrated_services.get()
+
+        self.assertEqual(group.objects_service.label, "Objects API")
+        self.assertEqual(group.objecttypes_service.label, "Objecttypes API")
+        self.assertEqual(group.drc_service.label, "Documents API")
+        self.assertEqual(group.catalogi_service.label, "Catalogi API")
+        self.assertEqual(
+            group.informatieobjecttype_attachment,
+            "https://catalogiapi.nl/api/v1/informatieobjecttypen/1",
+        )
+        self.assertEqual(
+            group.informatieobjecttype_submission_csv,
+            "https://catalogiapi.nl/api/v1/informatieobjecttypen/2",
+        )
+        self.assertEqual(
+            group.informatieobjecttype_submission_report,
+            "https://catalogiapi.nl/api/v1/informatieobjecttypen/3",
+        )
+        self.assertEqual(group.organisatie_rsin, "100000009")
+
+
+class NoObjectsAPIConfigDoesntCreateObjectsAPIGroupMigrationTest(TestMigrations):
+    app = "registrations_objects_api"
+    migrate_from = "0016_objectsapigroupconfig"
+    migrate_to = "0017_move_singleton_data"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        ObjectsAPIConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIConfig"
+        )
+
+        self.assertFalse(ObjectsAPIConfig.objects.exists())
+
+    def test_no_zgw_api_group_created(self):
+        ObjectsAPIGroupConfig = self.apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+
+        self.assertFalse(ObjectsAPIGroupConfig.objects.exists())
