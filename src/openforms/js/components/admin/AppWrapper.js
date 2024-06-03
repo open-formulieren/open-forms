@@ -1,8 +1,8 @@
 import React from 'react';
 import {IntlProvider} from 'react-intl';
+import jsonScriptToVar from 'utils/json-script';
 
 import {getIntlProviderProps} from 'components/admin/i18n';
-import jsonScriptToVar from 'utils/json-script';
 
 import {APIContext, FeatureFlagsContext} from './form_design/Context';
 

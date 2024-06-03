@@ -2,11 +2,11 @@ import groupBy from 'lodash/groupBy';
 import PropTypes from 'prop-types';
 import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
+import {get} from 'utils/fetch';
 
 import Loader from 'components/admin/Loader';
 import {PROCESS_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
-import {get} from 'utils/fetch';
 
 import FormFields from './FormFields';
 

@@ -4,9 +4,9 @@ import produce from 'immer';
 import React, {useEffect} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync} from 'react-use';
+import {get} from 'utils/fetch';
 
 import {DMN_DECISION_DEFINITIONS_PARAMS_LIST} from 'components/admin/form_design/constants';
-import {get} from 'utils/fetch';
 
 import InputsOverview from './InputsOverview';
 import VariableMapping from './VariableMapping';

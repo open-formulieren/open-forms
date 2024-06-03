@@ -8,10 +8,11 @@
  * Avoid adding more complex data processing - this should ideally have been done in
  * the parent as you require a clean view of the data there anyway.
  */
-import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
-import {FORM_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
 import {FormException} from 'utils/exception';
 import {ValidationErrors, post, put} from 'utils/fetch';
+
+import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
+import {FORM_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
 
 const updateOrCreateSingleFormStep = async (
   csrftoken,

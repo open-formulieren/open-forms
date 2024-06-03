@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {defineMessage, useIntl} from 'react-intl';
+import {getTranslatedChoices} from 'utils/i18n';
 
 import Select from 'components/admin/forms/Select';
-import {getTranslatedChoices} from 'utils/i18n';
 
 const OPERAND_TYPES = {
   literal: defineMessage({description: '"literal" operand type', defaultMessage: 'value'}),

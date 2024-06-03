@@ -1,7 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = {
+const config = {
   core: {
     disableTelemetry: true,
     disableWhatsNewNotifications: true,
@@ -23,10 +23,10 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     'storybook-react-intl',
+    '@storybook/addon-webpack5-compiler-babel',
   ],
   features: {
     interactionsDebugger: true,
-    storyStoreV7: true,
     buildStoriesJson: true,
   },
 
@@ -86,3 +86,5 @@ module.exports = {
     autodocs: 'tag',
   },
 };
+
+export default config;

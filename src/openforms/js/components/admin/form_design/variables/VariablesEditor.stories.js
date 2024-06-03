@@ -1,6 +1,4 @@
-import {expect} from '@storybook/jest';
-import {userEvent, waitFor, within} from '@storybook/testing-library';
-import {screen} from '@storybook/testing-library';
+import {expect, screen, userEvent, within} from '@storybook/test';
 
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';
@@ -250,7 +248,7 @@ export const WithObjectsAPIRegistrationBackends = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
 
-    const registrationTab = canvas.getByRole('tab', {name: 'Registration'});
+    const registrationTab = canvas.getByRole('tab', {name: 'Registratie'});
     await userEvent.click(registrationTab);
 
     const pdfUrl = canvas.getByRole('cell', {name: 'pdf_url'});
@@ -348,10 +346,10 @@ export const FilesMappingAndObjectAPIRegistration = {
 
     // Only the targets of type string should appear
     await expect(
-      await screen.findByRole('option', {name: 'path > to.the > target (required)'})
+      await screen.findByRole('option', {name: 'path > to.the > target (verplicht)'})
     ).toBeVisible();
     await expect(
-      await screen.findByRole('option', {name: 'path > to > uri (required)'})
+      await screen.findByRole('option', {name: 'path > to > uri (verplicht)'})
     ).toBeVisible();
 
     const saveButton = screen.getByRole('button', {name: 'Opslaan'});
@@ -364,7 +362,7 @@ export const FilesMappingAndObjectAPIRegistration = {
 
     await expect(dropdown).toBeInTheDocument();
     await expect(
-      await screen.findByRole('option', {name: 'path > to > array (required)'})
+      await screen.findByRole('option', {name: 'path > to > array (verplicht)'})
     ).toBeVisible();
   },
 };

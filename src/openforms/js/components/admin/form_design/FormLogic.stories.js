@@ -1,3 +1,5 @@
+import {fn} from '@storybook/test';
+
 import {
   FeatureFlagsDecorator,
   FormDecorator,
@@ -55,6 +57,13 @@ export default {
   title: 'Form design/FormLogic',
   component: FormLogic,
   decorators: [FeatureFlagsDecorator, FormDecorator, FormLogicDecorator],
+
+  args: {
+    onChange: fn(),
+    onServiceFetchAdd: fn(),
+    onDelete: fn(),
+    onAdd: fn(),
+  },
 
   parameters: {
     msw: {

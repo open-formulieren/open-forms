@@ -1,9 +1,9 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import ReactModal from 'react-modal';
+import {onLoaded} from 'utils/dom';
 
 import AppWrapper, {getWrapperProps} from 'components/admin/AppWrapper';
-import {onLoaded} from 'utils/dom';
 
 import DesignTokenValues from './DesignTokenValues';
 

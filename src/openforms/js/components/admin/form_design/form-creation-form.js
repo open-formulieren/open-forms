@@ -11,14 +11,14 @@ import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 import useAsync from 'react-use/esm/useAsync';
 import {useImmerReducer} from 'use-immer';
+import {APIError, NotAuthenticatedError} from 'utils/exception';
+import {post} from 'utils/fetch';
+import {getUniqueRandomString} from 'utils/random';
 
 import Loader from 'components/admin/Loader';
 import WarningIcon from 'components/admin/WarningIcon';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
-import {APIError, NotAuthenticatedError} from 'utils/exception';
-import {post} from 'utils/fetch';
-import {getUniqueRandomString} from 'utils/random';
 
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';

@@ -1,5 +1,4 @@
-import {expect} from '@storybook/jest';
-import {fireEvent, userEvent, waitFor, within} from '@storybook/testing-library';
+import {expect, fireEvent, fn, userEvent, waitFor, within} from '@storybook/test';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,
@@ -27,6 +26,7 @@ export default {
       {type: 'checkbox', key: 'canApply', name: 'Can apply?'},
       {type: 'postcode', key: 'postcode', name: 'Postcode'},
     ],
+    onSave: fn(),
   },
   parameters: {
     msw: {
@@ -288,38 +288,50 @@ export const withInitialValues = {
       outputMapping: [{formVariable: 'canApply', dmnVariable: 'reason'}],
     },
   },
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     const canvas = within(canvasElement);
 
-    const pluginDropdown = canvas.getByLabelText('Plugin');
-
-    await expect(pluginDropdown.value).toBe('camunda7');
-
-    const decisionDefDropdown = canvas.getByLabelText('Beslisdefinitie-ID');
-
-    await waitFor(async () => {
-      await expect(decisionDefDropdown.value).toBe('approve-payment');
+    await step('Selected plugin', async () => {
+      const pluginDropdown = canvas.getByLabelText('Plugin');
+      const option = await within(pluginDropdown).findByRole('option', {name: 'Camunda 7'});
+      expect(option.selected).toBe(true);
     });
 
-    const decisionDefVersionDropdown = canvas.getByLabelText('Beslisdefinitieversie');
-
-    await waitFor(async () => {
-      await expect(decisionDefVersionDropdown.value).toBe('1');
+    await step('Decision definition', async () => {
+      const decisionDefDropdown = canvas.getByLabelText('Beslisdefinitie-ID');
+      const option = await within(decisionDefDropdown).findByRole('option', {
+        name: 'Approve payment',
+      });
+      expect(option.selected).toBe(true);
     });
 
-    const varsDropdowns = within(document.querySelector('.logic-dmn__mapping-config')).getAllByRole(
-      'combobox'
-    );
+    await step('Decision definition versions', async () => {
+      const decisionDefVersionDropdown = canvas.getByLabelText('Beslisdefinitieversie');
+      const option = await within(decisionDefVersionDropdown).findByRole('option', {
+        name: 'v1 (version tag: n/a)',
+      });
+      expect(option.selected).toBe(true);
+    });
 
-    // Form vars
-    await expect(varsDropdowns[0].value).toBe('name');
-    await expect(varsDropdowns[2].value).toBe('surname');
-    await expect(varsDropdowns[4].value).toBe('canApply');
+    await step('Form variable dropdown values', async () => {
+      const formVariableDropdowns = await canvas.findAllByLabelText('Form variable');
 
-    // DMN vars
-    await expect(varsDropdowns[1].value).toBe('camundaVar');
-    await expect(varsDropdowns[3].value).toBe('port');
-    await expect(varsDropdowns[5].value).toBe('reason');
+      await waitFor(async () => {
+        await expect(formVariableDropdowns[0]).toHaveValue('name');
+        await expect(formVariableDropdowns[1]).toHaveValue('surname');
+        await expect(formVariableDropdowns[2]).toHaveValue('canApply');
+      });
+    });
+
+    await step('DMN variable dropdown values', async () => {
+      const dmnVariableDropdowns = await canvas.findAllByLabelText('DMN variable');
+
+      await waitFor(async () => {
+        await expect(dmnVariableDropdowns[0]).toHaveValue('camundaVar');
+        await expect(dmnVariableDropdowns[1]).toHaveValue('port');
+        await expect(dmnVariableDropdowns[2]).toHaveValue('reason');
+      });
+    });
   },
 };
 
