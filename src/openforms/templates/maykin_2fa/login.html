@@ -4,10 +4,17 @@
 {% block extra_login_options %}
     {% get_solo 'mozilla_django_oidc_db.OpenIDConnectConfig' as oidc_config %}
     {% if oidc_config.enabled %}
-        <div class="admin-login-option">{% trans "or" %}</div>
-        <div class="admin-login-option">
+        <div class="admin-login-option admin-login-password">
+            <a href="#" onclick="javascript: document.getElementById('login-form').style.display='block'; this.style.display='none';">{% trans "Login with application account" %}</a>
+        </div>
+        <div class="admin-login-divider"><span>{% trans "or" %}</span></div>
+        <div class="admin-login-option admin-login-oidc">
             <a href="{% url 'oidc_authentication_init' %}">{% trans "Login with organization account" %}</a>
         </div>
+        <style>
+            #login-form { display: none; }
+        </style>
+    
     {% endif %}
 {% endblock %}
 

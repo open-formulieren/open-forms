@@ -97,6 +97,22 @@ $djai-padding--tablet: 30px;
   clear: both;
   padding-top: 1em;
 }
+.admin-login-divider {
+  text-align: center;
+  clear: both;
+  padding-top: 1em;
+
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+  line-height: 0.1em;
+  margin: 10px 0 20px;
+
+  span {
+    background: #fff;
+    padding: 0 10px;
+  }
+} 
 
 /* Styling for react-jsonschema-form */
 .rjsf {
