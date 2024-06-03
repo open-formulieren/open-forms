@@ -159,8 +159,8 @@ export const SwitchToV2NonExisting = {
     expect(canvas.getByLabelText('Objecttype')).toHaveValue(
       'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
     );
-    // This time as a number as it is a number input:
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(2);
+    // While it's a number input, the value is still a string in the DOM api
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
   },
 };
 
