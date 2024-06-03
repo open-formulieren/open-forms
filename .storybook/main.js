@@ -1,7 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = {
+const config = {
   core: {
     disableTelemetry: true,
     disableWhatsNewNotifications: true,
@@ -82,5 +82,9 @@ module.exports = {
     return config;
   },
 
-  docs: {},
+  docs: {
+    autodocs: 'tag',
+  },
 };
+
+export default config;
