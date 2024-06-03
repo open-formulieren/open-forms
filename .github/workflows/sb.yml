@@ -10,11 +10,10 @@ on:
       - master
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# Allow one concurrent deployment
+concurrency:
+  group: 'pages-${{ github.ref_name }}' # unique builds for branch/tag name
+  cancel-in-progress: true
 
 jobs:
   storybook:
@@ -38,7 +37,7 @@ jobs:
           npm run build-storybook
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
-          SB_BASE_URL: '/open-forms'
+          API_BASE_URL: 'http://localhost:8000'
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -50,13 +49,14 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    # Allow one concurrent deployment
-    concurrency:
-      group: "pages"
-      cancel-in-progress: true
+    # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'  # Exclude PRs
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push' # Exclude PRs
     needs: storybook
     steps:
       - name: Setup Pages
@@ -65,3 +65,39 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  chromatic:
+    name: Chromatic (interaction & visual tests)
+    runs-on: ubuntu-latest
+    needs:
+      - storybook
+
+    # do not run in forks
+    if: github.event_name == 'push' || ! github.event.pull_request.head.repo.fork
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 👈 Required to retrieve git history
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ./storybook-static
+
+      - name: Extract artifact
+        run: |
+          tar -xvf artifact.tar
+          rm artifact.tar
+        working-directory: ./storybook-static
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@latest
+        if: github.event.pull_request.draft == false || github.event.push
+        with:
+          autoAcceptChanges: master
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: ./storybook-static
+          onlyChanged: true
