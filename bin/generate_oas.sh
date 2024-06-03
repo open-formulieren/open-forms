@@ -16,7 +16,7 @@ outfile=${1:-src/openapi.yaml}
 
 if [[ -z "${CI}" ]]; then
     echo "Dumping local configuration..."
-    CURRENT_CONFIG_FIXTURE=$(src/manage.py dumpdata config.GlobalConfiguration)
+    CURRENT_CONFIG_FIXTURE=$(src/manage.py dumpdata config.GlobalConfiguration flags)
     echo "Disabling demo plugins..."
     src/manage.py disable_demo_plugins
 fi

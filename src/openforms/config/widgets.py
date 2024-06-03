@@ -2,13 +2,13 @@ from typing import Any
 
 from django.forms import Textarea
 
+from flags.state import flag_enabled
+
 from openforms.appointments.registry import register as appointments_register
 from openforms.authentication.registry import register as auth_register
 from openforms.payments.registry import register as payments_register
 from openforms.prefill.registry import register as prefill_register
 from openforms.registrations.registry import register as registrations_register
-
-from .models import GlobalConfiguration
 
 PLUGIN_REGISTERS = [
     auth_register,
@@ -31,7 +31,7 @@ class PluginConfigurationTextAreaReact(Textarea):
     def get_context(self, name: str, value, attrs: dict) -> dict[str, Any]:
         context = super().get_context(name, value, attrs)
 
-        with_demos = GlobalConfiguration.get_solo().enable_demo_plugins
+        with_demos = flag_enabled("ENABLE_DEMO_PLUGINS")
         modules_and_plugins = {}
 
         for register in PLUGIN_REGISTERS:

@@ -400,19 +400,6 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
-    # debug/feature flags
-    enable_demo_plugins = models.BooleanField(
-        _("enable demo plugins"),
-        default=False,
-        help_text=_("If enabled, the admin allows selection of demo backend plugins."),
-    )
-
-    display_sdk_information = models.BooleanField(
-        _("display SDK information"),
-        default=False,
-        help_text=_("When enabled, information about the used SDK is displayed."),
-    )
-
     # Removing data configurations
     successful_submissions_removal_limit = models.PositiveIntegerField(
         _("successful submission removal limit"),

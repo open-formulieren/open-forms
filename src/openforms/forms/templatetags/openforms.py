@@ -1,9 +1,9 @@
 from django.template import Library
 from django.template.defaultfilters import stringfilter
 
+from flags.state import flag_enabled
 from rest_framework.reverse import reverse
 
-from openforms.config.models import GlobalConfiguration
 from openforms.utils.redirect import allow_redirect_url
 
 from ..context_processors import sdk_urls
@@ -26,9 +26,9 @@ def trim(value):
 
 @register.inclusion_tag("forms/sdk_info_banner.html")
 def sdk_info_banner():
-    config = GlobalConfiguration.get_solo()
+    enabled = flag_enabled("DISPLAY_SDK_INFORMATION")
     return {
-        "enabled": config.display_sdk_information,
+        "enabled": enabled,
         **sdk_urls(request=None),
     }
 
