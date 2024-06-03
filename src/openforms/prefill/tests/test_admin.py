@@ -19,7 +19,7 @@ class PrefillConfigTests(WebTest):
 
     @disable_admin_mfa()
     @patch(
-        "openforms.plugins.registry.GlobalConfiguration.get_solo",
+        "openforms.plugins.plugin.GlobalConfiguration.get_solo",
         return_value=GlobalConfiguration(
             plugin_configuration={
                 "registration": {

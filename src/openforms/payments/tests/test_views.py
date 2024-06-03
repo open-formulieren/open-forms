@@ -183,7 +183,7 @@ class ViewsTests(TestCase):
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://allowed.foo"]
     )
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     @patch("openforms.payments.views.on_post_submission_event")
     def test_start_plugin_not_enabled(
         self, on_post_submission_event_mock, mock_get_solo

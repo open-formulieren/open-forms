@@ -1,4 +1,3 @@
-from unittest.mock import patch
 from urllib.parse import quote
 
 from django.test import RequestFactory, TestCase, override_settings
@@ -7,10 +6,10 @@ from django.urls import reverse
 from furl import furl
 
 from openforms.accounts.tests.factories import StaffUserFactory
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.tests.feature_flags import enable_feature_flag
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....registry import register
@@ -77,9 +76,8 @@ class LoginTests(TestCase):
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_login_co_sign_bsn(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(enable_demo_plugins=True)
+    @enable_feature_flag("ENABLE_DEMO_PLUGINS")
+    def test_login_co_sign_bsn(self):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,

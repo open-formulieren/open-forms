@@ -148,7 +148,7 @@ class AuthenticationFlowTests(APITestCase):
         expected.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = "plugin1"
         self.assertEqual(furl(response["Location"]), expected)
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
     def test_plugin_start_failure_not_enabled(self, mock_get_solo):
         mock_get_solo.return_value = GlobalConfiguration(

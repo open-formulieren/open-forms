@@ -1,17 +1,12 @@
-from unittest.mock import patch
-
 from django.test import TestCase
 
-from openforms.config.models import GlobalConfiguration
+from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.validations.registry import register
 
 
 class DefaultRegistryTest(TestCase):
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_registered_validators(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(
-            enable_demo_plugins=False,
-        )
+    @enable_feature_flag("ENABLE_DEMO_PLUGINS")
+    def test_registered_validators(self):
         expected_identifiers = {
             "brk-zakelijk-gerechtigd",
             "kvk-kvkNumber",

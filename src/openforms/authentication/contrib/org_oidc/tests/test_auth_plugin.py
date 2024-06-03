@@ -21,7 +21,7 @@ class OrgOIDCAuthPluginEndpointTests(APITestCase):
 
         self.client.force_authenticate(user=self.user)
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     def test_plugin_list_org_oidc_enabled(self, mock_get_solo):
         mock_get_solo.return_value = GlobalConfiguration(
             plugin_configuration={
@@ -39,7 +39,7 @@ class OrgOIDCAuthPluginEndpointTests(APITestCase):
         plugin_names = [p["id"] for p in response.data]
         self.assertIn("org-oidc", plugin_names)
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     def test_plugin_list_org_oidc_not_enabled(self, mock_get_solo):
         mock_get_solo.return_value = GlobalConfiguration(
             plugin_configuration={

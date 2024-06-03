@@ -394,7 +394,7 @@ class PrefillHookTests(TransactionTestCase):
         except Exception:
             self.fail("Pre-fill can't handle empty/no plugins")
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     def test_applying_prefill_plugins_not_enabled(self, mock_get_solo):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)
