@@ -1,15 +1,17 @@
 import {rest} from 'msw';
-
-export const BASE_URL = process.env.SB_BASE_URL || '';
+import {API_BASE_URL} from 'utils/fetch';
 
 export const mockObjecttypesGet = objecttypes =>
-  rest.get(`${BASE_URL}/api/v2/registration/plugins/objects-api/object-types`, (req, res, ctx) => {
-    return res(ctx.json(objecttypes));
-  });
+  rest.get(
+    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/object-types`,
+    (req, res, ctx) => {
+      return res(ctx.json(objecttypes));
+    }
+  );
 
 export const mockObjecttypeVersionsGet = versions =>
   rest.get(
-    `${BASE_URL}/api/v2/registration/plugins/objects-api/object-types/:uuid/versions`,
+    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/object-types/:uuid/versions`,
     (req, res, ctx) => {
       return res(ctx.json(versions));
     }
@@ -22,7 +24,7 @@ export const mockObjecttypesError = () =>
 
 export const mockTargetPathsPost = paths =>
   rest.post(
-    `${BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`,
+    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/target-paths`,
     async (req, res, ctx) => {
       const requestBody = await req.json();
       const variableJsonSchemaType = requestBody.variableJsonSchema.type;

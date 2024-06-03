@@ -35,6 +35,11 @@ const config = {
     options: {},
   },
 
+  env: config => ({
+    ...config,
+    API_BASE_URL: process.env.API_BASE_URL || '',
+  }),
+
   webpackFinal: async (config, {configType}) => {
     const isEnvProduction = configType === 'PRODUCTION';
 

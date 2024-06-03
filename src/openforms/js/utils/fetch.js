@@ -1,13 +1,29 @@
 import {APIError, NotAuthenticatedError, ValidationErrors} from './exception';
 import {onResponseHook} from './session-expiry';
 
+export const API_BASE_URL = process.env.API_BASE_URL || '';
+
 const fetchDefaults = {
   credentials: 'same-origin', // required for Firefox 60, which is used in werkplekken
 };
 
+const normalizeUrl = url => {
+  if (!API_BASE_URL) return url;
+  // make URL fully qualified, which makes the mocks work on Github pages, Chromatic and
+  // local dev environments.
+  try {
+    new URL(url);
+  } catch (exc) {
+    // URLs like '/api/v2/foo' cannot be parsed as a URL without base, so we know
+    // we are missing the prefix
+    url = `${API_BASE_URL}${url}`;
+  }
+  return url;
+};
+
 const fetch = async (url, opts) => {
-  const options = Object.assign({}, fetchDefaults, opts);
-  const response = await window.fetch(url, options);
+  url = normalizeUrl(url);
+  const response = await window.fetch(normalizeUrl(url), opts);
   onResponseHook(response);
   return response;
 };
