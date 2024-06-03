@@ -1,5 +1,5 @@
-import {expect} from '@storybook/jest';
-import {fireEvent, userEvent, waitFor, within} from '@storybook/testing-library';
+import {expect} from '@storybook/test';
+import {fireEvent, userEvent, waitFor, within} from '@storybook/test';
 
 import {
   mockDMNDecisionDefinitionVersionsGet,

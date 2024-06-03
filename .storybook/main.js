@@ -23,10 +23,10 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     'storybook-react-intl',
+    '@storybook/addon-webpack5-compiler-babel',
   ],
   features: {
     interactionsDebugger: true,
-    storyStoreV7: true,
     buildStoriesJson: true,
   },
 
@@ -82,7 +82,5 @@ module.exports = {
     return config;
   },
 
-  docs: {
-    autodocs: 'tag',
-  },
+  docs: {},
 };

@@ -1,6 +1,6 @@
-import {expect} from '@storybook/jest';
-import {userEvent, waitFor, within} from '@storybook/testing-library';
-import {screen} from '@storybook/testing-library';
+import {expect} from '@storybook/test';
+import {userEvent, waitFor, within} from '@storybook/test';
+import {screen} from '@storybook/test';
 
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';

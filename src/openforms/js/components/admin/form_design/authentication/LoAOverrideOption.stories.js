@@ -1,5 +1,5 @@
-import {expect} from '@storybook/jest';
-import {within} from '@storybook/testing-library';
+import {expect} from '@storybook/test';
+import {within} from '@storybook/test';
 
 import LoAOverrideOption from './LoAOverrideOption';
 
