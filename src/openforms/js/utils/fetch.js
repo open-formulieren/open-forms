@@ -1,7 +1,7 @@
 import {APIError, NotAuthenticatedError, ValidationErrors} from './exception';
 import {onResponseHook} from './session-expiry';
 
-export const API_BASE_URL = process.env.API_BASE_URL || '';
+export const API_BASE_URL = process.env.API_BASE_URL;
 
 const fetchDefaults = {
   credentials: 'same-origin', // required for Firefox 60, which is used in werkplekken
