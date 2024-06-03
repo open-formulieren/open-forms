@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "jest",
+    "test:storybook": "test-storybook",
     "build": "NODE_ENV=production webpack",
     "builddev": "NODE_ENV=development webpack",
     "watch": "webpack -w",
@@ -93,6 +94,7 @@
     "@storybook/react": "^8.1.5",
     "@storybook/react-webpack5": "^8.1.5",
     "@storybook/test": "^8.1.5",
+    "@storybook/test-runner": "^0.18.2",
     "@utrecht/components": "^1.0.0-alpha.378",
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
