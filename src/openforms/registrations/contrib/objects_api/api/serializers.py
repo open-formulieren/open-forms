@@ -9,7 +9,7 @@ from ..models import ObjectsAPIGroupConfig
 
 class ObjectsAPIGroupInputSerializer(serializers.Serializer):
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
-        queryset=ObjectsAPIGroupConfig.objects.all(),
+        queryset=ObjectsAPIGroupConfig.objects.exclude(objecttypes_service=None),
         label=("Objects API group"),
         help_text=_("Which Objects API group to use."),
     )
