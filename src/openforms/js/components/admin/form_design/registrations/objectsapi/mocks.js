@@ -1,4 +1,5 @@
 import {rest} from 'msw';
+
 import {API_BASE_URL} from 'utils/fetch';
 
 export const mockObjecttypesGet = objecttypes =>

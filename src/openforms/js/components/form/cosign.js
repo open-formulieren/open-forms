@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
-import {get} from 'utils/fetch';
 
 import {AUTH_PLUGINS_ENDPOINT} from 'components/admin/form_design/constants.js';
+import {get} from 'utils/fetch';
 
 import {localiseSchema} from './i18n';
 import {patchValidateDefaults} from './textfield';
