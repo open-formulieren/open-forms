@@ -2539,6 +2539,12 @@
       "value": "Form variable"
     }
   ],
+  "RELMCa": [
+    {
+      "type": 0,
+      "value": "Which Objects API group to use."
+    }
+  ],
   "RN628y": [
     {
       "type": 0,
@@ -4543,6 +4549,12 @@
     {
       "type": 0,
       "value": "House number"
+    }
+  ],
+  "mgs/Xe": [
+    {
+      "type": 0,
+      "value": "Objects API group"
     }
   ],
   "mpzdoT": [

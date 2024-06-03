@@ -1219,6 +1219,11 @@
     "description": "Accessible label for (form) variable dropdown",
     "originalDefault": "Form variable"
   },
+  "RELMCa": {
+    "defaultMessage": "Which Objects API group to use.",
+    "description": "Objects API group selection",
+    "originalDefault": "Which Objects API group to use."
+  },
   "RcVlPF": {
     "defaultMessage": "Internal name/title of the form",
     "description": "Form name field help text",
@@ -2093,6 +2098,11 @@
     "defaultMessage": "Form field",
     "description": "JSON variable type \"Form field\" representation",
     "originalDefault": "Form field"
+  },
+  "mgs/Xe": {
+    "defaultMessage": "Objects API group",
+    "description": "Objects API group",
+    "originalDefault": "Objects API group"
   },
   "myvtu0": {
     "defaultMessage": "Manage process variables",
