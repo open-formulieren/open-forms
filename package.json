@@ -18,7 +18,7 @@
     "format": "prettier --write 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
     "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build --webpack-stats-json"
   },
   "repository": {
     "type": "git",
