@@ -106,6 +106,7 @@ django==4.2.11
     #   django-csp-reports
     #   django-digid-eherkenning
     #   django-filter
+    #   django-flags
     #   django-formtools
     #   django-hijack
     #   django-import-export
@@ -163,6 +164,8 @@ django-csp-reports==1.8.1
 django-digid-eherkenning==0.13.1
     # via -r requirements/base.in
 django-filter==23.2
+    # via -r requirements/base.in
+django-flags==5.0.13
     # via -r requirements/base.in
 django-formtools==2.5.1
     # via django-two-factor-auth

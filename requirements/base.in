@@ -47,6 +47,7 @@ django-colorfield
 django-cookie-consent
 django-cors-headers
 django-digid-eherkenning
+django-flags
 django-hijack
 django-import-export
 django-jsonform
