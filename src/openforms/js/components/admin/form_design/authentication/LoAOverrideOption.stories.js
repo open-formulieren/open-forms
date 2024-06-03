@@ -1,5 +1,4 @@
-import {expect} from '@storybook/test';
-import {within} from '@storybook/test';
+import {expect, within} from '@storybook/test';
 
 import LoAOverrideOption from './LoAOverrideOption';
 

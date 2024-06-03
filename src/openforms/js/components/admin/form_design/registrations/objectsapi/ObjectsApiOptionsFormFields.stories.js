@@ -1,7 +1,5 @@
 import {useArgs} from '@storybook/preview-api';
-import {expect} from '@storybook/test';
-import * as test from '@storybook/test';
-import {userEvent, within} from '@storybook/test';
+import {expect, fn, userEvent, within} from '@storybook/test';
 
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import Field from 'components/admin/forms/Field';
@@ -76,7 +74,7 @@ export const Default = {};
 
 export const SwitchToV2Empty = {
   play: async ({canvasElement}) => {
-    window.confirm = test.fn(() => true);
+    window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
     const v2Tab = canvas.getByRole('tab', {selected: false});
@@ -109,7 +107,7 @@ export const SwitchToV2Existing = {
     },
   },
   play: async ({canvasElement}) => {
-    window.confirm = test.fn(() => true);
+    window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
     const v2Tab = canvas.getByRole('tab', {selected: false});
@@ -141,7 +139,7 @@ export const SwitchToV2NonExisting = {
     },
   },
   play: async ({canvasElement}) => {
-    window.confirm = test.fn(() => true);
+    window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
     const v2Tab = canvas.getByRole('tab', {selected: false});
@@ -173,7 +171,7 @@ export const APIFetchError = {
     },
   },
   play: async ({canvasElement}) => {
-    window.confirm = test.fn(() => true);
+    window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
     const v2Tab = canvas.getByRole('tab', {selected: false});

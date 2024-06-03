@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import useAsync from 'react-use/esm/useAsync';
+import {get} from 'utils/fetch';
 
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
-import {get} from 'utils/fetch';
 
 const getObjecttypeVersionsEndpoint = objecttype => {
   const bits = [

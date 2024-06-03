@@ -3,7 +3,6 @@ import React, {useContext, useRef} from 'react';
 import {useIntl} from 'react-intl';
 import {useGlobalState} from 'state-pool';
 import getTinyMCEAppearance from 'tinymce_appearance';
-
 import {currentTheme} from 'utils/theme';
 
 import tinyMceConfig from '../../../../conf/tinymce_config.json';

@@ -1,5 +1,4 @@
 import {createGlobalstate} from 'state-pool';
-
 import {onLoaded} from 'utils/dom';
 
 export const THEMES = {

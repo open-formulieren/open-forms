@@ -1,5 +1,4 @@
 import {Formio} from 'formiojs';
-
 import {get} from 'utils/fetch';
 
 import {localiseSchema} from './i18n';

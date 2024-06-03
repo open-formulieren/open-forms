@@ -3,10 +3,10 @@ import set from 'lodash/set';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
+import jsonScriptToVar from 'utils/json-script';
 
 import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import useOnChanged from 'hooks/useOnChanged';
-import jsonScriptToVar from 'utils/json-script';
 
 import customTemplates from './customTemplates';
 import nlStrings from './translation';

@@ -1,7 +1,7 @@
 import useAsync from 'react-use/esm/useAsync';
+import {get} from 'utils/fetch';
 
 import {REGISTRATION_OBJECTTYPES_ENDPOINT} from 'components/admin/form_design/constants';
-import {get} from 'utils/fetch';
 
 export const useGetAvailableObjectTypes = () => {
   const {
