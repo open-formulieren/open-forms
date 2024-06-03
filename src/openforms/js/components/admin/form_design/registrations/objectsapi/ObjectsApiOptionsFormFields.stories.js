@@ -86,7 +86,7 @@ export const SwitchToV2Empty = {
     );
 
     await canvas.findByRole('option', {name: '2 (draft)'});
-    expect(canvas.getByLabelText('Objecttype version')).toHaveValue('2');
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
@@ -94,8 +94,8 @@ export const SwitchToV2Empty = {
     expect(canvas.getByLabelText('Objecttype')).toHaveValue(
       'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
     );
-    // This time as a number as it is a number input:
-    expect(canvas.getByLabelText('Objecttype version')).toHaveValue(2);
+    // While it's a number input, the value is still a string in the DOM api
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
   },
 };
 
@@ -119,7 +119,7 @@ export const SwitchToV2Existing = {
     );
 
     await canvas.findByRole('option', {name: '1 (published)'});
-    expect(canvas.getByLabelText('Objecttype version')).toHaveValue('1');
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
@@ -127,7 +127,7 @@ export const SwitchToV2Existing = {
     expect(canvas.getByLabelText('Objecttype')).toHaveValue(
       'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f2'
     );
-    expect(canvas.getByLabelText('Objecttype version')).toHaveValue('1');
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
   },
 };
 
@@ -151,7 +151,7 @@ export const SwitchToV2NonExisting = {
     );
 
     await canvas.findByRole('option', {name: '2 (draft)'});
-    expect(canvas.getByLabelText('Objecttype version')).toHaveValue('2');
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
@@ -160,7 +160,7 @@ export const SwitchToV2NonExisting = {
       'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
     );
     // This time as a number as it is a number input:
-    expect(canvas.getByLabelText('Objecttype version')).toHaveValue(2);
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(2);
   },
 };
 
@@ -178,7 +178,7 @@ export const APIFetchError = {
     await userEvent.click(v2Tab);
 
     const errorMessage = await canvas.findByText(
-      'Something went wrong when fectching the available Objecttypes and versions'
+      'Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies.'
     );
 
     expect(errorMessage).toBeVisible();
