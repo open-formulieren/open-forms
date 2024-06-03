@@ -19,7 +19,7 @@ from openforms.submissions.tests.factories import (
 )
 
 from ....constants import RegistrationAttribute
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV1Handler
 from ..typing import RegistrationOptionsV1
@@ -50,21 +50,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         super().setUp()
 
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
-            objecttype_version=1,
             productaanvraag_type="terugbelnotitie",
-            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
-            informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
-            organisatie_rsin="000000000",
             content_json=textwrap.dedent(
                 """
                 {
@@ -99,6 +85,21 @@ class ObjectsAPIBackendV1Tests(TestCase):
         )
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
+
+        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            objects_service=ServiceFactory.create(
+                api_root="https://objecten.nl/api/v1/",
+                api_type=APITypes.orc,
+            ),
+            drc_service=ServiceFactory.create(
+                api_root="https://documenten.nl/api/v1/",
+                api_type=APITypes.drc,
+            ),
+            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
+            informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
+            organisatie_rsin="000000000",
+        )
 
     def test_submission_with_objects_api_backend_override_defaults(self, m):
         submission = SubmissionFactory.from_components(
@@ -153,6 +154,8 @@ class ObjectsAPIBackendV1Tests(TestCase):
         step_slug = submission_step.form_step.slug
 
         objects_form_options = dict(
+            version=1,
+            objects_api_group=self.objects_api_group,
             objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
             objecttype_version=2,
             productaanvraag_type="testproduct",
@@ -315,6 +318,8 @@ class ObjectsAPIBackendV1Tests(TestCase):
             submitted_data={"voornaam": "Foo"},
         )
         objects_form_options = dict(
+            version=1,
+            objects_api_group=self.objects_api_group,
             objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
             objecttype_version=2,
             productaanvraag_type="testproduct",
@@ -432,7 +437,16 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(submission, {"upload_submission_csv": False})
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+                "objects_api_group": self.objects_api_group,
+                "upload_submission_csv": False,
+            },
+        )
 
         # check the requests made
         self.assertEqual(len(m.request_history), 2)
@@ -471,6 +485,10 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin.register_submission(
             submission,
             {
+                "version": 1,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+                "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": True,
                 "informatieobjecttype_submission_csv": "",
             },
@@ -507,6 +525,10 @@ class ObjectsAPIBackendV1Tests(TestCase):
         assert submission_step.form_step
         step_slug = submission_step.form_step.slug
         objects_form_options = dict(
+            version=1,
+            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
+            objecttype_version=1,
+            objects_api_group=self.objects_api_group,
             upload_submission_csv=False,
             content_json=textwrap.dedent(
                 """
@@ -609,7 +631,16 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration, applying default options from the config
-        plugin.register_submission(submission, {})
+        # (while still specifying the required fields):
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+            },
+        )
 
         # check the requests made
         self.assertEqual(len(m.request_history), 2)
@@ -724,7 +755,15 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(submission, {})
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+            },
+        )
 
         # check the requests made
         self.assertEqual(len(m.request_history), 4)
@@ -875,7 +914,15 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(submission, {})
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+            },
+        )
 
         # check the requests made
         self.assertEqual(len(m.request_history), 4)
@@ -994,7 +1041,15 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(submission, {})
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+            },
+        )
 
         # check the requests made
         self.assertEqual(len(m.request_history), 3)
@@ -1105,7 +1160,15 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(submission, {})
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+            },
+        )
 
         # check the requests made
         self.assertEqual(len(m.request_history), 3)
@@ -1179,6 +1242,10 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin.register_submission(
             submission,
             {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
                 "content_json": content_template,
                 "upload_submission_csv": False,
             },
@@ -1241,7 +1308,12 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         plugin.register_submission(
             submission,
-            {},
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+            },
         )
 
         self.assertEqual(len(m.request_history), 2)

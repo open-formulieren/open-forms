@@ -55,10 +55,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.all(),
         label=("Objects API group"),
-        help_text=_(
-            "Which Objects API group to use. If not provided, the default Objects API group will be used."
-        ),
-        required=False,
+        help_text=_("Which Objects API group to use."),
     )
     version = serializers.ChoiceField(
         label=_("options version"),

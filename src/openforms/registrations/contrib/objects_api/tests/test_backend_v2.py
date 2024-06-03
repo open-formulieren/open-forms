@@ -15,7 +15,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
@@ -34,8 +34,15 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
+        config_patcher = patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=ObjectsAPIConfig(),
+        )
+        self.mock_get_config = config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            objects_service=ServiceFactory.create(
                 api_root="http://localhost:8002/api/v2/",
                 api_type=APITypes.orc,
                 oas="https://example.com/",
@@ -44,7 +51,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
                 auth_type=AuthTypes.api_key,
             ),
-            drc_service=ServiceFactory.build(
+            drc_service=ServiceFactory.create(
                 api_root="http://localhost:8003/documenten/api/v1/",
                 api_type=APITypes.drc,
                 # See the docker compose fixtures:
@@ -53,13 +60,6 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 auth_type=AuthTypes.zgw,
             ),
         )
-
-        config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=config,
-        )
-        self.mock_get_config = config_patcher.start()
-        self.addCleanup(config_patcher.stop)
 
     def test_submission_with_objects_api_v2(self):
         submission = SubmissionFactory.from_components(
@@ -89,6 +89,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
 
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
+            "objects_api_group": self.objects_api_group,
             # See the docker compose fixtures for more info on these values:
             "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             "objecttype_version": 3,
@@ -206,6 +207,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
 
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
+            "objects_api_group": self.objects_api_group,
             # See the docker compose fixtures for more info on these values:
             "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
             "objecttype_version": 1,

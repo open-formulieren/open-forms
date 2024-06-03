@@ -17,7 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 
-from ..models import ObjectsAPIConfig
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 
 
@@ -33,23 +33,23 @@ class ObjectsAPIBackendTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
+        config_patcher = patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=ObjectsAPIConfig(),
+        )
+        self.mock_get_config = config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            objects_service=ServiceFactory.create(
                 api_root="https://objecten.nl/api/v1/",
                 api_type=APITypes.orc,
             ),
-            drc_service=ServiceFactory.build(
+            drc_service=ServiceFactory.create(
                 api_root="https://documenten.nl/api/v1/",
                 api_type=APITypes.drc,
             ),
         )
-
-        config_patcher = patch(
-            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=config,
-        )
-        self.mock_get_config = config_patcher.start()
-        self.addCleanup(config_patcher.stop)
 
     def test_csv_creation_fails_pdf_still_saved(self, m: requests_mock.Mocker):
         """Test the behavior when one of the API calls fails.
@@ -95,6 +95,7 @@ class ObjectsAPIBackendTests(TestCase):
             plugin.register_submission(
                 submission,
                 {
+                    "objects_api_group": self.objects_api_group,
                     "upload_submission_csv": True,
                     "informatieobjecttype_submission_csv": "dummy",
                     "informatieobjecttype_submission_report": "dummy",
@@ -169,6 +170,7 @@ class ObjectsAPIBackendTests(TestCase):
             plugin.register_submission(
                 submission,
                 {
+                    "objects_api_group": self.objects_api_group,
                     "upload_submission_csv": False,
                     "informatieobjecttype_attachment": "dummy",
                 },
@@ -213,6 +215,7 @@ class ObjectsAPIBackendTests(TestCase):
             plugin.register_submission(
                 submission,
                 {
+                    "objects_api_group": self.objects_api_group,
                     "upload_submission_csv": True,
                     "informatieobjecttype_submission_csv": "dummy",
                 },
