@@ -25,6 +25,7 @@ const getInformatieObjectTypen = async (backend, options) => {
     }
     case 'objects_api':
       return await get('/api/v2/registration/informatieobjecttypen', {
+        objects_api_group: options.objectsApiGroup,
         registration_backend: backend,
       });
     default:

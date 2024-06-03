@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 from zgw_consumers.test import generate_oas_component
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
@@ -30,6 +30,9 @@ class GetInformatieObjecttypesView(APITestCase):
             zrc_service__api_root="https://zaken-2.nl/api/v1/",
             drc_service__api_root="https://documenten-2.nl/api/v1/",
             ztc_service__api_root="https://catalogus-2.nl/api/v1/",
+        )
+        cls.objects_api_group1 = ObjectsAPIGroupConfig.objects.create(
+            catalogi_service=cls.zgw_group1.ztc_service
         )
 
     def install_mocks(self, m):
@@ -122,9 +125,10 @@ class GetInformatieObjecttypesView(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_retrieve_without_filter_param(self, m):
+    def test_retrieve_without_explicit_zgw_api_group(self, m):
         user = StaffUserFactory.create()
-        url = reverse("api:iotypen-list")
+        url = furl(reverse("api:iotypen-list"))
+        url.args["registration_backend"] = "zgw-create-zaak"
         self.client.force_login(user)
 
         self.install_mocks(m)
@@ -133,7 +137,7 @@ class GetInformatieObjecttypesView(APITestCase):
             "openforms.registrations.api.filters.ZgwConfig.get_solo",
             return_value=ZgwConfig(default_zgw_api_group=self.zgw_group1),
         ):
-            response = self.client.get(url)
+            response = self.client.get(url.url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -141,17 +145,18 @@ class GetInformatieObjecttypesView(APITestCase):
 
         self.assertEqual(len(data), 2)
 
-    def test_retrieve_without_filter_param_no_default(self, m):
+    def test_retrieve_without_explicit_zgw_api_group_no_default(self, m):
         user = StaffUserFactory.create()
-        url = reverse("api:iotypen-list")
+        url = furl(reverse("api:iotypen-list"))
+        url.args["registration_backend"] = "zgw-create-zaak"
         self.client.force_login(user)
 
-        response = self.client.get(url)
+        response = self.client.get(url.url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), [])
 
-    def test_retrieve_with_filter_params(self, m):
+    def test_retrieve_with_explicit_zgw_api_group(self, m):
         user = StaffUserFactory.create()
         url = furl(reverse("api:iotypen-list"))
         url.args["zgw_api_group"] = self.zgw_group2.pk
@@ -168,30 +173,37 @@ class GetInformatieObjecttypesView(APITestCase):
 
         self.assertEqual(len(data), 1)
 
-    def test_filter_with_invalid_param(self, m):
+    def test_filter_with_invalid_zgw_group(self, m):
         user = StaffUserFactory.create()
         url = furl(reverse("api:iotypen-list"))
         url.args["zgw_api_group"] = "INVALID"
+        url.args["registration_backend"] = "zgw-create-zaak"
         self.client.force_login(user)
 
         response = self.client.get(url.url)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), [])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_with_object_api(self, m):
+    def test_missing_objects_api_group(self, m):
         user = StaffUserFactory.create()
         url = furl(reverse("api:iotypen-list"))
         url.args["registration_backend"] = "objects_api"
         self.client.force_login(user)
 
+        response = self.client.get(url.url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_with_explicit_objects_api_group(self, m):
+        user = StaffUserFactory.create()
+        url = furl(reverse("api:iotypen-list"))
+        url.args["objects_api_group"] = self.objects_api_group1.pk
+        url.args["registration_backend"] = "objects_api"
+        self.client.force_login(user)
+
         self.install_mocks(m)
 
-        with patch(
-            "openforms.registrations.api.filters.ObjectsAPIConfig.get_solo",
-            return_value=ObjectsAPIConfig(catalogi_service=self.zgw_group1.ztc_service),
-        ):
-            response = self.client.get(url.url)
+        response = self.client.get(url.url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
