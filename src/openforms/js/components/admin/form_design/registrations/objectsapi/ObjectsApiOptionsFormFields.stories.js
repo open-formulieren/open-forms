@@ -1,4 +1,4 @@
-import {useArgs} from '@storybook/client-api';
+import {useArgs} from '@storybook/preview-api';
 import {expect} from '@storybook/test';
 import * as test from '@storybook/test';
 import {userEvent, within} from '@storybook/test';
