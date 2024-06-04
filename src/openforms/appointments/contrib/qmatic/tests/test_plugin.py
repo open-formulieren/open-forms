@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 
 import requests_mock
 from hypothesis import given, strategies as st
+from requests.exceptions import RequestException
 
 from openforms.formio.service import build_serializer
 from openforms.utils.date import TIMEZONE_AMS
@@ -13,9 +14,14 @@ from openforms.utils.tests.logging import disable_logging
 
 from ....base import AppointmentDetails, Customer, Location, Product
 from ....core import book
-from ....exceptions import AppointmentCreateFailed, AppointmentException
+from ....exceptions import (
+    AppointmentCreateFailed,
+    AppointmentDeleteFailed,
+    AppointmentException,
+)
 from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
+from ..exceptions import QmaticException
 from ..plugin import QmaticAppointment
 from .factories import ServiceFactory
 from .utils import MockConfigMixin, mock_response
@@ -593,6 +599,34 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             AppointmentCreateFailed, "Unexpected appointment create failure"
         ):
             self.plugin.create_appointment([product], location, start_at, client)
+
+    @requests_mock.Mocker()
+    def test_delete_appointment_failure(self, m):
+        identifier = "fa67a4692bb4c3fab9a0fbcc5511ff346ba4"
+
+        for exc in [QmaticException, RequestException]:
+            with self.subTest(exc=exc):
+                m.delete(
+                    f"{self.api_root}v1/appointments/{identifier}",
+                    exc=exc,
+                )
+
+                with self.assertRaises(AppointmentDeleteFailed):
+                    self.plugin.delete_appointment(identifier)
+
+    @requests_mock.Mocker()
+    def test_get_appointment_details_failure(self, m):
+        identifier = "d50517a0ae88cdbc495f7a32e011cb"
+
+        for exc in [QmaticException, RequestException, KeyError]:
+            with self.subTest(exc=exc):
+                m.get(
+                    f"{self.api_root}v1/appointments/{identifier}",
+                    exc=exc,
+                )
+
+                with self.assertRaises(AppointmentException):
+                    self.plugin.get_appointment_details(identifier)
 
 
 class ConfigurationTests(SimpleTestCase):
