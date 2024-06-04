@@ -97,6 +97,7 @@ $djai-padding--tablet: 30px;
   clear: both;
   padding-top: 1em;
 }
+
 .admin-login-divider {
   text-align: center;
   clear: both;
@@ -106,13 +107,21 @@ $djai-padding--tablet: 30px;
   text-align: center;
   border-bottom: 1px solid #ccc;
   line-height: 0.1em;
-  margin: 10px 0 20px;
+  margin: 10px 0 10px;
 
   span {
     background: #fff;
     padding: 0 10px;
   }
-} 
+}
+
+/**
+ * mozilla-django-oidc-db
+ * hide the regular admin login form by default if OIDC is enabled
+ */
+#login-form:has(~ .admin-login-oidc) {
+  display: none;
+}
 
 /* Styling for react-jsonschema-form */
 .rjsf {

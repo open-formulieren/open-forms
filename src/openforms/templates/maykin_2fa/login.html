@@ -1,20 +1,16 @@
 {% extends "maykin_2fa/login.html" %}
-{% load solo_tags i18n %}
+{% load solo_tags i18n static %}
 
 {% block extra_login_options %}
     {% get_solo 'mozilla_django_oidc_db.OpenIDConnectConfig' as oidc_config %}
     {% if oidc_config.enabled %}
         <div class="admin-login-option admin-login-password">
-            <a href="#" onclick="javascript: document.getElementById('login-form').style.display='block'; this.style.display='none';">{% trans "Login with application account" %}</a>
+            <a href="#">{% trans "Login with application account" %}</a>
         </div>
         <div class="admin-login-divider"><span>{% trans "or" %}</span></div>
         <div class="admin-login-option admin-login-oidc">
             <a href="{% url 'oidc_authentication_init' %}">{% trans "Login with organization account" %}</a>
         </div>
-        <style>
-            #login-form { display: none; }
-        </style>
-    
     {% endif %}
 {% endblock %}
 
@@ -27,4 +23,5 @@
 {# Do not show any version information #}
 {% block footer %}
     <div id="footer"></div>
+    <script src="{% static 'bundles/core-js.js' %}"></script>
 {% endblock %}
