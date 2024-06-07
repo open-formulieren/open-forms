@@ -231,7 +231,7 @@ Logica
 ------
 
 In dit tabblad kunnen regels worden gedefinieerd die, afhankelijk van de
-gegevens die de gebruikers invult, zowel de inhoud als het gedrag van het
+gegevens die de gebruiker invult, zowel de inhoud als het gedrag van het
 formulier kunnen wijzigen.
 
 Logica geeft u krachtige mogelijkheden om het formulier dynamischer te maken.
