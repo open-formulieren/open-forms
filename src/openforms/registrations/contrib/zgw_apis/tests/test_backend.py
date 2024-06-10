@@ -2178,3 +2178,56 @@ class ZGWBackendTests(TestCase):
                 "zaaktype": "https://zaken.nl/api/v1/zaaktypen/1",
             },
         )
+
+    @tag("gh-4337")
+    def test_zgw_backend_zaak_omschrijving(self, m):
+        with self.subTest("Short name that is not truncated"):
+            submission = SubmissionFactory.create(
+                completed_not_preregistered=True,
+                with_report=True,
+                form__name="Short name",
+            )
+            zgw_form_options = dict(
+                zgw_api_group=self.zgw_group,
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+                informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                auteur="",
+                zaak_vertrouwelijkheidaanduiding="",
+            )
+            self.install_mocks(m)
+            plugin = ZGWRegistration("zgw")
+
+            plugin.pre_register_submission(submission, zgw_form_options)
+
+            create_zaak = m.last_request
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(create_zaak.method, "POST")
+            body = create_zaak.json()
+            self.assertEqual(body["omschrijving"], "Short name")
+
+        with self.subTest("Long name that is truncated"):
+            submission = SubmissionFactory.create(
+                completed_not_preregistered=True,
+                with_report=True,
+                form__name="Long name that will most definitely be truncated to 80 characters right???????????",
+            )
+            zgw_form_options = dict(
+                zgw_api_group=self.zgw_group,
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+                informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                auteur="",
+                zaak_vertrouwelijkheidaanduiding="",
+            )
+            self.install_mocks(m)
+            plugin = ZGWRegistration("zgw")
+
+            plugin.pre_register_submission(submission, zgw_form_options)
+
+            create_zaak = m.last_request
+            self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(create_zaak.method, "POST")
+            body = create_zaak.json()
+            self.assertEqual(
+                body["omschrijving"],
+                "Long name that will most definitely be truncated to 80 characters right????????\u2026",
+            )
