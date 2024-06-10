@@ -9,5 +9,7 @@
     "content_style": "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
     "default_link_target": "_blank",
     "link_default_protocol": "https",
-    "link_assume_external_targets": true
+    "link_assume_external_targets": true,
+    "relative_urls": false,
+    "remove_script_host": false
 }
