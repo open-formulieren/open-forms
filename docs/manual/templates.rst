@@ -5,7 +5,7 @@ Sjablonen
 =========
 
 Open Forms ondersteunt sjablonen voor verschillende aspecten. Sjablonen zijn
-teksten die aangepaste kunnen worden op basis van het ingevulde formulier.
+teksten die aangepast kunnen worden op basis van het ingevulde formulier.
 
 .. note::
     Voor de ontwikkelaars documentatie, zie :ref:`developers_backend_core_templating`.
