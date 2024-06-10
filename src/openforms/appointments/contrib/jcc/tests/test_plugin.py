@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 import requests_mock
 from hypothesis import given, strategies as st
+from requests.exceptions import RequestException
+from zeep.exceptions import Error as ZeepError
 
 from openforms.formio.service import build_serializer
 from openforms.utils.tests.logging import disable_logging
@@ -15,7 +17,11 @@ from soap.tests.factories import SoapServiceFactory
 
 from ....base import AppointmentDetails, Customer, CustomerDetails, Location, Product
 from ....core import book
-from ....exceptions import AppointmentCreateFailed, AppointmentException
+from ....exceptions import (
+    AppointmentCreateFailed,
+    AppointmentDeleteFailed,
+    AppointmentException,
+)
 from ....tests.factories import AppointmentFactory, AppointmentProductFactory
 from ..constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
 from ..plugin import JccAppointment
@@ -684,6 +690,48 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             AppointmentCreateFailed, "Unexpected appointment create failure"
         ):
             self.plugin.create_appointment([product], location, start_at, client)
+
+    @requests_mock.Mocker()
+    def test_delete_appointment_failure(self, m):
+        identifier = "1234567890"
+
+        for exc in [ZeepError, RequestException]:
+            with self.subTest(exc=exc):
+                m.post(
+                    "http://example.com/soap11",
+                    exc=exc,
+                )
+
+                with self.assertRaises(AppointmentDeleteFailed):
+                    self.plugin.delete_appointment(identifier)
+
+    @requests_mock.Mocker()
+    def test_get_appointment_details_failure(self, m):
+        identifier = "1234567890"
+
+        for exc in [ZeepError, RequestException, AttributeError]:
+            with self.subTest(exc=exc):
+                m.post(
+                    "http://example.com/soap11",
+                    exc=exc,
+                )
+
+                with self.assertRaises(AppointmentException):
+                    self.plugin.get_appointment_details(identifier)
+
+    @requests_mock.Mocker()
+    def test_get_appointment_details_none_found(self, m):
+        identifier = "1234567890"
+
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovAppointmentDetailsEmptyResponse.xml"),
+            additional_matcher=lambda req: "getGovAppointmentDetailsRequest"
+            in req.text,
+        )
+
+        with self.assertRaises(AppointmentException):
+            self.plugin.get_appointment_details(identifier)
 
 
 class ConfigurationTests(SimpleTestCase):
