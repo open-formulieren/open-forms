@@ -2,9 +2,9 @@ import flatpickr from 'flatpickr';
 import {Dutch} from 'flatpickr/dist/l10n/nl.js';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
-import {onLoaded} from 'utils/dom';
 
 import AppWrapper, {getWrapperProps} from 'components/admin/AppWrapper';
+import {onLoaded} from 'utils/dom';
 
 import FormIOBuilder from './builder';
 

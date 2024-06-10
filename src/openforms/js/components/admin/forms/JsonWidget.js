@@ -3,6 +3,7 @@ import jsonLogic from 'json-logic-js';
 import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
 import {useIntl} from 'react-intl';
+
 import jsonPropTypeValidator from 'utils/JsonPropTypeValidator';
 
 import {TextArea} from './Inputs';

@@ -10,12 +10,12 @@ import isEmpty from 'lodash/isEmpty';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {IntlProvider} from 'react-intl';
-import jsonScriptToVar from 'utils/json-script';
 
 import {getIntlProviderProps} from 'components/admin/i18n';
 import {getAvailableAuthPlugins} from 'components/form/cosign';
 import {getAvailableDocumentTypes} from 'components/form/file';
 import {getComponentEmptyValue} from 'components/utils';
+import jsonScriptToVar from 'utils/json-script';
 
 import {
   getPrefillAttributes,
@@ -184,6 +184,7 @@ class WebformBuilder extends WebformBuilderFormio {
         // Clean up.
         this.removeEventListener(this.dialog, 'close', dialogClose);
         this.dialog = null;
+        root.unmount();
       };
       this.addEventListener(this.dialog, 'close', dialogClose);
 

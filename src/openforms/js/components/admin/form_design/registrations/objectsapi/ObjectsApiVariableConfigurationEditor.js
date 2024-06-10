@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useAsync, useToggle} from 'react-use';
-import {post} from 'utils/fetch';
 
 import {APIContext, FormContext} from 'components/admin/form_design/Context';
 import {REGISTRATION_OBJECTS_TARGET_PATHS} from 'components/admin/form_design/constants';
@@ -14,6 +13,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import ErrorMessage from 'components/errors/ErrorMessage';
+import {post} from 'utils/fetch';
 
 import {asJsonSchema} from './utils';
 

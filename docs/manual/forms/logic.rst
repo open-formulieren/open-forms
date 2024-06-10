@@ -30,7 +30,7 @@ Bovenstaand voorbeeld wijzigt de waarde van het tekstveld *Aanhef*, in de
 formulierstap *Persoonlijk*, naar ``de heer`` als het geselecteerde *Geslacht* 
 ``m`` is.
 
-In het voorbeeld staan een aantal woorden tussen blokhaken ([...]). Hiermee
+In het voorbeeld staat een aantal woorden tussen blokhaken ([...]). Hiermee
 duiden we in de documentatie aan dat dit keuzevelden zijn. Er zijn namelijk
 allerlei mogelijkheden om regels op te stellen en acties uit te voeren.
 

@@ -2,6 +2,7 @@
  * Utilities to manage the translations/localisation of components in the form builder.
  */
 import get from 'lodash/get';
+
 import jsonScriptToVar from 'utils/json-script';
 
 export const nlStrings = require('lang/formio/nl.json');

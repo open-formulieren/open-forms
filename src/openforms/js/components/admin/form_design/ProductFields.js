@@ -2,13 +2,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
-import {get} from 'utils/fetch';
 
 import Loader from 'components/admin/Loader';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
+import {get} from 'utils/fetch';
 
 import {PRODUCTS_ENDPOINT} from './constants';
 

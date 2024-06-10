@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
-import {getTranslatedChoices} from 'utils/i18n';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
@@ -11,6 +10,7 @@ import ArrayInput from 'components/admin/forms/ArrayInput';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 import useOnChanged from 'hooks/useOnChanged';
+import {getTranslatedChoices} from 'utils/i18n';
 
 import DSLEditorNode from './DSLEditorNode';
 import DataPreview from './DataPreview';

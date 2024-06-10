@@ -1,4 +1,5 @@
 import {rest} from 'msw';
+
 import {API_BASE_URL} from 'utils/fetch';
 
 export const mockObjecttypesGet = objecttypes =>
@@ -18,7 +19,7 @@ export const mockObjecttypeVersionsGet = versions =>
   );
 
 export const mockObjecttypesError = () =>
-  rest.all('*', (req, res, ctx) => {
+  rest.all(`${API_BASE_URL}/api/v2/*`, (req, res, ctx) => {
     return res(ctx.status(500));
   });
 

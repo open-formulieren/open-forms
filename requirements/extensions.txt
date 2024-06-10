@@ -783,7 +783,7 @@ tinycss2==1.1.0
     #   bleach
     #   cssselect2
     #   weasyprint
-tornado==6.3.3
+tornado==6.4.1
     # via
     #   -r requirements/base.txt
     #   flower
