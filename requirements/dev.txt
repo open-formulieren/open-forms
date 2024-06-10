@@ -1173,7 +1173,7 @@ tomli==1.2.1
     #   build
     #   pip-tools
     #   pytest
-tornado==6.3.3
+tornado==6.4.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
