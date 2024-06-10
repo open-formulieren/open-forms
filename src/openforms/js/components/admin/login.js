@@ -1,9 +1,16 @@
-const defaultLogin = document.querySelector('.admin-login-password');
-const loginForm = document.querySelector('#login-form');
+import {onLoaded} from 'utils/dom';
 
-if (defaultLogin && loginForm) {
-  defaultLogin.addEventListener('click', e => {
-    loginForm.style.display = 'block';
-    defaultLogin.style.display = 'none';
-  });
-}
+const addAdminLoginExpand = () => {
+  const defaultLoginToggle = document.querySelector('.admin-login-option--password');
+  const loginForm = document.querySelector('#login-form');
+
+  if (defaultLoginToggle && loginForm) {
+    defaultLoginToggle.addEventListener('click', e => {
+      e.preventDefault();
+      loginForm.classList.toggle('login-form--enabled');
+      defaultLoginToggle.classList.toggle('admin-login-option--disabled');
+    });
+  }
+};
+
+onLoaded(addAdminLoginExpand);

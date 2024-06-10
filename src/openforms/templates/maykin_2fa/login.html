@@ -4,11 +4,11 @@
 {% block extra_login_options %}
     {% get_solo 'mozilla_django_oidc_db.OpenIDConnectConfig' as oidc_config %}
     {% if oidc_config.enabled %}
-        <div class="admin-login-option admin-login-password">
+        <div class="admin-login-option admin-login-option--password">
             <a href="#">{% trans "Login with application account" %}</a>
         </div>
         <div class="admin-login-divider"><span>{% trans "or" %}</span></div>
-        <div class="admin-login-option admin-login-oidc">
+        <div class="admin-login-option admin-login-option--oidc">
             <a href="{% url 'oidc_authentication_init' %}">{% trans "Login with organization account" %}</a>
         </div>
     {% endif %}
