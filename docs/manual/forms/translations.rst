@@ -16,7 +16,7 @@ Deze handleiding beschrijft hoe u dat doet.
 Globale configuratievertalingen
 ===============================
 
-Allereerst zijn er een aantal globaal gebruikte teksten waarvan de vertalingen ingevoerd
+Allereerst is er een aantal globaal gebruikte teksten waarvan de vertalingen ingevoerd
 dienen te worden. Navigeer hiervoor naar **Configuratie > Algemene configuratie**.
 
 Op deze pagina vindt u de vertaalbare velden - deze hebben achtervoegsels zoals
