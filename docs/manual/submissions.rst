@@ -50,7 +50,7 @@ beschikbaar tot het moment van schoning.
 Opschonen
 =========
 
-Inzendingen worden regelmatig geschoond. Er zijn een aantal instellingen die
+Inzendingen worden regelmatig geschoond. Er is een aantal instellingen die
 de manier en periode van opschoning beïnvloeden. Zo kunnen inzendingen na
 enige tijd volledig verwijderd worden of kan alleen gevoelige informatie uit 
 een inzending verwijderd worden.
