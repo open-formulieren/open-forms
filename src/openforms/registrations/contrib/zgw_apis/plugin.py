@@ -3,6 +3,7 @@ from functools import partial, wraps
 from typing import Any, TypedDict
 
 from django.urls import reverse
+from django.utils.text import Truncator
 from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
@@ -171,6 +172,7 @@ class ZGWRegistration(BasePlugin):
             _create_zaak = partial(
                 zaken_client.create_zaak,
                 zaaktype=options["zaaktype"],
+                omschrijving=Truncator(submission.form.name).chars(80),
                 bronorganisatie=options["organisatie_rsin"],
                 vertrouwelijkheidaanduiding=options.get(
                     "zaak_vertrouwelijkheidaanduiding", ""
