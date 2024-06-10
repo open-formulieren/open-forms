@@ -125,3 +125,20 @@ Service           Supported versions
 ================  ===================
 StUF-ZDS          1.0 - 1.2
 ================  ===================
+
+
+Messages
+--------
+
+These SOAP-operations are used by this plugin:
+
+* ``genereerZaakIdentificatie_Di02``
+* ``creeerZaak_Lk01``
+
+   * ``heeftAlsInitiator`` (the initiator can be excluded if needed)
+   * ``heeftAlsOverigBetrokkene`` (will only be set if an employee logs in on behalf of a client)
+   * ``heeft`` (the status can be excluded if needed)
+
+* ``updateZaak_Lk01`` (only used when delayed payments are enabled)
+* ``genereerDocumentIdentificatie_Di02``
+* ``voegZaakdocumentToe_Lk01`` (for both the submission document and each attachment)
