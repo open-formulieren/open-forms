@@ -16,7 +16,7 @@ add a link to your privacy policy to explain why these cookies are required.
 .. _`GDPR`: https://gdpr.eu/
 
 
-Pivacy related settings
+Privacy related settings
 -----------------------
 
 There are 3 related settings to privacy:
