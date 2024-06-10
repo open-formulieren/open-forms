@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {useContext, useEffect} from 'react';
 import {FormattedMessage, defineMessage} from 'react-intl';
 import {useAsync} from 'react-use';
-import {get} from 'utils/fetch';
 
 import {FormContext} from 'components/admin/form_design/Context';
 import {
@@ -13,6 +12,7 @@ import {
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
+import {get} from 'utils/fetch';
 
 import DMNParametersForm from './DMNParametersForm';
 import {inputValuesType} from './types';

@@ -2,10 +2,10 @@ import jsonLogic from 'json-logic-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
-import {getTranslatedChoices} from 'utils/i18n';
 
 import {NumberInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
+import {getTranslatedChoices} from 'utils/i18n';
 
 import DSLEditorNode from './DSLEditorNode';
 import {OPERATORS} from './constants';

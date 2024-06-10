@@ -1,9 +1,9 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
-import {onLoaded} from 'utils/dom';
-import jsonScriptToVar from 'utils/json-script';
 
 import AppWrapper, {getWrapperProps} from 'components/admin/AppWrapper';
+import {onLoaded} from 'utils/dom';
+import jsonScriptToVar from 'utils/json-script';
 
 import PluginConfiguration from './PluginConfiguration';
 

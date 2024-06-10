@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
-import {getTranslatedChoices} from 'utils/i18n';
 
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {NumberInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
+import {getTranslatedChoices} from 'utils/i18n';
 
 const REMOVAL_METHODS = [
   [

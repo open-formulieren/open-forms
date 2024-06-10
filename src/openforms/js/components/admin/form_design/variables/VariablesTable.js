@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
-import {get} from 'utils/fetch';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
@@ -13,6 +12,7 @@ import Field from 'components/admin/forms/Field';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
+import {get} from 'utils/fetch';
 
 import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
 import RegistrationSummaryList from './registration';

@@ -2,11 +2,11 @@ import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import useAsync from 'react-use/esm/useAsync';
-import {post} from 'utils/fetch';
 
 import {APIContext} from 'components/admin/form_design/Context';
 import {LOGIC_DESCRIPTION_ENDPOINT} from 'components/admin/form_design/constants';
 import {TextInput} from 'components/admin/forms/Inputs';
+import {post} from 'utils/fetch';
 
 const generateDescription = async (csrftoken, expression) => {
   let response;

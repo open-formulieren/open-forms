@@ -4,13 +4,13 @@ import {FormattedDate, FormattedMessage, FormattedTime, useIntl} from 'react-int
 import useAsync from 'react-use/esm/useAsync';
 import semverDiff from 'semver/functions/diff';
 import semverValid from 'semver/functions/valid';
-import {get, post} from 'utils/fetch';
 
 import Loader from 'components/admin/Loader';
 import User from 'components/admin/User';
 import WarningIcon from 'components/admin/WarningIcon';
 import {APIContext} from 'components/admin/form_design/Context';
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import {get, post} from 'utils/fetch';
 
 const checkVersionsCompatible = (version1, version2) => {
   // if any of the versions is empty, we can't reach any conclusions

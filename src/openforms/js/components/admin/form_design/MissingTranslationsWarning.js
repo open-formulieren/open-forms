@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import {FormattedMessage} from 'react-intl';
-import jsonScriptToVar from 'utils/json-script';
 
 import MessageList from 'components/admin/MessageList';
 import TYPES from 'components/admin/form_design/types';
 import {Modal} from 'components/admin/modals';
 import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
+import jsonScriptToVar from 'utils/json-script';
 
 import {extractMissingComponentTranslations} from './MissingComponentTranslationsWarning';
 
