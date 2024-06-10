@@ -184,6 +184,7 @@ class WebformBuilder extends WebformBuilderFormio {
         // Clean up.
         this.removeEventListener(this.dialog, 'close', dialogClose);
         this.dialog = null;
+        root.unmount();
       };
       this.addEventListener(this.dialog, 'close', dialogClose);
 
