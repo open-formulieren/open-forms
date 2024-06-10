@@ -72,7 +72,7 @@ Navigeer vervolgens in de admin naar **Accounts** > **OpenID Connect configurati
 5. Vul bij **OpenID sign algorithm** ``RS256`` in.
 6. Laat **Sign key** leeg.
 
-Vervolgens moeten er een aantal endpoints van de OIDC provider ingesteld worden,
+Vervolgens moet er een aantal endpoints van de OIDC provider ingesteld worden,
 deze kunnen automatisch bepaald worden aan de hand van het discovery endpoint
 (``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
 
