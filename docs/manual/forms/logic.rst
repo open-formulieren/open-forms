@@ -161,6 +161,8 @@ gegevens die de gebruiker invult. Er zijn verschillende acties mogelijk:
 
   * *<stap>* - De formulierstap die als n.v.t. wordt aangemerkt.
 
+* **DMN evalueren** - Met deze actie kunnen beslistabellen uitgevoerd worden. Zie
+  :ref:`manual_logic_dmn` voor meer details.
 
 Geavanceerde logica
 ===================

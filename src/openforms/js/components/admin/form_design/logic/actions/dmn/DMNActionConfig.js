@@ -140,6 +140,12 @@ const DecisionDefinitionVersionField = () => {
           description="Decision definition version label"
         />
       }
+      helpText={
+        <FormattedMessage
+          description="DMN action: definition version field help text"
+          defaultMessage="If left blank, then the most recent version is used."
+        />
+      }
     >
       <Select
         allowBlank

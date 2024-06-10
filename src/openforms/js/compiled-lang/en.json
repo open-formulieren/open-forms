@@ -4081,6 +4081,12 @@
       "value": "Are you sure you want to delete this variable?"
     }
   ],
+  "hhoWxC": [
+    {
+      "type": 0,
+      "value": "If left blank, then the most recent version is used."
+    }
+  ],
   "huHjRm": [
     {
       "type": 0,

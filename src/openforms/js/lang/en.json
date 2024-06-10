@@ -1879,6 +1879,11 @@
     "description": "User defined variable deletion confirm message",
     "originalDefault": "Are you sure you want to delete this variable?"
   },
+  "hhoWxC": {
+    "defaultMessage": "If left blank, then the most recent version is used.",
+    "description": "DMN action: definition version field help text",
+    "originalDefault": "If left blank, then the most recent version is used."
+  },
   "huHjRm": {
     "defaultMessage": "Configure",
     "description": "Manage complex process vars configure column title",
