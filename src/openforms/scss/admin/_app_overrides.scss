@@ -3,6 +3,7 @@
 
  Generic overrides should go in _admin_theme.scss
  */
+@use 'microscope-sass/lib/bem';
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/util';
 
@@ -96,6 +97,42 @@ $djai-padding--tablet: 30px;
   text-align: center;
   clear: both;
   padding-top: 1em;
+
+  @include bem.modifier('disabled') {
+    display: none;
+  }
+}
+
+.admin-login-divider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-block-start: 1em;
+  &:after,
+  &:before {
+    content: '';
+    display: block;
+    border-bottom: 1px solid var(--border-color);
+    flex-grow: 1;
+  }
+  > span {
+    flex-shrink: 0;
+    padding-inline: 10px;
+  }
+}
+
+/**
+ * mozilla-django-oidc-db
+ * hide the regular admin login form by default if OIDC is enabled
+ */
+#login-form {
+  &:has(~ .admin-login-option--oidc) {
+    display: none;
+  }
+
+  &.login-form--enabled {
+    display: block;
+  }
 }
 
 /* Styling for react-jsonschema-form */
