@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Iterator
 
+from django.conf import settings
 from django.urls import reverse
 from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
@@ -35,7 +36,10 @@ class ContainerMixin:
         # class.
         # In registration mode, we need to treat layout/container nodes as visible so
         # that their children are emitted too.
-        if self.mode in {RenderModes.export, RenderModes.registration}:
+        visible_modes = {RenderModes.export, RenderModes.registration}
+        if settings.DISABLE_SENDING_HIDDEN_FIELDS:
+            visible_modes.remove(RenderModes.registration)
+        if self.mode in visible_modes:
             return True
 
         # We only pass the step data, since frontend logic only has access to the current step data.
