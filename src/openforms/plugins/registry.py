@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, Callable, Generic, Iterator, TypeVar
 
 from django.db import OperationalError
 
-from openforms.config.models import GlobalConfiguration
+from flags.state import flag_enabled
+
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 
 if TYPE_CHECKING:
@@ -68,9 +69,7 @@ class BaseRegistry(Generic[PluginT_co]):
 
     def iter_enabled_plugins(self) -> Iterator[PluginT_co]:
         try:
-            config = GlobalConfiguration.get_solo()
-            assert isinstance(config, GlobalConfiguration)
-            with_demos = config.enable_demo_plugins
+            with_demos = flag_enabled("ENABLE_DEMO_PLUGINS")
             enable_all = False
         except OperationalError:
             # fix CI trying to access non-existing database to generate OAS

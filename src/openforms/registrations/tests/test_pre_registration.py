@@ -276,7 +276,7 @@ class PreRegistrationTests(TestCase):
             "OF-IM-TEMPORARY",
         )
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     def test_retry_after_too_many_attempts_skips(self, m_get_solo):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
@@ -336,7 +336,7 @@ class PreRegistrationTests(TestCase):
             submission.registration_result, {"zaak": {"ohlalla": "a property!"}}
         )
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     def test_traceback_removed_from_result_after_success(self, m_get_solo):
         zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(

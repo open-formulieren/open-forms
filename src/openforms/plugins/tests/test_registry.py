@@ -38,7 +38,7 @@ class TestPluginDifferentNamespace(AbstractBasePlugin):
     verbose_name = "Test2"
 
 
-@patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+@patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
 class RegistryTestCase(TestCase):
     def test_registry_iter_enabled_plugins(self, mock_get_solo):
         mock_get_solo.return_value = GlobalConfiguration(
@@ -108,20 +108,17 @@ class RegistryTestCase(TestCase):
         self.assertEqual(plugins_namespace2[0].identifier, "plugin2")
         self.assertEqual(plugins_namespace2[0].registry, register2)
 
-    def test_registry_iter_enabled_plugins_no_database_enable_all(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(
-            plugin_configuration={
-                "test": {
-                    "plugin1": {"enabled": False},
-                    "plugin2": {"enabled": False},
-                },
-            }
-        )
+    # When the OAS is generated, the database is not used. Whatever we put in the
+    # GlobalConfiguration (mock) is ignored anyway in this situation.
+    @patch(
+        "flags.sources.DatabaseFlagsSource.get_flags", side_effect=OperationalError()
+    )
+    def test_registry_iter_enabled_plugins_no_database_enable_all(
+        self, mock_get_flags, mock_get_solo
+    ):
+        plugins = [x for x in register1.iter_enabled_plugins()]
 
-        # When the OAS is generated, the database is not used
-        with patch("openforms.config.models.GlobalConfiguration.get_solo") as m:
-            m.side_effect = OperationalError()
-            plugins = [x for x in register1.iter_enabled_plugins()]
+        mock_get_flags.assert_called_once()
 
         self.assertEqual(len(plugins), 2)
         self.assertEqual(plugins[0].identifier, "plugin1")

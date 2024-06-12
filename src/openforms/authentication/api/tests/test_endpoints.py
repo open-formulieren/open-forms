@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.config.models import GlobalConfiguration
+from openforms.utils.tests.feature_flags import enable_feature_flag
 
 from ...base import BasePlugin
 from ...constants import AuthAttribute
@@ -85,10 +85,6 @@ class ResponseTests(APITestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-        config = GlobalConfiguration.get_solo()
-        config.enable_demo_plugins = False
-        config.save()
-
     def test_single_auth_plugin(self):
         endpoint = reverse("api:authentication-plugin-list")
         response = self.client.get(endpoint)
@@ -108,11 +104,8 @@ class ResponseTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), expected)
 
+    @enable_feature_flag("ENABLE_DEMO_PLUGINS")
     def test_demo_plugin(self):
-        config = GlobalConfiguration.get_solo()
-        config.enable_demo_plugins = True
-        config.save()
-
         endpoint = reverse("api:authentication-plugin-list")
         response = self.client.get(endpoint)
 

@@ -195,6 +195,7 @@ INSTALLED_APPS = [
     "django_camunda",
     "log_outgoing_requests",
     "import_export",
+    "flags",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -1143,6 +1144,14 @@ LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
 LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
 )  # number of days
+
+#
+# DJANGO-FLAGS - manage feature flags.
+#
+FLAGS = {
+    "ENABLE_DEMO_PLUGINS": [],
+    "DISPLAY_SDK_INFORMATION": [],
+}
 
 #
 # Open Forms extensions

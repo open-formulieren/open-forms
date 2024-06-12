@@ -207,6 +207,7 @@ django==4.2.11
     #   django-digid-eherkenning
     #   django-extensions
     #   django-filter
+    #   django-flags
     #   django-formtools
     #   django-hijack
     #   django-import-export
@@ -296,6 +297,10 @@ django-digid-eherkenning==0.13.1
 django-extensions==3.2.3
     # via -r requirements/dev.in
 django-filter==23.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+django-flags==5.0.13
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

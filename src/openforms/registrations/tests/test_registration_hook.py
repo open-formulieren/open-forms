@@ -259,7 +259,7 @@ class RegistrationHookTests(TestCase):
             "Trying to register submission '%s' which is not completed.",
         )
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     @freeze_time("2021-08-04T12:00:00+02:00")
     def test_registration_plugin_not_enabled(self, mock_get_solo):
         register = Registry()
@@ -356,7 +356,7 @@ class RegistrationHookTests(TestCase):
 
 
 class NumRegistrationsTest(TestCase):
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    @patch("openforms.plugins.plugin.GlobalConfiguration.get_solo")
     def test_limit_registration_attempts(self, mock_get_solo):
         submission = SubmissionFactory.create(
             completed=True,

@@ -203,6 +203,10 @@
                 "blacklist"
             ],
             [
+                "flags",
+                "flagstate"
+            ],
+            [
                 "log_outgoing_requests",
                 "outgoingrequestslogconfig"
             ],

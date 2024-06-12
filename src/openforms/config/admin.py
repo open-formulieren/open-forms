@@ -141,7 +141,13 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
         (_("Plugin configuration"), {"fields": ("plugin_configuration",)}),
         (
             _("Registration"),
-            {"fields": ("registration_attempt_limit", "wait_for_payment_to_register")},
+            {
+                "fields": (
+                    "registration_attempt_limit",
+                    "wait_for_payment_to_register",
+                    "allow_empty_initiator",
+                )
+            },
         ),
         (
             _("Virus scan"),
@@ -155,18 +161,28 @@ class GlobalConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
             },
         ),
         (
+            _("Payments"),
+            {
+                "fields": ("payment_order_id_template",),
+            },
+        ),
+        (
             _("Feature flags & fields for testing"),
             {
                 "classes": ("collapse",),
-                "fields": (
-                    "display_sdk_information",
-                    "enable_demo_plugins",
-                    "allow_empty_initiator",
-                    "payment_order_id_template",
-                ),
+                "fields": ("feature_flags_link",),
             },
         ),
     )
+    readonly_fields = ("feature_flags_link",)
+
+    @admin.display(description=_("feature flags"))
+    def feature_flags_link(self, obj) -> str:
+        return format_html(
+            '<a href="{}">{}</a>',
+            reverse("admin:flags_flagstate_changelist"),
+            _("Manage"),
+        )
 
 
 @admin.register(RichTextColor)
