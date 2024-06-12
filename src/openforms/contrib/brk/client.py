@@ -5,6 +5,9 @@ import requests
 from typing_extensions import NotRequired
 from zgw_consumers.client import build_client
 
+from openforms.pre_requests.clients import PreRequestClientContext, PreRequestMixin
+from openforms.submissions.models import Submission
+
 from ..hal_client import HALClient
 from .models import BRKConfig
 
@@ -15,12 +18,17 @@ class NoServiceConfigured(RuntimeError):
     pass
 
 
-def get_client() -> "BRKClient":
+def get_client(submission: Submission | None = None) -> "BRKClient":
     config = BRKConfig.get_solo()
     assert isinstance(config, BRKConfig)
     if not (service := config.service):
         raise NoServiceConfigured("No BRK service configured!")
-    return build_client(service, client_factory=BRKClient)
+    context = (
+        PreRequestClientContext(submission=submission)
+        if submission is not None
+        else None
+    )
+    return build_client(service, client_factory=BRKClient, context=context)
 
 
 class SearchParams(TypedDict):
@@ -30,7 +38,7 @@ class SearchParams(TypedDict):
     huisnummertoevoeging: NotRequired[str]
 
 
-class BRKClient(HALClient):
+class BRKClient(PreRequestMixin, HALClient):
     def get_real_estate_by_address(self, query_params: SearchParams):
         """
         Search for real estate by querying for a specific address.
