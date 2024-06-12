@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -9,6 +9,8 @@ from privates.test import temp_private_root
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.brk.models import BRKConfig
+from openforms.pre_requests.base import PreRequestHookBase
+from openforms.pre_requests.registry import Registry
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -136,6 +138,33 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
             ),
         ):
             validator({"postcode": "1234AA", "house_number": "1"}, submission_bsn)
+
+    def test_pre_request_hooks_called(self):
+        pre_req_register = Registry()
+        mock = MagicMock()
+
+        @pre_req_register("test")
+        class PreRequestHook(PreRequestHookBase):
+            def __call__(self, *args, **kwargs):
+                mock(*args, **kwargs)
+
+        validator = BRKZakelijkGerechtigdeValidator("brk_validator")
+        submission_bsn = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__authentication_backends=["demo"],
+            form__formstep__form_definition__login_required=False,
+            auth_info__attribute_hashed=False,
+            auth_info__attribute=AuthAttribute.bsn,
+            auth_info__value="71291440",
+            auth_info__plugin="demo",
+        )
+
+        with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
+            validator({"postcode": "7361EW", "houseNumber": "21"}, submission_bsn)
+
+        self.assertEqual(mock.call_count, 2)  # 2 API calls expected
+        context = mock.call_args.kwargs["context"]
+        self.assertIsNotNone(context)  # type: ignore
 
 
 class BRKValidatorNotConfiguredTestCase(TestCase):

@@ -87,7 +87,7 @@ class BRKZakelijkGerechtigdeValidator(BasePlugin[AddressValue]):
         assert not submission.auth_info.attribute_hashed
 
         try:
-            client = get_client()
+            client = get_client(submission=submission)
         except NoServiceConfigured as e:
             logger.error(
                 "No BRK service configured when trying to validate address data",
