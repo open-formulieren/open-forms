@@ -160,7 +160,7 @@ class BRKValidatorTestCase(BRKTestMixin, OFVCRMixin, TestCase):
         )
 
         with patch("openforms.pre_requests.clients.registry", new=pre_req_register):
-            validator({"postcode": "7361EW", "houseNumber": "21"}, submission_bsn)
+            validator({"postcode": "7361EW", "house_number": "21"}, submission_bsn)
 
         self.assertEqual(mock.call_count, 2)  # 2 API calls expected
         context = mock.call_args.kwargs["context"]
