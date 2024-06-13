@@ -333,6 +333,12 @@
       "value": "Validation"
     }
   ],
+  "2sbkGI": [
+    {
+      "type": 0,
+      "value": "When enabled, the street name and city are derived from the entered postcode and house number."
+    }
+  ],
   "2uIYst": [
     {
       "type": 0,
@@ -1413,6 +1419,12 @@
     {
       "type": 0,
       "value": "Boolean"
+    }
+  ],
+  "DEetjI": [
+    {
+      "type": 0,
+      "value": "Street name"
     }
   ],
   "DGpAyT": [
@@ -4719,6 +4731,12 @@
       "value": "link"
     }
   ],
+  "osSl3z": [
+    {
+      "type": 0,
+      "value": "City"
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,
@@ -5109,6 +5127,12 @@
     {
       "type": 0,
       "value": "Whether to show this value in the confirmation email"
+    }
+  ],
+  "toTZ0C": [
+    {
+      "type": 0,
+      "value": "Derive address"
     }
   ],
   "twWsC2": [

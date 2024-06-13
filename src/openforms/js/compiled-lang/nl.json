@@ -333,6 +333,12 @@
       "value": "Validatie"
     }
   ],
+  "2sbkGI": [
+    {
+      "type": 0,
+      "value": "Indien aangevinkt, dan worden de straatnaam en stad afgeleid op basis van de ingevoerde postcode en huisnummer."
+    }
+  ],
   "2uIYst": [
     {
       "type": 0,
@@ -1417,6 +1423,12 @@
     {
       "type": 0,
       "value": "Waar/Niet waar (boolean)"
+    }
+  ],
+  "DEetjI": [
+    {
+      "type": 0,
+      "value": "Straatnaam"
     }
   ],
   "DGpAyT": [
@@ -4725,6 +4737,12 @@
       "value": "link"
     }
   ],
+  "osSl3z": [
+    {
+      "type": 0,
+      "value": "Stad"
+    }
+  ],
   "ow5AAO": [
     {
       "type": 0,
@@ -5115,6 +5133,12 @@
     {
       "type": 0,
       "value": "Geef aan of deze waarde in de bevestigingsmail moet opgenomen worden."
+    }
+  ],
+  "toTZ0C": [
+    {
+      "type": 0,
+      "value": "Adres afleiden"
     }
   ],
   "twWsC2": [
