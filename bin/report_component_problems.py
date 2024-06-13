@@ -57,6 +57,16 @@ def check_component(component: Component) -> str | None:
             if default_value not in expected_values:
                 return f"Default value '{default_value}' is not valid."
 
+        case {
+            "type": "textfield" | "textarea",
+            "openForms": {"translations": dict() as translations},
+        }:
+            for translation_dict in translations.values():
+                if not isinstance(translation_dict, dict):
+                    return "invalid translations structure"
+                if bool(translation_dict.get("defaultValue")):
+                    return "defaultValue has a translation"
+
 
 def report_problems(component_types: Sequence[str]) -> bool:
     from openforms.forms.models import FormDefinition
