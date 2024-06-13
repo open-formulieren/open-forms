@@ -21,7 +21,7 @@ Check off the items that are completed or not relevant.
 
 - I have updated the translations assets (you do NOT need to provide translations)
 
-  - [ ] Ran `./bin/makemessages_js.sh.sh`
+  - [ ] Ran `./bin/makemessages_js.sh`
   - [ ] Ran `./bin/compilemessages_js.sh`
 
 - Commit hygiene
