@@ -18,9 +18,6 @@ def report_problems() -> bool:
     fds = FormDefinition.objects.iterator()
     for form_definition in fds:
         for component in form_definition.iter_components():
-            assert "key" in component
-            assert "type" in component
-
             problem_base = [
                 form_definition.admin_name,
                 component.get("label") or component["key"],
@@ -66,6 +63,20 @@ def report_problems() -> bool:
                                 ]
                             )
                             break
+
+                case {
+                    "type": "radio",
+                    "values": list() as values,
+                    "defaultValue": str() as default_value,
+                } if bool(default_value):
+                    expected_values = [radio_value["value"] for radio_value in values]
+                    if default_value not in expected_values:
+                        problems.append(
+                            [
+                                *problem_base,
+                                f"Default value '{default_value}' is not valid.",
+                            ]
+                        )
 
     if not problems:
         print("No problems found.")
