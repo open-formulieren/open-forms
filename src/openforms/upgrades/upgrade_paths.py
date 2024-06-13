@@ -82,39 +82,6 @@ UPGRADE_PATHS = {
             VersionRange(minimum="2.5.2"),
         },
     ),
-    "2.5": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="2.4.0"),  # squashed migration sources are removed
-        },
-    ),
-    "2.4": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="2.3.0"),  # 2.4.0 squashes migrations again
-        },
-        scripts=(
-            # run detection again so we can now add the DB constraint
-            "check_non_unique_steps",
-        ),
-    ),
-    "2.3": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="2.1.3"),
-        },
-        scripts=(
-            # run detection to prevent crashes, see #3527
-            "check_non_unique_steps",
-        ),
-    ),
-    "2.2": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="2.1.3"),
-        }
-    ),
-    "2.1": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="2.0.2"),
-        }
-    ),
 }
 
 
