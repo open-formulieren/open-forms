@@ -19,6 +19,7 @@ from playwright.async_api import Page, expect
 
 from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.formio.typing import (
+    AddressNLComponent,
     Component,
     DateComponent,
     DatetimeComponent,
@@ -941,7 +942,7 @@ class SingleAddressNLTests(ValidationsTestCase):
 
     def assertAddressNLValidationIsAligned(
         self,
-        component: Component,
+        component: AddressNLComponent,
         ui_inputs: dict[str, str],
         expected_ui_error: str,
         api_value: dict[str, Any],
@@ -975,11 +976,12 @@ class SingleAddressNLTests(ValidationsTestCase):
             await expect(page.get_by_text(expected_ui_error)).to_be_visible()
 
     def test_required_field(self):
-        component: Component = {
+        component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
             "label": "Required AddressNL",
             "validate": {"required": True},
+            "deriveAddress": False,
         }
 
         self.assertAddressNLValidationIsAligned(
@@ -995,10 +997,11 @@ class SingleAddressNLTests(ValidationsTestCase):
         )
 
     def test_regex_failure(self):
-        component: Component = {
+        component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
             "label": "AddressNL invalid regex",
+            "deriveAddress": False,
         }
 
         test_cases = [
