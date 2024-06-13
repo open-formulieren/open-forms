@@ -4,6 +4,7 @@ from typing import Protocol
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.utils import timezone
+from django.utils.crypto import constant_time_compare
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
@@ -28,13 +29,13 @@ from ..formatters.custom import (
 )
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
-from ..typing import Component, DateComponent, DatetimeComponent
+from ..typing import AddressNLComponent, Component, DateComponent, DatetimeComponent
 from ..utils import conform_to_mask
 from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_family_members_haal_centraal
 from .np_family_members.models import FamilyMembersTypeConfig
 from .np_family_members.stuf_bg import get_np_family_members_stuf_bg
-from .utils import _normalize_pattern
+from .utils import _normalize_pattern, salt_location_message
 
 logger = logging.getLogger(__name__)
 
@@ -390,18 +391,70 @@ class AddressValueSerializer(serializers.Serializer):
         required=False,
         allow_blank=True,
     )
+    streetName = serializers.CharField(
+        label=_("street name"),
+        help_text=_("Derived street name"),
+        required=False,
+        allow_blank=True,
+    )
+    city = serializers.CharField(
+        label=_("city"),
+        help_text=_("Derived city"),
+        required=False,
+        allow_blank=True,
+    )
+    secretStreetCity = serializers.CharField(
+        label=_("city and street name secret"),
+        help_text=_("Secret for the combination of city and street name"),
+        required=False,
+        allow_blank=True,
+    )
+
+    def __init__(self, **kwargs):
+        self.derive_address = kwargs.pop("derive_address", None)
+        super().__init__(**kwargs)
 
     def validate_postcode(self, value: str) -> str:
         """Normalize the postcode so that it matches the regex from the BRK API."""
         return value.upper().replace(" ", "")
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        city = attrs.get("city", "")
+        street_name = attrs.get("streetName", "")
+
+        if self.derive_address:
+            existing_hmac = attrs.get("secretStreetCity", "")
+            postcode = attrs.get("postcode", "")
+            number = attrs.get("houseNumber", "")
+
+            computed_hmac = salt_location_message(
+                {
+                    "postcode": postcode,
+                    "number": number,
+                    "city": city,
+                    "street_name": street_name,
+                }
+            )
+
+            if not constant_time_compare(existing_hmac, computed_hmac):
+                raise serializers.ValidationError(
+                    _("Invalid secret city - street name combination"),
+                    code="invalid",
+                )
+
+        return attrs
+
 
 @register("addressNL")
-class AddressNL(BasePlugin):
+class AddressNL(BasePlugin[AddressNLComponent]):
 
     formatter = AddressNLFormatter
 
-    def build_serializer_field(self, component: Component) -> AddressValueSerializer:
+    def build_serializer_field(
+        self, component: AddressNLComponent
+    ) -> AddressValueSerializer:
 
         validate = component.get("validate", {})
         required = validate.get("required", False)
@@ -414,7 +467,10 @@ class AddressNL(BasePlugin):
         extra["validators"] = validators
 
         return AddressValueSerializer(
-            required=required, allow_null=not required, **extra
+            derive_address=component["deriveAddress"],
+            required=required,
+            allow_null=not required,
+            **extra,
         )
 
 

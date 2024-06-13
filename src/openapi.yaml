@@ -8289,6 +8289,10 @@ components:
         city:
           type: string
           description: Found city
+        secretStreetCity:
+          type: string
+          title: city and street name secret
+          description: Secret for the combination of city and street name
       required:
       - city
       - streetName

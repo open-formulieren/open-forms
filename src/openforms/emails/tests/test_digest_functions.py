@@ -442,6 +442,60 @@ class BrokenConfigurationTests(TestCase):
 
         self.assertEqual(broken_configuration, [])
 
+    @patch("openforms.contrib.kadaster.models.KadasterApiConfig.get_solo")
+    def test_invalid_bag_configuration_for_address_nl_component_is_collected(
+        self, kd_config
+    ):
+        kd_config.return_value = KadasterApiConfig(bag_service=None)
+
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "Address NL",
+                        "deriveAddress": True,
+                    }
+                ]
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 2)
+        self.assertIn(
+            "BAG Client", [config.config_name for config in broken_configuration]
+        )
+
+    @patch("openforms.contrib.kadaster.models.KadasterApiConfig.get_solo")
+    def test_invalid_bag_configuration_for_address_nl_component_not_collected_when_disabled(
+        self, kd_config
+    ):
+        kd_config.return_value = KadasterApiConfig(bag_service=None)
+
+        FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "addressNl",
+                        "type": "addressNL",
+                        "label": "Address NL",
+                        "deriveAddress": False,
+                    }
+                ]
+            },
+        )
+
+        broken_configuration = collect_broken_configurations()
+
+        self.assertEqual(len(broken_configuration), 1)
+        self.assertNotIn(
+            "BAG Client", [config.config_name for config in broken_configuration]
+        )
+
 
 @override_settings(LANGUAGE_CODE="en")
 class InvalidCertificatesTests(TestCase):

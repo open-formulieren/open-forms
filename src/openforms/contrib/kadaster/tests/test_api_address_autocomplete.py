@@ -35,7 +35,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     @patch("openforms.contrib.kadaster.api.views.lookup_address")
     def test_getting_street_name_and_city(self, m_lookup_address):
         m_lookup_address.return_value = AddressResult(
-            street_name="Keizersgracht", city="Amsterdam"
+            street_name="Keizersgracht", city="Amsterdam", secret_street_city=""
         )
 
         response = self.client.get(
@@ -44,9 +44,10 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(len(response.json()), 3)
         self.assertEqual(response.json()["streetName"], "Keizersgracht")
         self.assertEqual(response.json()["city"], "Amsterdam")
+        self.assertEqual(response.json()["secretStreetCity"], "")
 
     @patch(
         "openforms.api.exception_handling.uuid.uuid4",
@@ -117,7 +118,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self, m_lookup_address
     ):
         m_lookup_address.return_value = AddressResult(
-            street_name="Keizersgracht", city="Amsterdam"
+            street_name="Keizersgracht", city="Amsterdam", secret_street_city=""
         )
 
         response = self.client.get(
@@ -126,9 +127,10 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(len(response.json()), 3)
         self.assertEqual(response.json()["streetName"], "Keizersgracht")
         self.assertEqual(response.json()["city"], "Amsterdam")
+        self.assertEqual(response.json()["secretStreetCity"], "")
 
     @patch("openforms.contrib.kadaster.api.views.lookup_address")
     def test_address_not_found_returns_empty_200_response(self, m_lookup_address):
@@ -146,7 +148,7 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     @patch("openforms.contrib.kadaster.api.views.lookup_address")
     def test_endpoint_uses_caching(self, m_lookup_address):
         m_lookup_address.return_value = AddressResult(
-            street_name="Keizersgracht", city="Amsterdam"
+            street_name="Keizersgracht", city="Amsterdam", secret_street_city=""
         )
         endpoint = reverse("api:get-street-name-and-city-list")
 
