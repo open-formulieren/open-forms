@@ -5,6 +5,7 @@ import elasticapm
 import requests
 
 from openforms.contrib.hal_client import HALClient
+from openforms.formio.components.utils import salt_location_message
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ logger = logging.getLogger(__name__)
 class AddressResult:
     street_name: str
     city: str
+    secret_street_city: str = ""
 
 
 class BAGClient(HALClient):
@@ -53,7 +55,20 @@ class BAGClient(HALClient):
             return None
 
         first_result = response_data["_embedded"]["adressen"][0]
+        street_name = first_result.pop("korteNaam")
+        city = first_result.pop("woonplaatsNaam")
+
+        secret_street_city = salt_location_message(
+            {
+                "postcode": postcode.upper().replace(" ", ""),
+                "number": house_number,
+                "city": city,
+                "street_name": street_name,
+            }
+        )
+
         return AddressResult(
-            street_name=first_result.pop("korteNaam"),
-            city=first_result.pop("woonplaatsNaam"),
+            street_name=street_name,
+            city=city,
+            secret_street_city=secret_street_city,
         )

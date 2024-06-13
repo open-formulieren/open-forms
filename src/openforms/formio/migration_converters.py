@@ -15,7 +15,7 @@ from openforms.formio.typing.vanilla import ColumnsComponent, FileComponent
 from openforms.typing import JSONObject
 
 from .datastructures import FormioConfigurationWrapper
-from .typing import Component
+from .typing import AddressNLComponent, Component
 
 logger = logging.getLogger(__name__)
 
@@ -226,6 +226,16 @@ def convert_simple_conditionals(configuration: JSONObject) -> bool:
     return config_modified
 
 
+def ensure_addressnl_has_deriveAddress(component: Component) -> bool:
+    component = cast(AddressNLComponent, component)
+
+    if "deriveAddress" in component:
+        return False
+
+    component.setdefault("deriveAddress", False)
+    return True
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -290,6 +300,9 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     },
     "cosign": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+    },
+    "addressNL": {
+        "ensure_addressnl_has_deriveAddress": ensure_addressnl_has_deriveAddress
     },
     # Layout components
     "columns": {

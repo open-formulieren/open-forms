@@ -18,6 +18,11 @@ class GetStreetNameAndCityViewResultSerializer(serializers.Serializer):
         label=_("street name"), help_text=_("Found street name")
     )
     city = serializers.CharField(label=_("city"), help_text=_("Found city"))
+    secret_street_city = serializers.CharField(
+        label=_("city and street name secret"),
+        help_text=_("Secret for the combination of city and street name"),
+        required=False,
+    )
 
 
 class LatitudeLongitudeSerializer(serializers.Serializer):

@@ -1,4 +1,5 @@
 from django.test import SimpleTestCase
+from django.utils.crypto import salted_hmac
 
 from rest_framework import serializers
 
@@ -7,7 +8,7 @@ from openforms.contrib.brk.validators import ValueSerializer
 from openforms.submissions.models import Submission
 from openforms.validations.base import BasePlugin
 
-from ...typing import Component
+from ...typing import AddressNLComponent
 from .helpers import extract_error, replace_validators_registry, validate_formio_data
 
 
@@ -22,10 +23,11 @@ class PostcodeValidator(BasePlugin[AddressValue]):
 class AddressNLValidationTests(SimpleTestCase):
 
     def test_addressNL_field_required_validation(self):
-        component: Component = {
+        component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
             "label": "Required AddressNL",
+            "deriveAddress": False,
             "validate": {"required": True},
         }
 
@@ -44,10 +46,11 @@ class AddressNLValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     def test_addressNL_field_non_required_validation(self):
-        component: Component = {
+        component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
             "label": "Non required AddressNL",
+            "deriveAddress": False,
         }
 
         is_valid, _ = validate_formio_data(component, {})
@@ -55,10 +58,11 @@ class AddressNLValidationTests(SimpleTestCase):
         self.assertTrue(is_valid)
 
     def test_addressNL_field_regex_pattern_failure(self):
-        component: Component = {
+        component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
             "label": "AddressNL invalid regex",
+            "deriveAddress": False,
         }
 
         invalid_values = {
@@ -80,10 +84,11 @@ class AddressNLValidationTests(SimpleTestCase):
         self.assertEqual(error.code, "invalid")
 
     def test_addressNL_field_regex_pattern_success(self):
-        component: Component = {
+        component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
             "label": "AddressNL valid pattern",
+            "deriveAddress": False,
         }
 
         data = {
@@ -100,10 +105,11 @@ class AddressNLValidationTests(SimpleTestCase):
         self.assertTrue(is_valid)
 
     def test_missing_keys(self):
-        component: Component = {
+        component: AddressNLComponent = {
             "key": "addressNl",
             "type": "addressNL",
             "label": "AddressNL missing keys",
+            "deriveAddress": False,
         }
 
         invalid_values = {
@@ -125,10 +131,11 @@ class AddressNLValidationTests(SimpleTestCase):
         with replace_validators_registry() as register:
             register("postcode_validator")(PostcodeValidator)
 
-            component: Component = {
+            component: AddressNLComponent = {
                 "key": "addressNl",
                 "type": "addressNL",
                 "label": "AddressNL plugin validator",
+                "deriveAddress": False,
                 "validate": {"plugins": ["postcode_validator"]},
             }
 
@@ -161,3 +168,79 @@ class AddressNLValidationTests(SimpleTestCase):
                 )
 
                 self.assertFalse(is_valid)
+
+    def test_addressNL_field_secret_success(self):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL secret success",
+            "deriveAddress": False,
+        }
+
+        message = "1015CJ/117/Amsterdam/Keizersgracht"
+        secret = salted_hmac("location_check", value=message).hexdigest()
+        data = {
+            "addressNl": {
+                "postcode": "1015CJ",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "Amsterdam",
+                "streetName": "Keizersgracht",
+                "secretStreetCity": secret,
+            }
+        }
+
+        is_valid, _ = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+
+    def test_addressNL_field_secret_failure(self):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL secret failure",
+            "deriveAddress": True,
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "1015CJ",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "Amsterdam",
+                "streetName": "Keizersgracht",
+                "secretStreetCity": "invalid secret",
+            }
+        }
+
+        is_valid, errors = validate_formio_data(component, data)
+
+        secret_error = extract_error(errors["addressNl"], "non_field_errors")
+
+        self.assertFalse(is_valid)
+        self.assertEqual(secret_error.code, "invalid")
+
+    def test_addressNL_field_missing_city(self):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL missing city",
+            "deriveAddress": False,
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "1015CJ",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "",
+                "streetName": "Keizersgracht",
+            }
+        }
+
+        is_valid, _ = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
