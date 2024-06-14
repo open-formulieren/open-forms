@@ -7,12 +7,18 @@ def translate_options(
     enabled: bool,
 ) -> None:
     for option in options:
-        if not (translations := option.get("openForms", {}).get("translations")):
+        if "openForms" not in option:
             continue
 
-        translated_label = translations.get(language_code, {}).get("label", "")
-        if enabled and translated_label:
-            option["label"] = translated_label
+        if not (translations := option["openForms"].get("translations")):
+            continue
+
+        if enabled and (_translations := translations.get(language_code)):
+            if translated_label := _translations.get("label"):
+                option["label"] = translated_label
+
+            if translated_description := _translations.get("description"):
+                option["description"] = translated_description
 
         # always clean up
-        del option["openForms"]["translations"]  # type: ignore
+        del option["openForms"]["translations"]
