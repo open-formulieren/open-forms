@@ -8,8 +8,6 @@ import {Modal} from 'components/admin/modals';
 import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
 import jsonScriptToVar from 'utils/json-script';
 
-import {extractMissingComponentTranslations} from './MissingComponentTranslationsWarning';
-
 const LABEL_MAPPING = jsonScriptToVar('label-mapping', {default: {}});
 const LANGUAGES = jsonScriptToVar('languages', {default: []});
 
@@ -85,14 +83,7 @@ MissingTranslationsTable.propTypes = {
 const MissingTranslationsWarning = ({form, formSteps}) => {
   let formStepTranslations = [];
 
-  let formStepsMissingTranslations = [];
   for (const formStep of formSteps) {
-    if (extractMissingComponentTranslations(formStep.configuration).length) {
-      formStepsMissingTranslations.push(formStep.name);
-    }
-  }
-
-  for (const [index, formStep] of formSteps.entries()) {
     formStepTranslations = formStepTranslations.concat(
       extractMissingTranslations(
         formStep.translations,
@@ -146,20 +137,6 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
   };
 
   let warningList = [];
-
-  if (formStepsMissingTranslations.length) {
-    let formattedWarning = (
-      <FormattedMessage
-        description="Warning message for missing translations"
-        defaultMessage="Form has translation enabled, but there are missing translations for the following Form Steps: {stepNames}"
-        values={{
-          stepNames: formStepsMissingTranslations.join(', '),
-        }}
-      />
-    );
-    warningList.push({level: 'warning', message: formattedWarning});
-  }
-
   if (missingTranslations.length) {
     let formattedWarning = (
       <FormattedMessage

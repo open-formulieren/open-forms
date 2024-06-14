@@ -14,7 +14,6 @@ import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import {FormContext} from './Context';
 import LanguageTabs from './LanguageTabs';
 import LogicWarning from './LogicWarning';
-import MissingComponentTranslationsWarning from './MissingComponentTranslationsWarning';
 import PluginWarning from './PluginWarning';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import useDetectSimpleLogicErrors from './useDetectSimpleLogicErrors';
@@ -388,10 +387,6 @@ const FormStepDefinition = ({
           )}
         </LanguageTabs>
       </fieldset>
-
-      {translationEnabled ? (
-        <MissingComponentTranslationsWarning configuration={configuration} />
-      ) : null}
 
       <h2>Velden</h2>
 
