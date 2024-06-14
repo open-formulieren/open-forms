@@ -30,8 +30,6 @@ const ALWAYS_TRANSLATABLE_PROPERTIES = ['label', 'description', 'placeholder', '
  *   test the property path against.
  */
 const ADDITIONAL_PROPERTIES_BY_COMPONENT_TYPE = {
-  textfield: ['defaultValue'],
-  textarea: ['defaultValue'],
   content: ['html'],
   fieldset: ['legend'],
   editgrid: ['groupLabel'],
