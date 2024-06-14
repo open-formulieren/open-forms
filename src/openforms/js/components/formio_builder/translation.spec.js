@@ -16,7 +16,7 @@ describe('Checking if properties are translatable', () => {
   });
 
   it('takes component type into account', () => {
-    expect(isTranslatableProperty('textfield', 'defaultValue')).toBe(true);
+    expect(isTranslatableProperty('fieldset', 'legend')).toBe(true);
     expect(isTranslatableProperty('date', 'defaultValue')).toBe(false);
   });
 
@@ -103,7 +103,6 @@ describe('Clearing obsolete literals', () => {
     nl: {
       text1Label: 'Tekstlabel',
       text1: 'Tekst1',
-      text1Default: 'Eerste tekst',
       date1Label: '',
       editgrid1GroupLabel: 'Veldengroep',
     },
@@ -120,7 +119,6 @@ describe('Clearing obsolete literals', () => {
     expect(cleaned.nl).toEqual(expect.not.objectContaining({text1: 'Tekst1', date1Label: ''}));
     expect(cleaned.nl).toEqual({
       text1Label: 'Tekstlabel',
-      text1Default: 'Eerste tekst',
       editgrid1GroupLabel: 'Veldengroep',
     });
     expect(cleaned.en).toEqual(expect.not.objectContaining({text1: ''}));
