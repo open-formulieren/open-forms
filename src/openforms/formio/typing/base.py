@@ -52,6 +52,7 @@ class OptionDict(TypedDict):
 
     value: str
     label: str
+    description: NotRequired[str]
     openForms: NotRequired[OpenFormsOptionExtension]
 
 

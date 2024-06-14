@@ -553,7 +553,10 @@ class SelectBoxesTranslationTests(SimpleTestCase):
                     "label": "First option",
                     "openForms": {
                         "translations": {
-                            lang_code: {"label": translation},
+                            lang_code: {
+                                "label": translation,
+                                "description": translation,
+                            },
                         }
                     },
                 }
@@ -565,8 +568,11 @@ class SelectBoxesTranslationTests(SimpleTestCase):
         assert "values" in component
         opt1 = component["values"][0]
         assert "label" in opt1
+        assert "description" in opt1
         assert "openForms" in opt1
+
         self.assertEqual(opt1["label"], translation)
+        self.assertEqual(opt1["description"], translation)
         self.assertNotIn("translations", opt1["openForms"])
 
 
@@ -726,7 +732,10 @@ class RadioTranslationTests(SimpleTestCase):
                     "label": "First option",
                     "openForms": {
                         "translations": {
-                            lang_code: {"label": translation},
+                            lang_code: {
+                                "label": translation,
+                                "description": translation,
+                            },
                         }
                     },
                 }
@@ -738,8 +747,10 @@ class RadioTranslationTests(SimpleTestCase):
         assert "values" in component
         opt1 = component["values"][0]
         assert "label" in opt1
+        assert "description" in opt1
         assert "openForms" in opt1
         self.assertEqual(opt1["label"], translation)
+        self.assertEqual(opt1["description"], translation)
         self.assertNotIn("translations", opt1["openForms"])
 
 
