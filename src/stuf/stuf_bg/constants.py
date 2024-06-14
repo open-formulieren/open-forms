@@ -5,7 +5,8 @@ from django.utils.translation import gettext_lazy as _
 # Note:  This could cause a collision if two of the same elements
 #   are present in different namespaces
 NAMESPACE_REPLACEMENTS = {
-    "http://schemas.xmlsoap.org/soap/envelope/": None,
+    "http://www.w3.org/2003/05/soap-envelope": None,  # SOAP 1.2
+    "http://schemas.xmlsoap.org/soap/envelope/": None,  # SOAP 1.1
     "http://www.egem.nl/StUF/sector/bg/0310": None,
     "http://www.egem.nl/StUF/StUF0301": None,
     "http://www.w3.org/1999/xlink": None,
