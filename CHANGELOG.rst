@@ -2,6 +2,23 @@
 Changelog
 =========
 
+2.6.8 (2024-06-14)
+==================
+
+Bugfix release
+
+* [#4255] Fixed a performance issue in the confirmation PDF generation when large
+  blocks of text are rendered.
+* [#4241] Fixed some backend validation being skipped when there is component key
+  overlap with layout components (like fieldsets and columns).
+* [#4368] Fixed URLs to the same domain being broken in the WYSIWYG editors.
+* [#4377] Added support for pre-request context/extensions in BRK client
+  implementation.
+* [#4363] Fixed option descriptions not being translated for radio and selectboxes
+  components.
+* [#4362] Fixed a crash in the form designer when a textfield/textarea allows multiple
+  values in forms with translations enabled.
+
 2.6.7 (2024-05-22)
 ==================
 
