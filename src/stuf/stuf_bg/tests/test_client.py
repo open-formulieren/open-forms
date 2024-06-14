@@ -254,6 +254,64 @@ class StufBGClientTests(TestCase):
         value = glom(data_dict, GlomTarget["inp.heeftAlsKinderen"], default=missing)
         self.assertNotEqual(value, missing)
 
+    @tag("gh-4338")
+    @requests_mock.Mocker()
+    def test_scattered_namespaces(self, m):
+        XML = b"""<?xml version='1.0' encoding='UTF-8'?>
+        <soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
+            <soapenv:Header />
+            <soapenv:Body>
+                <BG:npsLa01 xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310"
+                    xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                    <BG:stuurgegevens>
+                        <StUF:berichtcode>La01</StUF:berichtcode>
+                        <StUF:zender>
+
+                            <StUF:applicatie>CGS</StUF:applicatie>
+
+
+                        </StUF:zender>
+                        <StUF:ontvanger>
+                            <StUF:organisatie>Maykin</StUF:organisatie>
+                            <StUF:applicatie>OpenForms</StUF:applicatie>
+
+
+                        </StUF:ontvanger>
+                        <StUF:referentienummer>S17170448031</StUF:referentienummer>
+                        <StUF:tijdstipBericht>2024053011095409</StUF:tijdstipBericht>
+                        <StUF:crossRefnummer>6551d7e5-515c-4c30-b249-e8aab590ac06</StUF:crossRefnummer>
+                        <StUF:entiteittype>NPS</StUF:entiteittype>
+                    </BG:stuurgegevens>
+                    <BG:parameters>
+                        <StUF:indicatorVervolgvraag>false</StUF:indicatorVervolgvraag>
+                    </BG:parameters>
+                    <BG:antwoord>
+                        <BG:object StUF:entiteittype="NPS">
+                            <BG:inp.bsn>111222333</BG:inp.bsn>
+                            <BG:geslachtsnaam>Janssen</BG:geslachtsnaam>
+                            <BG:voorvoegselGeslachtsnaam xsi:nil="true" StUF:noValue="geenWaarde" />
+                            <BG:geboortedatum>19820304</BG:geboortedatum>
+                        </BG:object>
+                    </BG:antwoord>
+                </BG:npsLa01>
+            </soapenv:Body>
+        </soapenv:Envelope>
+        """
+        m.post(self.stuf_service.soap_service.url, content=XML)
+
+        response_data = self.stufbg_client.get_values("999992314", ["irrelevant"])
+
+        expected = {
+            "inp.bsn": "111222333",
+            "geslachtsnaam": "Janssen",
+            "voorvoegselGeslachtsnaam": None,
+            "geboortedatum": "19820304",
+        }
+        for key, value in expected.items():
+            with self.subTest(key=key, value=value):
+                self.assertEqual(response_data.get(key), value)
+
 
 def _contains_nils(d: dict):
     """Check if xmltodict result contains xsi:nil="true" or StUF:noValue="geenWaarde"
