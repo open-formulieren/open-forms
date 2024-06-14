@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.5.8 (2024-06-14)
+==================
+
+Bugfix release
+
+* [#4255] Fixed a performance issue in the confirmation PDF generation when large
+  blocks of text are rendered.
+* [#4368] Fixed URLs to the same domain being broken in the WYSIWYG editors.
+* [#4362] Fixed a crash in the form designer when a textfield/textarea allows multiple
+  values in forms with translations enabled.
+
 2.5.7 (2024-05-13)
 ==================
 
