@@ -11,7 +11,7 @@ from ..factories import FormFactory
 
 
 class TranslationWarningTests(E2ETestCase):
-    async def test_no_warning_with_full_translations(self):
+    async def test_no_warning_for_components_with_missing_translations(self):
         @sync_to_async
         def setUpTestData():
             form = FormFactory.create(
@@ -39,8 +39,8 @@ class TranslationWarningTests(E2ETestCase):
                             "label": "Some Field",
                             "openForms": {
                                 "translations": {
-                                    "en": {"label": "Some EN Field"},
-                                    "nl": {"label": "Een NL Veld"},
+                                    "en": {"label": ""},
+                                    "nl": {"label": ""},
                                 }
                             },
                         }
@@ -92,21 +92,6 @@ class TranslationWarningTests(E2ETestCase):
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="",
                 formstep__form_definition__name_en="",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "someField",
-                            "label": "Some Field",
-                            "openForms": {
-                                "translations": {
-                                    "en": {"label": ""},
-                                    "nl": {"label": ""},
-                                }
-                            },
-                        }
-                    ],
-                },
                 translation_enabled=True,
             )
             ConfirmationEmailTemplateFactory.create(
@@ -167,21 +152,6 @@ class TranslationWarningTests(E2ETestCase):
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test nl",
                 formstep__form_definition__name_en="Playwright test en",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "someField",
-                            "label": "Some Field",
-                            "openForms": {
-                                "translations": {
-                                    "en": {"label": "Some EN Field"},
-                                    "nl": {"label": "Een NL Veld"},
-                                }
-                            },
-                        }
-                    ],
-                },
                 translation_enabled=True,
             )
             return form
@@ -227,21 +197,6 @@ class TranslationWarningTests(E2ETestCase):
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test nl",
                 formstep__form_definition__name_en="Playwright test en",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "someField",
-                            "label": "Some Field",
-                            "openForms": {
-                                "translations": {
-                                    "en": {"label": "Some EN Field"},
-                                    "nl": {"label": "Een NL Veld"},
-                                }
-                            },
-                        }
-                    ],
-                },
                 translation_enabled=True,
             )
             return form
@@ -297,21 +252,6 @@ class TranslationWarningTests(E2ETestCase):
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test nl",
                 formstep__form_definition__name_en="Playwright test en",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "someField",
-                            "label": "Some Field",
-                            "openForms": {
-                                "translations": {
-                                    "en": {"label": "Some EN Field"},
-                                    "nl": {"label": "Een NL Veld"},
-                                }
-                            },
-                        }
-                    ],
-                },
                 translation_enabled=True,
             )
             return form
@@ -354,21 +294,6 @@ class TranslationWarningTests(E2ETestCase):
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test nl",
                 formstep__form_definition__name_en="Playwright test en",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "someField",
-                            "label": "Some Field",
-                            "openForms": {
-                                "translations": {
-                                    "en": {"label": "Some EN Field"},
-                                    "nl": {"label": "Een NL Veld"},
-                                }
-                            },
-                        }
-                    ],
-                },
                 translation_enabled=True,
             )
             ConfirmationEmailTemplateFactory.create(
@@ -419,21 +344,6 @@ class TranslationWarningTests(E2ETestCase):
                 generate_minimal_setup=True,
                 formstep__form_definition__name_nl="Playwright test nl",
                 formstep__form_definition__name_en="Playwright test en",
-                formstep__form_definition__configuration={
-                    "components": [
-                        {
-                            "type": "textfield",
-                            "key": "someField",
-                            "label": "Some Field",
-                            "openForms": {
-                                "translations": {
-                                    "en": {"label": "Some EN Field"},
-                                    "nl": {"label": "Een NL Veld"},
-                                }
-                            },
-                        }
-                    ],
-                },
                 translation_enabled=True,
             )
             ConfirmationEmailTemplateFactory.create(

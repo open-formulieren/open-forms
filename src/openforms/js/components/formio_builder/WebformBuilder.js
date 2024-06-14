@@ -23,8 +23,15 @@ import {
   getRegistrationAttributes,
   getValidatorPlugins,
 } from './plugins';
-import {LANGUAGES} from './translation';
 
+let _supportedLanguages = undefined;
+const getSupportedLanguages = () => {
+  if (_supportedLanguages !== undefined) return _supportedLanguages;
+  _supportedLanguages = jsonScriptToVar('languages', {default: []});
+  return _supportedLanguages;
+};
+
+const LANGUAGES = getSupportedLanguages().map(([langCode]) => langCode);
 const CONFIDENTIALITY_LEVELS = jsonScriptToVar('CONFIDENTIALITY_LEVELS', {default: []});
 const FILE_TYPES = jsonScriptToVar('config-UPLOAD_FILETYPES', {default: []});
 const MAX_FILE_UPLOAD_SIZE = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE', {default: 'unknown'});

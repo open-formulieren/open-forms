@@ -4484,12 +4484,6 @@
       "value": "Partner 1"
     }
   ],
-  "lvxPCk": [
-    {
-      "type": 0,
-      "value": "Componentlabel"
-    }
-  ],
   "m20av3": [
     {
       "type": 0,
@@ -4506,12 +4500,6 @@
     {
       "type": 0,
       "value": "vandaag"
-    }
-  ],
-  "mL6vhw": [
-    {
-      "type": 0,
-      "value": "Componentsleutel"
     }
   ],
   "mMn7K3": [
@@ -4692,49 +4680,6 @@
     {
       "type": 0,
       "value": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden."
-    }
-  ],
-  "ooyhQ7": [
-    {
-      "type": 0,
-      "value": "Formuliervertalingen zijn ingeschakeld, maar er "
-    },
-    {
-      "children": [
-        {
-          "offset": 0,
-          "options": {
-            "one": {
-              "value": [
-                {
-                  "type": 0,
-                  "value": "ontbreekt een componentvertaling"
-                }
-              ]
-            },
-            "other": {
-              "value": [
-                {
-                  "type": 0,
-                  "value": "ontbreken "
-                },
-                {
-                  "type": 7
-                },
-                {
-                  "type": 0,
-                  "value": " componentvertalingen"
-                }
-              ]
-            }
-          },
-          "pluralType": "cardinal",
-          "type": 6,
-          "value": "count"
-        }
-      ],
-      "type": 8,
-      "value": "link"
     }
   ],
   "osSl3z": [
@@ -4961,16 +4906,6 @@
     {
       "type": 0,
       "value": "Kommagetal (float)"
-    }
-  ],
-  "rTeZb4": [
-    {
-      "type": 0,
-      "value": "Formuliervertalingen zijn ingeschakeld, maar er ontbreken vertalingen in de stappen: "
-    },
-    {
-      "type": 1,
-      "value": "stepNames"
     }
   ],
   "rZfe8Z": [
@@ -5249,12 +5184,6 @@
     {
       "type": 0,
       "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
-    }
-  ],
-  "vjHM9z": [
-    {
-      "type": 0,
-      "value": "Tekst"
     }
   ],
   "vlY36U": [

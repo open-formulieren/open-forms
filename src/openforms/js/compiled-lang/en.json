@@ -4479,12 +4479,6 @@
       "value": "Partner 1"
     }
   ],
-  "lvxPCk": [
-    {
-      "type": 0,
-      "value": "Component label"
-    }
-  ],
   "m20av3": [
     {
       "type": 0,
@@ -4501,12 +4495,6 @@
     {
       "type": 0,
       "value": "today"
-    }
-  ],
-  "mL6vhw": [
-    {
-      "type": 0,
-      "value": "Component key"
     }
   ],
   "mMn7K3": [
@@ -4687,48 +4675,6 @@
     {
       "type": 0,
       "value": "Whether to include the content of the confirmation page in the PDF."
-    }
-  ],
-  "ooyhQ7": [
-    {
-      "type": 0,
-      "value": "Form has translation enabled, but is missing "
-    },
-    {
-      "children": [
-        {
-          "offset": 0,
-          "options": {
-            "one": {
-              "value": [
-                {
-                  "type": 7
-                },
-                {
-                  "type": 0,
-                  "value": " component translation"
-                }
-              ]
-            },
-            "other": {
-              "value": [
-                {
-                  "type": 7
-                },
-                {
-                  "type": 0,
-                  "value": " component translations"
-                }
-              ]
-            }
-          },
-          "pluralType": "cardinal",
-          "type": 6,
-          "value": "count"
-        }
-      ],
-      "type": 8,
-      "value": "link"
     }
   ],
   "osSl3z": [
@@ -4955,16 +4901,6 @@
     {
       "type": 0,
       "value": "Float"
-    }
-  ],
-  "rTeZb4": [
-    {
-      "type": 0,
-      "value": "Form has translation enabled, but there are missing translations for the following Form Steps: "
-    },
-    {
-      "type": 1,
-      "value": "stepNames"
     }
   ],
   "rZfe8Z": [
@@ -5243,12 +5179,6 @@
     {
       "type": 0,
       "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-    }
-  ],
-  "vjHM9z": [
-    {
-      "type": 0,
-      "value": "Literal"
     }
   ],
   "vlY36U": [

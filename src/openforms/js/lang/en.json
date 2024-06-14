@@ -2064,20 +2064,10 @@
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
   },
-  "lvxPCk": {
-    "defaultMessage": "Component label",
-    "description": "Label of the Form component",
-    "originalDefault": "Component label"
-  },
   "mH3X/G": {
     "defaultMessage": "today",
     "description": "\"today\" operand type",
     "originalDefault": "today"
-  },
-  "mL6vhw": {
-    "defaultMessage": "Component key",
-    "description": "Key of the Form component",
-    "originalDefault": "Component key"
   },
   "mOgTIH": {
     "defaultMessage": "the variable",
@@ -2163,11 +2153,6 @@
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
-  },
-  "ooyhQ7": {
-    "defaultMessage": "Form has translation enabled, but is missing <link>{count, plural, one {# component translation} other {# component translations} }</link>",
-    "description": "Warning message for missing component translations",
-    "originalDefault": "Form has translation enabled, but is missing <link>{count, plural, one {# component translation} other {# component translations} }</link>"
   },
   "ow5AAO": {
     "defaultMessage": "The form is invalid. Please correct the errors below.",
@@ -2299,11 +2284,6 @@
     "description": "data type float",
     "originalDefault": "Float"
   },
-  "rTeZb4": {
-    "defaultMessage": "Form has translation enabled, but there are missing translations for the following Form Steps: {stepNames}",
-    "description": "Warning message for missing translations",
-    "originalDefault": "Form has translation enabled, but there are missing translations for the following Form Steps: {stepNames}"
-  },
   "rZfe8Z": {
     "defaultMessage": "Sorry, we couldn't do that because you are logged out - this may be because your session expired.",
     "description": "Session expiry notice - API call failed with 401",
@@ -2423,11 +2403,6 @@
     "defaultMessage": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-  },
-  "vjHM9z": {
-    "defaultMessage": "Literal",
-    "description": "Literal to be translated",
-    "originalDefault": "Literal"
   },
   "vng/5K": {
     "defaultMessage": "Set a key name before you can configure this variable",

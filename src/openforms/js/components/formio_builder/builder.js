@@ -9,9 +9,10 @@ import useOnChanged from 'hooks/useOnChanged';
 import jsonScriptToVar from 'utils/json-script';
 
 import customTemplates from './customTemplates';
-import nlStrings from './translation';
 
 Templates.current = customTemplates;
+
+const nlStrings = require('lang/formio/nl.json');
 
 const getBuilderOptions = () => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
