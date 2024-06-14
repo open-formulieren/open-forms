@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.5.9 (2024-06-14)
+==================
+
+Bugfix release fixing some issues (still) in 2.5.8
+
+Note that 2.5.8 was never published to Docker Hub.
+
+* [#4338] Fixed prefill for StUF-BG with SOAP 1.2 not properly extracting attributes.
+* [#4390] Fixed regression introduced by #4368 that would break template variables in
+  hyperlinks inside WYSIWYG content.
+
 2.5.8 (2024-06-14)
 ==================
 
