@@ -622,6 +622,9 @@ MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
 ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
 DISABLE_SENDING_HIDDEN_FIELDS = config("DISABLE_SENDING_HIDDEN_FIELDS", default=False)
 
+LOG_OUTGOING_REQUESTS_MAX_AGE = config(
+    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
+)  # number of days
 
 ##############################
 #                            #
@@ -1139,11 +1142,6 @@ LOG_OUTGOING_REQUESTS_CONTENT_TYPES = [
 ]
 LOG_OUTGOING_REQUESTS_EMIT_BODY = True
 LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
-
-# Custom settings
-LOG_OUTGOING_REQUESTS_MAX_AGE = config(
-    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
-)  # number of days
 
 #
 # DJANGO-FLAGS - manage feature flags.
