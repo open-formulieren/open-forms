@@ -1,65 +1,56 @@
-import logging
+from django.http import HttpRequest
+from django.urls import reverse
 
-from django.contrib import auth
-from django.core.exceptions import DisallowedRedirect
-from django.http import HttpResponseRedirect
-
-import requests
 from furl import furl
-from mozilla_django_oidc.views import (
-    OIDCAuthenticationRequestView as _OIDCAuthenticationRequestView,
-    get_next_url,
-)
-
-from openforms.authentication.contrib.digid_eherkenning_oidc.views import (
-    OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
+from mozilla_django_oidc_db.views import (
+    _OIDC_ERROR_SESSION_KEY,
+    _RETURN_URL_SESSION_KEY,
+    AdminCallbackView,
 )
 
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
-from .backends import OIDCAuthenticationBackend
-from .mixins import SoloConfigMixin
-
-logger = logging.getLogger(__name__)
+from .plugin import PLUGIN_IDENTIFIER
 
 
-class OIDCAuthenticationRequestView(SoloConfigMixin, _OIDCAuthenticationRequestView):
-    def get(self, request):
-        redirect_field_name = self.get_settings("OIDC_REDIRECT_FIELD_NAME", "next")
-        next_url = get_next_url(request, redirect_field_name)
-        if not next_url:
-            raise DisallowedRedirect
+class CallbackView(AdminCallbackView):
+    """
+    Apply the integrity error catching behaviour from AdminCallbackView.
 
-        try:
-            # Verify that the identity provider endpoint can be reached
-            response = requests.get(self.OIDC_OP_AUTH_ENDPOINT)
-            if response.status_code > 400:
-                response.raise_for_status()
-        except Exception as e:
-            logger.exception(
-                "authentication exception during 'start_login()' of plugin '%(plugin_id)s'",
-                {"plugin_id": self.plugin_identifier},
-                exc_info=e,
-            )
-            # append failure parameter and return to form
-            f = furl(next_url)
-            failure_url = f.args["next"]
+    Potential integrity constraint errors are caught, and login failures redirect the
+    user back to the public frontend (SDK).
+    """
 
-            f = furl(failure_url)
-            f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = self.plugin_identifier
-            return HttpResponseRedirect(f.url)
+    _redirect_next: str
 
+    def get(self, request: HttpRequest):
+        # grab where the redirect next from the session and store it as a temporary
+        # attribute. in the event that the failure url needs to be overridden, we
+        # then have the value available even *after* mozilla_django_oidc has flushed
+        # the session.
+        self._redirect_next = request.session.get(_RETURN_URL_SESSION_KEY, "")
         return super().get(request)
 
+    @property
+    def failure_url(self) -> str:
+        """
+        On failure, redirect to the form with an appropriate error message.
+        """
+        # handle integrity and validation errors by redirecting the user to the admin
+        # failure view.
+        if _OIDC_ERROR_SESSION_KEY in self.request.session:
+            return reverse("admin-oidc-error")
 
-class OIDCAuthenticationCallbackView(SoloConfigMixin, _OIDCAuthenticationCallbackView):
-    # TODO figure out how we want to reuse the patched OIDCAuthenticationCallbackView from digid_eherkenning (and digid_eherkenning_generics)
-    #  or possibly move it to mozilla_oidc_db
-    auth_backend_class = OIDCAuthenticationBackend
-
-    def login_success(self):
-        # override again because our base class removed the .login()
-        auth.login(
-            self.request, self.user, backend=OIDCAuthenticationBackend.get_import_path()
+        # this is expected to be the auth plugin return url, set by the OIDCInit view
+        plugin_return_url = furl(
+            self._redirect_next or self.get_settings("LOGIN_REDIRECT_URL", "/")
         )
-        assert self.user.is_authenticated
-        return super().login_success()
+        # this URL is expected to have a ?next query param pointing back to the frontend
+        # where the form is rendered/embedded
+        _next = plugin_return_url.args["next"]
+        assert isinstance(_next, str)
+        form_url = furl(_next)
+        form_url.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = PLUGIN_IDENTIFIER
+        return form_url.url
+
+
+callback_view = CallbackView.as_view()
