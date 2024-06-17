@@ -2,6 +2,77 @@
 Changelog
 =========
 
+2.6.9 (2024-06-14)
+==================
+
+Bugfix release fixing some issues (still) in 2.6.8
+
+* [#4338] Fixed prefill for StUF-BG with SOAP 1.2 not properly extracting attributes.
+* [#4390] Fixed regression introduced by #4368 that would break template variables in
+  hyperlinks inside WYSIWYG content.
+
+2.6.8 (2024-06-14)
+==================
+
+Bugfix release
+
+* [#4255] Fixed a performance issue in the confirmation PDF generation when large
+  blocks of text are rendered.
+* [#4241] Fixed some backend validation being skipped when there is component key
+  overlap with layout components (like fieldsets and columns).
+* [#4368] Fixed URLs to the same domain being broken in the WYSIWYG editors.
+* [#4377] Added support for pre-request context/extensions in BRK client
+  implementation.
+* [#4363] Fixed option descriptions not being translated for radio and selectboxes
+  components.
+* [#4362] Fixed a crash in the form designer when a textfield/textarea allows multiple
+  values in forms with translations enabled.
+
+2.5.9 (2024-06-14)
+==================
+
+Bugfix release fixing some issues (still) in 2.5.8
+
+Note that 2.5.8 was never published to Docker Hub.
+
+* [#4338] Fixed prefill for StUF-BG with SOAP 1.2 not properly extracting attributes.
+* [#4390] Fixed regression introduced by #4368 that would break template variables in
+  hyperlinks inside WYSIWYG content.
+
+2.5.8 (2024-06-14)
+==================
+
+Bugfix release
+
+* [#4255] Fixed a performance issue in the confirmation PDF generation when large
+  blocks of text are rendered.
+* [#4368] Fixed URLs to the same domain being broken in the WYSIWYG editors.
+* [#4362] Fixed a crash in the form designer when a textfield/textarea allows multiple
+  values in forms with translations enabled.
+
+2.4.9 (2024-06-14)
+==================
+
+Bugfix release fixing some issues (still) in 2.4.8
+
+Note that 2.4.8 was never published to Docker Hub.
+
+* [#4338] Fixed prefill for StUF-BG with SOAP 1.2 not properly extracting attributes.
+* [#4390] Fixed regression introduced by #4368 that would break template variables in
+  hyperlinks inside WYSIWYG content.
+
+
+2.4.8 (2024-06-14)
+==================
+
+Bugfix release
+
+* [#4255] Fixed a performance issue in the confirmation PDF generation when large
+  blocks of text are rendered.
+* [#4368] Fixed URLs to the same domain being broken in the WYSIWYG editors.
+* [#4362] Fixed a crash in the form designer when a textfield/textarea allows multiple
+  values in forms with translations enabled.
+
 2.7.0-alpha.1 (2024-XX-XX)
 ==========================
 
