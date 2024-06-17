@@ -1,4 +1,6 @@
-from typing import Any, ClassVar, Protocol
+from __future__ import annotations
+
+from typing import Any, ClassVar, Generic, Protocol, TypeVar
 
 from django.http import (
     HttpRequest,
@@ -8,38 +10,47 @@ from django.http import (
 )
 from django.utils.translation import gettext_lazy as _
 
-import requests
-from furl import furl
-from rest_framework.reverse import reverse
+from digid_eherkenning.oidc.models import OpenIDConnectBaseConfig
+from mozilla_django_oidc_db.utils import do_op_logout
+from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
 
-from digid_eherkenning_oidc_generics.models import (
-    OpenIDConnectDigiDMachtigenConfig,
-    OpenIDConnectEHerkenningBewindvoeringConfig,
-    OpenIDConnectEHerkenningConfig,
-    OpenIDConnectPublicConfig,
-)
-from digid_eherkenning_oidc_generics.views import (
-    digid_init,
-    digid_machtigen_init,
-    eherkenning_bewindvoering_init,
-    eherkenning_init,
-)
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
 )
 from openforms.forms.models import Form
+from openforms.typing import JSONObject, StrOrPromise
+from openforms.utils.urls import reverse_plus
 
 from ...base import BasePlugin, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
-from .constants import (
-    DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY,
-    DIGID_OIDC_AUTH_SESSION_KEY,
-    EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY,
-    EHERKENNING_OIDC_AUTH_SESSION_KEY,
+from .models import (
+    OFDigiDConfig,
+    OFDigiDMachtigenConfig,
+    OFEHerkenningBewindvoeringConfig,
+    OFEHerkenningConfig,
 )
+from .views import (
+    digid_init,
+    digid_machtigen_init,
+    eherkenning_bewindvoering_init,
+    eherkenning_init,
+)
+
+OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
+
+
+def get_config_to_plugin() -> dict[type[OpenIDConnectBaseConfig], OIDCAuthentication]:
+    """
+    Get the mapping of config class to plugin identifier from the registry.
+    """
+    return {
+        plugin.config_class: plugin
+        for plugin in register
+        if isinstance(plugin, OIDCAuthentication)
+    }
 
 
 class AuthInit(Protocol):
@@ -48,21 +59,27 @@ class AuthInit(Protocol):
     ) -> HttpResponseBase: ...
 
 
-class OIDCAuthentication(BasePlugin):
-    verbose_name = ""
-    provides_auth = ""
-    session_key = ""
-    config_class = None
+T = TypeVar("T", bound=str | JSONObject)
+
+
+class OIDCAuthentication(Generic[T], BasePlugin):
+    verbose_name: StrOrPromise = ""
+    provides_auth: AuthAttribute
+    session_key: str = ""
+    config_class: ClassVar[type[OpenIDConnectBaseConfig]]
     init_view: ClassVar[AuthInit]
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
-        auth_return_url = reverse(
+        return_url_query = {"next": form_url}
+        if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
+            return_url_query[CO_SIGN_PARAMETER] = co_sign_param
+
+        return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
+            request=request,
+            query=return_url_query,
         )
-        return_url = furl(auth_return_url).set({"next": form_url})
-        if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):
-            return_url.args[CO_SIGN_PARAMETER] = co_sign_param
 
         # "evaluate" the view, this achieves two things:
         #
@@ -74,11 +91,11 @@ class OIDCAuthentication(BasePlugin):
         #
         # This may raise `OIDCProviderOutage`, which bubbles into the generic auth
         # start_view and gets handled there.
-        response = self.init_view(request, return_url=str(return_url))
+        response = self.init_view(request, return_url=return_url)
         assert isinstance(response, HttpResponseRedirect)
         return response
 
-    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any] | None:
+    def handle_co_sign(self, request: HttpRequest, form: Form) -> dict[str, Any]:
         if not (claim := request.session.get(self.session_key)):
             raise InvalidCoSignData(f"Missing '{self.provides_auth}' parameter/value")
         return {
@@ -86,16 +103,11 @@ class OIDCAuthentication(BasePlugin):
             "fields": {},
         }
 
-    def add_claims_to_sessions_if_not_cosigning(self, claim, request):
-        # set the session auth key only if we're not co-signing
-        if claim and CO_SIGN_PARAMETER not in request.GET:
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": claim,
-            }
+    def translate_auth_data(self, session_value: T) -> tuple[str, None | JSONObject]:
+        assert isinstance(session_value, str)
+        return session_value, None
 
-    def handle_return(self, request, form):
+    def handle_return(self, request: HttpRequest, form: Form):
         """
         Redirect to form URL.
         """
@@ -103,39 +115,42 @@ class OIDCAuthentication(BasePlugin):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
 
-        claim = request.session.get(self.session_key)
-
-        self.add_claims_to_sessions_if_not_cosigning(claim, request)
+        session_value: T | None = request.session.get(self.session_key)
+        if session_value and CO_SIGN_PARAMETER not in request.GET:
+            auth_value, machtigen_data = self.translate_auth_data(session_value)
+            _machtigen_data = {"machtigen": machtigen_data} if machtigen_data else {}
+            request.session[FORM_AUTH_SESSION_KEY] = {
+                "plugin": self.identifier,
+                "attribute": self.provides_auth,
+                "value": auth_value,
+                **_machtigen_data,
+            }
 
         return HttpResponseRedirect(form_url)
 
     def logout(self, request: HttpRequest):
-        if "oidc_id_token" in request.session:
-            logout_endpoint = self.config_class.get_solo().oidc_op_logout_endpoint
-            if logout_endpoint:
-                logout_url = furl(logout_endpoint).set(
-                    {
-                        "id_token_hint": request.session["oidc_id_token"],
-                    }
-                )
-                requests.get(str(logout_url))
+        if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
+            config = self.config_class.get_solo()
+            assert isinstance(config, OpenIDConnectBaseConfig)
+            do_op_logout(config, id_token)
 
-            del request.session["oidc_id_token"]
-
-        if "oidc_login_next" in request.session:
-            del request.session["oidc_login_next"]
-
-        if self.session_key in request.session:
-            del request.session[self.session_key]
+        keys_to_delete = (
+            "oidc_login_next",  # from upstream library
+            self.session_key,
+            _RETURN_URL_SESSION_KEY,
+            OIDC_ID_TOKEN_SESSION_KEY,
+        )
+        for key in keys_to_delete:
+            if key in request.session:
+                del request.session[key]
 
 
 @register("digid_oidc")
-class DigiDOIDCAuthentication(OIDCAuthentication):
+class DigiDOIDCAuthentication(OIDCAuthentication[str]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
-    session_key = DIGID_OIDC_AUTH_SESSION_KEY
-    claim_name = ""
-    config_class = OpenIDConnectPublicConfig
+    session_key = "digid_oidc:bsn"
+    config_class = OFDigiDConfig
     init_view = staticmethod(digid_init)
 
     def get_label(self) -> str:
@@ -146,12 +161,11 @@ class DigiDOIDCAuthentication(OIDCAuthentication):
 
 
 @register("eherkenning_oidc")
-class eHerkenningOIDCAuthentication(OIDCAuthentication):
+class eHerkenningOIDCAuthentication(OIDCAuthentication[str]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
-    session_key = EHERKENNING_OIDC_AUTH_SESSION_KEY
-    claim_name = "kvk"
-    config_class = OpenIDConnectEHerkenningConfig
+    session_key = "eherkenning_oidc:kvk"
+    config_class = OFEHerkenningConfig
     init_view = staticmethod(eherkenning_init)
 
     def get_label(self) -> str:
@@ -162,29 +176,22 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication):
 
 
 @register("digid_machtigen_oidc")
-class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
+class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[JSONObject]):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
-    session_key = DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY
-    config_class = OpenIDConnectDigiDMachtigenConfig
+    session_key = "digid_machtigen_oidc:machtigen"
+    config_class = OFDigiDMachtigenConfig
     init_view = staticmethod(digid_machtigen_init)
     is_for_gemachtigde = True
 
-    def add_claims_to_sessions_if_not_cosigning(self, claim, request):
-        # set the session auth key only if we're not co-signing
-        if not claim or CO_SIGN_PARAMETER in request.GET:
-            return
+    def translate_auth_data(self, session_value: JSONObject) -> tuple[str, JSONObject]:
+        # these keys are set by the authentication backend
+        bsn_vertegenwoordigde = session_value.get("representee")
+        assert isinstance(bsn_vertegenwoordigde, str)
+        bsn_gemachtigde = session_value.get("authorizee")
+        assert isinstance(bsn_gemachtigde, str)
 
-        config = self.config_class.get_solo()
-        machtigen_data = request.session[self.session_key]
-        request.session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": self.identifier,
-            "attribute": self.provides_auth,
-            "value": claim[config.vertegenwoordigde_claim_name],
-            "machtigen": {
-                "identifier_value": machtigen_data.get(config.gemachtigde_claim_name)
-            },
-        }
+        return bsn_vertegenwoordigde, {"identifier_value": bsn_gemachtigde}
 
     def get_label(self) -> str:
         return "DigiD Machtigen"
@@ -194,32 +201,22 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
 
 
 @register("eherkenning_bewindvoering_oidc")
-class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
+class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication[JSONObject]):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
     provides_auth = AuthAttribute.kvk
-    session_key = EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
-    config_class = OpenIDConnectEHerkenningBewindvoeringConfig
+    session_key = "eherkenning_bewindvoering_oidc:machtigen"
+    config_class = OFEHerkenningBewindvoeringConfig
     init_view = staticmethod(eherkenning_bewindvoering_init)
     is_for_gemachtigde = True
 
-    def add_claims_to_sessions_if_not_cosigning(self, claim, request):
-        # set the session auth key only if we're not co-signing
-        if not claim or CO_SIGN_PARAMETER in request.GET:
-            return
+    def translate_auth_data(self, session_value: JSONObject) -> tuple[str, JSONObject]:
+        # these keys are set by the authentication backend
+        bsn_vertegenwoordigde = session_value.get("representee")
+        assert isinstance(bsn_vertegenwoordigde, str)
+        kvk_gemachtigde = session_value.get("authorizee_legal_subject")
+        assert isinstance(kvk_gemachtigde, str)
 
-        config = self.config_class.get_solo()
-        machtigen_data = request.session[self.session_key]
-        request.session[FORM_AUTH_SESSION_KEY] = {
-            "plugin": self.identifier,
-            "attribute": self.provides_auth,
-            "value": claim[config.vertegenwoordigde_company_claim_name],
-            "machtigen": {
-                # TODO So far the only possibility is that this is a BSN.
-                "identifier_value": machtigen_data.get(
-                    config.gemachtigde_person_claim_name
-                )
-            },
-        }
+        return bsn_vertegenwoordigde, {"identifier_value": kvk_gemachtigde}
 
     def get_label(self) -> str:
         return "eHerkenning bewindvoering"
