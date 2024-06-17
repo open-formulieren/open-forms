@@ -503,11 +503,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Allow logging in with both username+password and email+password
 AUTHENTICATION_BACKENDS = [
+    # Put the fake backend first, as it (on success) only puts information in the session
+    # and it's quite easy to shortcut.
+    "openforms.authentication.contrib.digid_eherkenning_oidc.backends.DigiDEHerkenningOIDCBackend",
+    # Real backends
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
-    "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend",
 ]
 
 SESSION_COOKIE_NAME = "openforms_sessionid"
