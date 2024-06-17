@@ -629,8 +629,14 @@ LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
 )  # number of days
 
+# TODO: convert to feature flags so that newly deployed instances get the new behaviour
+# while staying backwards compatible for existing instances
 USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS = config(
     "USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS",
+    default=True,
+)
+USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
+    "USE_LEGACY_ORG_OIDC_ENDPOINTS",
     default=True,
 )
 
@@ -1015,12 +1021,18 @@ SELF_CERTIFI_DIR = config(
 COOKIE_CONSENT_NAME = "cookie_consent"
 
 #
-# Mozilla Django OIDC DB settings
+# Mozilla Django OIDC (DB) settings
 #
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
+# DeprecationWarning
+# XXX: remove in Open Forms 3.0
+_USE_LEGACY_OIDC_ENDPOINTS = config("USE_LEGACY_OIDC_ENDPOINTS", default=True)
+OIDC_AUTHENTICATION_CALLBACK_URL = (
+    "legacy_oidc:oidc_authentication_callback"
+    if _USE_LEGACY_OIDC_ENDPOINTS
+    else "oidc_authentication_callback"
+)
 OIDC_CALLBACK_CLASS = "mozilla_django_oidc_db.views.OIDCCallbackView"
-MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
-MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
 
 # ID token is required to enable OIDC logout
 OIDC_STORE_ID_TOKEN = True

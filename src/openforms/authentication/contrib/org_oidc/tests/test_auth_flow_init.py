@@ -29,9 +29,7 @@ class OrgOIDCInitTests(IntegrationTestsBase):
     Test the outbound part of OIDC-based organisation user authentication.
     """
 
-    CALLBACK_URL = (
-        f"http://testserver{reverse_lazy('authentication:org-oidc-callback')}"
-    )
+    CALLBACK_URL = f"http://testserver{reverse_lazy('org-oidc-callback')}"
 
     @mock_org_oidc_config()
     def test_start_flow_redirects_to_oidc_provider(self):
