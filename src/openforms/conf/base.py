@@ -187,7 +187,7 @@ INSTALLED_APPS = [
     "stuf.stuf_zds",
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
-    "digid_eherkenning_oidc_generics",
+    "digid_eherkenning.oidc",
     "django_filters",
     "csp",
     "cspreports",
