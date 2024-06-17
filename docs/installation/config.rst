@@ -242,9 +242,6 @@ Other settings
 * ``CACHE_AXES``: The Redis cache location for Axes (used to prevent brute
   force attacks). Defaults to ``localhost:6379/0``.
 
-* ``CACHE_OIDC``: The Redis cache location for the OIDC configuration. Defaults
-  to ``localhost:6379/0``.
-
 * ``ENVIRONMENT``: Short string to indicate the environment (test, production,
   etc.) Defaults to ``""``.
 
@@ -264,6 +261,23 @@ Other settings
   redirect to the OpenID Connect provider. You typically want to enable this if you
   enable :ref:`Organization accounts <configuration_authentication_oidc>`. Defaults
   to ``False``.
+
+* ``USE_LEGACY_OIDC_ENDPOINTS``: Defaults to ``True`` for backwards compatibility
+  reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
+  ``/auth/oidc/callback/``, if ``True``, it is ``/oidc/callback/``.
+
+* ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS``: Defaults to ``True`` for backwards compatibility
+  reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
+  ``/auth/oidc/callback/``, if ``True``, they are:
+
+      - ``/digid-oidc/callback/``
+      - ``/eherkenning-oidc/callback/``
+      - ``/digid-machtigen-oidc/callback/``
+      - ``/eherkenning-bewindvoering-oidc/callback/``
+
+* ``USE_LEGACY_ORG_OIDC_ENDPOINTS``: Defaults to ``True`` for backwards compatibility
+  reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
+  ``/auth/oidc/callback/``, if ``True``, it is ``/org-oidc/callback/``.
 
 * ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: Controls if sessions expire at browser close.
   This applies to both the session of end-users filling out forms and staff using the
