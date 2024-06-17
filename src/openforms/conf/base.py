@@ -626,6 +626,11 @@ LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
 )  # number of days
 
+USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS = config(
+    "USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS",
+    default=True,
+)
+
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #

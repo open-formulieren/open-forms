@@ -179,20 +179,20 @@
                 "eherkenningconfiguration"
             ],
             [
-                "digid_eherkenning_oidc_generics",
-                "openidconnectdigidmachtigenconfig"
+                "digid_eherkenning_oidc",
+                "ofdigidconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
-                "openidconnecteherkenningbewindvoeringconfig"
+                "digid_eherkenning_oidc",
+                "ofdigidmachtigenconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
-                "openidconnecteherkenningconfig"
+                "digid_eherkenning_oidc",
+                "ofeherkenningbewindvoeringconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
-                "openidconnectpublicconfig"
+                "digid_eherkenning_oidc",
+                "ofeherkenningconfig"
             ],
             [
                 "django_camunda",
