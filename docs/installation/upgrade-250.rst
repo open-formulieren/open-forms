@@ -1,8 +1,8 @@
 .. _installation_upgrade_250:
 
-====================================================
-Upgrade details to Open Forms 2.5.0 (IN DEVELOPMENT)
-====================================================
+===================================
+Upgrade details to Open Forms 2.5.0
+===================================
 
 We do our best to avoid breaking changes, but at times we cannot guarantee that your
 configuration will keep working flawlessly. Open Forms 2.5.0 is such a release - and

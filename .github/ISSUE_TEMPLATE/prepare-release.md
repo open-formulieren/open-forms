@@ -8,17 +8,32 @@ assignees: sergei-maertens
 
 - [ ] Resolve release blockers
   - [ ] ...
-- [ ] Re-generate VCR cassettes for API tests (see instructions on Taiga)
+- [ ] Re-generate VCR cassettes for API tests (see instructions on Taiga). You can find all test
+      cases with `grep OFVCRMixin -r src`
+
   - [ ] Appoinments: Qmatic
   - [ ] Suwinet
-  - [ ] DigiD/eHerkenning (Signicat)
+  - DigiD/eHerkenning (Signicat)
+
+    - [ ] `openforms.authentication.contrib.digid.tests.test_signicat_integration`
+    - [ ] `openforms.authentication.contrib.eherkenning.tests.test_signicat_integration`
+
+  - OIDC based authentication flows
+
+    - [ ] `openforms.authentication.tests.test_oidc`
+    - [ ] `openforms.authentication.contrib.digid_eherkenning_oidc`
+    - [ ] `openforms.authentication.contrib.org_oidc`
+    - [ ] `openforms.authentication.contrib.org_oidc`
+    - [ ] `openforms.tests.test_registrator_prefill`
+
   - [ ] Haal Centraal BRP Personen bevragen
-  - [ ] `src.soap.tests.test_client`
+  - [ ] `soap.tests.test_client`
   - [ ] BRK (Kadaster)
   - [ ] KVK
   - [ ] Ogone
   - [ ] Objects API (registration)
   - [ ] ZGW APIs (registration)
+
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations

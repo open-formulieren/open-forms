@@ -161,8 +161,10 @@ django-csp==3.8
     # via -r requirements/base.in
 django-csp-reports==1.8.1
     # via -r requirements/base.in
-django-digid-eherkenning==0.13.1
-    # via -r requirements/base.in
+django-digid-eherkenning[oidc]==0.14.0
+    # via
+    #   -r requirements/base.in
+    #   django-digid-eherkenning
 django-filter==23.2
     # via -r requirements/base.in
 django-flags==5.0.13
@@ -332,8 +334,10 @@ maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.15.0
-    # via -r requirements/base.in
+mozilla-django-oidc-db==0.18.0
+    # via
+    #   -r requirements/base.in
+    #   django-digid-eherkenning
 o365==2.0.31
     # via -r requirements/base.in
 oauthlib==3.2.2
@@ -507,6 +511,7 @@ typing-extensions==4.11.0
     # via
     #   -r requirements/base.in
     #   asgiref
+    #   mozilla-django-oidc-db
     #   qrcode
     #   schwifty
     #   zgw-consumers

@@ -63,7 +63,6 @@ services:
       - DB_HOST=db
       - CACHE_DEFAULT=redis:6379/0
       - CACHE_AXES=redis:6379/0
-      - CACHE_OIDC=redis:6379/0
       - CACHE_PORTALOCKER=redis:6379/0
       - ALLOWED_HOSTS=*
       - CELERY_BROKER_URL=redis://redis:6379/0
@@ -76,6 +75,11 @@ services:
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
       - CSP_REPORT_ONLY=yes
+      # Legacy endpoints are deprecated, new installs should opt-out of using legacy
+      # settings (the default is to use legacy endpoints).
+      - USE_LEGACY_OIDC_ENDPOINTS=no
+      - USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=no
+      - USE_LEGACY_ORG_OIDC_ENDPOINTS=no
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media

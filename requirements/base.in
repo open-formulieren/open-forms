@@ -46,7 +46,7 @@ django-capture-tag
 django-colorfield
 django-cookie-consent
 django-cors-headers
-django-digid-eherkenning
+django-digid-eherkenning[oidc]
 django-flags
 django-hijack
 django-import-export

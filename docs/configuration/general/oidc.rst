@@ -36,6 +36,21 @@ Configureren van OIDC-provider
 Contacteer de IAM beheerders in je organisatie om een *Client* of *App* aan te
 maken in de omgeving van de OpenID Connect provider.
 
+**Redirect URI (vanaf Open Formulieren 2.7.0)**
+
+.. warning::
+
+    Zorg dat Open Formulieren :ref:`geïnstalleerd <installation_index>` is met de
+    ``USE_LEGACY_OIDC_ENDPOINTS=false`` en ``USE_LEGACY_ORG_OIDC_ENDPOINTS=false``
+    :ref:`omgevingsvariabelen<installation_environment_config>`, anders worden de legacy
+    (zie hieronder) endpoints gebruikt.
+
+Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/auth/oidc/callback/`` in,
+waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein. Deze
+Redirect URI wordt ook gebruikt voor :ref:`configuration_authentication_oidc_org`.
+
+**Redirect URI (legacy)**
+
 Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/oidc/callback/`` in,
 waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
 
@@ -43,6 +58,8 @@ Als je gebruikers van dezelfde organisatie ook wilt laten inloggen op
 formulieren, voeg dan ook direct 
 ``https://open-formulieren.gemeente.nl/oidc-org/callback/`` toe. Je kan hier 
 meer over lezen op :ref:`configuration_authentication_oidc_org`.
+
+**Gegevens**
 
 Aan het eind van dit proces moet je de volgende gegevens hebben (on premise):
 

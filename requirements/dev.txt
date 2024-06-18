@@ -290,10 +290,11 @@ django-csp-reports==1.8.1
     #   -r requirements/ci.txt
 django-debug-toolbar==4.3.0
     # via -r requirements/dev.in
-django-digid-eherkenning==0.13.1
+django-digid-eherkenning[oidc]==0.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-digid-eherkenning
 django-extensions==3.2.3
     # via -r requirements/dev.in
 django-filter==23.2
@@ -688,10 +689,11 @@ mozilla-django-oidc==4.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.15.0
+mozilla-django-oidc-db==0.18.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-digid-eherkenning
 multidict==6.0.4
     # via
     #   -c requirements/ci.txt
@@ -1189,6 +1191,7 @@ typing-extensions==4.11.0
     #   -r requirements/ci.txt
     #   asgiref
     #   black
+    #   mozilla-django-oidc-db
     #   pyee
     #   qrcode
     #   schwifty

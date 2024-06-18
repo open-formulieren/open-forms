@@ -2,6 +2,39 @@
 Changelog
 =========
 
+2.7.0 "TBD" (2024-07-??)
+========================
+
+This release is in development, meaning it is not finished yet or suitable for
+production use.
+
+Upgrade notes
+-------------
+
+* ⚠️ The feature flag to disable backend validation is now removed, instances relying
+  on it should verify that their existing forms works with the validation enforced.
+
+* We're consolidating the OpenID Connect *Redirect URI* endpoints into a single
+  endpoint: ``/auth/oidc/callback/``. The legacy endpoints are still enabled (by default),
+  but scheduled for removal in Open Forms 3.0.
+
+  You can already opt-in to the new behaviour through three environment variables:
+
+  - ``USE_LEGACY_OIDC_ENDPOINTS=false``: admin login
+  - ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=false``: DigiD/eHerkenning plugins
+  - ``USE_LEGACY_ORG_OIDC_ENDPOINTS=false``: Organization OIDC plugin
+
+  Note that the OpenID applications need to be updated on the identity provider,
+  specifically the allowed "Redirect URIs" setting needs to be updated with the
+  following path replacements:
+
+  - ``/oidc/callback/`` -> ``/auth/oidc/callback/``
+  - ``/digid-oidc/callback/`` -> ``/auth/oidc/callback/``
+  - ``/eherkenning-oidc/callback/`` -> ``/auth/oidc/callback/``
+  - ``/digid-machtigen-oidc/callback/`` -> ``/auth/oidc/callback/``
+  - ``/eherkenning-bewindvoering-oidc/callback/`` -> ``/auth/oidc/callback/``
+  - ``/org-oidc/callback/`` -> ``/auth/oidc/callback/``
+
 2.6.9 (2024-06-14)
 ==================
 
@@ -61,7 +94,6 @@ Note that 2.4.8 was never published to Docker Hub.
 * [#4390] Fixed regression introduced by #4368 that would break template variables in
   hyperlinks inside WYSIWYG content.
 
-
 2.4.8 (2024-06-14)
 ==================
 
@@ -72,17 +104,6 @@ Bugfix release
 * [#4368] Fixed URLs to the same domain being broken in the WYSIWYG editors.
 * [#4362] Fixed a crash in the form designer when a textfield/textarea allows multiple
   values in forms with translations enabled.
-
-2.7.0-alpha.1 (2024-XX-XX)
-==========================
-
-This is an alpha release, meaning it is not finished yet or suitable for production use.
-
-Upgrade notes
--------------
-
-* ⚠️ The feature flag to disable backend validation is now removed, instances relying
-  on it should verify that their existing forms works with the validation enforced.
 
 2.6.7 (2024-05-22)
 ==================

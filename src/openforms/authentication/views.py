@@ -1,4 +1,5 @@
 import logging
+import warnings
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
@@ -127,6 +128,7 @@ class AuthenticationFlowBaseView(RetrieveAPIView):
                 "Presence of this parameter marks a flow as a co-sign flow."
             ),
             required=False,
+            deprecated=True,
         ),
         OpenApiParameter(
             name="Location",
@@ -341,6 +343,10 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
     def _handle_co_sign(self, form: Form, plugin: BasePlugin) -> None:
         co_sign_submission = self._validate_co_sign_submission(plugin)
         if co_sign_submission is not None:
+            warnings.warn(
+                "Legacy co-sign is deprecated and will be removed in Open Forms 3.0",
+                DeprecationWarning,
+            )
             logger.debug("Co-sign authentication detected, invoking plugin handler.")
             co_sign_data = {
                 **plugin.handle_co_sign(self.request, form),

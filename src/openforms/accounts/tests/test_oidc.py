@@ -1,22 +1,33 @@
-from unittest.mock import patch
+from functools import partial
+from pathlib import Path
 
-from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
-from mozilla_django_oidc_db.models import OpenIDConnectConfig
+
+from openforms.utils.tests.keycloak import keycloak_login, mock_oidc_db_config
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import User
 from .factories import StaffUserFactory
 
+TEST_FILES = (Path(__file__).parent / "data").resolve()
+
+
+mock_admin_oidc_config = partial(
+    mock_oidc_db_config,
+    app_label="mozilla_django_oidc_db",
+    model="OpenIDConnectConfig",
+    id=1,  # required for the group queries because we're using in-memory objects
+    make_users_staff=True,
+    username_claim=["preferred_username"],
+)
+
 
 class OIDCLoginButtonTestCase(WebTest):
-    @patch(
-        "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(enabled=False),
-    )
-    def test_oidc_button_disabled(self, mock_get_solo):
+    @mock_admin_oidc_config(enabled=False)
+    def test_oidc_button_disabled(self):
         response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
@@ -25,17 +36,8 @@ class OIDCLoginButtonTestCase(WebTest):
         # Verify that the login button is not visible
         self.assertIsNone(oidc_login_link)
 
-    @patch(
-        "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(
-            enabled=True,
-            oidc_op_token_endpoint="https://some.endpoint.nl/",
-            oidc_op_user_endpoint="https://some.endpoint.nl/",
-            oidc_rp_client_id="id",
-            oidc_rp_client_secret="secret",
-        ),
-    )
-    def test_oidc_button_enabled(self, mock_get_solo):
+    @mock_admin_oidc_config(enabled=True)
+    def test_oidc_button_enabled(self):
         response = self.app.get(reverse("admin-mfa-login"))
 
         oidc_login_link = response.html.find(
@@ -48,160 +50,88 @@ class OIDCLoginButtonTestCase(WebTest):
         )
 
 
-class OIDCFLowTests(TestCase):
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_userinfo")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.store_tokens")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.verify_token")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_token")
-    @patch(
-        "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(id=1, enabled=True),
-    )
-    def test_duplicate_email_unique_constraint_violated(
-        self,
-        mock_get_solo,
-        mock_get_token,
-        mock_verify_token,
-        mock_store_tokens,
-        mock_get_userinfo,
-    ):
+class OIDCFLowTests(OFVCRMixin, WebTest):
+    VCR_TEST_FILES = TEST_FILES
+
+    @mock_admin_oidc_config()
+    def test_duplicate_email_unique_constraint_violated(self):
         """
         Assert that duplicate email addresses result in usable user feedback.
 
         Regression test for #1199
         """
-        # set up a user with a colliding email address
-        mock_get_userinfo.return_value = {
-            "email": "collision@example.com",
-            "sub": "some_username",
-        }
-        StaffUserFactory.create(
-            username="nonmatchingusername", email="collision@example.com"
+        # this user collides on the email address
+        staff_user = StaffUserFactory.create(
+            username="no-match", email="admin@example.com"
         )
-        session = self.client.session
-        session["oidc_states"] = {"mock": {"nonce": "nonce"}}
-        session.save()
-        callback_url = reverse("oidc_authentication_callback")
-
-        # enter the login flow
-        callback_response = self.client.get(
-            callback_url, {"code": "mock", "state": "mock"}
+        login_page = self.app.get(reverse("admin-mfa-login"))
+        start_response = login_page.click(
+            description=_("Login with organization account")
+        )
+        assert start_response.status_code == 302
+        redirect_uri = keycloak_login(
+            start_response["Location"], username="admin", password="admin"
         )
 
-        error_url = reverse("admin-oidc-error")
+        error_page = self.app.get(redirect_uri, auto_follow=True)
 
-        with self.subTest("error redirects"):
-            self.assertRedirects(callback_response, error_url)
-
-        with self.subTest("exception info on error page"):
-            error_page = self.client.get(error_url)
-
+        with self.subTest("error page"):
             self.assertEqual(error_page.status_code, 200)
+            self.assertEqual(error_page.request.path, reverse("admin-oidc-error"))
             self.assertEqual(
                 error_page.context["oidc_error"],
                 """duplicate key value violates unique constraint "filled_email_unique"""
-                """"\nDETAIL:  Key (email)=(collision@example.com) already exists.\n""",
+                """"\nDETAIL:  Key (email)=(admin@example.com) already exists.\n""",
             )
             self.assertContains(
                 error_page, "duplicate key value violates unique constraint"
             )
 
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_userinfo")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.store_tokens")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.verify_token")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_token")
-    @patch(
-        "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(id=1, enabled=True),
-    )
-    def test_happy_flow(
-        self,
-        mock_get_solo,
-        mock_get_token,
-        mock_verify_token,
-        mock_store_tokens,
-        mock_get_userinfo,
-    ):
-        """
-        Assert that duplicate email addresses result in usable user feedback.
+        with self.subTest("user state unmodified"):
+            self.assertEqual(User.objects.count(), 1)
+            staff_user.refresh_from_db()
+            self.assertEqual(staff_user.username, "no-match")
+            self.assertEqual(staff_user.email, "admin@example.com")
+            self.assertTrue(staff_user.is_staff)
 
-        Regression test for #1199
-        """
-        # set up a user with a colliding email address
-        mock_get_userinfo.return_value = {
-            "email": "nocollision@example.com",
-            "sub": "some_username",
-        }
-        StaffUserFactory.create(
-            username="nonmatchingusername", email="collision@example.com"
+    @mock_admin_oidc_config()
+    def test_happy_flow(self):
+        login_page = self.app.get(reverse("admin-mfa-login"))
+        start_response = login_page.click(
+            description=_("Login with organization account")
         )
-        session = self.client.session
-        session["oidc_states"] = {"mock": {"nonce": "nonce"}}
-        session.save()
-        callback_url = reverse("oidc_authentication_callback")
-
-        # enter the login flow
-        callback_response = self.client.get(
-            callback_url, {"code": "mock", "state": "mock"}
+        assert start_response.status_code == 302
+        redirect_uri = keycloak_login(
+            start_response["Location"], username="admin", password="admin"
         )
 
-        self.assertRedirects(
-            callback_response, reverse("admin:index"), fetch_redirect_response=False
+        admin_index = self.app.get(redirect_uri, auto_follow=True)
+
+        self.assertEqual(admin_index.status_code, 200)
+        self.assertEqual(admin_index.request.path, reverse("admin:index"))
+
+        self.assertEqual(User.objects.count(), 1)
+        user = User.objects.get()
+        self.assertEqual(user.username, "admin")
+
+    @mock_admin_oidc_config(make_users_staff=False)
+    def test_happy_flow_existing_user(self):
+        staff_user = StaffUserFactory.create(username="admin", email="update-me")
+        login_page = self.app.get(reverse("admin-mfa-login"))
+        start_response = login_page.click(
+            description=_("Login with organization account")
         )
-        self.assertTrue(User.objects.filter(email="nocollision@example.com").exists())
+        assert start_response.status_code == 302
+        redirect_uri = keycloak_login(
+            start_response["Location"], username="admin", password="admin"
+        )
 
-    def test_error_page_direct_access_forbidden(self):
-        error_url = reverse("admin-oidc-error")
+        admin_index = self.app.get(redirect_uri, auto_follow=True)
 
-        response = self.client.get(error_url)
+        self.assertEqual(admin_index.status_code, 200)
+        self.assertEqual(admin_index.request.path, reverse("admin:index"))
 
-        self.assertEqual(response.status_code, 403)
-
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_userinfo")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.store_tokens")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.verify_token")
-    @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_token")
-    @patch(
-        "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(id=1, enabled=True),
-    )
-    def test_error_first_cleared_after_succesful_login(
-        self,
-        mock_get_solo,
-        mock_get_token,
-        mock_verify_token,
-        mock_store_tokens,
-        mock_get_userinfo,
-    ):
-        mock_get_userinfo.return_value = {
-            "email": "nocollision@example.com",
-            "sub": "some_username",
-        }
-        session = self.client.session
-        session["oidc-error"] = "some error"
-        session.save()
-        error_url = reverse("admin-oidc-error")
-
-        with self.subTest("with error"):
-            response = self.client.get(error_url)
-
-            self.assertEqual(response.status_code, 200)
-
-        with self.subTest("after succesful login"):
-            session["oidc_states"] = {"mock": {"nonce": "nonce"}}
-            session.save()
-            callback_url = reverse("oidc_authentication_callback")
-
-            # enter the login flow
-            callback_response = self.client.get(
-                callback_url, {"code": "mock", "state": "mock"}
-            )
-
-            self.assertRedirects(
-                callback_response, reverse("admin:index"), fetch_redirect_response=False
-            )
-
-            with self.subTest("check error page again"):
-                response = self.client.get(error_url)
-
-                self.assertEqual(response.status_code, 403)
+        self.assertEqual(User.objects.count(), 1)
+        staff_user.refresh_from_db()
+        self.assertEqual(staff_user.username, "admin")
+        self.assertEqual(staff_user.email, "admin@example.com")

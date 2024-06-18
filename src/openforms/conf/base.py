@@ -104,14 +104,6 @@ CACHES = {
             "IGNORE_EXCEPTIONS": True,
         },
     },
-    "oidc": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{config('CACHE_OIDC', 'localhost:6379/0')}",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "IGNORE_EXCEPTIONS": True,
-        },
-    },
     # TODO: rename to 'redis-locks' and get rid of portalocker in favour of plain
     # redis locks?
     "portalocker": {
@@ -187,7 +179,7 @@ INSTALLED_APPS = [
     "stuf.stuf_zds",
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
-    "digid_eherkenning_oidc_generics",
+    "digid_eherkenning.oidc",
     "django_filters",
     "csp",
     "cspreports",
@@ -503,11 +495,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Allow logging in with both username+password and email+password
 AUTHENTICATION_BACKENDS = [
+    # Put the fake backend first, as it (on success) only puts information in the session
+    # and it's quite easy to shortcut.
+    "openforms.authentication.contrib.digid_eherkenning_oidc.backends.DigiDEHerkenningOIDCBackend",
+    # Real backends
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
-    "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend",
 ]
 
 SESSION_COOKIE_NAME = "openforms_sessionid"
@@ -622,6 +617,20 @@ MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
 ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
 DISABLE_SENDING_HIDDEN_FIELDS = config("DISABLE_SENDING_HIDDEN_FIELDS", default=False)
 
+LOG_OUTGOING_REQUESTS_MAX_AGE = config(
+    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
+)  # number of days
+
+# TODO: convert to feature flags so that newly deployed instances get the new behaviour
+# while staying backwards compatible for existing instances
+USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS = config(
+    "USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS",
+    default=True,
+)
+USE_LEGACY_ORG_OIDC_ENDPOINTS = config(
+    "USE_LEGACY_ORG_OIDC_ENDPOINTS",
+    default=True,
+)
 
 ##############################
 #                            #
@@ -692,7 +701,6 @@ TWO_FACTOR_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = "cross-platform"
 # auth, avoiding having some set up MFA again in the project.
 MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = [
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
-    "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend",
 ]
 
 #
@@ -1004,12 +1012,18 @@ SELF_CERTIFI_DIR = config(
 COOKIE_CONSENT_NAME = "cookie_consent"
 
 #
-# Mozilla Django OIDC DB settings
+# Mozilla Django OIDC (DB) settings
 #
 OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationRequestView"
+# DeprecationWarning
+# XXX: remove in Open Forms 3.0
+_USE_LEGACY_OIDC_ENDPOINTS = config("USE_LEGACY_OIDC_ENDPOINTS", default=True)
+OIDC_AUTHENTICATION_CALLBACK_URL = (
+    "legacy_oidc:oidc_authentication_callback"
+    if _USE_LEGACY_OIDC_ENDPOINTS
+    else "oidc_authentication_callback"
+)
 OIDC_CALLBACK_CLASS = "mozilla_django_oidc_db.views.OIDCCallbackView"
-MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
-MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
 
 # ID token is required to enable OIDC logout
 OIDC_STORE_ID_TOKEN = True
@@ -1139,11 +1153,6 @@ LOG_OUTGOING_REQUESTS_CONTENT_TYPES = [
 ]
 LOG_OUTGOING_REQUESTS_EMIT_BODY = True
 LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
-
-# Custom settings
-LOG_OUTGOING_REQUESTS_MAX_AGE = config(
-    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
-)  # number of days
 
 #
 # DJANGO-FLAGS - manage feature flags.

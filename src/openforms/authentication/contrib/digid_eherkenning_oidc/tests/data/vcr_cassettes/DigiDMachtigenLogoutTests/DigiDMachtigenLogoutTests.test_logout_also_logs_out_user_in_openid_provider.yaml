@@ -1,0 +1,727 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
+        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
+        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
+        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/1rz7o/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/login/keycloak/css/login.css\"
+        rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
+        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
+        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
+        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
+        \       We are sorry...\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
+        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-error-message\">\n
+        \           <p class=\"instruction\">Invalid Request</p>\n        </div>\n\n\n\n
+        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
+    headers:
+      Content-Language:
+      - en
+      Content-Security-Policy:
+      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
+      Content-Type:
+      - text/html;charset=utf-8
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - none
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '1573'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid+bsn&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Fdigid-machtigen-oidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
+        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
+        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
+        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/1rz7o/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/login/keycloak/css/login.css\"
+        rel=\"stylesheet\" />\n        <script type=\"module\">\n            import
+        { checkCookiesAndSetTimer } from \"/resources/1rz7o/login/keycloak/js/authChecker.js\";\n\n
+        \           checkCookiesAndSetTimer(\n              \"f81002bb-ea5e-4439-9a22-c2a573783986\",\n
+        \             \"1A_wSCIsnrw\",\n              \"/realms/test/login-actions/restart?client_id=testid&tab_id=1A_wSCIsnrw&skip_logout=true\"\n
+        \           );\n        </script>\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
+        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
+        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
+        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
+        \       Sign in to your account\n\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
+        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-form\">\n
+        \         <div id=\"kc-form-wrapper\">\n                <form id=\"kc-form-login\"
+        onsubmit=\"login.disabled = true; return true;\" action=\"http://localhost:8080/realms/test/login-actions/authenticate?session_code=YsMJJfYRlkMqfg7BM9x5BGxQfaUK8YXSLynnsGrg_Rc&amp;execution=d8b8778e-a545-45d4-8f72-fd69facf4b72&amp;client_id=testid&amp;tab_id=1A_wSCIsnrw\"
+        method=\"post\">\n                        <div class=\"form-group\">\n                            <label
+        for=\"username\" class=\"pf-c-form__label pf-c-form__label-text\">Username
+        or email</label>\n\n                            <input tabindex=\"1\" id=\"username\"
+        class=\"pf-c-form-control\" name=\"username\" value=\"\"  type=\"text\" autofocus
+        autocomplete=\"off\"\n                                   aria-invalid=\"\"\n
+        \                           />\n\n\n                        </div>\n\n                    <div
+        class=\"form-group\">\n                        <label for=\"password\" class=\"pf-c-form__label
+        pf-c-form__label-text\">Password</label>\n\n                        <div class=\"pf-c-input-group\">\n
+        \                           <input tabindex=\"2\" id=\"password\" class=\"pf-c-form-control\"
+        name=\"password\" type=\"password\" autocomplete=\"off\"\n                                   aria-invalid=\"\"\n
+        \                           />\n                            <button class=\"pf-c-button
+        pf-m-control\" type=\"button\" aria-label=\"Show password\"\n                                    aria-controls=\"password\"
+        \ data-password-toggle\n                                    data-icon-show=\"fa
+        fa-eye\" data-icon-hide=\"fa fa-eye-slash\"\n                                    data-label-show=\"Show
+        password\" data-label-hide=\"Hide password\">\n                                <i
+        class=\"fa fa-eye\" aria-hidden=\"true\"></i>\n                            </button>\n
+        \                       </div>\n\n\n                    </div>\n\n                    <div
+        class=\"form-group login-pf-settings\">\n                        <div id=\"kc-form-options\">\n
+        \                           </div>\n                            <div class=\"\">\n
+        \                           </div>\n\n                      </div>\n\n                      <div
+        id=\"kc-form-buttons\" class=\"form-group\">\n                          <input
+        type=\"hidden\" id=\"id-hidden-input\" name=\"credentialId\" />\n                          <input
+        tabindex=\"4\" class=\"pf-c-button pf-m-primary pf-m-block btn-lg\" name=\"login\"
+        id=\"kc-login\" type=\"submit\" value=\"Sign In\"/>\n                      </div>\n
+        \               </form>\n            </div>\n        </div>\n        <script
+        type=\"module\" src=\"/resources/1rz7o/login/keycloak/js/passwordVisibility.js\"></script>\n\n\n\n\n\n
+        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
+    headers:
+      Cache-Control:
+      - no-store, must-revalidate, max-age=0
+      Content-Language:
+      - en
+      Content-Security-Policy:
+      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
+      Content-Type:
+      - text/html;charset=utf-8
+      Referrer-Policy:
+      - no-referrer
+      Set-Cookie:
+      - AUTH_SESSION_ID=f81002bb-ea5e-4439-9a22-c2a573783986; Version=1; Path=/realms/test/;
+        SameSite=None; Secure; HttpOnly
+      - AUTH_SESSION_ID_LEGACY=f81002bb-ea5e-4439-9a22-c2a573783986; Version=1; Path=/realms/test/;
+        HttpOnly
+      - KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9kaWdpZC1tYWNodGlnZW4tb2lkYy9jYWxsYmFjay8iLCJhY3QiOiJBVVRIRU5USUNBVEUiLCJub3RlcyI6eyJzY29wZSI6Im9wZW5pZCBic24iLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2RpZ2lkLW1hY2h0aWdlbi1vaWRjL2NhbGxiYWNrLyIsInN0YXRlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyJ9fQ.CzIO8PEo0TtC0JUUGrAD0K0eHnesrWyKb05cHrA4S4k;
+        Version=1; Path=/realms/test/; HttpOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - none
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '4466'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: username=digid-machtigen&password=digid-machtigen&credentialId=&login=Sign+In
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '77'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Cookie:
+      - AUTH_SESSION_ID_LEGACY=f81002bb-ea5e-4439-9a22-c2a573783986; KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9kaWdpZC1tYWNodGlnZW4tb2lkYy9jYWxsYmFjay8iLCJhY3QiOiJBVVRIRU5USUNBVEUiLCJub3RlcyI6eyJzY29wZSI6Im9wZW5pZCBic24iLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2RpZ2lkLW1hY2h0aWdlbi1vaWRjL2NhbGxiYWNrLyIsInN0YXRlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyJ9fQ.CzIO8PEo0TtC0JUUGrAD0K0eHnesrWyKb05cHrA4S4k
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8080/realms/test/login-actions/authenticate?session_code=YsMJJfYRlkMqfg7BM9x5BGxQfaUK8YXSLynnsGrg_Rc&execution=d8b8778e-a545-45d4-8f72-fd69facf4b72&client_id=testid&tab_id=1A_wSCIsnrw
+  response:
+    body:
+      string: ''
+    headers:
+      Cache-Control:
+      - no-store, must-revalidate, max-age=0
+      Content-Security-Policy:
+      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
+      Location:
+      - http://testserver/digid-machtigen-oidc/callback/?state=not-a-random-string&session_state=f81002bb-ea5e-4439-9a22-c2a573783986&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest&code=a31fe888-300d-44d1-b48e-4b2e60c52064.f81002bb-ea5e-4439-9a22-c2a573783986.adf4ad83-4550-4619-9231-73bd8d700f45
+      Referrer-Policy:
+      - no-referrer
+      Set-Cookie:
+      - KEYCLOAK_LOCALE=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
+      - KC_RESTART=; Version=1; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Max-Age=0;
+        Path=/realms/test/; HttpOnly
+      - KC_AUTH_STATE=; Version=1; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Max-Age=0;
+        Path=/realms/test/
+      - KEYCLOAK_IDENTITY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3MTY0OTY4MDIsImlhdCI6MTcxNjQ2MDgwMiwianRpIjoiNzUxYWJlNzUtMjliNS00ZGZiLWJlZWMtODAyZWEwMTZiZmI3IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzdGF0ZV9jaGVja2VyIjoib2ZfM1dKck01UzZkU3JESHJWT2Ztall3ZHgtbHlPWDRpa0cweFRma0xYbyJ9.09qPIXCSix1bOHLQvbsEiBUb9ySV1SktTqMUJ9IA1u4;
+        Version=1; Path=/realms/test/; SameSite=None; Secure; HttpOnly
+      - KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3MTY0OTY4MDIsImlhdCI6MTcxNjQ2MDgwMiwianRpIjoiNzUxYWJlNzUtMjliNS00ZGZiLWJlZWMtODAyZWEwMTZiZmI3IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzdGF0ZV9jaGVja2VyIjoib2ZfM1dKck01UzZkU3JESHJWT2Ztall3ZHgtbHlPWDRpa0cweFRma0xYbyJ9.09qPIXCSix1bOHLQvbsEiBUb9ySV1SktTqMUJ9IA1u4;
+        Version=1; Path=/realms/test/; HttpOnly
+      - KEYCLOAK_SESSION=test/ec5a1f70-3d10-48a8-a18b-2d13c925cd92/f81002bb-ea5e-4439-9a22-c2a573783986;
+        Version=1; Expires=Thu, 23-May-2024 20:40:02 GMT; Max-Age=36000; Path=/realms/test/;
+        SameSite=None; Secure
+      - KEYCLOAK_SESSION_LEGACY=test/ec5a1f70-3d10-48a8-a18b-2d13c925cd92/f81002bb-ea5e-4439-9a22-c2a573783986;
+        Version=1; Expires=Thu, 23-May-2024 20:40:02 GMT; Max-Age=36000; Path=/realms/test/
+      - KEYCLOAK_REMEMBER_ME=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - none
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '0'
+    status:
+      code: 302
+      message: Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
+        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
+        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
+        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/1rz7o/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/login/keycloak/css/login.css\"
+        rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
+        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
+        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
+        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
+        \       We are sorry...\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
+        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-error-message\">\n
+        \           <p class=\"instruction\">Invalid Request</p>\n        </div>\n\n\n\n
+        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
+    headers:
+      Content-Language:
+      - en
+      Content-Security-Policy:
+      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
+      Content-Type:
+      - text/html;charset=utf-8
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - none
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '1573'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Cookie:
+      - AUTH_SESSION_ID_LEGACY=f81002bb-ea5e-4439-9a22-c2a573783986; KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3MTY0OTY4MDIsImlhdCI6MTcxNjQ2MDgwMiwianRpIjoiNzUxYWJlNzUtMjliNS00ZGZiLWJlZWMtODAyZWEwMTZiZmI3IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzdGF0ZV9jaGVja2VyIjoib2ZfM1dKck01UzZkU3JESHJWT2Ztall3ZHgtbHlPWDRpa0cweFRma0xYbyJ9.09qPIXCSix1bOHLQvbsEiBUb9ySV1SktTqMUJ9IA1u4;
+        KEYCLOAK_SESSION_LEGACY=test/ec5a1f70-3d10-48a8-a18b-2d13c925cd92/f81002bb-ea5e-4439-9a22-c2a573783986
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid+bsn&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Fdigid-machtigen-oidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
+  response:
+    body:
+      string: ''
+    headers:
+      Cache-Control:
+      - no-store, must-revalidate, max-age=0
+      Location:
+      - http://testserver/digid-machtigen-oidc/callback/?state=not-a-random-string&session_state=f81002bb-ea5e-4439-9a22-c2a573783986&iss=http%3A%2F%2Flocalhost%3A8080%2Frealms%2Ftest&code=8a0feebb-483f-4e3a-aab3-72ca24ff10fc.f81002bb-ea5e-4439-9a22-c2a573783986.adf4ad83-4550-4619-9231-73bd8d700f45
+      Referrer-Policy:
+      - no-referrer
+      Set-Cookie:
+      - KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9kaWdpZC1tYWNodGlnZW4tb2lkYy9jYWxsYmFjay8iLCJhY3QiOiJBVVRIRU5USUNBVEUiLCJub3RlcyI6eyJzY29wZSI6Im9wZW5pZCBic24iLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2RpZ2lkLW1hY2h0aWdlbi1vaWRjL2NhbGxiYWNrLyIsInN0YXRlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyJ9fQ.CzIO8PEo0TtC0JUUGrAD0K0eHnesrWyKb05cHrA4S4k;
+        Version=1; Path=/realms/test/; HttpOnly
+      - KEYCLOAK_LOCALE=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
+      - KC_RESTART=; Version=1; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Max-Age=0;
+        Path=/realms/test/; HttpOnly
+      - KC_AUTH_STATE=; Version=1; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Max-Age=0;
+        Path=/realms/test/
+      - KEYCLOAK_IDENTITY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3MTY0OTY4MDIsImlhdCI6MTcxNjQ2MDgwMiwianRpIjoiOTg4NDdjMDAtYjM3Ny00OTNkLWFlOWItNzU4ZTdhOTgxMThiIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzdGF0ZV9jaGVja2VyIjoib2ZfM1dKck01UzZkU3JESHJWT2Ztall3ZHgtbHlPWDRpa0cweFRma0xYbyJ9.BXeZkKDXi8_1y5BMHBoHAv4fUROc-Bt2fvwATjjxG9A;
+        Version=1; Path=/realms/test/; SameSite=None; Secure; HttpOnly
+      - KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3MTY0OTY4MDIsImlhdCI6MTcxNjQ2MDgwMiwianRpIjoiOTg4NDdjMDAtYjM3Ny00OTNkLWFlOWItNzU4ZTdhOTgxMThiIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzdGF0ZV9jaGVja2VyIjoib2ZfM1dKck01UzZkU3JESHJWT2Ztall3ZHgtbHlPWDRpa0cweFRma0xYbyJ9.BXeZkKDXi8_1y5BMHBoHAv4fUROc-Bt2fvwATjjxG9A;
+        Version=1; Path=/realms/test/; HttpOnly
+      - KEYCLOAK_SESSION=test/ec5a1f70-3d10-48a8-a18b-2d13c925cd92/f81002bb-ea5e-4439-9a22-c2a573783986;
+        Version=1; Expires=Thu, 23-May-2024 20:40:02 GMT; Max-Age=36000; Path=/realms/test/;
+        SameSite=None; Secure
+      - KEYCLOAK_SESSION_LEGACY=test/ec5a1f70-3d10-48a8-a18b-2d13c925cd92/f81002bb-ea5e-4439-9a22-c2a573783986;
+        Version=1; Expires=Thu, 23-May-2024 20:40:02 GMT; Max-Age=36000; Path=/realms/test/
+      - KEYCLOAK_REMEMBER_ME=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '0'
+    status:
+      code: 302
+      message: Found
+- request:
+    body: client_id=testid&client_secret=7DB3KUAAizYCcmZufpHRVOcD0TOkNO3I&grant_type=authorization_code&code=8a0feebb-483f-4e3a-aab3-72ca24ff10fc.f81002bb-ea5e-4439-9a22-c2a573783986.adf4ad83-4550-4619-9231-73bd8d700f45&redirect_uri=http%3A%2F%2Ftestserver%2Fdigid-machtigen-oidc%2Fcallback%2F
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '283'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/token
+  response:
+    body:
+      string: '{"access_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3MTY0NjExMDIsImlhdCI6MTcxNjQ2MDgwMiwiYXV0aF90aW1lIjoxNzE2NDYwODAyLCJqdGkiOiI2ZmQzNTEyNS03NzQzLTRkOWEtYWNjNS0xMWVmODhkM2MxODMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGVzdGlkIiwibm9uY2UiOiJub3QtYS1yYW5kb20tc3RyaW5nIiwic2Vzc2lvbl9zdGF0ZSI6ImY4MTAwMmJiLWVhNWUtNDQzOS05YTIyLWMyYTU3Mzc4Mzk4NiIsImFjciI6IjAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovLzEyNy4wLjAuMTo4MDAwIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSBrdmsgYnNuIiwic2lkIjoiZjgxMDAyYmItZWE1ZS00NDM5LTlhMjItYzJhNTczNzgzOTg2IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJnZW1hY2h0aWdkZS5ic24iOiI5OTk5OTk5OTkiLCJhYW52cmFnZXIuYnNuIjoiMDAwMDAwMDAwIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGlnaWQtbWFjaHRpZ2VuIn0.JN_G-BYrqgbyP_gxGhtlVTDEOc-cqSeLfzLQwDFDnxt2wGNKXbDGvtbscujaEQM8jr0D7Ch3JrBg-dj6vyrSVSZDS7byvq7WcprJTbEA4D6ds3S5haTRnf1HriqCX19mLJYe_F4h5i3MHc2eG2W1qUh1L5Df4ve4_j0ckpnzVAtDeJ3DIw5liyG4raxQ5cF7xgVgfTarPkoJvnP-Bu8Lc4WG1pm6yb1eROGhZF-B8Kf10yxBLpu7bNnYxVbzAem-8zthnM8ny6RccqOIbZE_pz1cOOFqdg_9fVkvB6W5PkbEDahg9mVqlfH8ff6KKPgSB0J_1f-__0kiWqBPcY0h0Q","expires_in":300,"refresh_expires_in":1800,"refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3MTY0NjI2MDIsImlhdCI6MTcxNjQ2MDgwMiwianRpIjoiMGE2ZGZmOTAtODc1Ni00OTZiLTkzNWQtYmYxNDBlYWUwMmYzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiUmVmcmVzaCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIGt2ayBic24iLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYifQ.cBuveTYRN8Ic_ziO9nuvFgHAUi3EyBGiOml0zvPXgo4","token_type":"Bearer","id_token":"eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3MTY0NjExMDIsImlhdCI6MTcxNjQ2MDgwMiwiYXV0aF90aW1lIjoxNzE2NDYwODAyLCJqdGkiOiI0Njg2YTIxMS04ZDc0LTRhMmYtOTkyYi00MDhlMzJjZjdmOGYiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJ0ZXN0aWQiLCJzdWIiOiJlYzVhMWY3MC0zZDEwLTQ4YTgtYTE4Yi0yZDEzYzkyNWNkOTIiLCJ0eXAiOiJJRCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJhdF9oYXNoIjoibkx4M21sbUNuYnRKSjBoZ24xMjVrQSIsImFjciI6IjAiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImdlbWFjaHRpZ2RlLmJzbiI6Ijk5OTk5OTk5OSIsImFhbnZyYWdlci5ic24iOiIwMDAwMDAwMDAiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkaWdpZC1tYWNodGlnZW4ifQ.q0jDrz6NUPvaBzoJ-Kgygo4-kW_YFau77jKtxdvjwtrrLzRXKIK7t5s_O50XrdTb4e6a_Rmf48BzlurYbEPbhyEIit2mOoXyEKr_XoQuMDfO91pmhOCwyX-YBs7SMltTgqWcVi99bdFgvskxo9iusjWlcy0pp43LRtGrJZK5_GVvN5ApAwsWGjJ6v0gXka6xYZcsoxPcVfBUffApy_Slxfd3M1XH9m0oITSUPoWsOSja5lBEmNOeMhkXU3EGNSW9-Pwit2bWr9-fAYDO5lj0oZsQwVZHcROf35-_-1X-xH6in4f2CUGgaGB3ox3z9HtklfddmapyMU6VLMgbddZLfw","not-before-policy":0,"session_state":"f81002bb-ea5e-4439-9a22-c2a573783986","scope":"openid
+        email profile kvk bsn"}'
+    headers:
+      Cache-Control:
+      - no-store
+      Content-Type:
+      - application/json
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '3553'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/certs
+  response:
+    body:
+      string: '{"keys":[{"kid":"4UNQAcvUcv-DFUOx_4O1gt13OdJSotqEKPZurs2vQW8","kty":"RSA","alg":"RS256","use":"sig","n":"2DOZ0qHie73SuFVR7civrl6r82YUiAghfzaMowjCg0o06AF--2lIS7vNV_PbsVVznPAAMqVrNG-8CcevEzvVZMQD9nH4DI7xlOxK0lrYu8rmMeSfOvXVbBVsWBZe0jnGNukZqjwmRE5__ttJdxPfIBT5-2L6mguQbDfhSUEEdIW7y7UfOXvqLqEcBtoIEB-ORKDTUIQwGZM5mSCy-cY3cHvvZfZVgaUUy5NvujPRXTMje4n_hG0KfEV-40G9qC2_Xvx4EooJzBZ6FSThiWhCpwhIvzcQqB6M9lHW7nU6wADhYPNCa2OKWvphwZ_zbrF4B9dmS6Zli5rBvbox9Hh45w","e":"AQAB","x5c":["MIIClzCCAX8CBgGNeYaMLTANBgkqhkiG9w0BAQsFADAPMQ0wCwYDVQQDDAR0ZXN0MB4XDTI0MDIwNTEzNDYxN1oXDTM0MDIwNTEzNDc1N1owDzENMAsGA1UEAwwEdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANgzmdKh4nu90rhVUe3Ir65eq/NmFIgIIX82jKMIwoNKNOgBfvtpSEu7zVfz27FVc5zwADKlazRvvAnHrxM71WTEA/Zx+AyO8ZTsStJa2LvK5jHknzr11WwVbFgWXtI5xjbpGao8JkROf/7bSXcT3yAU+fti+poLkGw34UlBBHSFu8u1Hzl76i6hHAbaCBAfjkSg01CEMBmTOZkgsvnGN3B772X2VYGlFMuTb7oz0V0zI3uJ/4RtCnxFfuNBvagtv178eBKKCcwWehUk4YloQqcISL83EKgejPZR1u51OsAA4WDzQmtjilr6YcGf826xeAfXZkumZYuawb26MfR4eOcCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAsnQG/Yi2g1XTCJn74hWv9MjxVAaZb4gBAc2AWm5VgAjhFEM9h6x6m1mQkq7JM4rIdAj8jw55Ok9CBVBIqq4G4cME3eUvVytkj2lC9zcRoAivjjZF2HPg7zNPa2TTR50asmHPRokppV6gewO/C+o5as+4P2zqDXBh61aRd/9kdQfkg14LBbH5/dYccAuvUqlTYC4IEPCvVmBNC1xsMjf0vohvoSjm9vL2bfqG/RJH0ScdCjOd5d2zju4/e2oVdluWm+vzKBQplc7tVMuKpn6LcLmVHiGNAl+EBIZH+WVLlTx0D1+kbHZsfLYG53lQg2LsvurRbWyF/a5fVM/oLTn5ag=="],"x5t":"H5xfs1pRtvX0HyVTskx7eTXx88U","x5t#S256":"XurVtKAIEyc4w9HCGOhnjoRHnYu4d9HCn_5YHmkScJg"},{"kid":"TV3Tl5jIY1nrJLSb53UKEubLR5gYiq9slq1SsDDg1HU","kty":"RSA","alg":"RSA-OAEP","use":"enc","n":"pNvU3ecpVHbJT4bCOEpw6cnV1yi65tB3I0bRF2ilLVOY944QRAGnjBBECPIzNbgqavghYp1j75F2nq6_ny1CYfoaxTV2iDpRUw8_f7sliYbl8FrLLat0S25ItlZrg5TEJHObvOqlG2_nXoeH36MRWwNhms2uCqfhn5VgtenIzpQIBolnM7zzGp21NvdJ1C_ZAUzkXC-l3oQ-BXTtpEVM4h2KpYh4gfZJWCbYij5d1e1YApKD6V61_Cs3Oa2OY7CAUyq5kgAWJZFDB6CpzIr226u3bV7F9RbrQu3Ybc_Lv33EwykscLznKWZY2Mbs3Iz_rFNv3sVX_vHpH4DHWlKu7Q","e":"AQAB","x5c":["MIIClzCCAX8CBgGNeYaMlzANBgkqhkiG9w0BAQsFADAPMQ0wCwYDVQQDDAR0ZXN0MB4XDTI0MDIwNTEzNDYxN1oXDTM0MDIwNTEzNDc1N1owDzENMAsGA1UEAwwEdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKTb1N3nKVR2yU+GwjhKcOnJ1dcouubQdyNG0RdopS1TmPeOEEQBp4wQRAjyMzW4Kmr4IWKdY++Rdp6uv58tQmH6GsU1dog6UVMPP3+7JYmG5fBayy2rdEtuSLZWa4OUxCRzm7zqpRtv516Hh9+jEVsDYZrNrgqn4Z+VYLXpyM6UCAaJZzO88xqdtTb3SdQv2QFM5Fwvpd6EPgV07aRFTOIdiqWIeIH2SVgm2Io+XdXtWAKSg+letfwrNzmtjmOwgFMquZIAFiWRQwegqcyK9turt21exfUW60Lt2G3Py799xMMpLHC85ylmWNjG7NyM/6xTb97FV/7x6R+Ax1pSru0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAQGJHeTYSMvp0yndbIn7DLohO9lom5nRrx/bLyb7TiRfogyJEF6rQZ66CAkQFk5eMF878fsHTuMVjtmXVBnhojhVmK91HwjsNQu/8xR6QMXNKJQMvHR245vwUGxlWRw/36ObM1D7QjCd/q+FonpBEY4m5Y6Uz1U0HR2Cbh0E2afVlPLeV+F0LKrlyVMdIaWBGWftCGIKDAHaG/PD66zbAKtxerv2fBIDq100WHPhd57BZxX+2aGJp1IaRDgkxV0E/CjEy3+Knd8xbAgUSW0Tl6OTC75exIvlbzeluEBe0wlapAb7WvBKYsipSW8G8Ey7tjoolDT4AU82EaKUPstiMnA=="],"x5t":"AlfHDI0FOPQpt3RBAILt0dtW1yw","x5t#S256":"a7bhm8-JsnfY7bL_m8Yl72hgmp5516VZlFcVloKzk08"}]}'
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Type:
+      - application/json;charset=UTF-8
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '2909'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3MTY0NjExMDIsImlhdCI6MTcxNjQ2MDgwMiwiYXV0aF90aW1lIjoxNzE2NDYwODAyLCJqdGkiOiI2ZmQzNTEyNS03NzQzLTRkOWEtYWNjNS0xMWVmODhkM2MxODMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGVzdGlkIiwibm9uY2UiOiJub3QtYS1yYW5kb20tc3RyaW5nIiwic2Vzc2lvbl9zdGF0ZSI6ImY4MTAwMmJiLWVhNWUtNDQzOS05YTIyLWMyYTU3Mzc4Mzk4NiIsImFjciI6IjAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovLzEyNy4wLjAuMTo4MDAwIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXRlc3QiLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSBrdmsgYnNuIiwic2lkIjoiZjgxMDAyYmItZWE1ZS00NDM5LTlhMjItYzJhNTczNzgzOTg2IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJnZW1hY2h0aWdkZS5ic24iOiI5OTk5OTk5OTkiLCJhYW52cmFnZXIuYnNuIjoiMDAwMDAwMDAwIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiZGlnaWQtbWFjaHRpZ2VuIn0.JN_G-BYrqgbyP_gxGhtlVTDEOc-cqSeLfzLQwDFDnxt2wGNKXbDGvtbscujaEQM8jr0D7Ch3JrBg-dj6vyrSVSZDS7byvq7WcprJTbEA4D6ds3S5haTRnf1HriqCX19mLJYe_F4h5i3MHc2eG2W1qUh1L5Df4ve4_j0ckpnzVAtDeJ3DIw5liyG4raxQ5cF7xgVgfTarPkoJvnP-Bu8Lc4WG1pm6yb1eROGhZF-B8Kf10yxBLpu7bNnYxVbzAem-8zthnM8ny6RccqOIbZE_pz1cOOFqdg_9fVkvB6W5PkbEDahg9mVqlfH8ff6KKPgSB0J_1f-__0kiWqBPcY0h0Q
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/userinfo
+  response:
+    body:
+      string: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJzdWIiOiJlYzVhMWY3MC0zZDEwLTQ4YTgtYTE4Yi0yZDEzYzkyNWNkOTIiLCJhdWQiOiJ0ZXN0aWQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvdGVzdCIsImdlbWFjaHRpZ2RlLmJzbiI6Ijk5OTk5OTk5OSIsImFhbnZyYWdlci5ic24iOiIwMDAwMDAwMDAiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkaWdpZC1tYWNodGlnZW4ifQ.o49__EZYqQIn8ctrG7GKzzNx1fxyOQHbpxnIeT-swLVZNgP04xGwI-hcycw1Okb6CuRUjzsrXzI1gLzmUE2pFcpIbCkKBJuoeShH1rgiRXezcUDo8b0vDMyBrHwjrv3E8bCOJ8yI5bR4qBXR6uZDyY9ZrZLoWYyYz4f1ws6TNa3FBtVvx6j171tw14_V85jlLICOwTPFYqyQ8884n2-s4blRyVQgIl1X9fbziOsRRshsbwnh3Ldct-8wrW218Bnw_HKklxfoDj13w6xm39U0JLWb3wz9rLmfRPAuGffHEIePigCTy0NmObKWNqN7MyI2mEJf9h8cIRqgV4zVXYn_YQ
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Type:
+      - application/jwt
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '753'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/certs
+  response:
+    body:
+      string: '{"keys":[{"kid":"4UNQAcvUcv-DFUOx_4O1gt13OdJSotqEKPZurs2vQW8","kty":"RSA","alg":"RS256","use":"sig","n":"2DOZ0qHie73SuFVR7civrl6r82YUiAghfzaMowjCg0o06AF--2lIS7vNV_PbsVVznPAAMqVrNG-8CcevEzvVZMQD9nH4DI7xlOxK0lrYu8rmMeSfOvXVbBVsWBZe0jnGNukZqjwmRE5__ttJdxPfIBT5-2L6mguQbDfhSUEEdIW7y7UfOXvqLqEcBtoIEB-ORKDTUIQwGZM5mSCy-cY3cHvvZfZVgaUUy5NvujPRXTMje4n_hG0KfEV-40G9qC2_Xvx4EooJzBZ6FSThiWhCpwhIvzcQqB6M9lHW7nU6wADhYPNCa2OKWvphwZ_zbrF4B9dmS6Zli5rBvbox9Hh45w","e":"AQAB","x5c":["MIIClzCCAX8CBgGNeYaMLTANBgkqhkiG9w0BAQsFADAPMQ0wCwYDVQQDDAR0ZXN0MB4XDTI0MDIwNTEzNDYxN1oXDTM0MDIwNTEzNDc1N1owDzENMAsGA1UEAwwEdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANgzmdKh4nu90rhVUe3Ir65eq/NmFIgIIX82jKMIwoNKNOgBfvtpSEu7zVfz27FVc5zwADKlazRvvAnHrxM71WTEA/Zx+AyO8ZTsStJa2LvK5jHknzr11WwVbFgWXtI5xjbpGao8JkROf/7bSXcT3yAU+fti+poLkGw34UlBBHSFu8u1Hzl76i6hHAbaCBAfjkSg01CEMBmTOZkgsvnGN3B772X2VYGlFMuTb7oz0V0zI3uJ/4RtCnxFfuNBvagtv178eBKKCcwWehUk4YloQqcISL83EKgejPZR1u51OsAA4WDzQmtjilr6YcGf826xeAfXZkumZYuawb26MfR4eOcCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAsnQG/Yi2g1XTCJn74hWv9MjxVAaZb4gBAc2AWm5VgAjhFEM9h6x6m1mQkq7JM4rIdAj8jw55Ok9CBVBIqq4G4cME3eUvVytkj2lC9zcRoAivjjZF2HPg7zNPa2TTR50asmHPRokppV6gewO/C+o5as+4P2zqDXBh61aRd/9kdQfkg14LBbH5/dYccAuvUqlTYC4IEPCvVmBNC1xsMjf0vohvoSjm9vL2bfqG/RJH0ScdCjOd5d2zju4/e2oVdluWm+vzKBQplc7tVMuKpn6LcLmVHiGNAl+EBIZH+WVLlTx0D1+kbHZsfLYG53lQg2LsvurRbWyF/a5fVM/oLTn5ag=="],"x5t":"H5xfs1pRtvX0HyVTskx7eTXx88U","x5t#S256":"XurVtKAIEyc4w9HCGOhnjoRHnYu4d9HCn_5YHmkScJg"},{"kid":"TV3Tl5jIY1nrJLSb53UKEubLR5gYiq9slq1SsDDg1HU","kty":"RSA","alg":"RSA-OAEP","use":"enc","n":"pNvU3ecpVHbJT4bCOEpw6cnV1yi65tB3I0bRF2ilLVOY944QRAGnjBBECPIzNbgqavghYp1j75F2nq6_ny1CYfoaxTV2iDpRUw8_f7sliYbl8FrLLat0S25ItlZrg5TEJHObvOqlG2_nXoeH36MRWwNhms2uCqfhn5VgtenIzpQIBolnM7zzGp21NvdJ1C_ZAUzkXC-l3oQ-BXTtpEVM4h2KpYh4gfZJWCbYij5d1e1YApKD6V61_Cs3Oa2OY7CAUyq5kgAWJZFDB6CpzIr226u3bV7F9RbrQu3Ybc_Lv33EwykscLznKWZY2Mbs3Iz_rFNv3sVX_vHpH4DHWlKu7Q","e":"AQAB","x5c":["MIIClzCCAX8CBgGNeYaMlzANBgkqhkiG9w0BAQsFADAPMQ0wCwYDVQQDDAR0ZXN0MB4XDTI0MDIwNTEzNDYxN1oXDTM0MDIwNTEzNDc1N1owDzENMAsGA1UEAwwEdGVzdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKTb1N3nKVR2yU+GwjhKcOnJ1dcouubQdyNG0RdopS1TmPeOEEQBp4wQRAjyMzW4Kmr4IWKdY++Rdp6uv58tQmH6GsU1dog6UVMPP3+7JYmG5fBayy2rdEtuSLZWa4OUxCRzm7zqpRtv516Hh9+jEVsDYZrNrgqn4Z+VYLXpyM6UCAaJZzO88xqdtTb3SdQv2QFM5Fwvpd6EPgV07aRFTOIdiqWIeIH2SVgm2Io+XdXtWAKSg+letfwrNzmtjmOwgFMquZIAFiWRQwegqcyK9turt21exfUW60Lt2G3Py799xMMpLHC85ylmWNjG7NyM/6xTb97FV/7x6R+Ax1pSru0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAQGJHeTYSMvp0yndbIn7DLohO9lom5nRrx/bLyb7TiRfogyJEF6rQZ66CAkQFk5eMF878fsHTuMVjtmXVBnhojhVmK91HwjsNQu/8xR6QMXNKJQMvHR245vwUGxlWRw/36ObM1D7QjCd/q+FonpBEY4m5Y6Uz1U0HR2Cbh0E2afVlPLeV+F0LKrlyVMdIaWBGWftCGIKDAHaG/PD66zbAKtxerv2fBIDq100WHPhd57BZxX+2aGJp1IaRDgkxV0E/CjEy3+Knd8xbAgUSW0Tl6OTC75exIvlbzeluEBe0wlapAb7WvBKYsipSW8G8Ey7tjoolDT4AU82EaKUPstiMnA=="],"x5t":"AlfHDI0FOPQpt3RBAILt0dtW1yw","x5t#S256":"a7bhm8-JsnfY7bL_m8Yl72hgmp5516VZlFcVloKzk08"}]}'
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Type:
+      - application/json;charset=UTF-8
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '2909'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: id_token_hint=eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI0VU5RQWN2VWN2LURGVU94XzRPMWd0MTNPZEpTb3RxRUtQWnVyczJ2UVc4In0.eyJleHAiOjE3MTY0NjExMDIsImlhdCI6MTcxNjQ2MDgwMiwiYXV0aF90aW1lIjoxNzE2NDYwODAyLCJqdGkiOiI0Njg2YTIxMS04ZDc0LTRhMmYtOTkyYi00MDhlMzJjZjdmOGYiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJhdWQiOiJ0ZXN0aWQiLCJzdWIiOiJlYzVhMWY3MC0zZDEwLTQ4YTgtYTE4Yi0yZDEzYzkyNWNkOTIiLCJ0eXAiOiJJRCIsImF6cCI6InRlc3RpZCIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJhdF9oYXNoIjoibkx4M21sbUNuYnRKSjBoZ24xMjVrQSIsImFjciI6IjAiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImdlbWFjaHRpZ2RlLmJzbiI6Ijk5OTk5OTk5OSIsImFhbnZyYWdlci5ic24iOiIwMDAwMDAwMDAiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkaWdpZC1tYWNodGlnZW4ifQ.q0jDrz6NUPvaBzoJ-Kgygo4-kW_YFau77jKtxdvjwtrrLzRXKIK7t5s_O50XrdTb4e6a_Rmf48BzlurYbEPbhyEIit2mOoXyEKr_XoQuMDfO91pmhOCwyX-YBs7SMltTgqWcVi99bdFgvskxo9iusjWlcy0pp43LRtGrJZK5_GVvN5ApAwsWGjJ6v0gXka6xYZcsoxPcVfBUffApy_Slxfd3M1XH9m0oITSUPoWsOSja5lBEmNOeMhkXU3EGNSW9-Pwit2bWr9-fAYDO5lj0oZsQwVZHcROf35-_-1X-xH6in4f2CUGgaGB3ox3z9HtklfddmapyMU6VLMgbddZLfw
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1171'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.31.0
+    method: POST
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/logout
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
+        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
+        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
+        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/1rz7o/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/login/keycloak/css/login.css\"
+        rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
+        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
+        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
+        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
+        \       You are logged out\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
+        \       <div id=\"kc-content-wrapper\">\n\n\n    <div id=\"kc-info-message\">\n
+        \       <p class=\"instruction\">You are logged out</p>\n    </div>\n\n\n\n
+        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Language:
+      - en
+      Content-Security-Policy:
+      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
+      Content-Type:
+      - text/html;charset=utf-8
+      Referrer-Policy:
+      - no-referrer
+      Set-Cookie:
+      - AUTH_SESSION_ID=019db403-873f-4e2e-82b8-41b7e6ba9477; Version=1; Path=/realms/test/;
+        SameSite=None; Secure; HttpOnly
+      - AUTH_SESSION_ID_LEGACY=019db403-873f-4e2e-82b8-41b7e6ba9477; Version=1; Path=/realms/test/;
+        HttpOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - none
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '1566'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
+        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
+        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
+        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/1rz7o/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/login/keycloak/css/login.css\"
+        rel=\"stylesheet\" />\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
+        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
+        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
+        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
+        \       We are sorry...\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
+        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-error-message\">\n
+        \           <p class=\"instruction\">Invalid Request</p>\n        </div>\n\n\n\n
+        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
+    headers:
+      Content-Language:
+      - en
+      Content-Security-Policy:
+      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
+      Content-Type:
+      - text/html;charset=utf-8
+      Referrer-Policy:
+      - no-referrer
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - none
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '1573'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      Cookie:
+      - AUTH_SESSION_ID_LEGACY=f81002bb-ea5e-4439-9a22-c2a573783986; KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9kaWdpZC1tYWNodGlnZW4tb2lkYy9jYWxsYmFjay8iLCJhY3QiOiJBVVRIRU5USUNBVEUiLCJub3RlcyI6eyJzY29wZSI6Im9wZW5pZCBic24iLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2RpZ2lkLW1hY2h0aWdlbi1vaWRjL2NhbGxiYWNrLyIsInN0YXRlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyJ9fQ.CzIO8PEo0TtC0JUUGrAD0K0eHnesrWyKb05cHrA4S4k;
+        KEYCLOAK_IDENTITY_LEGACY=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJleHAiOjE3MTY0OTY4MDIsImlhdCI6MTcxNjQ2MDgwMiwianRpIjoiOTg4NDdjMDAtYjM3Ny00OTNkLWFlOWItNzU4ZTdhOTgxMThiIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy90ZXN0Iiwic3ViIjoiZWM1YTFmNzAtM2QxMC00OGE4LWExOGItMmQxM2M5MjVjZDkyIiwidHlwIjoiU2VyaWFsaXplZC1JRCIsInNlc3Npb25fc3RhdGUiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzaWQiOiJmODEwMDJiYi1lYTVlLTQ0MzktOWEyMi1jMmE1NzM3ODM5ODYiLCJzdGF0ZV9jaGVja2VyIjoib2ZfM1dKck01UzZkU3JESHJWT2Ztall3ZHgtbHlPWDRpa0cweFRma0xYbyJ9.BXeZkKDXi8_1y5BMHBoHAv4fUROc-Bt2fvwATjjxG9A;
+        KEYCLOAK_SESSION_LEGACY=test/ec5a1f70-3d10-48a8-a18b-2d13c925cd92/f81002bb-ea5e-4439-9a22-c2a573783986
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=openid+bsn&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Fdigid-machtigen-oidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
+  response:
+    body:
+      string: "<!DOCTYPE html>\n<html class=\"login-pf\">\n\n<head>\n    <meta charset=\"utf-8\">\n
+        \   <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"
+        />\n    <meta name=\"robots\" content=\"noindex, nofollow\">\n\n            <meta
+        name=\"viewport\" content=\"width=device-width,initial-scale=1\"/>\n    <title>Sign
+        in to test</title>\n    <link rel=\"icon\" href=\"/resources/1rz7o/login/keycloak/img/favicon.ico\"
+        />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/@patternfly/patternfly/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/common/keycloak/lib/pficon/pficon.css\"
+        rel=\"stylesheet\" />\n            <link href=\"/resources/1rz7o/login/keycloak/css/login.css\"
+        rel=\"stylesheet\" />\n        <script type=\"module\">\n            import
+        { checkCookiesAndSetTimer } from \"/resources/1rz7o/login/keycloak/js/authChecker.js\";\n\n
+        \           checkCookiesAndSetTimer(\n              \"3cf31a3a-15a7-4f19-8d23-9d318b9ab640\",\n
+        \             \"2xuKvrxd4UQ\",\n              \"/realms/test/login-actions/restart?client_id=testid&tab_id=2xuKvrxd4UQ&skip_logout=true\"\n
+        \           );\n        </script>\n</head>\n\n<body class=\"\">\n<div class=\"login-pf-page\">\n
+        \   <div id=\"kc-header\" class=\"login-pf-page-header\">\n        <div id=\"kc-header-wrapper\"\n
+        \            class=\"\">test</div>\n    </div>\n    <div class=\"card-pf\">\n
+        \       <header class=\"login-pf-header\">\n                <h1 id=\"kc-page-title\">
+        \       Sign in to your account\n\n</h1>\n      </header>\n      <div id=\"kc-content\">\n
+        \       <div id=\"kc-content-wrapper\">\n\n\n        <div id=\"kc-form\">\n
+        \         <div id=\"kc-form-wrapper\">\n                <form id=\"kc-form-login\"
+        onsubmit=\"login.disabled = true; return true;\" action=\"http://localhost:8080/realms/test/login-actions/authenticate?session_code=tda-QODkf1A0u3WsybEZlPDVExJ6NaYNWl7IUGAlT7E&amp;execution=d8b8778e-a545-45d4-8f72-fd69facf4b72&amp;client_id=testid&amp;tab_id=2xuKvrxd4UQ\"
+        method=\"post\">\n                        <div class=\"form-group\">\n                            <label
+        for=\"username\" class=\"pf-c-form__label pf-c-form__label-text\">Username
+        or email</label>\n\n                            <input tabindex=\"1\" id=\"username\"
+        class=\"pf-c-form-control\" name=\"username\" value=\"\"  type=\"text\" autofocus
+        autocomplete=\"off\"\n                                   aria-invalid=\"\"\n
+        \                           />\n\n\n                        </div>\n\n                    <div
+        class=\"form-group\">\n                        <label for=\"password\" class=\"pf-c-form__label
+        pf-c-form__label-text\">Password</label>\n\n                        <div class=\"pf-c-input-group\">\n
+        \                           <input tabindex=\"2\" id=\"password\" class=\"pf-c-form-control\"
+        name=\"password\" type=\"password\" autocomplete=\"off\"\n                                   aria-invalid=\"\"\n
+        \                           />\n                            <button class=\"pf-c-button
+        pf-m-control\" type=\"button\" aria-label=\"Show password\"\n                                    aria-controls=\"password\"
+        \ data-password-toggle\n                                    data-icon-show=\"fa
+        fa-eye\" data-icon-hide=\"fa fa-eye-slash\"\n                                    data-label-show=\"Show
+        password\" data-label-hide=\"Hide password\">\n                                <i
+        class=\"fa fa-eye\" aria-hidden=\"true\"></i>\n                            </button>\n
+        \                       </div>\n\n\n                    </div>\n\n                    <div
+        class=\"form-group login-pf-settings\">\n                        <div id=\"kc-form-options\">\n
+        \                           </div>\n                            <div class=\"\">\n
+        \                           </div>\n\n                      </div>\n\n                      <div
+        id=\"kc-form-buttons\" class=\"form-group\">\n                          <input
+        type=\"hidden\" id=\"id-hidden-input\" name=\"credentialId\" />\n                          <input
+        tabindex=\"4\" class=\"pf-c-button pf-m-primary pf-m-block btn-lg\" name=\"login\"
+        id=\"kc-login\" type=\"submit\" value=\"Sign In\"/>\n                      </div>\n
+        \               </form>\n            </div>\n        </div>\n        <script
+        type=\"module\" src=\"/resources/1rz7o/login/keycloak/js/passwordVisibility.js\"></script>\n\n\n\n\n\n
+        \       </div>\n      </div>\n\n    </div>\n  </div>\n</body>\n</html>\n"
+    headers:
+      Cache-Control:
+      - no-store, must-revalidate, max-age=0
+      Content-Language:
+      - en
+      Content-Security-Policy:
+      - frame-src 'self'; frame-ancestors 'self'; object-src 'none';
+      Content-Type:
+      - text/html;charset=utf-8
+      Referrer-Policy:
+      - no-referrer
+      Set-Cookie:
+      - KEYCLOAK_IDENTITY=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
+      - KEYCLOAK_IDENTITY_LEGACY=; Version=1; Comment=Expiring cookie; Expires=Thu,
+        01-Jan-1970 00:00:10 GMT; Max-Age=0; Path=/realms/test/; HttpOnly
+      - KEYCLOAK_SESSION=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test/
+      - KEYCLOAK_SESSION_LEGACY=; Version=1; Comment=Expiring cookie; Expires=Thu,
+        01-Jan-1970 00:00:10 GMT; Max-Age=0; Path=/realms/test/
+      - KEYCLOAK_IDENTITY=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test; HttpOnly
+      - KEYCLOAK_IDENTITY_LEGACY=; Version=1; Comment=Expiring cookie; Expires=Thu,
+        01-Jan-1970 00:00:10 GMT; Max-Age=0; Path=/realms/test; HttpOnly
+      - KEYCLOAK_SESSION=; Version=1; Comment=Expiring cookie; Expires=Thu, 01-Jan-1970
+        00:00:10 GMT; Max-Age=0; Path=/realms/test
+      - KEYCLOAK_SESSION_LEGACY=; Version=1; Comment=Expiring cookie; Expires=Thu,
+        01-Jan-1970 00:00:10 GMT; Max-Age=0; Path=/realms/test
+      - AUTH_SESSION_ID=3cf31a3a-15a7-4f19-8d23-9d318b9ab640; Version=1; Path=/realms/test/;
+        SameSite=None; Secure; HttpOnly
+      - AUTH_SESSION_ID_LEGACY=3cf31a3a-15a7-4f19-8d23-9d318b9ab640; Version=1; Path=/realms/test/;
+        HttpOnly
+      - KC_RESTART=eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlNzE1ZTA1MS02Y2RiLTQ4Y2MtYjRmNC1mMDcyMmM4MWY5ZDMifQ.eyJjaWQiOiJ0ZXN0aWQiLCJwdHkiOiJvcGVuaWQtY29ubmVjdCIsInJ1cmkiOiJodHRwOi8vdGVzdHNlcnZlci9kaWdpZC1tYWNodGlnZW4tb2lkYy9jYWxsYmFjay8iLCJhY3QiOiJBVVRIRU5USUNBVEUiLCJub3RlcyI6eyJzY29wZSI6Im9wZW5pZCBic24iLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvcmVhbG1zL3Rlc3QiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlZGlyZWN0X3VyaSI6Imh0dHA6Ly90ZXN0c2VydmVyL2RpZ2lkLW1hY2h0aWdlbi1vaWRjL2NhbGxiYWNrLyIsInN0YXRlIjoibm90LWEtcmFuZG9tLXN0cmluZyIsIm5vbmNlIjoibm90LWEtcmFuZG9tLXN0cmluZyJ9fQ.CzIO8PEo0TtC0JUUGrAD0K0eHnesrWyKb05cHrA4S4k;
+        Version=1; Path=/realms/test/; HttpOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Robots-Tag:
+      - none
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '4466'
+    status:
+      code: 200
+      message: OK
+version: 1

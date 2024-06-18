@@ -1,11 +1,12 @@
 from django.core.management import call_command
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
-from django.test import TransactionTestCase, override_settings
+from django.test import TransactionTestCase, override_settings, tag
 
 unset = object()
 
 
+@tag("migrations")
 class TestMigrations(TransactionTestCase):
     """
     Test the effect of applying a migration

@@ -4,15 +4,19 @@
 OpenID Connect voor inloggen met DigiD Machtigen en eHerkenning bewindvoering
 =============================================================================
 
-Open Formulieren ondersteunt `DigiD Machtigen`_ en eHerkenning bewindvoering login voor burgers via het OpenID Connect
-protocol (OIDC).
-Burgers kunnen inloggen op Open Formulieren met hun DigiD/eHerkenning account en een formulier invullen namens iemand
+Open Formulieren ondersteunt `DigiD Machtigen`_ en eHerkenning bewindvoering login voor
+burgers via het OpenID Connect protocol (OIDC). Burgers kunnen inloggen op Open
+Formulieren met hun DigiD/eHerkenning account en een formulier invullen namens iemand
 anders. In deze flow:
 
-* Een gebruiker klikt op de knop *Inloggen met DigiD Machtigen* of *Inloggen met eHerkenning bewindvoering* die op de startpagina van een formulier staat.
-* De gebruiker wordt via de omgeving van de OpenID Connect provider (bijv. `Keycloak`_) naar DigiD/eHerkenning geleid, waar de gebruiker kan inloggen met *hun eigen* DigiD/eHerkenning inloggegevens.
+* Een gebruiker klikt op de knop *Inloggen met DigiD Machtigen* of *Inloggen met
+  eHerkenning bewindvoering* die op de startpagina van een formulier staat.
+* De gebruiker wordt via de omgeving van de OpenID Connect provider (bijv. `Keycloak`_)
+  naar DigiD/eHerkenning geleid, waar de gebruiker kan inloggen met *hun eigen*
+  DigiD/eHerkenning inloggegevens.
 * De gebruiker kan dan kiezen namens wie ze het formulier willen invullen.
-* De gebruiker wordt daarna terug naar de OIDC omgeving gestuurd, die op zijn beurt de gebruiker weer terugstuurt naar Open Formulieren
+* De gebruiker wordt daarna terug naar de OIDC omgeving gestuurd, die op zijn beurt de
+  gebruiker weer terugstuurt naar Open Formulieren
 * De gebruiker kan verder met het invullen van het formulier
 
 .. _DigiD Machtigen: https://machtigen.digid.nl/
@@ -20,12 +24,13 @@ anders. In deze flow:
 
 .. _configuration_oidc_digid_machtigen_appgroup:
 
-Configureren van OIDC voor DigiD Machtigen
-==========================================
+Configureren van OIDC-provider voor DigiD Machtigen
+===================================================
 
-De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_appgroup`, maar de **Redirect URI**
-is ``https://open-formulieren.gemeente.nl/digid-oidc-machtigen/callback/`` (met het juiste domein in plaats van
-``open-formulieren.gemeente.nl``).
+De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_appgroup`.
+
+.. warning:: Indien je de legacy **Redirect URI** gebruikt, dan is de waarde
+   ``https://open-formulieren.gemeente.nl/digid-machtigen-oidc/callback/``.
 
 Aan het eind van dit proces moet u de volgende gegevens hebben:
 
@@ -60,12 +65,13 @@ Nu kan er een formulier aangemaakt worden met het authenticatie backend ``DigiD 
 
 .. _configuration_oidc_eh_bewindvoering_appgroup:
 
-Configureren van OIDC voor eHerkenning bewindvoering
-====================================================
+Configureren van OIDC-provider voor eHerkenning bewindvoering
+=============================================================
 
-De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_machtigen_appgroup`, maar de **Redirect URI**
-is ``https://open-formulieren.gemeente.nl/eherkenning-bewindvoering-oidc/callback/`` (met het juiste domein in plaats van
-``open-formulieren.gemeente.nl``).
+De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_machtigen_appgroup`.
+
+.. warning:: Indien je de legacy **Redirect URI** gebruikt, dan is de waarde
+   ``https://open-formulieren.gemeente.nl/eherkenning-bewindvoering-oidc/callback/``.
 
 Aan het eind van dit proces moet u de volgende gegevens hebben:
 

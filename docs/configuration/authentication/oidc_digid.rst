@@ -17,14 +17,30 @@ flow:
 
 .. _configuration_oidc_digid_appgroup:
 
-Configureren van OIDC voor DigiD
-================================
+Configureren van OIDC-provider
+==============================
 
 Contacteer de IAM beheerders in je organisatie om een *Client* aan te
 maken in de omgeving van de OpenID Connect provider.
 
+**Redirect URI (vanaf Open Formulieren 2.7.0)**
+
+.. warning::
+
+    Zorg dat Open Formulieren :ref:`geïnstalleerd <installation_index>` is met de
+    ``USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=false``
+    :ref:`omgevingsvariabele<installation_environment_config>`, anders worden de legacy
+    (zie hieronder) endpoints gebruikt.
+
+Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/auth/oidc/callback/`` in,
+waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
+
+**Redirect URI (legacy)**
+
 Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/digid-oidc/callback/`` in,
 waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
+
+**Gegevens**
 
 Aan het eind van dit proces moet je de volgende gegevens hebben:
 

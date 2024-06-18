@@ -5944,6 +5944,7 @@ paths:
           format: uuid
         description: UUID of the submission for which this co-sign authentication
           applies. Presence of this parameter marks a flow as a co-sign flow.
+        deprecated: true
       - in: query
         name: next
         schema:
@@ -6688,23 +6689,23 @@ components:
       - supportsLoaOverride
     AuthenticationBackendsEnum:
       enum:
-      - digid
-      - eherkenning
-      - eidas
       - digid_oidc
       - eherkenning_oidc
       - digid_machtigen_oidc
       - eherkenning_bewindvoering_oidc
+      - digid
+      - eherkenning
+      - eidas
       - org-oidc
       type: string
       description: |-
-        * `digid` - DigiD
-        * `eherkenning` - eHerkenning
-        * `eidas` - eIDAS
         * `digid_oidc` - DigiD
         * `eherkenning_oidc` - eHerkenning
         * `digid_machtigen_oidc` - DigiD Machtigen
         * `eherkenning_bewindvoering_oidc` - eHerkenning bewindvoering
+        * `digid` - DigiD
+        * `eherkenning` - eHerkenning
+        * `eidas` - eIDAS
         * `org-oidc` - OpenID Connect
     AvailableLanguagesEnum:
       enum:
