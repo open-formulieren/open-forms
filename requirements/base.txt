@@ -162,9 +162,7 @@ django-csp==3.8
 django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-digid-eherkenning[oidc]==0.14.0
-    # via
-    #   -r requirements/base.in
-    #   django-digid-eherkenning
+    # via -r requirements/base.in
 django-filter==23.2
     # via -r requirements/base.in
 django-flags==5.0.13
@@ -334,7 +332,7 @@ maykin-python3-saml==1.16.1
     # via django-digid-eherkenning
 mozilla-django-oidc==4.0.0
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.18.0
+mozilla-django-oidc-db==0.18.1
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
