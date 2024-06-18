@@ -13,6 +13,7 @@ jsonschema_specifications
 jq
 html5lib
 lxml
+lxml-html-clean
 O365  # microsoft graph
 Pillow  # handle images
 portalocker[redis]

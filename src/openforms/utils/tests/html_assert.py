@@ -2,7 +2,7 @@ from io import StringIO
 
 from lxml import etree
 from lxml.etree import XMLSyntaxError
-from lxml.html.clean import Cleaner
+from lxml_html_clean import Cleaner
 
 
 class HTMLAssertMixin:

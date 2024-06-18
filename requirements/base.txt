@@ -312,10 +312,13 @@ lxml==5.2.2
     #   -r requirements/base.in
     #   django-camunda
     #   django-digid-eherkenning
+    #   lxml-html-clean
     #   mail-cleaner
     #   maykin-python3-saml
     #   xmlsec
     #   zeep
+lxml-html-clean==0.1.1
+    # via -r requirements/base.in
 mail-cleaner==1.2.0
     # via -r requirements/base.in
 mail-parser==3.15.0
