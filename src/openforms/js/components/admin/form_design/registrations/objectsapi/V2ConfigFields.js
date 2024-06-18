@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
@@ -37,6 +37,14 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
     return rawErrors ? getErrorMarkup(rawErrors) : null;
   };
 
+  useEffect(() => {
+    if (schema.properties.objectsApiGroup.enum.length === 1) {
+      onChange({
+        target: {name: 'objectsApiGroup', value: schema.properties.objectsApiGroup.enum[0]},
+      });
+    }
+  }, []);
+
   const loadingError = !!availableObjectTypesState.error;
   if (loadingError) {
     return (
@@ -61,8 +69,8 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
           description: 'Objects API group selection',
           defaultMessage: 'Which Objects API group to use.',
         })}
-        rawErrors={null}
-        errors={null}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'objectsApiGroup')}
+        errors={buildErrorsComponent('objectsApiGroup')}
         displayLabel
       >
         <Select

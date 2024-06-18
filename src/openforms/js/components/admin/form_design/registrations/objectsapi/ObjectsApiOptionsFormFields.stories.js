@@ -10,10 +10,10 @@ import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
 
 // WARNING
-// The `render` function will mutate args, meaning interactions can't be run twice
+// The `render*` functions will mutate args, meaning interactions can't be run twice
 // Be sure to refresh the page and remove the args in the query parameters
 
-const render = ({index, label, name}) => {
+const renderMultipleGroups = ({index, label, name}) => {
   const [{formData}, updateArgs] = useArgs();
   const onChange = newValues => {
     updateArgs({formData: newValues});
@@ -45,10 +45,42 @@ const render = ({index, label, name}) => {
   );
 };
 
+const renderSingleGroup = ({index, label, name}) => {
+  const [{formData}, updateArgs] = useArgs();
+  const onChange = newValues => {
+    updateArgs({formData: newValues});
+  };
+
+  return (
+    <Fieldset>
+      <FormRow>
+        <Field name={name} label={label}>
+          <ObjectsApiOptionsFormFields
+            index={index}
+            name={name}
+            schema={{
+              type: 'object',
+              properties: {
+                objectsApiGroup: {
+                  type: 'integer',
+                  enum: [1],
+                  enumNames: ['Single Objects API group'],
+                },
+              },
+            }}
+            formData={formData}
+            onChange={onChange}
+          />
+        </Field>
+      </FormRow>
+    </Fieldset>
+  );
+};
+
 export default {
   title: 'Form design/Registration/Objects API',
   decorators: [FormDecorator],
-  render,
+  render: renderMultipleGroups,
   args: {
     formData: {},
   },
@@ -183,6 +215,19 @@ export const SwitchToV2NonExisting = {
   },
 };
 
+export const AutoSelectApiGroup = {
+  render: renderSingleGroup,
+  play: async ({canvasElement}) => {
+    window.confirm = fn(() => true);
+    const canvas = within(canvasElement);
+
+    const v2Tab = canvas.getByRole('tab', {selected: false});
+    await userEvent.click(v2Tab);
+
+    expect(canvas.getByLabelText('Objects API group')).toHaveValue('1');
+  },
+};
+
 export const APIFetchError = {
   parameters: {
     msw: {
@@ -195,6 +240,9 @@ export const APIFetchError = {
 
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
+
+    const groupSelect = canvas.getByLabelText('Objects API group');
+    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     const errorMessage = await canvas.findByText(
       'Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies.'
