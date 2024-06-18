@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.test.client import RequestFactory
 from django.utils.translation import gettext as _
 
@@ -12,6 +12,7 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
+from openforms.config.tests.factories import ThemeFactory
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
@@ -447,6 +448,36 @@ class RegistratorSubjectInfoViewTests(WebTest):
     def test_view_displays_user(self):
         response = self.app.get(self.subject_url, status=200, user=self.user)
         self.assertContains(response, self.user.get_employee_name())
+
+    @tag("gh-4313")
+    def test_view_loads_theme(self):
+        theme = ThemeFactory.create(
+            design_token_values={
+                "of": {
+                    "color": {
+                        "bg": {"value": "#FFF"},
+                    },
+                    "layout": {"bg": {"value": "#FFF"}},
+                    "typography": {"sans-serif": {"font-family": {"value": "Lexend"}}},
+                },
+            },
+            logo="somefile.svg",
+        )
+        self.form.theme = theme
+        self.form.save()
+
+        response = self.app.get(self.subject_url, status=200, user=self.user)
+        self.assertContains(response, self.user.get_employee_name())
+
+        style = response.pyquery.find("style")
+
+        self.assertIsNotNone(style)
+
+        expected = (
+            ".openforms-theme { --of-color-bg: #FFF; --of-layout-bg: #FFF; "
+            "--of-typography-sans-serif-font-family: Lexend; --of-header-logo-url: url('/media/somefile.svg'); }"
+        )
+        self.assertEqual(style.text(), expected)
 
     def test_view_requires_redirect_target(self):
         with self.subTest("get"):

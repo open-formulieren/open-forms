@@ -21,7 +21,10 @@ class RegistratorSubjectInfoTests(E2ETestCase):
         await create_superuser()
         form = await setUpTestData()
 
-        form_url = str(furl(self.live_server_url) / form.slug)
+        form_url = str(
+            furl(self.live_server_url)
+            / reverse("forms:form-detail", kwargs={"slug": form.slug})
+        )
         registrator_page = furl(self.live_server_url) / reverse(
             "authentication:registrator-subject", kwargs={"slug": form.slug}
         )
