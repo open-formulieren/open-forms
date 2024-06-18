@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-22 15:56+0200\n"
+"POT-Creation-Date: 2024-06-18 18:03+0200\n"
 "PO-Revision-Date: 2024-05-22 15:53+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -1108,7 +1108,7 @@ msgstr "Demo"
 #: openforms/appointments/contrib/demo/plugin.py:56
 #: openforms/appointments/contrib/jcc/constants.py:20
 #: openforms/appointments/contrib/qmatic/constants.py:21
-#: stuf/stuf_bg/constants.py:24
+#: stuf/stuf_bg/constants.py:25
 msgid "Last name"
 msgstr "Achternaam"
 
@@ -1141,7 +1141,7 @@ msgid "Email address"
 msgstr "e-mailadres"
 
 #: openforms/appointments/contrib/jcc/constants.py:45
-#: stuf/stuf_bg/constants.py:23
+#: stuf/stuf_bg/constants.py:24
 msgid "Initials"
 msgstr "Initialen"
 
@@ -1163,7 +1163,7 @@ msgstr "Telefoonnummer"
 
 #: openforms/appointments/contrib/jcc/constants.py:71
 #: openforms/appointments/contrib/qmatic/constants.py:30
-#: stuf/stuf_bg/constants.py:31
+#: stuf/stuf_bg/constants.py:32
 msgid "Postal code"
 msgstr "Postcode"
 
@@ -1235,7 +1235,7 @@ msgid "Qmatic appointment plugin"
 msgstr "Qmatic afspraken plugin"
 
 #: openforms/appointments/contrib/qmatic/constants.py:20
-#: stuf/stuf_bg/constants.py:22
+#: stuf/stuf_bg/constants.py:23
 msgid "First name"
 msgstr "Voornaam"
 
@@ -1593,7 +1593,7 @@ msgstr "Authenticatiemodule"
 
 #: openforms/authentication/constants.py:15
 #: openforms/authentication/contrib/demo/plugin.py:34
-#: stuf/stuf_bg/constants.py:20
+#: stuf/stuf_bg/constants.py:21
 msgid "BSN"
 msgstr "BSN"
 
@@ -10540,8 +10540,8 @@ msgid "Your reference is: %(ref)s"
 msgstr "Uw referentie is: %(ref)s"
 
 #: openforms/submissions/templates/report/submission_report.html:80
-msgid "Total payment required"
-msgstr "Totaalbedrag te voldoen"
+msgid "Total amount"
+msgstr "Totaalbedrag"
 
 #: openforms/submissions/templates/submissions/find_submission_for_cosign.html:8
 msgid "Retrieve submission for co-signing"
@@ -11637,67 +11637,67 @@ msgstr "StUF-service"
 msgid "StUF services"
 msgstr "StUF-services"
 
-#: stuf/stuf_bg/constants.py:25
+#: stuf/stuf_bg/constants.py:26
 msgid "Last name prefix"
 msgstr "Voorvoegsel"
 
-#: stuf/stuf_bg/constants.py:27
+#: stuf/stuf_bg/constants.py:28
 msgid "Street Name"
 msgstr "Straatnaam"
 
-#: stuf/stuf_bg/constants.py:28
+#: stuf/stuf_bg/constants.py:29
 msgid "House number"
 msgstr "Huisnummer"
 
-#: stuf/stuf_bg/constants.py:29
+#: stuf/stuf_bg/constants.py:30
 msgid "House letter"
 msgstr "Huisletter"
 
-#: stuf/stuf_bg/constants.py:30
+#: stuf/stuf_bg/constants.py:31
 msgid "House number addition"
 msgstr "Huisnummertoevoeging"
 
-#: stuf/stuf_bg/constants.py:32
+#: stuf/stuf_bg/constants.py:33
 msgid "Residence name"
 msgstr "Woonplaatsnaam"
 
-#: stuf/stuf_bg/constants.py:34
+#: stuf/stuf_bg/constants.py:35
 msgid "Municipality where registered"
 msgstr "Gemeente van inschrijving"
 
-#: stuf/stuf_bg/constants.py:37
+#: stuf/stuf_bg/constants.py:38
 msgid "Foreign address country"
 msgstr "Buitenland: Land"
 
-#: stuf/stuf_bg/constants.py:38
+#: stuf/stuf_bg/constants.py:39
 msgid "Foreign address line 1"
 msgstr "Buitenland: Adresregel 1"
 
-#: stuf/stuf_bg/constants.py:39
+#: stuf/stuf_bg/constants.py:40
 msgid "Foreign address line 2"
 msgstr "Buitenland: Adresregel 2"
 
-#: stuf/stuf_bg/constants.py:40
+#: stuf/stuf_bg/constants.py:41
 msgid "Foreign address line 3"
 msgstr "Buitenland: Adresregel 3"
 
-#: stuf/stuf_bg/constants.py:42
+#: stuf/stuf_bg/constants.py:43
 msgid "Place of birth"
 msgstr "Geboorteplaats"
 
-#: stuf/stuf_bg/constants.py:43
+#: stuf/stuf_bg/constants.py:44
 msgid "Date of birth"
 msgstr "Geboortedatum"
 
-#: stuf/stuf_bg/constants.py:44
+#: stuf/stuf_bg/constants.py:45
 msgid "Country of birth"
 msgstr "Geboorteland"
 
-#: stuf/stuf_bg/constants.py:45
+#: stuf/stuf_bg/constants.py:46
 msgid "Gender indication"
 msgstr "Geslacht"
 
-#: stuf/stuf_bg/constants.py:47
+#: stuf/stuf_bg/constants.py:48
 msgid "Date of death"
 msgstr "Sterfdatum"
 
@@ -11962,6 +11962,9 @@ msgstr ""
 msgid "Without any binding addresses, no Suwinet service can be used."
 msgstr ""
 "Zonder enig \"binding address\" kan er geen Suwinet service gebruikt worden."
+
+#~ msgid "Total payment required"
+#~ msgstr "Totaalbedrag te voldoen"
 
 #~ msgid "show form link in co-sign email"
 #~ msgstr "toon formulierlink in mede-ondertekenenmail"
