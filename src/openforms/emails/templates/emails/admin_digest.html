@@ -144,3 +144,19 @@
         {% endfor %}
     </ul>
 {% endif %}
+
+{% if invalid_dmn_actions %}
+    <h5>{% trans "Invalid DMN evaluation actions" %}</h5>
+    <ul>
+        {% for problem in invalid_dmn_actions %}
+            <li>
+                <p>
+                    {% blocktranslate with form_name=problem.form_name message=problem.message trimmed %}
+                        Invalid DMN evaluation action in form {{ form_name }} (<em>{{ message }}</em>).
+                    {% endblocktranslate %}
+                </p>
+                <p><a href="{{ problem.admin_link }}">{% trans "View form" %}</a></p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

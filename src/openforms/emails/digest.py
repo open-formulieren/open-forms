@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from itertools import groupby
@@ -18,15 +19,13 @@ from simple_certmanager.models import Certificate
 
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
-from openforms.dmn.registry import register as dmn_register
+from openforms.dmn.registry import BasePlugin as DMNPlugin, register as dmn_register
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import Form
-from openforms.forms.models.form import FormQuerySet
-from openforms.forms.models.form_registration_backend import FormRegistrationBackend
-from openforms.forms.models.logic import FormLogic
+from openforms.forms.models import Form, FormLogic, FormRegistrationBackend
 from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.registry import register
+from openforms.submissions.logic.actions import ActionDict, EvaluateDMNAction
 from openforms.submissions.models.submission import Submission
 from openforms.submissions.utils import get_filtered_submission_admin_url
 from openforms.typing import StrOrPromise
@@ -238,6 +237,7 @@ def collect_failed_prefill_plugins(since: datetime) -> list[FailedPrefill]:
     return failed_prefill_plugins
 
 
+# TODO: check DMN config
 def collect_broken_configurations() -> list[BrokenConfiguration]:
     check_brk_configuration = check_brk_config_for_addressNL()
     check_bag_configuration = check_bag_config_for_address_fields()
@@ -476,7 +476,7 @@ def collect_invalid_logic_variables() -> list[InvalidLogicVariable]:
     return invalid_logic_rules
 
 
-def _get_forms_with_dmn_action(plugin_id: str) -> FormQuerySet:
+def _get_forms_with_dmn_action(plugin_id: str):
     # actions is a JSONField - the top-level is an array of actions. Each action is
     # an object with the shape openforms.submissions.logic.actions.ActionDict. The
     # JSONField query does not fully specify all properties because it performs
@@ -486,9 +486,172 @@ def _get_forms_with_dmn_action(plugin_id: str) -> FormQuerySet:
         {
             "action": {
                 "type": LogicActionTypes.evaluate_dmn,
-                "config": {"plugin_id": plugin_id},
+                # if a plugin ID is provided, filter actions for that plugin, otherwise
+                # return any DMN evaluation action plugin
+                "config": {"plugin_id": plugin_id} if plugin_id else {},
             }
         }
     ]
     base_qs = Form.objects.live().distinct()
     return base_qs.filter(formlogic__actions__contains=lookup_value)
+
+
+@dataclass
+class InvalidDMNAction:
+    form_id: int
+    form_name: str
+    # definition: DecisionDefinition
+    message: StrOrPromise
+
+    @property
+    def admin_link(self) -> str:
+        form_relative_admin_url = reverse(
+            "admin:forms_form_change", kwargs={"object_id": self.form_id}
+        )
+
+        return build_absolute_uri(form_relative_admin_url)
+
+
+def _iter_dmn_actions(form_qs) -> Iterator[tuple[Form, ActionDict]]:
+    for form in form_qs.iterator():
+        logic_rules = form.formlogic_set.filter(
+            actions__contains=[{"action": {"type": LogicActionTypes.evaluate_dmn}}]
+        )
+        for rule in logic_rules.iterator():
+            for action in rule.actions:
+                match action:
+                    case {"action": {"type": LogicActionTypes.evaluate_dmn}}:
+                        yield (form, action)
+
+
+def collect_invalid_dmn_actions() -> list[InvalidDMNAction]:
+    """
+    Introspect forms using the DMN action in their logic rules.
+
+    Checks whether:
+
+    1. The decision definition can be introspected
+    2. The input/output variables exist
+    """
+    invalid_actions = []
+    # track available definitions to present human readable names
+    available_definitions: dict[str, dict[str, str]] = {}
+
+    static_variables = [var.key for var in get_static_variables()]
+
+    def _populate_definitions(plugin: DMNPlugin) -> None:
+        if (key := plugin.identifier) in available_definitions:
+            return
+        try:
+            definitions = plugin.get_available_decision_definitions()
+        except Exception:
+            definitions = []
+        available_definitions[key] = {
+            definition.identifier: definition.label for definition in definitions
+        }
+
+    forms = _get_forms_with_dmn_action(plugin_id="")
+    for form, _action in _iter_dmn_actions(forms):
+
+        def _report(msg: StrOrPromise):
+            invalid_actions.append(
+                InvalidDMNAction(
+                    form_id=form.id, form_name=form.admin_name, message=msg
+                )
+            )
+
+        try:
+            action = EvaluateDMNAction.from_action(_action)
+        except Exception:
+            _report(_("Could not parse configuration"))
+            continue
+
+        try:
+            plugin = dmn_register[action.plugin_id]
+        except KeyError:
+            _report(
+                _("Unknown DMN plugin: {plugin_id}").format(plugin_id=action.plugin_id)
+            )
+            continue
+
+        definition_id = action.decision_definition_id
+        definition_version = action.decision_definition_version
+
+        # introspect the definition - if this fails, there's likely some permission issue
+        # or the definition was removed
+        try:
+            parameters = plugin.get_decision_definition_parameters(
+                definition_id=definition_id,
+                version=definition_version,
+            )
+        except Exception:
+            _populate_definitions(plugin)
+            name = available_definitions[action.plugin_id].get(
+                definition_id, definition_id
+            )
+            _report(
+                _(
+                    "Definition {name} does not exist or Open Forms has no access"
+                ).format(name=name)
+            )
+            continue
+
+        form_variable_keys = list(form.formvariable_set.values_list("key", flat=True))
+        all_keys = static_variables + form_variable_keys
+        output_names = [param.name for param in parameters.outputs]
+
+        invalid_form_vars = []
+        invalid_input_vars = []
+        invalid_output_vars = []
+
+        for input_mapping in action.input_mapping:
+            if (form_var := input_mapping["form_variable"]) not in all_keys:
+                invalid_form_vars.append(form_var)
+
+            dmn_var = input_mapping["dmn_variable"]
+            # there could be false negatives here, since we don't parse the FEEL
+            # expressions and just do string containment checks.
+            if not any(dmn_var in param.expression for param in parameters.inputs):
+                invalid_input_vars.append(dmn_var)
+
+        for output_mapping in action.output_mapping:
+            # exclude static vars, since you cannot assign to them
+            if (form_var := output_mapping["form_variable"]) not in form_variable_keys:
+                invalid_form_vars.append(form_var)
+            if (dmn_var := output_mapping["dmn_variable"]) not in output_names:
+                invalid_output_vars.append(dmn_var)
+
+        if any([invalid_form_vars, invalid_input_vars, invalid_output_vars]):
+            _populate_definitions(plugin)
+            name = available_definitions[action.plugin_id].get(
+                definition_id, definition_id
+            )
+
+            if invalid_form_vars:
+                msg = _(
+                    "The '{name}' definition configuration points to invalid form variables: {form_vars}"
+                ).format(
+                    name=name,
+                    form_vars=", ".join(invalid_form_vars),
+                )
+                _report(msg)
+
+            if invalid_input_vars:
+                msg = _(
+                    "Definition '{name}' does not appear to have the input variable(s): {input_vars}"
+                ).format(
+                    name=name,
+                    input_vars=", ".join(invalid_input_vars),
+                )
+                _report(msg)
+
+            if invalid_output_vars:
+                msg = _(
+                    "Definition '{name}' does not appear to have the output variable(s): {output_vars}"
+                ).format(
+                    name=name,
+                    output_vars=", ".join(invalid_output_vars),
+                )
+                _report(msg)
+
+    return invalid_actions

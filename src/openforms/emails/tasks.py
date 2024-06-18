@@ -15,6 +15,7 @@ from .digest import (
     collect_failed_prefill_plugins,
     collect_failed_registrations,
     collect_invalid_certificates,
+    collect_invalid_dmn_actions,
     collect_invalid_logic_variables,
     collect_invalid_registration_backends,
 )
@@ -33,6 +34,7 @@ class Digest:
         invalid_certificates = collect_invalid_certificates()
         invalid_registration_backends = collect_invalid_registration_backends()
         invalid_logic_variables = collect_invalid_logic_variables()
+        invalid_dmn_actions = collect_invalid_dmn_actions()
 
         return {
             "failed_emails": failed_emails,
@@ -42,6 +44,7 @@ class Digest:
             "invalid_certificates": invalid_certificates,
             "invalid_registration_backends": invalid_registration_backends,
             "invalid_logic_variables": invalid_logic_variables,
+            "invalid_dmn_actions": invalid_dmn_actions,
         }
 
     def render(self) -> str:
