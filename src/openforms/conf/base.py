@@ -701,7 +701,6 @@ TWO_FACTOR_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = "cross-platform"
 # auth, avoiding having some set up MFA again in the project.
 MAYKIN_2FA_ALLOW_MFA_BYPASS_BACKENDS = [
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
-    "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend",
 ]
 
 #
