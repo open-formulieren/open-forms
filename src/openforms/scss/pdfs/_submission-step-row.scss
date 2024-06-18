@@ -49,6 +49,7 @@
     width: 60%;
     word-break: break-all;
     margin-left: 40%;
+    min-height: 1.5em; // required to ensure styling still works if value has no text
 
     // wysiwyg content
     p {
