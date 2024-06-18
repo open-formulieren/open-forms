@@ -18,8 +18,10 @@ from simple_certmanager.models import Certificate
 
 from openforms.contrib.brk.service import check_brk_config_for_addressNL
 from openforms.contrib.kadaster.service import check_bag_config_for_address_fields
+from openforms.dmn.registry import register as dmn_register
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import Form
+from openforms.forms.models.form import FormQuerySet
 from openforms.forms.models.form_registration_backend import FormRegistrationBackend
 from openforms.forms.models.logic import FormLogic
 from openforms.logging.models import TimelineLogProxy
@@ -255,6 +257,22 @@ def collect_broken_configurations() -> list[BrokenConfiguration]:
             )
         )
 
+    # check DMN usage for each plugin and if used, validate the plugin config
+    for plugin in dmn_register.iter_enabled_plugins():
+        has_forms = _get_forms_with_dmn_action(plugin.identifier).exists()
+        if not has_forms:
+            continue
+
+        try:
+            plugin.check_config()
+        except InvalidPluginConfiguration as exc:
+            broken_configurations.append(
+                BrokenConfiguration(
+                    config_name=_("{plugin} (DMN)").format(plugin=plugin.verbose_name),
+                    exception_message=exc.message,
+                )
+            )
+
     return broken_configurations
 
 
@@ -456,3 +474,21 @@ def collect_invalid_logic_variables() -> list[InvalidLogicVariable]:
             )
 
     return invalid_logic_rules
+
+
+def _get_forms_with_dmn_action(plugin_id: str) -> FormQuerySet:
+    # actions is a JSONField - the top-level is an array of actions. Each action is
+    # an object with the shape openforms.submissions.logic.actions.ActionDict. The
+    # JSONField query does not fully specify all properties because it performs
+    # structural matching (and we only process the rest of the config after establishing
+    # that it is indeed the expected action type).
+    lookup_value = [
+        {
+            "action": {
+                "type": LogicActionTypes.evaluate_dmn,
+                "config": {"plugin_id": plugin_id},
+            }
+        }
+    ]
+    base_qs = Form.objects.live().distinct()
+    return base_qs.filter(formlogic__actions__contains=lookup_value)
