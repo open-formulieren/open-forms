@@ -4,8 +4,6 @@
 #
 #    ./bin/compile_dependencies.sh
 #
---no-binary lxml
-
 alabaster==0.7.16
     # via sphinx
 amqp==5.2.0
@@ -567,7 +565,7 @@ lazy-object-proxy==1.9.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   openapi-spec-validator
-lxml==4.9.1
+lxml==5.2.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1110,7 +1108,7 @@ xlwt==1.3.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   tablib
-xmlsec==1.3.10
+xmlsec==1.3.14
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

@@ -4,8 +4,6 @@
 #
 #    ./bin/compile_dependencies.sh
 #
---no-binary lxml
-
 alabaster==0.7.16
     # via
     #   -c requirements/ci.txt
@@ -636,7 +634,7 @@ lazy-object-proxy==1.9.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openapi-spec-validator
-lxml==4.9.1
+lxml==5.2.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1292,7 +1290,7 @@ xlwt==1.3.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   tablib
-xmlsec==1.3.10
+xmlsec==1.3.14
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

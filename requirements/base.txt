@@ -4,8 +4,6 @@
 #
 #    ./bin/compile_dependencies.sh
 #
---no-binary lxml
-
 amqp==5.2.0
     # via kombu
 ape-pie==0.1.0
@@ -162,9 +160,7 @@ django-csp==3.8
 django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-digid-eherkenning[oidc]==0.14.0
-    # via
-    #   -r requirements/base.in
-    #   django-digid-eherkenning
+    # via -r requirements/base.in
 django-filter==23.2
     # via -r requirements/base.in
 django-flags==5.0.13
@@ -311,7 +307,7 @@ kombu==5.3.7
     # via celery
 lazy-object-proxy==1.9.0
     # via openapi-spec-validator
-lxml==4.9.1
+lxml==5.2.2
     # via
     #   -r requirements/base.in
     #   django-camunda
@@ -553,7 +549,7 @@ xlrd==2.0.1
     # via tablib
 xlwt==1.3.0
     # via tablib
-xmlsec==1.3.10
+xmlsec==1.3.14
     # via maykin-python3-saml
 xmltodict==0.12.0
     # via -r requirements/base.in

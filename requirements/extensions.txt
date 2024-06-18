@@ -4,8 +4,6 @@
 #
 #    ./bin/compile_dependencies.sh
 #
---no-binary lxml
-
 amqp==5.2.0
     # via
     #   -r requirements/base.txt
@@ -473,7 +471,7 @@ lazy-object-proxy==1.9.0
     # via
     #   -r requirements/base.txt
     #   openapi-spec-validator
-lxml==4.9.1
+lxml==5.2.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -863,7 +861,7 @@ xlwt==1.3.0
     # via
     #   -r requirements/base.txt
     #   tablib
-xmlsec==1.3.10
+xmlsec==1.3.14
     # via
     #   -r requirements/base.txt
     #   maykin-python3-saml

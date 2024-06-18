@@ -12,10 +12,6 @@ jsonschema
 jsonschema_specifications
 jq
 html5lib
-# see https://github.com/onelogin/python3-saml/issues/292 and
-# https://bugs.launchpad.net/lxml/+bug/1960668 -> we can avoid this by compiling lxml
-# against the system libxml2
---no-binary lxml
 lxml
 O365  # microsoft graph
 Pillow  # handle images
