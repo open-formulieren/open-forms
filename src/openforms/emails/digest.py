@@ -124,7 +124,7 @@ class InvalidRegistrationBackend:
 
 
 @dataclass
-class InvalidLogicRule:
+class InvalidLogicVariable:
     variable: str
     form_name: str
     form_id: int
@@ -366,7 +366,7 @@ def collect_invalid_registration_backends() -> list[InvalidRegistrationBackend]:
     return invalid_registration_backends
 
 
-def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
+def collect_invalid_logic_variables() -> list[InvalidLogicVariable]:
     forms = Form.objects.live().iterator()
     static_variables = {
         var.key: {"source": var.source, "type": var.data_type}
@@ -409,7 +409,7 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
 
             def _report():
                 invalid_logic_rules.append(
-                    InvalidLogicRule(
+                    InvalidLogicVariable(
                         variable=var.key,
                         form_name=form.admin_name,
                         form_id=form.id,

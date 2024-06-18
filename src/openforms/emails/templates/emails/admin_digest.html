@@ -110,7 +110,6 @@
 {% if invalid_registration_backends %}
     <h5>{% trans "Registration backends problems" %}</h5>
     <ul>
-        <ul>
         {% for failed_backend in invalid_registration_backends %}
             <li>
                 <p>
@@ -130,18 +129,17 @@
     </ul>
 {% endif %}
 
-{% if invalid_logic_rules %}
+{% if invalid_logic_variables %}
     <h5>{% trans "Logic rules problems" %}</h5>
     <ul>
-        <ul>
-        {% for logic_rule in invalid_logic_rules %}
+        {% for problem in invalid_logic_variables %}
             <li>
                 <p>
-                    {% blocktranslate with var=logic_rule.variable form_name=logic_rule.form_name trimmed %}
+                    {% blocktranslate with var=problem.variable form_name=problem.form_name trimmed %}
                         Logic rule for variable '{{ var }}' is invalid in form '{{ form_name }}'.<br>
                     {% endblocktranslate %}
                 </p>
-                <p><a href="{{ logic_rule.admin_link }}">{% trans "View form" %}</a></p>
+                <p><a href="{{ problem.admin_link }}">{% trans "View form" %}</a></p>
             </li>
         {% endfor %}
     </ul>
