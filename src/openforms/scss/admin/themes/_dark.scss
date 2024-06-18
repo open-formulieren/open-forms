@@ -158,6 +158,13 @@
       }
     }
   }
+
+  .mce-content-body {
+    // Fix dark mode selections
+    [data-mce-selected='inline-boundary'] {
+      background-color: #0a2647;
+    }
+  }
 }
 
 @mixin ckeditor-variables {
