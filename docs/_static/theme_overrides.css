@@ -17,16 +17,14 @@
    }
 }
 
-/* Depends on logo but default seems ok for this.
 .wy-side-nav-search {
    background-color: #04A5BB;
 }
-*/
 
 .rst-content a:link, .rst-content a:visited {
-  color: #017092;
+  color: #04a5bb;
 }
 
 .rst-content a:focus, .rst-content a:hover {
-  color: #051F31;
+  color: #00464f;
 }
