@@ -9,7 +9,7 @@ from django.http import (
     HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import resolve, reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import FormView
@@ -23,6 +23,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 
+from openforms.config.templatetags.theme import THEME_OVERRIDE_CONTEXT_VAR
 from openforms.forms.models import Form
 from openforms.submissions.api.permissions import owns_submission
 from openforms.submissions.models import Submission
@@ -404,6 +405,15 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
     raise_exception = True
 
     cleaned_next_url = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        assert self.cleaned_next_url
+        path = str(furl(self.cleaned_next_url).path)
+        resolved = resolve(path)
+        form = get_object_or_404(Form, slug=resolved.kwargs.get("slug"))
+        context[THEME_OVERRIDE_CONTEXT_VAR] = form.theme
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         next_url = self.request.GET.get("next")
