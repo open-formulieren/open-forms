@@ -26,6 +26,16 @@ const render = ({index, label, name}) => {
           <ObjectsApiOptionsFormFields
             index={index}
             name={name}
+            schema={{
+              type: 'object',
+              properties: {
+                objectsApiGroup: {
+                  type: 'integer',
+                  enum: [1, 2],
+                  enumNames: ['Objects API group 1', 'Objects API group 2'],
+                },
+              },
+            }}
             formData={formData}
             onChange={onChange}
           />
@@ -80,6 +90,9 @@ export const SwitchToV2Empty = {
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
 
+    const groupSelect = canvas.getByLabelText('Objects API group');
+    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
     expect(canvas.getByLabelText('Objecttype')).toHaveValue(
       'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
@@ -113,6 +126,9 @@ export const SwitchToV2Existing = {
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
 
+    const groupSelect = canvas.getByLabelText('Objects API group');
+    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+
     await canvas.findByRole('option', {name: 'Person (open)'}, {timeout: 5000});
     expect(canvas.getByLabelText('Objecttype')).toHaveValue(
       'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f2'
@@ -144,6 +160,9 @@ export const SwitchToV2NonExisting = {
 
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
+
+    const groupSelect = canvas.getByLabelText('Objects API group');
+    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
     expect(canvas.getByLabelText('Objecttype')).toHaveValue(
