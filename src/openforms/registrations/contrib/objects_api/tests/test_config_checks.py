@@ -2,34 +2,22 @@ from django.test import TestCase
 
 import requests
 import requests_mock
-from zgw_consumers.constants import APITypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
-from ..models import ObjectsAPIGroupConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from .factories import ObjectsAPIGroupConfigFactory
 
 
 class ConfigCheckTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.config = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objects.example.com/api/v1/",
-            ),
-            objecttypes_service=ServiceFactory.create(
-                api_root="https://objecttypes.example.com/api/v1/",
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="https://documents.example.com/api/v1/",
-                api_type=APITypes.drc,
-            ),
-            catalogi_service=ServiceFactory.create(
-                api_root="https://catalogi.example.com/api/v1/",
-                api_type=APITypes.drc,
-            ),
+        self.config = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objects.example.com/api/v1/",
+            objecttypes_service__api_root="https://objecttypes.example.com/api/v1/",
+            drc_service__api_root="https://documents.example.com/api/v1/",
+            catalogi_service__api_root="https://catalogi.example.com/api/v1/",
             organisatie_rsin="123456782",
         )
 

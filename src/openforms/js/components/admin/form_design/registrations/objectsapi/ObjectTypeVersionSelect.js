@@ -33,8 +33,7 @@ const ObjectTypeVersionSelect = ({
     // no match -> no versions to retrieve;
     if (!objecttype) return [];
 
-    const params = {};
-    if (objectsApiGroup) params.objects_api_group = objectsApiGroup;
+    const params = {objects_api_group: objectsApiGroup};
     const response = await get(getObjecttypeVersionsEndpoint(objecttype), params);
     if (!response.ok) {
       throw new Error('Loading available object types failed');

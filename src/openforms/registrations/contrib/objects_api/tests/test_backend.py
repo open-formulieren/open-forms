@@ -3,9 +3,7 @@ from unittest.mock import patch
 from django.test import TestCase
 
 import requests_mock
-from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.registrations.contrib.objects_api.models import (
     ObjectsAPIRegistrationData,
@@ -17,8 +15,9 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 
-from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
+from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from .factories import ObjectsAPIGroupConfigFactory
 
 
 @requests_mock.Mocker()
@@ -40,15 +39,9 @@ class ObjectsAPIBackendTests(TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
+        self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
 
     def test_csv_creation_fails_pdf_still_saved(self, m: requests_mock.Mocker):

@@ -38,7 +38,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
   };
 
   useEffect(() => {
-    if (schema.properties.objectsApiGroup.enum.length === 1) {
+    if (schema.properties.objectsApiGroup.enum.length === 1 && objectsApiGroup === '') {
       onChange({
         target: {name: 'objectsApiGroup', value: schema.properties.objectsApiGroup.enum[0]},
       });
@@ -72,13 +72,14 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
         rawErrors={getFieldErrors(name, index, validationErrors, 'objectsApiGroup')}
         errors={buildErrorsComponent('objectsApiGroup')}
         displayLabel
+        required
       >
         <Select
           id="root_objectsApiGroup"
           name="objectsApiGroup"
           choices={getChoicesFromSchema(
-            schema?.properties?.objectsApiGroup?.enum,
-            schema?.properties?.objectsApiGroup?.enumNames
+            schema.properties.objectsApiGroup.enum,
+            schema.properties.objectsApiGroup.enumNames
           )}
           value={objectsApiGroup}
           onChange={onChange}

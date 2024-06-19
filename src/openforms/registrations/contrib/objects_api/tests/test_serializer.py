@@ -9,6 +9,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..config import ObjectsAPIOptionsSerializer
 from ..models import ObjectsAPIGroupConfig
+from .factories import ObjectsAPIGroupConfigFactory
 
 FILES_DIR = Path(__file__).parent / "files"
 
@@ -69,6 +70,13 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 secret="test_secret_key",
                 auth_type=AuthTypes.zgw,
             ),
+        )
+
+        # This group shouldn't be usable:
+        cls.invalid_objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service=None,
+            drc_service=None,
+            catalogi_service=None,
         )
 
     def test_invalid_fields_v1(self):
@@ -142,6 +150,24 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
         self.assertIn("objecttype_version", options.errors)
         error = options.errors["objecttype_version"][0]
         self.assertEqual(error.code, "not-found")
+
+    def test_invalid_objects_api_group(self):
+        options = ObjectsAPIOptionsSerializer(
+            data={
+                "objects_api_group": self.invalid_objects_api_group.pk,
+                "version": 2,
+                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 1,
+                "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+                "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+                "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            },
+        )
+
+        self.assertFalse(options.is_valid())
+        self.assertIn("objects_api_group", options.errors)
+        error = options.errors["objects_api_group"][0]
+        self.assertEqual(error.code, "does_not_exist")
 
     def test_valid_serializer(self):
         options = ObjectsAPIOptionsSerializer(

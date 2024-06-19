@@ -67,6 +67,7 @@ class ObjectsAPIConfig(SingletonModel):
 
 
 class ObjectsAPIGroupConfig(models.Model):
+    # TODO OF 3.0: remove `null=True` from the service fields
     name = models.CharField(
         _("name"),
         max_length=255,

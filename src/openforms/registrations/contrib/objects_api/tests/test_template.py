@@ -7,8 +7,6 @@ from django.test import TestCase, override_settings, tag
 import requests_mock
 import tablib
 from freezegun import freeze_time
-from zgw_consumers.constants import APITypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -16,8 +14,9 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
+from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from .factories import ObjectsAPIGroupConfigFactory
 
 
 class JSONTemplatingTests(TestCase):
@@ -40,15 +39,9 @@ class JSONTemplatingTests(TestCase):
         config = ObjectsAPIConfig(
             productaanvraag_type="terugbelnotitie",
         )
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
         m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -135,15 +128,9 @@ class JSONTemplatingTests(TestCase):
                 }"""
             ),
         )
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -262,15 +249,9 @@ class JSONTemplatingTests(TestCase):
             ),
         )
 
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -303,15 +284,9 @@ class JSONTemplatingTests(TestCase):
         config = ObjectsAPIConfig(
             content_json='{"key": "value",}',  # Invalid JSON,
         )
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -383,10 +358,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
         config = ObjectsAPIConfig(
             content_json="{% json_summary %}",
         )
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(),
-            drc_service=ServiceFactory.create(),
-        )
+        config_group = ObjectsAPIGroupConfigFactory.create()
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         prefix = "openforms.registrations.contrib.objects_api"
 
@@ -491,10 +463,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             submitted_data={"radio": "2"},
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
-        config = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(),
-            drc_service=ServiceFactory.create(),
-        )
+        config = ObjectsAPIGroupConfigFactory.create()
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (

@@ -42,6 +42,8 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         registration_backend = attrs["registration_backend"]
+        # TODO We are leaking plugin details here, ideally this validation
+        # should go through the plugin registry.
         if registration_backend == "objects_api" and "objects_api_group" not in attrs:
             raise serializers.ValidationError(
                 _(

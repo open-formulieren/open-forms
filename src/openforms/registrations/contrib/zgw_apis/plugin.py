@@ -502,7 +502,7 @@ class ZGWRegistration(BasePlugin):
 
         # In a follow up PR: the group will be configurable:
         with get_objects_client(
-            ObjectsAPIGroupConfig.objects.first()
+            ObjectsAPIGroupConfig.objects.order_by("pk").first()
         ) as objects_client:
             response = execute_unless_result_exists(
                 partial(objects_client.create_object, object_data=object_data),

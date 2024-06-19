@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.db import models
+from django.db.models import IntegerChoices, Q
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
@@ -18,7 +18,7 @@ from .client import get_catalogi_client, get_objecttypes_client
 from .models import ObjectsAPIGroupConfig
 
 
-class VersionChoices(models.IntegerChoices):
+class VersionChoices(IntegerChoices):
     V1 = 1, _("v1, template based")
     V2 = 2, _("v2, variables mapping")
 
@@ -55,10 +55,10 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.exclude(
-            objects_service=None,
-            objecttypes_service=None,
-            drc_service=None,
-            catalogi_service=None,
+            Q(objects_service=None)
+            | Q(objecttypes_service=None)
+            | Q(drc_service=None)
+            | Q(catalogi_service=None)
         ),
         label=("Objects API group"),
         help_text=_("Which Objects API group to use."),
@@ -253,7 +253,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 raise serializers.ValidationError(
                     {
                         "objecttype": _(
-                            "The provided objecttype does not exist on the Objecttypes API."
+                            "The provided objecttype does not exist in the Objecttypes API."
                         )
                     },
                     code="not-found",
@@ -270,7 +270,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 raise serializers.ValidationError(
                     {
                         "objecttype_version": _(
-                            "The provided objecttype version does not exist on the Objecttypes API."
+                            "The provided objecttype version does not exist in the Objecttypes API."
                         )
                     },
                     code="not-found",

@@ -5,15 +5,14 @@ from django.test import TestCase
 
 import requests_mock
 from freezegun import freeze_time
-from zgw_consumers.constants import APITypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
+from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from .factories import ObjectsAPIGroupConfigFactory
 
 
 @requests_mock.Mocker()
@@ -53,11 +52,8 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             ),
         )
 
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
         )
 
         m.patch(
@@ -122,11 +118,8 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
 
         config = ObjectsAPIConfig()
 
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
         )
 
         m.patch(
@@ -202,11 +195,8 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             payment_status_update_json="",
         )
 
-        config_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
         )
 
         m.patch(

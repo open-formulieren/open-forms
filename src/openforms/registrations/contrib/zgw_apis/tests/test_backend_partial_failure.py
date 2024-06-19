@@ -7,13 +7,11 @@ from django.test import TestCase, tag
 import requests_mock
 from glom import glom
 from privates.test import temp_private_root
-from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.factories import ServiceFactory
 
-from openforms.registrations.contrib.objects_api.models import (
-    ObjectsAPIConfig,
-    ObjectsAPIGroupConfig,
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.registrations.contrib.objects_api.tests.factories import (
+    ObjectsAPIGroupConfigFactory,
 )
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tasks import pre_registration
@@ -418,11 +416,8 @@ class ObjectsAPIPartialRegistrationFailureTests(TestCase):
                 }"""
             ),
         )
-        ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
+        ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
             organisatie_rsin="000000000",
         )
 

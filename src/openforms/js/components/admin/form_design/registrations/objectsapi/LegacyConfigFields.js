@@ -33,7 +33,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
   };
 
   useEffect(() => {
-    if (schema.properties.objectsApiGroup.enum.length === 1) {
+    if (schema.properties.objectsApiGroup.enum.length === 1 && objectsApiGroup === '') {
       onChange({
         target: {name: 'objectsApiGroup', value: schema.properties.objectsApiGroup.enum[0]},
       });

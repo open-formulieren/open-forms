@@ -6,9 +6,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 import requests_mock
-from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
 from openforms.payments.constants import PaymentStatus
@@ -19,10 +17,11 @@ from openforms.submissions.tests.factories import (
 )
 
 from ....constants import RegistrationAttribute
-from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV1Handler
 from ..typing import RegistrationOptionsV1
+from .factories import ObjectsAPIGroupConfigFactory
 
 
 def get_create_json(req, ctx):
@@ -86,15 +85,9 @@ class ObjectsAPIBackendV1Tests(TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
-            objects_service=ServiceFactory.create(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
+        self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
             informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
