@@ -65,3 +65,22 @@ class AuthContextDataTests(SimpleTestCase):
         auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
+
+    def test_digid_machtigen_auth(self):
+        auth_info = AuthInfo(
+            submission=SubmissionFactory.build(),
+            plugin="dummy",
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            attribute_hashed=False,
+            loa=DigiDAssuranceLevels.high,
+            legal_subject_identifier_type=LegalSubjectIdentifierType.bsn,
+            legal_subject_identifier_value="999995224",
+            mandate_context={
+                "services": [{"id": "cd9baded-ac37-4650-a607-c01b7ceabf20"}]
+            },
+        )
+
+        auth_context = auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)

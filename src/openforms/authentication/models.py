@@ -14,7 +14,7 @@ from .constants import (
     LegalSubjectIdentifierType,
 )
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
-from .types import DigiDContext
+from .types import DigiDContext, DigiDMachtigenContext
 
 
 class BaseAuthInfo(models.Model):
@@ -219,10 +219,11 @@ class AuthInfo(BaseAuthInfo):
             # TODO: add constraints matching the json schema for the identifier types
         ]
 
-    def to_auth_context_data(self) -> DigiDContext:
+    def to_auth_context_data(self) -> DigiDContext | DigiDMachtigenContext:
         assert not self.attribute_hashed
 
         match (self.attribute, self.legal_subject_identifier_type):
+            # DigiD without machtigen
             case (AuthAttribute.bsn, ""):
                 return {
                     "source": "digid",
@@ -234,13 +235,23 @@ class AuthInfo(BaseAuthInfo):
                         }
                     },
                 }
-            case (
-                AuthAttribute.bsn,
-                LegalSubjectIdentifierType() as legal_subject_type,
-            ):
-                # DigiD machtigen, TODO
-                print(legal_subject_type)
-                raise NotImplementedError()
+            # DigiD with machtigen
+            case (AuthAttribute.bsn, LegalSubjectIdentifierType.bsn):
+                return {
+                    "source": "digid",
+                    "levelOfAssurance": self.loa,
+                    "representee": {
+                        "identifierType": "bsn",
+                        "identifier": self.value,
+                    },
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "bsn",
+                            "identifier": self.legal_subject_identifier_value,
+                        }
+                    },
+                    "mandate": self.mandate_context,
+                }
 
             case _:
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")
