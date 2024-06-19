@@ -17,10 +17,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
         python3-dev \
         libpq-dev \
         shared-mime-info \
-        # lxml deps
-        libxml2-dev \
-        libxslt-dev \
-        libxmlsec1-dev \
+        # lxml/xmlsec deps
         zlib1g-dev \
         libxmlsec1-openssl \
         # weasyprint deps, see https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-11
