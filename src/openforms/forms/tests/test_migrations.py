@@ -1,3 +1,5 @@
+from django.db.migrations.state import StateApps
+
 from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.utils.tests.test_migrations import TestMigrations
@@ -447,3 +449,39 @@ class FixSimpleConditionalsCheckboxesMigrationTests(TestMigrations):
             isinstance(fixed_components[6]["components"][0]["conditional"]["eq"], bool)
         )
         self.assertTrue(fixed_components[6]["components"][0]["conditional"]["eq"])
+
+
+class AddDefaultObjectsAPIGroupMigrationTests(TestMigrations):
+    app = "forms"
+    migrate_from = "0099_auto_20240613_0654"
+    migrate_to = "0100_add_default_objects_api_group"
+
+    def setUpBeforeMigration(self, apps: StateApps) -> None:
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+        ObjectsAPIGroupConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+
+        form = Form.objects.create(name="test form")
+        ObjectsAPIGroupConfig.objects.create(name="Objects API Group")
+
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="Objects API backend",
+            key="backend",
+            backend="objects_api",
+        )
+
+    def test_sets_default_objects_api_group(self) -> None:
+        FormRegistrationBackend = self.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+        ObjectsAPIGroupConfig = self.apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+
+        backend = FormRegistrationBackend.objects.get()
+        self.assertEqual(
+            backend.options["objects_api_group"], ObjectsAPIGroupConfig.objects.get().pk
+        )
