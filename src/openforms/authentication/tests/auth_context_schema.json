@@ -1,0 +1,470 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "http://localhost/schema.json",
+  "title": "JSON schema definition for authentication context data in Dutch government landscapes",
+  "type": "object",
+  "oneOf": [
+    {"$ref": "#/$defs/digid/schemas/withoutMandate"},
+    {"$ref": "#/$defs/digid/schemas/withMandate"},
+    {"$ref": "#/$defs/eherkenning/schemas/withoutMandate"},
+    {"$ref": "#/$defs/eherkenning/schemas/withMandate"}
+  ],
+  "$defs": {
+    "naturalPerson": {
+      "title": "Natural Person",
+      "description": "JSON schema to describe a reference to a natural person.",
+      "type": "object",
+      "required": [
+        "identifierType",
+        "identifier"
+      ],
+      "properties": {
+        "identifierType": {
+          "title": "Identifier type",
+          "description": "A natural person is always identified by their BSN (social security number).",
+          "const": "bsn"
+        },
+        "identifier": {
+          "title": "Identifier value",
+          "description": "BSN which uniquely identifies the authenticated person. Note that the value must follow the format rules for Dutch social security numbers.",
+          "type": "string",
+          "pattern": "^[0-9]{9}$",
+          "format": "nl-bsn"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "_company:kvk": {
+      "title": "Identifying attributes for a company by KVK number",
+      "type": "object",
+      "required": [
+        "identifierType",
+        "identifier"
+      ],
+      "properties": {
+        "identifierType": {
+          "title": "Identifier type",
+          "description": "A company can be identified by its chamber of commerce number.",
+          "const": "kvkNummer"
+        },
+        "identifier": {
+          "title": "Identifier value",
+          "description": "Chamber of commerce number (KVK-nummer) that uniquely identifies the company.",
+          "type": "string",
+          "pattern": "^[0-9]{8}$",
+          "format": "urn:etoegang:1.9:EntityConcernedID:KvKnr"
+        }
+      }
+    },
+    "_company:rsin": {
+      "title": "Identifying attributes for a company by RSIN",
+      "type": "object",
+      "required": [
+        "identifierType",
+        "identifier"
+      ],
+      "properties": {
+        "identifierType": {
+          "title": "Identifier type",
+          "description": "A company can be identified by its RSIN.",
+          "const": "rsin"
+        },
+        "identifier": {
+          "title": "Identifier value",
+          "description": "RSIN that uniquely identifies the legal entity.",
+          "type": "string",
+          "pattern": "^[0-9]{9}$",
+          "format": "urn:etoegang:1.9:EntityConcernedID:RSIN"
+        }
+      }
+    },
+    "company:actingSubject": {
+      "title": "Person acting for an authenticated company",
+      "description": "The actual person who authenticated to represent the given company in their actions.",
+      "type": "object",
+      "required": [
+        "identifierType",
+        "identifier"
+      ],
+      "properties": {
+        "identifierType": {
+          "description": "The identifier is always some encrypted form, specific to the service provider. I.e. the same physical person gets different identifier values when authenting with different service providers.",
+          "const": "opaque"
+        },
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "company:withoutBranchRestriction": {
+      "title": "A company without branch restriction",
+      "description": "A 'company', registered in the Chamber of Commerce (KVK). Can be identified by the COC-number or RSIN. No branch restriction implies this refers to the whole company and all its branches.",
+      "type": "object",
+      "required": [
+        "identifierType",
+        "identifier"
+      ],
+      "oneOf": [
+        {"$ref": "#/$defs/_company:kvk"},
+        {"$ref": "#/$defs/_company:rsin"}
+      ],
+      "unevaluatedProperties": false
+    },
+    "company:withBranchRestriction": {
+      "title": "A company with branch restriction",
+      "description": "A 'company', registered in the Chamber of Commerce (KVK). Can be identified by the COC-number or RSIN. A branch restriction only allows 'access' to one of the main company branches. Branch restrictions can only be applied in certain contexts.",
+      "type": "object",
+      "required": [
+        "identifierType",
+        "identifier",
+        "branchNumber"
+      ],
+      "allOf": [
+        {"oneOf": [
+          {"$ref": "#/$defs/_company:kvk"},
+          {"$ref": "#/$defs/_company:rsin"}
+        ]}
+      ],
+      "properties": {
+        "branchNumber": {
+          "title": "Branch number",
+          "description": "The branch number imposes a restriction on the acting subject - it is limited to act only on this particular branch of the legal subject.",
+          "type": "string",
+          "pattern": "^[0-9]{12}$",
+          "format": "urn:etoegang:1.9:ServiceRestriction:Vestigingsnr"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+
+    "digid": {
+      "source": {
+        "title": "Means used for authentication",
+        "description": "Fixed value to indicate DigiD authentication.",
+        "const": "digid"
+      },
+      "loa": {
+        "title": "Level of assurance (betrouwbaarheidsniveaus)",
+        "description": "Logius defines the available levels of assurance *and* prescribes what the minimum level must be.",
+        "type": "string",
+        "enum": [
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard",
+          "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI"
+        ]
+      },
+      "service": {
+        "title": "A service reference",
+        "description": "DigiD mandates are bound to either a single service or serviceSet (a collection of services). A service is identified by its ID.",
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "serviceSet": {
+        "title": "A set of services (aka theme)",
+        "description": "A group of related services for which a mandate can be extended. TODO!",
+        "type": "object",
+        "required": ["id", "services"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "services": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "#/$defs/digid/service"}
+          }
+        },
+        "additionalProperties": false
+      },
+      "schemas": {
+        "withoutMandate": {
+          "title": "Authentication context data schema for DigiD without mandate",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/digid/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/digid/loa"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The person who is authorized. Because no mandate is involved, the representee and the authorizee are the same person.",
+              "type": "object",
+              "required": ["legalSubject"],
+              "properties": {
+                "legalSubject": {
+                  "$ref": "#/$defs/naturalPerson",
+                  "title": "Legal subject",
+                  "description": "The legal beneficiary of the service(s). Because no mandata is involved, the acting subject and legal subject are the same person."
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "withMandate": {
+          "title": "Authentication context data schema for DigiD with mandate.",
+          "description": "DigiD Machtigen (or also known as CombiConnect) is a form of voluntary mandate. A natural person represents another natural person.",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "representee",
+            "authorizee",
+            "mandate"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/digid/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/digid/loa"},
+            "representee": {"$ref": "#/$defs/naturalPerson"},
+            "authorizee": {
+              "title": "Authorizee (gemachtigde)",
+              "description": "The person who is authorized. Because no mandate is involved, the representee and the authorizee are the same person.",
+              "type": "object",
+              "required": ["legalSubject"],
+              "properties": {
+                "legalSubject": {
+                  "$ref": "#/$defs/naturalPerson",
+                  "title": "Legal subject",
+                  "description": "The legal, natural person, mandated to act on behalf of the representee."
+                }
+              },
+              "additionalProperties": false
+            },
+            "mandate": {
+              "title": "Mandate context",
+              "description": "Additional context describing the extent of the mandate. At least one dimension/property must be provided.",
+              "type": "object",
+              "required": [],
+              "properties": {
+                "services": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {"$ref": "#/$defs/digid/service"}
+                },
+                "serviceSet": {"$ref": "#/$defs/digid/serviceSet"}
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+
+    "eherkenning": {
+      "source": {
+        "title": "Means used for authentication",
+        "description": "Fixed value to indicate eHerkenning authentication.",
+        "const": "eherkenning"
+      },
+      "loa": {
+        "title": "Level of assurance (betrouwbaarheidsniveaus)",
+        "description": "afsprakenstelsel.etoegang.nl defines the available levels of assurance *and* prescribes what the minimum level must be. Note that a minimum of loa2plus is required these days.",
+        "type": "string",
+        "enum": [
+          "urn:etoegang:core:assurance-class:loa1",
+          "urn:etoegang:core:assurance-class:loa2",
+          "urn:etoegang:core:assurance-class:loa2plus",
+          "urn:etoegang:core:assurance-class:loa3",
+          "urn:etoegang:core:assurance-class:loa4"
+        ]
+      },
+
+      "role": {
+        "title": "Role of the mandate, which determines the level of access to services",
+        "description": "The role of a mandate, typically assigned through judicial procedures.",
+        "type": "string",
+        "enum": [
+          "bewindvoerder",
+          "curator",
+          "mentor"
+        ]
+      },
+      "service": {
+        "title": "A service reference",
+        "description": "Identifying properties of a service present in the service catalog.",
+        "type": "object",
+        "required": ["id", "uuid"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "The ServiceID from the service catalog, for example: 'urn:etoegang:DV:00000001002308836000:services:9113'."
+          },
+          "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The ServiceUUID from the service catalog."
+          }
+        },
+        "additionalProperties": false
+      },
+      "mandate": {
+        "title": "Mandate context",
+        "description": "Additional context describing the extent of the mandate. At least one dimension/property must be provided.",
+        "type": "object",
+        "required": [],
+        "properties": {
+          "services": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "#/$defs/eherkenning/service"}
+          },
+          "role": {"$ref": "#/$defs/eherkenning/role"}
+        },
+        "additionalProperties": false
+      },
+
+      "mandate:common": {
+        "title": "Common properties for eHerkenning auth with mandate",
+        "type": "object",
+        "required": ["source", "levelOfAssurance", "mandate"],
+        "properties": {
+          "source": {"$ref": "#/$defs/eherkenning/source"},
+          "levelOfAssurance": {"$ref": "#/$defs/eherkenning/loa"},
+          "mandate": {
+            "$ref": "#/$defs/eherkenning/mandate"
+          }
+        }
+      },
+      "mandate:naturalPerson": {
+        "title": "Authentication context data schema for eHerkenning representing a natural person",
+        "type": "object",
+        "allOf": [
+          {"$ref": "#/$defs/eherkenning/mandate:common"},
+          {
+            "type": "object",
+            "required": ["representee", "authorizee"],
+            "properties": {
+              "representee": {"$ref": "#/$defs/naturalPerson"},
+              "authorizee": {
+                "title": "Authorizee (ge-autoriseerde)",
+                "description": "The company that is authorized to act on behalf of the representee.",
+                "type": "object",
+                "required": [
+                  "legalSubject",
+                  "actingSubject"
+                ],
+                "properties": {
+                  "legalSubject": {
+                    "oneOf": [
+                      {"$ref": "#/$defs/company:withoutBranchRestriction"},
+                      {"$ref": "#/$defs/company:withBranchRestriction"}
+                    ]
+                  },
+                  "actingSubject": {
+                    "$ref": "#/$defs/company:actingSubject"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "mandate:company": {
+        "title": "Authentication context data schema for eHerkenning representing a company (ketenmachtiging). There cannot be a branch restriction here.",
+        "type": "object",
+        "allOf": [
+          {"$ref": "#/$defs/eherkenning/mandate:common"},
+          {
+            "type": "object",
+            "required": ["representee", "authorizee"],
+            "properties": {
+              "representee": {"$ref": "#/$defs/company:withoutBranchRestriction"},
+              "authorizee": {
+                "title": "Authorizee (ge-autoriseerde)",
+                "description": "The company that is authorized to act on behalf of the representee.",
+                "type": "object",
+                "required": [
+                  "legalSubject",
+                  "actingSubject"
+                ],
+                "properties": {
+                  "legalSubject": {
+                    "$ref": "#/$defs/company:withoutBranchRestriction"
+                  },
+                  "actingSubject": {
+                    "$ref": "#/$defs/company:actingSubject"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+
+      "schemas": {
+        "withoutMandate": {
+          "title": "Authentication context data schema for eHerkenning without mandate",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "authorizee"
+          ],
+          "properties": {
+            "source": {"$ref": "#/$defs/eherkenning/source"},
+            "levelOfAssurance": {"$ref": "#/$defs/eherkenning/loa"},
+            "authorizee": {
+              "title": "Authorizee (ge-autoriseerde)",
+              "description": "The company that is authorized. Because no mandate is involved, the representee and the authorizee are the same company.",
+              "type": "object",
+              "required": [
+                "legalSubject",
+                "actingSubject"
+              ],
+              "properties": {
+                "legalSubject": {
+                  "type": "object",
+                  "oneOf": [
+                    {"$ref": "#/$defs/company:withoutBranchRestriction"},
+                    {"$ref": "#/$defs/company:withBranchRestriction"}
+                  ]
+                },
+                "actingSubject": {
+                  "$ref": "#/$defs/company:actingSubject"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "withMandate": {
+          "title": "Authentication context data schema for eHerkenning with mandate",
+          "type": "object",
+          "required": [
+            "source",
+            "levelOfAssurance",
+            "representee",
+            "authorizee",
+            "mandate"
+          ],
+          "oneOf": [
+            {"$ref": "#/$defs/eherkenning/mandate:naturalPerson"},
+            {"$ref": "#/$defs/eherkenning/mandate:company"}
+          ],
+          "unevaluatedProperties": false
+        }
+      }
+    }
+  }
+}
