@@ -35,6 +35,29 @@ Upgrade notes
   - ``/eherkenning-bewindvoering-oidc/callback/`` -> ``/auth/oidc/callback/``
   - ``/org-oidc/callback/`` -> ``/auth/oidc/callback/``
 
+2.6.10 (2024-06-19)
+===================
+
+Hotfix fixing a regression in the PDF generation.
+
+* [#4403] Fixed broken submission PDF layout when empty values are present.
+* [#4409] Updated language used for payment amount in submission PDF.
+
+2.5.10 (2024-06-19)
+===================
+
+Hotfix fixing a regression in the PDF generation.
+
+* [#4403] Fixed broken submission PDF layout when empty values are present.
+* [#4409] Updated language used for payment amount in submission PDF.
+
+2.4.10 (2024-06-19)
+===================
+
+Final bugfix release in the ``2.4.x`` series.
+
+* [#4403] Fixed broken submission PDF layout when empty values are present.
+
 2.6.9 (2024-06-14)
 ==================
 
