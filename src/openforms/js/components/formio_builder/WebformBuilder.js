@@ -16,6 +16,7 @@ import {getAvailableAuthPlugins} from 'components/form/cosign';
 import {getAvailableDocumentTypes} from 'components/form/file';
 import {getComponentEmptyValue} from 'components/utils';
 import jsonScriptToVar from 'utils/json-script';
+import {currentTheme} from 'utils/theme';
 
 import {
   getPrefillAttributes,
@@ -159,6 +160,7 @@ class WebformBuilder extends WebformBuilderFormio {
             // Context binding
             uniquifyKey={uniquifyKey}
             supportedLanguageCodes={LANGUAGES}
+            theme={currentTheme.getValue()}
             richTextColors={RICH_TEXT_COLORS}
             getFormComponents={() => this.webform.form.components}
             getValidatorPlugins={getValidatorPlugins}
