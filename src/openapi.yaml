@@ -3803,6 +3803,12 @@ paths:
       summary: List available InformatieObjectTypen
       parameters:
       - in: query
+        name: objects_api_group
+        schema:
+          type: integer
+        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+      - in: query
         name: registration_backend
         schema:
           enum:
@@ -3824,6 +3830,7 @@ paths:
           * `objects_api` - Objects API registration
           * `microsoft-graph` - Microsoft Graph (OneDrive/SharePoint)
           * `camunda` - Camunda
+        required: true
       - in: query
         name: zgw_api_group
         schema:
@@ -3919,6 +3926,12 @@ paths:
         List the available Objecttypes.
 
         Note that the response data is essentially proxied from the configured Objecttypes API.
+      parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: string
+        description: Which Objects API group to use.
       tags:
       - registration
       security:
@@ -3949,6 +3962,11 @@ paths:
 
         Note that the response data is essentially proxied from the configured Objecttypes API.
       parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: string
+        description: Which Objects API group to use.
       - in: path
         name: submission_uuid
         schema:
@@ -9919,6 +9937,9 @@ components:
     TargetPathsInput:
       type: object
       properties:
+        objectsApiGroup:
+          type: integer
+          description: Which Objects API group to use.
         objecttypeUrl:
           type: string
           format: uri
@@ -9931,6 +9952,7 @@ components:
           additionalProperties: {}
           description: The JSON Schema of the form variable.
       required:
+      - objectsApiGroup
       - objecttypeUrl
       - objecttypeVersion
       - variableJsonSchema
