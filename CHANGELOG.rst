@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.6.10 (2024-06-19)
+===================
+
+Hotfix fixing a regression in the PDF generation.
+
+* [#4403] Fixed broken submission PDF layout when empty values are present.
+* [#4409] Updated language used for payment amount in submission PDF.
+
 2.6.9 (2024-06-14)
 ==================
 
