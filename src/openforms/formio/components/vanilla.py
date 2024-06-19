@@ -30,6 +30,7 @@ from csp_post_processor import post_process_html
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.attachments import temporary_upload_from_url
+from openforms.submissions.constants import UPLOADS_SESSION_KEY
 from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 from openforms.validations.service import PluginValidator
@@ -331,6 +332,11 @@ class FileSerializer(serializers.Serializer):
 
         temporary_upload = temporary_upload_from_url(attrs["url"])
         if temporary_upload is None:
+            raise serializers.ValidationError({"url": _("Invalid URL.")})
+
+        if str(temporary_upload.uuid) not in self.context["request"].session.get(
+            UPLOADS_SESSION_KEY, []
+        ):
             raise serializers.ValidationError({"url": _("Invalid URL.")})
 
         if attrs["size"] != temporary_upload.file_size:

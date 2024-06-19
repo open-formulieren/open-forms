@@ -71,7 +71,10 @@ class CompletionValidationSerializer(serializers.Serializer):
                 step_data_serializer = build_serializer(
                     configuration["components"],
                     data=data,
-                    context={"submission": submission},
+                    context={
+                        "submission": submission,
+                        "request": self.context["request"],
+                    },
                 )
                 if not step_data_serializer.is_valid():
                     errors = step_data_serializer.errors

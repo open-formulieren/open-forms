@@ -1,18 +1,24 @@
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files import File
 from django.test import TestCase, tag
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.settings import api_settings
+from rest_framework.test import APIRequestFactory
+from rest_framework.utils.serializer_helpers import ReturnDict
 
 from openforms.config.models import GlobalConfiguration
+from openforms.submissions.attachments import temporary_upload_uuid_from_url
+from openforms.submissions.constants import UPLOADS_SESSION_KEY
 from openforms.submissions.tests.factories import TemporaryFileUploadFactory
+from openforms.typing import JSONValue
 
 from ...typing import FileComponent
 from ..factories import SubmittedFileFactory
-from .helpers import extract_error, validate_formio_data
+from .helpers import extract_error, validate_formio_data as _validate_formio_data
 
 TEST_FILES_DIR = Path(__file__).parents[1] / "files"
 
@@ -27,6 +33,19 @@ DEFAULT_FILE_COMPONENT: FileComponent = {
     "filePattern": "",
     "file": {"allowedTypesLabels": []},
 }
+
+
+def validate_formio_data(
+    component: FileComponent, data: JSONValue, session_uploads: list[str] = []
+) -> tuple[bool, ReturnDict]:
+    request = APIRequestFactory().put("/irrelevant")
+
+    # Add a session to the request:
+    middleware = SessionMiddleware(lambda x: None)  # type: ignore
+    middleware.process_request(request)
+    request.session[UPLOADS_SESSION_KEY] = [str(uuid) for uuid in session_uploads]
+
+    return _validate_formio_data(component, data, extra_context={"request": request})
 
 
 class FileValidationMaxFilesAndRequiredTests(TestCase):
@@ -97,8 +116,14 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "maxNumberOfFiles": 2,
         }
 
+        submitted_files = SubmittedFileFactory.create_batch(2)
+
         is_valid, _ = validate_formio_data(
-            component, {"foo": SubmittedFileFactory.create_batch(2)}
+            component,
+            {"foo": submitted_files},
+            session_uploads=[
+                temporary_upload_uuid_from_url(f["url"]) for f in submitted_files
+            ],
         )
 
         self.assertTrue(is_valid)
@@ -116,8 +141,14 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "multiple": False,
         }
 
+        submitted_files = SubmittedFileFactory.create_batch(2)
+
         is_valid, errors = validate_formio_data(
-            component, {"foo": SubmittedFileFactory.create_batch(2)}
+            component,
+            {"foo": submitted_files},
+            session_uploads=[
+                temporary_upload_uuid_from_url(f["url"]) for f in submitted_files
+            ],
         )
 
         self.assertFalse(is_valid)
@@ -138,8 +169,14 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "maxNumberOfFiles": 1,
         }
 
+        submitted_files = SubmittedFileFactory.create_batch(2)
+
         is_valid, errors = validate_formio_data(
-            component, {"foo": SubmittedFileFactory.create_batch(2)}
+            component,
+            {"foo": submitted_files},
+            session_uploads=[
+                temporary_upload_uuid_from_url(f["url"]) for f in submitted_files
+            ],
         )
 
         self.assertFalse(is_valid)
@@ -203,13 +240,31 @@ class FileValidationTests(TestCase):
         self.assertEqual(error.code, "invalid")
         self.assertEqual(error, _("Invalid URL."))
 
+    def test_temporary_upload_not_owned(self):
+        # `SubmittedFileFactory` will create a `TemporaryFileUploadFactory`,
+        # but we will not add it to the session.
+        data = SubmittedFileFactory.create()
+
+        is_valid, errors = validate_formio_data(
+            DEFAULT_FILE_COMPONENT, {"foo": [data]}, session_uploads=[]
+        )
+
+        self.assertFalse(is_valid)
+        error = extract_error(errors["foo"][0], "url")
+        self.assertEqual(error.code, "invalid")
+        self.assertEqual(error, _("Invalid URL."))
+
     def test_does_not_match_upload_file_size(self):
 
         data = SubmittedFileFactory.create()
         data["size"] = 0
         data["data"]["size"] = 0
 
-        is_valid, errors = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
+        is_valid, errors = validate_formio_data(
+            DEFAULT_FILE_COMPONENT,
+            {"foo": [data]},
+            session_uploads=[temporary_upload_uuid_from_url(data["url"])],
+        )
 
         self.assertFalse(is_valid)
         error = extract_error(errors["foo"][0], "size")
@@ -222,7 +277,11 @@ class FileValidationTests(TestCase):
         data["originalName"] = "unrelated"
         data["data"]["name"] = "unrelated"
 
-        is_valid, errors = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
+        is_valid, errors = validate_formio_data(
+            DEFAULT_FILE_COMPONENT,
+            {"foo": [data]},
+            session_uploads=[temporary_upload_uuid_from_url(data["url"])],
+        )
 
         self.assertFalse(is_valid)
         error = extract_error(errors["foo"][0], "originalName")
@@ -232,7 +291,11 @@ class FileValidationTests(TestCase):
     def test_passes_validation(self):
         data = SubmittedFileFactory.create()
 
-        is_valid, _ = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
+        is_valid, _ = validate_formio_data(
+            DEFAULT_FILE_COMPONENT,
+            {"foo": [data]},
+            session_uploads=[temporary_upload_uuid_from_url(data["url"])],
+        )
 
         self.assertTrue(is_valid)
 
@@ -285,7 +348,9 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["application/pdf"], "allowedTypesLabels": []},
         }
 
-        is_valid, errors = validate_formio_data(component, data)
+        is_valid, errors = validate_formio_data(
+            component, data, session_uploads=[upload1.uuid, upload2.uuid]
+        )
         self.assertFalse(is_valid)
         self.assertEqual(len(errors["foo"]), 2)
 
@@ -329,7 +394,9 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["image/png", "image/jpeg"], "allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(component, data)
+        is_valid, _ = validate_formio_data(
+            component, data, session_uploads=[upload1.uuid, upload2.uuid]
+        )
         self.assertTrue(is_valid)
 
     @tag("GHSA-h85r-xv4w-cg8g")
@@ -358,7 +425,9 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(component, data)
+        is_valid, _ = validate_formio_data(
+            component, data, session_uploads=[upload.uuid]
+        )
         self.assertTrue(is_valid)
 
     @tag("GHSA-h85r-xv4w-cg8g")
@@ -393,7 +462,9 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(component, data)
+        is_valid, _ = validate_formio_data(
+            component, data, session_uploads=[upload.uuid]
+        )
         self.assertTrue(is_valid)
 
     @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
@@ -428,6 +499,8 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
-        is_valid, errors = validate_formio_data(component, data)
+        is_valid, errors = validate_formio_data(
+            component, data, session_uploads=[upload.uuid]
+        )
         self.assertFalse(is_valid)
         self.assertEqual(len(errors["foo"]), 1)
