@@ -1222,7 +1222,7 @@ urllib3==2.2.2
     #   elastic-apm
     #   requests
     #   sentry-sdk
-uwsgi==2.0.23
+uwsgi==2.0.26
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

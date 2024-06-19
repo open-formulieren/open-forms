@@ -30,7 +30,7 @@ jobs:
       - name: Set up backend environment
         uses: maykinmedia/setup-django-backend@v1.3
         with:
-          apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gdal-bin'
+          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
           python-version: '3.10'
           setup-node: 'no'
       - uses: isort/isort-action@v1.1.0
@@ -48,7 +48,7 @@ jobs:
       - name: Set up backend environment
         uses: maykinmedia/setup-django-backend@v1.3
         with:
-          apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gdal-bin'
+          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
           python-version: '3.10'
           setup-node: 'no'
       - name: Run black
@@ -64,7 +64,7 @@ jobs:
       - name: Set up backend environment
         uses: maykinmedia/setup-django-backend@v1.3
         with:
-          apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gdal-bin'
+          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
           python-version: '3.10'
           setup-node: 'no'
       - name: Run flake8
@@ -107,7 +107,7 @@ jobs:
       - name: Set up backend environment
         uses: maykinmedia/setup-django-backend@v1.3
         with:
-          apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gdal-bin'
+          apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
           python-version: '3.10'
           setup-node: 'no'
       - name: Run manage.py makemigrations --check --dry-run

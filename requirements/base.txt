@@ -527,7 +527,7 @@ urllib3==2.2.2
     #   elastic-apm
     #   requests
     #   sentry-sdk
-uwsgi==2.0.23
+uwsgi==2.0.26
     # via -r requirements/base.in
 vine==5.1.0
     # via
