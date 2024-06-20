@@ -1215,11 +1215,12 @@ class ObjectsAPIBackendV1Tests(TestCase):
             registration_result={
                 "url": "https://objecten.nl/api/v1/objects/111-222-333"
             },
+            form__payment_backend="demo",
+            form__product__price=10,
         )
-        SubmissionPaymentFactory.create(
+        SubmissionPaymentFactory.for_submission(
             submission=submission,
             status=PaymentStatus.started,
-            amount=10,
             public_order_id="",
         )
 
