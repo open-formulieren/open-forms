@@ -126,7 +126,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         )
         with_completed_payment = factory.Trait(
             form__payment_backend="demo",
-            payment=factory.RelatedFactory(
+            completed_payment=factory.RelatedFactory(
                 "openforms.payments.tests.factories.SubmissionPaymentFactory",
                 factory_related_name="submission",
                 status=PaymentStatus.completed,
@@ -134,7 +134,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         )
         with_registered_payment = factory.Trait(
             form__payment_backend="demo",
-            payment=factory.RelatedFactory(
+            registered_payment=factory.RelatedFactory(
                 "openforms.payments.tests.factories.SubmissionPaymentFactory",
                 factory_related_name="submission",
                 status=PaymentStatus.registered,
@@ -142,7 +142,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         )
         with_failed_payment = factory.Trait(
             form__payment_backend="demo",
-            payment=factory.RelatedFactory(
+            failed_payment=factory.RelatedFactory(
                 "openforms.payments.tests.factories.SubmissionPaymentFactory",
                 factory_related_name="submission",
                 status=PaymentStatus.failed,
