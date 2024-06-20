@@ -31,6 +31,11 @@ class URLsHelper:
         form_url = furl(f"{self.host}{self.form_path}").set({"_start": "1"})
         return str(form_url)
 
+    @property
+    def api_resource(self) -> str:
+        api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": self.form.uuid})
+        return f"{self.host}{api_path}"
+
     def get_auth_start(self, plugin_id: str) -> str:
         """
         Compute the authentication start URL for the specified plugin ID.
