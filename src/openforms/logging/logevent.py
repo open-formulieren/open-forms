@@ -308,7 +308,7 @@ def confirmation_email_skip(submission: Submission):
 # - - -
 
 
-def payment_flow_start(payment: SubmissionPayment, plugin):
+def payment_flow_start(payment: SubmissionPayment, plugin, from_email: bool = False):
     _create_log(
         payment.submission,
         "payment_flow_start",
@@ -316,6 +316,7 @@ def payment_flow_start(payment: SubmissionPayment, plugin):
         extra_data={
             "payment_order_id": payment.public_order_id,
             "payment_id": payment.id,
+            "from_email": from_email,
         },
     )
 

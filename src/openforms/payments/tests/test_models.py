@@ -90,14 +90,6 @@ class SubmissionPaymentTests(TransactionTestCase):
         )
         self.assertEqual(payment.public_order_id, "xyz2020/OF-123456/4")
 
-    def test_queryset_sum_amount(self):
-        self.assertEqual(0, SubmissionPayment.objects.none().sum_amount())
-
-        SubmissionPaymentFactory.create(amount=Decimal("1"))
-        SubmissionPaymentFactory.create(amount=Decimal("2"))
-        SubmissionPaymentFactory.create(amount=Decimal("3"))
-        self.assertEqual(6, SubmissionPayment.objects.sum_amount())
-
     def test_status_is_final(self):
         for s in [PaymentStatus.started, PaymentStatus.processing]:
             with self.subTest(s):

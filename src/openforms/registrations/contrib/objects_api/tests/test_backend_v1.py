@@ -2,7 +2,7 @@ import textwrap
 from datetime import date
 from unittest.mock import patch
 
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.utils import timezone
 
 import requests_mock
@@ -1215,11 +1215,12 @@ class ObjectsAPIBackendV1Tests(TestCase):
             registration_result={
                 "url": "https://objecten.nl/api/v1/objects/111-222-333"
             },
+            form__payment_backend="demo",
+            form__product__price=10,
         )
-        SubmissionPaymentFactory.create(
+        SubmissionPaymentFactory.for_submission(
             submission=submission,
             status=PaymentStatus.started,
-            amount=10,
             public_order_id="",
         )
 
@@ -1401,3 +1402,26 @@ class V1HandlerTests(TestCase):
 
         record_data = object_data["record"]["data"]
         self.assertEqual(record_data["cosign_date"], "")
+
+    @tag("utrecht-243", "gh-4425")
+    def test_payment_context_without_any_payment_attempts(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__payment_backend="demo",
+            form__product__price=10,
+        )
+        assert not submission.payments.exists()
+        assert submission.price == 10
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        options: RegistrationOptionsV1 = {
+            "version": 1,
+            "objecttype": "-dummy-",
+            "objecttype_version": 1,
+            "productaanvraag_type": "-dummy-",
+            "content_json": """{"amount": {{ payment.amount }}}""",
+        }
+        handler = ObjectsAPIV1Handler()
+
+        object_data = handler.get_object_data(submission=submission, options=options)
+
+        self.assertEqual(object_data["record"]["data"]["amount"], 10)

@@ -62,12 +62,14 @@ class PaymentCompleted(BaseStaticVariable):
 @register("payment_amount")
 class PaymentAmount(BaseStaticVariable):
     name = _("Payment amount")
-    data_type = FormVariableDataTypes.string
+    data_type = FormVariableDataTypes.float
 
     def get_initial_value(self, submission: Submission | None = None):
         if submission is None:
             return None
-        return float(submission.payments.sum_amount())
+        if submission.price is None:
+            return None
+        return float(submission.price)
 
 
 @register("payment_public_order_ids")
