@@ -37,7 +37,7 @@ def update_submission_payment_registration(submission: Submission):
 
         try:
             plugin.update_payment_status(submission, options_serializer.validated_data)
-            payments.update(status=PaymentStatus.registered)
+            payments.mark_registered()
         except Exception as e:
             logevent.registration_payment_update_failure(
                 submission, error=e, plugin=plugin

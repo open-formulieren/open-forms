@@ -65,6 +65,10 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
 
 
 class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):
+    def mark_registered(self):
+        qs = self.filter(status=PaymentStatus.completed)
+        return qs.update(status=PaymentStatus.registered)
+
     def get_completed_public_order_ids(self) -> list[str]:
         return list(
             self.filter(
