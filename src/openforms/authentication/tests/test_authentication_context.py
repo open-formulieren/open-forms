@@ -10,14 +10,9 @@ The schema used in these tests is taken from the proposal above. It will be made
 at some point.
 """
 
-import json
-from pathlib import Path
-
 from django.test import SimpleTestCase
 
 from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
-from jsonschema import ValidationError, Validator
-from jsonschema.validators import validator_for
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -27,29 +22,10 @@ from ..constants import (
     LegalSubjectIdentifierType,
 )
 from ..models import AuthInfo
-
-SCHEMA_FILE = Path(__file__).parent.resolve() / "auth_context_schema.json"
-
-
-def _get_validator() -> Validator:
-    with SCHEMA_FILE.open("r") as infile:
-        schema = json.load(infile)
-    return validator_for(schema)(schema)
+from .utils import AuthContextAssertMixin
 
 
-validator = _get_validator()
-
-
-class AuthContextDataTests(SimpleTestCase):
-
-    def assertValidContext(self, context):
-        try:
-            validator.validate(context)
-        except ValidationError as exc:
-            raise self.failureException(
-                "Context is not valid according to schema"
-            ) from exc
-
+class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
     def test_plain_digid_auth(self):
         auth_info = AuthInfo(
             submission=SubmissionFactory.build(),

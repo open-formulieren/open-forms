@@ -1,6 +1,11 @@
+import json
+from pathlib import Path
+
 from django.urls import reverse
 
 from furl import furl
+from jsonschema import ValidationError, Validator
+from jsonschema.validators import validator_for
 
 from openforms.forms.models import Form
 
@@ -36,3 +41,25 @@ class URLsHelper:
         )
         start_url = furl(login_url).set({"next": self.frontend_start})
         return str(start_url)
+
+
+SCHEMA_FILE = Path(__file__).parent.resolve() / "auth_context_schema.json"
+
+
+def _get_validator() -> Validator:
+    with SCHEMA_FILE.open("r") as infile:
+        schema = json.load(infile)
+    return validator_for(schema)(schema)
+
+
+validator = _get_validator()
+
+
+class AuthContextAssertMixin:
+    def assertValidContext(self, context):
+        try:
+            validator.validate(context)
+        except ValidationError as exc:
+            raise self.failureException(
+                "Context is not valid according to schema"
+            ) from exc
