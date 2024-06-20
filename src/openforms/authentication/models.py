@@ -14,7 +14,12 @@ from .constants import (
     LegalSubjectIdentifierType,
 )
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
-from .types import DigiDContext, DigiDMachtigenContext, EHerkenningContext
+from .types import (
+    DigiDContext,
+    DigiDMachtigenContext,
+    EHerkenningContext,
+    EHerkenningMachtigenContext,
+)
 
 
 class BaseAuthInfo(models.Model):
@@ -221,7 +226,12 @@ class AuthInfo(BaseAuthInfo):
 
     def to_auth_context_data(
         self,
-    ) -> DigiDContext | DigiDMachtigenContext | EHerkenningContext:
+    ) -> (
+        DigiDContext
+        | DigiDMachtigenContext
+        | EHerkenningContext
+        | EHerkenningMachtigenContext
+    ):
         assert not self.attribute_hashed
 
         match (self.attribute, self.legal_subject_identifier_type):
@@ -276,6 +286,29 @@ class AuthInfo(BaseAuthInfo):
                     },
                 }
                 return eh_context
+
+            # EHerkenning with machtigen/mandate
+            case (AuthAttribute.bsn, LegalSubjectIdentifierType.kvk):
+                ehm_context: EHerkenningMachtigenContext = {
+                    "source": "eherkenning",
+                    "levelOfAssurance": self.loa,
+                    "representee": {
+                        "identifierType": "bsn",
+                        "identifier": self.value,
+                    },
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "kvkNummer",
+                            "identifier": self.legal_subject_identifier_value,
+                        },
+                        "actingSubject": {
+                            "identifierType": self.acting_subject_identifier_type,
+                            "identifier": self.acting_subject_identifier_value,
+                        },
+                    },
+                    "mandate": self.mandate_context,
+                }
+                return ehm_context
             case _:
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")
 

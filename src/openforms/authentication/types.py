@@ -1,5 +1,7 @@
 from typing import Literal, TypedDict
 
+from typing_extensions import NotRequired
+
 
 class DigiDEntity(TypedDict):
     identifierType: Literal["bsn"]
@@ -59,3 +61,23 @@ class EHerkenningContext(TypedDict):
         "urn:etoegang:core:assurance-class:loa4",
     ]
     authorizee: EHerkenningAuthorizee
+
+
+class EHRepresenteeEntity(TypedDict):
+    identifierType: Literal["bsn"]
+    identifier: str
+
+
+class EHMandateService(TypedDict):
+    id: str
+    uuid: str
+
+
+class EHMandate(TypedDict):
+    role: NotRequired[Literal["bewindvoerder", "curator", "mentor"]]
+    services: list[EHMandateService]
+
+
+class EHerkenningMachtigenContext(EHerkenningContext):
+    representee: EHRepresenteeEntity
+    mandate: EHMandate
