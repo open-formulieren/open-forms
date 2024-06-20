@@ -2,6 +2,18 @@
 Changelog
 =========
 
+2.6.11 (2024-06-20)
+===================
+
+Hotfix for payment integration in Objects API
+
+* [#4425] Fixed the wrong price being sent to the Objects API when multiple payment
+  attempts are made.
+* [#4425] Fixed incorrectly marking failed/non-completed payment attempts as registered
+  in the registration backend.
+* [#4425] Added missing (audit) logging for payments started from the confirmation
+  email link.
+
 2.6.10 (2024-06-19)
 ===================
 
