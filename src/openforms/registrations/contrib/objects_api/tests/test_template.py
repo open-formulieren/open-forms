@@ -7,8 +7,6 @@ from django.test import TestCase, override_settings, tag
 import requests_mock
 import tablib
 from freezegun import freeze_time
-from zgw_consumers.constants import APITypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -18,6 +16,7 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from .factories import ObjectsAPIGroupConfigFactory
 
 
 class JSONTemplatingTests(TestCase):
@@ -38,15 +37,11 @@ class JSONTemplatingTests(TestCase):
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
             productaanvraag_type="terugbelnotitie",
+        )
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
         m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -67,6 +62,8 @@ class JSONTemplatingTests(TestCase):
             plugin.register_submission(
                 submission,
                 {
+                    "version": 1,
+                    "objects_api_group": config_group,
                     "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
                     "objecttype_version": 300,
                     "informatieobjecttype_submission_report": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
@@ -109,14 +106,6 @@ class JSONTemplatingTests(TestCase):
     @freeze_time("2022-09-12")
     def test_custom_template(self, m):
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
             content_json=textwrap.dedent(
                 """
                 {
@@ -138,6 +127,10 @@ class JSONTemplatingTests(TestCase):
                     "bijlagen": {% uploaded_attachment_urls %}
                 }"""
             ),
+        )
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -178,6 +171,8 @@ class JSONTemplatingTests(TestCase):
             plugin.register_submission(
                 submission,
                 {
+                    "version": 1,
+                    "objects_api_group": config_group,
                     "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
                     "objecttype_version": 300,
                     "productaanvraag_type": "tralala-type",
@@ -227,14 +222,6 @@ class JSONTemplatingTests(TestCase):
     def test_submission_with_objects_api_content_json_exceed_max_file_limit(self):
         submission = SubmissionFactory.create(with_report=True)
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
             content_json=textwrap.dedent(
                 """
                 {
@@ -262,6 +249,11 @@ class JSONTemplatingTests(TestCase):
             ),
         )
 
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
+        )
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         with (
             patch(
@@ -277,20 +269,24 @@ class JSONTemplatingTests(TestCase):
                 SuspiciousOperation,
                 msg="Templated out content JSON exceeds the maximum size 10\xa0bytes (it is 398\xa0bytes).",
             ):
-                plugin.register_submission(submission, {})
+                plugin.register_submission(
+                    submission,
+                    {
+                        "version": 1,
+                        "objects_api_group": config_group,
+                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype_version": 300,
+                    },
+                )
 
     def test_submission_with_objects_api_content_json_not_valid_json(self):
         submission = SubmissionFactory.create(with_report=True)
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            drc_service=ServiceFactory.build(
-                api_root="https://documenten.nl/api/v1/",
-                api_type=APITypes.drc,
-            ),
             content_json='{"key": "value",}',  # Invalid JSON,
+        )
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
         )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -305,7 +301,15 @@ class JSONTemplatingTests(TestCase):
             ),
         ):
             with self.assertRaises(RuntimeError):
-                plugin.register_submission(submission, {})
+                plugin.register_submission(
+                    submission,
+                    {
+                        "version": 1,
+                        "objects_api_group": config_group,
+                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype_version": 300,
+                    },
+                )
 
 
 class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
@@ -352,10 +356,9 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(),
-            drc_service=ServiceFactory.build(),
             content_json="{% json_summary %}",
         )
+        config_group = ObjectsAPIGroupConfigFactory.create()
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         prefix = "openforms.registrations.contrib.objects_api"
 
@@ -373,6 +376,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                 submission,
                 {
                     "version": 1,
+                    "objects_api_group": config_group,
                     "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
                     "objecttype_version": 300,
                     # skip document uploads
@@ -459,20 +463,13 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             submitted_data={"radio": "2"},
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
-        config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(),
-            drc_service=ServiceFactory.build(),
-            content_json="{% json_summary %}",
-        )
+        config = ObjectsAPIGroupConfigFactory.create()
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        prefix = "openforms.registrations.contrib.objects_api"
 
         with (
             patch(
-                f"{prefix}.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
-            ),
-            patch(f"{prefix}.plugin.get_objects_client") as mock_objects_client,
+                "openforms.registrations.contrib.objects_api.plugin.get_objects_client"
+            ) as mock_objects_client,
         ):
             _objects_client = mock_objects_client.return_value.__enter__.return_value
             _objects_client.create_object.return_value = {"dummy": "response"}
@@ -480,6 +477,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             plugin.register_submission(
                 submission,
                 {
+                    "objects_api_group": config,
                     "version": 1,
                     "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
                     "objecttype_version": 300,
@@ -487,6 +485,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                     "informatieobjecttype_submission_report": "",
                     "upload_submission_csv": False,
                     "informatieobjecttype_attachment": "",
+                    "content_json": "{% json_summary %}",
                 },
             )
 

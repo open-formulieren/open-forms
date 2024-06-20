@@ -15,7 +15,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_objects_client
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..typing import RegistrationOptionsV2
 
@@ -28,8 +28,8 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
+        self.config_group = ObjectsAPIGroupConfig.objects.create(
+            objects_service=ServiceFactory.create(
                 api_root="http://localhost:8002/api/v2/",
                 api_type=APITypes.orc,
                 oas="https://example.com/",
@@ -42,7 +42,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
 
         config_patcher = patch(
             "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-            return_value=config,
+            return_value=ObjectsAPIConfig(),
         )
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
@@ -50,7 +50,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
     def test_update_payment_status(self):
         # We manually create the objects instance, to be in the same state after
         # `plugin.register_submission` was called:
-        with get_objects_client() as client:
+        with get_objects_client(self.config_group) as client:
             data = client.create_object(
                 object_data=prepare_data_for_registration(
                     record_data={
@@ -104,6 +104,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
 
         v2_options: RegistrationOptionsV2 = {
             "version": 2,
+            "objects_api_group": self.config_group,
             # See the docker compose fixtures for more info on these values:
             "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             "objecttype_version": 3,

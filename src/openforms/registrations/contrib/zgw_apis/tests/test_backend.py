@@ -10,12 +10,13 @@ import requests_mock
 from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
-from zgw_consumers.constants import APITypes
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.registrations.contrib.objects_api.tests.factories import (
+    ObjectsAPIGroupConfigFactory,
+)
 from openforms.submissions.constants import PostSubmissionEvents
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tasks import pre_registration
@@ -1495,13 +1496,6 @@ class ZGWBackendTests(TestCase):
     )
     def test_submission_with_zgw_and_objects_api_backends(self, m, obj_api_config):
         config = ObjectsAPIConfig(
-            objects_service=ServiceFactory.build(
-                api_root="https://objecten.nl/api/v1/",
-                api_type=APITypes.orc,
-            ),
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
-            objecttype_version=1,
-            organisatie_rsin="000000000",
             content_json=textwrap.dedent(
                 """
                 {
@@ -1520,6 +1514,11 @@ class ZGWBackendTests(TestCase):
                     ],
                 }"""
             ),
+        )
+
+        ObjectsAPIGroupConfigFactory.create(
+            objects_service__api_root="https://objecten.nl/api/v1/",
+            organisatie_rsin="000000000",
         )
 
         def get_create_json_for_object(req, ctx):

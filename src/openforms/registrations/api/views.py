@@ -75,8 +75,7 @@ class InformatieObjectTypenListView(ListMixin, APIView):
         filter_serializer = ListInformatieObjectTypenQueryParamsSerializer(
             data=self.request.query_params
         )
-        if not filter_serializer.is_valid():
-            return []
+        filter_serializer.is_valid(raise_exception=True)
 
         client = filter_serializer.get_ztc_client()
         if not client:

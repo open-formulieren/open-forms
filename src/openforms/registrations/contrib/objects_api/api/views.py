@@ -3,7 +3,8 @@ from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import authentication, exceptions, permissions, views
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -13,17 +14,25 @@ from openforms.api.views import ListMixin
 from ..client import get_objecttypes_client
 from ..json_schema import InvalidReference, iter_json_schema_paths, json_schema_matches
 from .serializers import (
+    ObjectsAPIGroupInputSerializer,
     ObjecttypeSerializer,
     ObjecttypeVersionSerializer,
     TargetPathsInputSerializer,
     TargetPathsSerializer,
 )
 
+# TODO: https://github.com/open-formulieren/open-forms/issues/611
+OBJECTS_API_GROUP_QUERY_PARAMETER = OpenApiParameter(
+    name="objects_api_group",
+    type=OpenApiTypes.STR,
+    location=OpenApiParameter.QUERY,
+    description=_("Which Objects API group to use."),
+)
 
-@extend_schema_view(
-    get=extend_schema(
-        tags=["registration"],
-    ),
+
+@extend_schema(
+    tags=["registration"],
+    parameters=[OBJECTS_API_GROUP_QUERY_PARAMETER],
 )
 class ObjecttypesListView(ListMixin, views.APIView):
     """
@@ -37,14 +46,20 @@ class ObjecttypesListView(ListMixin, views.APIView):
     serializer_class = ObjecttypeSerializer
 
     def get_objects(self) -> list[dict[str, Any]]:
-        with get_objecttypes_client() as client:
+        input_serializer = ObjectsAPIGroupInputSerializer(
+            data=self.request.query_params
+        )
+        input_serializer.is_valid(raise_exception=True)
+
+        config_group = input_serializer.validated_data["objects_api_group"]
+
+        with get_objecttypes_client(config_group) as client:
             return client.list_objecttypes()
 
 
-@extend_schema_view(
-    get=extend_schema(
-        tags=["registration"],
-    ),
+@extend_schema(
+    tags=["registration"],
+    parameters=[OBJECTS_API_GROUP_QUERY_PARAMETER],
 )
 class ObjecttypeVersionsListView(ListMixin, views.APIView):
     """
@@ -58,7 +73,14 @@ class ObjecttypeVersionsListView(ListMixin, views.APIView):
     serializer_class = ObjecttypeVersionSerializer
 
     def get_objects(self) -> list[dict[str, Any]]:
-        with get_objecttypes_client() as client:
+        input_serializer = ObjectsAPIGroupInputSerializer(
+            data=self.request.query_params
+        )
+        input_serializer.is_valid(raise_exception=True)
+
+        config_group = input_serializer.validated_data["objects_api_group"]
+
+        with get_objecttypes_client(config_group) as client:
             return client.list_objecttype_versions(self.kwargs["submission_uuid"])
 
 
@@ -85,8 +107,9 @@ class TargetPathsListView(views.APIView):
 
         objecttype_uuid = match.group()
 
-        with get_objecttypes_client() as client:
+        config_group = input_serializer.validated_data["objects_api_group"]
 
+        with get_objecttypes_client(config_group) as client:
             json_schema = client.get_objecttype_version(
                 objecttype_uuid, input_serializer.validated_data["objecttype_version"]
             )["jsonSchema"]

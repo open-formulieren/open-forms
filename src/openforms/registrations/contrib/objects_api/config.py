@@ -1,20 +1,24 @@
 from typing import Any
 
-from django.db import models
+from django.db.models import IntegerChoices, Q
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
+from .client import get_catalogi_client, get_objecttypes_client
+from .models import ObjectsAPIGroupConfig
 
-class VersionChoices(models.IntegerChoices):
+
+class VersionChoices(IntegerChoices):
     V1 = 1, _("v1, template based")
     V2 = 2, _("v2, variables mapping")
 
@@ -49,7 +53,16 @@ class ObjecttypeVariableMappingSerializer(serializers.Serializer):
 
 
 class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
-
+    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ObjectsAPIGroupConfig.objects.exclude(
+            Q(objects_service=None)
+            | Q(objecttypes_service=None)
+            | Q(drc_service=None)
+            | Q(catalogi_service=None)
+        ),
+        label=("Objects API group"),
+        help_text=_("Which Objects API group to use."),
+    )
     version = serializers.ChoiceField(
         label=_("options version"),
         help_text=_(
@@ -196,6 +209,71 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             case _:  # pragma: no cover
                 raise ValidationError(
                     {"version": _("Unknown version: {version}").format(version=version)}
+                )
+
+        if not self.context.get("validate_business_logic", True):
+            return attrs
+
+        objects_api_group: ObjectsAPIGroupConfig = attrs["objects_api_group"]
+        with get_catalogi_client(objects_api_group) as catalogi_client:
+            informatieobjecttypen = catalogi_client.get_all_informatieobjecttypen()
+
+        for field in (
+            "informatieobjecttype_submission_report",
+            "informatieobjecttype_submission_csv",
+            "informatieobjecttype_attachment",
+        ):
+            url = attrs.get(field)
+            if url is not None and not any(
+                informatieobjecttype["url"] == url
+                for informatieobjecttype in informatieobjecttypen
+            ):
+                raise serializers.ValidationError(
+                    {
+                        field: _(
+                            "The provided {field} does not exist in the Catalogi API."
+                        ).format(field=field)
+                    },
+                    code="not-found",
+                )
+
+        with get_objecttypes_client(objects_api_group) as objecttypes_client:
+            objecttypes = objecttypes_client.list_objecttypes()
+
+            matching_objecttype = next(
+                (
+                    objecttype
+                    for objecttype in objecttypes
+                    if objecttype["url"] == attrs["objecttype"]
+                ),
+                None,
+            )
+
+            if matching_objecttype is None:
+                raise serializers.ValidationError(
+                    {
+                        "objecttype": _(
+                            "The provided objecttype does not exist in the Objecttypes API."
+                        )
+                    },
+                    code="not-found",
+                )
+
+            objecttype_versions = objecttypes_client.list_objecttype_versions(
+                objecttype_uuid=matching_objecttype["uuid"]
+            )
+
+            if not any(
+                objecttype_version["version"] == attrs["objecttype_version"]
+                for objecttype_version in objecttype_versions
+            ):
+                raise serializers.ValidationError(
+                    {
+                        "objecttype_version": _(
+                            "The provided objecttype version does not exist in the Objecttypes API."
+                        )
+                    },
+                    code="not-found",
                 )
 
         return attrs

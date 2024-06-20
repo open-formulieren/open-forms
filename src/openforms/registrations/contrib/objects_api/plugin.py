@@ -49,6 +49,24 @@ class ObjectsAPIRegistration(BasePlugin):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
 
+    @staticmethod
+    def set_defaults(options: RegistrationOptions) -> None:
+        config_group = options["objects_api_group"]
+        config_group.apply_defaults_to(options)
+
+        if options["version"] == 1:
+            global_config = ObjectsAPIConfig.get_solo()
+            assert isinstance(global_config, ObjectsAPIConfig)
+            if not options.get("content_json", "").strip():
+                options["content_json"] = global_config.content_json
+            if not options.get("payment_status_update_json", "").strip():
+                options["payment_status_update_json"] = (
+                    global_config.payment_status_update_json
+                )
+            options.setdefault(
+                "productaanvraag_type", global_config.productaanvraag_type
+            )
+
     @override
     def register_submission(
         self, submission: Submission, options: RegistrationOptions
@@ -59,9 +77,7 @@ class ObjectsAPIRegistration(BasePlugin):
         will be created differently. The actual logic lives in the ``submission_registration`` submodule.
         """
 
-        config = ObjectsAPIConfig.get_solo()
-        assert isinstance(config, ObjectsAPIConfig)
-        config.apply_defaults_to(options)
+        self.set_defaults(options)
 
         handler = HANDLER_MAPPING[options["version"]]
 
@@ -72,7 +88,7 @@ class ObjectsAPIRegistration(BasePlugin):
             options=options,
         )
 
-        with get_objects_client() as objects_client:
+        with get_objects_client(options["objects_api_group"]) as objects_client:
             response = execute_unless_result_exists(
                 partial(objects_client.create_object, object_data=object_data),
                 submission,
@@ -108,9 +124,7 @@ class ObjectsAPIRegistration(BasePlugin):
     def update_payment_status(
         self, submission: Submission, options: RegistrationOptions
     ) -> dict[str, Any] | None:
-        config = ObjectsAPIConfig.get_solo()
-        assert isinstance(config, ObjectsAPIConfig)
-        config.apply_defaults_to(options)
+        self.set_defaults(options)
 
         handler = HANDLER_MAPPING[options["version"]]
         updated_object_data = handler.get_update_payment_status_data(
@@ -121,7 +135,7 @@ class ObjectsAPIRegistration(BasePlugin):
             return
 
         object_url = submission.registration_result["url"]
-        with get_objects_client() as objects_client:
+        with get_objects_client(options["objects_api_group"]) as objects_client:
             response = objects_client.patch(
                 url=object_url,
                 json=updated_object_data,

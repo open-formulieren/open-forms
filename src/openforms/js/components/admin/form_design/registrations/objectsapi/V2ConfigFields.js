@@ -1,26 +1,24 @@
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
 import ObjectTypeSelect from './ObjectTypeSelect';
 import ObjectTypeVersionSelect from './ObjectTypeVersionSelect';
 import {useGetAvailableObjectTypes} from './hooks';
-import {getErrorMarkup, getFieldErrors} from './utils';
+import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
 
-const V2ConfigFields = ({index, name, formData, onChange}) => {
+const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
   const intl = useIntl();
   const validationErrors = useContext(ValidationErrorContext);
 
-  // Track available object types and versions in this component so the state can be
-  // shared.
-  const availableObjectTypesState = useGetAvailableObjectTypes();
-
   const {
+    objectsApiGroup = '',
     objecttype = '',
     objecttypeVersion = '',
     informatieobjecttypeSubmissionReport = '',
@@ -30,10 +28,22 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
     organisatieRsin = '',
   } = formData;
 
+  // Track available object types and versions in this component so the state can be
+  // shared.
+  const availableObjectTypesState = useGetAvailableObjectTypes(objectsApiGroup);
+
   const buildErrorsComponent = field => {
     const rawErrors = getFieldErrors(name, index, validationErrors, field);
     return rawErrors ? getErrorMarkup(rawErrors) : null;
   };
+
+  useEffect(() => {
+    if (schema.properties.objectsApiGroup.enum.length === 1 && objectsApiGroup === '') {
+      onChange({
+        target: {name: 'objectsApiGroup', value: schema.properties.objectsApiGroup.enum[0]},
+      });
+    }
+  }, []);
 
   const loadingError = !!availableObjectTypesState.error;
   if (loadingError) {
@@ -49,6 +59,33 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
 
   return (
     <>
+      <CustomFieldTemplate
+        id="root_objectsApiGroup"
+        label={intl.formatMessage({
+          defaultMessage: 'Objects API group',
+          description: 'Objects API group',
+        })}
+        rawDescription={intl.formatMessage({
+          description: 'Objects API group selection',
+          defaultMessage: 'Which Objects API group to use.',
+        })}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'objectsApiGroup')}
+        errors={buildErrorsComponent('objectsApiGroup')}
+        displayLabel
+        required
+      >
+        <Select
+          id="root_objectsApiGroup"
+          name="objectsApiGroup"
+          choices={getChoicesFromSchema(
+            schema.properties.objectsApiGroup.enum,
+            schema.properties.objectsApiGroup.enumNames
+          )}
+          value={objectsApiGroup}
+          onChange={onChange}
+          allowBlank
+        />
+      </CustomFieldTemplate>
       <CustomFieldTemplate
         id="root_objecttype"
         label={intl.formatMessage({
@@ -89,6 +126,7 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
       >
         {/* TODO: fallback to legacy UI if there are loading errors */}
         <ObjectTypeVersionSelect
+          objectsApiGroup={objectsApiGroup}
           availableObjecttypes={availableObjectTypesState.availableObjecttypes}
           selectedObjecttype={objecttype}
           selectedVersion={objecttypeVersion}
@@ -226,7 +264,9 @@ const V2ConfigFields = ({index, name, formData, onChange}) => {
 V2ConfigFields.propTypes = {
   index: PropTypes.number,
   name: PropTypes.string,
+  schema: PropTypes.any,
   formData: PropTypes.shape({
+    objectsApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     version: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,

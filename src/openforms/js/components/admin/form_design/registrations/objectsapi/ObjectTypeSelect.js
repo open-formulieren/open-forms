@@ -18,7 +18,7 @@ const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => 
   // synchronize the UI state back to the form state)
   useEffect(() => {
     // do nothing if no options have been loaded
-    if (loading) return;
+    if (loading || !availableObjecttypes.length) return;
 
     // check if a valid option is selected, if this is the case -> do nothing
     const isOptionPresent = availableObjecttypes.find(ot => ot.url === objecttype);

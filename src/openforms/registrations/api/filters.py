@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -5,7 +7,7 @@ from zgw_consumers.client import build_client
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIConfig
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.registrations.contrib.zgw_apis.client import get_catalogi_client
 from openforms.registrations.contrib.zgw_apis.models import ZGWApiGroupConfig, ZgwConfig
 
@@ -23,33 +25,56 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
         label=_("ZGW API set"),
         required=False,
     )
+    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ObjectsAPIGroupConfig.objects.all(),
+        help_text=_(
+            "The primary key of the Objects API group to use. The informatieobjecttypen from the Catalogi API "
+            "in this group will be returned."
+        ),
+        label=_("Objects API group"),
+        required=False,
+    )
     registration_backend = serializers.ChoiceField(
         help_text=_("The ID of the registration backend to use."),
         label=_("Registration backend ID"),
-        required=False,
         choices=[],
     )
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        registration_backend = attrs["registration_backend"]
+        # TODO We are leaking plugin details here, ideally this validation
+        # should go through the plugin registry.
+        if registration_backend == "objects_api" and "objects_api_group" not in attrs:
+            raise serializers.ValidationError(
+                _(
+                    "'objects_api_group' is required when 'registration_backend' is set to 'objects_api'."
+                )
+            )
+
+        return attrs
 
     def get_fields(self):
         fields = super().get_fields()
         # lazy set choices
-        if "registration_backend" in fields:
-            fields["registration_backend"].choices = register.get_choices()
+        fields["registration_backend"].choices = register.get_choices()
         return fields
 
     def get_ztc_client(self) -> CatalogiClient | None:
-        registration_backend = self.validated_data.get("registration_backend")
-        zgw_api_group: ZGWApiGroupConfig = self.validated_data.get("zgw_api_group")
+        registration_backend: str = self.validated_data.get("registration_backend")
 
-        if registration_backend == "zgw-create-zaak" and zgw_api_group is not None:
-            return get_catalogi_client(zgw_api_group)
+        if registration_backend == "zgw-create-zaak":
+            zgw_api_group: ZGWApiGroupConfig | None = self.validated_data.get(
+                "zgw_api_group"
+            )
+            if zgw_api_group is not None:
+                return get_catalogi_client(zgw_api_group)
+            config = ZgwConfig.get_solo()
+            assert isinstance(config, ZgwConfig)
+            if group := config.default_zgw_api_group:
+                return get_catalogi_client(group)
         elif registration_backend == "objects_api":
-            config = ObjectsAPIConfig.get_solo()
-            assert isinstance(config, ObjectsAPIConfig)
-            if service := config.catalogi_service:
+            objects_api_group: ObjectsAPIGroupConfig = self.validated_data[
+                "objects_api_group"
+            ]
+            if service := objects_api_group.catalogi_service:
                 return build_client(service, client_factory=CatalogiClient)
-
-        config = ZgwConfig.get_solo()
-        assert isinstance(config, ZgwConfig)
-        if group := config.default_zgw_api_group:
-            return get_catalogi_client(group)

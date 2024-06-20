@@ -1,9 +1,9 @@
 import React from 'react';
 
 const getChoicesFromSchema = (enums, enumNames) => {
-  let finalChoices = {};
+  const finalChoices = [];
   Object.keys(enums).forEach(key => {
-    finalChoices[enums[key]] = enumNames[key];
+    finalChoices.push([enums[key], enumNames[key]]);
   });
 
   return finalChoices;

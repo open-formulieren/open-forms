@@ -2,6 +2,18 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+
+from ..models import ObjectsAPIGroupConfig
+
+
+class ObjectsAPIGroupInputSerializer(serializers.Serializer):
+    objects_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ObjectsAPIGroupConfig.objects.exclude(objecttypes_service=None),
+        label=("Objects API group"),
+        help_text=_("Which Objects API group to use."),
+    )
+
 
 class ObjecttypeSerializer(serializers.Serializer):
     # Keys are defined in camel case as this is what we get from the Objecttype API
@@ -43,7 +55,7 @@ class TargetPathsSerializer(serializers.Serializer):
     )
 
 
-class TargetPathsInputSerializer(serializers.Serializer):
+class TargetPathsInputSerializer(ObjectsAPIGroupInputSerializer):
     objecttype_url = serializers.URLField(
         label=_("objecttype url"), help_text=("The URL of the objecttype.")
     )
