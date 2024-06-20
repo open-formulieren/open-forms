@@ -17,6 +17,7 @@ from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from ..registration_variables import PaymentAmount
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
 
@@ -521,3 +522,18 @@ class V2HandlerTests(TestCase):
 
         record_data = object_data["record"]["data"]
         self.assertEqual(record_data["cosign_date"], None)
+
+    @tag("utrecht-243", "gh-4425")
+    def test_payment_variable_without_any_payment_attempts(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__payment_backend="demo",
+            form__product__price=10,
+        )
+        assert not submission.payments.exists()
+        assert submission.price == 10
+        variable = PaymentAmount("dummy")
+
+        value = variable.get_initial_value(submission=submission)
+
+        self.assertEqual(value, 10.0)
