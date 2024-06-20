@@ -1,5 +1,5 @@
 import {useArgs} from '@storybook/preview-api';
-import {expect, fn, userEvent, within} from '@storybook/test';
+import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import Field from 'components/admin/forms/Field';
@@ -198,7 +198,9 @@ export const AutoSelectApiGroup = {
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
 
-    expect(canvas.getByLabelText('Objects API group')).toHaveValue('1');
+    await waitFor(() => {
+      expect(canvas.getByLabelText('Objects API group')).toHaveValue('1');
+    });
   },
 };
 
