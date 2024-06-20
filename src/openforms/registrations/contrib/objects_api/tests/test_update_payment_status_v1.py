@@ -32,6 +32,8 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             registration_result={
                 "url": "https://objecten.nl/api/v1/objects/111-222-333"
             },
+            form__payment_backend="demo",
+            form__product__price=10.01,
         )
         SubmissionPaymentFactory.create(
             submission=submission,
@@ -101,6 +103,8 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             registration_result={
                 "url": "https://objecten.nl/api/v1/objects/111-222-333"
             },
+            form__payment_backend="demo",
+            form__product__price=10,
         )
         SubmissionPaymentFactory.create(
             submission=submission,

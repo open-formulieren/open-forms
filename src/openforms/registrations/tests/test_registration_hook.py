@@ -5,7 +5,7 @@ Test the registration hook on submissions.
 from datetime import timedelta
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -17,6 +17,7 @@ from zgw_consumers.models import Service
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import FormRegistrationBackend
 from openforms.logging.models import TimelineLogProxy
+from openforms.payments.constants import PaymentStatus
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -351,6 +352,32 @@ class RegistrationHookTests(TestCase):
         submission.refresh_from_db()
 
         self.assertEqual(submission.registration_status, RegistrationStatuses.success)
+
+    @tag("gh-4425")
+    def test_registration_hook_with_failed_and_completed_payments(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            with_public_registration_reference=True,
+            with_failed_payment=True,
+            with_completed_payment=True,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["registration@test.nl"]},
+        )
+        assert submission.payments.count() == 2
+        with patch(
+            "openforms.registrations.tasks.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(wait_for_payment_to_register=True),
+        ):
+            register_submission(
+                submission.id, str(PostSubmissionEvents.on_payment_complete)
+            )
+
+        registered_payments = submission.payments.filter(
+            status=PaymentStatus.registered
+        )
+        self.assertEqual(registered_payments.count(), 1)
+        failed_payments = submission.payments.filter(status=PaymentStatus.failed)
+        self.assertEqual(failed_payments.count(), 1)
 
 
 class NumRegistrationsTest(TestCase):

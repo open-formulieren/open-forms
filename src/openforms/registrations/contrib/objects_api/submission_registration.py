@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import contextmanager
 from datetime import date, datetime
+from decimal import Decimal
 from typing import Any, Generic, Iterator, TypeVar, cast
 
 from django.db.models import F
@@ -272,9 +273,11 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
     @staticmethod
     def get_payment_context_data(submission: Submission) -> dict[str, Any]:
+        price = submission.price
+        amount = Decimal(price).quantize(Decimal("0.01")) if price is not None else 0
         return {
             "completed": submission.payment_user_has_paid,
-            "amount": str(submission.payments.sum_amount()),
+            "amount": str(amount),
             "public_order_ids": submission.payments.get_completed_public_order_ids(),
         }
 

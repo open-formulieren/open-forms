@@ -11,7 +11,6 @@ from rest_framework.exceptions import ValidationError
 from openforms.celery import app
 from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
-from openforms.payments.constants import PaymentStatus
 from openforms.submissions.constants import PostSubmissionEvents, RegistrationStatuses
 from openforms.submissions.models import Submission
 from openforms.submissions.public_references import set_submission_reference
@@ -296,7 +295,7 @@ def register_submission(submission_id: int, event: PostSubmissionEvents | str) -
         config.wait_for_payment_to_register
         and event == PostSubmissionEvents.on_payment_complete
     ):
-        submission.payments.update(status=PaymentStatus.registered)
+        submission.payments.mark_registered()
 
     submission.save_registration_status(RegistrationStatuses.success, result or {})
     logevent.registration_success(submission, plugin)

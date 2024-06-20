@@ -73,25 +73,35 @@ class EscapeHTMLTests(TestCase):
                 self.assertIs(result, sample)
 
     def test_render_to_json_large_numbers(self):
-        payment = SubmissionPaymentFactory.create(
-            amount=1_000,
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__payment_backend="demo",
+            form__product__price=1_000,
         )
+        assert submission.price == 1_000
 
-        context_data = ObjectsAPIV1Handler.get_payment_context_data(payment.submission)
+        context_data = ObjectsAPIV1Handler.get_payment_context_data(submission)
 
         self.assertEqual("1000.00", context_data["amount"])
 
     def test_render_to_json_many_decimal_places(self):
-        payment = SubmissionPaymentFactory.create(
-            amount=3.1415926535,
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__payment_backend="demo",
+            form__product__price=3.1415926535,
         )
+        assert submission.price == 3.1415926535
 
-        context_data = ObjectsAPIV1Handler.get_payment_context_data(payment.submission)
+        context_data = ObjectsAPIV1Handler.get_payment_context_data(submission)
 
         self.assertEqual("3.14", context_data["amount"])
 
     def test_multiple_public_order_ids(self):
-        submission = SubmissionFactory.create(with_public_registration_reference=True)
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            form__payment_backend="demo",
+            form__product__price=20,
+        )
         payment1, payment2 = SubmissionPaymentFactory.create_batch(
             2, submission=submission, status=PaymentStatus.completed, amount=10
         )

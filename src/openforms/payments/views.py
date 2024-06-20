@@ -384,6 +384,7 @@ class PaymentLinkView(DetailView):
             )
 
             info = plugin.start_payment(self.request, payment)
+            logevent.payment_flow_start(payment, plugin, from_email=True)
 
             context["url"] = info.url
             context["method"] = info.type.upper()
