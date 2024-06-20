@@ -15,7 +15,7 @@ from pathlib import Path
 
 from django.test import SimpleTestCase
 
-from digid_eherkenning.choices import DigiDAssuranceLevels
+from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from jsonschema import ValidationError, Validator
 from jsonschema.validators import validator_for
 
@@ -79,6 +79,27 @@ class AuthContextDataTests(SimpleTestCase):
             mandate_context={
                 "services": [{"id": "cd9baded-ac37-4650-a607-c01b7ceabf20"}]
             },
+        )
+
+        auth_context = auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+
+    def test_plain_eherkenning_auth(self):
+        auth_info = AuthInfo(
+            submission=SubmissionFactory.build(),
+            plugin="dummy",
+            attribute=AuthAttribute.kvk,
+            value="90002768",
+            attribute_hashed=False,
+            loa=AssuranceLevels.substantial,
+            legal_subject_identifier_type="",
+            legal_subject_identifier_value="",
+            acting_subject_identifier_type=ActingSubjectIdentifierType.opaque,
+            acting_subject_identifier_value=(
+                "4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018"
+                "@2D8FF1EF10279BC2643F376D89835151"
+            ),
         )
 
         auth_context = auth_info.to_auth_context_data()

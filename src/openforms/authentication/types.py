@@ -32,3 +32,30 @@ class DigiDMandate(TypedDict):
 class DigiDMachtigenContext(DigiDContext):
     representee: DigiDEntity
     mandate: DigiDMandate
+
+
+class EHerkenningLegalSubject(TypedDict):
+    identifierType: Literal["kvkNummer"]
+    identifier: str
+
+
+class EHerkenningActingSubject(TypedDict):
+    identifierType: Literal["opaque"]
+    identifier: str
+
+
+class EHerkenningAuthorizee(TypedDict):
+    legalSubject: EHerkenningLegalSubject
+    actingSubject: EHerkenningActingSubject
+
+
+class EHerkenningContext(TypedDict):
+    source: Literal["eherkenning"]
+    levelOfAssurance: Literal[
+        "urn:etoegang:core:assurance-class:loa1",
+        "urn:etoegang:core:assurance-class:loa2",
+        "urn:etoegang:core:assurance-class:loa2plus",
+        "urn:etoegang:core:assurance-class:loa3",
+        "urn:etoegang:core:assurance-class:loa4",
+    ]
+    authorizee: EHerkenningAuthorizee
