@@ -10,10 +10,10 @@ import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
 
 // WARNING
-// The `render*` functions will mutate args, meaning interactions can't be run twice
+// The `render` function will mutate args, meaning interactions can't be run twice
 // Be sure to refresh the page and remove the args in the query parameters
 
-const renderMultipleGroups = ({index, label, name}) => {
+const render = ({apiGroups}) => {
   const [{formData}, updateArgs] = useArgs();
   const onChange = newValues => {
     updateArgs({formData: newValues});
@@ -22,49 +22,17 @@ const renderMultipleGroups = ({index, label, name}) => {
   return (
     <Fieldset>
       <FormRow>
-        <Field name={name} label={label}>
+        <Field name="dummy" label="">
           <ObjectsApiOptionsFormFields
-            index={index}
-            name={name}
+            index={0}
+            name="dummy"
             schema={{
               type: 'object',
               properties: {
                 objectsApiGroup: {
                   type: 'integer',
-                  enum: [1, 2],
-                  enumNames: ['Objects API group 1', 'Objects API group 2'],
-                },
-              },
-            }}
-            formData={formData}
-            onChange={onChange}
-          />
-        </Field>
-      </FormRow>
-    </Fieldset>
-  );
-};
-
-const renderSingleGroup = ({index, label, name}) => {
-  const [{formData}, updateArgs] = useArgs();
-  const onChange = newValues => {
-    updateArgs({formData: newValues});
-  };
-
-  return (
-    <Fieldset>
-      <FormRow>
-        <Field name={name} label={label}>
-          <ObjectsApiOptionsFormFields
-            index={index}
-            name={name}
-            schema={{
-              type: 'object',
-              properties: {
-                objectsApiGroup: {
-                  type: 'integer',
-                  enum: [1],
-                  enumNames: ['Single Objects API group'],
+                  enum: apiGroups.map(group => group[0]),
+                  enumNames: apiGroups.map(group => group[1]),
                 },
               },
             }}
@@ -80,8 +48,12 @@ const renderSingleGroup = ({index, label, name}) => {
 export default {
   title: 'Form design/Registration/Objects API',
   decorators: [FormDecorator],
-  render: renderMultipleGroups,
+  render,
   args: {
+    apiGroups: [
+      [1, 'Objects API group 1'],
+      [2, 'Objects API group 2'],
+    ],
     formData: {},
   },
   parameters: {
@@ -216,7 +188,9 @@ export const SwitchToV2NonExisting = {
 };
 
 export const AutoSelectApiGroup = {
-  render: renderSingleGroup,
+  args: {
+    apiGroups: [[1, 'Single Objects API group']],
+  },
   play: async ({canvasElement}) => {
     window.confirm = fn(() => true);
     const canvas = within(canvasElement);
