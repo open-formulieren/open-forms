@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, List
 
 from django.db import IntegrityError, models, transaction
-from django.db.models import Max, Sum
+from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
 
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -63,8 +63,9 @@ class SubmissionPaymentManager(models.Manager):
 
 
 class SubmissionPaymentQuerySet(models.QuerySet):
-    def sum_amount(self) -> Decimal:
-        return self.aggregate(sum_amount=Sum("amount"))["sum_amount"] or Decimal("0")
+    def mark_registered(self):
+        qs = self.filter(status=PaymentStatus.completed)
+        return qs.update(status=PaymentStatus.registered)
 
     def get_completed_public_order_ids(self) -> List[int]:
         return list(
