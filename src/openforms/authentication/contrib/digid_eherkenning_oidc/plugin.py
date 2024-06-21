@@ -179,8 +179,25 @@ class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims]):
         }
 
 
+class EHClaims(TypedDict):
+    """
+    Processed EH claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.EHerkenningConfig.CLAIMS_CONFIGURATION`
+    for the source of this structure.
+    """
+
+    identifier_type_claim: NotRequired[str]
+    legal_subject_claim: str
+    acting_subject_claim: str
+    branch_number_claim: NotRequired[str]
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+
+
 @register("eherkenning_oidc")
-class eHerkenningOIDCAuthentication(OIDCAuthentication):
+class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     session_key = "eherkenning_oidc:kvk"
@@ -192,6 +209,18 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication):
 
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
+
+    def transform_claims(self, normalized_claims: EHClaims) -> FormAuth:
+        return {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": normalized_claims["legal_subject_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+            "acting_subject_identifier_type": "opaque",
+            "acting_subject_identifier_value": normalized_claims[
+                "acting_subject_claim"
+            ],
+        }
 
 
 @register("digid_machtigen_oidc")

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from django.test import override_settings
 
-from digid_eherkenning.choices import DigiDAssuranceLevels
+from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 from django_webtest import WebTest
 
 from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL, mock_oidc_db_config
@@ -35,6 +35,8 @@ mock_eherkenning_config = partial(
     legal_subject_claim=["legalSubjectID"],
     acting_subject_claim=["actingSubjectID"],
     branch_number_claim=["urn:etoegang:1.9:ServiceRestriction:Vestigingsnr"],
+    loa_claim=["authsp_level"],
+    default_loa=AssuranceLevels.low_plus,
 )
 
 mock_digid_machtigen_config = partial(
