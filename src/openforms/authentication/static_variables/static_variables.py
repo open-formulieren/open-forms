@@ -9,11 +9,10 @@ from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.registry import register_static_variable
 
 from ..constants import AuthAttribute
+from ..typing import FormAuth
 
 if TYPE_CHECKING:
     from openforms.submissions.models import Submission
-
-    from ..utils import FormAuth
 
 
 @register_static_variable("auth")
@@ -25,12 +24,11 @@ class Auth(BaseStaticVariable):
         if not submission or not submission.is_authenticated:
             return None
 
-        from ..utils import FormAuth
-
         auth_data = FormAuth(
             plugin=submission.auth_info.plugin,
             attribute=submission.auth_info.attribute,
             value=submission.auth_info.value,
+            # XXX: use to_auth_context_data_method() here? Or make it a separate var?
             # TODO what is the structure of the data in the machtigen field?
             machtigen=submission.auth_info.machtigen,
         )

@@ -101,8 +101,10 @@ def set_auth_attribute_on_session(
     )
     logevent.submission_auth(
         instance,
-        delegated=registrator_subject
-        and registrator_subject.get("skipped_subject_info") is None,
+        delegated=bool(
+            registrator_subject
+            and registrator_subject.get("skipped_subject_info") is None
+        ),
         user=user,
     )
 
