@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, Protocol, TypeVar
+from typing import Any, ClassVar, Generic, Protocol, TypedDict, TypeVar
 
 from django.http import (
     HttpRequest,
@@ -10,10 +10,12 @@ from django.http import (
 )
 from django.utils.translation import gettext_lazy as _
 
-from digid_eherkenning.oidc.models import OpenIDConnectBaseConfig
+from digid_eherkenning.oidc.models import BaseConfig
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
+from typing_extensions import NotRequired
 
+from openforms.authentication.typing import FormAuth
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
@@ -42,7 +44,7 @@ from .views import (
 OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
 
 
-def get_config_to_plugin() -> dict[type[OpenIDConnectBaseConfig], OIDCAuthentication]:
+def get_config_to_plugin() -> dict[type[BaseConfig], OIDCAuthentication]:
     """
     Get the mapping of config class to plugin identifier from the registry.
     """
@@ -59,14 +61,16 @@ class AuthInit(Protocol):
     ) -> HttpResponseBase: ...
 
 
-T = TypeVar("T", bound=str | JSONObject)
+# can't bind it to JSONObject because TypedDict and dict[str, ...] are not considered
+# assignable... :(
+T = TypeVar("T")
 
 
 class OIDCAuthentication(Generic[T], BasePlugin):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""
-    config_class: ClassVar[type[OpenIDConnectBaseConfig]]
+    config_class: ClassVar[type[BaseConfig]]
     init_view: ClassVar[AuthInit]
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
@@ -103,9 +107,8 @@ class OIDCAuthentication(Generic[T], BasePlugin):
             "fields": {},
         }
 
-    def translate_auth_data(self, session_value: T) -> tuple[str, None | JSONObject]:
-        assert isinstance(session_value, str)
-        return session_value, None
+    def transform_claims(self, normalized_claims: T) -> FormAuth:
+        raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
     def handle_return(self, request: HttpRequest, form: Form):
         """
@@ -115,23 +118,17 @@ class OIDCAuthentication(Generic[T], BasePlugin):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
 
-        session_value: T | None = request.session.get(self.session_key)
-        if session_value and CO_SIGN_PARAMETER not in request.GET:
-            auth_value, machtigen_data = self.translate_auth_data(session_value)
-            _machtigen_data = {"machtigen": machtigen_data} if machtigen_data else {}
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": auth_value,
-                **_machtigen_data,
-            }
+        normalized_claims: T | None = request.session.get(self.session_key)
+        if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
+            form_auth = self.transform_claims(normalized_claims)
+            request.session[FORM_AUTH_SESSION_KEY] = form_auth
 
         return HttpResponseRedirect(form_url)
 
     def logout(self, request: HttpRequest):
         if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
             config = self.config_class.get_solo()
-            assert isinstance(config, OpenIDConnectBaseConfig)
+            assert isinstance(config, BaseConfig)
             do_op_logout(config, id_token)
 
         keys_to_delete = (
@@ -145,8 +142,22 @@ class OIDCAuthentication(Generic[T], BasePlugin):
                 del request.session[key]
 
 
+class DigiDClaims(TypedDict):
+    """
+    Processed DigiD claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.DigiDConfig.CLAIMS_CONFIGURATION` for the
+    source of this structure.
+    """
+
+    bsn_claim: str
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+
+
 @register("digid_oidc")
-class DigiDOIDCAuthentication(OIDCAuthentication[str]):
+class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_oidc:bsn"
@@ -159,9 +170,17 @@ class DigiDOIDCAuthentication(OIDCAuthentication[str]):
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
+    def transform_claims(self, normalized_claims: DigiDClaims) -> FormAuth:
+        return {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": normalized_claims["bsn_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+        }
+
 
 @register("eherkenning_oidc")
-class eHerkenningOIDCAuthentication(OIDCAuthentication[str]):
+class eHerkenningOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     session_key = "eherkenning_oidc:kvk"
@@ -176,7 +195,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[str]):
 
 
 @register("digid_machtigen_oidc")
-class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[JSONObject]):
+class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_machtigen_oidc:machtigen"
@@ -184,7 +203,7 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[JSONObject]):
     init_view = staticmethod(digid_machtigen_init)
     is_for_gemachtigde = True
 
-    def translate_auth_data(self, session_value: JSONObject) -> tuple[str, JSONObject]:
+    def transform_claims(self, session_value: JSONObject) -> tuple[str, JSONObject]:
         # these keys are set by the authentication backend
         bsn_vertegenwoordigde = session_value.get("representee")
         assert isinstance(bsn_vertegenwoordigde, str)
@@ -201,7 +220,7 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[JSONObject]):
 
 
 @register("eherkenning_bewindvoering_oidc")
-class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication[JSONObject]):
+class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     session_key = "eherkenning_bewindvoering_oidc:machtigen"
@@ -209,7 +228,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication[JSONObject])
     init_view = staticmethod(eherkenning_bewindvoering_init)
     is_for_gemachtigde = True
 
-    def translate_auth_data(self, session_value: JSONObject) -> tuple[str, JSONObject]:
+    def transform_claims(self, session_value: JSONObject) -> tuple[str, JSONObject]:
         # these keys are set by the authentication backend
         bsn_vertegenwoordigde = session_value.get("representee")
         assert isinstance(bsn_vertegenwoordigde, str)

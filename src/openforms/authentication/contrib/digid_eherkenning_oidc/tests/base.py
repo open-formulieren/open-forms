@@ -3,6 +3,7 @@ from pathlib import Path
 
 from django.test import override_settings
 
+from digid_eherkenning.choices import DigiDAssuranceLevels
 from django_webtest import WebTest
 
 from openforms.utils.tests.keycloak import KEYCLOAK_BASE_URL, mock_oidc_db_config
@@ -22,6 +23,8 @@ mock_digid_config = partial(
     mock_config,
     model="OFDigiDConfig",
     oidc_rp_scopes_list=["openid", "bsn"],
+    loa_claim=["authsp_level"],
+    default_loa=DigiDAssuranceLevels.middle,
 )
 
 mock_eherkenning_config = partial(

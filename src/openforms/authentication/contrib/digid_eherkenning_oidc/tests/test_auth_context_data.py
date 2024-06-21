@@ -66,6 +66,6 @@ class DigiDAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
         self.assertValidContext(auth_context)
         self.assertEqual(auth_context["source"], "digid")
         self.assertEqual(
-            auth_context["authorizee"],
+            auth_context["authorizee"]["legalSubject"],
             {"identifierType": "bsn", "identifier": "000000000"},
         )

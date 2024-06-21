@@ -10,7 +10,6 @@ from digid_eherkenning.oidc.models import (
     EHerkenningBewindvoeringConfig,
     EHerkenningConfig,
 )
-from mozilla_django_oidc_db.typing import ClaimPath
 
 
 def get_callback_view(self):
@@ -56,14 +55,6 @@ class OFDigiDMachtigenConfig(DigiDMachtigenConfig):
             return "digid_machtigen_oidc:callback"
         return "oidc_authentication_callback"
 
-    @property
-    def mandate_claims(self) -> dict[str, ClaimPath]:
-        return {
-            "representee": self.representee_bsn_claim,
-            "authorizee": self.authorizee_bsn_claim,
-            "service_id": self.mandate_service_id_claim,
-        }
-
 
 class OFEHerkenningConfig(EHerkenningConfig):
     class Meta:
@@ -101,15 +92,3 @@ class OFEHerkenningBewindvoeringConfig(EHerkenningBewindvoeringConfig):
             )
             return "eherkenning_bewindvoering_oidc:callback"
         return "oidc_authentication_callback"
-
-    @property
-    def mandate_claims(self) -> dict[str, ClaimPath]:
-        return {
-            "representee": self.representee_claim,
-            # "authorizee_legal_subject_type": self.identifier_type_claim,
-            "authorizee_legal_subject": self.legal_subject_claim,
-            "authorizee_acting_subject": self.acting_subject_claim,
-            # "authorizee_branch_number": self.branch_number_claim,
-            # "service_id": self.mandate_service_id_claim,
-            # "service_uuid": self.mandate_service_uuid_claim,
-        }
