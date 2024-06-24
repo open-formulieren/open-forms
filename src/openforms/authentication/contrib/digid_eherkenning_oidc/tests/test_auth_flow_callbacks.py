@@ -21,6 +21,7 @@ from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
+from openforms.utils.tests.feature_flags import enable_feature_flag
 from openforms.utils.tests.keycloak import keycloak_login
 
 from .base import (
@@ -52,7 +53,7 @@ class DigiDCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-    @mock_digid_config(bsn_claim="absent-claim")
+    @mock_digid_config(bsn_claim=["absent-claim"])
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backends=["digid_oidc"])
         url_helper = URLsHelper(form=form)
@@ -155,7 +156,7 @@ class EHerkenningCallbackTests(IntegrationTestsBase):
 
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
-    @mock_eherkenning_config(legal_subject_claim="absent-claim")
+    @mock_eherkenning_config(legal_subject_claim=["absent-claim"])
     def test_failing_claim_verification(self):
         form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
         url_helper = URLsHelper(form=form)
@@ -265,10 +266,35 @@ class DigiDMachtigenCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
     @mock_digid_machtigen_config(
-        representee_bsn_claim="absent-claim",
-        authorizee_bsn_claim="absent-claim",
+        representee_bsn_claim=["absent-claim"],
+        authorizee_bsn_claim=["absent-claim"],
     )
     def test_failing_claim_verification(self):
+        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
+        url_helper = URLsHelper(form=form)
+        start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
+        start_response = self.app.get(start_url)
+        # simulate login to Keycloak
+        redirect_uri = keycloak_login(
+            start_response["Location"],
+            username="digid-machtigen",
+            password="digid-machtigen",
+        )
+
+        # complete the login flow on our end
+        callback_response = self.app.get(redirect_uri, auto_follow=True)
+
+        # XXX: shouldn't this be "digid" so that the correct error message is rendered?
+        # Query: ?_digid-message=error
+        expected_url = furl(url_helper.frontend_start).add(
+            {BACKEND_OUTAGE_RESPONSE_PARAMETER: "digid_machtigen_oidc"}
+        )
+        self.assertEqual(callback_response.request.url, str(expected_url))
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.app.session)
+
+    @enable_feature_flag("DIGID_EHERKENNING_OIDC_STRICT")
+    @mock_digid_machtigen_config(mandate_service_id_claim=["absent-claim"])
+    def test_failing_claim_verification_strict_mode(self):
         form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
         url_helper = URLsHelper(form=form)
         start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
@@ -383,8 +409,8 @@ class EHerkenningBewindvoeringCallbackTests(IntegrationTestsBase):
         self.assertEqual(callback_response.request.url, url_helper.frontend_start)
 
     @mock_eherkenning_bewindvoering_config(
-        legal_subject_claim="absent-claim",
-        representee_claim="absent-claim",
+        legal_subject_claim=["absent-claim"],
+        representee_claim=["absent-claim"],
     )
     def test_failing_claim_verification(self):
         form = FormFactory.create(
