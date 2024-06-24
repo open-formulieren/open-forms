@@ -71,10 +71,10 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         choices=VersionChoices.choices,
         default=1,
     )
-    objecttype = serializers.URLField(
+    objecttype = serializers.UUIDField(
         label=_("objecttype"),
         help_text=_(
-            "URL that points to the ProductAanvraag objecttype in the Objecttypes API. "
+            "UUID of the ProductAanvraag objecttype in the Objecttypes API. "
             "The objecttype should have the following three attributes: "
             "1) submission_id; "
             "2) type (the type of productaanvraag); "
@@ -244,7 +244,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 (
                     objecttype
                     for objecttype in objecttypes
-                    if objecttype["url"] == attrs["objecttype"]
+                    if objecttype["uuid"] == str(attrs["objecttype"])
                 ),
                 None,
             )
