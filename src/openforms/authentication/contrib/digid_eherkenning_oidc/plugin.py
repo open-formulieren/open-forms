@@ -308,6 +308,8 @@ class EHerkenningBewindvoeringOIDCAuthentication(
     OIDCAuthentication[EHBewindvoeringClaims]
 ):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
+    # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been
+    # told)
     provides_auth = AuthAttribute.bsn
     session_key = "eherkenning_bewindvoering_oidc:machtigen"
     config_class = OFEHerkenningBewindvoeringConfig
