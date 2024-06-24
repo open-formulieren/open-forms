@@ -1,11 +1,11 @@
 # Certificates
 
-The certificates in this directory are self-signed and used for testing Open Forms
-certificate validation. **Do NOT use these in any real deployments.**
+The certificates in this directory are self-signed and used for testing Open Forms certificate
+validation. **Do NOT use these in any real deployments.**
 
-Open Forms has a mode where you can specify additional (root) certificates to trust,
-in addition to the [`certifi.where()`][certifi] certificate bundle. These certificates
-are used to (automatically) test this.
+Open Forms has a mode where you can specify additional (root) certificates to trust, in addition to
+the [`certifi.where()`][certifi] certificate bundle. These certificates are used to (automatically)
+test this.
 
 ## Testing
 
@@ -15,8 +15,8 @@ In the root of the repository, run:
 docker-compose -f docker-compose.ci.yml up mock-endpoints.local
 ```
 
-Now, navigate your browser (or any other HTTP client) to `https://localhost:9001` and
-verify that the self-signed certificates are used.
+Now, navigate your browser (or any other HTTP client) to `https://localhost:9001` and verify that
+the self-signed certificates are used.
 
 ## Generate certificates
 
@@ -25,8 +25,16 @@ The certificates are generated following an [Azure guide][certicate guide].
 ```bash
 # root certificate
 openssl ecparam -out openforms.key -name prime256v1 -genkey
-openssl req -new -sha256 -key openforms.key -out openforms.csr
-openssl x509 -req -sha256 -days 1095 -in openforms.csr -signkey openforms.key -out openforms.crt
+openssl req -new -sha256 -key openforms.key -out openforms.csr -config openforms.cnf
+openssl x509 \
+    -req \
+    -sha256 \
+    -days 1095 \
+    -in openforms.csr \
+    -signkey openforms.key \
+    -out openforms.crt \
+    -extensions v3_ca \
+    -extfile openforms.cnf
 
 # server certificate
 openssl ecparam -out mocks.key -name prime256v1 -genkey
@@ -55,4 +63,5 @@ openssl x509 \
 Note that the certificate expires after about 3 years.
 
 [certifi]: https://pypi.org/project/certifi/
-[certificate guide]: https://docs.microsoft.com/en-us/azure/application-gateway/self-signed-certificates
+[certificate guide]:
+  https://docs.microsoft.com/en-us/azure/application-gateway/self-signed-certificates
