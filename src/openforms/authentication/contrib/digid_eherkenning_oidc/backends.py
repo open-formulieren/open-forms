@@ -8,6 +8,7 @@ from digid_eherkenning.oidc.claims import process_claims
 from digid_eherkenning.oidc.models import BaseConfig
 from flags.state import flag_enabled
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
+from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from typing_extensions import override
 
@@ -22,6 +23,8 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
     """
     A backend specialised to the digid-eherkenning-generics subclassed model.
     """
+
+    OF_OIDCDB_REQUIRED_CLAIMS = dynamic_setting[list[str]](default=[])
 
     @override
     def _check_candidate_backend(self) -> bool:
@@ -80,7 +83,7 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         # process_claims in strict mode raises ValueError if *required* claims are
         # missing
         try:
-            self._process_claims(claims)
+            processed_claims = self._process_claims(claims)
         except ValueError as exc:
             logger.error(
                 "Claims are incomplete",
@@ -88,6 +91,16 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
                 extra={"claims": obfuscated_claims},
             )
             return False
+
+        # even in non-strict mode, some claims are a hard requirement
+        for claim in self.OF_OIDCDB_REQUIRED_CLAIMS:
+            if claim not in processed_claims:
+                logger.error(
+                    "Claims are incomplete - claim for '%s' is missing",
+                    claim,
+                    extra={"claims": obfuscated_claims},
+                )
+                return False
 
         return True
 

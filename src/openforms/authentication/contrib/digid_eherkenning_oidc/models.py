@@ -25,6 +25,7 @@ class OFDigiDConfig(DigiDConfig):
         verbose_name_plural = _("DigiD (OIDC)")
 
     get_callback_view = get_callback_view
+    of_oidcdb_required_claims = ["bsn_claim"]
 
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
@@ -44,6 +45,7 @@ class OFDigiDMachtigenConfig(DigiDMachtigenConfig):
         verbose_name_plural = _("DigiD Machtigen (OIDC)")
 
     get_callback_view = get_callback_view
+    of_oidcdb_required_claims = ["representee_bsn_claim", "authorizee_bsn_claim"]
 
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
@@ -63,6 +65,7 @@ class OFEHerkenningConfig(EHerkenningConfig):
         verbose_name_plural = _("eHerkenning (OIDC)")
 
     get_callback_view = get_callback_view
+    of_oidcdb_required_claims = ["legal_subject_claim"]
 
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
@@ -82,6 +85,7 @@ class OFEHerkenningBewindvoeringConfig(EHerkenningBewindvoeringConfig):
         verbose_name_plural = _("eHerkenning bewindvoering (OIDC)")
 
     get_callback_view = get_callback_view
+    of_oidcdb_required_claims = ["legal_subject_claim", "representee_claim"]
 
     @classproperty
     def oidc_authentication_callback_url(cls) -> str:  # type: ignore
