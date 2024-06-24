@@ -11,6 +11,8 @@ These tests use VCR. When re-recording, making sure to:
 to bring up a Keycloak instance.
 """
 
+import warnings
+
 from django.test import override_settings
 from django.urls import reverse
 
@@ -143,6 +145,46 @@ class DigiDMachtigenAuthContextTests(
         auth_context = submission.auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
+        self.assertEqual(auth_context["source"], "digid")
+        assert "representee" in auth_context
+        self.assertEqual(
+            auth_context["representee"],
+            {"identifierType": "bsn", "identifier": "000000000"},
+        )
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {"identifierType": "bsn", "identifier": "999999999"},
+        )
+        # TODO: remove in Open Forms 3.0
+        with self.subTest("legacy structure"):
+            machtigen = submission.auth_info.machtigen
+            self.assertEqual(machtigen, {"identifier_value": "999999999"})
+
+    @mock_digid_machtigen_config(mandate_service_id_claim=["required-but-absent-claim"])
+    def test_new_required_claims_are_backwards_compatible(self):
+        """
+        Test that the legacy configuration without additional claims still works.
+
+        The extra authentication context (metadata) is required in the new flow, but
+        this data was not extracted and/or provided before, so existing incomplete
+        infrastructure should not break existing forms. At worst, we send non-compliant
+        data to the registration backend/our own database, but that should not have
+        runtime implications.
+        """
+        warnings.warn(
+            "Legacy behaviour will be removed in Open Forms 3.0", DeprecationWarning
+        )
+        self._login_and_start_form(
+            "digid_machtigen_oidc",
+            username="digid-machtigen",
+            password="digid-machtigen",
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+        # it is NOT valid according to the JSON schema (!) due to the missing service
+        # ID claim
         self.assertEqual(auth_context["source"], "digid")
         assert "representee" in auth_context
         self.assertEqual(
