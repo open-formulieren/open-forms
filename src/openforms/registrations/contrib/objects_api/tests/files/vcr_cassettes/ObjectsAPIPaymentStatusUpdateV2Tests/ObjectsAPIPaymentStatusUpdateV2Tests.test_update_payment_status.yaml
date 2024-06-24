@@ -27,8 +27,8 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8002/api/v2/objects/302d84d5-b428-4e6b-8fb5-9127a893fd5e","uuid":"302d84d5-b428-4e6b-8fb5-9127a893fd5e","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-03-22","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58","uuid":"719f033f-43ec-43a7-86c3-48d2dbcd6f58","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-06-24","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -41,7 +41,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8002/api/v2/objects/302d84d5-b428-4e6b-8fb5-9127a893fd5e
+      - http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58
       Referrer-Policy:
       - same-origin
       X-Content-Type-Options:
@@ -74,11 +74,11 @@ interactions:
       User-Agent:
       - python-requests/2.31.0
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/302d84d5-b428-4e6b-8fb5-9127a893fd5e
+    uri: http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58
   response:
     body:
-      string: '{"url":"http://localhost:8002/api/v2/objects/302d84d5-b428-4e6b-8fb5-9127a893fd5e","uuid":"302d84d5-b428-4e6b-8fb5-9127a893fd5e","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-03-22","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58","uuid":"719f033f-43ec-43a7-86c3-48d2dbcd6f58","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-06-24","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS

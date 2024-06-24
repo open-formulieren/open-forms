@@ -143,7 +143,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": "1",
                         "objecttype_version": 1,
                         "payment_status_update_json": textwrap.dedent(
                             """
@@ -221,7 +221,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": "1",
                         "objecttype_version": 1,
                     },
                 )

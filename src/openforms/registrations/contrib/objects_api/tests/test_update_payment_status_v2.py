@@ -1,5 +1,6 @@
 from pathlib import Path
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import TestCase
 from django.utils import timezone
@@ -29,6 +30,15 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
         super().setUp()
 
         self.config_group = ObjectsAPIGroupConfig.objects.create(
+            objecttypes_service=ServiceFactory.create(
+                api_root="http://objecttypes-web:8000/api/v2/",
+                api_type=APITypes.orc,
+                oas="https://example.com/",
+                header_key="Authorization",
+                # See the docker compose fixtures:
+                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+                auth_type=AuthTypes.api_key,
+            ),
             objects_service=ServiceFactory.create(
                 api_root="http://localhost:8002/api/v2/",
                 api_type=APITypes.orc,
@@ -106,7 +116,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
             "version": 2,
             "objects_api_group": self.config_group,
             # See the docker compose fixtures for more info on these values:
-            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
             "objecttype_version": 3,
             "upload_submission_csv": True,
             "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
@@ -158,6 +168,9 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
             amount=10.01,
             public_order_id="TEST-123",
         )
+
+        submission.price = 10.01
+        submission.save()
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 

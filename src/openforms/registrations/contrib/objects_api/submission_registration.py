@@ -252,6 +252,11 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                             )
                         )
 
+    def build_objecttype_url(self, options: OptionsT) -> str:
+        base_url = options["objects_api_group"].objecttypes_service.api_root
+
+        return f"{base_url}objecttypes/{options['objecttype']}"
+
     @abstractmethod
     def get_object_data(
         self,
@@ -355,7 +360,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         )
         object_data = prepare_data_for_registration(
             record_data=record_data,
-            objecttype=options["objecttype"],
+            objecttype=self.build_objecttype_url(options),
             objecttype_version=options["objecttype_version"],
         )
         object_data = apply_data_mapping(
@@ -386,7 +391,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 
         return prepare_data_for_registration(
             record_data=record_data,
-            objecttype=options["objecttype"],
+            objecttype=self.build_objecttype_url(options),
             objecttype_version=options["objecttype_version"],
         )
 
@@ -492,7 +497,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         object_data = prepare_data_for_registration(
             record_data=record_data,
-            objecttype=options["objecttype"],
+            objecttype=self.build_objecttype_url(options),
             objecttype_version=options["objecttype_version"],
         )
 
@@ -522,7 +527,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         object_data = prepare_data_for_registration(
             record_data=record_data,
-            objecttype=options["objecttype"],
+            objecttype=self.build_objecttype_url(options),
             objecttype_version=options["objecttype_version"],
         )
 

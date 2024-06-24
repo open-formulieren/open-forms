@@ -87,6 +87,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
 
         self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
@@ -149,7 +150,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         objects_form_options = dict(
             version=1,
             objects_api_group=self.objects_api_group,
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
+            objecttype="2",
             objecttype_version=2,
             productaanvraag_type="testproduct",
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
@@ -245,7 +246,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             expected_result = {
                 "url": "https://objecten.nl/api/v1/objects/1",
                 "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                "type": objects_form_options["objecttype"],
+                "type": f"https://objecttypen.nl/api/v1/objecttypes/{objects_form_options['objecttype']}",
                 "record": {
                     "index": 0,
                     "typeVersion": objects_form_options["objecttype_version"],
@@ -313,7 +314,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         objects_form_options = dict(
             version=1,
             objects_api_group=self.objects_api_group,
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
+            objecttype="2",
             objecttype_version=2,
             productaanvraag_type="testproduct",
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
@@ -434,7 +435,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             submission,
             {
                 "version": 1,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": False,
@@ -479,7 +480,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             submission,
             {
                 "version": 1,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": True,
@@ -519,7 +520,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         step_slug = submission_step.form_step.slug
         objects_form_options = dict(
             version=1,
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
+            objecttype="1",
             objecttype_version=1,
             objects_api_group=self.objects_api_group,
             upload_submission_csv=False,
@@ -630,7 +631,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
             },
         )
@@ -753,7 +754,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
             },
         )
@@ -912,7 +913,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
             },
         )
@@ -1039,7 +1040,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
             },
         )
@@ -1158,7 +1159,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
             },
         )
@@ -1237,7 +1238,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
                 "content_json": content_template,
                 "upload_submission_csv": False,
@@ -1305,7 +1306,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": "1",
                 "objecttype_version": 1,
             },
         )
@@ -1428,6 +1429,14 @@ class V1HandlerTests(TestCase):
     to the Objects API.
     """
 
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+
+        cls.group = ObjectsAPIGroupConfigFactory(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v2/",
+        )
+
     def test_cosign_info_available(self):
         now = timezone.now().isoformat()
 
@@ -1452,7 +1461,8 @@ class V1HandlerTests(TestCase):
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v2_options: RegistrationOptionsV1 = {
+        v1_options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
             "objecttype": "-dummy-",
             "objecttype_version": 1,
@@ -1470,7 +1480,7 @@ class V1HandlerTests(TestCase):
         }
         handler = ObjectsAPIV1Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        object_data = handler.get_object_data(submission=submission, options=v1_options)
 
         record_data = object_data["record"]["data"]
 
@@ -1496,7 +1506,8 @@ class V1HandlerTests(TestCase):
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v2_options: RegistrationOptionsV1 = {
+        v1_options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
             "objecttype": "-dummy-",
             "objecttype_version": 1,
@@ -1516,7 +1527,7 @@ class V1HandlerTests(TestCase):
         }
         handler = ObjectsAPIV1Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        object_data = handler.get_object_data(submission=submission, options=v1_options)
 
         self.assertEqual(object_data["record"]["data"], {})
 
@@ -1543,7 +1554,8 @@ class V1HandlerTests(TestCase):
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v2_options: RegistrationOptionsV1 = {
+        v1_options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
             "objecttype": "-dummy-",
             "objecttype_version": 1,
@@ -1558,7 +1570,7 @@ class V1HandlerTests(TestCase):
         }
         handler = ObjectsAPIV1Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        object_data = handler.get_object_data(submission=submission, options=v1_options)
 
         record_data = object_data["record"]["data"]
         self.assertEqual(record_data["cosign_date"], "")
@@ -1574,6 +1586,7 @@ class V1HandlerTests(TestCase):
         assert submission.price == 10
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
             "objecttype": "-dummy-",
             "objecttype_version": 1,

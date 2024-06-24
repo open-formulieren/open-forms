@@ -40,6 +40,7 @@ class JSONTemplatingTests(TestCase):
             productaanvraag_type="terugbelnotitie",
         )
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
@@ -64,7 +65,7 @@ class JSONTemplatingTests(TestCase):
                 {
                     "version": 1,
                     "objects_api_group": config_group,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": "1",
                     "objecttype_version": 300,
                     "informatieobjecttype_submission_report": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                     "informatieobjecttype_attachment": "https://catalogi.nl/api/v1/informatieobjecttypen/2",
@@ -129,6 +130,7 @@ class JSONTemplatingTests(TestCase):
             ),
         )
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
@@ -173,7 +175,7 @@ class JSONTemplatingTests(TestCase):
                 {
                     "version": 1,
                     "objects_api_group": config_group,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": "1",
                     "objecttype_version": 300,
                     "productaanvraag_type": "tralala-type",
                     "upload_submission_csv": True,
@@ -250,6 +252,7 @@ class JSONTemplatingTests(TestCase):
         )
 
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
@@ -274,7 +277,7 @@ class JSONTemplatingTests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": "1",
                         "objecttype_version": 300,
                     },
                 )
@@ -285,6 +288,7 @@ class JSONTemplatingTests(TestCase):
             content_json='{"key": "value",}',  # Invalid JSON,
         )
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
@@ -306,7 +310,7 @@ class JSONTemplatingTests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": "1",
                         "objecttype_version": 300,
                     },
                 )
@@ -358,7 +362,9 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
         config = ObjectsAPIConfig(
             content_json="{% json_summary %}",
         )
-        config_group = ObjectsAPIGroupConfigFactory.create()
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         prefix = "openforms.registrations.contrib.objects_api"
 
@@ -377,7 +383,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                 {
                     "version": 1,
                     "objects_api_group": config_group,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": "1",
                     "objecttype_version": 300,
                     # skip document uploads
                     "informatieobjecttype_submission_report": "",
@@ -463,7 +469,9 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             submitted_data={"radio": "2"},
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
-        config = ObjectsAPIGroupConfigFactory.create()
+        config = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         with (
@@ -479,7 +487,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                 {
                     "objects_api_group": config,
                     "version": 1,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": "1",
                     "objecttype_version": 300,
                     # skip document uploads
                     "informatieobjecttype_submission_report": "",
