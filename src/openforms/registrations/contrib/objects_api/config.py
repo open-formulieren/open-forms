@@ -71,7 +71,8 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         choices=VersionChoices.choices,
         default=1,
     )
-    objecttype = serializers.URLField(
+    # Either the URL or name should be provided:
+    objecttype_url = serializers.URLField(
         label=_("objecttype"),
         help_text=_(
             "URL that points to the ProductAanvraag objecttype in the Objecttypes API. "
@@ -80,6 +81,18 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "2) type (the type of productaanvraag); "
             "3) data (the submitted form data)"
         ),
+        required=False,
+    )
+    objecttype_name = serializers.CharField(
+        label=_("objecttype"),
+        help_text=_(
+            "Name of the objecttype in the Objecttypes API. "
+            "The objecttype should have the following three attributes: "
+            "1) submission_id; "
+            "2) type (the type of productaanvraag); "
+            "3) data (the submitted form data)"
+        ),
+        required=False,
     )
     objecttype_version = serializers.IntegerField(
         label=_("objecttype version"),
@@ -174,6 +187,12 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+
+        if not ("objecttype_url" in attrs) ^ ("objecttype_name" in attrs):
+            raise ValidationError(
+                _("Either 'objecttype_url' or 'objecttype_name' should be provided.")
+            )
+
         v1_only_fields = {
             "productaanvraag_type",
             "content_json",
@@ -240,11 +259,16 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         with get_objecttypes_client(objects_api_group) as objecttypes_client:
             objecttypes = objecttypes_client.list_objecttypes()
 
+            attrs_key = (
+                "objecttype_url" if "objecttype_url" in attrs else "objecttype_name"
+            )
+            matching_key = "url" if "objecttype_url" in attrs else "name"
+
             matching_objecttype = next(
                 (
                     objecttype
                     for objecttype in objecttypes
-                    if objecttype["url"] == attrs["objecttype"]
+                    if objecttype[matching_key] == attrs[attrs_key]
                 ),
                 None,
             )
@@ -252,7 +276,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             if matching_objecttype is None:
                 raise serializers.ValidationError(
                     {
-                        "objecttype": _(
+                        attrs_key: _(
                             "The provided objecttype does not exist in the Objecttypes API."
                         )
                     },

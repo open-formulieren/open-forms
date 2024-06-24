@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
 class _BaseRegistrationOptions(TypedDict, total=False):
     objects_api_group: Required[ObjectsAPIGroupConfig]
-    objecttype: Required[str]
+    objecttype_url: str
+    objecttype_name: str
     objecttype_version: Required[int]
     informatieobjecttype_submission_report: str
     upload_submission_csv: bool
