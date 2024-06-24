@@ -15,6 +15,41 @@ flow:
 3. eHerkenning stuurt de gebruiker terug naar de OIDC omgeving, die op zijn beurt de gebruiker weer terugstuurt naar Open Formulieren
 4. De gebruiker is ingelogd en kan verder met het invullen van het formulier
 
+.. _configuration_oidc_eherkenning_claim_requirements:
+
+Claim-eisen
+===========
+
+De OpenID Connect provider moet na een succesvolle login met DigiD een aantal claims
+aanbieden aan Open Formulieren. De precieze namen van deze claims kunnen ingesteld
+worden in Open Formulieren.
+
+``name qualifier``
+    De waarde geeft aan of het bedrijf met RSIN of KVK-nummer inlogt. Indien niet
+    gegeven, dan gaat Open Formulieren uit van een KVK-nummer.
+
+``legalSubject``
+    Het KVK-nummer of RSIN van het bedrijf. Altijd verplicht.
+
+``actingSubject``
+    De (versleutelde) identificatie van de medewerker die inlogt namens het bedrijf.
+
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+
+``vestigingsNummer``
+    Identificatie van de/een vestiging van het bedrijf. Nooit verplicht. Indien niet
+    opgegeven, dan is de aanname dat het de hoofdvestiging betreft.
+
+``betrouwbaarheidsniveau``
+    Het betrouwbaarheidsniveau gebruikt tijdens het inloggen. Dit wordt vastgelegd en
+    meegestuurd tijdens het registeren van formulierinzendingen. Als de provider dit
+    niet kan aanleveren, dan kan je een standaardwaarde instellen in Open Formulieren.
+
+    Beheerders kunnen waardenvertalingen inrichten indien de provider de waarden
+    niet aanlevert zoals gedocumenteerd in de koppelvlakstandaard van Logius.
+
+.. warning:: Open Formulieren ondersteunt op dit moment enkel KVK-nummers en niet RSIN.
+
 .. _configuration_oidc_eherkenning_appgroup:
 
 Configureren van OIDC-provider

@@ -279,6 +279,16 @@ Other settings
   reasons. New installations should opt-out. If ``False``, the OIDC callback URL is
   ``/auth/oidc/callback/``, if ``True``, it is ``/org-oidc/callback/``.
 
+* ``DIGID_EHERKENNING_OIDC_STRICT``: Enable strict claim processing/validation when
+  using :ref:`configuration_authentication_oidc_digid`,
+  :ref:`configuration_authentication_oidc_eherkenning` or
+  :ref:`configuration_authentication_oidc_machtigen`. Defaults to ``False``. You can
+  also add a feature flag in the admin interface to enable this behaviour.
+
+  .. versionadded:: 2.7.0
+     A formal and more complete authentication context data model is used - existing
+     installations likely do not provide all this information yet.
+
 * ``SESSION_EXPIRE_AT_BROWSER_CLOSE``: Controls if sessions expire at browser close.
   This applies to both the session of end-users filling out forms and staff using the
   administrative interface. Enabling this forces users to log in every time they open

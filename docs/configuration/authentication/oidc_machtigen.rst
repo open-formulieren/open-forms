@@ -22,10 +22,36 @@ anders. In deze flow:
 .. _DigiD Machtigen: https://machtigen.digid.nl/
 .. _Keycloak: https://www.keycloak.org/
 
+DigiD Machtigen
+===============
+
+Claim-eisen
+-----------
+
+``BSN vertegenwoordiger``
+    Het BSN van de vertegenwoordiger die "aan de knoppen zit". Altijd verplicht.
+
+``BSN vertegenwoordigde``
+    Het BSN van de vertegenwoordigde gebruiker. Altijd verplicht.
+
+``betrouwbaarheidsniveau``
+    Het betrouwbaarheidsniveau gebruikt tijdens het inloggen. Dit wordt vastgelegd en
+    meegestuurd tijdens het registeren van formulierinzendingen. Als de provider dit
+    niet kan aanleveren, dan kan je een standaardwaarde instellen in Open Formulieren.
+
+    Beheerders kunnen waardenvertalingen inrichten indien de provider de waarden
+    niet aanlevert zoals gedocumenteerd in de koppelvlakstandaard van Logius.
+
+``Service ID``
+    Het ID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Dit komt voor de
+    provider/broker beschikbaar via Logius' DigiD Machtigen.
+
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+
 .. _configuration_oidc_digid_machtigen_appgroup:
 
-Configureren van OIDC-provider voor DigiD Machtigen
-===================================================
+Configureren van OIDC-provider
+------------------------------
 
 De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_appgroup`.
 
@@ -39,7 +65,7 @@ Aan het eind van dit proces moet u de volgende gegevens hebben:
 * Client secret, bijvoorbeeld ``97d663a9-3624-4930-90c7-2b90635bd990``
 
 Configureren van OIDC in Open Formulieren
-=========================================
+-----------------------------------------
 
 Om OIDC in Open-Formulieren te kunnen configureren zijn de volgende :ref:`gegevens <configuration_oidc_digid_machtigen_appgroup>` nodig:
 
@@ -63,10 +89,34 @@ volgen om die te configureren.
 
 Nu kan er een formulier aangemaakt worden met het authenticatie backend ``DigiD Machtigen via OpenID Connect`` (zie :ref:`manual_forms_basics`).
 
+eHerkenning bewindvoering
+=========================
+
+Claim-eisen
+-----------
+
+Alle eisen voor :ref:`standaard-eHerkenning <configuration_oidc_eherkenning_claim_requirements>`
+gelden, plus:
+
+``BSN vertegenwoordigde``
+    Het BSN van de vertegenwoordigde gebruiker. Altijd verplicht.
+
+``Service ID``
+    Het ID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Deze waarde staat
+    in de dienstencatalogus.
+
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+
+``Service UUID``
+    Het UUID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Deze waarde staat
+    in de dienstencatalogus.
+
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+
 .. _configuration_oidc_eh_bewindvoering_appgroup:
 
-Configureren van OIDC-provider voor eHerkenning bewindvoering
-=============================================================
+Configureren van OIDC-provider
+------------------------------
 
 De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_machtigen_appgroup`.
 
@@ -81,7 +131,7 @@ Aan het eind van dit proces moet u de volgende gegevens hebben:
 * Identity provider hint (optioneel)
 
 Configureren van OIDC in Open Formulieren
-=========================================
+-----------------------------------------
 
 Om OIDC in Open-Formulieren te kunnen configureren zijn de volgende :ref:`gegevens <configuration_oidc_eh_bewindvoering_appgroup>` nodig:
 

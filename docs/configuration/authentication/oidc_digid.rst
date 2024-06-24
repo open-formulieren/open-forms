@@ -15,13 +15,33 @@ flow:
 3. DigiD stuurt de gebruiker terug naar de OIDC omgeving, die op zijn beurt de gebruiker weer terugstuurt naar Open Formulieren
 4. De gebruiker is ingelogd en kan verder met het invullen van het formulier
 
+.. _configuration_oidc_digid_claim_requirements:
+
+Claim-eisen
+===========
+
+De OpenID Connect provider moet na een succesvolle login met DigiD een aantal claims
+aanbieden aan Open Formulieren. De precieze namen van deze claims kunnen ingesteld
+worden in Open Formulieren.
+
+``BSN``
+    Het BSN van de ingelogde gebruiker. Altijd verplicht.
+
+``betrouwbaarheidsniveau``
+    Het betrouwbaarheidsniveau gebruikt tijdens het inloggen. Dit wordt vastgelegd en
+    meegestuurd tijdens het registeren van formulierinzendingen. Als de provider dit
+    niet kan aanleveren, dan kan je een standaardwaarde instellen in Open Formulieren.
+
+    Beheerders kunnen waardenvertalingen inrichten indien de provider de waarden
+    niet aanlevert zoals gedocumenteerd in de koppelvlakstandaard van Logius.
+
 .. _configuration_oidc_digid_appgroup:
 
 Configureren van OIDC-provider
 ==============================
 
-Contacteer de IAM beheerders in je organisatie om een *Client* aan te
-maken in de omgeving van de OpenID Connect provider.
+Contacteer de IAM beheerders in je organisatie om een *Client* aan te maken in de
+omgeving van de OpenID Connect provider.
 
 **Redirect URI (vanaf Open Formulieren 2.7.0)**
 
