@@ -13,15 +13,16 @@ from django.utils.translation import gettext_lazy as _
 from digid_eherkenning.oidc.models import BaseConfig
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
-from typing_extensions import NotRequired, deprecated
+from typing_extensions import NotRequired
 
+from openforms.authentication.constants import LegalSubjectIdentifierType
 from openforms.authentication.typing import FormAuth
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
 )
 from openforms.forms.models import Form
-from openforms.typing import JSONObject, StrOrPromise
+from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
 
 from ...base import BasePlugin, LoginLogo
@@ -224,6 +225,13 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
 
 
 class DigiDmachtigenClaims(TypedDict):
+    """
+    Processed DigiD Machtigen claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.DigiDMachtigenConfig.CLAIMS_CONFIGURATION`
+    for the source of this structure.
+    """
+
     representee_bsn_claim: str
     authorizee_bsn_claim: str
     mandate_service_id_claim: str
@@ -266,23 +274,82 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims])
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
 
+class EHBewindvoeringClaims(TypedDict):
+    """
+    Processed EH claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.EHerkenningBewindvoeringConfig.CLAIMS_CONFIGURATION`
+    for the source of this structure.
+    """
+
+    identifier_type_claim: NotRequired[str]
+    legal_subject_claim: str
+    acting_subject_claim: str
+    branch_number_claim: NotRequired[str]
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+    representee_claim: str
+    mandate_service_id_claim: str
+    mandate_service_uuid_claim: str
+
+
+_EH_IDENTIFIER_TYPE_MAP = {
+    "urn:etoegang:1.9:EntityConcernedID:KvKnr": LegalSubjectIdentifierType.kvk,
+    "urn:etoegang:1.9:EntityConcernedID:RSIN": LegalSubjectIdentifierType.rsin,
+}
+
+
 @register("eherkenning_bewindvoering_oidc")
-class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
+class EHerkenningBewindvoeringOIDCAuthentication(
+    OIDCAuthentication[EHBewindvoeringClaims]
+):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
-    provides_auth = AuthAttribute.kvk
+    provides_auth = AuthAttribute.bsn
     session_key = "eherkenning_bewindvoering_oidc:machtigen"
     config_class = OFEHerkenningBewindvoeringConfig
     init_view = staticmethod(eherkenning_bewindvoering_init)
     is_for_gemachtigde = True
 
-    def transform_claims(self, session_value: JSONObject) -> tuple[str, JSONObject]:
-        # these keys are set by the authentication backend
-        bsn_vertegenwoordigde = session_value.get("representee")
-        assert isinstance(bsn_vertegenwoordigde, str)
-        kvk_gemachtigde = session_value.get("authorizee_legal_subject")
-        assert isinstance(kvk_gemachtigde, str)
-
-        return bsn_vertegenwoordigde, {"identifier_value": kvk_gemachtigde}
+    def transform_claims(self, normalized_claims: EHBewindvoeringClaims) -> FormAuth:
+        authorizee = normalized_claims["legal_subject_claim"]
+        # Assume KVK if claim is not present...
+        name_qualifier = normalized_claims.get(
+            "identifier_type_claim",
+            "urn:etoegang:1.9:EntityConcernedID:KvKnr",
+        )
+        return {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": normalized_claims["representee_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+            # representee
+            # acting subject
+            "acting_subject_identifier_type": "opaque",
+            "acting_subject_identifier_value": normalized_claims[
+                "acting_subject_claim"
+            ],
+            # legal subject
+            "legal_subject_identifier_type": _EH_IDENTIFIER_TYPE_MAP.get(
+                name_qualifier,
+                LegalSubjectIdentifierType.kvk,
+            ),
+            "legal_subject_identifier_value": authorizee,
+            # mandate
+            "mandate_context": {
+                "role": "bewindvoerder",
+                "services": [
+                    {
+                        "id": normalized_claims["mandate_service_id_claim"],
+                        "uuid": normalized_claims["mandate_service_uuid_claim"],
+                    }
+                ],
+            },
+            # DeprecationWarning - legacy, remove in 3.0
+            "machtigen": {
+                "identifier_value": authorizee,
+            },
+        }
 
     def get_label(self) -> str:
         return "eHerkenning bewindvoering"

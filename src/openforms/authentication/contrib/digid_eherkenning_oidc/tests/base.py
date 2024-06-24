@@ -61,6 +61,8 @@ mock_eherkenning_bewindvoering_config = partial(
     representee_claim=["representeeBSN"],
     mandate_service_id_claim=["service_id"],
     mandate_service_uuid_claim=["service_uuid"],
+    loa_claim=["authsp_level"],
+    default_loa=AssuranceLevels.low_plus,
 )
 
 
