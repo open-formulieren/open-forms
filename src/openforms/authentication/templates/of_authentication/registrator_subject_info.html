@@ -3,14 +3,15 @@
 
 {% block extra_css %}
     {{ block.super }}
+
     {# Needed for the styling of the auth-mode class #}
-    <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
+    <link href="{% static 'bundles/public-styles.css' %}" media="all" rel="stylesheet"/>
 {% endblock %}
 
 {% block card %}
 <div class="openforms-card">
     <header class="openforms-card__header">
-        <h1 class="title">
+        <h1 class="utrecht-heading-1 openforms-title">
             {% blocktranslate with name=user.get_employee_name trimmed %}
                Logged in as employee {{ name }}
             {% endblocktranslate %}
