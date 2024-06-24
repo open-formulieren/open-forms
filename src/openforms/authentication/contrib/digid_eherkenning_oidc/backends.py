@@ -6,18 +6,13 @@ from django.http import HttpRequest
 
 from digid_eherkenning.oidc.claims import process_claims
 from digid_eherkenning.oidc.models import BaseConfig
+from flags.state import flag_enabled
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from typing_extensions import override
 
 from openforms.typing import JSONObject
 
-from .models import (
-    OFDigiDConfig,
-    OFDigiDMachtigenConfig,
-    OFEHerkenningBewindvoeringConfig,
-    OFEHerkenningConfig,
-)
 from .plugin import get_config_to_plugin
 
 logger = logging.getLogger(__name__)
@@ -69,24 +64,21 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
     def _process_claims(self, claims: JSONObject) -> JSONObject:
         # see if we can use a cached config instance from the settings configuration
         assert hasattr(self, "_config") and isinstance(self._config, BaseConfig)
-        return process_claims(claims, self._config)
+        strict_mode = flag_enabled(
+            "DIGID_EHERKENNING_OIDC_STRICT", request=self.request
+        )
+        assert isinstance(strict_mode, bool)
+        return process_claims(claims, self._config, strict=strict_mode)
 
     @override
     def verify_claims(self, claims) -> bool:
         """Verify the provided claims to decide if authentication should be allowed."""
-        if self.config_class in (OFDigiDConfig, OFEHerkenningConfig):
-            return super().verify_claims(claims)
-
-        assert self.config_class in (
-            OFDigiDMachtigenConfig,
-            OFEHerkenningBewindvoeringConfig,
-        )
-
         assert claims, "Empty claims should have been blocked earlier"
         obfuscated_claims = obfuscate_claims(claims, self.OIDCDB_SENSITIVE_CLAIMS)
         logger.debug("OIDC claims received: %s", obfuscated_claims)
 
-        # process_claims raises ValueError if *required* claims are missing
+        # process_claims in strict mode raises ValueError if *required* claims are
+        # missing
         try:
             self._process_claims(claims)
         except ValueError as exc:

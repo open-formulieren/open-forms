@@ -1163,6 +1163,14 @@ LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
 FLAGS = {
     "ENABLE_DEMO_PLUGINS": [],
     "DISPLAY_SDK_INFORMATION": [],
+    "DIGID_EHERKENNING_OIDC_STRICT": [
+        {
+            "condition": "boolean",
+            # DeprecationWarning
+            # TODO: set default to `True` in Open Forms 3.0
+            "value": config("DIGID_EHERKENNING_OIDC_STRICT", default=False),
+        }
+    ],
 }
 
 #

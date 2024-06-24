@@ -237,7 +237,8 @@ class DigiDmachtigenClaims(TypedDict):
 
     representee_bsn_claim: str
     authorizee_bsn_claim: str
-    mandate_service_id_claim: str
+    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
+    mandate_service_id_claim: NotRequired[str]
     # *could* be a number if no value mapping is specified and the source claims return
     # numeric values...
     loa_claim: NotRequired[str | int | float]
@@ -254,6 +255,11 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims])
 
     def transform_claims(self, normalized_claims: DigiDmachtigenClaims) -> FormAuth:
         authorizee = normalized_claims["authorizee_bsn_claim"]
+        mandate_context = {}
+        if "mandate_service_id_claim" in normalized_claims:
+            mandate_context["services"] = [
+                {"id": normalized_claims["mandate_service_id_claim"]}
+            ]
         return {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
@@ -261,9 +267,7 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims])
             "loa": str(normalized_claims.get("loa_claim", "")),
             "legal_subject_identifier_type": "bsn",
             "legal_subject_identifier_value": authorizee,
-            "mandate_context": {
-                "services": [{"id": normalized_claims["mandate_service_id_claim"]}],
-            },
+            "mandate_context": mandate_context,
             # DeprecationWarning - legacy, remove in 3.0
             "machtigen": {
                 "identifier_value": authorizee,
