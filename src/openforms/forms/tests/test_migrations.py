@@ -485,3 +485,37 @@ class AddDefaultObjectsAPIGroupMigrationTests(TestMigrations):
         self.assertEqual(
             backend.options["objects_api_group"], ObjectsAPIGroupConfig.objects.get().pk
         )
+
+
+class ChangeObjecttypeKeyNameMigrationTests(TestMigrations):
+    app = "forms"
+    migrate_from = "0100_add_default_objects_api_group"
+    migrate_to = "0101_change_objecttype_key_name"
+
+    def setUpBeforeMigration(self, apps: StateApps) -> None:
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+
+        form = Form.objects.create(name="test form")
+
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="Objects API backend",
+            key="backend",
+            backend="objects_api",
+            options={
+                "objecttype": "http://objecttypen.nl/api/v1/objecttypes/123",
+            },
+        )
+
+    def test_changes_objecttype_key_name(self) -> None:
+        FormRegistrationBackend = self.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+
+        backend = FormRegistrationBackend.objects.get()
+        self.assertNotIn("objecttype", backend.options)
+        self.assertEqual(
+            backend.options["objecttype_url"],
+            "http://objecttypen.nl/api/v1/objecttypes/123",
+        )
