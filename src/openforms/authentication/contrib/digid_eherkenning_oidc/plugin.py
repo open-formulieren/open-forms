@@ -214,6 +214,9 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
     def transform_claims(self, normalized_claims: EHClaims) -> FormAuth:
         return {
             "plugin": self.identifier,
+            # TODO: look at `identifier_type_claim` and return kvk or rsin accordingly.
+            # Currently we have no support for RSIN at all, so that will need to be
+            # added first (and has implications for prefill!)
             "attribute": self.provides_auth,
             "value": normalized_claims["legal_subject_claim"],
             "loa": str(normalized_claims.get("loa_claim", "")),
