@@ -297,8 +297,9 @@ class EHBewindvoeringClaims(TypedDict):
     # numeric values...
     loa_claim: NotRequired[str | int | float]
     representee_claim: str
-    mandate_service_id_claim: str
-    mandate_service_uuid_claim: str
+    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
+    mandate_service_id_claim: NotRequired[str]
+    mandate_service_uuid_claim: NotRequired[str]
 
 
 _EH_IDENTIFIER_TYPE_MAP = {
@@ -327,6 +328,18 @@ class EHerkenningBewindvoeringOIDCAuthentication(
             "identifier_type_claim",
             "urn:etoegang:1.9:EntityConcernedID:KvKnr",
         )
+        services = []
+        if (
+            "mandate_service_id_claim" in normalized_claims
+            and "mandate_service_uuid_claim" in normalized_claims
+        ):
+            services.append(
+                {
+                    "id": normalized_claims["mandate_service_id_claim"],
+                    "uuid": normalized_claims["mandate_service_uuid_claim"],
+                }
+            )
+
         return {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
@@ -347,12 +360,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(
             # mandate
             "mandate_context": {
                 "role": "bewindvoerder",
-                "services": [
-                    {
-                        "id": normalized_claims["mandate_service_id_claim"],
-                        "uuid": normalized_claims["mandate_service_uuid_claim"],
-                    }
-                ],
+                "services": services,
             },
             # DeprecationWarning - legacy, remove in 3.0
             "machtigen": {

@@ -255,3 +255,56 @@ class EHerkenningBewindvoeringAuthContextTests(
         with self.subTest("legacy structure"):
             machtigen = submission.auth_info.machtigen
             self.assertEqual(machtigen, {"identifier_value": "12345678"})
+
+    @mock_eherkenning_bewindvoering_config(
+        mandate_service_id_claim=["required-but-absent-claim1"],
+        mandate_service_uuid_claim=["required-but-absent-claim2"],
+    )
+    def test_new_required_claims_are_backwards_compatible(self):
+        """
+        Test that the legacy configuration without additional claims still works.
+
+        The extra authentication context (metadata) is required in the new flow, but
+        this data was not extracted and/or provided before, so existing incomplete
+        infrastructure should not break existing forms. At worst, we send non-compliant
+        data to the registration backend/our own database, but that should not have
+        runtime implications.
+        """
+        warnings.warn(
+            "Legacy behaviour will be removed in Open Forms 3.0", DeprecationWarning
+        )
+        self._login_and_start_form(
+            "eherkenning_bewindvoering_oidc",
+            username="eherkenning-bewindvoering",
+            password="eherkenning-bewindvoering",
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+        # it is NOT valid according to the JSON schema (!) due to the missing service
+        # ID claim
+        self.assertEqual(auth_context["source"], "eherkenning")
+        assert "representee" in auth_context
+        self.assertEqual(
+            auth_context["representee"],
+            {"identifierType": "bsn", "identifier": "000000000"},
+        )
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {"identifierType": "kvkNummer", "identifier": "12345678"},
+        )
+        assert "actingSubject" in auth_context["authorizee"]
+        self.assertEqual(
+            auth_context["authorizee"]["actingSubject"],
+            {"identifierType": "opaque", "identifier": "4B75A0EA107B3D36"},
+        )
+        self.assertEqual(
+            auth_context["mandate"],
+            {"role": "bewindvoerder", "services": []},
+        )
+
+        # TODO: remove in Open Forms 3.0
+        with self.subTest("legacy structure"):
+            machtigen = submission.auth_info.machtigen
+            self.assertEqual(machtigen, {"identifier_value": "12345678"})
