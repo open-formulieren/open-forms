@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from digid_eherkenning.oidc.models import BaseConfig
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired, deprecated
 
 from openforms.authentication.typing import FormAuth
 from openforms.contrib.digid_eherkenning.utils import (
@@ -223,8 +223,17 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
         }
 
 
+class DigiDmachtigenClaims(TypedDict):
+    representee_bsn_claim: str
+    authorizee_bsn_claim: str
+    mandate_service_id_claim: str
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+
+
 @register("digid_machtigen_oidc")
-class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
+class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims]):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_machtigen_oidc:machtigen"
@@ -232,14 +241,23 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
     init_view = staticmethod(digid_machtigen_init)
     is_for_gemachtigde = True
 
-    def transform_claims(self, session_value: JSONObject) -> tuple[str, JSONObject]:
-        # these keys are set by the authentication backend
-        bsn_vertegenwoordigde = session_value.get("representee")
-        assert isinstance(bsn_vertegenwoordigde, str)
-        bsn_gemachtigde = session_value.get("authorizee")
-        assert isinstance(bsn_gemachtigde, str)
-
-        return bsn_vertegenwoordigde, {"identifier_value": bsn_gemachtigde}
+    def transform_claims(self, normalized_claims: DigiDmachtigenClaims) -> FormAuth:
+        authorizee = normalized_claims["authorizee_bsn_claim"]
+        return {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": normalized_claims["representee_bsn_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+            "legal_subject_identifier_type": "bsn",
+            "legal_subject_identifier_value": authorizee,
+            "mandate_context": {
+                "services": [{"id": normalized_claims["mandate_service_id_claim"]}],
+            },
+            # DeprecationWarning - legacy, remove in 3.0
+            "machtigen": {
+                "identifier_value": authorizee,
+            },
+        }
 
     def get_label(self) -> str:
         return "DigiD Machtigen"

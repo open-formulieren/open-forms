@@ -46,6 +46,8 @@ mock_digid_machtigen_config = partial(
     representee_bsn_claim=["aanvrager.bsn"],
     authorizee_bsn_claim=["gemachtigde.bsn"],
     mandate_service_id_claim=["service_id"],
+    loa_claim=["authsp_level"],
+    default_loa=DigiDAssuranceLevels.middle,
 )
 
 mock_eherkenning_bewindvoering_config = partial(
