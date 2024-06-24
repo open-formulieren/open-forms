@@ -14,6 +14,8 @@ to bring up a Keycloak instance.
 from django.test import override_settings
 from django.urls import reverse
 
+from django_webtest import DjangoTestApp
+
 from openforms.authentication.tests.utils import AuthContextAssertMixin, URLsHelper
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
@@ -28,22 +30,22 @@ from .base import (
 )
 
 
-@override_settings(ALLOWED_HOSTS=["*"])
-class DigiDAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
-    csrf_checks = False
-    extra_environ = {
-        "HTTP_HOST": "localhost:8000",
-    }
+class PerformLoginMixin:
+    app: DjangoTestApp
+    extra_environ: dict
 
-    @mock_digid_config()
-    def test_record_auth_context(self):
-        form = FormFactory.create(authentication_backends=["digid_oidc"])
-        url_helper = URLsHelper(form=form, host="http://localhost:8000")
-        start_url = url_helper.get_auth_start(plugin_id="digid_oidc")
+    def _login_and_start_form(self, plugin: str, *, username: str, password: str):
+        host = f"http://{self.extra_environ['HTTP_HOST']}"
+        form = FormFactory.create(authentication_backends=[plugin])
+        url_helper = URLsHelper(form=form, host=host)
+        start_url = url_helper.get_auth_start(plugin_id=plugin)
         start_response = self.app.get(start_url)
         # simulate login to Keycloak
         redirect_uri = keycloak_login(
-            start_response["Location"], host="http://localhost:8000"
+            start_response["Location"],
+            username=username,
+            password=password,
+            host=host,
         )
         # complete the login flow on our end
         callback_response = self.app.get(redirect_uri, auto_follow=True)
@@ -58,8 +60,23 @@ class DigiDAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
         )
         assert create_response.status_code == 201
 
-        submission = Submission.objects.get()
 
+@override_settings(ALLOWED_HOSTS=["*"])
+class DigiDAuthContextTests(
+    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+):
+    csrf_checks = False
+    extra_environ = {
+        "HTTP_HOST": "localhost:8000",
+    }
+
+    @mock_digid_config()
+    def test_record_auth_context(self):
+        self._login_and_start_form(
+            "digid_oidc", username="testuser", password="testuser"
+        )
+
+        submission = Submission.objects.get()
         self.assertTrue(submission.is_authenticated)
         auth_context = submission.auth_info.to_auth_context_data()
 
@@ -72,7 +89,9 @@ class DigiDAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
 
 
 @override_settings(ALLOWED_HOSTS=["*"])
-class EHerkenningAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
+class EHerkenningAuthContextTests(
+    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
@@ -80,29 +99,11 @@ class EHerkenningAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
 
     @mock_eherkenning_config()
     def test_record_auth_context(self):
-        form = FormFactory.create(authentication_backends=["eherkenning_oidc"])
-        url_helper = URLsHelper(form=form, host="http://localhost:8000")
-        start_url = url_helper.get_auth_start(plugin_id="eherkenning_oidc")
-        start_response = self.app.get(start_url)
-        # simulate login to Keycloak
-        redirect_uri = keycloak_login(
-            start_response["Location"], host="http://localhost:8000"
+        self._login_and_start_form(
+            "eherkenning_oidc", username="testuser", password="testuser"
         )
-        # complete the login flow on our end
-        callback_response = self.app.get(redirect_uri, auto_follow=True)
-        assert callback_response.status_code == 200
-        # start submission
-        create_response = self.app.post_json(
-            reverse("api:submission-list"),
-            {
-                "form": url_helper.api_resource,
-                "formUrl": url_helper.frontend_start,
-            },
-        )
-        assert create_response.status_code == 201
 
         submission = Submission.objects.get()
-
         self.assertTrue(submission.is_authenticated)
         auth_context = submission.auth_info.to_auth_context_data()
 
@@ -121,7 +122,9 @@ class EHerkenningAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
 
 
 @override_settings(ALLOWED_HOSTS=["*"])
-class DigiDMachtigenAuthContextTests(AuthContextAssertMixin, IntegrationTestsBase):
+class DigiDMachtigenAuthContextTests(
+    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
+):
     csrf_checks = False
     extra_environ = {
         "HTTP_HOST": "localhost:8000",
@@ -129,32 +132,13 @@ class DigiDMachtigenAuthContextTests(AuthContextAssertMixin, IntegrationTestsBas
 
     @mock_digid_machtigen_config()
     def test_record_auth_context(self):
-        form = FormFactory.create(authentication_backends=["digid_machtigen_oidc"])
-        url_helper = URLsHelper(form=form, host="http://localhost:8000")
-        start_url = url_helper.get_auth_start(plugin_id="digid_machtigen_oidc")
-        start_response = self.app.get(start_url)
-        # simulate login to Keycloak
-        redirect_uri = keycloak_login(
-            start_response["Location"],
+        self._login_and_start_form(
+            "digid_machtigen_oidc",
             username="digid-machtigen",
             password="digid-machtigen",
-            host="http://localhost:8000",
         )
-        # complete the login flow on our end
-        callback_response = self.app.get(redirect_uri, auto_follow=True)
-        assert callback_response.status_code == 200
-        # start submission
-        create_response = self.app.post_json(
-            reverse("api:submission-list"),
-            {
-                "form": url_helper.api_resource,
-                "formUrl": url_helper.frontend_start,
-            },
-        )
-        assert create_response.status_code == 201
 
         submission = Submission.objects.get()
-
         self.assertTrue(submission.is_authenticated)
         auth_context = submission.auth_info.to_auth_context_data()
 
@@ -177,7 +161,7 @@ class DigiDMachtigenAuthContextTests(AuthContextAssertMixin, IntegrationTestsBas
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class EHerkenningBewindvoeringAuthContextTests(
-    AuthContextAssertMixin, IntegrationTestsBase
+    PerformLoginMixin, AuthContextAssertMixin, IntegrationTestsBase
 ):
     csrf_checks = False
     extra_environ = {
@@ -186,36 +170,13 @@ class EHerkenningBewindvoeringAuthContextTests(
 
     @mock_eherkenning_bewindvoering_config()
     def test_record_auth_context(self):
-        form = FormFactory.create(
-            authentication_backends=["eherkenning_bewindvoering_oidc"]
-        )
-        url_helper = URLsHelper(form=form, host="http://localhost:8000")
-        start_url = url_helper.get_auth_start(
-            plugin_id="eherkenning_bewindvoering_oidc"
-        )
-        start_response = self.app.get(start_url)
-        # simulate login to Keycloak
-        redirect_uri = keycloak_login(
-            start_response["Location"],
+        self._login_and_start_form(
+            "eherkenning_bewindvoering_oidc",
             username="eherkenning-bewindvoering",
             password="eherkenning-bewindvoering",
-            host="http://localhost:8000",
         )
-        # complete the login flow on our end
-        callback_response = self.app.get(redirect_uri, auto_follow=True)
-        assert callback_response.status_code == 200
-        # start submission
-        create_response = self.app.post_json(
-            reverse("api:submission-list"),
-            {
-                "form": url_helper.api_resource,
-                "formUrl": url_helper.frontend_start,
-            },
-        )
-        assert create_response.status_code == 201
 
         submission = Submission.objects.get()
-
         self.assertTrue(submission.is_authenticated)
         auth_context = submission.auth_info.to_auth_context_data()
 
