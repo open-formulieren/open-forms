@@ -36,7 +36,7 @@ from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
-from .client import DocumentenClient, get_documents_client
+from .client import DocumentenClient, get_documents_client, get_objecttypes_client
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import get_cosign_value, register as variables_registry
 from .typing import (
@@ -252,6 +252,27 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                             )
                         )
 
+    def get_objecttype_url(self, options: OptionsT) -> str:
+        """Return the objecttype URL to use, matching the name set on the backend config."""
+
+        with get_objecttypes_client(options["objects_api_group"]) as objecttypes_client:
+            objecttypes = objecttypes_client.list_objecttypes()
+            objecttype_url: str | None = next(
+                (
+                    objecttype["url"]
+                    for objecttype in objecttypes
+                    if objecttype["name"] == options["objecttype_name"]  # type: ignore
+                ),
+                None,
+            )
+
+        if objecttype_url is None:
+            # It might be that the objecttype got deleted since
+            # the form registration backend was configured. We
+            # currently don't have any recurring tasks that validates that.
+            raise RegistrationFailed
+        return objecttype_url
+
     @abstractmethod
     def get_object_data(
         self,
@@ -345,12 +366,14 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             ),
         }
 
+        objecttype_url = self.get_objecttype_url(options) if "objecttype_name" in options else options["objecttype_url"]  # type: ignore
+
         record_data = cast(
             dict[str, Any], render_to_json(options["content_json"], context)
         )
         object_data = prepare_data_for_registration(
             record_data=record_data,
-            objecttype=options["objecttype"],
+            objecttype=objecttype_url,
             objecttype_version=options["objecttype_version"],
         )
         object_data = apply_data_mapping(
@@ -485,9 +508,11 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
         variables_mapping = options["variables_mapping"]
         record_data = self._get_record_data(variables_values, variables_mapping)
 
+        objecttype_url = self.get_objecttype_url(options) if "objecttype_name" in options else options["objecttype_url"]  # type: ignore
+
         object_data = prepare_data_for_registration(
             record_data=record_data,
-            objecttype=options["objecttype"],
+            objecttype=objecttype_url,
             objecttype_version=options["objecttype_version"],
         )
 
