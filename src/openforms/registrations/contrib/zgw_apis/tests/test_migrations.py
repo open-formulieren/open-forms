@@ -118,7 +118,7 @@ class BackwardsMigrationNoZGWGroupTests(TestMigrations):
         self.assertIsNone(solo.zrc_service)
 
 
-class NoZgwConfigDoesntCreateZGWApiGrouMigrationTest(TestMigrations):
+class NoZgwConfigDoesntCreateZGWApiGroupMigrationTest(TestMigrations):
     migrate_from = "0006_zgwapigroupconfig"
     migrate_to = "0007_move_singleton_data"
     app = "zgw_apis"
