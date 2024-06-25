@@ -9,8 +9,8 @@ const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => 
   const choices =
     loading || error
       ? LOADING_OPTION
-      : availableObjecttypes.map(({url, name, dataClassification}) => [
-          url,
+      : availableObjecttypes.map(({uuid, name, dataClassification}) => [
+          uuid,
           `${name} (${dataClassification})`,
         ]);
 
@@ -21,11 +21,11 @@ const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => 
     if (loading || !availableObjecttypes.length) return;
 
     // check if a valid option is selected, if this is the case -> do nothing
-    const isOptionPresent = availableObjecttypes.find(ot => ot.url === objecttype);
+    const isOptionPresent = availableObjecttypes.find(ot => ot.uuid === objecttype);
     if (isOptionPresent) return;
 
     // otherwise select the first possible option and persist that back into the state
-    const fakeEvent = {target: {name: 'objecttype', value: availableObjecttypes[0].url}};
+    const fakeEvent = {target: {name: 'objecttype', value: availableObjecttypes[0].uuid}};
     onChange(fakeEvent);
   });
 

@@ -77,7 +77,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: "submission_id", "type" (the type of productaanvraag) and "data" (the submitted form data)',
+            'UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: "submission_id", "type" (the type of productaanvraag) and "data" (the submitted form data)',
           description: 'Objects API registration options "Objecttype" description',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'objecttype')}

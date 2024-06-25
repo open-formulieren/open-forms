@@ -98,9 +98,7 @@ export const SwitchToV2Empty = {
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-      'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
-    );
+    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
 
     await canvas.findByRole('option', {name: '2 (draft)'});
     expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
@@ -108,9 +106,7 @@ export const SwitchToV2Empty = {
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-      'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
-    );
+    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
     // While it's a number input, the value is still a string in the DOM api
     expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
   },
@@ -119,7 +115,7 @@ export const SwitchToV2Empty = {
 export const SwitchToV2Existing = {
   args: {
     formData: {
-      objecttype: 'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f2',
+      objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
     },
   },
@@ -134,9 +130,7 @@ export const SwitchToV2Existing = {
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Person (open)'}, {timeout: 5000});
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-      'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f2'
-    );
+    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f2');
 
     await canvas.findByRole('option', {name: '1 (published)'});
     expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
@@ -144,9 +138,7 @@ export const SwitchToV2Existing = {
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-      'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f2'
-    );
+    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f2');
     expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
   },
 };
@@ -154,7 +146,7 @@ export const SwitchToV2Existing = {
 export const SwitchToV2NonExisting = {
   args: {
     formData: {
-      objecttype: 'https://objecttypen.nl/api/v1/objecttypes/a-non-existing-uuid',
+      objecttype: 'a-non-existing-uuid',
       objecttypeVersion: 1,
     },
   },
@@ -169,9 +161,7 @@ export const SwitchToV2NonExisting = {
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-      'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
-    );
+    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
 
     await canvas.findByRole('option', {name: '2 (draft)'});
     expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
@@ -179,9 +169,7 @@ export const SwitchToV2NonExisting = {
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-      'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1'
-    );
+    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
     // While it's a number input, the value is still a string in the DOM api
     expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
   },
