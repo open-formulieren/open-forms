@@ -10,3 +10,4 @@ class AnalyticsTools(models.TextChoices):
     piwik_pro_tag_manager = "piwik_pro_tag_manager", "Piwik Pro Tag Manager"
     siteimprove = "siteimprove", "Siteimprove"
     govmetric = "govmetric", "GovMetric"
+    expoints = "expoints", "Expoints"

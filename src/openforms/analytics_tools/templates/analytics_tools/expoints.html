@@ -1,0 +1,26 @@
+{% comment %}
+  Documentation: https://documentation.expoints.nl/external/Help/Popup
+{% endcomment %}
+{% load solo_tags %}
+{% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
+{% if analytics_tools_config.is_expoints_enabled %}
+{{analytics_tools_config.expoints_use_test_mode|json_script:"expoints_test_mode"}}
+<script type="text/javascript" id="expoints-analytics" nonce="{{ request.csp_nonce }}">
+    (function() {
+        let scriptConfig = {instanceUrl: 'https://{{ analytics_tools_config.expoints_organization_name|escapejs }}.expoints.nl'};
+        let useTestMode = JSON.parse(document.getElementById('expoints_test_mode').innerText);
+        if (useTestMode) scriptConfig.isTest = true;
+
+        var exp = document.createElement('script');
+        exp.type = 'text/javascript';
+        exp.async = true;
+        exp.onload = function() {
+            window.expoints = lightningjs.require('expoints','https://{{ analytics_tools_config.expoints_organization_name|escapejs }}.expoints.nl/m/Scripts/dist/expoints-external.min.js');
+            expoints('start', '{{ analytics_tools_config.expoints_config_uuid|escapejs }}', scriptConfig);
+        };
+        exp.src = 'https://{{ analytics_tools_config.expoints_organization_name|escapejs }}.expoints.nl/m/Scripts/dist/expoints-external-loader.min.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(exp, s);
+    })();
+</script>
+{% endif %}
