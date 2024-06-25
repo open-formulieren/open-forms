@@ -129,3 +129,18 @@ class AnalyticsToolsRenderingTest(WebTest):
 
         siteimprove = form_page.pyquery("#siteimprove-analytics")
         self.assertTrue(siteimprove.is_("script"))
+
+    def test_expoints_rendering(self):
+        """Assert that the Expoints script is rendered"""
+
+        # Enable and configure Expoints
+        self.config.enable_expoints_analytics = True
+        self.config.expoints_organization_name = "Demodam"
+        self.config.expoints_config_uuid = "1234"
+        self.config.save()
+
+        # Accept cookies
+        form_page = self.app.get(self.url)
+
+        siteimprove = form_page.pyquery("#expoints-analytics")
+        self.assertTrue(siteimprove.is_("script"))
