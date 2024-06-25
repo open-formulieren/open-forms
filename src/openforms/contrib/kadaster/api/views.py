@@ -86,10 +86,6 @@ class AddressAutocompleteView(APIView):
             timeout=ADDRESS_AUTOCOMPLETE_CACHE_TIMEOUT,
         )
 
-        if not address_data:
-            # If address is not found just return an empty response
-            return Response({})
-
         return Response(GetStreetNameAndCityViewResultSerializer(address_data).data)
 
 

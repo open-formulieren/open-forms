@@ -32,7 +32,7 @@ class BAGClient(HALClient):
     @elasticapm.capture_span(span_type="app.bag.query")
     def get_address(
         self, postcode: str, house_number: str, reraise_errors: bool = False
-    ) -> AddressResult | None:
+    ) -> AddressResult:
         params = {
             "huisnummer": house_number,
             "postcode": postcode.replace(" ", ""),
@@ -47,17 +47,22 @@ class BAGClient(HALClient):
             logger.exception(
                 "Could not retrieve address details from the BAG API", exc_info=exc
             )
-            return None
+            return self.build_address_result(postcode, house_number)
 
         response_data = response.json()
         if "_embedded" not in response_data:
             # No addresses were found
-            return None
+            return self.build_address_result(postcode, house_number)
 
         first_result = response_data["_embedded"]["adressen"][0]
         street_name = first_result.pop("korteNaam")
         city = first_result.pop("woonplaatsNaam")
 
+        return self.build_address_result(postcode, house_number, city, street_name)
+
+    def build_address_result(
+        self, postcode: str, house_number: str, city: str = "", street_name: str = ""
+    ) -> AddressResult:
         secret_street_city = salt_location_message(
             {
                 "postcode": postcode.upper().replace(" ", ""),

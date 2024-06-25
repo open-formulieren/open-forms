@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 from django.utils.crypto import salted_hmac
 
 from rest_framework import serializers
@@ -8,6 +8,7 @@ from openforms.contrib.brk.validators import ValueSerializer
 from openforms.submissions.models import Submission
 from openforms.validations.base import BasePlugin
 
+from ...components.utils import salt_location_message
 from ...typing import AddressNLComponent
 from .helpers import extract_error, replace_validators_registry, validate_formio_data
 
@@ -20,6 +21,7 @@ class PostcodeValidator(BasePlugin[AddressValue]):
             raise serializers.ValidationError("nope")
 
 
+@override_settings(LANGUAGE_CODE="en")
 class AddressNLValidationTests(SimpleTestCase):
 
     def test_addressNL_field_required_validation(self):
@@ -238,6 +240,37 @@ class AddressNLValidationTests(SimpleTestCase):
                 "houseNumberAddition": "",
                 "city": "",
                 "streetName": "Keizersgracht",
+            }
+        }
+
+        is_valid, _ = validate_formio_data(component, data)
+
+        self.assertTrue(is_valid)
+
+    def test_addressNL_field_city_street_name_no_data_found(self):
+        component: AddressNLComponent = {
+            "key": "addressNl",
+            "type": "addressNL",
+            "label": "AddressNL secret failure",
+            "deriveAddress": True,
+        }
+
+        data = {
+            "addressNl": {
+                "postcode": "1015CJ",
+                "houseNumber": "117",
+                "houseLetter": "",
+                "houseNumberAddition": "",
+                "city": "",
+                "streetName": "",
+                "secretStreetCity": salt_location_message(
+                    {
+                        "postcode": "1015CJ",
+                        "number": "117",
+                        "city": "",
+                        "street_name": "",
+                    }
+                ),
             }
         }
 
