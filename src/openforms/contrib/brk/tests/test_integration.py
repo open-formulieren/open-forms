@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.utils.tests.vcr import OFVCRMixin

@@ -5,7 +5,7 @@ from django.test import TransactionTestCase
 
 from privates.test import temp_private_root
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.authentication.utils import store_auth_details, store_registrator_details
 from openforms.config.models import GlobalConfiguration
 from openforms.prefill import prefill_variables

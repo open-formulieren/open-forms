@@ -10,13 +10,10 @@ from rest_framework import status
 from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.accounts.models import User
-from openforms.authentication.constants import (
-    FORM_AUTH_SESSION_KEY,
-    REGISTRATOR_SUBJECT_SESSION_KEY,
-    AuthAttribute,
-)
+from openforms.authentication.constants import REGISTRATOR_SUBJECT_SESSION_KEY
 from openforms.authentication.contrib.org_oidc.plugin import PLUGIN_IDENTIFIER
 from openforms.authentication.contrib.org_oidc.tests.base import mock_org_oidc_config
+from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.tests.utils import URLsHelper
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.contrib.haal_centraal.tests.utils import load_json_mock

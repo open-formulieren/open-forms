@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from glom import GlomError, glom
 from requests import RequestException
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.kvk.api_models.basisprofiel import BasisProfiel
 from openforms.contrib.kvk.client import NoServiceConfigured, get_kvk_profile_client
 from openforms.contrib.kvk.models import KVKConfig

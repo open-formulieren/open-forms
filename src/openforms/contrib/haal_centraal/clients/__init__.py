@@ -2,7 +2,7 @@ from typing import Any
 
 from zgw_consumers.client import build_client
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 

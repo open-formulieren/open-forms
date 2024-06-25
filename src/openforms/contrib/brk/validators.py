@@ -10,7 +10,7 @@ from glom import glom
 from requests import RequestException
 from rest_framework import serializers
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.formio.components.custom import AddressValueSerializer
 from openforms.submissions.models import Submission
 from openforms.validations.base import BasePlugin

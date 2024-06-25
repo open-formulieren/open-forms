@@ -12,7 +12,7 @@ from testfixtures import LogCapture
 
 from openforms.appointments.exceptions import AppointmentRegistrationFailed
 from openforms.appointments.tests.utils import setup_jcc
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory

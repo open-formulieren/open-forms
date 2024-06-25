@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 from openforms.variables.registry import Registry

@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 from rest_framework import ISO_8601, serializers
 from rest_framework.request import Request
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping

@@ -9,7 +9,7 @@ from django.utils.translation import gettext as _
 import requests_mock
 from zgw_consumers.test.factories import ServiceFactory
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import get_dynamic_configuration
 from openforms.logging.tests.utils import disable_timelinelog

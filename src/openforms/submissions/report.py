@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.forms.models import Form
 
 if TYPE_CHECKING:

@@ -19,7 +19,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import StatementCheckboxChoices, SubmissionAllowedChoices
 from openforms.forms.tests.factories import (

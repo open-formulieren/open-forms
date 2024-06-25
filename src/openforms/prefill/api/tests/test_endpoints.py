@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 
 from ...base import BasePlugin
 from ...registry import Registry

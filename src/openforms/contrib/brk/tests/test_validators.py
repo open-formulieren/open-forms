@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 import requests_mock
 from privates.test import temp_private_root
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.brk.models import BRKConfig
 from openforms.pre_requests.base import PreRequestHookBase
 from openforms.pre_requests.registry import Registry

@@ -3,7 +3,7 @@ from django.utils.translation import override as override_language
 
 from privates.test import temp_private_root
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.submissions.tests.factories import SubmissionFactory
 
 

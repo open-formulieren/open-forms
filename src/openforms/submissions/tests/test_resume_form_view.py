@@ -7,8 +7,8 @@ from django.urls import reverse
 from freezegun import freeze_time
 from furl import furl
 
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
+from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.frontend.tests import FrontendRedirectMixin
 
