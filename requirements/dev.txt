@@ -289,7 +289,7 @@ django-csp-reports==1.8.1
     #   -r requirements/ci.txt
 django-debug-toolbar==4.3.0
     # via -r requirements/dev.in
-django-digid-eherkenning[oidc]==0.15.0
+django-digid-eherkenning[oidc]==0.16.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -693,7 +693,7 @@ mozilla-django-oidc==4.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.18.1
+mozilla-django-oidc-db==0.19.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
