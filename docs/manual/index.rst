@@ -14,6 +14,7 @@ more technical configuration of Open Forms? Check out the
    getting_started
    accounts
    forms/index
+   authenticatie
    submissions
    workflows
    templates

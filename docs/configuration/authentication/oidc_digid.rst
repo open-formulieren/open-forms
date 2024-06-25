@@ -113,8 +113,8 @@ bepaald worden aan de hand van het discovery endpoint
 (``https://login.gemeente.nl/auth/realms/{realm}/.well-known/openid-configuration``).
 
 10. Vul bij **Discovery endpoint** het pad naar het juiste authenticatie realm endpoint
-   van de OpenID Connect provider in (met een ``/`` op het einde),
-   bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
+    van de OpenID Connect provider in (met een ``/`` op het einde),
+    bijvoorbeeld ``https://login.gemeente.nl/auth/realms/{realm}/``.
 11. Laat de overige endpoints leeg - deze worden automatisch aangevuld.
 
 Klik tot slot linksonder op **Opslaan**.
