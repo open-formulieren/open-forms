@@ -179,12 +179,6 @@
       "value": "Months"
     }
   ],
-  "0gmZ4c": [
-    {
-      "type": 0,
-      "value": "Edit component JSON"
-    }
-  ],
   "0h7gYQ": [
     {
       "type": 0,
@@ -2579,12 +2573,6 @@
     {
       "type": 0,
       "value": "Initial value"
-    }
-  ],
-  "RrjozJ": [
-    {
-      "type": 0,
-      "value": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
     }
   ],
   "RuAQwk": [
@@ -5113,6 +5101,12 @@
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
+  "uO3byK": [
+    {
+      "type": 0,
+      "value": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
+    }
+  ],
   "uVVO4b": [
     {
       "type": 0,
@@ -5345,12 +5339,6 @@
     {
       "type": 0,
       "value": "Create definition"
-    }
-  ],
-  "xnRkUj": [
-    {
-      "type": 0,
-      "value": "Edit JSON"
     }
   ],
   "xrmpmN": [

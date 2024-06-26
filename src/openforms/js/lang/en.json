@@ -1239,11 +1239,6 @@
     "description": "Variable table initial value title",
     "originalDefault": "Initial value"
   },
-  "RrjozJ": {
-    "defaultMessage": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)",
-    "description": "Objects API registration options \"Objecttype\" description",
-    "originalDefault": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
-  },
   "RvJXSo": {
     "defaultMessage": "change the value of a variable/component",
     "description": "action type \"variable\" label",
@@ -2378,6 +2373,11 @@
     "defaultMessage": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "uO3byK": {
+    "defaultMessage": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)",
+    "description": "Objects API registration options \"Objecttype\" description",
+    "originalDefault": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
   },
   "uiliGe": {
     "defaultMessage": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information.",

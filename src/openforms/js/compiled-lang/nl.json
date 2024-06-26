@@ -179,12 +179,6 @@
       "value": "Maanden"
     }
   ],
-  "0gmZ4c": [
-    {
-      "type": 0,
-      "value": "Component-JSON aanpassen"
-    }
-  ],
   "0h7gYQ": [
     {
       "type": 0,
@@ -2579,12 +2573,6 @@
     {
       "type": 0,
       "value": "Beginwaarde"
-    }
-  ],
-  "RrjozJ": [
-    {
-      "type": 0,
-      "value": "URL naar het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het objecttype moet de volgende drie attributen bevatten:  \"submission_id\", \"type\" (het type van de 'ProductAanvraag') en \"data\" (de ingezonden formuliergegevens)."
     }
   ],
   "RuAQwk": [
@@ -5118,6 +5106,12 @@
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "uO3byK": [
+    {
+      "type": 0,
+      "value": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
+    }
+  ],
   "uVVO4b": [
     {
       "type": 0,
@@ -5350,12 +5344,6 @@
     {
       "type": 0,
       "value": "Formulierdefinitie aanmaken"
-    }
-  ],
-  "xnRkUj": [
-    {
-      "type": 0,
-      "value": "Wijzig JSON"
     }
   ],
   "xrmpmN": [
