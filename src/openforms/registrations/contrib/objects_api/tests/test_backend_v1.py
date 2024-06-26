@@ -1324,6 +1324,101 @@ class ObjectsAPIBackendV1Tests(TestCase):
             },
         )
 
+    def test_submission_with_auth_context_data(self, m):
+        # skip document uploads
+        self.objects_api_group.informatieobjecttype_submission_report = ""
+        self.objects_api_group.save()
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__generate_minimal_setup=True,
+            # simulate eherkenning bewindvoering, as that is most complex
+            form__authentication_backends=["demo"],
+            auth_info__plugin="demo",
+            auth_info__is_eh_bewindvoering=True,
+        )
+        m.post(
+            "https://objecten.nl/api/v1/objects", status_code=201, json=get_create_json
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+                "informatieobjecttype_submission_report": "",
+                "upload_submission_csv": False,
+                "content_json": r"""{"auth": {% as_json auth_context %}}""",
+            },
+        )
+
+        object_create = m.last_request
+        body = object_create.json()
+        # for the values, see openforms.authentication.tests.factories.AuthInfoFactory
+        expected = {
+            "source": "eherkenning",
+            # from auth info factory
+            "levelOfAssurance": "urn:etoegang:core:assurance-class:loa3",
+            "representee": {
+                "identifierType": "bsn",
+                "identifier": "999991607",
+            },
+            "authorizee": {
+                "legalSubject": {
+                    "identifierType": "kvkNummer",
+                    "identifier": "90002768",
+                },
+                "actingSubject": {
+                    "identifierType": "opaque",
+                    "identifier": (
+                        "4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA6345"
+                        "2EE3018@2D8FF1EF10279BC2643F376D89835151"
+                    ),
+                },
+            },
+            "mandate": {
+                "role": "bewindvoerder",
+                "services": [
+                    {
+                        "id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                        "uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                    }
+                ],
+            },
+        }
+        self.assertEqual(body["record"]["data"]["auth"], expected)
+
+    def test_submission_with_auth_context_data_not_authenticated(self, m):
+        # skip document uploads
+        self.objects_api_group.informatieobjecttype_submission_report = ""
+        self.objects_api_group.save()
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__generate_minimal_setup=True,
+        )
+        assert not submission.is_authenticated
+        m.post(
+            "https://objecten.nl/api/v1/objects", status_code=201, json=get_create_json
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        plugin.register_submission(
+            submission,
+            {
+                "version": 1,
+                "objects_api_group": self.objects_api_group,
+                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype_version": 1,
+                "informatieobjecttype_submission_report": "",
+                "upload_submission_csv": False,
+                "content_json": r"""{"auth": {% as_json auth_context %}}""",
+            },
+        )
+
+        object_create = m.last_request
+        body = object_create.json()
+        self.assertEqual(body["record"]["data"]["auth"], None)
+
 
 class V1HandlerTests(TestCase):
     """

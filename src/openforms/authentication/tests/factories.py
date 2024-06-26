@@ -1,6 +1,11 @@
 import factory
+from digid_eherkenning.choices import AssuranceLevels
 
-from ..constants import AuthAttribute
+from ..constants import (
+    ActingSubjectIdentifierType,
+    AuthAttribute,
+    LegalSubjectIdentifierType,
+)
 from ..contrib.digid.constants import DIGID_DEFAULT_LOA
 from ..models import AuthInfo, RegistratorInfo
 
@@ -23,6 +28,28 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
             _hashed_id_attrs=factory.PostGenerationMethodCall(
                 "hash_identifying_attributes"
             ),
+        )
+        is_eh_bewindvoering = factory.Trait(
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            attribute_hashed=False,
+            loa=AssuranceLevels.substantial,
+            legal_subject_identifier_type=LegalSubjectIdentifierType.kvk,
+            legal_subject_identifier_value="90002768",
+            acting_subject_identifier_type=ActingSubjectIdentifierType.opaque,
+            acting_subject_identifier_value=(
+                "4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018"
+                "@2D8FF1EF10279BC2643F376D89835151"
+            ),
+            mandate_context={
+                "role": "bewindvoerder",
+                "services": [
+                    {
+                        "id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                        "uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                    }
+                ],
+            },
         )
 
 

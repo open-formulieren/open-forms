@@ -6,6 +6,7 @@ from django.utils.safestring import SafeString
 
 from openforms.formio.rendering.structured import render_json
 from openforms.registrations.contrib.objects_api.utils import html_escape_json
+from openforms.typing import JSONEncodable
 
 register = template.Library()
 
@@ -16,7 +17,7 @@ def uploaded_attachment_urls(context: template.Context) -> SafeString:
     Output a sequence of attachment URLs as a JSON-serialized list.
     """
     attachments = context.get("submission", {}).get("uploaded_attachment_urls", [])
-    return SafeString(json.dumps(attachments))
+    return as_json(attachments)
 
 
 @register.simple_tag(takes_context=True)
@@ -47,4 +48,15 @@ def as_geo_json(value: list[float] | str) -> SafeString:
         else {}
     )
 
-    return SafeString(json.dumps(data))
+    return as_json(data)
+
+
+@register.simple_tag
+def as_json(value: JSONEncodable):
+    """
+    Dump the value as a JSON string.
+
+    DO NOT USE THIS OUTSIDE OF OBJECTS API REGISTRATION TEMPLATES. It is unsafe. The
+    objects API templates validate that the result can be loaded as JSON.
+    """
+    return SafeString(json.dumps(value))
