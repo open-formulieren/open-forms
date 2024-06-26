@@ -601,32 +601,36 @@ In dit sjabloon kunnen alleen de inzendingsvariabelen (``variables.<naam van var
    De ``payment.amount`` in een JSON sjabloon geeft een ``number``. Het objecttype schema zou de nauwkeurigheid van
    het ``amount`` veld moeten vastleggen door bijvoorbeeld ``type: number, multipleOf: 0.01`` te specificeren.
 
-**Speciale instructies**
+Speciale instructies
+--------------------
 
 Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor het
 sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
 sjabloon, dan wordt deze niet getoond.
 
-=====================================  ===========================================================================
-Variabele                              Beschrijving
-=====================================  ===========================================================================
-``{{ productaanvraag_type }}``         Het productaanvraag type.
-``{{ submission.public_reference }}``  De publieke referentie van de inzending.
-``{{ submission.kenmerk }}``           Het interne ID van de inzending (UUID).
-``{{ submission.language_code }}``     De taal waarin de gebruiker het formulier invulde, bijvoorbeeld 'nl' of 'en'.
-``{{ submission.pdf_url }}``           De URL van het inzendingsrapport (in PDF formaat) in de documenten API.
-``{{ submission.csv_url }}``           De URL van het inzendingsrapport (in CSV formaat) in de documenten API. Dit document is mogelijk niet aangemaakt
-``{% json_summary %}``                 JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
-``{% uploaded_attachment_urls %}``     Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs verwijzen naar het geregistreerde document in de Documenten API.
-``{% as_geo_json variables.map %}``    Sluit de gerefereerde variabele (`variables.map`) in als JSON.
-``{{ payment.completed }}``            Indicatie of de betaling voltooid is.
-``{{ payment.amount }}``               Bedrag dat betaald moet worden.
-``{{ payment.public_order_ids }}``     Lijst van bestelling IDs die naar de externe betaalprovider meegestuurd zijn.
-``{{ cosign_data.date }}``             De datum waarop de inzending mede is ondertekend.
-``{{ cosign_data.bsn }}``              Het BSN van de medeondertekenaar, indien beschikbaar.
-``{{ cosign_data.kvk }}``              Het KvK van de medeondertekenaar, indien beschikbaar.
-``{{ cosign_data.pseudo }}``           Het pseudo van de medeondertekenaar, indien beschikbaar.
-=====================================  ===========================================================================
+======================================= ===========================================================================
+Variabele                               Beschrijving
+======================================= ===========================================================================
+``{{ productaanvraag_type }}``          Het productaanvraag type.
+``{{ submission.public_reference }}``   De publieke referentie van de inzending.
+``{{ submission.kenmerk }}``            Het interne ID van de inzending (UUID).
+``{{ submission.language_code }}``      De taal waarin de gebruiker het formulier invulde, bijvoorbeeld 'nl' of 'en'.
+``{{ submission.pdf_url }}``            De URL van het inzendingsrapport (in PDF formaat) in de documenten API.
+``{{ submission.csv_url }}``            De URL van het inzendingsrapport (in CSV formaat) in de documenten API. Dit document is mogelijk niet aangemaakt
+``{% json_summary %}``                  JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
+``{% uploaded_attachment_urls %}``      Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs
+                                        verwijzen naar het geregistreerde document in de Documenten API.
+``{% as_geo_json variables.map %}``     Sluit de gerefereerde variabele (`variables.map`) in als JSON.
+``{{ payment.completed }}``             Indicatie of de betaling voltooid is.
+``{{ payment.amount }}``                Bedrag dat betaald moet worden.
+``{{ payment.public_order_ids }}``      Lijst van bestelling IDs die naar de externe betaalprovider meegestuurd zijn.
+``{{ cosign_data.date }}``              De datum waarop de inzending mede is ondertekend.
+``{{ cosign_data.bsn }}``               Het BSN van de medeondertekenaar, indien beschikbaar.
+``{{ cosign_data.kvk }}``               Het KvK van de medeondertekenaar, indien beschikbaar.
+``{{ cosign_data.pseudo }}``            Het pseudo van de medeondertekenaar, indien beschikbaar.
+``{% as_json auth_context %}``          De meta-informatie over de formulierauthenticatie. Dit is een complexe
+                                        structuur, zie :ref:`objecten_api_registratie_auth_context`.
+======================================= ===========================================================================
 
 
 Voorbeeld
@@ -672,3 +676,67 @@ Voorbeeld
            "cosign_date": "2024-01-01T12:00:00.037672+00:00",
            "cosign_bsn": "123456783"
          }
+
+.. _objecten_api_registratie_auth_context:
+
+Authenticatie-metadata
+----------------------
+
+Je kan doorgeven op welke manier een gebruiker al dan niet ingelogd was tijdens het
+invullen van het formulier, en of het een machtiging betreft of niet. Dit hangt samen
+met de beschikbare :ref:`authenticatiemethoden <manual_authenticatie>`.
+
+De informatie is beschikbaar in de sjabloonvariabele ``auth_context``. Om deze één op
+één over te nemen kan je deze direct insluiten:
+
+.. code:: django
+
+    {
+        "form_data": {% json_summary %},
+        "authenticatie": {% as_json auth_context %}
+    }
+
+Je kan ook individuele aspecten gebruiken:
+
+``{{ auth_context }}``
+    Indien ingelogd, dan is dit een object met ingesloten attributen. Indien het
+    formulier anoniem ingevuld is, dan is dit ``None`` (en vertaalt naar ``null`` in
+    JSON).
+
+    Je kan dit dus conditioneel insluiten, bijvoorbeeld:
+    ``{% if auth_context %}...{% endif %}``.
+
+``{{ auth_context.source }}``
+    Middel van inloggen: de waarde is ``"digid"`` of ``eherkenning``.
+
+``{{ auth_context.levelOfAssurance }}``
+    Betrouwbaarheidsniveau waarmee ingelogd is. Kan leeg zijn indien onbekend.
+
+``{{ auth_context.representee }}``
+    Object die vertegenwoordigde/machtiger identificeert. Afwezig indien er geen
+    sprake is van machtiging.
+
+    * ``{{ auth_context.representee.identifierType }}``: geeft aan of het om een BSN of
+      KVK-nummer gaat.
+    * ``{{ auth_context.representee.identifier }}``: identificatie van de
+      vertegenwoordigde.
+
+``{{ auth_context.authorizee }}``
+    Object die de ingelogde persoon en/of vertegenwoordiger identificeert. Dit is altijd
+    aanwezig.
+
+    * ``{{ auth_context.authorizee.legalSubject }}``: object die de wettelijke
+      vertegenwoordigder identificeert. In het geval van DigiD is dit een persoon, in
+      het geval van eHerkenning (met of zonder bewindvoering) is dit een bedrijf.
+
+      De attributen ``{{ auth_context.authorizee.legalSubject.identifierType }}`` en
+      ``{{ auth_context.authorizee.legalSubject.identifier }}`` hebben dezelfde
+      betekenis als bij de ``representee``.
+
+    * ``{{ auth_context.authorizee.actingSubject }}``: object die de handelende persoon
+      identificeert bij vertegenwoordiging. Dit is enkel aanwezig wanneer het
+      eHerkenning betreft.
+
+      De attributen ``{{ auth_context.authorizee.actingSubject.identifierType }}`` en
+      ``{{ auth_context.authorizee.actingSubject.identifier }}`` hebben een
+      gelijkaardige betekenis als bij de ``representee``.
