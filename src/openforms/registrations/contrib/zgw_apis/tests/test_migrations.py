@@ -1,3 +1,5 @@
+from django.db.migrations.state import StateApps
+
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.constants import APITypes
 
@@ -348,3 +350,35 @@ class MoveDefaultsToFormTest(TestMigrations):
                 options["informatieobjecttype"],
                 "http://www.example-ztc.com/api/v1/informatieobjecttypen/3",
             )
+
+
+class SetZGWAPIGroupTest(TestMigrations):
+    app = "zgw_apis"
+    migrate_from = "0012_remove_zgwapigroupconfig_informatieobjecttype_and_more"
+    migrate_to = "0013_set_zgw_api_group"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
+        ZgwConfig = apps.get_model("zgw_apis", "ZgwConfig")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+        Form = apps.get_model("forms", "Form")
+
+        self.group = ZGWApiGroupConfig.objects.create(name="zgw api group")
+        zgw_config = ZgwConfig.objects.create(default_zgw_api_group=self.group)
+        form = Form.objects.create(name="test form")
+
+        FormRegistrationBackend.objects.create(
+            form=form,
+            key="global-defaults",
+            name="global-defaults",
+            backend="zgw-create-zaak",
+            options={},
+        )
+
+    def test_sets_zgw_api_group(self):
+        FormRegistrationBackend = self.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+
+        backend = FormRegistrationBackend.objects.get()
+        self.assertEqual(backend.options["zgw_api_group"], self.group.pk)
