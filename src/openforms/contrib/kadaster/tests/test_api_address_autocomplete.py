@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 import requests_mock
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.formio.components.utils import salt_location_message
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -133,8 +134,10 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         self.assertEqual(response.json()["secretStreetCity"], "")
 
     @patch("openforms.contrib.kadaster.api.views.lookup_address")
-    def test_address_not_found_returns_empty_200_response(self, m_lookup_address):
-        m_lookup_address.return_value = None
+    def test_address_not_found_returns_empty_strs_200_response(self, m_lookup_address):
+        m_lookup_address.return_value = AddressResult(
+            street_name="", city="", secret_street_city=""
+        )
 
         response = self.client.get(
             reverse("api:get-street-name-and-city-list"),
@@ -142,7 +145,9 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {})
+        self.assertEqual(
+            response.json(), {"streetName": "", "city": "", "secretStreetCity": ""}
+        )
 
     @tag("gh-1832")
     @patch("openforms.contrib.kadaster.api.views.lookup_address")
@@ -181,4 +186,18 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
             )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {})
+        self.assertEqual(
+            response.json(),
+            {
+                "streetName": "",
+                "city": "",
+                "secretStreetCity": salt_location_message(
+                    {
+                        "postcode": "1015CJ",
+                        "number": "117",
+                        "city": "",
+                        "street_name": "",
+                    }
+                ),
+            },
+        )

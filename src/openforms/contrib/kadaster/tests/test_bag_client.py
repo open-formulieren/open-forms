@@ -8,7 +8,10 @@ import requests
 import requests_mock
 from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.formio.components.utils import salt_location_message
+
 from ..clients import get_bag_client
+from ..clients.bag import AddressResult
 from ..models import KadasterApiConfig
 
 TEST_FILES = Path(__file__).parent.resolve() / "files"
@@ -48,12 +51,11 @@ class BAGClientTests(SimpleTestCase):
         with get_bag_client() as client:
             address_data = client.get_address("1015CJ", "117")
 
-        assert address_data is not None
         self.assertEqual(address_data.street_name, "Keizersgracht")
         self.assertEqual(address_data.city, "Amsterdam")
 
     @requests_mock.Mocker()
-    def test_client_returns_empty_value_when_no_results_are_found(self, m):
+    def test_client_returns_empty_strs_when_no_results_are_found(self, m):
         m.get(
             "https://bag/api/adressen?postcode=1015CJ&huisnummer=1",
             status_code=200,
@@ -63,7 +65,21 @@ class BAGClientTests(SimpleTestCase):
         with get_bag_client() as client:
             address_data = client.get_address("1015CJ", "1")
 
-        self.assertIsNone(address_data)
+        self.assertEqual(
+            address_data,
+            AddressResult(
+                street_name="",
+                city="",
+                secret_street_city=salt_location_message(
+                    {
+                        "postcode": "1015CJ",
+                        "number": "1",
+                        "city": "",
+                        "street_name": "",
+                    }
+                ),
+            ),
+        )
 
     @requests_mock.Mocker()
     def test_client_returns_empty_value_when_client_exception_is_thrown(self, m):
@@ -75,4 +91,18 @@ class BAGClientTests(SimpleTestCase):
         with get_bag_client() as client:
             address_data = client.get_address("1015CJ", "115")
 
-        self.assertIsNone(address_data)
+        self.assertEqual(
+            address_data,
+            AddressResult(
+                street_name="",
+                city="",
+                secret_street_city=salt_location_message(
+                    {
+                        "postcode": "1015CJ",
+                        "number": "115",
+                        "city": "",
+                        "street_name": "",
+                    }
+                ),
+            ),
+        )
