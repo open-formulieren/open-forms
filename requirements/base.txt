@@ -233,7 +233,7 @@ djangorestframework==3.14.0
     #   drf-spectacular
 djangorestframework-camel-case==1.4.2
     # via -r requirements/base.in
-drf-jsonschema-serializer==2.0.0
+drf-jsonschema-serializer==3.0.0
     # via -r requirements/base.in
 drf-nested-routers==0.93.4
     # via -r requirements/base.in
