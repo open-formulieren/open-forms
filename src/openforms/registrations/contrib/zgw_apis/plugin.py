@@ -31,7 +31,7 @@ from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .client import get_catalogi_client, get_documents_client, get_zaken_client
-from .models import ZGWApiGroupConfig, ZgwConfig
+from .models import ZGWApiGroupConfig
 from .options import ZaakOptionsSerializer
 from .utils import process_according_to_eigenschap_format
 
@@ -142,15 +142,6 @@ class ZGWRegistration(BasePlugin):
         ),
     }
 
-    @staticmethod
-    def get_zgw_config(options: dict) -> ZGWApiGroupConfig:
-        zgw = options.get("zgw_api_group")
-        if zgw is None:
-            config = ZgwConfig.get_solo()
-            assert isinstance(config, ZgwConfig)
-            zgw = config.default_zgw_api_group
-        return zgw
-
     @wrap_api_errors
     def pre_register_submission(
         self, submission: "Submission", options: dict
@@ -161,7 +152,7 @@ class ZGWRegistration(BasePlugin):
         Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
         confirmation report PDF will be added in the registration task (after the report has been generated).
         """
-        zgw = self.get_zgw_config(options)
+        zgw: ZGWApiGroupConfig = options["zgw_api_group"]
         zgw.apply_defaults_to(options)
 
         zaak_data = apply_data_mapping(
@@ -196,7 +187,7 @@ class ZGWRegistration(BasePlugin):
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
-        zgw = self.get_zgw_config(options)
+        zgw: ZGWApiGroupConfig = options["zgw_api_group"]
         zgw.apply_defaults_to(options)
 
         result = submission.registration_result

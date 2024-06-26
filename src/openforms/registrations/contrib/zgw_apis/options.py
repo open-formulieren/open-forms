@@ -13,7 +13,7 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 from .client import get_catalogi_client
-from .models import ZGWApiGroupConfig, ZgwConfig
+from .models import ZGWApiGroupConfig
 
 
 class MappedVariablePropertySerializer(serializers.Serializer):
@@ -34,9 +34,8 @@ class MappedVariablePropertySerializer(serializers.Serializer):
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.all(),
-        help_text=_("Which ZGW API set to use."),  # type: ignore
-        label=_("ZGW API set"),  # type: ignore
-        required=False,
+        help_text=_("Which ZGW API set to use."),
+        label=_("ZGW API set"),
     )
     zaaktype = serializers.URLField(
         required=True, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
@@ -103,29 +102,11 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        from .plugin import ZGWRegistration  # circular import
-
-        # First checking that a ZGWApiGroupConfig is available:
-        if attrs.get("zgw_api_group") is None:
-            config = ZgwConfig.get_solo()
-            assert isinstance(config, ZgwConfig)
-            if config.default_zgw_api_group is None:
-                raise serializers.ValidationError(
-                    {
-                        "zgw_api_group": _(
-                            "No ZGW API set was configured on the form and no default "
-                            "was specified globally."
-                        )
-                    },
-                    code="invalid",
-                )
-
-        # We know it exists thanks to the previous check
-        group_config = ZGWRegistration.get_zgw_config(attrs)
-
         validate_business_logic = self.context.get("validate_business_logic", True)
         if not validate_business_logic:
             return attrs
+
+        group_config = attrs["zgw_api_group"]
 
         # Run all validations against catalogi API in the same connection pool.
         with get_catalogi_client(group_config) as client:

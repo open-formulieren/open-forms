@@ -364,7 +364,7 @@ class SetZGWAPIGroupTest(TestMigrations):
         Form = apps.get_model("forms", "Form")
 
         self.group = ZGWApiGroupConfig.objects.create(name="zgw api group")
-        zgw_config = ZgwConfig.objects.create(default_zgw_api_group=self.group)
+        ZgwConfig.objects.create(default_zgw_api_group=self.group)
         form = Form.objects.create(name="test form")
 
         FormRegistrationBackend.objects.create(

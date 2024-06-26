@@ -230,26 +230,6 @@
                 "timelinelog"
             ],
             [
-                "add_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
-            ],
-            [
-                "change_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
-            ],
-            [
-                "delete_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
-            ],
-            [
-                "view_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
-            ],
-            [
                 "add_service",
                 "zgw_consumers",
                 "service"
@@ -1507,26 +1487,6 @@
                 "view_timelinelog",
                 "timeline_logger",
                 "timelinelog"
-            ],
-            [
-                "add_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
-            ],
-            [
-                "change_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
-            ],
-            [
-                "delete_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
-            ],
-            [
-                "view_zgwconfig",
-                "zgw_apis",
-                "zgwconfig"
             ],
             [
                 "add_nlxconfig",

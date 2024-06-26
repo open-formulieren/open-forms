@@ -14,10 +14,16 @@ def get_content_text() -> str:
     return render_to_string("registrations/contrib/zgw_apis/content_json.txt").strip()
 
 
+# Remove this model when migrations get squashed:
 class ZgwConfig(SingletonModel):
     """
     global configuration and defaults
     """
+
+    def __init__(self, *args, **kwargs) -> None:
+        raise RuntimeError(
+            f"{self.__class__.__name__} is scheduled for removal and shouldn't be instanciated."
+        )  # pragma: nocover
 
     default_zgw_api_group = models.ForeignKey(
         to="ZGWApiGroupConfig",
