@@ -17,7 +17,7 @@ def enable_new_builder(apps, _):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("config", "0053_v230_to_v250"),
+        ("config", "0001_initial_to_v250"),
     ]
 
     operations = [

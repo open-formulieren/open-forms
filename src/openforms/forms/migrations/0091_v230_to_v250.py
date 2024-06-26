@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("forms", "0046_squashed_to_openforms_v230"),
-        ("config", "0053_v230_to_v250"),
+        ("config", "0001_initial_to_v250"),
     ]
 
     operations = [

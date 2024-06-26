@@ -952,7 +952,7 @@ class FormEditTests(WebTest):
         # delete defaults from migrations, if present
         RichTextColor.objects.all().delete()
         forward_migration = import_string(
-            "openforms.config.migrations.0001_initial_squashed_0022_merge_20210903_1228.add_colors"
+            "openforms.config.migrations.0001_initial_to_v250.add_colors"
         )
         forward_migration(apps, schema_editor=None)
         change_page = self.app.get(
