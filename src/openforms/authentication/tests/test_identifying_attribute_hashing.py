@@ -37,7 +37,7 @@ class HashIdentifyingAttributesTaskTests(TestCase):
 
 class HashIdentifyingAttributesTests(TestCase):
 
-    def test_hashing(self):
+    def test_hashing_extra_identifying_attributes(self):
         input_attributes = {
             "value": "123456789",
             "acting_subject_identifier_value": "some-opaque-identifier",
@@ -62,3 +62,15 @@ class HashIdentifyingAttributesTests(TestCase):
                 hashed_value = getattr(auth_info, attr)
                 self.assertGreater(len(hashed_value), 0)
                 self.assertNotEqual(hashed_value, old_value)
+
+    def test_hashing_minimal_information(self):
+        auth_info = AuthInfoFactory.create(value="123456789")
+        assert not auth_info.acting_subject_identifier_value
+        assert not auth_info.legal_subject_identifier_value
+
+        auth_info.hash_identifying_attributes()
+
+        auth_info.refresh_from_db()
+
+        assert auth_info.value
+        self.assertNotEqual(auth_info.value, "123456789")
