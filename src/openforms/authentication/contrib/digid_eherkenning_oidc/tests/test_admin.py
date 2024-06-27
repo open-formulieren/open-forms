@@ -1,10 +1,11 @@
 import json
 
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
 from django.test import override_settings
 from django.urls import reverse_lazy
 
+from digid_eherkenning.oidc.models import BaseConfig
+from django_jsonform.models.fields import JSONField
 from django_webtest import WebTest
 from maykin_2fa.test import disable_admin_mfa
 
@@ -26,11 +27,15 @@ class AdminTestsBase(WebTest):
     pass
 
 
-def _set_arrayfields(form, config: type[models.Model]) -> None:
+def _set_arrayfields(form, config: BaseConfig) -> None:
     """
     Set the field values manually, normally this is done through JS in the admin.
     """
-    fields = [f.name for f in config._meta.get_fields() if isinstance(f, ArrayField)]
+    fields = [
+        f.name
+        for f in config._meta.get_fields()
+        if isinstance(f, (ArrayField, JSONField))
+    ]
     for field in fields:
         form[field] = json.dumps(getattr(config, field))
 

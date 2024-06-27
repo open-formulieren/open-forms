@@ -14,6 +14,12 @@ from .constants import (
     LegalSubjectIdentifierType,
 )
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
+from .types import (
+    DigiDContext,
+    DigiDMachtigenContext,
+    EHerkenningContext,
+    EHerkenningMachtigenContext,
+)
 
 
 class BaseAuthInfo(models.Model):
@@ -237,6 +243,94 @@ class AuthInfo(BaseAuthInfo):
             ),
             # TODO: add constraints matching the json schema for the identifier types
         ]
+
+    def to_auth_context_data(
+        self,
+    ) -> (
+        DigiDContext
+        | DigiDMachtigenContext
+        | EHerkenningContext
+        | EHerkenningMachtigenContext
+    ):
+        assert not self.attribute_hashed
+
+        match (self.attribute, self.legal_subject_identifier_type):
+            # DigiD without machtigen/mandate
+            case (AuthAttribute.bsn, ""):
+                d_context: DigiDContext = {
+                    "source": "digid",
+                    "levelOfAssurance": self.loa,
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "bsn",
+                            "identifier": self.value,
+                        }
+                    },
+                }
+                return d_context
+            # DigiD with machtigen/mandate
+            case (AuthAttribute.bsn, LegalSubjectIdentifierType.bsn):
+                dm_context: DigiDMachtigenContext = {
+                    "source": "digid",
+                    "levelOfAssurance": self.loa,
+                    "representee": {
+                        "identifierType": "bsn",
+                        "identifier": self.value,
+                    },
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "bsn",
+                            "identifier": self.legal_subject_identifier_value,
+                        }
+                    },
+                    "mandate": self.mandate_context,
+                }
+                return dm_context
+
+            # EHerkenning without machtigen/mandate
+            # Presence of an acting subject confirms eHerkenning (or eidas? TODO),
+            # as opposed to a registrator entering the KVK number.
+            case (AuthAttribute.kvk, "") if self.acting_subject_identifier_value:
+                eh_context: EHerkenningContext = {
+                    "source": "eherkenning",
+                    "levelOfAssurance": self.loa,
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "kvkNummer",
+                            "identifier": self.value,
+                        },
+                        "actingSubject": {
+                            "identifierType": self.acting_subject_identifier_type,
+                            "identifier": self.acting_subject_identifier_value,
+                        },
+                    },
+                }
+                return eh_context
+
+            # EHerkenning with machtigen/mandate
+            case (AuthAttribute.bsn, LegalSubjectIdentifierType.kvk):
+                ehm_context: EHerkenningMachtigenContext = {
+                    "source": "eherkenning",
+                    "levelOfAssurance": self.loa,
+                    "representee": {
+                        "identifierType": "bsn",
+                        "identifier": self.value,
+                    },
+                    "authorizee": {
+                        "legalSubject": {
+                            "identifierType": "kvkNummer",
+                            "identifier": self.legal_subject_identifier_value,
+                        },
+                        "actingSubject": {
+                            "identifierType": self.acting_subject_identifier_type,
+                            "identifier": self.acting_subject_identifier_value,
+                        },
+                    },
+                    "mandate": self.mandate_context,
+                }
+                return ehm_context
+            case _:
+                raise RuntimeError(f"Unknown attribute: {self.attribute}")
 
 
 class RegistratorInfo(BaseAuthInfo):

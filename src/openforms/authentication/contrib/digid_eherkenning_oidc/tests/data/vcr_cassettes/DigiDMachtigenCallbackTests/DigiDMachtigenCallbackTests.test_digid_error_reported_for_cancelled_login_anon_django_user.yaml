@@ -9,7 +9,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.2
     method: GET
     uri: http://localhost:8080/realms/test/protocol/openid-connect/auth
   response:
@@ -66,7 +66,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.2
     method: GET
     uri: http://localhost:8080/realms/test/protocol/openid-connect/auth?response_type=code&scope=badscope&client_id=testid&redirect_uri=http%3A%2F%2Ftestserver%2Fdigid-machtigen-oidc%2Fcallback%2F&state=not-a-random-string&nonce=not-a-random-string
   response:

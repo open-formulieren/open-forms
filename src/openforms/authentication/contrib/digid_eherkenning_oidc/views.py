@@ -2,7 +2,7 @@ import logging
 
 from django.http import HttpRequest
 
-from digid_eherkenning.oidc.models import OpenIDConnectBaseConfig
+from digid_eherkenning.oidc.models import BaseConfig
 from digid_eherkenning.oidc.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
 )
@@ -65,7 +65,7 @@ class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
 
         config_to_plugin = get_config_to_plugin()
         config_class = lookup_config(self.request)
-        assert issubclass(config_class, OpenIDConnectBaseConfig)
+        assert issubclass(config_class, BaseConfig)
         plugin = config_to_plugin[config_class]
 
         match error, error_description, plugin:

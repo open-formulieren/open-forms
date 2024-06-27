@@ -262,7 +262,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning[oidc]==0.14.0
+django-digid-eherkenning[oidc]==0.15.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

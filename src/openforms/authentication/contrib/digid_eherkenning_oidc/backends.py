@@ -4,22 +4,16 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 
-from digid_eherkenning.oidc.models import OpenIDConnectBaseConfig
-from glom import Path, PathAccessError, glom
+from digid_eherkenning.oidc.claims import process_claims
+from digid_eherkenning.oidc.models import BaseConfig
+from flags.state import flag_enabled
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
-from mozilla_django_oidc_db.typing import ClaimPath
 from mozilla_django_oidc_db.utils import obfuscate_claims
 from typing_extensions import override
 
 from openforms.typing import JSONObject
 
-from .models import (
-    OFDigiDConfig,
-    OFDigiDMachtigenConfig,
-    OFEHerkenningBewindvoeringConfig,
-    OFEHerkenningConfig,
-)
 from .plugin import get_config_to_plugin
 
 logger = logging.getLogger(__name__)
@@ -30,16 +24,13 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
     A backend specialised to the digid-eherkenning-generics subclassed model.
     """
 
-    MANDATE_CLAIMS = dynamic_setting[dict[str, ClaimPath]]()
-    """
-    Mapping of destination key and the claim paths to extract.
-    """
+    OF_OIDCDB_REQUIRED_CLAIMS = dynamic_setting[list[str]](default=[])
 
     @override
     def _check_candidate_backend(self) -> bool:
         # if we're dealing with a mozilla-django-oidc-db config that is *not* a
         # digid-eherkenning-generics subclass, then don't bother.
-        if not issubclass(self.config_class, OpenIDConnectBaseConfig):
+        if not issubclass(self.config_class, BaseConfig):
             return False
         return super()._check_candidate_backend()
 
@@ -73,29 +64,41 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
         user.is_active = True  # type: ignore
         return user
 
+    def _process_claims(self, claims: JSONObject) -> JSONObject:
+        # see if we can use a cached config instance from the settings configuration
+        assert hasattr(self, "_config") and isinstance(self._config, BaseConfig)
+        strict_mode = flag_enabled(
+            "DIGID_EHERKENNING_OIDC_STRICT", request=self.request
+        )
+        assert isinstance(strict_mode, bool)
+        return process_claims(claims, self._config, strict=strict_mode)
+
     @override
     def verify_claims(self, claims) -> bool:
         """Verify the provided claims to decide if authentication should be allowed."""
-        if self.config_class in (OFDigiDConfig, OFEHerkenningConfig):
-            return super().verify_claims(claims)
-
-        assert self.config_class in (
-            OFDigiDMachtigenConfig,
-            OFEHerkenningBewindvoeringConfig,
-        )
-
         assert claims, "Empty claims should have been blocked earlier"
         obfuscated_claims = obfuscate_claims(claims, self.OIDCDB_SENSITIVE_CLAIMS)
         logger.debug("OIDC claims received: %s", obfuscated_claims)
 
-        for claim_path in self.MANDATE_CLAIMS.values():
-            try:
-                glom(claims, Path(*claim_path))
-            except PathAccessError:
+        # process_claims in strict mode raises ValueError if *required* claims are
+        # missing
+        try:
+            processed_claims = self._process_claims(claims)
+        except ValueError as exc:
+            logger.error(
+                "Claims are incomplete",
+                exc_info=exc,
+                extra={"claims": obfuscated_claims},
+            )
+            return False
+
+        # even in non-strict mode, some claims are a hard requirement
+        for claim in self.OF_OIDCDB_REQUIRED_CLAIMS:
+            if claim not in processed_claims:
                 logger.error(
-                    "`%s` not found in the OIDC claims, cannot "
-                    "proceed with authentication",
-                    " > ".join(claim_path),
+                    "Claims are incomplete - claim for '%s' is missing",
+                    claim,
+                    extra={"claims": obfuscated_claims},
                 )
                 return False
 
@@ -103,31 +106,11 @@ class DigiDEHerkenningOIDCBackend(OIDCAuthenticationBackend):
 
     def _extract_and_store_claims(self, claims: JSONObject) -> None:
         """
-        Extract the required claims and store them in the session.
-
-        TODO: extend this to grab more information from the claims.
+        Extract the claims configured on the config and store them in the session.
         """
         config_to_plugin = get_config_to_plugin()
         assert self.config_class and self.config_class in config_to_plugin
         session_key = config_to_plugin[self.config_class].session_key
-
-        session_value: JSONObject | str
-
-        # DigiD/eHerkenning without machtigen -> stores the BSN/KVK directly
-        if self.config_class in (OFDigiDConfig, OFEHerkenningConfig):
-            claim_bits = self.OIDCDB_USERNAME_CLAIM
-            session_value = glom(claims, Path(*claim_bits), default="")
-        # DigiD/eHerkenning with machtigen -> store a dict of relevant claims.
-        elif self.config_class in (
-            OFDigiDMachtigenConfig,
-            OFEHerkenningBewindvoeringConfig,
-        ):
-            session_value = {
-                key: glom(claims, Path(*claim_bits))
-                for key, claim_bits in self.MANDATE_CLAIMS.items()
-            }
-        else:  # pragma: no cover
-            raise RuntimeError("Unsupported config class")
-
+        procssed_claims = self._process_claims(claims)
         assert self.request
-        self.request.session[session_key] = session_value
+        self.request.session[session_key] = procssed_claims

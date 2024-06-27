@@ -311,6 +311,8 @@ class Submission(models.Model):
     _prefilled_data = None
     _total_configuration_wrapper = None
 
+    auth_info: AuthInfo
+
     class Meta:
         verbose_name = _("submission")
         verbose_name_plural = _("submissions")

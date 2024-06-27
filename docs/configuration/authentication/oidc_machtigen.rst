@@ -22,10 +22,36 @@ anders. In deze flow:
 .. _DigiD Machtigen: https://machtigen.digid.nl/
 .. _Keycloak: https://www.keycloak.org/
 
+DigiD Machtigen
+===============
+
+Claim-eisen
+-----------
+
+``BSN vertegenwoordiger``
+    Het BSN van de vertegenwoordiger die "aan de knoppen zit". Altijd verplicht.
+
+``BSN vertegenwoordigde``
+    Het BSN van de vertegenwoordigde gebruiker. Altijd verplicht.
+
+``betrouwbaarheidsniveau``
+    Het betrouwbaarheidsniveau gebruikt tijdens het inloggen. Dit wordt vastgelegd en
+    meegestuurd tijdens het registeren van formulierinzendingen. Als de provider dit
+    niet kan aanleveren, dan kan je een standaardwaarde instellen in Open Formulieren.
+
+    Beheerders kunnen waardenvertalingen inrichten indien de provider de waarden
+    niet aanlevert zoals gedocumenteerd in de koppelvlakstandaard van Logius.
+
+``Service ID``
+    Het ID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Dit komt voor de
+    provider/broker beschikbaar via Logius' DigiD Machtigen.
+
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` (:ref:`installation_environment_config`) op ``True`` staat.
+
 .. _configuration_oidc_digid_machtigen_appgroup:
 
-Configureren van OIDC-provider voor DigiD Machtigen
-===================================================
+Configureren van OIDC-provider
+------------------------------
 
 De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_appgroup`.
 
@@ -39,36 +65,89 @@ Aan het eind van dit proces moet u de volgende gegevens hebben:
 * Client secret, bijvoorbeeld ``97d663a9-3624-4930-90c7-2b90635bd990``
 
 Configureren van OIDC in Open Formulieren
-=========================================
+-----------------------------------------
 
-Om OIDC in Open-Formulieren te kunnen configureren zijn de volgende :ref:`gegevens <configuration_oidc_digid_machtigen_appgroup>` nodig:
+Om OIDC in Open-Formulieren te kunnen configureren zijn de volgende
+:ref:`gegevens <configuration_oidc_digid_machtigen_appgroup>` nodig:
 
 * Server adres
 * Client ID
 * Client secret
 
-Navigeer vervolgens in de admin naar **Configuratie** > **OpenID Connect configuration for DigiD Machtigen**.
+Navigeer vervolgens in de admin naar **Configuratie** > **DigiD Machtigen (OIDC)**.
 
-#. Vink *Enable* aan om OIDC in te schakelen.
-#. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld ``a7d14516-8b20-418f-b34e-25f53c930948``.
-#. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld ``97d663a9-3624-4930-90c7-2b90635bd990``.
-#. Vul bij **OpenID Connect scopes**  ``openid``.
-#. Vul bij **OpenID sign algorithm** ``RS256`` in.
-#. Laat **Sign key** leeg.
-#. Laat bij **Vertegenwoordigde claim name** de standaardwaarde staan, tenzij de naam van het BSN veld van de vertegenwoordigde in de OIDC claims anders is dan ``aanvrager.bsn``.
-#. Laat bij **Gemachtigde claim name** de standaardwaarde staan, tenzij de naam van het BSN veld van de gemachtigde in de OIDC claims anders is dan ``gemachtigde.bsn``.
+Stel de algemene instellingen in:
 
-De endpoints die ingesteld moeten worden zijn dezelfde als voor DigiD. U kunt de stappen in :ref:`configuration_oidc_digid_appgroup`
-volgen om die te configureren.
+1. Vink *Ingeschakeld* aan om OIDC in te schakelen.
+2. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
+   ``a7d14516-8b20-418f-b34e-25f53c930948``.
+3. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
+   ``97d663a9-3624-4930-90c7-2b90635bd990``.
+4. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
+   de instructies van je OpenID Connect provider.
+5. Vul bij **OpenID sign algorithm** ``RS256`` in.
+6. Laat **Sign key** leeg.
 
-Nu kan er een formulier aangemaakt worden met het authenticatie backend ``DigiD Machtigen via OpenID Connect`` (zie :ref:`manual_forms_basics`).
+Stel dan de claims in:
+
+.. note:: Indien er sprake is van *nesting* in de claims, voeg dan een regel toe met het
+   plusje voor elk niveau.
+
+7. Vul bij **BSN vertegenwoordigde-claim** de naam van de claim in die het BSN bevat
+   van de machtiger, bijvoorbeeld ``aanvrager.bsn``.
+8. Vul bij **BSN vertegenwoordiger-claim** de naam van de claim in die het BSN bevat
+   van de gemachtigde, bijvoorbeeld ``gemachtigde.bsn``.
+9. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in (bijvoorbeeld
+   ``authsp_level``) als die bekend is. Indien niet, kies dan bij
+   **Standaardbetrouwbaarheidsniveau** de waarde die meest van toepassing is. Dit wordt
+   enkel gebruikt om vast te leggen met welk betrouwbaarheidsniveau iemand ingelogd is.
+10. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus toevoegen,
+    bijvoorbeeld:
+
+    * klik op "Add item"
+    * Kies "Tekstuele waarde" in de **From** dropdown en voer de waarde ``10`` op in het
+      tekstveld
+    * Selecteer "DigiD Basis" in de **To** dropdown
+    * Herhaal voor andere waarden en niveaus
+11. Vul bij de **Service ID-claim** de naam van de claim in die aangeeft voor welke
+    dienst de machtiging afgegeven is, bijvoobeeld ``urn:nl-eid-gdi:1.0:ServiceUUID``.
+
+De endpoints die ingesteld moeten worden zijn dezelfde als voor DigiD. Je kan de stappen
+in :ref:`configuration_oidc_digid_appgroup` volgen om die te configureren.
+
+Je kan nu een formulier aanmaken met de ``DigiD Machtigen via OpenID Connect``
+authenticatie-plugin, zie :ref:`manual_forms_basics`.
+
+eHerkenning bewindvoering
+=========================
+
+Claim-eisen
+-----------
+
+Alle eisen voor :ref:`standaard-eHerkenning <configuration_oidc_eherkenning_claim_requirements>`
+gelden, plus:
+
+``BSN vertegenwoordigde``
+    Het BSN van de vertegenwoordigde gebruiker. Altijd verplicht.
+
+``Service ID``
+    Het ID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Deze waarde staat
+    in de dienstencatalogus.
+
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` (:ref:`installation_environment_config`) op ``True`` staat.
+
+``Service UUID``
+    Het UUID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Deze waarde staat
+    in de dienstencatalogus.
+
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` (:ref:`installation_environment_config`) op ``True`` staat.
 
 .. _configuration_oidc_eh_bewindvoering_appgroup:
 
-Configureren van OIDC-provider voor eHerkenning bewindvoering
-=============================================================
+Configureren van OIDC-provider
+------------------------------
 
-De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_machtigen_appgroup`.
+De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_eherkenning_appgroup`.
 
 .. warning:: Indien je de legacy **Redirect URI** gebruikt, dan is de waarde
    ``https://open-formulieren.gemeente.nl/eherkenning-bewindvoering-oidc/callback/``.
@@ -81,26 +160,58 @@ Aan het eind van dit proces moet u de volgende gegevens hebben:
 * Identity provider hint (optioneel)
 
 Configureren van OIDC in Open Formulieren
-=========================================
+-----------------------------------------
 
-Om OIDC in Open-Formulieren te kunnen configureren zijn de volgende :ref:`gegevens <configuration_oidc_eh_bewindvoering_appgroup>` nodig:
+Om OIDC in Open-Formulieren te kunnen configureren zijn de volgende
+:ref:`gegevens <configuration_oidc_eh_bewindvoering_appgroup>` nodig:
 
 * OpenID connect client discovery endpoint
 * Client ID
 * Client secret
 * Identity provider hint (optioneel)
 
-Navigeer vervolgens in de admin naar **Configuratie** > **OpenID Connect configuration for eHerkenning bewindvoering**.
+Navigeer vervolgens in de admin naar **Configuratie** > **eHerkenning bewindvoering (OIDC)**.
 
-#. Vink *Enable* aan om OIDC in te schakelen.
-#. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld ``a7d14516-8b20-418f-b34e-25f53c930948``.
-#. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld ``97d663a9-3624-4930-90c7-2b90635bd990``.
-#. Vul bij **OpenID Connect scopes**  ``openid``.
-#. Vul bij **OpenID sign algorithm** ``RS256`` in.
-#. Laat **Sign key** leeg.
-#. Laat bij **Vertegenwoordigd bedrijf claim name** de standaardwaarde staan, tenzij de naam van het KvK veld van de vertegenwoordigde in de OIDC claims anders is dan ``aanvrager.kvk``.
-#. Laat bij **Gemachtigde persoon claim name** de standaardwaarde staan, tenzij de naam van het ID veld van de gemachtigde in de OIDC claims anders is dan ``gemachtigde.bsn``.
-#. De endpoints die ingesteld moeten worden zijn dezelfde als voor DigiD. U kunt de stappen in :ref:`configuration_oidc_digid_appgroup` volgen om die te configureren.
-#. Als u een Identity Provider hint heeft, dan vul het in. Voor Keycloak is dit nodig.
+Stel de algemene instellingen in:
 
-Nu kan er een formulier aangemaakt worden met het authenticatie backend ``eHerkenning bewindvoering via OpenID Connect`` (zie :ref:`manual_forms_basics`).
+1. Vink *Ingeschakeld* aan om OIDC in te schakelen.
+2. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
+   ``a7d14516-8b20-418f-b34e-25f53c930948``.
+3. Vul bij **OpenID Connect secret** het Client secret in, bijvoobeeld
+   ``97d663a9-3624-4930-90c7-2b90635bd990``.
+4. Laat bij **OpenID Connect scopes** de standaardwaarden staan, of stel deze in volgens
+   de instructies van je OpenID Connect provider.
+5. Vul bij **OpenID sign algorithm** ``RS256`` in.
+6. Laat **Sign key** leeg.
+
+Stel dan de claims in:
+
+7. Vul bij **Identificatie vertegenwoordigde-claim** de naam van de claim in die het
+   BSN bevat van de machtiger, bijvoorbeeld ``bsn``.
+8. Vul bij **Soort identificatie-claim** de claim in die aangeeft of het een KVK-nummer
+   of RSIN betreft (merk op: op dit moment ondersteunen we enkel KVK). Indien onbekend,
+   dan kan je de standaardwaarde laten staan.
+9. Vul bij **Bedrijfsidenticatie-claim** de claim in die het KVK-nummer (of RSIN,
+   toekomst) bevat, bijvoorbeeld ``kvk``.
+10. Vul de claim in die het (eventuele) vestigingsnummer bevat bij
+    **Vestigingsnummer-claim**. Indien onbekend, laat dan de standaardwaarde staan.
+11. Vul bij **Identificatie handelende persoon-claim** de claim in die de identificatie
+    bevat van de medewerker die namens het bedrijf inlogt.
+12. Voer bij **betrouwbaarheidsniveau-claim** de naam van de claim in (bijvoorbeeld
+    ``authsp_level``) als die bekend is. Indien niet, kies dan bij
+    **Standaardbetrouwbaarheidsniveau** de waarde die meest van toepassing is. Dit wordt
+    enkel gebruikt om vast te leggen met welk betrouwbaarheidsniveau iemand ingelogd is.
+13. Indien gewenst, dan kan je waardenvertalingen voor de betrouwbaarheidsniveaus toevoegen,
+    bijvoorbeeld:
+
+    * klik op "Add item"
+    * Kies "Tekstuele waarde" in de **From** dropdown en voer de waarde ``00`` op in het
+      tekstveld
+    * Selecteer "Non existent" in de **To** dropdown
+    * Herhaal voor andere waarden en niveaus
+
+De endpoints die ingesteld moeten worden zijn dezelfde als voor DigiD. Je kan de stappen
+in :ref:`configuration_oidc_eherkenning_appgroup` volgen om die te configureren.
+
+Je kan nu een formulier aanmaken met de ``eHerkenning bewindvoering via OpenID Connect``
+authenticatie-plugin, zie :ref:`manual_forms_basics`.

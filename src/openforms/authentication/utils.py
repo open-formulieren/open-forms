@@ -9,12 +9,7 @@ from openforms.typing import AnyRequest
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
-from .typing import BaseAuth
-
-
-class FormAuth(BaseAuth):
-    machtigen: dict | None
-    loa: str | None
+from .typing import BaseAuth, FormAuth
 
 
 def store_auth_details(

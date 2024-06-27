@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, Protocol, TypeVar
+from typing import Any, ClassVar, Generic, Protocol, TypedDict, TypeVar
 
 from django.http import (
     HttpRequest,
@@ -10,16 +10,19 @@ from django.http import (
 )
 from django.utils.translation import gettext_lazy as _
 
-from digid_eherkenning.oidc.models import OpenIDConnectBaseConfig
+from digid_eherkenning.oidc.models import BaseConfig
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
+from typing_extensions import NotRequired
 
+from openforms.authentication.constants import LegalSubjectIdentifierType
+from openforms.authentication.typing import FormAuth
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,
     get_eherkenning_logo,
 )
 from openforms.forms.models import Form
-from openforms.typing import JSONObject, StrOrPromise
+from openforms.typing import StrOrPromise
 from openforms.utils.urls import reverse_plus
 
 from ...base import BasePlugin, LoginLogo
@@ -42,7 +45,7 @@ from .views import (
 OIDC_ID_TOKEN_SESSION_KEY = "oidc_id_token"
 
 
-def get_config_to_plugin() -> dict[type[OpenIDConnectBaseConfig], OIDCAuthentication]:
+def get_config_to_plugin() -> dict[type[BaseConfig], OIDCAuthentication]:
     """
     Get the mapping of config class to plugin identifier from the registry.
     """
@@ -59,14 +62,16 @@ class AuthInit(Protocol):
     ) -> HttpResponseBase: ...
 
 
-T = TypeVar("T", bound=str | JSONObject)
+# can't bind it to JSONObject because TypedDict and dict[str, ...] are not considered
+# assignable... :(
+T = TypeVar("T")
 
 
 class OIDCAuthentication(Generic[T], BasePlugin):
     verbose_name: StrOrPromise = ""
     provides_auth: AuthAttribute
     session_key: str = ""
-    config_class: ClassVar[type[OpenIDConnectBaseConfig]]
+    config_class: ClassVar[type[BaseConfig]]
     init_view: ClassVar[AuthInit]
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
@@ -103,9 +108,8 @@ class OIDCAuthentication(Generic[T], BasePlugin):
             "fields": {},
         }
 
-    def translate_auth_data(self, session_value: T) -> tuple[str, None | JSONObject]:
-        assert isinstance(session_value, str)
-        return session_value, None
+    def transform_claims(self, normalized_claims: T) -> FormAuth:
+        raise NotImplementedError("Subclasses must implement 'transform_claims'")
 
     def handle_return(self, request: HttpRequest, form: Form):
         """
@@ -115,23 +119,17 @@ class OIDCAuthentication(Generic[T], BasePlugin):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
 
-        session_value: T | None = request.session.get(self.session_key)
-        if session_value and CO_SIGN_PARAMETER not in request.GET:
-            auth_value, machtigen_data = self.translate_auth_data(session_value)
-            _machtigen_data = {"machtigen": machtigen_data} if machtigen_data else {}
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": auth_value,
-                **_machtigen_data,
-            }
+        normalized_claims: T | None = request.session.get(self.session_key)
+        if normalized_claims and CO_SIGN_PARAMETER not in request.GET:
+            form_auth = self.transform_claims(normalized_claims)
+            request.session[FORM_AUTH_SESSION_KEY] = form_auth
 
         return HttpResponseRedirect(form_url)
 
     def logout(self, request: HttpRequest):
         if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
             config = self.config_class.get_solo()
-            assert isinstance(config, OpenIDConnectBaseConfig)
+            assert isinstance(config, BaseConfig)
             do_op_logout(config, id_token)
 
         keys_to_delete = (
@@ -145,8 +143,22 @@ class OIDCAuthentication(Generic[T], BasePlugin):
                 del request.session[key]
 
 
+class DigiDClaims(TypedDict):
+    """
+    Processed DigiD claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.DigiDConfig.CLAIMS_CONFIGURATION` for the
+    source of this structure.
+    """
+
+    bsn_claim: str
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+
+
 @register("digid_oidc")
-class DigiDOIDCAuthentication(OIDCAuthentication[str]):
+class DigiDOIDCAuthentication(OIDCAuthentication[DigiDClaims]):
     verbose_name = _("DigiD via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_oidc:bsn"
@@ -159,9 +171,34 @@ class DigiDOIDCAuthentication(OIDCAuthentication[str]):
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
+    def transform_claims(self, normalized_claims: DigiDClaims) -> FormAuth:
+        return {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": normalized_claims["bsn_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+        }
+
+
+class EHClaims(TypedDict):
+    """
+    Processed EH claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.EHerkenningConfig.CLAIMS_CONFIGURATION`
+    for the source of this structure.
+    """
+
+    identifier_type_claim: NotRequired[str]
+    legal_subject_claim: str
+    acting_subject_claim: str
+    branch_number_claim: NotRequired[str]
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+
 
 @register("eherkenning_oidc")
-class eHerkenningOIDCAuthentication(OIDCAuthentication[str]):
+class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
     verbose_name = _("eHerkenning via OpenID Connect")
     provides_auth = AuthAttribute.kvk
     session_key = "eherkenning_oidc:kvk"
@@ -174,9 +211,41 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[str]):
     def get_logo(self, request) -> LoginLogo | None:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
+    def transform_claims(self, normalized_claims: EHClaims) -> FormAuth:
+        return {
+            "plugin": self.identifier,
+            # TODO: look at `identifier_type_claim` and return kvk or rsin accordingly.
+            # Currently we have no support for RSIN at all, so that will need to be
+            # added first (and has implications for prefill!)
+            "attribute": self.provides_auth,
+            "value": normalized_claims["legal_subject_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+            "acting_subject_identifier_type": "opaque",
+            "acting_subject_identifier_value": normalized_claims[
+                "acting_subject_claim"
+            ],
+        }
+
+
+class DigiDmachtigenClaims(TypedDict):
+    """
+    Processed DigiD Machtigen claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.DigiDMachtigenConfig.CLAIMS_CONFIGURATION`
+    for the source of this structure.
+    """
+
+    representee_bsn_claim: str
+    authorizee_bsn_claim: str
+    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
+    mandate_service_id_claim: NotRequired[str]
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+
 
 @register("digid_machtigen_oidc")
-class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[JSONObject]):
+class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[DigiDmachtigenClaims]):
     verbose_name = _("DigiD Machtigen via OpenID Connect")
     provides_auth = AuthAttribute.bsn
     session_key = "digid_machtigen_oidc:machtigen"
@@ -184,14 +253,26 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[JSONObject]):
     init_view = staticmethod(digid_machtigen_init)
     is_for_gemachtigde = True
 
-    def translate_auth_data(self, session_value: JSONObject) -> tuple[str, JSONObject]:
-        # these keys are set by the authentication backend
-        bsn_vertegenwoordigde = session_value.get("representee")
-        assert isinstance(bsn_vertegenwoordigde, str)
-        bsn_gemachtigde = session_value.get("authorizee")
-        assert isinstance(bsn_gemachtigde, str)
-
-        return bsn_vertegenwoordigde, {"identifier_value": bsn_gemachtigde}
+    def transform_claims(self, normalized_claims: DigiDmachtigenClaims) -> FormAuth:
+        authorizee = normalized_claims["authorizee_bsn_claim"]
+        mandate_context = {}
+        if "mandate_service_id_claim" in normalized_claims:
+            mandate_context["services"] = [
+                {"id": normalized_claims["mandate_service_id_claim"]}
+            ]
+        return {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": normalized_claims["representee_bsn_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+            "legal_subject_identifier_type": "bsn",
+            "legal_subject_identifier_value": authorizee,
+            "mandate_context": mandate_context,
+            # DeprecationWarning - legacy, remove in 3.0
+            "machtigen": {
+                "identifier_value": authorizee,
+            },
+        }
 
     def get_label(self) -> str:
         return "DigiD Machtigen"
@@ -200,23 +281,92 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication[JSONObject]):
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
 
+class EHBewindvoeringClaims(TypedDict):
+    """
+    Processed EH claims structure.
+
+    See :attr:`digid_eherkenning.oidc.models.EHerkenningBewindvoeringConfig.CLAIMS_CONFIGURATION`
+    for the source of this structure.
+    """
+
+    identifier_type_claim: NotRequired[str]
+    legal_subject_claim: str
+    acting_subject_claim: str
+    branch_number_claim: NotRequired[str]
+    # *could* be a number if no value mapping is specified and the source claims return
+    # numeric values...
+    loa_claim: NotRequired[str | int | float]
+    representee_claim: str
+    # could be missing in lax mode, see DIGID_EHERKENNING_OIDC_STRICT feature flag
+    mandate_service_id_claim: NotRequired[str]
+    mandate_service_uuid_claim: NotRequired[str]
+
+
+_EH_IDENTIFIER_TYPE_MAP = {
+    "urn:etoegang:1.9:EntityConcernedID:KvKnr": LegalSubjectIdentifierType.kvk,
+    "urn:etoegang:1.9:EntityConcernedID:RSIN": LegalSubjectIdentifierType.rsin,
+}
+
+
 @register("eherkenning_bewindvoering_oidc")
-class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication[JSONObject]):
+class EHerkenningBewindvoeringOIDCAuthentication(
+    OIDCAuthentication[EHBewindvoeringClaims]
+):
     verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
-    provides_auth = AuthAttribute.kvk
+    # eHerkenning Bewindvoering always is on a personal title via BSN (or so I've been
+    # told)
+    provides_auth = AuthAttribute.bsn
     session_key = "eherkenning_bewindvoering_oidc:machtigen"
     config_class = OFEHerkenningBewindvoeringConfig
     init_view = staticmethod(eherkenning_bewindvoering_init)
     is_for_gemachtigde = True
 
-    def translate_auth_data(self, session_value: JSONObject) -> tuple[str, JSONObject]:
-        # these keys are set by the authentication backend
-        bsn_vertegenwoordigde = session_value.get("representee")
-        assert isinstance(bsn_vertegenwoordigde, str)
-        kvk_gemachtigde = session_value.get("authorizee_legal_subject")
-        assert isinstance(kvk_gemachtigde, str)
+    def transform_claims(self, normalized_claims: EHBewindvoeringClaims) -> FormAuth:
+        authorizee = normalized_claims["legal_subject_claim"]
+        # Assume KVK if claim is not present...
+        name_qualifier = normalized_claims.get(
+            "identifier_type_claim",
+            "urn:etoegang:1.9:EntityConcernedID:KvKnr",
+        )
+        services = []
+        if (
+            "mandate_service_id_claim" in normalized_claims
+            and "mandate_service_uuid_claim" in normalized_claims
+        ):
+            services.append(
+                {
+                    "id": normalized_claims["mandate_service_id_claim"],
+                    "uuid": normalized_claims["mandate_service_uuid_claim"],
+                }
+            )
 
-        return bsn_vertegenwoordigde, {"identifier_value": kvk_gemachtigde}
+        return {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": normalized_claims["representee_claim"],
+            "loa": str(normalized_claims.get("loa_claim", "")),
+            # representee
+            # acting subject
+            "acting_subject_identifier_type": "opaque",
+            "acting_subject_identifier_value": normalized_claims[
+                "acting_subject_claim"
+            ],
+            # legal subject
+            "legal_subject_identifier_type": _EH_IDENTIFIER_TYPE_MAP.get(
+                name_qualifier,
+                LegalSubjectIdentifierType.kvk,
+            ),
+            "legal_subject_identifier_value": authorizee,
+            # mandate
+            "mandate_context": {
+                "role": "bewindvoerder",
+                "services": services,
+            },
+            # DeprecationWarning - legacy, remove in 3.0
+            "machtigen": {
+                "identifier_value": authorizee,
+            },
+        }
 
     def get_label(self) -> str:
         return "eHerkenning bewindvoering"
