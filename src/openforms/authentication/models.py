@@ -329,7 +329,7 @@ class AuthInfo(BaseAuthInfo):
                     "mandate": self.mandate_context,
                 }
                 return ehm_context
-            case _:
+            case _:  # pragma: no cover
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")
 
 
