@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("registrations_objects_api", "0010_objectsapiconfig_objecttypes_service"),
-        ("forms", "0091_v230_to_v250"),
+        ("forms", "0001_initial_to_v250"),
     ]
 
     operations = [

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("config", "0001_initial_to_v250"),
-        ("forms", "0001_initial_pre_openforms_v230"),
+        ("forms", "0001_initial_to_v250"),
     ]
 
     operations = [

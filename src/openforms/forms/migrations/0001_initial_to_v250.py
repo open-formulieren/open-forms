@@ -27,12 +27,7 @@ import openforms.utils.files
 
 
 class Migration(migrations.Migration):
-
-    replaces = [
-        ("forms", "0001_initial_pre_openforms_v230"),
-        ("forms", "0046_squashed_to_openforms_v230"),
-        ("forms", "0091_v230_to_v250"),
-    ]
+    initial = True
 
     dependencies = [
         ("products", "0001_initial"),
