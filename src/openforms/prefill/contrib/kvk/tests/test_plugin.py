@@ -3,7 +3,7 @@ from django.test import TestCase
 import requests_mock
 from privates.test import temp_private_root
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.contrib.kvk.tests.base import KVKTestMixin, load_json_mock
 from openforms.submissions.tests.factories import SubmissionFactory

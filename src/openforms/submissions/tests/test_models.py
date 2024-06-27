@@ -11,7 +11,7 @@ from hypothesis.extra.django import TestCase as HypothesisTestCase
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,

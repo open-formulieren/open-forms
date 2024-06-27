@@ -7,7 +7,7 @@ from django.test import TransactionTestCase
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext as _
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.forms.tests.factories import FormFactory, FormStepFactory

@@ -1,6 +1,6 @@
 from typing import Any, Container, Iterable
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
 from openforms.typing import JSONEncodable

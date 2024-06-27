@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 import requests
 from glom import GlomError, glom
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.haal_centraal.clients import NoServiceConfigured, get_brp_client
 from openforms.contrib.haal_centraal.clients.brp import BRPClient
 from openforms.contrib.haal_centraal.constants import BRPVersions

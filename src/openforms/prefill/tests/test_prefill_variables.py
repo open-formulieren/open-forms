@@ -5,7 +5,7 @@ from django.test import RequestFactory, TestCase, TransactionTestCase
 import requests_mock
 from zgw_consumers.test.factories import ServiceFactory
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.contrib.haal_centraal.models import HaalCentraalConfig
 from openforms.formio.service import (
     FormioConfigurationWrapper,

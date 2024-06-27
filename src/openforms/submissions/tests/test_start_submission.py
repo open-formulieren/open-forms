@@ -22,7 +22,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.service import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,

@@ -8,7 +8,7 @@ import requests
 from glom import T as Target, glom
 from lxml import etree
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 from openforms.utils.xml import fromstring

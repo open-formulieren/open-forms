@@ -194,7 +194,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         submission = cls.create(**kwargs)
         if bsn or kvk or pseudo:
-            from openforms.authentication.constants import AuthAttribute
+            from openforms.authentication.service import AuthAttribute
             from openforms.authentication.tests.factories import AuthInfoFactory
 
             attribute = AuthAttribute.bsn

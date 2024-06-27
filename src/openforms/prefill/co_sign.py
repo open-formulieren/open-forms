@@ -9,7 +9,7 @@ received, see the :mod:`signals` module.
 
 import logging
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.submissions.models import Submission
 
 from .models import PrefillConfig

@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 
 from .fields import PrefillPluginChoiceField
 

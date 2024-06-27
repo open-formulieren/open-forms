@@ -5,6 +5,7 @@ type model fields.
 
 from rest_framework import serializers
 
+# import from `constants` to avoid circ. import:
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.registry import register
 

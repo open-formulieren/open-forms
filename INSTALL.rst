@@ -27,7 +27,6 @@ You need the following libraries and/or programs:
 * `Redis`_ for `Celery`_ to work
 * `Node.js`_, see ``.nvmrc`` for the exact version. Using nvm_ is recommended.
 * `npm`_
-* `yarn`_ (to build the SDK)
 * `gettext`_
 * `gdal-bin`_ (should pull in ``libgeos``)
 * `chromedriver`_
@@ -49,7 +48,6 @@ You will also need the following operating-system libraries:
 .. _Node.js: http://nodejs.org/
 .. _nvm: https://github.com/nvm-sh/nvm
 .. _npm: https://www.npmjs.com/
-.. _yarn: https://yarnpkg.com/
 .. _Redis: https://redis.io/
 .. _gettext: https://www.gnu.org/software/gettext/
 .. _gdal-bin: https://docs.djangoproject.com/en/3.2/ref/contrib/gis/gdal/
@@ -158,8 +156,8 @@ this particular SDK build for local backend dev and testing.
       cd /path/to/code/
       git clone git@github.com:open-formulieren/open-forms-sdk.git
       cd open-forms-sdk
-      yarn install
-      yarn build
+      npm install
+      npm run build
 
    This produces the production build artifacts in the ``dist`` folder, it should contain
    ``open-forms-sdk.js`` and ``open-forms-sdk.css`` files.

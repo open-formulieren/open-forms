@@ -3,7 +3,7 @@ import logging
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
 from openforms.typing import JSONSerializable

@@ -6,7 +6,7 @@ import requests_mock
 from glom import glom
 from zgw_consumers.test.factories import ServiceFactory
 
-from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.service import AuthAttribute
 from openforms.authentication.utils import store_registrator_details
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
