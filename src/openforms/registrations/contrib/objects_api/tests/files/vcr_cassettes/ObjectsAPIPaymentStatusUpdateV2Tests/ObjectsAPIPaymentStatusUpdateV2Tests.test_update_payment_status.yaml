@@ -27,8 +27,8 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58","uuid":"719f033f-43ec-43a7-86c3-48d2dbcd6f58","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-06-24","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://localhost:8002/api/v2/objects/7ea00ab0-7edf-4fc5-a55e-2131652e6a13","uuid":"7ea00ab0-7edf-4fc5-a55e-2131652e6a13","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-06-27","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -41,7 +41,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Location:
-      - http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58
+      - http://localhost:8002/api/v2/objects/7ea00ab0-7edf-4fc5-a55e-2131652e6a13
       Referrer-Policy:
       - same-origin
       X-Content-Type-Options:
@@ -52,10 +52,44 @@ interactions:
       code: 201
       message: Created
 - request:
-    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-      "record": {"typeVersion": 3, "data": {"submission_payment_completed": true,
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Authorization:
+      - Token 171be5abaf41e7856b423ad513df1ef8f867ff48
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
+  response:
+    body:
+      string: '{"url":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3"]}'
+    headers:
+      Allow:
+      - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Content-Length:
+      - '766'
+      Content-Type:
+      - application/json
+      Referrer-Policy:
+      - same-origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+      "record": {"typeVersion": 3, "data": {"submission_payment_completed": false,
       "nested": {"submission_payment_amount": 10.01}, "submission_payment_public_ids":
-      ["TEST-123"]}, "startAt": "2020-02-02"}}'
+      []}, "startAt": "2020-02-02"}}'
     headers:
       Accept:
       - '*/*'
@@ -68,24 +102,24 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '293'
+      - '278'
       Content-Type:
       - application/json
       User-Agent:
       - python-requests/2.31.0
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58
+    uri: http://localhost:8002/api/v2/objects/7ea00ab0-7edf-4fc5-a55e-2131652e6a13
   response:
     body:
-      string: '{"url":"http://localhost:8002/api/v2/objects/719f033f-43ec-43a7-86c3-48d2dbcd6f58","uuid":"719f033f-43ec-43a7-86c3-48d2dbcd6f58","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-06-24","correctionFor":null,"correctedBy":null}}'
+      string: '{"type":["ObjectType with url=http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
+        is not configured."]}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '716'
+      - '129'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
@@ -97,6 +131,6 @@ interactions:
       X-Frame-Options:
       - DENY
     status:
-      code: 200
-      message: OK
+      code: 400
+      message: Bad Request
 version: 1

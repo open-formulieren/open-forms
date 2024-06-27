@@ -194,8 +194,8 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
     When registering a submission to the Objects API, the following happens:
     - Depending on the version (v1 or v2) of the options, the correct handler is instantiated.
     - ``save_registration_data`` is called, creating an instance of ``ObjectsAPIRegistrationData``.
-    - ``get_object_data`` is called, and should make use of the saved registration data to build the payload
-      to be sent to the Objects API.
+    - ``get_record_data`` is called, and should make use of the saved registration data to build
+      the record data to be sent to the Objects API.
     - Similarly, ``get_update_payment_status_data`` is called to get the PATCH payload to be sent
       to the Objects API.
     """
@@ -258,12 +258,12 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
         return f"{base_url}objecttypes/{options['objecttype']}"
 
     @abstractmethod
-    def get_object_data(
+    def get_record_data(
         self,
         submission: Submission,
         options: OptionsT,
     ) -> dict[str, Any]:
-        """Get the object data payload to be sent to the Objects API."""
+        """Get the record data to be sent to the Objects API."""
         pass
 
     @abstractmethod
@@ -308,12 +308,12 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             }
 
     @override
-    def get_object_data(
+    def get_record_data(
         self,
         submission: Submission,
         options: RegistrationOptionsV1,
     ) -> dict[str, Any]:
-        """Get the object data payload to be sent to the Objects API."""
+        """Get the record data to be sent to the Objects API."""
 
         registration_data = ObjectsAPIRegistrationData.objects.get(
             submission=submission
@@ -349,24 +349,21 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
         }
 
         object_mapping = {
-            "record.geometry": FieldConf(
+            "geometry": FieldConf(
                 RegistrationAttribute.locatie_coordinaat,
                 transform=_point_coordinate,
             ),
         }
 
-        record_data = cast(
-            dict[str, Any], render_to_json(options["content_json"], context)
-        )
-        object_data = prepare_data_for_registration(
-            record_data=record_data,
-            objecttype=self.build_objecttype_url(options),
+        data = cast(dict[str, Any], render_to_json(options["content_json"], context))
+        record_data = prepare_data_for_registration(
+            data=data,
             objecttype_version=options["objecttype_version"],
         )
-        object_data = apply_data_mapping(
-            submission, object_mapping, REGISTRATION_ATTRIBUTE, object_data
+        record_data = apply_data_mapping(
+            submission, object_mapping, REGISTRATION_ATTRIBUTE, record_data
         )
-        return object_data
+        return record_data
 
     @override
     def get_update_payment_status_data(
@@ -384,14 +381,13 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             "payment": self.get_payment_context_data(submission),
         }
 
-        record_data = cast(
+        data = cast(
             dict[str, Any],
             render_to_json(options["payment_status_update_json"], context),
         )
 
         return prepare_data_for_registration(
-            record_data=record_data,
-            objecttype=self.build_objecttype_url(options),
+            data=data,
             objecttype_version=options["objecttype_version"],
         )
 
@@ -399,7 +395,7 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
 class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
     @staticmethod
-    def _get_record_data(
+    def _get_data(
         variables_values: FormioData, variables_mapping: list[ObjecttypeVariableMapping]
     ) -> JSONObject:
         record_data: JSONObject = {}
@@ -438,7 +434,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 return value
 
     @override
-    def get_object_data(
+    def get_record_data(
         self, submission: Submission, options: RegistrationOptionsV2
     ) -> dict[str, Any]:
 
@@ -493,18 +489,17 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         variables_values = FormioData({**dynamic_values, **static_values})
         variables_mapping = options["variables_mapping"]
-        record_data = self._get_record_data(variables_values, variables_mapping)
+        data = self._get_data(variables_values, variables_mapping)
 
-        object_data = prepare_data_for_registration(
-            record_data=record_data,
-            objecttype=self.build_objecttype_url(options),
+        record_data = prepare_data_for_registration(
+            data=data,
             objecttype_version=options["objecttype_version"],
         )
 
         if geometry_variable_key := options.get("geometry_variable_key"):
-            object_data["record"]["geometry"] = variables_values[geometry_variable_key]
+            record_data["geometry"] = variables_values[geometry_variable_key]
 
-        return object_data
+        return record_data
 
     @override
     def get_update_payment_status_data(
@@ -523,15 +518,14 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
 
         variables_values = FormioData(values)
         variables_mapping = options["variables_mapping"]
-        record_data = self._get_record_data(variables_values, variables_mapping)
+        data = self._get_data(variables_values, variables_mapping)
 
-        object_data = prepare_data_for_registration(
-            record_data=record_data,
-            objecttype=self.build_objecttype_url(options),
+        record_data = prepare_data_for_registration(
+            data=data,
             objecttype_version=options["objecttype_version"],
         )
 
-        return object_data
+        return record_data
 
 
 HANDLER_MAPPING: dict[ConfigVersion, ObjectsAPIRegistrationHandler[Any]] = {

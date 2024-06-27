@@ -43,6 +43,14 @@ class ObjecttypesClient(NLXClient):
             page_size=page_size,
         )
 
+    def get_objecttype(
+        self,
+        objecttype_uuid: str | UUID,
+    ) -> dict[str, Any]:
+        response = self.get(f"objecttypes/{objecttype_uuid}")
+        response.raise_for_status()
+        return response.json()
+
     def list_objecttype_versions(
         self,
         objecttype_uuid: str | UUID,

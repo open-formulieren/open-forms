@@ -31,7 +31,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
 
         self.config_group = ObjectsAPIGroupConfig.objects.create(
             objecttypes_service=ServiceFactory.create(
-                api_root="http://objecttypes-web:8000/api/v2/",
+                api_root="http://localhost:8001/api/v2/",
                 api_type=APITypes.orc,
                 oas="https://example.com/",
                 header_key="Authorization",
@@ -62,8 +62,8 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
         # `plugin.register_submission` was called:
         with get_objects_client(self.config_group) as client:
             data = client.create_object(
-                object_data=prepare_data_for_registration(
-                    record_data={
+                record_data=prepare_data_for_registration(
+                    data={
                         "age": 20,
                         "name": {
                             "last.name": "My last name",
@@ -78,9 +78,9 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                         "submission_payment_public_ids": [],
                         "submission_date": timezone.now().isoformat(),
                     },
-                    objecttype="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                     objecttype_version=3,
-                )
+                ),
+                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
             )
             objects_url = data["url"]
 
@@ -108,6 +108,8 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                 "location": [52.36673378967122, 4.893164274470299],
             },
             registration_result={"url": objects_url},
+            form__payment_backend="demo",
+            form__product__price=10.01,
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
@@ -168,9 +170,6 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
             amount=10.01,
             public_order_id="TEST-123",
         )
-
-        submission.price = 10.01
-        submission.save()
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 

@@ -15,7 +15,7 @@ from openforms.variables.service import get_static_variables
 from ...base import BasePlugin
 from ...registry import register
 from .checks import check_config
-from .client import get_objects_client
+from .client import get_objects_client, get_objecttypes_client
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 from .registration_variables import register as variables_registry
@@ -83,14 +83,22 @@ class ObjectsAPIRegistration(BasePlugin):
 
         handler.save_registration_data(submission, options)
 
-        object_data = handler.get_object_data(
+        record_data = handler.get_record_data(
             submission=submission,
             options=options,
         )
 
+        with get_objecttypes_client(options["objects_api_group"]) as objecttypes_client:
+            objecttype = objecttypes_client.get_objecttype(options["objecttype"])
+            objecttype_url = objecttype["url"]
+
         with get_objects_client(options["objects_api_group"]) as objects_client:
             response = execute_unless_result_exists(
-                partial(objects_client.create_object, object_data=object_data),
+                partial(
+                    objects_client.create_object,
+                    objecttype_url=objecttype_url,
+                    record_data=record_data,
+                ),
                 submission,
                 "intermediate.objects_api_object",
             )
@@ -127,18 +135,25 @@ class ObjectsAPIRegistration(BasePlugin):
         self.set_defaults(options)
 
         handler = HANDLER_MAPPING[options["version"]]
-        updated_object_data = handler.get_update_payment_status_data(
+        updated_record_data = handler.get_update_payment_status_data(
             submission, options
         )
 
-        if updated_object_data is None:
+        if updated_record_data is None:
             return
+
+        with get_objecttypes_client(options["objects_api_group"]) as objecttypes_client:
+            objecttype = objecttypes_client.get_objecttype(options["objecttype"])
+            objecttype_url = objecttype["url"]
 
         object_url = submission.registration_result["url"]
         with get_objects_client(options["objects_api_group"]) as objects_client:
             response = objects_client.patch(
                 url=object_url,
-                json=updated_object_data,
+                json={
+                    "type": objecttype_url,
+                    "record": updated_record_data,
+                },
                 headers={"Content-Crs": "EPSG:4326"},
             )
             response.raise_for_status()
