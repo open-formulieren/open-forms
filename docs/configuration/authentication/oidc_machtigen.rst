@@ -46,7 +46,7 @@ Claim-eisen
     Het ID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Dit komt voor de
     provider/broker beschikbaar via Logius' DigiD Machtigen.
 
-    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` (:ref:`installation_environment_config`) op ``True`` staat.
 
 .. _configuration_oidc_digid_machtigen_appgroup:
 
@@ -134,13 +134,13 @@ gelden, plus:
     Het ID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Deze waarde staat
     in de dienstencatalogus.
 
-    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` (:ref:`installation_environment_config`) op ``True`` staat.
 
 ``Service UUID``
     Het UUID van de dienst waarvoor de vertegenwoordiger gemachtigd is. Deze waarde staat
     in de dienstencatalogus.
 
-    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` (:ref:`installation_environment_config`) op ``True`` staat.
 
 .. _configuration_oidc_eh_bewindvoering_appgroup:
 

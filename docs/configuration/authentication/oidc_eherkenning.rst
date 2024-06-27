@@ -34,7 +34,7 @@ worden in Open Formulieren.
 ``actingSubject``
     De (versleutelde) identificatie van de medewerker die inlogt namens het bedrijf.
 
-    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` op ``True`` staat.
+    Verplicht indien ``DIGID_EHERKENNING_OIDC_STRICT`` (:ref:`installation_environment_config`) op ``True`` staat.
 
 ``vestigingsNummer``
     Identificatie van de/een vestiging van het bedrijf. Nooit verplicht. Indien niet
