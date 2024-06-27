@@ -121,6 +121,7 @@ django==4.2.11
     #   django-simple-certmanager
     #   django-solo
     #   django-timeline-logger
+    #   django-tinymce
     #   django-treebeard
     #   django-two-factor-auth
     #   djangorestframework
@@ -216,7 +217,7 @@ django-solo==2.1.0
     #   zgw-consumers
 django-timeline-logger==4.0.0
     # via -r requirements/base.in
-django-tinymce==3.6.1
+django-tinymce==4.1.0
     # via -r requirements/base.in
 django-treebeard==4.7
     # via -r requirements/base.in
@@ -224,7 +225,7 @@ django-two-factor-auth[phonenumberslite,webauthn]==1.16.0
     # via maykin-2fa
 django-yubin==2.0.4
     # via -r requirements/base.in
-djangorestframework==3.14.0
+djangorestframework==3.15.2
     # via
     #   -r requirements/base.in
     #   drf-jsonschema-serializer
@@ -407,7 +408,6 @@ python-magic==0.4.27
 pytz==2022.2.1
     # via
     #   django-yubin
-    #   djangorestframework
     #   flower
     #   zeep
 pytz-deprecation-shim==0.1.0.post0
