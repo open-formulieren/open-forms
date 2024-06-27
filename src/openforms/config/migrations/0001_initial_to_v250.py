@@ -92,11 +92,7 @@ def remove_colors(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("config", "0001_initial_squashed_0022_merge_20210903_1228"),
-        ("config", "0002_squashed_to_of_v230"),
-        ("config", "0053_v230_to_v250"),
-    ]
+    initial = True
 
     dependencies = [
         ("contenttypes", "0002_remove_content_type_name"),

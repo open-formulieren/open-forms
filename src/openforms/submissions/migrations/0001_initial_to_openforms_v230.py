@@ -21,8 +21,8 @@ import openforms.utils.validators
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("config", "0001_initial_squashed_0022_merge_20210903_1228"),
-        ("forms", "0001_initial_pre_openforms_v230"),
+        ("config", "0001_initial_to_v250"),
+        ("forms", "0001_initial_to_v250"),
     ]
 
     operations = [

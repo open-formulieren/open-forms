@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("analytics_tools", "0002_auto_20230119_1500"),
-        ("config", "0053_v230_to_v250"),
+        ("config", "0001_initial_to_v250"),
     ]
 
     # RunPython operation is removed, it was executed as part of the 2.5.0 upgrade.
