@@ -17,12 +17,22 @@ from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
+from openforms.registrations.contrib.objects_api.tests.factories import (
+    ObjectsAPIGroupConfigFactory,
+)
 from openforms.translations.tests.utils import make_translated
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ..constants import EXPORT_META_KEY
-from ..models import Form, FormDefinition, FormLogic, FormStep, FormVariable
+from ..models import (
+    Form,
+    FormDefinition,
+    FormLogic,
+    FormRegistrationBackend,
+    FormStep,
+    FormVariable,
+)
 from ..utils import form_to_json
 from .factories import (
     CategoryFactory,
@@ -1358,3 +1368,91 @@ class ImportExportTests(TestCase):
             fixed_components[9]["components"][0]["conditional"]["eq"], int
         )
         self.assertIsInstance(fixed_components[10]["conditional"]["eq"], int)
+
+    def test_import_form_with_objecttype_url_objects_api_registration_backend(self):
+        """Test forms with an Objects API registration backend where objecttype is specified as an URL
+        correctly gets converted to a UUID.
+        """
+
+        group = ObjectsAPIGroupConfigFactory.create()
+
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "old-objecttype-url",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": group.pk,
+                                "version": 2,
+                                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1",
+                                "objecttype_version": 1,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(
+            registration_backend.options["objecttype"],
+            "2c77babf-a967-4057-9969-0200320d23f1",
+        )
+
+    def test_import_form_with_objecttype_uuid_objects_api_registration_backend(self):
+        """Test forms with an Objects API registration backend where objecttype is specified as an UUID
+        stays as is.
+        """
+
+        group = ObjectsAPIGroupConfigFactory.create()
+
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "old-objecttype-url",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "objects_api_group": group.pk,
+                                "version": 2,
+                                "objecttype": "2c77babf-a967-4057-9969-0200320d23f1",
+                                "objecttype_version": 1,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(
+            registration_backend.options["objecttype"],
+            "2c77babf-a967-4057-9969-0200320d23f1",
+        )

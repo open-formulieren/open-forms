@@ -240,6 +240,7 @@ def import_form_data(
                     "request": request,
                     "form": created_form,
                     "is_import": True,
+                    "validate_business_logic": False,
                 },
             }
 
