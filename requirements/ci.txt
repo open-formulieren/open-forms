@@ -201,6 +201,7 @@ django==4.2.11
     #   django-simple-certmanager
     #   django-solo
     #   django-timeline-logger
+    #   django-tinymce
     #   django-treebeard
     #   django-two-factor-auth
     #   djangorestframework
@@ -367,7 +368,7 @@ django-timeline-logger==4.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-tinymce==3.6.1
+django-tinymce==4.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -387,7 +388,7 @@ django-yubin==2.0.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-djangorestframework==3.14.0
+djangorestframework==3.15.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -804,7 +805,6 @@ pytz==2022.2.1
     #   -r requirements/base.txt
     #   babel
     #   django-yubin
-    #   djangorestframework
     #   flower
     #   zeep
 pytz-deprecation-shim==0.1.0.post0

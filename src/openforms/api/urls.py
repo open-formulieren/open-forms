@@ -45,7 +45,7 @@ forms_router.register(r"versions", FormVersionViewSet, basename="form-versions")
 
 # form decoration
 # Expose this endpoint on 2 different URLs
-router.register(r"categories", CategoryViewSet, basename="categories")
+router.register(r"categories", CategoryViewSet, basename="legacy-categories")
 router.register(r"public/categories", CategoryViewSet, basename="categories")
 
 # submissions API

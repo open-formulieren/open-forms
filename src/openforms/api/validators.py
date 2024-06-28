@@ -58,7 +58,7 @@ class ModelValidator(Generic[MT]):
     ...         })
     ...
 
-    Then `ModelValidator(validate_service_has_oas)` will be validator you can use on a
+    Then `ModelValidator(validate_service_has_oas)` will be a validator you can use on a
     Serializer.
 
     You can annotate `ModelValidator` with a type:
