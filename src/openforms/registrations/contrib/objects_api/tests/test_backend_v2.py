@@ -713,3 +713,136 @@ class V2HandlerTests(TestCase):
                 "soort_actor": "opaque",
             }
             self.assertEqual(record_data["authn"], expected_obj)
+
+    def test_auth_context_data_info_parts_missing_variants(self):
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            # "objects_api_group": self.objects_api_group.pk,
+            "objecttype": "TODO",
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "auth_context",
+                    "target_path": ["auth_context"],
+                },
+                {
+                    "variable_key": "auth_context_source",
+                    "target_path": ["authn", "middel"],
+                },
+                {
+                    "variable_key": "auth_context_loa",
+                    "target_path": ["authn", "loa"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier",
+                    "target_path": ["authn", "vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier_type",
+                    "target_path": ["authn", "soort_vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier",
+                    "target_path": ["authn", "gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier_type",
+                    "target_path": ["authn", "soort_gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier",
+                    "target_path": ["authn", "actor"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier_type",
+                    "target_path": ["authn", "soort_actor"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        cases = [
+            (
+                "anonymous",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info=None,
+                ),
+                {
+                    "middel": "",
+                    "loa": "",
+                    "vertegenwoordigde": "",
+                    "soort_vertegenwoordigde": "",
+                    "gemachtigde": "",
+                    "soort_gemachtigde": "",
+                    "actor": "",
+                    "soort_actor": "",
+                },
+            ),
+            (
+                "digid",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info__is_digid=True,
+                ),
+                {
+                    "middel": "digid",
+                    "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+                    "vertegenwoordigde": "",
+                    "soort_vertegenwoordigde": "",
+                    "gemachtigde": "999991607",
+                    "soort_gemachtigde": "bsn",
+                    "actor": "",
+                    "soort_actor": "",
+                },
+            ),
+            (
+                "digid-machtigen",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info__is_digid_machtigen=True,
+                ),
+                {
+                    "middel": "digid",
+                    "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+                    "vertegenwoordigde": "999991607",
+                    "soort_vertegenwoordigde": "bsn",
+                    "gemachtigde": "999999999",
+                    "soort_gemachtigde": "bsn",
+                    "actor": "",
+                    "soort_actor": "",
+                },
+            ),
+            (
+                "eherkenning",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info__is_eh=True,
+                ),
+                {
+                    "middel": "eherkenning",
+                    "loa": "urn:etoegang:core:assurance-class:loa3",
+                    "vertegenwoordigde": "",
+                    "soort_vertegenwoordigde": "",
+                    "gemachtigde": "90002768",
+                    "soort_gemachtigde": "kvkNummer",
+                    "actor": (
+                        "4B75A0EA107B3D36C82FD675B5B78CC2F"
+                        "181B22E33D85F2D4A5DA63452EE3018@2"
+                        "D8FF1EF10279BC2643F376D89835151"
+                    ),
+                    "soort_actor": "opaque",
+                },
+            ),
+        ]
+
+        for label, submission, expected in cases:
+            with self.subTest(labe=label):
+                ObjectsAPIRegistrationData.objects.create(submission=submission)
+
+                object_data = handler.get_object_data(
+                    submission=submission, options=v2_options
+                )
+
+                record_data = object_data["record"]["data"]
+                self.assertEqual(record_data["authn"], expected)
