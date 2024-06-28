@@ -182,6 +182,10 @@ class EmailDigestTaskIntegrationTests(TestCase):
                 form=form,
                 json_logic_trigger={"==": [{"var": "foo"}, "apple"]},
             )
+            FormLogicFactory(
+                form=form,
+                json_logic_trigger={"custom_operator": [5, 3]},
+            )
 
             with (
                 open(TEST_FILES / "test2.certificate", "r") as client_certificate_f,
@@ -273,6 +277,10 @@ class EmailDigestTaskIntegrationTests(TestCase):
             self.assertIn(admin_form_url, sent_email.body)
 
         with self.subTest("invalid logic rules"):
+            self.assertIn(
+                f"We couldn't process logic rule 2 for '{form.admin_name}' because it appears to be invalid.",
+                sent_email.body,
+            )
             self.assertIn(
                 f"Logic rule for variable 'foo' is invalid in form '{form.admin_name}'.",
                 sent_email.body,
