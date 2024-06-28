@@ -104,11 +104,6 @@ def validate_not_staff(user: User):
         raise ValidationError({"is_staff": err})
 
 
-def validate_non_field_attrs_not_set(user: User):
-    if hasattr(user, "extra_field"):
-        raise ValidationError("Non-model field attr set", code="bad_attr")
-
-
 class UserSerializer(serializers.ModelSerializer):
     extra_field = serializers.CharField(required=False)
 
@@ -119,6 +114,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username": {
                 "validators": []
             },  # disable unique validator which does queries
+            "email": {"validators": []},  # disable unique validator which does queries
         }
         validators = [
             ModelValidator[User](validate_not_staff),
