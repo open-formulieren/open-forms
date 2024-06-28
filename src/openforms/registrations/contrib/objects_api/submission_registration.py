@@ -336,6 +336,11 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
                 "pdf_url": registration_data.pdf_url,
                 "csv_url": registration_data.csv_url,
             },
+            "auth_context": (
+                submission.auth_info.to_auth_context_data()
+                if submission.is_authenticated
+                else None
+            ),
         }
 
         object_mapping = {
