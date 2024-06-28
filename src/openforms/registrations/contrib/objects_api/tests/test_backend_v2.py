@@ -71,6 +71,14 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 secret="test_secret_key",
                 auth_type=AuthTypes.zgw,
             ),
+            catalogi_service=ServiceFactory.create(
+                api_root="http://localhost:8003/catalogi/api/v1/",
+                api_type=APITypes.ztc,
+                # See the docker compose fixtures:
+                client_id="test_client_id",
+                secret="test_secret_key",
+                auth_type=AuthTypes.zgw,
+            ),
         )
 
     def test_submission_with_objects_api_v2(self):

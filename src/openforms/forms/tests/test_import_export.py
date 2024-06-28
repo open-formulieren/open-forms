@@ -9,6 +9,8 @@ from django.test import TestCase, override_settings, tag
 from django.utils import translation
 
 from freezegun import freeze_time
+from zgw_consumers.constants import APITypes, AuthTypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
@@ -17,10 +19,9 @@ from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
-from openforms.registrations.contrib.objects_api.tests.factories import (
-    ObjectsAPIGroupConfigFactory,
-)
+from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.translations.tests.utils import make_translated
+from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
@@ -1369,12 +1370,62 @@ class ImportExportTests(TestCase):
         )
         self.assertIsInstance(fixed_components[10]["conditional"]["eq"], int)
 
+
+class ImportObjectsAPITests(OFVCRMixin, TestCase):
+    """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
+
+    See the relevant Docker compose in the ``docker/`` folder.
+    """
+
+    VCR_TEST_FILES = PATH / "files"
+
+    def setUp(self):
+        super().setUp()
+
+        self.filepath = PATH / "export_test.zip"
+        self.addCleanup(lambda: self.filepath.unlink(missing_ok=True))
+
+        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            objecttypes_service=ServiceFactory.create(
+                api_root="http://localhost:8001/api/v2/",
+                api_type=APITypes.orc,
+                oas="https://example.com/",
+                header_key="Authorization",
+                # See the docker compose fixtures:
+                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+                auth_type=AuthTypes.api_key,
+            ),
+            objects_service=ServiceFactory.create(
+                api_root="http://localhost:8002/api/v2/",
+                api_type=APITypes.orc,
+                oas="https://example.com/",
+                header_key="Authorization",
+                # See the docker compose fixtures:
+                header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+                auth_type=AuthTypes.api_key,
+            ),
+            drc_service=ServiceFactory.create(
+                api_root="http://localhost:8003/documenten/api/v1/",
+                api_type=APITypes.drc,
+                # See the docker compose fixtures:
+                client_id="test_client_id",
+                secret="test_secret_key",
+                auth_type=AuthTypes.zgw,
+            ),
+            catalogi_service=ServiceFactory.create(
+                api_root="http://localhost:8003/catalogi/api/v1/",
+                api_type=APITypes.ztc,
+                # See the docker compose fixtures:
+                client_id="test_client_id",
+                secret="test_secret_key",
+                auth_type=AuthTypes.zgw,
+            ),
+        )
+
     def test_import_form_with_objecttype_url_objects_api_registration_backend(self):
         """Test forms with an Objects API registration backend where objecttype is specified as an URL
         correctly gets converted to a UUID.
         """
-
-        group = ObjectsAPIGroupConfigFactory.create()
 
         resources = {
             "forms": [
@@ -1390,9 +1441,9 @@ class ImportExportTests(TestCase):
                             "name": "Test backend",
                             "backend": "objects_api",
                             "options": {
-                                "objects_api_group": group.pk,
+                                "objects_api_group": self.objects_api_group.pk,
                                 "version": 2,
-                                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1",
+                                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
                             },
                         }
@@ -1410,7 +1461,7 @@ class ImportExportTests(TestCase):
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
             registration_backend.options["objecttype"],
-            "2c77babf-a967-4057-9969-0200320d23f1",
+            "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
         )
 
     def test_import_form_with_objecttype_uuid_objects_api_registration_backend(self):
@@ -1418,8 +1469,6 @@ class ImportExportTests(TestCase):
         stays as is.
         """
 
-        group = ObjectsAPIGroupConfigFactory.create()
-
         resources = {
             "forms": [
                 {
@@ -1434,9 +1483,9 @@ class ImportExportTests(TestCase):
                             "name": "Test backend",
                             "backend": "objects_api",
                             "options": {
-                                "objects_api_group": group.pk,
+                                "objects_api_group": self.objects_api_group.pk,
                                 "version": 2,
-                                "objecttype": "2c77babf-a967-4057-9969-0200320d23f1",
+                                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
                             },
                         }
@@ -1454,5 +1503,5 @@ class ImportExportTests(TestCase):
         registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
         self.assertEqual(
             registration_backend.options["objecttype"],
-            "2c77babf-a967-4057-9969-0200320d23f1",
+            "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
         )
