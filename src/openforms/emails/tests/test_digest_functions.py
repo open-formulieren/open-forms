@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.core.files import File
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.utils.timezone import utc
 
 import requests_mock
@@ -819,6 +819,85 @@ class InvalidLogicRulesTests(TestCase):
         self.assertIn(
             InvalidLogicRule(
                 variable="pie.filling", form_name=form.admin_name, form_id=form.id
+            ),
+            invalid_logic_rules,
+        )
+
+    @tag("gh-4400")
+    def test_invalid_logic_rules_with_exceptions_are_both_reported_and_logged(self):
+        form = FormFactory.create()
+        FormLogicFactory(
+            form=form,
+            json_logic_trigger={"custom_operator": [5, 3]},
+            actions=[],
+        )
+
+        with self.assertLogs() as logs:
+            invalid_logic_rules = collect_invalid_logic_rules()
+
+        logs_messages = [log.getMessage() for log in logs.records]
+
+        self.assertEqual(len(logs.records), 1)
+        self.assertIn(
+            f"malformed/unsupported JsonLogic expression in form {form.admin_name}: {{'custom_operator': [5, 3]}}",
+            logs_messages,
+        )
+        self.assertEqual(len(invalid_logic_rules), 1)
+        self.assertIn(
+            InvalidLogicRule(
+                variable="",
+                form_name=form.admin_name,
+                form_id=form.id,
+                exception=True,
+                rule_index=1,
+            ),
+            invalid_logic_rules,
+        )
+
+    @tag("gh-4400")
+    def test_invalid_logic_actions_with_exceptions_are_both_reported_and_logged(self):
+        form = FormFactory.create()
+        FormVariableFactory.create(
+            form=form,
+            name="Variable 1",
+            key="foo",
+            user_defined=True,
+        )
+        FormLogicFactory(
+            form=form,
+            json_logic_trigger={"==": [{"var": "foo"}, "apple"]},
+            actions=[
+                {
+                    "action": {
+                        "type": "variable",
+                        "value": {"custom_operator": [5, 3]},
+                    },
+                    "variable": "temp",
+                    "component": "",
+                    "form_step": "",
+                    "form_step_uuid": "c490b80f-05fe-4006-884d-f631c8abe968",
+                },
+            ],
+        )
+
+        with self.assertLogs() as logs:
+            invalid_logic_rules = collect_invalid_logic_rules()
+
+        logs_messages = [log.getMessage() for log in logs.records]
+
+        self.assertEqual(len(logs.records), 1)
+        self.assertIn(
+            f"malformed/unsupported JsonLogic expression in form {form.admin_name}: {{'custom_operator': [5, 3]}}",
+            logs_messages,
+        )
+        self.assertEqual(len(invalid_logic_rules), 1)
+        self.assertIn(
+            InvalidLogicRule(
+                variable="",
+                form_name=form.admin_name,
+                form_id=form.id,
+                exception=True,
+                rule_index=1,
             ),
             invalid_logic_rules,
         )
