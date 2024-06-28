@@ -312,11 +312,18 @@ class SubmissionReportFactory(factory.django.DjangoModelFactory):
 
 
 class TemporaryFileUploadFactory(factory.django.DjangoModelFactory):
+    submission = factory.SubFactory(SubmissionFactory)
     file_name = factory.Faker("file_name")
     content = factory.django.FileField(filename="file.dat", data=b"content")
 
     class Meta:
         model = TemporaryFileUpload
+
+    class Params:
+        is_legacy = factory.Trait(
+            legacy=True,
+            submission=None,
+        )
 
     @factory.lazy_attribute
     def content_type(self) -> str:
@@ -326,7 +333,12 @@ class TemporaryFileUploadFactory(factory.django.DjangoModelFactory):
 
 class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
     submission_step = factory.SubFactory(SubmissionStepFactory)
-    temporary_file = factory.SubFactory(TemporaryFileUploadFactory)
+    temporary_file = factory.SubFactory(
+        TemporaryFileUploadFactory,
+        submission=factory.LazyAttribute(
+            lambda o: o.factory_parent.submission_step.submission
+        ),
+    )
     content = factory.django.FileField(filename="attachment.pdf", data=b"content")
     file_name = factory.Faker("file_name")
     original_name = factory.Faker("file_name")
