@@ -1,5 +1,5 @@
 from openforms.contrib.kadaster.config_check import BAGCheck
-from openforms.forms.models.form import Form
+from openforms.forms.models import Form
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 
@@ -20,7 +20,7 @@ def check_bag_config_for_address_fields() -> str:
 
     try:
         BAGCheck.check_config()
-    except InvalidPluginConfiguration as e:
-        return e.args[0]
+    except InvalidPluginConfiguration as exc:
+        return exc.message
 
     return ""

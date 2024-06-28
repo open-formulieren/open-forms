@@ -1,4 +1,4 @@
-from openforms.forms.models.form import Form
+from openforms.forms.models import Form
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from .checks import BRKValidatorCheck
@@ -10,7 +10,7 @@ def check_brk_config_for_addressNL() -> str:
     if any(form.has_component("addressNL") for form in live_forms):
         try:
             BRKValidatorCheck.check_config()
-        except InvalidPluginConfiguration as e:
-            return e.args[0]
+        except InvalidPluginConfiguration as exc:
+            return exc.message
 
     return ""

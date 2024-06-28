@@ -36,13 +36,13 @@ from openforms.variables.constants import FormVariableDataTypes
 from stuf.stuf_bg.client import NoServiceConfigured
 
 from ..digest import (
-    InvalidLogicRule,
+    InvalidLogicVariable,
     collect_broken_configurations,
     collect_failed_emails,
     collect_failed_prefill_plugins,
     collect_failed_registrations,
     collect_invalid_certificates,
-    collect_invalid_logic_rules,
+    collect_invalid_logic_variables,
     collect_invalid_registration_backends,
 )
 from ..tasks import Digest
@@ -678,7 +678,7 @@ class InvalidLogicRulesTests(TestCase):
             json_logic_trigger={"==": [{"var": "foo"}, "apple"]},
         )
 
-        invalid_logic_rules = collect_invalid_logic_rules()
+        invalid_logic_rules = collect_invalid_logic_variables()
 
         logs_exist = TimelineLogProxy.objects.exists()
 
@@ -714,7 +714,7 @@ class InvalidLogicRulesTests(TestCase):
         )
 
         with self.assertLogs() as logs:
-            collect_invalid_logic_rules()
+            collect_invalid_logic_variables()
 
         logs_messages = [log.getMessage() for log in logs.records]
 
@@ -773,51 +773,53 @@ class InvalidLogicRulesTests(TestCase):
         )
 
         with self.assertNoLogs():
-            invalid_logic_rules = collect_invalid_logic_rules()
+            invalid_logic_rules = collect_invalid_logic_variables()
 
         self.assertEqual(len(invalid_logic_rules), 8)
         self.assertIn(
-            InvalidLogicRule(
+            InvalidLogicVariable(
                 variable="temp", form_name=form.admin_name, form_id=form.id
             ),
             invalid_logic_rules,
         )
         self.assertIn(
-            InvalidLogicRule(
+            InvalidLogicVariable(
                 variable="fooStr.nested", form_name=form.admin_name, form_id=form.id
             ),
             invalid_logic_rules,
         )
         self.assertIn(
-            InvalidLogicRule(
+            InvalidLogicVariable(
                 variable="fooArray.bar", form_name=form.admin_name, form_id=form.id
             ),
             invalid_logic_rules,
         )
         self.assertIn(
-            InvalidLogicRule(
+            InvalidLogicVariable(
                 variable="foo.wrong", form_name=form.admin_name, form_id=form.id
             ),
             invalid_logic_rules,
         )
         self.assertIn(
-            InvalidLogicRule(
+            InvalidLogicVariable(
                 variable="temp.0.other", form_name=form.admin_name, form_id=form.id
             ),
             invalid_logic_rules,
         )
         self.assertIn(
-            InvalidLogicRule(
+            InvalidLogicVariable(
                 variable="another", form_name=form.admin_name, form_id=form.id
             ),
             invalid_logic_rules,
         )
         self.assertIn(
-            InvalidLogicRule(variable="", form_name=form.admin_name, form_id=form.id),
+            InvalidLogicVariable(
+                variable="", form_name=form.admin_name, form_id=form.id
+            ),
             invalid_logic_rules,
         )
         self.assertIn(
-            InvalidLogicRule(
+            InvalidLogicVariable(
                 variable="pie.filling", form_name=form.admin_name, form_id=form.id
             ),
             invalid_logic_rules,
