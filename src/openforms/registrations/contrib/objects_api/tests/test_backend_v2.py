@@ -413,6 +413,33 @@ class V2HandlerTests(TestCase):
 
         self.assertEqual(data["textfield"], "some_string")
 
+    def test_public_reference_available(self):
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            public_registration_reference="OF-911",
+            auth_info__plugin="irrelevant",
+            auth_info__is_eh_bewindvoering=True,
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            # "objects_api_group": self.objects_api_group.pk,
+            "objecttype": "TODO",
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "public_reference",
+                    "target_path": ["of_nummer"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
+
+        record_data = object_data["record"]["data"]
+        self.assertEqual(record_data, {"of_nummer": "OF-911"})
+
     def test_cosign_info_available(self):
         now = timezone.now().isoformat()
 

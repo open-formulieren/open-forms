@@ -26,6 +26,17 @@ register = Registry()
 """The Objects API registration variables registry."""
 
 
+@register("public_reference")
+class PublicReference(BaseStaticVariable):
+    name = _("Public reference")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None:
+            return ""
+        return submission.public_registration_reference
+
+
 @register("pdf_url")
 class PdfUrl(BaseStaticVariable):
     name = _("PDF Url")
