@@ -606,3 +606,110 @@ class V2HandlerTests(TestCase):
         value = variable.get_initial_value(submission=submission)
 
         self.assertEqual(value, 10.0)
+
+    def test_auth_context_data_info_available(self):
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            # "objects_api_group": self.objects_api_group.pk,
+            "objecttype": "TODO",
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "auth_context",
+                    "target_path": ["auth_context"],
+                },
+                {
+                    "variable_key": "auth_context_source",
+                    "target_path": ["authn", "middel"],
+                },
+                {
+                    "variable_key": "auth_context_loa",
+                    "target_path": ["authn", "loa"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier",
+                    "target_path": ["authn", "vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier_type",
+                    "target_path": ["authn", "soort_vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier",
+                    "target_path": ["authn", "gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier_type",
+                    "target_path": ["authn", "soort_gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier",
+                    "target_path": ["authn", "actor"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier_type",
+                    "target_path": ["authn", "soort_actor"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            auth_info__plugin="irrelevant",
+            auth_info__is_eh_bewindvoering=True,
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+
+        object_data = handler.get_object_data(submission=submission, options=v2_options)
+
+        record_data = object_data["record"]["data"]
+        with self.subTest("full auth context"):
+            expected_auth_context = {
+                "source": "eherkenning",
+                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa3",
+                "representee": {
+                    "identifierType": "bsn",
+                    "identifier": "999991607",
+                },
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "kvkNummer",
+                        "identifier": "90002768",
+                    },
+                    "actingSubject": {
+                        "identifierType": "opaque",
+                        "identifier": (
+                            "4B75A0EA107B3D36C82FD675B5B78CC2F"
+                            "181B22E33D85F2D4A5DA63452EE3018@2"
+                            "D8FF1EF10279BC2643F376D89835151"
+                        ),
+                    },
+                },
+                "mandate": {
+                    "role": "bewindvoerder",
+                    "services": [
+                        {
+                            "id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                            "uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                        }
+                    ],
+                },
+            }
+            self.assertEqual(record_data["auth_context"], expected_auth_context)
+
+        with self.subTest("individual auth context vars"):
+            expected_obj = {
+                "middel": "eherkenning",
+                "loa": "urn:etoegang:core:assurance-class:loa3",
+                "vertegenwoordigde": "999991607",
+                "soort_vertegenwoordigde": "bsn",
+                "gemachtigde": "90002768",
+                "soort_gemachtigde": "kvkNummer",
+                "actor": (
+                    "4B75A0EA107B3D36C82FD675B5B78CC2F"
+                    "181B22E33D85F2D4A5DA63452EE3018@2"
+                    "D8FF1EF10279BC2643F376D89835151"
+                ),
+                "soort_actor": "opaque",
+            }
+            self.assertEqual(record_data["authn"], expected_obj)
