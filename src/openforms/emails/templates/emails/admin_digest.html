@@ -136,11 +136,19 @@
         <ul>
         {% for logic_rule in invalid_logic_rules %}
             <li>
+                {% if logic_rule.exception %}
+                    <p>
+                        {% blocktranslate with index=logic_rule.rule_index form_name=logic_rule.form_name trimmed %}
+                            We couldn't process logic rule {{ index }} for '{{ form_name }}' because it appears to be invalid. <br>
+                        {% endblocktranslate %}
+                    </p>
+                {% else %}
                 <p>
                     {% blocktranslate with var=logic_rule.variable form_name=logic_rule.form_name trimmed %}
                         Logic rule for variable '{{ var }}' is invalid in form '{{ form_name }}'.<br>
                     {% endblocktranslate %}
                 </p>
+                {% endif %}
                 <p><a href="{{ logic_rule.admin_link }}">{% trans "View form" %}</a></p>
             </li>
         {% endfor %}

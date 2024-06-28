@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django_yubin.models import Message
 from furl import furl
+from json_logic.typing import JSON
 from rest_framework import serializers
 from simple_certmanager.models import Certificate
 
@@ -128,6 +129,8 @@ class InvalidLogicRule:
     variable: str
     form_name: str
     form_id: int
+    exception: bool = False
+    rule_index: int = 0
 
     @property
     def admin_link(self) -> str:
@@ -366,7 +369,35 @@ def collect_invalid_registration_backends() -> list[InvalidRegistrationBackend]:
     return invalid_registration_backends
 
 
+def introspect_json_logic_wrapper(
+    expression: JSON, form_name: str
+) -> list[InputVar] | None:
+    try:
+        introspection_result = introspect_json_logic(expression).get_input_keys()
+    except Exception as e:
+        logger.error(
+            "malformed/unsupported JsonLogic expression in form %s: %r",
+            form_name,
+            expression,
+            exc_info=e,
+        )
+        return None
+
+    return introspection_result
+
+
 def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
+    def _report(var_key: str = "", exception: bool = False, rule_index: int = 0):
+        invalid_logic_rules.append(
+            InvalidLogicRule(
+                variable=var_key,
+                form_name=form.admin_name,
+                form_id=form.id,
+                exception=exception,
+                rule_index=rule_index,
+            )
+        )
+
     forms = Form.objects.live().iterator()
     static_variables = {
         var.key: {"source": var.source, "type": var.data_type}
@@ -388,17 +419,31 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
         form_logics = FormLogic.objects.filter(form=form)
 
         form_logics_vars = []
-        for logic in form_logics:
-            form_logics_vars += introspect_json_logic(
-                logic.json_logic_trigger
-            ).get_input_keys()
+        for index, logic in enumerate(form_logics):
+            logic_introspection_result = introspect_json_logic_wrapper(
+                logic.json_logic_trigger, form.admin_name
+            )
+
+            if logic_introspection_result is None:
+                _report(exception=True, rule_index=index + 1)
+
+                # no need for checking actions since the logic rule is already broken
+                continue
+
+            form_logics_vars += logic_introspection_result
+
             for action in logic.actions:
                 if action["action"]["type"] == LogicActionTypes.variable:
-                    form_logics_vars.append(InputVar(key=action["variable"]))
                     expression = action["action"]["value"]
-                    form_logics_vars += introspect_json_logic(
-                        expression
-                    ).get_input_keys()
+                    action_introspection_result = introspect_json_logic_wrapper(
+                        expression, form.admin_name
+                    )
+
+                    if action_introspection_result is None:
+                        _report(exception=True, rule_index=index + 1)
+                    else:
+                        form_logics_vars.append(InputVar(key=action["variable"]))
+                        form_logics_vars += action_introspection_result
 
         for var in set(form_logics_vars):
             # there is a variable with this exact key, it is a valid reference
@@ -407,20 +452,11 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
 
             outer, *nested = var.key.split(".")
 
-            def _report():
-                invalid_logic_rules.append(
-                    InvalidLogicRule(
-                        variable=var.key,
-                        form_name=form.admin_name,
-                        form_id=form.id,
-                    )
-                )
-
             # Before checking the type of the parent/outer bit, check if it exists in
             # the first place. It could also be that it's not a parent at all (nested is
             # empty), so that's a guaranteed broken reference too.
             if outer not in all_keys:
-                _report()
+                _report(var.key)
                 continue
 
             # Nested cannot be empty now - if it were, either the key exists as a var,
@@ -443,7 +479,7 @@ def collect_invalid_logic_rules() -> list[InvalidLogicRule]:
             # guaranteed error since lookups inside primitives are not possible.
             parent_var = form_variables.get(outer) or static_variables.get(outer)
             if parent_var["type"] not in expected_container_types:
-                _report()
+                _report(var.key)
                 continue
 
             # all the other situations - we cannot (yet) conclude anything meaningful,
