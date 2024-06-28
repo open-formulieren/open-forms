@@ -8823,6 +8823,9 @@ components:
       - version
     PaginatedFormDefinitionList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -8850,6 +8853,9 @@ components:
             $ref: '#/components/schemas/PublicForm'
     PaginatedServiceFetchConfigurationList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
@@ -8870,6 +8876,9 @@ components:
             $ref: '#/components/schemas/ServiceFetchConfiguration'
     PaginatedSubmissionList:
       type: object
+      required:
+      - count
+      - results
       properties:
         count:
           type: integer
