@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from typing import Any
 from unittest.mock import patch
 
 from rest_framework.exceptions import ErrorDetail
@@ -13,12 +14,12 @@ from ...typing import Component
 
 
 def validate_formio_data(
-    component: Component, data: JSONValue
+    component: Component, data: JSONValue, extra_context: dict[str, Any] = {}
 ) -> tuple[bool, ReturnDict]:
     """
     Dynamically build the serializer, validate it and return the status.
     """
-    context = {"submission": SubmissionFactory.build()}
+    context = {"submission": SubmissionFactory.build(), **extra_context}
     serializer = build_serializer(components=[component], data=data, context=context)
     is_valid = serializer.is_valid(raise_exception=False)
     return is_valid, serializer.errors
