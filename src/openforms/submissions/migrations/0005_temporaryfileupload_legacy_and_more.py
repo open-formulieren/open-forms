@@ -31,15 +31,4 @@ class Migration(migrations.Migration):
                 verbose_name="submission",
             ),
         ),
-        migrations.AddConstraint(
-            model_name="temporaryfileupload",
-            constraint=models.CheckConstraint(
-                check=models.Q(
-                    models.Q(("legacy", False), ("submission__isnull", False)),
-                    models.Q(("legacy", True), ("submission__isnull", True)),
-                    _connector="OR",
-                ),
-                name="non_legacy_submission_not_null",
-            ),
-        ),
     ]

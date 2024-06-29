@@ -33,6 +33,9 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.submission = SubmissionFactory.create()
+        cls.submission_url = reverse(
+            "api:submission-detail", kwargs={"uuid": cls.submission.uuid}
+        )
 
     def tearDown(self):
         self._clear_session()
@@ -44,7 +47,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         )
 
         response = self.client.post(
-            url, {"file": file, "submission": self.submission.uuid}, format="multipart"
+            url, {"file": file, "submission": self.submission_url}, format="multipart"
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -53,7 +56,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         file.seek(0)
         response = self.client.post(
-            url, {"file": file, "submission": self.submission.uuid}, format="multipart"
+            url, {"file": file, "submission": self.submission_url}, format="multipart"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -66,7 +69,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         )
 
         response = self.client.post(
-            url, {"file": file, "submission": self.submission.uuid}, format="multipart"
+            url, {"file": file, "submission": self.submission_url}, format="multipart"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -100,7 +103,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         response = self.client.post(
             url,
-            {"file": file, "submission": self.submission.uuid},
+            {"file": file, "submission": self.submission_url},
             format="multipart",
         )
 
@@ -111,6 +114,27 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             response.content.decode("utf8"), _("The submitted file is empty.")
         )
         self.assertEqual(response.content_type, "text/plain")
+
+    @tag("security-30")
+    def test_owns_submission(self):
+        self._add_submission_to_session(self.submission)
+        unrelated_submission = SubmissionFactory.create()
+
+        url = reverse("api:formio:temporary-file-upload")
+        file = SimpleUploadedFile("my-file.txt", b"", content_type="text/plain")
+
+        response = self.client.post(
+            url,
+            {
+                "file": file,
+                "submission": reverse(
+                    "api:submission-detail", kwargs={"uuid": unrelated_submission.uuid}
+                ),
+            },
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, 400)
 
     def test_content_inconsistent_with_mime_type(self):
         self._add_submission_to_session(self.submission)
@@ -136,7 +160,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         response = self.client.post(
             url,
-            {"file": file, "submission": self.submission.uuid},
+            {"file": file, "submission": self.submission_url},
             format="multipart",
         )
 
@@ -159,7 +183,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         response = self.client.post(
             url,
-            {"file": file, "submission": self.submission.uuid},
+            {"file": file, "submission": self.submission_url},
             format="multipart",
             CONTENT_LENGTH="5",
         )
@@ -180,7 +204,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         response = self.client.post(
             url,
-            {"file": file, "submission": self.submission.uuid},
+            {"file": file, "submission": self.submission_url},
             format="multipart",
         )
 
@@ -206,7 +230,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             ):
                 response_virus = self.client.post(
                     url,
-                    {"file": file_with_virus, "submission": self.submission.uuid},
+                    {"file": file_with_virus, "submission": self.submission_url},
                     format="multipart",
                 )
 
@@ -246,7 +270,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
                         url,
                         {
                             "file": file_without_virus,
-                            "submission": self.submission.uuid,
+                            "submission": self.submission_url,
                         },
                         format="multipart",
                     )
@@ -277,7 +301,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             ):
                 response_virus = self.client.post(
                     url,
-                    {"file": file_with_virus, "submission": self.submission.uuid},
+                    {"file": file_with_virus, "submission": self.submission_url},
                     format="multipart",
                 )
 
@@ -311,7 +335,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             ):
                 response_virus = self.client.post(
                     url,
-                    {"file": file_with_virus, "submission": self.submission.uuid},
+                    {"file": file_with_virus, "submission": self.submission_url},
                     format="multipart",
                 )
 
@@ -345,7 +369,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             ):
                 response_virus = self.client.post(
                     url,
-                    {"file": file_with_virus, "submission": self.submission.uuid},
+                    {"file": file_with_virus, "submission": self.submission_url},
                     format="multipart",
                 )
 

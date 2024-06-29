@@ -312,18 +312,16 @@ class SubmissionReportFactory(factory.django.DjangoModelFactory):
 
 
 class TemporaryFileUploadFactory(factory.django.DjangoModelFactory):
-    submission = factory.SubFactory(SubmissionFactory)
+    submission = factory.Maybe(
+        "legacy",
+        yes_declaration=None,
+        no_declaration=factory.SubFactory(SubmissionFactory),
+    )
     file_name = factory.Faker("file_name")
     content = factory.django.FileField(filename="file.dat", data=b"content")
 
     class Meta:
         model = TemporaryFileUpload
-
-    class Params:
-        is_legacy = factory.Trait(
-            legacy=True,
-            submission=None,
-        )
 
     @factory.lazy_attribute
     def content_type(self) -> str:

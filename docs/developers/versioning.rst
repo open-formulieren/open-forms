@@ -46,7 +46,7 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    1.5.0       2.3.0               n/a
    2.0.0       2.4.0               n/a
    2.1.0       2.4.0               n/a
-   2.2.0       2.4.0               n/a
+   2.2.0       2.4.0               2.6.x
    =========== =================== ===================
 
 End-of-life versions are not listed in this table.

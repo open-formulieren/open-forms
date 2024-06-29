@@ -10,10 +10,7 @@ def set_legacy_true(apps: StateApps, schema_editor: BaseDatabaseSchemaEditor) ->
     """Alter existing ``TemporaryFileUpload`` instances to have ``legacy`` set to ``True`` by default."""
 
     TemporaryFileUpload = apps.get_model("submissions", "TemporaryFileUpload")
-
-    for file_upload in TemporaryFileUpload.objects.iterator():
-        file_upload.legacy = True
-        file_upload.save()
+    TemporaryFileUpload.objects.update(legacy=True)
 
 
 class Migration(migrations.Migration):

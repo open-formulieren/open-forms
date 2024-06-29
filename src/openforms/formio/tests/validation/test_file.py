@@ -288,11 +288,13 @@ class FileValidationTests(TestCase):
         temporary_file_upload = TemporaryFileUploadFactory.create()
         data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
 
-        # Not giving any extra context, so that `validate_formio_data` will create
-        # a dummy submission for us, which will be != `temporary_file_upload.submission`:
         is_valid, errors = validate_formio_data(
             DEFAULT_FILE_COMPONENT,
             {"foo": [data]},
+            extra_context={
+                # Unrelated submission:
+                "submission": SubmissionFactory.create()
+            },
         )
 
         self.assertFalse(is_valid)

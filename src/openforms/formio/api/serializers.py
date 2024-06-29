@@ -3,12 +3,13 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from openforms.submissions.models import Submission, TemporaryFileUpload
+from openforms.submissions.constants import SUBMISSIONS_SESSION_KEY
+from openforms.submissions.models import Submission
 
 from .validators import MimeTypeValidator, NoVirusValidator
 
 
-class TemporaryFileUploadSerializer(serializers.ModelSerializer):
+class TemporaryFileUploadSerializer(serializers.Serializer):
     """
     https://help.form.io/integrations/filestorage/#url
 
@@ -25,9 +26,10 @@ class TemporaryFileUploadSerializer(serializers.ModelSerializer):
         use_url=False,
         validators=[MimeTypeValidator(), NoVirusValidator()],
     )
-    submission = serializers.SlugRelatedField(
-        slug_field="uuid",
-        queryset=Submission.objects.filter(completed_on=None),
+    submission = serializers.HyperlinkedRelatedField(
+        view_name="api:submission-detail",
+        lookup_field="uuid",
+        queryset=Submission.objects.all(),
         label=_("Submission"),
         write_only=True,
         required=True,
@@ -43,16 +45,6 @@ class TemporaryFileUploadSerializer(serializers.ModelSerializer):
         label=_("File size"), source="content.size", read_only=True
     )
 
-    class Meta:
-        model = TemporaryFileUpload
-        fields = (
-            "file",
-            "submission",
-            "url",
-            "name",
-            "size",
-        )
-
     def get_url(self, instance) -> str:
         request = self.context["request"]
         return reverse(
@@ -60,3 +52,11 @@ class TemporaryFileUploadSerializer(serializers.ModelSerializer):
             kwargs={"uuid": instance.uuid},
             request=request,
         )
+
+    def validate_submission(self, submission: Submission) -> Submission:
+        if submission.uuid not in self.context["request"].session.get(
+            SUBMISSIONS_SESSION_KEY, []
+        ):
+            raise serializers.ValidationError({"submission": _("Invalid submission")})
+
+        return submission

@@ -136,9 +136,9 @@ class SubmissionAttachmentTest(TestCase):
         )
 
     def test_resolve_nested_uploads(self):
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
-        nested_upload = TemporaryFileUploadFactory.create()
+        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
+            TemporaryFileUploadFactory.create_batch(3)
+        )
         data = {
             "repeatingGroup": [
                 {
@@ -384,13 +384,9 @@ class SubmissionAttachmentTest(TestCase):
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_uploads_to_submission_step_with_nested_fields(self, resize_mock):
         submission = SubmissionFactory.create()
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create(
-            submission=submission
+        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
+            TemporaryFileUploadFactory.create_batch(3, submission=submission)
         )
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create(
-            submission=submission
-        )
-        nested_upload = TemporaryFileUploadFactory.create(submission=submission)
         data = {
             "repeatingGroup": [
                 {
@@ -610,11 +606,8 @@ class SubmissionAttachmentTest(TestCase):
         self, resize_mock
     ):
         submission = SubmissionFactory.create()
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create(
-            submission=submission
-        )
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create(
-            submission=submission
+        upload_in_repeating_group_1, upload_in_repeating_group_2 = (
+            TemporaryFileUploadFactory.create_batch(2, submission=submission)
         )
         data = {
             "repeatingGroup": [
@@ -701,13 +694,9 @@ class SubmissionAttachmentTest(TestCase):
         self, resize_mock
     ):
         submission = SubmissionFactory.create()
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create(
-            submission=submission
+        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
+            TemporaryFileUploadFactory.create_batch(3, submission=submission)
         )
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create(
-            submission=submission
-        )
-        nested_upload = TemporaryFileUploadFactory.create(submission=submission)
         data = {
             "repeatingGroup": [
                 {
@@ -1095,10 +1084,10 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
 
-        # Using `is_legacy` is the only way to create an upload without a submission.
+        # Using `legacy` is the only way to create an upload without a submission.
         # It will be set later.
         upload = TemporaryFileUploadFactory.create(
-            file_name="aaa.txt", content__data=b"a" * 20, file_size=20, is_legacy=True
+            file_name="aaa.txt", content__data=b"a" * 20, file_size=20, legacy=True
         )
 
         data = {
@@ -1369,11 +1358,9 @@ class SubmissionAttachmentTest(TestCase):
             }
         ]
 
-        # Using `is_legacy` is the only way to create an upload without a submission.
+        # Using `legacy` is the only way to create an upload without a submission.
         # It will be set later.
-        upload = TemporaryFileUploadFactory.create(
-            file_name="pixel.gif", is_legacy=True
-        )
+        upload = TemporaryFileUploadFactory.create(file_name="pixel.gif", legacy=True)
 
         data = {
             "someFile": [

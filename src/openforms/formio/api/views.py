@@ -7,16 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.parsers import MaxFilesizeMultiPartParser
-from openforms.submissions.api.permissions import (
-    AnyActiveSubmissionPermission,
-    owns_submission,
-)
+from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.submissions.api.renderers import PlainTextErrorRenderer
 from openforms.submissions.attachments import clean_mime_type
 from openforms.submissions.models import TemporaryFileUpload
@@ -64,10 +60,6 @@ class TemporaryFileUploadView(GenericAPIView):
             )
 
         submission = serializer.validated_data["submission"]
-
-        if not owns_submission(request, submission.uuid):
-            raise PermissionDenied()
-
         file = serializer.validated_data["file"]
 
         # trim name part if necessary but keep the extension

@@ -54,7 +54,7 @@ class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
         default=False,
         help_text=_("Whether the instance is linked to a submission instance."),
     )
-    # TODO null=True is a transitional state, and should be removed
+    # TODO DeprecationWarning null=True is a transitional state, and should be removed
     # at some point:
     submission = models.ForeignKey(
         "submissions.Submission",

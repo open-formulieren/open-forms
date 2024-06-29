@@ -539,13 +539,9 @@ class FormNodeTests(TestCase):
             form__formstep__form_definition__configuration={"components": components},
         )
 
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create(
-            submission=submission
+        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
+            TemporaryFileUploadFactory.create_batch(3, submission=submission)
         )
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create(
-            submission=submission
-        )
-        nested_upload = TemporaryFileUploadFactory.create(submission=submission)
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
@@ -735,8 +731,9 @@ class FormNodeTests(TestCase):
             form__formstep__form_definition__configuration={"components": components},
         )
 
-        upload_1 = TemporaryFileUploadFactory.create(submission=submission)
-        upload_2 = TemporaryFileUploadFactory.create(submission=submission)
+        upload_1, upload_2 = TemporaryFileUploadFactory.create_batch(
+            2, submission=submission
+        )
         step = SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
@@ -881,11 +878,8 @@ class FormNodeTests(TestCase):
             form__formstep__form_definition__configuration={"components": components},
         )
 
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create(
-            submission=submission
-        )
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create(
-            submission=submission
+        upload_in_repeating_group_1, upload_in_repeating_group_2 = (
+            TemporaryFileUploadFactory.create_batch(2, submission=submission)
         )
         step = SubmissionStepFactory.create(
             submission=submission,
