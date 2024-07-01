@@ -1,19 +1,18 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Callable, Generic, Iterator, TypeVar
 
 from django.db import OperationalError
 
 from flags.state import flag_enabled
 
-from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
+from .constants import UNIQUE_ID_MAX_LENGTH
 
 if TYPE_CHECKING:
     from .plugin import AbstractBasePlugin  # noqa: F401
 
 
-PluginT_co = TypeVar("PluginT_co", bound="AbstractBasePlugin", covariant=True)
-
-# Ideally, this should be bound to "type[PluginT_co]", but is not possible as of today.
-PluginTypeT = TypeVar("PluginTypeT", bound="type[AbstractBasePlugin]")
+PluginT_co = TypeVar("PluginT_co", bound="AbstractBasePlugin")
 
 
 class BaseRegistry(Generic[PluginT_co]):
@@ -34,18 +33,22 @@ class BaseRegistry(Generic[PluginT_co]):
         self._registry = {}
 
     def __call__(
-        self, unique_identifier: str, *args, **kwargs
-    ) -> Callable[[PluginTypeT], PluginTypeT]:
-        def decorator(plugin_cls: PluginTypeT) -> PluginTypeT:
-            if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
-                raise ValueError(
-                    f"The unique identifier '{unique_identifier}' is longer than {UNIQUE_ID_MAX_LENGTH} characters."
-                )
+        self, unique_identifier: str
+    ) -> Callable[[type[PluginT_co]], type[PluginT_co]]:
+
+        if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
+            raise ValueError(
+                f"The unique identifier '{unique_identifier}' is longer than "
+                f"{UNIQUE_ID_MAX_LENGTH} characters."
+            )
+
+        def decorator(plugin_cls: type[PluginT_co]) -> type[PluginT_co]:
             if unique_identifier in self._registry:
                 raise ValueError(
                     f"The unique identifier '{unique_identifier}' is already present "
                     "in the registry."
                 )
+
             plugin = plugin_cls(identifier=unique_identifier)
             self.check_plugin(plugin)
             plugin.registry = self
