@@ -1,5 +1,6 @@
 from pathlib import Path
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import TestCase, tag
 from django.utils import timezone
@@ -20,6 +21,7 @@ from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..registration_variables import PaymentAmount
 from ..submission_registration import ObjectsAPIV2Handler
 from ..typing import RegistrationOptionsV2
+from .factories import ObjectsAPIGroupConfigFactory
 
 
 @freeze_time("2024-03-19T13:40:34.222258+00:00")
@@ -43,6 +45,15 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         self.addCleanup(config_patcher.stop)
 
         self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            objecttypes_service=ServiceFactory.create(
+                api_root="http://localhost:8001/api/v2/",
+                api_type=APITypes.orc,
+                oas="https://example.com/",
+                header_key="Authorization",
+                # See the docker compose fixtures:
+                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+                auth_type=AuthTypes.api_key,
+            ),
             objects_service=ServiceFactory.create(
                 api_root="http://localhost:8002/api/v2/",
                 api_type=APITypes.orc,
@@ -55,6 +66,14 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             drc_service=ServiceFactory.create(
                 api_root="http://localhost:8003/documenten/api/v1/",
                 api_type=APITypes.drc,
+                # See the docker compose fixtures:
+                client_id="test_client_id",
+                secret="test_secret_key",
+                auth_type=AuthTypes.zgw,
+            ),
+            catalogi_service=ServiceFactory.create(
+                api_root="http://localhost:8003/catalogi/api/v1/",
+                api_type=APITypes.ztc,
                 # See the docker compose fixtures:
                 client_id="test_client_id",
                 secret="test_secret_key",
@@ -92,7 +111,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "version": 2,
             "objects_api_group": self.objects_api_group,
             # See the docker compose fixtures for more info on these values:
-            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
             "objecttype_version": 3,
             "upload_submission_csv": True,
             "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
@@ -151,7 +170,10 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             submission=submission
         )
 
-        self.assertEqual(result["type"], v2_options["objecttype"])
+        self.assertEqual(
+            result["type"],
+            "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        )
         self.assertEqual(
             result["record"]["typeVersion"], v2_options["objecttype_version"]
         )
@@ -160,13 +182,14 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             result["record"]["data"],
             {
                 "age": 20,
+                "cosign_date": None,
                 "name": {
                     "last.name": "My last name",
                 },
                 "submission_pdf_url": registration_data.pdf_url,
                 "submission_csv_url": registration_data.csv_url,
                 "submission_payment_completed": False,
-                "submission_payment_amount": "0",
+                "submission_payment_amount": None,
                 "submission_payment_public_ids": [],
                 "submission_date": submission_date,
             },
@@ -210,7 +233,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "version": 2,
             "objects_api_group": self.objects_api_group,
             # See the docker compose fixtures for more info on these values:
-            "objecttype": "http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
+            "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
             "upload_submission_csv": False,
             "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
@@ -234,7 +257,10 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         # Run the registration
         result = plugin.register_submission(submission, v2_options)
 
-        self.assertEqual(result["type"], v2_options["objecttype"])
+        self.assertEqual(
+            result["type"],
+            "http://objecttypes-web:8000/api/v2/objecttypes/527b8408-7421-4808-a744-43ccb7bdaaa2",
+        )
         self.assertEqual(
             result["record"]["typeVersion"], v2_options["objecttype_version"]
         )
@@ -256,6 +282,14 @@ class V2HandlerTests(TestCase):
     Test the behaviour of the V2 registration handler for producing record data to send
     to the Objects API.
     """
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+
+        cls.group = ObjectsAPIGroupConfigFactory(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v2/",
+        )
 
     def test_submission_with_map_component_inside_data(self):
         """
@@ -279,8 +313,9 @@ class V2HandlerTests(TestCase):
         )
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -291,11 +326,11 @@ class V2HandlerTests(TestCase):
         }
         handler = ObjectsAPIV2Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
 
-        record_data = object_data["record"]["data"]
+        data = record_data["data"]
         self.assertEqual(
-            record_data["pointCoordinates"],
+            data["pointCoordinates"],
             {
                 "type": "Point",
                 "coordinates": [52.36673378967122, 4.893164274470299],
@@ -321,8 +356,9 @@ class V2HandlerTests(TestCase):
         )
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -333,10 +369,10 @@ class V2HandlerTests(TestCase):
         }
         handler = ObjectsAPIV2Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+        data = record_data["data"]
 
-        record_data = object_data["record"]["data"]
-        self.assertEqual(record_data["textfield"], "some_string")
+        self.assertEqual(data["textfield"], "some_string")
 
     @tag("gh-4202")
     def test_hidden_component(self):
@@ -359,8 +395,9 @@ class V2HandlerTests(TestCase):
         )
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -371,10 +408,10 @@ class V2HandlerTests(TestCase):
         }
         handler = ObjectsAPIV2Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+        data = record_data["data"]
 
-        record_data = object_data["record"]["data"]
-        self.assertEqual(record_data["textfield"], "some_string")
+        self.assertEqual(data["textfield"], "some_string")
 
     def test_cosign_info_available(self):
         now = timezone.now().isoformat()
@@ -401,8 +438,9 @@ class V2HandlerTests(TestCase):
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -425,20 +463,20 @@ class V2HandlerTests(TestCase):
         }
         handler = ObjectsAPIV2Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+        data = record_data["data"]
 
-        record_data = object_data["record"]["data"]
         self.assertEqual(
-            record_data["cosign_data"],
+            data["cosign_data"],
             {
                 "value": "123456789",
                 "attribute": AuthAttribute.bsn,
                 "cosign_date": now,
             },
         )
-        self.assertEqual(record_data["cosign_date"], now)
-        self.assertEqual(record_data["cosign_bsn"], "123456789")
-        self.assertEqual(record_data["cosign_kvk"], "")
+        self.assertEqual(data["cosign_date"], now)
+        self.assertEqual(data["cosign_bsn"], "123456789")
+        self.assertEqual(data["cosign_kvk"], "")
 
     def test_cosign_info_not_available(self):
         submission = SubmissionFactory.from_components(
@@ -458,8 +496,9 @@ class V2HandlerTests(TestCase):
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -478,11 +517,11 @@ class V2HandlerTests(TestCase):
         }
         handler = ObjectsAPIV2Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+        data = record_data["data"]
 
-        record_data = object_data["record"]["data"]
-        self.assertEqual(record_data["cosign_date"], None)
-        self.assertEqual(record_data["cosign_pseudo"], "")
+        self.assertEqual(data["cosign_date"], None)
+        self.assertEqual(data["cosign_pseudo"], "")
 
     def test_cosign_info_no_cosign_date(self):
         """The cosign date might not be available on existing submissions."""
@@ -508,8 +547,9 @@ class V2HandlerTests(TestCase):
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -520,10 +560,10 @@ class V2HandlerTests(TestCase):
         }
         handler = ObjectsAPIV2Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+        data = record_data["data"]
 
-        record_data = object_data["record"]["data"]
-        self.assertEqual(record_data["cosign_date"], None)
+        self.assertEqual(data["cosign_date"], None)
 
     @tag("utrecht-243", "gh-4425")
     def test_payment_variable_without_any_payment_attempts(self):

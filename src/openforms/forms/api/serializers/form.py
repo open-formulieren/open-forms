@@ -84,7 +84,9 @@ class FormRegistrationBackendSerializer(serializers.ModelSerializer):
         if not plugin.configuration_options:  # unicorn case
             return attrs  # pragma: nocover
 
-        serializer = plugin.configuration_options(data=attrs["options"])
+        serializer = plugin.configuration_options(
+            data=attrs["options"], context=self.context
+        )
         try:
             serializer.is_valid(raise_exception=True)
         except serializers.ValidationError as e:

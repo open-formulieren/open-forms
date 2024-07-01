@@ -56,8 +56,8 @@ class TargetPathsSerializer(serializers.Serializer):
 
 
 class TargetPathsInputSerializer(ObjectsAPIGroupInputSerializer):
-    objecttype_url = serializers.URLField(
-        label=_("objecttype url"), help_text=("The URL of the objecttype.")
+    objecttype = serializers.UUIDField(
+        label=_("objecttype uuid"), help_text=("The UUID of the objecttype.")
     )
     objecttype_version = serializers.IntegerField(
         label=_("objecttype version"), help_text=_("The version of the objecttype.")

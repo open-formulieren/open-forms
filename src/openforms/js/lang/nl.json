@@ -1249,11 +1249,6 @@
     "description": "Variable table initial value title",
     "originalDefault": "Initial value"
   },
-  "RrjozJ": {
-    "defaultMessage": "URL naar het OBJECTTYPE voor de 'ProductAanvraag' in de Objecttypen API. Het objecttype moet de volgende drie attributen bevatten:  \"submission_id\", \"type\" (het type van de 'ProductAanvraag') en \"data\" (de ingezonden formuliergegevens).",
-    "description": "Objects API registration options \"Objecttype\" description",
-    "originalDefault": "URL that points to the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
-  },
   "RvJXSo": {
     "defaultMessage": "zet de waarde van een variabele/component",
     "description": "action type \"variable\" label",
@@ -2395,6 +2390,11 @@
     "defaultMessage": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "uO3byK": {
+    "defaultMessage": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)",
+    "description": "Objects API registration options \"Objecttype\" description",
+    "originalDefault": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
   },
   "uiliGe": {
     "defaultMessage": "De logicaregels die u hier definieert worden uitgevoerd in de volgorde zoals hier weergegeven. U vindt meer informatie in de <docs>handleiding</docs>.",

@@ -84,7 +84,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             data={
                 "objects_api_group": self.objects_api_group.pk,
                 "version": 1,
-                "objecttype": "https://objecttypen.nl/api/v2/objecttypes/2c77babf-a967-4057-9969-0200320d23f1",
+                "objecttype": "2c77babf-a967-4057-9969-0200320d23f1",
                 "objecttype_version": 1,
                 "variables_mapping": [],
             },
@@ -97,7 +97,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             data={
                 "objects_api_group": self.objects_api_group.pk,
                 "version": 2,
-                "objecttype": "https://objecttypen.nl/api/v2/objecttypes/2c77babf-a967-4057-9969-0200320d23f1",
+                "objecttype": "2c77babf-a967-4057-9969-0200320d23f1",
                 "objecttype_version": 1,
                 "content_json": "dummy",
             },
@@ -110,7 +110,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             data={
                 "objects_api_group": self.objects_api_group.pk,
                 "version": 2,
-                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
                 "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/1",
             },
@@ -126,7 +126,8 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             data={
                 "objects_api_group": self.objects_api_group.pk,
                 "version": 2,
-                "objecttype": "http://localhost:8001/api/v2/objecttypes/1",
+                # Unknown UUID:
+                "objecttype": "3064be01-87cd-45e1-8b57-904e183283d6",
                 "objecttype_version": 1,
             },
         )
@@ -141,7 +142,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             data={
                 "objects_api_group": self.objects_api_group.pk,
                 "version": 2,
-                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 999,
             },
         )
@@ -156,7 +157,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             data={
                 "objects_api_group": self.invalid_objects_api_group.pk,
                 "version": 2,
-                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
                 "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
                 "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
@@ -174,7 +175,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             data={
                 "objects_api_group": self.objects_api_group.pk,
                 "version": 2,
-                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
                 "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
                 "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",

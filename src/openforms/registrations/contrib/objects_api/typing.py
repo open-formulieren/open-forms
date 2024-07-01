@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, TypeAlias, TypedDict
+from uuid import UUID
 
 from typing_extensions import Required
 
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 
 class _BaseRegistrationOptions(TypedDict, total=False):
     objects_api_group: Required[ObjectsAPIGroupConfig]
-    objecttype: Required[str]
+    objecttype: Required[UUID]
     objecttype_version: Required[int]
     informatieobjecttype_submission_report: str
     upload_submission_csv: bool

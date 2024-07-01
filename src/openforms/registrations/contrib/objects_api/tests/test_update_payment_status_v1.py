@@ -1,5 +1,6 @@
 import textwrap
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import TestCase
 
@@ -56,11 +57,19 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
 
         config_group = ObjectsAPIGroupConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
         )
 
         m.patch(
             "https://objecten.nl/api/v1/objects/111-222-333",
             json={},  # Unused in our case, but required as .json() is called on the response
+            status_code=200,
+        )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
             status_code=200,
         )
 
@@ -76,14 +85,14 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                         "objecttype_version": 1,
                     },
                 )
 
-        self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(len(m.request_history), 2)
 
-        patch_request = m.request_history[0]
+        patch_request = m.request_history[1]
         body = patch_request.json()
 
         self.assertEqual(
@@ -124,11 +133,19 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
 
         config_group = ObjectsAPIGroupConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
         )
 
         m.patch(
             "https://objecten.nl/api/v1/objects/111-222-333",
             json={},  # Unused in our case, but required as .json() is called on the response
+            status_code=200,
+        )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
             status_code=200,
         )
 
@@ -143,7 +160,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                         "objecttype_version": 1,
                         "payment_status_update_json": textwrap.dedent(
                             """
@@ -158,9 +175,9 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
                     },
                 )
 
-        self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(len(m.request_history), 2)
 
-        patch_request = m.request_history[0]
+        patch_request = m.request_history[1]
         body = patch_request.json()
 
         self.assertEqual(
@@ -201,11 +218,19 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
 
         config_group = ObjectsAPIGroupConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
         )
 
         m.patch(
             "https://objecten.nl/api/v1/objects/111-222-333",
             json={},  # Unused in our case, but required as .json() is called on the response
+            status_code=200,
+        )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
             status_code=200,
         )
 
@@ -221,7 +246,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                         "objecttype_version": 1,
                     },
                 )

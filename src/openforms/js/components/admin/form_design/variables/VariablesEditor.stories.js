@@ -131,8 +131,8 @@ export const WithObjectsAPIRegistrationBackends = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objecttype:
-            'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1',
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [
             {
@@ -152,8 +152,8 @@ export const WithObjectsAPIRegistrationBackends = {
         name: 'Other Objects API registration with a long name',
         options: {
           version: 2,
-          objecttype:
-            'https://objecttypen.nl/api/v1/objecttypes/209e0341-834d-4060-bd19-a3419d19ed74',
+          objectsApiGroup: 1,
+          objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
           objecttypeVersion: 2,
           variablesMapping: [
             {
@@ -169,8 +169,8 @@ export const WithObjectsAPIRegistrationBackends = {
         name: "Shouldn't display!",
         options: {
           version: 1,
-          objecttype:
-            'https://objecttypen.nl/api/v1/objecttypes/209e0341-834d-4060-bd19-a3419d19ed74',
+          objectsApiGroup: 1,
+          objecttype: '209e0341-834d-4060-bd19-a3419d19ed74',
           objecttypeVersion: 2,
         },
       },
@@ -269,8 +269,8 @@ export const FilesMappingAndObjectAPIRegistration = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objecttype:
-            'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1',
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [
             {
@@ -376,8 +376,8 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
         name: 'Example Objects API reg.',
         options: {
           version: 2,
-          objecttype:
-            'https://objecttypen.nl/api/v1/objecttypes/2c77babf-a967-4057-9969-0200320d23f1',
+          objectsApiGroup: 1,
+          objecttype: '2c77babf-a967-4057-9969-0200320d23f1',
           objecttypeVersion: 2,
           variablesMapping: [
             {

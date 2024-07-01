@@ -1,5 +1,6 @@
 import textwrap
 from unittest.mock import patch
+from uuid import UUID
 
 from django.core.exceptions import SuspiciousOperation
 from django.test import TestCase, override_settings, tag
@@ -40,10 +41,18 @@ class JSONTemplatingTests(TestCase):
             productaanvraag_type="terugbelnotitie",
         )
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
         m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         with (
             patch(
@@ -64,7 +73,7 @@ class JSONTemplatingTests(TestCase):
                 {
                     "version": 1,
                     "objects_api_group": config_group,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                     "objecttype_version": 300,
                     "informatieobjecttype_submission_report": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                     "informatieobjecttype_attachment": "https://catalogi.nl/api/v1/informatieobjecttypen/2",
@@ -75,7 +84,7 @@ class JSONTemplatingTests(TestCase):
         self.assertEqual(
             posted_object,
             {
-                "type": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "type": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
                 "record": {
                     "typeVersion": 300,
                     "data": {
@@ -129,6 +138,7 @@ class JSONTemplatingTests(TestCase):
             ),
         )
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
@@ -145,6 +155,13 @@ class JSONTemplatingTests(TestCase):
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         with (
             patch(
@@ -173,7 +190,7 @@ class JSONTemplatingTests(TestCase):
                 {
                     "version": 1,
                     "objects_api_group": config_group,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                     "objecttype_version": 300,
                     "productaanvraag_type": "tralala-type",
                     "upload_submission_csv": True,
@@ -187,7 +204,7 @@ class JSONTemplatingTests(TestCase):
         self.assertEqual(
             posted_object,
             {
-                "type": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "type": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
                 "record": {
                     "typeVersion": 300,
                     "data": {
@@ -250,6 +267,7 @@ class JSONTemplatingTests(TestCase):
         )
 
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
@@ -274,7 +292,7 @@ class JSONTemplatingTests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                         "objecttype_version": 300,
                     },
                 )
@@ -285,6 +303,7 @@ class JSONTemplatingTests(TestCase):
             content_json='{"key": "value",}',  # Invalid JSON,
         )
         config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             objects_service__api_root="https://objecten.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
         )
@@ -306,7 +325,7 @@ class JSONTemplatingTests(TestCase):
                     {
                         "version": 1,
                         "objects_api_group": config_group,
-                        "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                         "objecttype_version": 300,
                     },
                 )
@@ -314,7 +333,8 @@ class JSONTemplatingTests(TestCase):
 
 class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
     @tag("dh-673")
-    def test_object_nulls_regression(self):
+    @requests_mock.Mocker()
+    def test_object_nulls_regression(self, m):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -358,9 +378,19 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
         config = ObjectsAPIConfig(
             content_json="{% json_summary %}",
         )
-        config_group = ObjectsAPIGroupConfigFactory.create()
+        config_group = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         prefix = "openforms.registrations.contrib.objects_api"
+
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
 
         with (
             patch(
@@ -377,7 +407,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                 {
                     "version": 1,
                     "objects_api_group": config_group,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                     "objecttype_version": 300,
                     # skip document uploads
                     "informatieobjecttype_submission_report": "",
@@ -387,9 +417,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             )
 
         _objects_client.create_object.mock_assert_called_once()
-        record_data = _objects_client.create_object.call_args[1]["object_data"][
-            "record"
-        ]["data"]
+        record_data = _objects_client.create_object.call_args[1]["record_data"]["data"]
         # for missing values, the empty value (depending on component type) must be used
         # Note that the input data was validated against the hidden/visible and
         # clearOnHide state - absence of the data implies that the component was not
@@ -408,7 +436,8 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
 
     @tag("dh-673", "gh-4140")
     @override_settings(DISABLE_SENDING_HIDDEN_FIELDS=True)
-    def test_opt_out_of_sending_hidden_fields(self):
+    @requests_mock.Mocker()
+    def test_opt_out_of_sending_hidden_fields(self, m):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -463,8 +492,18 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             submitted_data={"radio": "2"},
             form_definition_kwargs={"slug": "stepwithnulls"},
         )
-        config = ObjectsAPIGroupConfigFactory.create()
+        config = ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
 
         with (
             patch(
@@ -479,7 +518,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                 {
                     "objects_api_group": config,
                     "version": 1,
-                    "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                    "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                     "objecttype_version": 300,
                     # skip document uploads
                     "informatieobjecttype_submission_report": "",
@@ -490,9 +529,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
             )
 
         _objects_client.create_object.mock_assert_called_once()
-        record_data = _objects_client.create_object.call_args[1]["object_data"][
-            "record"
-        ]["data"]
+        record_data = _objects_client.create_object.call_args[1]["record_data"]["data"]
         # for missing values, the empty value (depending on component type) must be used
         # Note that the input data was validated against the hidden/visible and
         # clearOnHide state - absence of the data implies that the component was not

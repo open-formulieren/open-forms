@@ -82,7 +82,8 @@ UPGRADE_PATHS = {
             # 2.6.7: patch release with new migrations, easiest is to force people to
             # have executed that one
             VersionRange(minimum="2.6.7"),
-        }
+        },
+        scripts={"check_objecttypes_urls"},
     ),
     "2.6": UpgradeConstraint(
         valid_ranges={

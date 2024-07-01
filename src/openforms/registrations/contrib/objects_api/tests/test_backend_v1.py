@@ -1,6 +1,7 @@
 import textwrap
 from datetime import date
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import TestCase, override_settings, tag
 from django.utils import timezone
@@ -87,6 +88,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
 
         self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
+            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
@@ -149,7 +151,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         objects_form_options = dict(
             version=1,
             objects_api_group=self.objects_api_group,
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
+            objecttype=UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             objecttype_version=2,
             productaanvraag_type="testproduct",
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
@@ -176,6 +178,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -193,13 +202,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
         result = plugin.register_submission(submission, objects_form_options)
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 3)
-        document_create, csv_document_create, object_create = m.request_history
+        self.assertEqual(len(m.request_history), 4)
+        document_create, csv_document_create, _, object_create = m.request_history
 
         with self.subTest("object create call and registration result"):
             submitted_object_data = object_create.json()
             expected_object_body = {
-                "type": "https://objecttypen.nl/api/v1/objecttypes/2",
+                "type": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
                 "record": {
                     "typeVersion": 2,
                     "data": {
@@ -245,7 +254,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             expected_result = {
                 "url": "https://objecten.nl/api/v1/objects/1",
                 "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                "type": objects_form_options["objecttype"],
+                "type": f"https://objecttypen.nl/api/v1/objecttypes/{objects_form_options['objecttype']}",
                 "record": {
                     "index": 0,
                     "typeVersion": objects_form_options["objecttype_version"],
@@ -313,7 +322,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         objects_form_options = dict(
             version=1,
             objects_api_group=self.objects_api_group,
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
+            objecttype=UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             objecttype_version=2,
             productaanvraag_type="testproduct",
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
@@ -339,6 +348,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -356,15 +372,15 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin.register_submission(submission, objects_form_options)
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 3)
-        document_create, csv_document_create, object_create = m.request_history
+        self.assertEqual(len(m.request_history), 4)
+        document_create, csv_document_create, _, object_create = m.request_history
 
         with self.subTest("object create call and registration result"):
             submitted_object_data = object_create.json()
 
             self.assertEqual(
                 submitted_object_data["type"],
-                "https://objecttypen.nl/api/v1/objecttypes/2",
+                "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
             )
             self.assertEqual(submitted_object_data["record"]["typeVersion"], 2)
             self.assertEqual(
@@ -422,6 +438,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -434,7 +457,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             submission,
             {
                 "version": 1,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": False,
@@ -442,7 +465,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         )
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(len(m.request_history), 3)
         object_create = m.last_request
 
         with self.subTest("object create call and registration result"):
@@ -467,6 +490,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -479,7 +509,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             submission,
             {
                 "version": 1,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": True,
@@ -488,7 +518,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         )
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(len(m.request_history), 3)
         object_create = m.last_request
 
         with self.subTest("object create call and registration result"):
@@ -519,7 +549,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         step_slug = submission_step.form_step.slug
         objects_form_options = dict(
             version=1,
-            objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
+            objecttype=UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             objecttype_version=1,
             objects_api_group=self.objects_api_group,
             upload_submission_csv=False,
@@ -548,6 +578,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -559,7 +596,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
         plugin.register_submission(submission, objects_form_options)
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(len(m.request_history), 3)
 
         with self.subTest("object create call"):
             object_create = m.last_request
@@ -610,6 +647,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -630,14 +674,14 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
             },
         )
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 2)
-        document_create, object_create = m.request_history
+        self.assertEqual(len(m.request_history), 3)
+        document_create, _, object_create = m.request_history
 
         with self.subTest("Document create (PDF summary)"):
             document_create_body = document_create.json()
@@ -725,6 +769,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -753,17 +804,18 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
             },
         )
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 4)
+        self.assertEqual(len(m.request_history), 5)
         (
             pdf_create,
             attachment1_create,
             attachment2_create,
+            _,
             object_create,
         ) = m.request_history
 
@@ -884,6 +936,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -912,13 +971,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
             },
         )
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 4)
+        self.assertEqual(len(m.request_history), 5)
         attachment1_create = m.request_history[1]
         attachment2_create = m.request_history[2]
 
@@ -1018,6 +1077,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -1039,13 +1105,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
             },
         )
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 3)
+        self.assertEqual(len(m.request_history), 4)
         document_create_attachment = m.request_history[1]
 
         document_create_attachment_body = document_create_attachment.json()
@@ -1137,6 +1203,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -1158,13 +1231,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
             },
         )
 
         # check the requests made
-        self.assertEqual(len(m.request_history), 3)
+        self.assertEqual(len(m.request_history), 4)
         document_create_attachment = m.request_history[1]
 
         document_create_attachment_body = document_create_attachment.json()
@@ -1224,6 +1297,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -1237,14 +1317,14 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
                 "content_json": content_template,
                 "upload_submission_csv": False,
             },
         )
 
-        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(len(m.request_history), 3)
 
         object_create = m.last_request
         expected_record_data = {
@@ -1289,6 +1369,13 @@ class ObjectsAPIBackendV1Tests(TestCase):
             status_code=201,
             json=get_create_json,
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         m.post(
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
             status_code=201,
@@ -1305,12 +1392,12 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
             },
         )
 
-        self.assertEqual(len(m.request_history), 2)
+        self.assertEqual(len(m.request_history), 3)
 
         object_create = m.last_request
         body = object_create.json()
@@ -1339,13 +1426,20 @@ class ObjectsAPIBackendV1Tests(TestCase):
         m.post(
             "https://objecten.nl/api/v1/objects", status_code=201, json=get_create_json
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
@@ -1401,13 +1495,20 @@ class ObjectsAPIBackendV1Tests(TestCase):
         m.post(
             "https://objecten.nl/api/v1/objects", status_code=201, json=get_create_json
         )
+        m.get(
+            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
+            json={
+                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
+            },
+            status_code=200,
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
         plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/1",
+                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
                 "objecttype_version": 1,
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
@@ -1427,6 +1528,14 @@ class V1HandlerTests(TestCase):
     Test the behaviour of the V1 registration handler for producing record data to send
     to the Objects API.
     """
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        super().setUpTestData()
+
+        cls.group = ObjectsAPIGroupConfigFactory(
+            objecttypes_service__api_root="https://objecttypen.nl/api/v2/",
+        )
 
     def test_cosign_info_available(self):
         now = timezone.now().isoformat()
@@ -1452,9 +1561,10 @@ class V1HandlerTests(TestCase):
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v2_options: RegistrationOptionsV1 = {
+        v1_options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "content_json": textwrap.dedent(
@@ -1470,14 +1580,14 @@ class V1HandlerTests(TestCase):
         }
         handler = ObjectsAPIV1Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v1_options)
 
-        record_data = object_data["record"]["data"]
+        data = record_data["data"]
 
-        self.assertEqual(record_data["cosign_date"], now)
-        self.assertEqual(record_data["cosign_bsn"], "123456789")
-        self.assertEqual(record_data["cosign_kvk"], "")
-        self.assertEqual(record_data["cosign_pseudo"], "")
+        self.assertEqual(data["cosign_date"], now)
+        self.assertEqual(data["cosign_bsn"], "123456789")
+        self.assertEqual(data["cosign_kvk"], "")
+        self.assertEqual(data["cosign_pseudo"], "")
 
     def test_cosign_info_not_available(self):
         submission = SubmissionFactory.from_components(
@@ -1496,9 +1606,10 @@ class V1HandlerTests(TestCase):
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v2_options: RegistrationOptionsV1 = {
+        v1_options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "content_json": textwrap.dedent(
@@ -1516,9 +1627,9 @@ class V1HandlerTests(TestCase):
         }
         handler = ObjectsAPIV1Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v1_options)
 
-        self.assertEqual(object_data["record"]["data"], {})
+        self.assertEqual(record_data["data"], {})
 
     def test_cosign_info_no_cosign_date(self):
         """The cosign date might not be available on existing submissions."""
@@ -1543,9 +1654,10 @@ class V1HandlerTests(TestCase):
         )
 
         ObjectsAPIRegistrationData.objects.create(submission=submission)
-        v2_options: RegistrationOptionsV1 = {
+        v1_options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "content_json": textwrap.dedent(
@@ -1558,10 +1670,10 @@ class V1HandlerTests(TestCase):
         }
         handler = ObjectsAPIV1Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v1_options)
+        data = record_data["data"]
 
-        record_data = object_data["record"]["data"]
-        self.assertEqual(record_data["cosign_date"], "")
+        self.assertEqual(data["cosign_date"], "")
 
     @tag("utrecht-243", "gh-4425")
     def test_payment_context_without_any_payment_attempts(self):
@@ -1574,14 +1686,15 @@ class V1HandlerTests(TestCase):
         assert submission.price == 10
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         options: RegistrationOptionsV1 = {
+            "objects_api_group": self.group,
             "version": 1,
-            "objecttype": "-dummy-",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "productaanvraag_type": "-dummy-",
             "content_json": """{"amount": {{ payment.amount }}}""",
         }
         handler = ObjectsAPIV1Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=options)
+        record_data = handler.get_record_data(submission=submission, options=options)
 
-        self.assertEqual(object_data["record"]["data"]["amount"], 10)
+        self.assertEqual(record_data["data"]["amount"], 10)

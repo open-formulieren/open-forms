@@ -29,7 +29,7 @@ const ObjectTypeVersionSelect = ({
     error,
   } = useAsync(async () => {
     if (!objectsApiGroup) return [];
-    const objecttype = availableObjecttypes.find(ot => ot.url === selectedObjecttype);
+    const objecttype = availableObjecttypes.find(ot => ot.uuid === selectedObjecttype);
     // no match -> no versions to retrieve;
     if (!objecttype) return [];
 

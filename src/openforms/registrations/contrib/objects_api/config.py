@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import Any
 
 from django.db.models import IntegerChoices, Q
@@ -71,10 +72,10 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         choices=VersionChoices.choices,
         default=1,
     )
-    objecttype = serializers.URLField(
+    objecttype = serializers.UUIDField(
         label=_("objecttype"),
         help_text=_(
-            "URL that points to the ProductAanvraag objecttype in the Objecttypes API. "
+            "UUID of the ProductAanvraag objecttype in the Objecttypes API. "
             "The objecttype should have the following three attributes: "
             "1) submission_id; "
             "2) type (the type of productaanvraag); "
@@ -173,6 +174,23 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         allow_blank=True,
     )
 
+    def to_internal_value(self, data: Any) -> Any:
+        # Apply conversions when importing forms:
+        is_import: bool = self.context.get("is_import", False)
+        new_data = data
+
+        # We want to be careful, data can be anything. If not a mapping or no objecttype is present,
+        # `super().to_internal_value` will raise an error.
+        if is_import and isinstance(data, Mapping) and "objecttype" in data:
+            try:
+                objecttype_uuid = data["objecttype"].rsplit("/", 1)[1]
+            except IndexError:
+                pass
+            else:
+                new_data = {**data, "objecttype": objecttype_uuid}
+
+        return super().to_internal_value(new_data)
+
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         v1_only_fields = {
             "productaanvraag_type",
@@ -244,7 +262,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 (
                     objecttype
                     for objecttype in objecttypes
-                    if objecttype["url"] == attrs["objecttype"]
+                    if objecttype["uuid"] == str(attrs["objecttype"])
                 ),
                 None,
             )

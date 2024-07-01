@@ -472,7 +472,7 @@ class ZGWRegistration(BasePlugin):
         self, submission: Submission, options: dict
     ) -> dict:
         object_mapping = {
-            "record.geometry": FieldConf(
+            "geometry": FieldConf(
                 RegistrationAttribute.locatie_coordinaat,
                 transform=_point_coordinate,
             ),
@@ -489,15 +489,14 @@ class ZGWRegistration(BasePlugin):
             },
         }
 
-        record_data = render_to_json(options["content_json"], context)
-        object_data = prepare_data_for_registration(
-            record_data=record_data,
-            objecttype=options["objecttype"],
+        data = render_to_json(options["content_json"], context)
+        record_data = prepare_data_for_registration(
+            data=data,
             objecttype_version=options["objecttype_version"],
         )
 
         apply_data_mapping(
-            submission, object_mapping, REGISTRATION_ATTRIBUTE, object_data
+            submission, object_mapping, REGISTRATION_ATTRIBUTE, record_data
         )
 
         # In a follow up PR: the group will be configurable:
@@ -505,7 +504,11 @@ class ZGWRegistration(BasePlugin):
             ObjectsAPIGroupConfig.objects.order_by("pk").first()
         ) as objects_client:
             response = execute_unless_result_exists(
-                partial(objects_client.create_object, object_data=object_data),
+                partial(
+                    objects_client.create_object,
+                    objecttype_url=options["objecttype"],
+                    record_data=record_data,
+                ),
                 submission,
                 "intermediate.objects_api_object",
             )
