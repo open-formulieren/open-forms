@@ -1,6 +1,8 @@
 from django.test import SimpleTestCase, tag
 from django.utils import timezone
 
+from freezegun import freeze_time
+
 from openforms.submissions.models import Submission
 
 from ...datastructures import FormioConfigurationWrapper
@@ -61,6 +63,9 @@ class DateFieldValidationTests(SimpleTestCase):
                 self.assertEqual(error.code, error_code)
 
     @tag("gh-4172")
+    # test breaks between 00:00-02:00 because of DST
+    # XXX: add explicit test since this points out some broken behaviour!
+    @freeze_time("2024-05-01T18:00:00")
     def test_min_max_can_be_datetimes(self):
         # Our dynamic logic that calculates dates/datetimes is shared between date
         # and datetime components, so it produces datetime strings (!)
