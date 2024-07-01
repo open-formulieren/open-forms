@@ -252,11 +252,6 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                             )
                         )
 
-    def build_objecttype_url(self, options: OptionsT) -> str:
-        base_url = options["objects_api_group"].objecttypes_service.api_root
-
-        return f"{base_url}objecttypes/{options['objecttype']}"
-
     @abstractmethod
     def get_record_data(
         self,
