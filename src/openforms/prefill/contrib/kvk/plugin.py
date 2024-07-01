@@ -37,29 +37,32 @@ class KVK_KVKNumberPrefill(BasePlugin):
 
     requires_auth = AuthAttribute.kvk
 
-    def get_available_attributes(self) -> list[tuple[str, str]]:
+    @staticmethod
+    def get_available_attributes() -> list[tuple[str, str]]:
         return Attributes.choices
 
+    @classmethod
     def get_identifier_value(
-        self, submission: Submission, identifier_role: str
+        cls, submission: Submission, identifier_role: str
     ) -> str | None:
         if not submission.is_authenticated:
             return
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == self.requires_auth
+            and submission.auth_info.attribute == cls.requires_auth
         ):
             return submission.auth_info.value
 
+    @classmethod
     def get_prefill_values(
-        self,
+        cls,
         submission: Submission,
         attributes: list[str],
         identifier_role: str = IdentifierRoles.main,
     ) -> dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
-        if not (kvk_value := self.get_identifier_value(submission, identifier_role)):
+        if not (kvk_value := cls.get_identifier_value(submission, identifier_role)):
             return {}
 
         try:
@@ -68,7 +71,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
         except (RequestException, NoServiceConfigured):
             return {}
 
-        self.modify_result(result)
+        cls.modify_result(result)
 
         values = dict()
         for attr in attributes:
@@ -80,8 +83,8 @@ class KVK_KVKNumberPrefill(BasePlugin):
                 )
         return values
 
-    @classmethod
-    def modify_result(cls, result: BasisProfiel):
+    @staticmethod
+    def modify_result(result: BasisProfiel):
         # first try getting the addresses from the embedded 'hoofdvestiging'. Note that
         # this may be absent or empty depending on the type of company (see #1299).
         # If there are no addresses found, we try to get them from 'eigenaar' instead.

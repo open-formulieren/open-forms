@@ -1,6 +1,5 @@
 import logging
-from collections.abc import Sequence
-from typing import Any, TypeAlias
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -32,9 +31,6 @@ VERSION_TO_ATTRIBUTES_MAP = {
 }
 
 
-AttributesSequence: TypeAlias = Sequence[AttributesV1 | AttributesV2]
-
-
 def get_attributes_cls():
     config = HaalCentraalConfig.get_solo()
     assert isinstance(config, HaalCentraalConfig)
@@ -63,7 +59,7 @@ class HaalCentraalPrefill(BasePlugin):
         cls,
         client: BRPClient,
         bsn: str,
-        attributes: AttributesSequence,
+        attributes: list[str],
     ) -> dict[str, Any]:
         if not (data := client.find_person(bsn, attributes=attributes)):
             return {}
@@ -101,7 +97,7 @@ class HaalCentraalPrefill(BasePlugin):
     def get_prefill_values(
         cls,
         submission: Submission,
-        attributes: AttributesSequence,
+        attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, Any]:
         try:

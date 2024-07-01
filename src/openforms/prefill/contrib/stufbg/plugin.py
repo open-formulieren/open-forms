@@ -97,12 +97,12 @@ class StufBgPrefill(BasePlugin):
     verbose_name = _("StUF-BG")
     requires_auth = AuthAttribute.bsn
 
-    def get_available_attributes(self) -> list[tuple[str, str]]:
+    @staticmethod
+    def get_available_attributes() -> list[tuple[str, str]]:
         return FieldChoices.choices
 
-    def _get_values_for_bsn(
-        self, bsn: str, attributes: list[FieldChoices]
-    ) -> dict[str, Any]:
+    @staticmethod
+    def _get_values_for_bsn(bsn: str, attributes: list[FieldChoices]) -> dict[str, Any]:
         with get_client() as client:
             data = client.get_values(bsn, [str(attr) for attr in attributes])
 
@@ -129,36 +129,39 @@ class StufBgPrefill(BasePlugin):
 
         return response_dict
 
+    @classmethod
     def get_identifier_value(
-        self, submission: Submission, identifier_role: str
+        cls, submission: Submission, identifier_role: IdentifierRoles
     ) -> str | None:
         if not submission.is_authenticated:
             return
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == self.requires_auth
+            and submission.auth_info.attribute == cls.requires_auth
         ):
             return submission.auth_info.value
 
         if identifier_role == IdentifierRoles.authorised_person:
             return submission.auth_info.machtigen.get("identifier_value")
 
+    @classmethod
     def get_prefill_values(
-        self,
+        cls,
         submission: Submission,
-        attributes: list[FieldChoices],
-        identifier_role: str = IdentifierRoles.main,
+        attributes: list[str],
+        identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, Any]:
-        if not (bsn_value := self.get_identifier_value(submission, identifier_role)):
+        if not (bsn_value := cls.get_identifier_value(submission, identifier_role)):
             #  If there is no bsn we can't prefill any values so just return
             logger.info("No BSN associated with submission, cannot prefill.")
             return {}
 
-        return self._get_values_for_bsn(bsn_value, attributes)
+        return cls._get_values_for_bsn(bsn_value, attributes)
 
+    @classmethod
     def get_co_sign_values(
-        self, submission: Submission, identifier: str
+        cls, submission: Submission, identifier: str
     ) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
@@ -171,7 +174,7 @@ class StufBgPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        values = self._get_values_for_bsn(
+        values = cls._get_values_for_bsn(
             identifier,
             [
                 FieldChoices.voornamen,

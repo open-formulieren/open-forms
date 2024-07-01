@@ -18,7 +18,8 @@ class BasePlugin(AbstractBasePlugin):
     requires_auth: AuthAttribute | None = None
     for_components: Container[str] = AllComponentTypes()
 
-    def get_available_attributes(self) -> Iterable[tuple[str, str]]:
+    @staticmethod
+    def get_available_attributes() -> Iterable[tuple[str, str]]:
         """
         Return a choice list of available attributes this plugin offers.
         """
@@ -26,8 +27,9 @@ class BasePlugin(AbstractBasePlugin):
             "You must implement the 'get_available_attributes' method."
         )
 
+    @classmethod
     def get_prefill_values(
-        self,
+        cls,
         submission: Submission,
         attributes: list[str],
         identifier_role: IdentifierRoles = IdentifierRoles.main,
@@ -48,8 +50,9 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError("You must implement the 'get_prefill_values' method.")
 
+    @classmethod
     def get_co_sign_values(
-        self, submission: Submission, identifier: str
+        cls, submission: Submission, identifier: str
     ) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
@@ -64,8 +67,9 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError("You must implement the 'get_co_sign_values' method.")
 
+    @classmethod
     def get_identifier_value(
-        self, submission: Submission, identifier_role: IdentifierRoles
+        cls, submission: Submission, identifier_role: IdentifierRoles
     ) -> str | None:
         """
         Given a submission and the role of the identifier, return the value of the identifier.
@@ -82,6 +86,6 @@ class BasePlugin(AbstractBasePlugin):
 
         if (
             identifier_role == IdentifierRoles.main
-            and submission.auth_info.attribute == self.requires_auth
+            and submission.auth_info.attribute == cls.requires_auth
         ):
             return submission.auth_info.value
