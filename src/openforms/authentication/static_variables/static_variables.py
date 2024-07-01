@@ -20,7 +20,9 @@ class Auth(BaseStaticVariable):
     name = _("Authentication")
     data_type = FormVariableDataTypes.object
 
-    def get_initial_value(self, submission: Submission | None) -> FormAuth | None:
+    def get_initial_value(
+        self, submission: Submission | None = None
+    ) -> FormAuth | None:
         if not submission or not submission.is_authenticated:
             return None
 
@@ -51,8 +53,7 @@ class AuthBSN(BaseStaticVariable):
     name = _("Authentication BSN")
     data_type = FormVariableDataTypes.string
 
-    @staticmethod
-    def get_initial_value(submission: Submission | None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.bsn)
 
 
@@ -61,8 +62,7 @@ class AuthKvK(BaseStaticVariable):
     name = _("Authentication KvK")
     data_type = FormVariableDataTypes.string
 
-    @staticmethod
-    def get_initial_value(submission: Submission | None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.kvk)
 
 
@@ -71,6 +71,5 @@ class AuthPseudo(BaseStaticVariable):
     name = _("Authentication pseudo")
     data_type = FormVariableDataTypes.string
 
-    @staticmethod
-    def get_initial_value(submission: Submission | None) -> str:
+    def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.pseudo)
