@@ -26,8 +26,6 @@ services:
       - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
       - ALLOWED_HOSTS=*
       - DB_HOST=objects-objecttypes-db
-    ports:
-      - 8001:8000
     depends_on:
       - objects-objecttypes-db
     networks:
@@ -44,8 +42,6 @@ services:
       - CELERY_BROKER_URL=redis://objects-redis:6379/0
       - CELERY_RESULT_BACKEND=redis://objects-redis:6379/0
       - NOTIFICATIONS_DISABLED=True
-    ports:
-      - 8002:8000
     depends_on:
       - objects-objecttypes-db
       - objects-redis
@@ -59,6 +55,19 @@ services:
     depends_on:
       - objects-objecttypes-db
       - objects-redis
+    networks:
+      - open-forms-dev
+
+  objects-nginx:
+    image: nginx
+    volumes:
+      - ./objects-apis/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - '8001:80'
+      - '8002:81'
+    depends_on:
+      - objects-web
+      - objecttypes-web
     networks:
       - open-forms-dev
 

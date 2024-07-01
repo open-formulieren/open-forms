@@ -22,28 +22,34 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: POST
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://localhost:8002/api/v2/objects/7ea00ab0-7edf-4fc5-a55e-2131652e6a13","uuid":"7ea00ab0-7edf-4fc5-a55e-2131652e6a13","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
-        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-06-27","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/1a9ff7e3-f677-4e7e-b354-5290e68fee3c","uuid":"1a9ff7e3-f677-4e7e-b354-5290e68fee3c","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":1,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"submission_pdf_url":"http://example.com","submission_csv_url":"http://example.com","submission_payment_completed":false,"nested":{"unrelated":"some_value","submission_payment_amount":0},"submission_payment_public_ids":[],"submission_date":"2020-02-02T00:00:00+00:00"},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-07-01","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
+      Connection:
+      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '703'
+      - '705'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
+      Date:
+      - Mon, 01 Jul 2024 13:42:08 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/7ea00ab0-7edf-4fc5-a55e-2131652e6a13
+      - http://localhost:81/api/v2/objects/1a9ff7e3-f677-4e7e-b354-5290e68fee3c
       Referrer-Policy:
       - same-origin
+      Server:
+      - nginx/1.27.0
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
@@ -63,21 +69,27 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
   response:
     body:
-      string: '{"url":"http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3"]}'
+      string: '{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","uuid":"8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","name":"Person","namePlural":"Persons","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2023-10-24","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/1","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/2","http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48/versions/3"]}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Connection:
+      - keep-alive
       Content-Length:
-      - '766'
+      - '790'
       Content-Type:
       - application/json
+      Date:
+      - Mon, 01 Jul 2024 13:42:08 GMT
       Referrer-Policy:
       - same-origin
+      Server:
+      - nginx/1.27.0
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
@@ -86,10 +98,10 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"type": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
-      "record": {"typeVersion": 3, "data": {"submission_payment_completed": false,
+    body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+      "record": {"typeVersion": 3, "data": {"submission_payment_completed": true,
       "nested": {"submission_payment_amount": 10.01}, "submission_payment_public_ids":
-      []}, "startAt": "2020-02-02"}}'
+      ["TEST-123"]}, "startAt": "2020-02-02"}}'
     headers:
       Accept:
       - '*/*'
@@ -102,35 +114,41 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '278'
+      - '293'
       Content-Type:
       - application/json
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.3
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/7ea00ab0-7edf-4fc5-a55e-2131652e6a13
+    uri: http://localhost:8002/api/v2/objects/1a9ff7e3-f677-4e7e-b354-5290e68fee3c
   response:
     body:
-      string: '{"type":["ObjectType with url=http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48
-        is not configured."]}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/1a9ff7e3-f677-4e7e-b354-5290e68fee3c","uuid":"1a9ff7e3-f677-4e7e-b354-5290e68fee3c","type":"http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48","record":{"index":2,"typeVersion":3,"data":{"age":20,"name":{"last.name":"My
+        last name"},"nested":{"unrelated":"some_value","submission_payment_amount":10.01},"submission_date":"2020-02-02T00:00:00+00:00","submission_csv_url":"http://example.com","submission_pdf_url":"http://example.com","submission_payment_completed":true,"submission_payment_public_ids":["TEST-123"]},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-07-01","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Connection:
+      - keep-alive
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '129'
+      - '718'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
+      Date:
+      - Mon, 01 Jul 2024 13:42:08 GMT
       Referrer-Policy:
       - same-origin
+      Server:
+      - nginx/1.27.0
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - DENY
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1
