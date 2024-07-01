@@ -279,7 +279,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         self.assertEqual(submission.auth_info.value, "123456789")
         self.assertFalse(submission.auth_info.attribute_hashed)
 
-    def test_auth_with_digid_machtigen(self):
+    def test_auth_with_legacy_digid_machtigen(self):
         submission = SubmissionFactory.create(
             form__authentication_backends=["digid_machtigen_oidc"]
         )
