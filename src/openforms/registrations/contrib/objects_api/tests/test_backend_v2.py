@@ -422,9 +422,9 @@ class V2HandlerTests(TestCase):
         )
         ObjectsAPIRegistrationData.objects.create(submission=submission)
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            # "objects_api_group": self.objects_api_group.pk,
-            "objecttype": "TODO",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -435,10 +435,9 @@ class V2HandlerTests(TestCase):
         }
         handler = ObjectsAPIV2Handler()
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
 
-        record_data = object_data["record"]["data"]
-        self.assertEqual(record_data, {"of_nummer": "OF-911"})
+        self.assertEqual(record_data["data"], {"of_nummer": "OF-911"})
 
     def test_cosign_info_available(self):
         now = timezone.now().isoformat()
@@ -609,9 +608,9 @@ class V2HandlerTests(TestCase):
 
     def test_auth_context_data_info_available(self):
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            # "objects_api_group": self.objects_api_group.pk,
-            "objecttype": "TODO",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -660,9 +659,9 @@ class V2HandlerTests(TestCase):
         )
         ObjectsAPIRegistrationData.objects.create(submission=submission)
 
-        object_data = handler.get_object_data(submission=submission, options=v2_options)
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
 
-        record_data = object_data["record"]["data"]
+        data = record_data["data"]
         with self.subTest("full auth context"):
             expected_auth_context = {
                 "source": "eherkenning",
@@ -695,7 +694,7 @@ class V2HandlerTests(TestCase):
                     ],
                 },
             }
-            self.assertEqual(record_data["auth_context"], expected_auth_context)
+            self.assertEqual(data["auth_context"], expected_auth_context)
 
         with self.subTest("individual auth context vars"):
             expected_obj = {
@@ -712,13 +711,13 @@ class V2HandlerTests(TestCase):
                 ),
                 "soort_actor": "opaque",
             }
-            self.assertEqual(record_data["authn"], expected_obj)
+            self.assertEqual(data["authn"], expected_obj)
 
     def test_auth_context_data_info_parts_missing_variants(self):
         v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
             "version": 2,
-            # "objects_api_group": self.objects_api_group.pk,
-            "objecttype": "TODO",
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
             "variables_mapping": [
                 {
@@ -840,9 +839,9 @@ class V2HandlerTests(TestCase):
             with self.subTest(labe=label):
                 ObjectsAPIRegistrationData.objects.create(submission=submission)
 
-                object_data = handler.get_object_data(
+                record_data = handler.get_record_data(
                     submission=submission, options=v2_options
                 )
 
-                record_data = object_data["record"]["data"]
-                self.assertEqual(record_data["authn"], expected)
+                data = record_data["data"]
+                self.assertEqual(data["authn"], expected)
