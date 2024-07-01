@@ -5,6 +5,7 @@ from typing import Any
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.data import Action
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -44,8 +45,8 @@ class DemoPrefill(BasePlugin):
         """
         return {attr: CALLBACKS[attr]() for attr in attributes}
 
-    def check_config(self):
+    def check_config(self) -> list[Action]:
         """
         Demo config is always valid.
         """
-        pass
+        return []
