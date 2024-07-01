@@ -254,6 +254,12 @@ class AuthInfo(BaseAuthInfo):
     ):
         assert not self.attribute_hashed
 
+        try:
+            self.submission._registrator
+            has_registrator = True
+        except RegistratorInfo.DoesNotExist:
+            has_registrator = False
+
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate
             case (AuthAttribute.bsn, ""):
@@ -290,7 +296,7 @@ class AuthInfo(BaseAuthInfo):
             # EHerkenning without machtigen/mandate
             # Presence of an acting subject confirms eHerkenning (or eidas? TODO),
             # as opposed to a registrator entering the KVK number.
-            case (AuthAttribute.kvk, "") if self.acting_subject_identifier_value:
+            case (AuthAttribute.kvk, "") if not has_registrator:
                 eh_context: EHerkenningContext = {
                     "source": "eherkenning",
                     "levelOfAssurance": self.loa,

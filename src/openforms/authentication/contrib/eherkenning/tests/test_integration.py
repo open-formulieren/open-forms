@@ -34,7 +34,7 @@ class SubmissionIntegrationTests(APITestCase):
         """
         # see .test_auth.AuthenticationStep5Tests.test_receive_samlart_from_eHerkenning
         # for the source of this session attribute
-        self._set_kvk_in_session("12345")
+        self._set_kvk_in_session("12345678")
         form = FormFactory.create(
             generate_minimal_setup=True,
             formstep__form_definition__login_required=True,
@@ -52,4 +52,4 @@ class SubmissionIntegrationTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
-        self.assertEqual(submission.auth_info.value, "12345")
+        self.assertEqual(submission.auth_info.value, "12345678")
