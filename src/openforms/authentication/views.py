@@ -165,7 +165,7 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
     queryset = Form.objects.live()
     register = register
 
-    def get(self, request, slug: str, plugin_id: str):
+    def get(self, request: Request, slug: str, plugin_id: str):
         form = self.get_object()
         try:
             plugin = self.register[plugin_id]

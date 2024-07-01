@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.config.data import Action
 from openforms.config.models import GlobalConfiguration
+from openforms.typing import StrOrPromise
 
 from .registry import BaseRegistry
 
@@ -20,7 +21,7 @@ class AbstractBasePlugin:
     def __init__(self, identifier: str):
         self.identifier = identifier
 
-    def get_label(self):
+    def get_label(self) -> StrOrPromise:
         return self.verbose_name
 
     @property

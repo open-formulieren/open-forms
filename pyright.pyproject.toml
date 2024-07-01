@@ -1,10 +1,11 @@
 [tool.pyright]
 include = [
+    # plugin/registry-related code (base classes etc.)
     "src/openforms/plugins",
+    "src/openforms/authentication/base.py",
+    "src/openforms/authentication/registry.py",
 ]
-exclude = [
-    "**/__pycache__"
-]
+exclude = ["**/__pycache__"]
 ignore = []
 
 pythonVersion = "3.10"
