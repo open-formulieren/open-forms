@@ -84,3 +84,120 @@ class AuthPseudo(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_auth_value(submission, AuthAttribute.pseudo)
+
+
+@register_static_variable("auth_context")
+class AuthContext(BaseStaticVariable):
+    name = _("Authentication context data")
+    data_type = FormVariableDataTypes.object
+
+    def get_initial_value(self, submission: Submission | None = None):
+        if submission is None:
+            return None
+        if not submission.is_authenticated:
+            return None
+        return submission.auth_info.to_auth_context_data()
+
+
+@register_static_variable("auth_context_source")
+class AuthContextSource(BaseStaticVariable):
+    name = _("Authentication context data: source")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        return auth_context["source"]
+
+
+@register_static_variable("auth_context_loa")
+class AuthContextLOA(BaseStaticVariable):
+    name = _("Authentication context data: level of assurance")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        return auth_context["levelOfAssurance"]
+
+
+@register_static_variable("auth_context_representee_identifier_type")
+class AuthContextRepresenteeType(BaseStaticVariable):
+    name = _("Authentication context data: representee identifier type")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        if "representee" not in auth_context:
+            return ""
+        return auth_context["representee"]["identifierType"]
+
+
+@register_static_variable("auth_context_representee_identifier")
+class AuthContextRepresenteeIdentifier(BaseStaticVariable):
+    name = _("Authentication context data: representee identifier")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        if "representee" not in auth_context:
+            return ""
+        return auth_context["representee"]["identifier"]
+
+
+@register_static_variable("auth_context_legal_subject_identifier_type")
+class AuthContextLegalSubjectIdentifierType(BaseStaticVariable):
+    name = _("Authentication context data: authorizee, legal subject identifier type")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        return auth_context["authorizee"]["legalSubject"]["identifierType"]
+
+
+@register_static_variable("auth_context_legal_subject_identifier")
+class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
+    name = _("Authentication context data: authorizee, legal subject identifier")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        return auth_context["authorizee"]["legalSubject"]["identifier"]
+
+
+@register_static_variable("auth_context_acting_subject_identifier_type")
+class AuthContextActingSubjectIdentifierType(BaseStaticVariable):
+    name = _("Authentication context data: authorizee, acting subject identifier type")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        if "actingSubject" not in auth_context["authorizee"]:
+            return ""
+        return auth_context["authorizee"]["actingSubject"]["identifierType"]
+
+
+@register_static_variable("auth_context_acting_subject_identifier")
+class AuthContextActingSubjectIdentifier(BaseStaticVariable):
+    name = _("Authentication context data: authorizee, acting subject identifier")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        if "actingSubject" not in auth_context["authorizee"]:
+            return ""
+        return auth_context["authorizee"]["actingSubject"]["identifier"]
