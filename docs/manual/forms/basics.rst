@@ -290,20 +290,29 @@ Een vaste lijst met variabelen die beschikbaar zijn door het formulier heen.
 Afhankelijk van het type formulier zijn variabelen wel of niet voorzien van een
 waarde.
 
-=============== ========= =========================== ====================================================================================================================
+=============== ========= =========================== =========================================================================
 Variabele       Type      Voorbeeld waarde            Toelichting
-=============== ========= =========================== ====================================================================================================================
-now             datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn :ref:`verschillende weergaven <manual_templates_formatting_of_variables>` van mogelijk.
+=============== ========= =========================== =========================================================================
+now             datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn
+                                                      :ref:`verschillende weergaven <manual_templates_formatting_of_variables>`
+                                                      van mogelijk.
                                                       Seconden en milliseconden zijn altijd 0.
-environment     string    ``production``              De waarde die tijdens de installatie gezet is als ``ENVIRONMENT``. Zie: :ref:`installation_environment_config`.
+environment     string    ``production``              De waarde die tijdens de installatie gezet is als
+                                                      ``ENVIRONMENT``. Zie: :ref:`installation_environment_config`.
 form_name       string    ``Paspoort aanvragen``      De naam van het formulier.
 form_id         string    ``1c453fc8-b10f-4510-``...  Het unieke ID van het formulier.
 auth            object                                Een verzameling van authenticatie gegevens. Zie hieronder.
 auth.plugin     string    ``digid``                   De systeemnaam van de gebruikte authenticatie plugin.
-auth.attribute  string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben.
-auth.value      string    ``111222333``               De identificerende waarde in het ``attribute`` van de authenticatie plugin.
-auth.machtigen  object    TODO
-auth_bsn        string    ``111222333``               De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``bsn`` heeft. Anders leeg.
-auth_kvk        string    ``90001354``                De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``kvk`` heeft. Anders leeg.
-auth_pseudo     string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``pseudo`` heeft. Anders leeg.
-=============== ========= =========================== ====================================================================================================================
+auth.value      string    ``111222333``               De identificerende waarde in het ``attribute`` van de
+                                                      authenticatie plugin.
+auth.machtigen  object    TODO                        Verouderd, wordt in 3.0 verwijderd.
+auth_type       string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben.
+auth_bsn        string    ``111222333``               De waarde van ``auth.value`` indien ``auth_type`` als waarde
+                                                      ``bsn`` heeft. Anders leeg.
+auth_kvk        string    ``90001354``                De waarde van ``auth.value`` indien ``auth_type`` als waarde
+                                                      ``kvk`` heeft. Anders leeg.
+auth_pseudo     string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth_type`` als waarde
+                                                      ``pseudo`` heeft. Anders leeg.
+auth.attribute  string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben (verouderd,
+                                                      gebruik ``auth_type`` in d eplaats).
+=============== ========= =========================== =========================================================================

@@ -38,7 +38,18 @@ class Auth(BaseStaticVariable):
         return auth_data
 
 
-def get_auth_value(submission: Submission | None, attribute: str) -> str:
+@register_static_variable("auth_type")
+class AuthType(BaseStaticVariable):
+    name = _("Authentication type")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if not submission or not submission.is_authenticated:
+            return ""
+        return submission.auth_info.attribute
+
+
+def get_auth_value(submission: Submission | None, attribute: AuthAttribute) -> str:
     if not submission or not submission.is_authenticated:
         return ""
 
