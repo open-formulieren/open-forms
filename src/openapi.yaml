@@ -9940,10 +9940,11 @@ components:
         objectsApiGroup:
           type: integer
           description: Which Objects API group to use.
-        objecttypeUrl:
+        objecttype:
           type: string
-          format: uri
-          description: The URL of the objecttype.
+          format: uuid
+          title: objecttype uuid
+          description: The UUID of the objecttype.
         objecttypeVersion:
           type: integer
           description: The version of the objecttype.
@@ -9953,7 +9954,7 @@ components:
           description: The JSON Schema of the form variable.
       required:
       - objectsApiGroup
-      - objecttypeUrl
+      - objecttype
       - objecttypeVersion
       - variableJsonSchema
     TemporaryFileUpload:

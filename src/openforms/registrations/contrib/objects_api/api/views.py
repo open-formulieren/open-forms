@@ -1,11 +1,10 @@
-import re
 from typing import Any
 
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import authentication, exceptions, permissions, views
+from rest_framework import authentication, permissions, views
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -95,23 +94,12 @@ class TargetPathsListView(views.APIView):
         input_serializer = TargetPathsInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
 
-        # Regex taken from django.urls.converters.UUIDConverter
-        match = re.search(
-            r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/?$",
-            input_serializer.validated_data["objecttype_url"],
-        )
-        if not match:
-            raise exceptions.ValidationError(
-                detail={"objecttype_url": _("Invalid URL.")}
-            )
-
-        objecttype_uuid = match.group()
-
         config_group = input_serializer.validated_data["objects_api_group"]
 
         with get_objecttypes_client(config_group) as client:
             json_schema = client.get_objecttype_version(
-                objecttype_uuid, input_serializer.validated_data["objecttype_version"]
+                input_serializer.validated_data["objecttype"],
+                input_serializer.validated_data["objecttype_version"],
             )["jsonSchema"]
 
         return_data = [

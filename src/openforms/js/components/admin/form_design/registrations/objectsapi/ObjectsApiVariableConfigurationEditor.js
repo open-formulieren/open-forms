@@ -22,6 +22,7 @@ import {asJsonSchema} from './utils';
  *
  * @typedef {{
  *   version: 1 | 2;
+ *   objectsApiGroup: number;
  *   objecttype: string;
  *   objecttypeVersion: number;
  *   variablesMapping: {variableKey: string, targetPath: string[]}[];
@@ -39,8 +40,14 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   const {values: backendOptions, getFieldProps, setFieldValue} = useFormikContext();
 
   /** @type {ObjectsAPIRegistrationBackendOptions} */
-  const {objecttype, objecttypeVersion, geometryVariableKey, variablesMapping, version} =
-    backendOptions;
+  const {
+    objectsApiGroup,
+    objecttype,
+    objecttypeVersion,
+    geometryVariableKey,
+    variablesMapping,
+    version,
+  } = backendOptions;
 
   if (version !== 2) throw new Error('Not supported, must be config version 2.');
 
@@ -71,10 +78,14 @@ const ObjectsApiVariableConfigurationEditor = ({variable}) => {
   } = useAsync(
     async () => {
       const response = await post(REGISTRATION_OBJECTS_TARGET_PATHS, csrftoken, {
-        objecttypeUrl: objecttype,
+        objectsApiGroup,
+        objecttype,
         objecttypeVersion,
         variableJsonSchema: asJsonSchema(variable, components),
       });
+      if (!response.ok) {
+        throw new Error('Error when loading target paths');
+      }
 
       return response.data;
     },
