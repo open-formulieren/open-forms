@@ -1,0 +1,11 @@
+[tool.pyright]
+include = [
+    "src/openforms/plugins",
+]
+exclude = [
+    "**/__pycache__"
+]
+ignore = []
+
+pythonVersion = "3.10"
+pythonPlatform = "Linux"
