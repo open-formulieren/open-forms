@@ -28,7 +28,7 @@ verkregen of uit externe koppelingen opgehaald worden.
 Vaste variabelen
 ================
 
-Een vaste lijst met variabelen die beschikbaar zijn door het formulier heen.
+Een vaste lijst met variabelen die beschikbaar zijn in alle stappen van het formulier.
 Afhankelijk van het type formulier zijn variabelen wel of niet voorzien van een
 waarde.
 
@@ -55,7 +55,8 @@ auth_kvk           string    ``90001354``                De waarde van ``auth.va
 auth_pseudo        string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth_type`` als waarde
                                                          ``pseudo`` heeft. Anders leeg.
 auth_context       object    ``{"source": "...", ...}``  De volledige authenticatiecontext, met machtigingsinformatie. Zie
-                                                         :ref:`manual_forms_variables_auth_context` voor de beschrijving.
+                                                         :ref:`manual_forms_variables_auth_context` voor de beschrijving en
+                                                         individuele elementen als vaste variabelen.
 ================== ========= =========================== =========================================================================
 
 **Verouderde variabelen**
@@ -83,11 +84,21 @@ is op een formulier. Deze bundel informatie is beschikbaar in de vaste variabele
 Wanneer er niet ingelogd is op het formulier, dan is de waarde van deze variabele
 ``null``.
 
-.. note:: Het is een nieuwere en volledigere variant van de ``auth`` variabele.
-   Er zijn geen plannen om deze laatste te verwijderen.
+.. note::
+
+    De ``auth_context`` variabele gaat op termijn de ``auth`` variabele vervangen,
+    maar voorlopig wordt deze laatste niet verwijderd. We verwachten in Open Formulieren
+    3.0 enkel de ``auth.machtigen`` variabele te verwijderen omdat de structuur
+    hiervan altijd vaag en onbetrouwbaar was.
+
+    Tip: in plaats van ``auth.plugin`` kan je beter ``auth_context_source`` of
+    ``auth_type`` gebruiken - de eerste is minder flexibel/uitwisselbaar, terwijl de
+    tweede wel goed de semantische betekenis bevat of het om een burger of bedrijf gaat.
 
 De variabele bevat een bak aan informatie, gestructureerd volgens het
-authenticatiecontextdatamodel (TODO: add link). De structuur is als volgt:
+authenticatiecontextdatamodel_. De structuur is als volgt:
+
+.. _authenticatiecontextdatamodel: https://app.gitbook.com/o/xSFlMqbR6wFN2VhQWOy6/s/VabqDNWmqXP8aggdbh1j/patronen/machtigen
 
 .. code-block:: json
 
@@ -135,7 +146,7 @@ De volgende attributen zijn gegarandeerd aanwezig:
 De onderdelen van deze structuur worden ook als individuele variabelen aangeboden:
 
 ``auth_context_source``
-    Middel van inloggen: de waarde is ``"digid"`` of ``eherkenning``, of een lege string
+    Middel van inloggen: de waarde is ``digid`` of ``eherkenning``, of een lege string
     wanneer er geen informatie beschikbaar is.
 
 ``auth_context_loa``
