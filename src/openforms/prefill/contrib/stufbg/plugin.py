@@ -142,7 +142,7 @@ class StufBgPrefill(BasePlugin):
         ):
             return submission.auth_info.value
 
-        if identifier_role == IdentifierRoles.authorised_person:
+        if identifier_role == IdentifierRoles.authorizee:
             return submission.auth_info.machtigen.get("identifier_value")
 
     @classmethod

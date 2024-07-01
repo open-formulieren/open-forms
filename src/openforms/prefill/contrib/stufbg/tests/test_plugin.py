@@ -229,7 +229,7 @@ class StufBgPrefillTests(TestCase):
         )
 
         values = self.plugin.get_prefill_values(
-            submission, attributes, IdentifierRoles.authorised_person
+            submission, attributes, IdentifierRoles.authorizee
         )
 
         self.assertEqual(values["bsn"], "999992314")

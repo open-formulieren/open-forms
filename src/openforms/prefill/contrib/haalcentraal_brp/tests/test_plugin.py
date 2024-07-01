@@ -146,7 +146,7 @@ class HaalCentraalPluginTests:
         values = plugin.get_prefill_values(
             submission,
             attributes=[Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
-            identifier_role=IdentifierRoles.authorised_person,
+            identifier_role=IdentifierRoles.authorizee,
         )
 
         self.assertEqual(
