@@ -126,7 +126,7 @@ Voorbeeld
 Formattering van variabelen
 ---------------------------
 
-Vaak wilt u :ref:`variabelen <manual_forms_basics_variables>` op een bepaalde manier formatteren.
+Vaak wilt u :ref:`variabelen <manual_forms_variables>` op een bepaalde manier formatteren.
 Dit is mogelijk met behulp van de *sjabloonfilters* die standaard ingebouwd
 zijn. Alle beschikbare filters zijn gedocumenteerd op de
 `Django defaultfilters reference`_. Het patroon is typisch:
@@ -686,57 +686,16 @@ Je kan doorgeven op welke manier een gebruiker al dan niet ingelogd was tijdens 
 invullen van het formulier, en of het een machtiging betreft of niet. Dit hangt samen
 met de beschikbare :ref:`authenticatiemethoden <manual_authenticatie>`.
 
-De informatie is beschikbaar in de sjabloonvariabele ``auth_context``. Om deze één op
-één over te nemen kan je deze direct insluiten:
+De informatie is beschikbaar in de sjabloonvariabele ``variables.auth_context``. Om deze
+één op één over te nemen kan je deze direct insluiten:
 
 .. code:: django
 
     {
         "form_data": {% json_summary %},
-        "authenticatie": {% as_json auth_context %}
+        "authenticatie": {% as_json variables.auth_context %}
     }
 
-Je kan ook individuele aspecten gebruiken:
-
-``{{ auth_context }}``
-    Indien ingelogd, dan is dit een object met ingesloten attributen. Indien het
-    formulier anoniem ingevuld is, dan is dit ``None`` (en vertaalt naar ``null`` in
-    JSON).
-
-    Je kan dit dus conditioneel insluiten, bijvoorbeeld:
-    ``{% if auth_context %}...{% endif %}``.
-
-``{{ auth_context.source }}``
-    Middel van inloggen: de waarde is ``"digid"`` of ``eherkenning``.
-
-``{{ auth_context.levelOfAssurance }}``
-    Betrouwbaarheidsniveau waarmee ingelogd is. Kan leeg zijn indien onbekend.
-
-``{{ auth_context.representee }}``
-    Object die vertegenwoordigde/machtiger identificeert. Afwezig indien er geen
-    sprake is van machtiging.
-
-    * ``{{ auth_context.representee.identifierType }}``: geeft aan of het om een BSN of
-      KVK-nummer gaat.
-    * ``{{ auth_context.representee.identifier }}``: identificatie van de
-      vertegenwoordigde.
-
-``{{ auth_context.authorizee }}``
-    Object die de ingelogde persoon en/of vertegenwoordiger identificeert. Dit is altijd
-    aanwezig.
-
-    * ``{{ auth_context.authorizee.legalSubject }}``: object die de wettelijke
-      vertegenwoordigder identificeert. In het geval van DigiD is dit een persoon, in
-      het geval van eHerkenning (met of zonder bewindvoering) is dit een bedrijf.
-
-      De attributen ``{{ auth_context.authorizee.legalSubject.identifierType }}`` en
-      ``{{ auth_context.authorizee.legalSubject.identifier }}`` hebben dezelfde
-      betekenis als bij de ``representee``.
-
-    * ``{{ auth_context.authorizee.actingSubject }}``: object die de handelende persoon
-      identificeert bij vertegenwoordiging. Dit is enkel aanwezig wanneer het
-      eHerkenning betreft.
-
-      De attributen ``{{ auth_context.authorizee.actingSubject.identifierType }}`` en
-      ``{{ auth_context.authorizee.actingSubject.identifier }}`` hebben een
-      gelijkaardige betekenis als bij de ``representee``.
+Zie :ref:`manual_forms_variables_auth_context` voor een voorbeeld van de structuur, en
+een overzicht van alle "onderdelen" waaruit de ``auth_context`` variabele bestaat. Je
+kan deze allemaal individueel gebruiken in de sjablonen.

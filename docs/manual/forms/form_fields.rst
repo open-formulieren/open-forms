@@ -33,16 +33,15 @@ Basis
 Variabelen
 ~~~~~~~~~~
 
-U kunt :ref:`variabelen <manual_forms_basics_variables>` gebruiken in het ontwerp van formulieren, 
-bijvoorbeeld om een (voor-)ingevulde naam in het label van een ander 
+U kunt :ref:`variabelen <manual_forms_variables>` gebruiken in het ontwerp van
+formulieren, bijvoorbeeld om een (voor-)ingevulde naam in het label van een ander
 formulierveld weer te geven. Hiervoor is de 
 :ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
 
 .. note::
 
-    Alle velden in een formulier zijn als variabele beschikbaar. Daarnaast zijn er ook
-    altijd een aantal :ref:`vaste variabelen beschikbaar én u kunt zelf ook variabelen
-    definiëren <manual_forms_basics_variables>`.
+    Je kan hier de component-, vaste en/of gebruikersvariabelen gebruiken. Eventuele
+    registratievariabelen zijn niet beschikbaar.
 
 Stel dat u een formulier hebt met de volgende velden:
 
