@@ -1,5 +1,8 @@
+from collections.abc import Sequence
+
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.data import Action
 from openforms.config.models import GlobalConfiguration
 
 from .registry import BaseRegistry
@@ -43,7 +46,7 @@ class AbstractBasePlugin:
         """
         raise NotImplementedError()
 
-    def get_config_actions(self) -> list[tuple[str, str]]:
+    def get_config_actions(self) -> Sequence[Action]:
         """
         Returns a list of tuples containing the label and URL of each action
         that is related to the configuration of this plugin. This can be to

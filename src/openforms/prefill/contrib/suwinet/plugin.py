@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from openforms.authentication.service import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
-from openforms.typing import JSONSerializable
+from openforms.typing import JSONEncodable, JSONObject
 from suwinet.client import NoServiceConfigured, SuwinetClient, get_client
 from suwinet.constants import SERVICES
 from suwinet.models import SuwinetConfig
@@ -43,19 +43,20 @@ class SuwinetPrefill(BasePlugin):
                 for operation in SERVICES[service_name].operations
             ]
 
+    @classmethod
     def get_prefill_values(
-        self,
+        cls,
         submission: Submission,
         attributes: list[str],
-        identifier_role: str = IdentifierRoles.main,
-    ) -> dict[str, JSONSerializable]:
+        identifier_role: IdentifierRoles = IdentifierRoles.main,
+    ) -> dict[str, JSONEncodable]:
         if not (
             (client := _get_client())
-            and (bsn := self.get_identifier_value(submission, identifier_role))
+            and (bsn := cls.get_identifier_value(submission, identifier_role))
         ):
             return {}
 
-        def get_value(attr) -> dict | None:
+        def get_value(attr: str) -> JSONObject | None:
             service_name, operation = attr.split(".")
             service = getattr(client, service_name)
             perform_soap_call = getattr(service, operation)

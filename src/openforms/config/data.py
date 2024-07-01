@@ -3,7 +3,9 @@ from typing import TypeAlias
 
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 
-Action: TypeAlias = tuple[str, str]
+from openforms.typing import StrOrPromise
+
+Action: TypeAlias = tuple[StrOrPromise, str]  # (label, reversed URL path)
 
 
 @dataclass

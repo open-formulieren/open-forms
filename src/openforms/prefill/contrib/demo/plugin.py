@@ -5,15 +5,17 @@ from typing import Any
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.data import Action
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
+from ...constants import IdentifierRoles
 from ...registry import register
 from .constants import Attributes
 
 CALLBACKS = {
-    Attributes.random_number: lambda: random.randint(1000, 10_000),
-    Attributes.random_string: partial(get_random_string, length=10),
+    Attributes.random_number.value: lambda: random.randint(1000, 10_000),
+    Attributes.random_string.value: partial(get_random_string, length=10),
 }
 
 
@@ -26,9 +28,12 @@ class DemoPrefill(BasePlugin):
     def get_available_attributes():
         return Attributes.choices
 
-    @staticmethod
+    @classmethod
     def get_prefill_values(
-        submission: Submission, attributes: list[str], identifier_role: str
+        cls,
+        submission: Submission,
+        attributes: list[str],
+        identifier_role: IdentifierRoles = IdentifierRoles.main,
     ) -> dict[str, Any]:
         """
         Given the requested attributes, look up the appropriate values and return them.
@@ -40,8 +45,8 @@ class DemoPrefill(BasePlugin):
         """
         return {attr: CALLBACKS[attr]() for attr in attributes}
 
-    def check_config(self):
+    def check_config(self) -> list[Action]:
         """
         Demo config is always valid.
         """
-        pass
+        return []
