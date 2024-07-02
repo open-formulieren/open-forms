@@ -1,7 +1,10 @@
+from uuid import UUID
+
 from django.test import TestCase
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.tests.factories import AuthInfoFactory
+from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.variables.service import get_static_variables
 
 
@@ -52,3 +55,25 @@ class TestStaticVariables(TestCase):
             with self.subTest(key=variable_key, value=value):
                 self.assertIn(variable_key, static_data)
                 self.assertEqual(static_data[variable_key].initial_value, value)
+
+    def test_submission_id_variable(self):
+        submission = SubmissionFactory.build(
+            uuid=UUID("b0a84235-3afe-49ca-8f75-fc2015538b1a")
+        )
+        static_data = {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(submission=submission)
+        }
+
+        self.assertEqual(
+            static_data["submission_id"], "b0a84235-3afe-49ca-8f75-fc2015538b1a"
+        )
+
+    def test_language_code_variable(self):
+        submission = SubmissionFactory.build(language_code="nl")
+        static_data = {
+            variable.key: variable.initial_value
+            for variable in get_static_variables(submission=submission)
+        }
+
+        self.assertEqual(static_data["language_code"], "nl")

@@ -15,6 +15,24 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
+@register_static_variable("submission_id")
+class SubmissionID(BaseStaticVariable):
+    name = _("Internal ID")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        return str(submission.uuid) if submission else ""
+
+
+@register_static_variable("language_code")
+class LanguageCode(BaseStaticVariable):
+    name = _("Language code")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        return submission.language_code if submission else ""
+
+
 @register_static_variable("auth")
 class Auth(BaseStaticVariable):
     name = _("Authentication")
