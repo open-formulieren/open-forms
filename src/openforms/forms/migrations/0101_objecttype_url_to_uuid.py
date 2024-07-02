@@ -16,9 +16,14 @@ def objecttype_url_to_uuid(
     for registration_backend in FormRegistrationBackend.objects.filter(
         backend="objects_api"
     ):
-        objecttype_url = registration_backend.options["objecttype"]
-        registration_backend.options["objecttype"] = objecttype_url.rsplit("/", 1)[1]
-        registration_backend.save()
+
+        objecttype_url = registration_backend.options.get("objecttype")
+        if objecttype_url is not None:
+            # If it is `None`, we are dealing with broken confs. and upgrade checks where bypassed.
+            registration_backend.options["objecttype"] = objecttype_url.rsplit("/", 1)[
+                1
+            ]
+            registration_backend.save()
 
 
 class Migration(migrations.Migration):
