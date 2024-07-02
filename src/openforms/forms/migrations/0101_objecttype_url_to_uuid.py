@@ -2,24 +2,6 @@
 
 from django.db import migrations
 
-from django.db.migrations.state import StateApps
-from django.db.backends.base.schema import BaseDatabaseSchemaEditor
-
-
-def objecttype_url_to_uuid(
-    apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
-) -> None:
-    """Change the objects API registration options to reference the objecttype UUID instead of the URL."""
-
-    FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
-
-    for registration_backend in FormRegistrationBackend.objects.filter(
-        backend="objects_api"
-    ):
-        objecttype_url = registration_backend.options["objecttype"]
-        registration_backend.options["objecttype"] = objecttype_url.rsplit("/", 1)[1]
-        registration_backend.save()
-
 
 class Migration(migrations.Migration):
 
@@ -28,8 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            objecttype_url_to_uuid,
-            migrations.RunPython.noop,
-        ),
+        # Moved to `registrations_objects_api.0020_objecttype_url_to_uuid`.
     ]
