@@ -1031,6 +1031,15 @@ OIDC_STORE_ID_TOKEN = True
 # Access token required for performing the Token exchange
 OIDC_STORE_ACCESS_TOKEN = True
 
+# Paths that are exempt from the SessionRefresh middleware
+# these must be explicitly added to avoid infinite redirects from happening (#4435)
+if _USE_LEGACY_OIDC_ENDPOINTS:
+    OIDC_EXEMPT_URLS = [
+        "legacy_oidc:oidc_authentication_init",
+        "legacy_oidc:oidc_authentication_callback",
+        "legacy_oidc:oidc_logout",
+    ]
+
 # TODO: remove once 2.7 is released, this is required for data migration(s)
 MOZILLA_DJANGO_OIDC_DB_CACHE = "solo"
 
