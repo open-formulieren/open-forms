@@ -563,12 +563,6 @@
       "value": "Number of months. Empty values are ignored."
     }
   ],
-  "5ZI59Y": [
-    {
-      "type": 0,
-      "value": "Main"
-    }
-  ],
   "5dp5j+": [
     {
       "type": 1,
@@ -845,6 +839,12 @@
     {
       "type": 0,
       "value": "(missing label)"
+    }
+  ],
+  "8/Nzyy": [
+    {
+      "type": 0,
+      "value": "Changing the Objects API group will remove the existing variables mapping. Are you sure you want to continue?"
     }
   ],
   "833GAg": [
@@ -2455,12 +2455,6 @@
       "value": " must be a valid email."
     }
   ],
-  "Q7oBP/": [
-    {
-      "type": 0,
-      "value": "Authorised person"
-    }
-  ],
   "Q8WgtE": [
     {
       "type": 0,
@@ -2525,6 +2519,12 @@
     {
       "type": 0,
       "value": "Confidentiality"
+    }
+  ],
+  "R7XVbR": [
+    {
+      "type": 0,
+      "value": "Main/representee"
     }
   ],
   "R8/zGm": [
@@ -2811,6 +2811,12 @@
     {
       "type": 0,
       "value": "All Submissions Removal Limit"
+    }
+  ],
+  "UjvOBe": [
+    {
+      "type": 0,
+      "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
     }
   ],
   "UlVtQd": [
@@ -5403,6 +5409,12 @@
     {
       "type": 0,
       "value": "Maximum length"
+    }
+  ],
+  "yIPUtA": [
+    {
+      "type": 0,
+      "value": "Authorizee"
     }
   ],
   "yL9Ql7": [
