@@ -1,5 +1,5 @@
 import factory
-from digid_eherkenning.choices import AssuranceLevels
+from digid_eherkenning.choices import AssuranceLevels, DigiDAssuranceLevels
 
 from ..constants import (
     ActingSubjectIdentifierType,
@@ -27,6 +27,34 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
         with_hashed_identifying_attributes = factory.Trait(
             _hashed_id_attrs=factory.PostGenerationMethodCall(
                 "hash_identifying_attributes"
+            ),
+        )
+        is_digid = factory.Trait(
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            attribute_hashed=False,
+            loa=DigiDAssuranceLevels.middle,
+        )
+        is_digid_machtigen = factory.Trait(
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            attribute_hashed=False,
+            loa=DigiDAssuranceLevels.middle,
+            legal_subject_identifier_type=LegalSubjectIdentifierType.bsn,
+            legal_subject_identifier_value="999999999",
+            mandate_context={
+                "services": [{"id": "34085d78-21aa-4481-a219-b28d7f3282fc"}],
+            },
+        )
+        is_eh = factory.Trait(
+            attribute=AuthAttribute.kvk,
+            value="90002768",
+            attribute_hashed=False,
+            loa=AssuranceLevels.substantial,
+            acting_subject_identifier_type=ActingSubjectIdentifierType.opaque,
+            acting_subject_identifier_value=(
+                "4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018"
+                "@2D8FF1EF10279BC2643F376D89835151"
             ),
         )
         is_eh_bewindvoering = factory.Trait(

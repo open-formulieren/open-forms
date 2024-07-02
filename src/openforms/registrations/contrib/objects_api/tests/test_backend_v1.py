@@ -1443,7 +1443,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 "objecttype_version": 1,
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
-                "content_json": r"""{"auth": {% as_json auth_context %}}""",
+                "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
             },
         )
 
@@ -1512,7 +1512,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 "objecttype_version": 1,
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
-                "content_json": r"""{"auth": {% as_json auth_context %}}""",
+                "content_json": r"""{"auth": {% as_json variables.auth_context %}}""",
             },
         )
 

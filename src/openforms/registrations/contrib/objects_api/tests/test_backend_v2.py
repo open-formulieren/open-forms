@@ -413,6 +413,32 @@ class V2HandlerTests(TestCase):
 
         self.assertEqual(data["textfield"], "some_string")
 
+    def test_public_reference_available(self):
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            public_registration_reference="OF-911",
+            auth_info__plugin="irrelevant",
+            auth_info__is_eh_bewindvoering=True,
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "public_reference",
+                    "target_path": ["of_nummer"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        self.assertEqual(record_data["data"], {"of_nummer": "OF-911"})
+
     def test_cosign_info_available(self):
         now = timezone.now().isoformat()
 
@@ -579,3 +605,243 @@ class V2HandlerTests(TestCase):
         value = variable.get_initial_value(submission=submission)
 
         self.assertEqual(value, 10.0)
+
+    def test_auth_context_data_info_available(self):
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "auth_context",
+                    "target_path": ["auth_context"],
+                },
+                {
+                    "variable_key": "auth_context_source",
+                    "target_path": ["authn", "middel"],
+                },
+                {
+                    "variable_key": "auth_context_loa",
+                    "target_path": ["authn", "loa"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier",
+                    "target_path": ["authn", "vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier_type",
+                    "target_path": ["authn", "soort_vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier",
+                    "target_path": ["authn", "gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier_type",
+                    "target_path": ["authn", "soort_gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier",
+                    "target_path": ["authn", "actor"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier_type",
+                    "target_path": ["authn", "soort_actor"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            auth_info__plugin="irrelevant",
+            auth_info__is_eh_bewindvoering=True,
+        )
+        ObjectsAPIRegistrationData.objects.create(submission=submission)
+
+        record_data = handler.get_record_data(submission=submission, options=v2_options)
+
+        data = record_data["data"]
+        with self.subTest("full auth context"):
+            expected_auth_context = {
+                "source": "eherkenning",
+                "levelOfAssurance": "urn:etoegang:core:assurance-class:loa3",
+                "representee": {
+                    "identifierType": "bsn",
+                    "identifier": "999991607",
+                },
+                "authorizee": {
+                    "legalSubject": {
+                        "identifierType": "kvkNummer",
+                        "identifier": "90002768",
+                    },
+                    "actingSubject": {
+                        "identifierType": "opaque",
+                        "identifier": (
+                            "4B75A0EA107B3D36C82FD675B5B78CC2F"
+                            "181B22E33D85F2D4A5DA63452EE3018@2"
+                            "D8FF1EF10279BC2643F376D89835151"
+                        ),
+                    },
+                },
+                "mandate": {
+                    "role": "bewindvoerder",
+                    "services": [
+                        {
+                            "id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                            "uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                        }
+                    ],
+                },
+            }
+            self.assertEqual(data["auth_context"], expected_auth_context)
+
+        with self.subTest("individual auth context vars"):
+            expected_obj = {
+                "middel": "eherkenning",
+                "loa": "urn:etoegang:core:assurance-class:loa3",
+                "vertegenwoordigde": "999991607",
+                "soort_vertegenwoordigde": "bsn",
+                "gemachtigde": "90002768",
+                "soort_gemachtigde": "kvkNummer",
+                "actor": (
+                    "4B75A0EA107B3D36C82FD675B5B78CC2F"
+                    "181B22E33D85F2D4A5DA63452EE3018@2"
+                    "D8FF1EF10279BC2643F376D89835151"
+                ),
+                "soort_actor": "opaque",
+            }
+            self.assertEqual(data["authn"], expected_obj)
+
+    def test_auth_context_data_info_parts_missing_variants(self):
+        v2_options: RegistrationOptionsV2 = {
+            "objects_api_group": self.group,
+            "version": 2,
+            "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            "objecttype_version": 1,
+            "variables_mapping": [
+                {
+                    "variable_key": "auth_context",
+                    "target_path": ["auth_context"],
+                },
+                {
+                    "variable_key": "auth_context_source",
+                    "target_path": ["authn", "middel"],
+                },
+                {
+                    "variable_key": "auth_context_loa",
+                    "target_path": ["authn", "loa"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier",
+                    "target_path": ["authn", "vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_representee_identifier_type",
+                    "target_path": ["authn", "soort_vertegenwoordigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier",
+                    "target_path": ["authn", "gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_legal_subject_identifier_type",
+                    "target_path": ["authn", "soort_gemachtigde"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier",
+                    "target_path": ["authn", "actor"],
+                },
+                {
+                    "variable_key": "auth_context_acting_subject_identifier_type",
+                    "target_path": ["authn", "soort_actor"],
+                },
+            ],
+        }
+        handler = ObjectsAPIV2Handler()
+
+        cases = [
+            (
+                "anonymous",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info=None,
+                ),
+                {
+                    "middel": "",
+                    "loa": "",
+                    "vertegenwoordigde": "",
+                    "soort_vertegenwoordigde": "",
+                    "gemachtigde": "",
+                    "soort_gemachtigde": "",
+                    "actor": "",
+                    "soort_actor": "",
+                },
+            ),
+            (
+                "digid",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info__is_digid=True,
+                ),
+                {
+                    "middel": "digid",
+                    "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+                    "vertegenwoordigde": "",
+                    "soort_vertegenwoordigde": "",
+                    "gemachtigde": "999991607",
+                    "soort_gemachtigde": "bsn",
+                    "actor": "",
+                    "soort_actor": "",
+                },
+            ),
+            (
+                "digid-machtigen",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info__is_digid_machtigen=True,
+                ),
+                {
+                    "middel": "digid",
+                    "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract",
+                    "vertegenwoordigde": "999991607",
+                    "soort_vertegenwoordigde": "bsn",
+                    "gemachtigde": "999999999",
+                    "soort_gemachtigde": "bsn",
+                    "actor": "",
+                    "soort_actor": "",
+                },
+            ),
+            (
+                "eherkenning",
+                SubmissionFactory.create(
+                    with_public_registration_reference=True,
+                    auth_info__is_eh=True,
+                ),
+                {
+                    "middel": "eherkenning",
+                    "loa": "urn:etoegang:core:assurance-class:loa3",
+                    "vertegenwoordigde": "",
+                    "soort_vertegenwoordigde": "",
+                    "gemachtigde": "90002768",
+                    "soort_gemachtigde": "kvkNummer",
+                    "actor": (
+                        "4B75A0EA107B3D36C82FD675B5B78CC2F"
+                        "181B22E33D85F2D4A5DA63452EE3018@2"
+                        "D8FF1EF10279BC2643F376D89835151"
+                    ),
+                    "soort_actor": "opaque",
+                },
+            ),
+        ]
+
+        for label, submission, expected in cases:
+            with self.subTest(labe=label):
+                ObjectsAPIRegistrationData.objects.create(submission=submission)
+
+                record_data = handler.get_record_data(
+                    submission=submission, options=v2_options
+                )
+
+                data = record_data["data"]
+                self.assertEqual(data["authn"], expected)

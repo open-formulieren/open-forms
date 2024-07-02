@@ -5,7 +5,7 @@ Formulier met authenticatie
 ===========================
 
 In dit voorbeeld maken we een fictief formulier bestaande uit 1 stap, waarbij
-logica en :ref:`vaste variabelen <manual_forms_basics_variables>` worden 
+logica en :ref:`vaste variabelen <manual_forms_variables>` worden
 gebruikt om te zien of de gebruiker als persoon of als bedrijf ingelogd is.
 
 In dit voorbeeld gaan we er van uit dat u een

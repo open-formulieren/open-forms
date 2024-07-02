@@ -289,8 +289,10 @@ class AuthInfo(BaseAuthInfo):
 
             # EHerkenning without machtigen/mandate
             # Presence of an acting subject confirms eHerkenning (or eidas? TODO),
-            # as opposed to a registrator entering the KVK number.
-            case (AuthAttribute.kvk, "") if self.acting_subject_identifier_value:
+            # as opposed to a registrator entering the KVK number, but it's not a
+            # guarantee as we still have eHerkenning via SAML plugins not able to
+            # extract these "claims" yet.
+            case (AuthAttribute.kvk, "") if not self.submission.has_registrator:
                 eh_context: EHerkenningContext = {
                     "source": "eherkenning",
                     "levelOfAssurance": self.loa,
@@ -329,7 +331,7 @@ class AuthInfo(BaseAuthInfo):
                     "mandate": self.mandate_context,
                 }
                 return ehm_context
-            case _:
+            case _:  # pragma: no cover
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")
 
 

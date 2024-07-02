@@ -1,4 +1,4 @@
-from django.urls import resolve, reverse
+from django.urls import Resolver404, resolve, reverse
 
 from asgiref.sync import sync_to_async
 from furl import furl
@@ -7,6 +7,7 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
+from openforms.tests.utils import log_flaky
 
 from ..factories import FormFactory
 from .helpers import close_modal, open_component_options_modal, phase
@@ -171,7 +172,12 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
 
         def collect_requests(request):
             url = furl(request.url)
-            match = resolve(str(url.path))
+            try:
+                match = resolve(str(url.path))
+            except Resolver404:
+                print(f"Failed to resolve URL: {request.url}")
+                log_flaky()
+                return
 
             if match.view_name == "api:iotypen-list":
                 requests_to_endpoint.append(request)

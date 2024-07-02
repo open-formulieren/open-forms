@@ -29,6 +29,7 @@ class TestStaticVariables(TestCase):
             "auth_bsn": "111222333",
             "auth_kvk": "",
             "auth_pseudo": "",
+            "auth_type": "bsn",
         }
 
         for variable_key, value in expected.items():
@@ -44,6 +45,7 @@ class TestStaticVariables(TestCase):
             "auth_bsn": "",
             "auth_kvk": "",
             "auth_pseudo": "",
+            "auth_type": "",
         }
 
         for variable_key, value in expected.items():
