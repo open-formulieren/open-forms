@@ -1,6 +1,9 @@
 @import '~microscope-sass/lib/typography';
 
 .submission-step-row {
+  // TODO this fixes overlap on next page but also adds empty pages in case of long values
+  break-inside: avoid-page;
+
   & + & {
     margin-top: 1mm;
   }
@@ -59,5 +62,12 @@
     > * {
       max-width: 100%;
     }
+  }
+
+  // Avoid rows from overlapping in case the field label is more than 1 line (#4450)
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
   }
 }
