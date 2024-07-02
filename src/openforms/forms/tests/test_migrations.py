@@ -545,6 +545,16 @@ class PrefillIdentifierRoleRename(TestMigrations):
                     },
                 },
                 {"type": "number", "key": "number", "label": "no prefill configured"},
+                {
+                    "type": "bsn",
+                    "key": "other",
+                    "label": "Some bsn field with prefill",
+                    "prefill": {
+                        "plugin": "demo",
+                        "attribute": "random_string",
+                        "identifierRole": "main",
+                    },
+                },
             ]
         }
         FormDefinition.objects.create(name="legacy", configuration=configuration)
@@ -567,6 +577,9 @@ class PrefillIdentifierRoleRename(TestMigrations):
 
         variable = FormVariable.objects.get()
         self.assertEqual(variable.prefill_identifier_role, "authorizee")
+
         fd = FormDefinition.objects.get()
         component = fd.configuration["components"][0]
         self.assertEqual(component["prefill"]["identifierRole"], "authorizee")
+        component3 = fd.configuration["components"][2]
+        self.assertEqual(component3["prefill"]["identifierRole"], "main")

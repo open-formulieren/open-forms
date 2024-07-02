@@ -236,6 +236,15 @@ def ensure_addressnl_has_deriveAddress(component: Component) -> bool:
     return True
 
 
+def rename_identifier_role_authorizee(component: Component) -> bool:
+    if "prefill" not in component:
+        return False
+    if component["prefill"].get("identifierRole") != "authorised_person":
+        return False
+    component["prefill"]["identifierRole"] = "authorizee"
+    return True
+
+
 DEFINITION_CONVERTERS = [
     convert_simple_conditionals,
 ]
@@ -246,16 +255,19 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "textfield": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
     },
     "email": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
     },
     "date": {
         "alter_prefill_default_values": alter_prefill_default_values,
+        "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
     },
     "datetime": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "prevent_datetime_components_from_emptying_invalid_values": prevent_datetime_components_from_emptying_invalid_values,
+        "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
     },
     "time": {
         "move_time_validators": move_time_validators,
@@ -267,6 +279,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
         "alter_prefill_default_values": alter_prefill_default_values,
         "ensure_validate_pattern": ensure_postcode_validate_pattern,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
     },
     "file": {
         "fix_default_value": fix_file_default_value,
@@ -297,6 +310,7 @@ CONVERTERS: dict[str, dict[str, ComponentConverter]] = {
     "bsn": {
         "alter_prefill_default_values": alter_prefill_default_values,
         "fix_empty_validate_lengths": fix_empty_validate_lengths,
+        "rename_identifier_role_authorizee": rename_identifier_role_authorizee,
     },
     "cosign": {
         "fix_empty_validate_lengths": fix_empty_validate_lengths,

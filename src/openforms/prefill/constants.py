@@ -9,4 +9,4 @@ class IdentifierRoles(models.TextChoices):
     # 2. with eHerkenning (bewindvoering), the authorizee is de *company* (legal
     #    subject). For the acting subject, we only get an opaque, encrypted identifier
     #    that cannot be used to prefill information (this is by design).
-    authorizee = "authorised_person", _("Authorizee")
+    authorizee = "authorizee", _("Authorizee")
