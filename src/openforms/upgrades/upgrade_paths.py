@@ -83,7 +83,7 @@ UPGRADE_PATHS = {
             # have executed that one
             VersionRange(minimum="2.6.7"),
         },
-        scripts={"check_objecttypes_urls"},
+        scripts={"check_objecttypes_urls", "check_zgw_groups"},
     ),
     "2.6": UpgradeConstraint(
         valid_ranges={
