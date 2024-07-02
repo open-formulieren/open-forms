@@ -6,7 +6,7 @@ from shutil import rmtree
 from textwrap import dedent
 from unittest.mock import patch
 
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 from django.test import TestCase, override_settings, tag
 from django.utils import translation
 
@@ -22,6 +22,9 @@ from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.registrations.contrib.zgw_apis.tests.factories import (
+    ZGWApiGroupConfigFactory,
+)
 from openforms.translations.tests.utils import make_translated
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableSources
@@ -1520,4 +1523,107 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
         self.assertEqual(
             registration_backend.options["objecttype"],
             "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        )
+
+
+class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
+    """This test case requires the Open Zaak Docker Compose to be running.
+
+    See the relevant Docker compose in the ``docker/`` folder.
+    """
+
+    VCR_TEST_FILES = PATH / "files"
+
+    def test_import_form_with_zgw_registration_backend_no_available_group(self):
+
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "zgw-no-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "zgw-create-zaak",
+                            "options": {
+                                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        with self.assertRaises(CommandError):
+            call_command("import", import_file=self.filepath)
+
+    def test_import_form_with_zgw_registration_backend_available_group(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "zgw-no-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "zgw-create-zaak",
+                            "options": {
+                                "zaaktype": "http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc",
+                                "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        _credentials = {
+            "auth_type": AuthTypes.zgw,
+            "client_id": "test_client_id",
+            "secret": "test_secret_key",
+        }
+        zaken_service = ServiceFactory.create(
+            api_root="http://localhost:8003/zaken/api/v1/",
+            api_type=APITypes.zrc,
+            **_credentials,
+        )
+        documenten_service = ServiceFactory.create(
+            api_root="http://localhost:8003/documenten/api/v1/",
+            api_type=APITypes.drc,
+            **_credentials,
+        )
+        catalogi_service = ServiceFactory.create(
+            api_root="http://localhost:8003/catalogi/api/v1/",
+            api_type=APITypes.ztc,
+            **_credentials,
+        )
+        zgw_group = ZGWApiGroupConfigFactory.create(
+            zrc_service=zaken_service,
+            drc_service=documenten_service,
+            ztc_service=catalogi_service,
+        )
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(
+            registration_backend.options["zgw_api_group"],
+            zgw_group.pk,
         )

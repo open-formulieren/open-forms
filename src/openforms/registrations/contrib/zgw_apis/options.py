@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -33,7 +34,9 @@ class MappedVariablePropertySerializer(serializers.Serializer):
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
-        queryset=ZGWApiGroupConfig.objects.all(),
+        queryset=ZGWApiGroupConfig.objects.exclude(
+            Q(zrc_service=None) | Q(drc_service=None) | Q(ztc_service=None)
+        ),
         help_text=_("Which ZGW API set to use."),
         label=_("ZGW API set"),
     )
@@ -101,10 +104,41 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
     )
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if getattr(self, "swagger_fake_view", False) or not self.context.get(
+            "is_import", False
+        ):
+            return fields
+
+        # If in an import context, we don't want to error on missing groups.
+        # Instead, we will try to set one if possible in the `validate` method.
+        fields["zgw_api_group"].required = False
+        return fields
+
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         validate_business_logic = self.context.get("validate_business_logic", True)
         if not validate_business_logic:
             return attrs
+
+        if self.context.get("is_import", False) and attrs.get("zgw_api_group") is None:
+            existing_group = (
+                ZGWApiGroupConfig.objects.order_by("pk")
+                .exclude(
+                    Q(zrc_service=None) | Q(drc_service=None) | Q(ztc_service=None)
+                )
+                .first()
+            )
+            if existing_group is None:
+                raise serializers.ValidationError(
+                    {
+                        "zgw_api_group": _(
+                            "You must create a valid ZGW API Group config (with the necessary services) before importing."
+                        )
+                    }
+                )
+            else:
+                attrs["zgw_api_group"] = existing_group
 
         group_config = attrs["zgw_api_group"]
 
