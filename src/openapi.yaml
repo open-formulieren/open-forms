@@ -8229,7 +8229,7 @@ components:
             In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?
 
             * `main` - Main
-            * `authorised_person` - Authorised person
+            * `authorizee` - Authorizee
         dataType:
           allOf:
           - $ref: '#/components/schemas/DataTypeEnum'
@@ -9310,11 +9310,11 @@ components:
     PrefillIdentifierRoleEnum:
       enum:
       - main
-      - authorised_person
+      - authorizee
       type: string
       description: |-
         * `main` - Main
-        * `authorised_person` - Authorised person
+        * `authorizee` - Authorizee
     PrefillPlugin:
       type: object
       properties:

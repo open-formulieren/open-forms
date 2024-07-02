@@ -101,12 +101,12 @@ const EMPTY_VARIABLE = {
 
 const IDENTIFIER_ROLE_CHOICES = {
   main: defineMessage({
-    description: 'Choices (main/authorised person) label',
-    defaultMessage: 'Main',
+    description: 'Identifier role (for mandate context) label for representee',
+    defaultMessage: 'Main/representee',
   }),
-  authorised_person: defineMessage({
-    description: 'Choices (main/authorised person) label',
-    defaultMessage: 'Authorised person',
+  authorizee: defineMessage({
+    description: 'Identifier role (for mandate context) label for authorizee',
+    defaultMessage: 'Authorizee',
   }),
 };
 

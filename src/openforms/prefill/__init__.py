@@ -170,7 +170,7 @@ def prefill_variables(submission: Submission, register: Registry | None = None) 
 
     # grouped_fields is a dict of the following shape:
     # {"plugin_id": {"identifier_role": ["attr_1", "attr_2"]}}
-    # "identifier_role" is either "main" or "authorised_person"
+    # "identifier_role" is either "main" or "authorizee"
     grouped_fields: defaultdict[str, defaultdict[str, list[str]]] = defaultdict(
         lambda: defaultdict(list)
     )

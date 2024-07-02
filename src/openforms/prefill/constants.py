@@ -4,4 +4,4 @@ from django.utils.translation import gettext_lazy as _
 
 class IdentifierRoles(models.TextChoices):
     main = "main", _("Main")
-    authorised_person = "authorised_person", _("Authorised person")
+    authorizee = "authorizee", _("Authorizee")

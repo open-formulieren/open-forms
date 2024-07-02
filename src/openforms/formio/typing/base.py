@@ -59,7 +59,7 @@ class OptionDict(TypedDict):
 class PrefillConfiguration(TypedDict):
     plugin: str
     attribute: str
-    identifierRole: Literal["main", "authorised_person"]
+    identifierRole: Literal["main", "authorizee"]
 
 
 class Component(TypedDict):

@@ -140,7 +140,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.geslachtsnaam",
-                    "identifierRole": IdentifierRoles.authorised_person,
+                    "identifierRole": IdentifierRoles.authorizee,
                 },
             },
         ]
@@ -185,7 +185,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.geslachtsnaam",
-                    "identifier": IdentifierRoles.authorised_person,
+                    "identifier": IdentifierRoles.authorizee,
                 },
             },
             {
@@ -194,7 +194,7 @@ class PrefillHookTests(TransactionTestCase):
                 "prefill": {
                     "plugin": "haalcentraal",
                     "attribute": "naam.voornamen",
-                    "identifier": IdentifierRoles.authorised_person,
+                    "identifier": IdentifierRoles.authorizee,
                 },
             },
         ]
