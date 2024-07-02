@@ -81,7 +81,12 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
 
         def collect_requests(request):
             url = furl(request.url)
-            match = resolve(url.path)
+            try:
+                match = resolve(str(url.path))
+            except Resolver404:
+                print(f"Failed to resolve URL: {request.url}")
+                log_flaky()
+                return
 
             if match.view_name == "api:iotypen-list":
                 requests_to_endpoint.append(request)
