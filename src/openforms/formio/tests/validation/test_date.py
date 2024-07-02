@@ -2,6 +2,7 @@ from django.test import SimpleTestCase, tag
 from django.utils import timezone
 
 from openforms.submissions.models import Submission
+from openforms.utils.date import get_today
 
 from ...datastructures import FormioConfigurationWrapper
 from ...dynamic_config import rewrite_formio_components
@@ -92,7 +93,9 @@ class DateFieldValidationTests(SimpleTestCase):
         assert "minDate" in updated_component["datePicker"]
 
         with self.subTest("valid value"):
-            today = timezone.now().date().isoformat()
+            # use localized date in Amsterdam, otherwise the test fails between midnight
+            # and 1am/2am depending on DST
+            today = get_today()
             is_valid, _ = validate_formio_data(component, {"foo": today})
 
             self.assertTrue(is_valid)
