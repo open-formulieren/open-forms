@@ -245,11 +245,6 @@
     "description": "Version of the object type in the Object Types API",
     "originalDefault": "Objects API - objecttype version"
   },
-  "5ZI59Y": {
-    "defaultMessage": "Main/machtiger",
-    "description": "Choices (main/authorised person) label",
-    "originalDefault": "Main"
-  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -1179,11 +1174,6 @@
     "description": "Auth plugin provided attributes suffix",
     "originalDefault": "(provides {attrs})"
   },
-  "Q7oBP/": {
-    "defaultMessage": "Gemachtigde",
-    "description": "Choices (main/authorised person) label",
-    "originalDefault": "Authorised person"
-  },
   "Q8WgtE": {
     "defaultMessage": "Uitvoerparameters",
     "description": "Output mapping title",
@@ -1223,6 +1213,11 @@
     "defaultMessage": "Vertrouwelijkheidaanduiding",
     "description": "Indication of the level to which extend the dossier of the ZAAK is meant to be public",
     "originalDefault": "Confidentiality"
+  },
+  "R7XVbR": {
+    "defaultMessage": "Main/representee",
+    "description": "Identifier role (for mandate context) label for representee",
+    "originalDefault": "Main/representee"
   },
   "R8/zGm": {
     "defaultMessage": "Form variable",
@@ -2525,6 +2520,11 @@
     "defaultMessage": "Formulierdefinitie selecteren",
     "description": "select definition icon title",
     "originalDefault": "Select definition"
+  },
+  "yIPUtA": {
+    "defaultMessage": "Authorizee",
+    "description": "Identifier role (for mandate context) label for authorizee",
+    "originalDefault": "Authorizee"
   },
   "yTpHh0": {
     "defaultMessage": "(niet ingesteld)",
