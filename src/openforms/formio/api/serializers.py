@@ -29,7 +29,7 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
     submission = serializers.HyperlinkedRelatedField(
         view_name="api:submission-detail",
         lookup_field="uuid",
-        queryset=Submission.objects.all(),
+        queryset=Submission.objects.none(),  # Overridden dynamically
         label=_("Submission"),
         write_only=True,
         required=True,
@@ -53,10 +53,14 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
             request=request,
         )
 
-    def validate_submission(self, submission: Submission) -> Submission:
-        if submission.uuid not in self.context["request"].session.get(
-            SUBMISSIONS_SESSION_KEY, []
-        ):
-            raise serializers.ValidationError({"submission": _("Invalid submission")})
+    def get_fields(self):
+        fields = super().get_fields()
+        view = self.context.get("view")
+        if getattr(view, "swagger_fake_view", False):
+            return fields
 
-        return submission
+        session = self.context["request"].session
+        fields["submission"].queryset = Submission.objects.filter(
+            completed_on=None, uuid__in=session.get(SUBMISSIONS_SESSION_KEY, [])
+        )
+        return fields

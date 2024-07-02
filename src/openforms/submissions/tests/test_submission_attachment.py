@@ -1084,10 +1084,18 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
 
-        # Using `legacy` is the only way to create an upload without a submission.
-        # It will be set later.
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": components},
+            completed=False,
+            with_report=False,
+        )
+
         upload = TemporaryFileUploadFactory.create(
-            file_name="aaa.txt", content__data=b"a" * 20, file_size=20, legacy=True
+            submission=submission,
+            file_name="aaa.txt",
+            content__data=b"a" * 20,
+            file_size=20,
         )
 
         data = {
@@ -1110,17 +1118,12 @@ class SubmissionAttachmentTest(TestCase):
                 }
             ],
         }
-        submission = SubmissionFactory.from_components(
-            completed=False,
-            with_report=False,
-            components_list=components,
-            submitted_data=data,
-        )
-        upload.submission = submission
-        upload.legacy = False
-        upload.save()
 
-        submission_step = submission.submissionstep_set.get()
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data=data,
+        )
 
         with self.assertRaises(RequestEntityTooLarge):
             attach_uploads_to_submission_step(submission_step)
@@ -1357,10 +1360,15 @@ class SubmissionAttachmentTest(TestCase):
                 "type": "file",
             }
         ]
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": components},
+        )
 
-        # Using `legacy` is the only way to create an upload without a submission.
-        # It will be set later.
-        upload = TemporaryFileUploadFactory.create(file_name="pixel.gif", legacy=True)
+        upload = TemporaryFileUploadFactory.create(
+            submission=submission,
+            file_name="pixel.gif",
+        )
 
         data = {
             "someFile": [
@@ -1384,12 +1392,13 @@ class SubmissionAttachmentTest(TestCase):
             ],
         }
 
-        submission = SubmissionFactory.from_components(components, data)
-        upload.submission = submission
-        upload.legacy = False
-        upload.save()
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data=data,
+        )
 
-        result = attach_uploads_to_submission_step(submission.steps[0])
+        result = attach_uploads_to_submission_step(submission_step)
         self.assertEqual(len(result), 1)
 
         attachment_filename = result[0][0].file_name

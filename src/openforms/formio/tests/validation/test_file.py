@@ -113,7 +113,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
                     for file in temporary_file_uploads
                 ]
             },
-            extra_context={"submission": submission},
+            submission=submission,
         )
 
         self.assertTrue(is_valid)
@@ -144,7 +144,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
                     for file in temporary_file_uploads
                 ]
             },
-            extra_context={"submission": submission},
+            submission=submission,
         )
 
         self.assertFalse(is_valid)
@@ -178,7 +178,7 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
                     for file in temporary_file_uploads
                 ]
             },
-            extra_context={"submission": submission},
+            submission=submission,
         )
 
         self.assertFalse(is_valid)
@@ -201,7 +201,7 @@ class FileValidationTests(TestCase):
             is_valid, errors = validate_formio_data(
                 DEFAULT_FILE_COMPONENT,
                 {"foo": [data]},
-                extra_context={"submission": temporary_file_upload.submission},
+                submission=temporary_file_upload.submission,
             )
 
             self.assertFalse(is_valid)
@@ -216,7 +216,7 @@ class FileValidationTests(TestCase):
             is_valid, errors = validate_formio_data(
                 DEFAULT_FILE_COMPONENT,
                 {"foo": [data]},
-                extra_context={"submission": temporary_file_upload.submission},
+                submission=temporary_file_upload.submission,
             )
 
             self.assertFalse(is_valid)
@@ -231,7 +231,7 @@ class FileValidationTests(TestCase):
             is_valid, errors = validate_formio_data(
                 DEFAULT_FILE_COMPONENT,
                 {"foo": [data]},
-                extra_context={"submission": temporary_file_upload.submission},
+                submission=temporary_file_upload.submission,
             )
 
             self.assertFalse(is_valid)
@@ -258,7 +258,7 @@ class FileValidationTests(TestCase):
         is_valid, errors = validate_formio_data(
             DEFAULT_FILE_COMPONENT,
             {"foo": [data]},
-            extra_context={"submission": temporary_file_upload.submission},
+            submission=temporary_file_upload.submission,
         )
 
         self.assertFalse(is_valid)
@@ -275,7 +275,7 @@ class FileValidationTests(TestCase):
         is_valid, errors = validate_formio_data(
             DEFAULT_FILE_COMPONENT,
             {"foo": [data]},
-            extra_context={"submission": temporary_file_upload.submission},
+            submission=temporary_file_upload.submission,
         )
 
         self.assertFalse(is_valid)
@@ -291,10 +291,8 @@ class FileValidationTests(TestCase):
         is_valid, errors = validate_formio_data(
             DEFAULT_FILE_COMPONENT,
             {"foo": [data]},
-            extra_context={
-                # Unrelated submission:
-                "submission": SubmissionFactory.create()
-            },
+            # Unrelated submission:
+            submission=SubmissionFactory.create(),
         )
 
         self.assertFalse(is_valid)
@@ -309,7 +307,7 @@ class FileValidationTests(TestCase):
         is_valid, _ = validate_formio_data(
             DEFAULT_FILE_COMPONENT,
             {"foo": [data]},
-            extra_context={"submission": temporary_file_upload.submission},
+            submission=temporary_file_upload.submission,
         )
 
         self.assertTrue(is_valid)
@@ -369,9 +367,7 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["application/pdf"], "allowedTypesLabels": []},
         }
 
-        is_valid, errors = validate_formio_data(
-            component, data, extra_context={"submission": submission}
-        )
+        is_valid, errors = validate_formio_data(component, data, submission=submission)
         self.assertFalse(is_valid)
         self.assertEqual(len(errors["foo"]), 2)
 
@@ -421,9 +417,7 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["image/png", "image/jpeg"], "allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(
-            component, data, extra_context={"submission": submission}
-        )
+        is_valid, _ = validate_formio_data(component, data, submission=submission)
         self.assertTrue(is_valid)
 
     @tag("GHSA-h85r-xv4w-cg8g")
@@ -455,9 +449,7 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(
-            component, data, extra_context={"submission": submission}
-        )
+        is_valid, _ = validate_formio_data(component, data, submission=submission)
         self.assertTrue(is_valid)
 
     @tag("GHSA-h85r-xv4w-cg8g")
@@ -495,9 +487,7 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(
-            component, data, extra_context={"submission": submission}
-        )
+        is_valid, _ = validate_formio_data(component, data, submission=submission)
         self.assertTrue(is_valid)
 
     @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
@@ -535,8 +525,6 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
-        is_valid, errors = validate_formio_data(
-            component, data, extra_context={"submission": submission}
-        )
+        is_valid, errors = validate_formio_data(component, data, submission=submission)
         self.assertFalse(is_valid)
         self.assertEqual(len(errors["foo"]), 1)

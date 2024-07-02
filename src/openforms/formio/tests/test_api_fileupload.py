@@ -422,7 +422,12 @@ class ConcurrentUploadTests(SubmissionsMixin, APITransactionTestCase):
             )
             response = self.client.post(
                 endpoint,
-                {"file": file, "submission": submission.uuid},
+                {
+                    "file": file,
+                    "submission": reverse(
+                        "api:submission-detail", kwargs={"uuid": submission.uuid}
+                    ),
+                },
                 format="multipart",
             )
             assert response.status_code == status.HTTP_200_OK
