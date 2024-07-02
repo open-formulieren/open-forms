@@ -18,7 +18,7 @@ class TranslatedMixin(factory.base.Factory):
             return kwargs
         lang = kwargs.pop("_language")
         options = translator.get_options_for_model(cls._meta.model)
-        for field, i18n_fields in options.fields.items():
+        for field, i18n_fields in options.all_fields.items():
             i18n_names = {f.name for f in i18n_fields}
             i18n_field = f"{field}_{lang}"
             if field not in kwargs or i18n_field not in i18n_names:
