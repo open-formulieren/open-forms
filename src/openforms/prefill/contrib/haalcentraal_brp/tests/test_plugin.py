@@ -218,6 +218,46 @@ class HaalCentraalPluginTests:
             context = mock.call_args.kwargs["context"]
             self.assertIsNotNone(context)  # type: ignore
 
+    def test_extract_authorizee_identifier_value(self):
+        cases = (
+            # new auth context data approach
+            (
+                SubmissionFactory.create(
+                    auth_info__is_digid_machtigen=True,
+                    auth_info__legal_subject_identifier_value="999333666",
+                ),
+                "999333666",
+            ),
+            # new auth context data, but not a BSN
+            (
+                SubmissionFactory.create(
+                    auth_info__is_eh_bewindvoering=True,
+                    auth_info__legal_subject_identifier_value="12345678",
+                ),
+                None,
+            ),
+            # legacy fallback
+            (
+                SubmissionFactory.create(
+                    auth_info__is_digid_machtigen=True,
+                    auth_info__legal_subject_identifier_type="",
+                    auth_info__legal_subject_identifier_value="",
+                    auth_info__machtigen={"identifier_value": "999333666"},
+                    auth_info__mandate_context=None,
+                ),
+                "999333666",
+            ),
+        )
+        plugin = HaalCentraalPrefill(PLUGIN_IDENTIFIER)
+
+        for submission, expected in cases:
+            with self.subTest(auth_context=submission.auth_info.to_auth_context_data()):
+                identifier_value = plugin.get_identifier_value(
+                    submission, IdentifierRoles.authorizee
+                )
+
+                self.assertEqual(identifier_value, expected)
+
 
 class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
     version = BRPVersions.v13
