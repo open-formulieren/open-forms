@@ -18,10 +18,7 @@ def check_zgw_groups() -> bool:
     from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 
     zgw_config = ZgwConfig.get_solo()
-    if zgw_config is not None:
-        default_group = zgw_config.default_zgw_api_group
-    else:
-        default_group = None
+    default_group = zgw_config.default_zgw_api_group
 
     problems: list[list[str]] = []
 
