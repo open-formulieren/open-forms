@@ -1,6 +1,8 @@
 import json
+import tempfile
 import zipfile
 from pathlib import Path
+from shutil import rmtree
 from textwrap import dedent
 from unittest.mock import patch
 
@@ -48,10 +50,27 @@ from .factories import (
 PATH = Path(__file__).parent
 
 
-class ImportExportTests(TestCase):
+class TempdirMixin:
+    """
+    Set up temporary directories for export files to avoid race conditions.
+
+    When running tests in parallel, multiple processes can be manipulating the filepath
+    where the export file ends up, and if these directories are fixed/not guaranteed
+    to be isolated from each other, one test cleanup can be deleting the file to be
+    used by another, or worse, the wrong content is set up and the tests are flaky.
+    """
+
     def setUp(self):
-        self.filepath = PATH / "export_test.zip"
+        super().setUp()
+
+        test_dir = Path(tempfile.mkdtemp())
+
+        self.filepath = test_dir / "export_test.zip"
         self.addCleanup(lambda: self.filepath.unlink(missing_ok=True))
+        self.addCleanup(lambda: rmtree(test_dir, ignore_errors=True))
+
+
+class ImportExportTests(TempdirMixin, TestCase):
 
     @override_settings(ALLOWED_HOSTS=["example.com"])
     def test_export(self):
@@ -1371,7 +1390,7 @@ class ImportExportTests(TestCase):
         self.assertIsInstance(fixed_components[10]["conditional"]["eq"], int)
 
 
-class ImportObjectsAPITests(OFVCRMixin, TestCase):
+class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
     """This test case requires the Objects & Objecttypes API and Open Zaak to be running.
 
     See the relevant Docker compose in the ``docker/`` folder.
@@ -1381,9 +1400,6 @@ class ImportObjectsAPITests(OFVCRMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-
-        self.filepath = PATH / "export_test.zip"
-        self.addCleanup(lambda: self.filepath.unlink(missing_ok=True))
 
         self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
             objecttypes_service=ServiceFactory.create(
