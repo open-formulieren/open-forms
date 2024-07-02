@@ -313,6 +313,40 @@ class AddDefaultObjectsAPIGroupMigrationTests(TestMigrations):
         )
 
 
+class AddDefaultObjectsAPIGroupWithBrokenStateMigrationTests(TestMigrations):
+    app = "registrations_objects_api"
+    migrate_from = "0018_remove_objectsapiconfig_catalogi_service_and_more"
+    migrate_to = "0019_add_default_objects_api_group"
+
+    def setUpBeforeMigration(self, apps: StateApps) -> None:
+        Form = apps.get_model("forms", "Form")
+        FormRegistrationBackend = apps.get_model("forms", "FormRegistrationBackend")
+        ObjectsAPIGroupConfig = apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+
+        form = Form.objects.create(name="test form")
+        FormRegistrationBackend.objects.create(
+            form=form,
+            name="Objects API backend",
+            key="backend",
+            backend="objects_api",
+        )
+        assert not ObjectsAPIGroupConfig.objects.exists()
+
+    def test_sets_default_objects_api_group(self) -> None:
+        FormRegistrationBackend = self.apps.get_model(
+            "forms", "FormRegistrationBackend"
+        )
+        ObjectsAPIGroupConfig = self.apps.get_model(
+            "registrations_objects_api", "ObjectsAPIGroupConfig"
+        )
+        auto_created_config = ObjectsAPIGroupConfig.objects.get()
+
+        backend = FormRegistrationBackend.objects.get()
+        self.assertEqual(backend.options["objects_api_group"], auto_created_config.pk)
+
+
 class ObjecttypeUrltoUuidMigrationTests(TestMigrations):
     app = "registrations_objects_api"
     migrate_from = "0019_add_default_objects_api_group"
