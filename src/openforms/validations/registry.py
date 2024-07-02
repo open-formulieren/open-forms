@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Iterable
+from typing import Iterable, TypeAlias
 
 from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -17,6 +17,8 @@ from .base import BasePlugin
 
 logger = logging.getLogger(__name__)
 
+StrOrIterable: TypeAlias = str | Iterable["StrOrIterable"]
+
 
 @dataclasses.dataclass()
 class ValidationResult:
@@ -24,17 +26,18 @@ class ValidationResult:
     messages: list[str] = dataclasses.field(default_factory=list)
 
 
-def flatten(iterables: Iterable[str]) -> list[str]:
-    def _flat(it):
-        if isinstance(it, str):
-            yield it
-        else:
-            for v in it:
-                if isinstance(v, Iterable):
-                    yield from _flat(v)
-                else:
-                    yield v
+def _flat(it: StrOrIterable):
+    if isinstance(it, str):
+        yield it
+    else:
+        for v in it:
+            if isinstance(v, Iterable):
+                yield from _flat(v)
+            else:
+                yield v
 
+
+def flatten(iterables: Iterable[StrOrIterable]) -> list[str]:
     return list(_flat(iterables))
 
 
