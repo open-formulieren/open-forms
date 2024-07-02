@@ -33,7 +33,6 @@ VERSION_TO_ATTRIBUTES_MAP = {
 
 def get_attributes_cls():
     config = HaalCentraalConfig.get_solo()
-    assert isinstance(config, HaalCentraalConfig)
 
     match config:
         case HaalCentraalConfig(

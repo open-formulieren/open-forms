@@ -45,7 +45,6 @@ class EHerkenningConfigMixin:
         METADATA = TEST_FILES / "eherkenning-metadata.xml"
 
         config = EherkenningConfiguration.get_solo()
-        assert isinstance(config, EherkenningConfiguration)
         config.certificate = cert
         config.base_url = "https://test-sp.nl"
         config.entity_id = "urn:etoegang:DV:00000001111111111000:entities:9000"

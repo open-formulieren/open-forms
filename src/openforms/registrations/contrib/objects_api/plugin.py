@@ -56,7 +56,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
         if options["version"] == 1:
             global_config = ObjectsAPIConfig.get_solo()
-            assert isinstance(global_config, ObjectsAPIConfig)
             if not options.get("content_json", "").strip():
                 options["content_json"] = global_config.content_json
             if not options.get("payment_status_update_json", "").strip():

@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 def get_kvk_profile_client() -> "KVKProfileClient":
     config = KVKConfig.get_solo()
-    assert isinstance(config, KVKConfig)
     if not (service := config.profile_service):
         raise NoServiceConfigured("No KVK basisprofielen service configured!")
     return build_client(service, client_factory=KVKProfileClient)
@@ -23,7 +22,6 @@ def get_kvk_profile_client() -> "KVKProfileClient":
 
 def get_kvk_search_client() -> "KVKSearchClient":
     config = KVKConfig.get_solo()
-    assert isinstance(config, KVKConfig)
     if not (service := config.search_service):
         raise NoServiceConfigured("No KVK zoeken service configured!")
     return build_client(service, client_factory=KVKSearchClient)

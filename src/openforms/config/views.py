@@ -38,7 +38,6 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
 
     def get_clamav_entry(self):
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         config_url = reverse(
             "admin:config_globalconfiguration_change", args=(config.pk,)
         )

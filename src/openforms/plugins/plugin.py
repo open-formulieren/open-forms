@@ -27,7 +27,6 @@ class AbstractBasePlugin:
     @property
     def is_enabled(self) -> bool:
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         return config.plugin_enabled(self.registry.module, self.identifier)
 
     def check_config(self):

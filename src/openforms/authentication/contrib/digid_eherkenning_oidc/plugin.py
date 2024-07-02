@@ -129,7 +129,6 @@ class OIDCAuthentication(Generic[T], BasePlugin):
     def logout(self, request: HttpRequest):
         if id_token := request.session.get(OIDC_ID_TOKEN_SESSION_KEY):
             config = self.config_class.get_solo()
-            assert isinstance(config, BaseConfig)
             do_op_logout(config, id_token)
 
         keys_to_delete = (

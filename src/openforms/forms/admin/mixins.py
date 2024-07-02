@@ -21,7 +21,6 @@ class FormioConfigMixin:
         self, request, context, add=False, change=False, form_url="", obj=None
     ):
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         context.update(
             {
                 "required_default": config.form_fields_required_default,

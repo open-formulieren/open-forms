@@ -8,7 +8,6 @@ from openforms.utils.urls import build_absolute_uri
 
 def get_wrapper_context(html_content="", theme: Theme | None = None):
     config = GlobalConfiguration.get_solo()
-    assert isinstance(config, GlobalConfiguration)
     theme = theme or config.get_default_theme()
 
     design_tokens = theme.design_token_values or {}
