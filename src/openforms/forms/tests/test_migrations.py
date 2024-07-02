@@ -518,3 +518,55 @@ class ObjecttypeUrltoUuidMigrationTests(TestMigrations):
             backend.options["objecttype"],
             "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
         )
+
+
+class PrefillIdentifierRoleRename(TestMigrations):
+    app = "forms"
+    migrate_from = "0102_alter_formvariable_prefill_identifier_role"
+    migrate_to = "0103_rename_identifier_role_prefill"
+
+    def setUpBeforeMigration(self, apps: StateApps):
+        Form = apps.get_model("forms", "Form")
+        FormVariable = apps.get_model("forms", "FormVariable")
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        form = Form.objects.create(name="test form")
+
+        configuration = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "someTextField",
+                    "label": "Some textfield with prefill",
+                    "prefill": {
+                        "plugin": "demo",
+                        "attribute": "random_string",
+                        "identifierRole": "authorised_person",
+                    },
+                },
+                {"type": "number", "key": "number", "label": "no prefill configured"},
+            ]
+        }
+        FormDefinition.objects.create(name="legacy", configuration=configuration)
+        FormVariable.objects.create(
+            form=form,
+            form_definition=None,
+            name="Prefill",
+            key="prefill",
+            source=FormVariableSources.user_defined,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+            prefill_identifier_role="authorised_person",
+            data_type=FormVariableDataTypes.string,
+            initial_value="",
+        )
+
+    def test_identifier_role_updated_to_authorizee(self):
+        FormVariable = self.apps.get_model("forms", "FormVariable")
+        FormDefinition = self.apps.get_model("forms", "FormDefinition")
+
+        variable = FormVariable.objects.get()
+        self.assertEqual(variable.prefill_identifier_role, "authorizee")
+        fd = FormDefinition.objects.get()
+        component = fd.configuration["components"][0]
+        self.assertEqual(component["prefill"]["identifierRole"], "authorizee")
