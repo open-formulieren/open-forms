@@ -9,7 +9,7 @@ import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
 
-const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
+const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
   const intl = useIntl();
   const validationErrors = useContext(ValidationErrorContext);
 
@@ -34,7 +34,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
 
   useEffect(() => {
     if (schema.properties.objectsApiGroup.enum.length === 1 && objectsApiGroup === '') {
-      onChange({
+      onFieldChange({
         target: {name: 'objectsApiGroup', value: schema.properties.objectsApiGroup.enum[0]},
       });
     }
@@ -65,7 +65,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
             schema.properties.objectsApiGroup.enumNames
           )}
           value={objectsApiGroup}
-          onChange={onChange}
+          onChange={onFieldChange}
           allowBlank
         />
       </CustomFieldTemplate>
@@ -85,7 +85,12 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
         displayLabel
         required
       >
-        <TextInput id="root_objecttype" name="objecttype" value={objecttype} onChange={onChange} />
+        <TextInput
+          id="root_objecttype"
+          name="objecttype"
+          value={objecttype}
+          onChange={onFieldChange}
+        />
       </CustomFieldTemplate>
       <CustomFieldTemplate
         id="root_objecttypeVersion"
@@ -106,7 +111,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_objecttypeVersion"
           name="objecttypeVersion"
           value={objecttypeVersion}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -127,7 +132,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_productaanvraagType"
           name="productaanvraagType"
           value={productaanvraagType}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -156,7 +161,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_informatieobjecttypeSubmissionReport"
           name="informatieobjecttypeSubmissionReport"
           value={informatieobjecttypeSubmissionReport}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -178,7 +183,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_uploadSubmissionCsv"
           name="uploadSubmissionCsv"
           value={uploadSubmissionCsv}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -207,7 +212,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_informatieobjecttypeSubmissionCsv"
           name="informatieobjecttypeSubmissionCsv"
           value={informatieobjecttypeSubmissionCsv}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -230,7 +235,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_informatieobjecttypeAttachment"
           name="informatieobjecttypeAttachment"
           value={informatieobjecttypeAttachment}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -251,7 +256,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_organisatieRsin"
           name="organisatieRsin"
           value={organisatieRsin}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -272,7 +277,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_contentJson"
           name="contentJson"
           value={contentJson}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -296,7 +301,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_paymentStatusUpdateJson"
           name="paymentStatusUpdateJson"
           value={paymentStatusUpdateJson}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
     </>
@@ -321,7 +326,7 @@ LegacyConfigFields.propTypes = {
     contentJson: PropTypes.string,
     paymentStatusUpdateJson: PropTypes.string,
   }),
-  onChange: PropTypes.func.isRequired,
+  onFieldChange: PropTypes.func.isRequired,
 };
 
 export default LegacyConfigFields;

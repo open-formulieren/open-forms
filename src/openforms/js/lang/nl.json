@@ -347,6 +347,11 @@
     "description": "Variable table registration title",
     "originalDefault": "Registration"
   },
+  "8/Nzyy": {
+    "defaultMessage": "Changing the Objects API group will remove the existing variables mapping. Are you sure you want to continue?",
+    "description": "Changing Objects API group warning message",
+    "originalDefault": "Changing the Objects API group will remove the existing variables mapping. Are you sure you want to continue?"
+  },
   "833GAg": {
     "defaultMessage": "Invoerparameters",
     "description": "Input mapping title",
@@ -1353,6 +1358,11 @@
     "defaultMessage": "Bewaartermijn van inzendingen",
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
+  },
+  "UjvOBe": {
+    "defaultMessage": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?",
+    "description": "Changing objecttype warning message",
+    "originalDefault": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
   },
   "V21YkS": {
     "defaultMessage": "Bevestigen",
