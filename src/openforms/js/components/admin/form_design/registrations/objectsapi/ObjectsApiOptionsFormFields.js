@@ -101,7 +101,7 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
               name={name}
               schema={schema}
               formData={formData}
-              onChange={onFieldChange}
+              onFieldChange={onFieldChange}
             />
           </Wrapper>
         </TabPanel>
@@ -114,7 +114,8 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
               name={name}
               schema={schema}
               formData={formData}
-              onChange={onFieldChange}
+              onFieldChange={onFieldChange}
+              onChange={onChange}
             />
           </Wrapper>
         </TabPanel>

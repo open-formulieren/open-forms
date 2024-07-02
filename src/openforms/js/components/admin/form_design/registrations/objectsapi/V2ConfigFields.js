@@ -1,3 +1,4 @@
+import {produce} from 'immer';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -13,7 +14,7 @@ import ObjectTypeVersionSelect from './ObjectTypeVersionSelect';
 import {useGetAvailableObjectTypes} from './hooks';
 import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
 
-const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
+const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}) => {
   const intl = useIntl();
   const validationErrors = useContext(ValidationErrorContext);
 
@@ -26,6 +27,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
     informatieobjecttypeSubmissionCsv = '',
     informatieobjecttypeAttachment = '',
     organisatieRsin = '',
+    variablesMapping = [],
   } = formData;
 
   // Track available object types and versions in this component so the state can be
@@ -39,11 +41,30 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
 
   useEffect(() => {
     if (schema.properties.objectsApiGroup.enum.length === 1 && objectsApiGroup === '') {
-      onChange({
+      onFieldChange({
         target: {name: 'objectsApiGroup', value: schema.properties.objectsApiGroup.enum[0]},
       });
     }
   }, []);
+
+  const clearMappingOnChange = message => {
+    return event => {
+      if (variablesMapping.length === 0) {
+        onFieldChange(event);
+      } else {
+        const confirmSwitch = window.confirm(message);
+        if (confirmSwitch) {
+          const {name, value} = event.target;
+          onChange(
+            produce(formData, draft => {
+              draft.variablesMapping = [];
+              draft[name] = value;
+            })
+          );
+        }
+      }
+    };
+  };
 
   const loadingError = !!availableObjectTypesState.error;
   if (loadingError) {
@@ -82,7 +103,13 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
             schema.properties.objectsApiGroup.enumNames
           )}
           value={objectsApiGroup}
-          onChange={onChange}
+          onChange={clearMappingOnChange(
+            intl.formatMessage({
+              defaultMessage: `Changing the Objects API group will remove the existing variables mapping.
+            Are you sure you want to continue?`,
+              description: 'Changing Objects API group warning message',
+            })
+          )}
           allowBlank
         />
       </CustomFieldTemplate>
@@ -106,7 +133,13 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
         <ObjectTypeSelect
           availableObjectTypesState={availableObjectTypesState}
           objecttype={objecttype}
-          onChange={onChange}
+          onChange={clearMappingOnChange(
+            intl.formatMessage({
+              defaultMessage: `Changing the objecttype will remove the existing variables mapping.
+            Are you sure you want to continue?`,
+              description: 'Changing objecttype warning message',
+            })
+          )}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -130,7 +163,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
           availableObjecttypes={availableObjectTypesState.availableObjecttypes}
           selectedObjecttype={objecttype}
           selectedVersion={objecttypeVersion}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -159,7 +192,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_informatieobjecttypeSubmissionReport"
           name="informatieobjecttypeSubmissionReport"
           value={informatieobjecttypeSubmissionReport}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -181,7 +214,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_uploadSubmissionCsv"
           name="uploadSubmissionCsv"
           value={uploadSubmissionCsv}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -210,7 +243,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_informatieobjecttypeSubmissionCsv"
           name="informatieobjecttypeSubmissionCsv"
           value={informatieobjecttypeSubmissionCsv}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -233,7 +266,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_informatieobjecttypeAttachment"
           name="informatieobjecttypeAttachment"
           value={informatieobjecttypeAttachment}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -254,7 +287,7 @@ const V2ConfigFields = ({index, name, schema, formData, onChange}) => {
           id="root_organisatieRsin"
           name="organisatieRsin"
           value={organisatieRsin}
-          onChange={onChange}
+          onChange={onFieldChange}
         />
       </CustomFieldTemplate>
     </>
@@ -278,6 +311,7 @@ V2ConfigFields.propTypes = {
     contentJson: PropTypes.string,
     paymentStatusUpdateJson: PropTypes.string,
   }),
+  onFieldChange: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
