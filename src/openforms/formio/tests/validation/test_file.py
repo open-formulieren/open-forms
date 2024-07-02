@@ -8,7 +8,10 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.settings import api_settings
 
 from openforms.config.models import GlobalConfiguration
-from openforms.submissions.tests.factories import TemporaryFileUploadFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    TemporaryFileUploadFactory,
+)
 
 from ...typing import FileComponent
 from ..factories import SubmittedFileFactory
@@ -97,8 +100,20 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "maxNumberOfFiles": 2,
         }
 
+        submission = SubmissionFactory.create()
+        temporary_file_uploads = TemporaryFileUploadFactory.create_batch(
+            2, submission=submission
+        )
+
         is_valid, _ = validate_formio_data(
-            component, {"foo": SubmittedFileFactory.create_batch(2)}
+            component,
+            {
+                "foo": [
+                    SubmittedFileFactory.create(temporary_upload=file)
+                    for file in temporary_file_uploads
+                ]
+            },
+            submission=submission,
         )
 
         self.assertTrue(is_valid)
@@ -116,8 +131,20 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "multiple": False,
         }
 
+        submission = SubmissionFactory.create()
+        temporary_file_uploads = TemporaryFileUploadFactory.create_batch(
+            2, submission=submission
+        )
+
         is_valid, errors = validate_formio_data(
-            component, {"foo": SubmittedFileFactory.create_batch(2)}
+            component,
+            {
+                "foo": [
+                    SubmittedFileFactory.create(temporary_upload=file)
+                    for file in temporary_file_uploads
+                ]
+            },
+            submission=submission,
         )
 
         self.assertFalse(is_valid)
@@ -138,8 +165,20 @@ class FileValidationMaxFilesAndRequiredTests(TestCase):
             "maxNumberOfFiles": 1,
         }
 
+        submission = SubmissionFactory.create()
+        temporary_file_uploads = TemporaryFileUploadFactory.create_batch(
+            2, submission=submission
+        )
+
         is_valid, errors = validate_formio_data(
-            component, {"foo": SubmittedFileFactory.create_batch(2)}
+            component,
+            {
+                "foo": [
+                    SubmittedFileFactory.create(temporary_upload=file)
+                    for file in temporary_file_uploads
+                ]
+            },
+            submission=submission,
         )
 
         self.assertFalse(is_valid)
@@ -155,11 +194,14 @@ class FileValidationTests(TestCase):
         NON_FIELD_ERRORS_KEY = api_settings.NON_FIELD_ERRORS_KEY
 
         with self.subTest("url field"):
-            data = SubmittedFileFactory.create()
+            temporary_file_upload = TemporaryFileUploadFactory.create()
+            data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
             data["data"]["url"] = "http://example.com"
 
             is_valid, errors = validate_formio_data(
-                DEFAULT_FILE_COMPONENT, {"foo": [data]}
+                DEFAULT_FILE_COMPONENT,
+                {"foo": [data]},
+                submission=temporary_file_upload.submission,
             )
 
             self.assertFalse(is_valid)
@@ -167,11 +209,14 @@ class FileValidationTests(TestCase):
             self.assertEqual(error.code, "invalid")
 
         with self.subTest("size field"):
-            data = SubmittedFileFactory.create()
+            temporary_file_upload = TemporaryFileUploadFactory.create(file_size=10)
+            data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
             data["data"]["size"] = 0
 
             is_valid, errors = validate_formio_data(
-                DEFAULT_FILE_COMPONENT, {"foo": [data]}
+                DEFAULT_FILE_COMPONENT,
+                {"foo": [data]},
+                submission=temporary_file_upload.submission,
             )
 
             self.assertFalse(is_valid)
@@ -179,11 +224,14 @@ class FileValidationTests(TestCase):
             self.assertEqual(error.code, "invalid")
 
         with self.subTest("name/originalName field"):
-            data = SubmittedFileFactory.create()
+            temporary_file_upload = TemporaryFileUploadFactory.create()
+            data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
             data["data"]["name"] = "unrelated"
 
             is_valid, errors = validate_formio_data(
-                DEFAULT_FILE_COMPONENT, {"foo": [data]}
+                DEFAULT_FILE_COMPONENT,
+                {"foo": [data]},
+                submission=temporary_file_upload.submission,
             )
 
             self.assertFalse(is_valid)
@@ -191,10 +239,8 @@ class FileValidationTests(TestCase):
             self.assertEqual(error.code, "invalid")
 
     def test_no_temporary_upload(self):
-
-        data = (
-            SubmittedFileFactory.build()
-        )  # Using `.build()` will not persist the `TemporaryFileUpload`.
+        # Using `.build()` will not persist the `TemporaryFileUpload`:
+        data = SubmittedFileFactory.build()
 
         is_valid, errors = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
 
@@ -204,12 +250,16 @@ class FileValidationTests(TestCase):
         self.assertEqual(error, _("Invalid URL."))
 
     def test_does_not_match_upload_file_size(self):
-
-        data = SubmittedFileFactory.create()
+        temporary_file_upload = TemporaryFileUploadFactory.create(file_size=10)
+        data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
         data["size"] = 0
         data["data"]["size"] = 0
 
-        is_valid, errors = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
+        is_valid, errors = validate_formio_data(
+            DEFAULT_FILE_COMPONENT,
+            {"foo": [data]},
+            submission=temporary_file_upload.submission,
+        )
 
         self.assertFalse(is_valid)
         error = extract_error(errors["foo"][0], "size")
@@ -217,22 +267,48 @@ class FileValidationTests(TestCase):
         self.assertEqual(error, _("Size does not match the uploaded file."))
 
     def test_does_not_match_upload_name(self):
-
-        data = SubmittedFileFactory.create()
+        temporary_file_upload = TemporaryFileUploadFactory.create()
+        data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
         data["originalName"] = "unrelated"
         data["data"]["name"] = "unrelated"
 
-        is_valid, errors = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
+        is_valid, errors = validate_formio_data(
+            DEFAULT_FILE_COMPONENT,
+            {"foo": [data]},
+            submission=temporary_file_upload.submission,
+        )
 
         self.assertFalse(is_valid)
         error = extract_error(errors["foo"][0], "originalName")
         self.assertEqual(error.code, "invalid")
         self.assertEqual(error, _("Name does not match the uploaded file."))
 
-    def test_passes_validation(self):
-        data = SubmittedFileFactory.create()
+    @tag("security-30")
+    def test_temporary_file_upload_invalid_submission(self):
+        temporary_file_upload = TemporaryFileUploadFactory.create()
+        data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
 
-        is_valid, _ = validate_formio_data(DEFAULT_FILE_COMPONENT, {"foo": [data]})
+        is_valid, errors = validate_formio_data(
+            DEFAULT_FILE_COMPONENT,
+            {"foo": [data]},
+            # Unrelated submission:
+            submission=SubmissionFactory.create(),
+        )
+
+        self.assertFalse(is_valid)
+        error = extract_error(errors["foo"][0], "url")
+        self.assertEqual(error.code, "invalid")
+        self.assertEqual(error, _("Invalid URL."))
+
+    def test_passes_validation(self):
+        temporary_file_upload = TemporaryFileUploadFactory.create()
+        data = SubmittedFileFactory.create(temporary_upload=temporary_file_upload)
+
+        is_valid, _ = validate_formio_data(
+            DEFAULT_FILE_COMPONENT,
+            {"foo": [data]},
+            submission=temporary_file_upload.submission,
+        )
 
         self.assertTrue(is_valid)
 
@@ -250,14 +326,20 @@ class FileValidationMimeTypeTests(TestCase):
         data. The step attaching the uploads to the form data must validate the
         configuration.
         """
+        submission = SubmissionFactory.create()
+
         with open(TEST_FILES_DIR / "image-256x256.pdf", "rb") as infile:
             upload1 = TemporaryFileUploadFactory.create(
+                submission=submission,
                 file_name="my-pdf.pdf",
                 content=File(infile),
                 content_type="application/pdf",
             )
             upload2 = TemporaryFileUploadFactory.create(
-                file_name="my-pdf2.pdf", content=File(infile), content_type="image/png"
+                submission=submission,
+                file_name="my-pdf2.pdf",
+                content=File(infile),
+                content_type="image/png",
             )
 
         data = {
@@ -285,7 +367,7 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["application/pdf"], "allowedTypesLabels": []},
         }
 
-        is_valid, errors = validate_formio_data(component, data)
+        is_valid, errors = validate_formio_data(component, data, submission=submission)
         self.assertFalse(is_valid)
         self.assertEqual(len(errors["foo"]), 2)
 
@@ -300,14 +382,20 @@ class FileValidationMimeTypeTests(TestCase):
         data. The step attaching the uploads to the form data must validate the
         configuration.
         """
+        submission = SubmissionFactory.create()
+
         with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
             upload1 = TemporaryFileUploadFactory.create(
+                submission=submission,
                 file_name="my-img.png",
                 content=File(infile),
                 content_type="image/png",
             )
             upload2 = TemporaryFileUploadFactory.create(
-                file_name="my-img2.png", content=File(infile), content_type="image/png"
+                submission=submission,
+                file_name="my-img2.png",
+                content=File(infile),
+                content_type="image/png",
             )
 
         data = {
@@ -329,13 +417,16 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["image/png", "image/jpeg"], "allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(component, data)
+        is_valid, _ = validate_formio_data(component, data, submission=submission)
         self.assertTrue(is_valid)
 
     @tag("GHSA-h85r-xv4w-cg8g")
     def test_attach_upload_validates_file_content_types_implicit_wildcard(self):
+        submission = SubmissionFactory.create()
+
         with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
             upload = TemporaryFileUploadFactory.create(
+                submission=submission,
                 file_name="my-img.png",
                 content=File(infile),
                 content_type="image/png",
@@ -358,7 +449,7 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(component, data)
+        is_valid, _ = validate_formio_data(component, data, submission=submission)
         self.assertTrue(is_valid)
 
     @tag("GHSA-h85r-xv4w-cg8g")
@@ -369,8 +460,11 @@ class FileValidationMimeTypeTests(TestCase):
         Assert that file uploads are allowed if the "All" file types in the file
         configuration tab is used, which presents as a '*' entry.
         """
+        submission = SubmissionFactory.create()
+
         with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
             upload = TemporaryFileUploadFactory.create(
+                submission=submission,
                 file_name="my-img.png",
                 content=File(infile),
                 content_type="image/png",
@@ -393,7 +487,7 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
-        is_valid, _ = validate_formio_data(component, data)
+        is_valid, _ = validate_formio_data(component, data, submission=submission)
         self.assertTrue(is_valid)
 
     @patch("openforms.formio.components.vanilla.GlobalConfiguration.get_solo")
@@ -404,8 +498,11 @@ class FileValidationMimeTypeTests(TestCase):
             form_upload_default_file_types=["application/pdf", "image/jpeg"],
         )
 
+        submission = SubmissionFactory.create()
+
         with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
             upload = TemporaryFileUploadFactory.create(
+                submission=submission,
                 file_name="my-img.png",
                 content=File(infile),
                 content_type="image/png",
@@ -428,6 +525,6 @@ class FileValidationMimeTypeTests(TestCase):
             "file": {"type": ["*"], "allowedTypesLabels": []},
         }
 
-        is_valid, errors = validate_formio_data(component, data)
+        is_valid, errors = validate_formio_data(component, data, submission=submission)
         self.assertFalse(is_valid)
         self.assertEqual(len(errors["foo"]), 1)

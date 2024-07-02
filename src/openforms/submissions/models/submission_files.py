@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Mapping, cast
 
 from django.core.files.base import File
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -48,6 +49,20 @@ class TemporaryFileUploadQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
 
 class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
+    legacy = models.BooleanField(
+        _("legacy"),
+        default=False,
+        help_text=_("Whether the instance is linked to a submission instance."),
+    )
+    # TODO DeprecationWarning null=True is a transitional state, and should be removed
+    # at some point:
+    submission = models.ForeignKey(
+        "submissions.Submission",
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_("submission"),
+        help_text=_("Submission the temporary file upload belongs to."),
+    )
     content = PrivateMediaFileField(
         verbose_name=_("content"),
         upload_to=temporary_file_upload_to,
@@ -68,6 +83,13 @@ class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
     class Meta:
         verbose_name = _("temporary file upload")
         verbose_name_plural = _("temporary file uploads")
+        constraints = [
+            models.CheckConstraint(
+                check=(Q(legacy=False) & Q(submission__isnull=False))
+                | (Q(legacy=True) & Q(submission__isnull=True)),
+                name="non_legacy_submission_not_null",
+            ),
+        ]
 
 
 class SubmissionFileAttachmentQuerySet(

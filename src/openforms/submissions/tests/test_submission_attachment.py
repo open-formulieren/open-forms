@@ -136,9 +136,9 @@ class SubmissionAttachmentTest(TestCase):
         )
 
     def test_resolve_nested_uploads(self):
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
-        nested_upload = TemporaryFileUploadFactory.create()
+        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
+            TemporaryFileUploadFactory.create_batch(3)
+        )
         data = {
             "repeatingGroup": [
                 {
@@ -269,10 +269,11 @@ class SubmissionAttachmentTest(TestCase):
             {"key": "my_file", "type": "file", "file": {"name": "my-filename.txt"}},
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=upload.submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=upload.submission, data=data
         )
 
         # test attaching the file
@@ -347,10 +348,11 @@ class SubmissionAttachmentTest(TestCase):
             }
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=upload.submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=upload.submission, data=data
         )
 
         # test attaching the file
@@ -381,9 +383,10 @@ class SubmissionAttachmentTest(TestCase):
 
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_uploads_to_submission_step_with_nested_fields(self, resize_mock):
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
-        nested_upload = TemporaryFileUploadFactory.create()
+        submission = SubmissionFactory.create()
+        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
+            TemporaryFileUploadFactory.create_batch(3, submission=submission)
+        )
         data = {
             "repeatingGroup": [
                 {
@@ -457,10 +460,11 @@ class SubmissionAttachmentTest(TestCase):
             {"key": "nested.file", "type": "file"},
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=submission, data=data
         )
 
         # test attaching the file
@@ -486,11 +490,12 @@ class SubmissionAttachmentTest(TestCase):
     def test_attach_uploads_to_submission_step_with_nested_fields_with_matching_keys(
         self, resize_mock
     ):
+        submission = SubmissionFactory.create()
         attachment_1 = TemporaryFileUploadFactory.create(
-            file_name="attachmentInside.pdf"
+            submission=submission, file_name="attachmentInside.pdf"
         )
         attachment_2 = TemporaryFileUploadFactory.create(
-            file_name="attachmentOutside.pdf"
+            submission=submission, file_name="attachmentOutside.pdf"
         )
         data = {
             "repeatingGroup": [
@@ -557,16 +562,17 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=submission, data=data
         )
         # TODO: remove once #2728 is fixed
         SubmissionValueVariableFactory.create(
             key="attachment",
             form_variable__form=form_step.form,
-            submission=submission_step.submission,
+            submission=submission,
             value=data["attachment"],
         )
 
@@ -599,8 +605,10 @@ class SubmissionAttachmentTest(TestCase):
     def test_attach_multiple_uploads_to_submission_step_in_repeating_group(
         self, resize_mock
     ):
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
+        submission = SubmissionFactory.create()
+        upload_in_repeating_group_1, upload_in_repeating_group_2 = (
+            TemporaryFileUploadFactory.create_batch(2, submission=submission)
+        )
         data = {
             "repeatingGroup": [
                 {
@@ -654,10 +662,11 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=submission, data=data
         )
 
         # test attaching the file
@@ -684,9 +693,10 @@ class SubmissionAttachmentTest(TestCase):
     def test_attach_uploads_to_submission_step_with_nested_fields_to_register(
         self, resize_mock
     ):
-        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
-        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
-        nested_upload = TemporaryFileUploadFactory.create()
+        submission = SubmissionFactory.create()
+        upload_in_repeating_group_1, upload_in_repeating_group_2, nested_upload = (
+            TemporaryFileUploadFactory.create_batch(3, submission=submission)
+        )
         data = {
             "repeatingGroup": [
                 {
@@ -799,10 +809,11 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=submission, data=data
         )
 
         # test attaching the file
@@ -859,8 +870,13 @@ class SubmissionAttachmentTest(TestCase):
 
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_multiple_uploads_to_submission_step(self, resize_mock):
-        upload_1 = TemporaryFileUploadFactory.create(file_name="my-image-1.jpg")
-        upload_2 = TemporaryFileUploadFactory.create(file_name="my-image-2.jpg")
+        submission = SubmissionFactory.create()
+        upload_1 = TemporaryFileUploadFactory.create(
+            file_name="my-image-1.jpg", submission=submission
+        )
+        upload_2 = TemporaryFileUploadFactory.create(
+            file_name="my-image-2.jpg", submission=submission
+        )
         data = {
             "my_normal_key": "foo",
             "my_file": [
@@ -908,10 +924,11 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=submission, data=data
         )
 
         # test attaching the file
@@ -962,11 +979,16 @@ class SubmissionAttachmentTest(TestCase):
     @tag("gh-4197")  # Test tweaked to test with multiple images
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_attach_uploads_to_submission_step_resizes_images(self):
+        submission = SubmissionFactory.create()
         upload_1 = TemporaryFileUploadFactory.create(
-            file_name="my-image-1.png", content=File(open(self.test_image_path, "rb"))
+            file_name="my-image-1.png",
+            content=File(open(self.test_image_path, "rb")),
+            submission=submission,
         )
         upload_2 = TemporaryFileUploadFactory.create(
-            file_name="my-image-2.png", content=File(open(self.test_image_path, "rb"))
+            file_name="my-image-2.png",
+            content=File(open(self.test_image_path, "rb")),
+            submission=submission,
         )
         data = {
             "my_normal_key": "foo",
@@ -1017,10 +1039,11 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=submission, data=data
         )
 
         # test attaching the file
@@ -1060,9 +1083,21 @@ class SubmissionAttachmentTest(TestCase):
                 "fileMaxSize": "10B",
             },
         ]
-        upload = TemporaryFileUploadFactory.create(
-            file_name="aaa.txt", content__data=b"a" * 20, file_size=20
+
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": components},
+            completed=False,
+            with_report=False,
         )
+
+        upload = TemporaryFileUploadFactory.create(
+            submission=submission,
+            file_name="aaa.txt",
+            content__data=b"a" * 20,
+            file_size=20,
+        )
+
         data = {
             "my_file": [
                 {
@@ -1083,13 +1118,12 @@ class SubmissionAttachmentTest(TestCase):
                 }
             ],
         }
-        submission = SubmissionFactory.from_components(
-            completed=False,
-            with_report=False,
-            components_list=components,
-            submitted_data=data,
+
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data=data,
         )
-        submission_step = submission.submissionstep_set.get()
 
         with self.assertRaises(RequestEntityTooLarge):
             attach_uploads_to_submission_step(submission_step)
@@ -1248,10 +1282,11 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=upload.submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=upload.submission, data=data
         )
 
         # test attaching the file
@@ -1302,10 +1337,11 @@ class SubmissionAttachmentTest(TestCase):
             },
         ]
         form_step = FormStepFactory.create(
-            form_definition__configuration={"components": components}
+            form=upload.submission.form,
+            form_definition__configuration={"components": components},
         )
         submission_step = SubmissionStepFactory.create(
-            form_step=form_step, submission__form=form_step.form, data=data
+            form_step=form_step, submission=upload.submission, data=data
         )
 
         # test attaching the file
@@ -1324,8 +1360,15 @@ class SubmissionAttachmentTest(TestCase):
                 "type": "file",
             }
         ]
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": components},
+        )
 
-        upload = TemporaryFileUploadFactory.create(file_name="pixel.gif")
+        upload = TemporaryFileUploadFactory.create(
+            submission=submission,
+            file_name="pixel.gif",
+        )
 
         data = {
             "someFile": [
@@ -1349,9 +1392,13 @@ class SubmissionAttachmentTest(TestCase):
             ],
         }
 
-        submission = SubmissionFactory.from_components(components, data)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data=data,
+        )
 
-        result = attach_uploads_to_submission_step(submission.steps[0])
+        result = attach_uploads_to_submission_step(submission_step)
         self.assertEqual(len(result), 1)
 
         attachment_filename = result[0][0].file_name

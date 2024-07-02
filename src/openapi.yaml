@@ -9980,6 +9980,10 @@ components:
         file:
           type: string
           writeOnly: true
+        submission:
+          type: string
+          format: uri
+          writeOnly: true
         url:
           type: string
           readOnly: true
@@ -9995,6 +9999,7 @@ components:
       - file
       - name
       - size
+      - submission
       - url
     TextChoice:
       type: object

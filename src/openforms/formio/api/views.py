@@ -59,6 +59,7 @@ class TemporaryFileUploadView(GenericAPIView):
                 content_type="text/plain",
             )
 
+        submission = serializer.validated_data["submission"]
         file = serializer.validated_data["file"]
 
         # trim name part if necessary but keep the extension
@@ -66,6 +67,7 @@ class TemporaryFileUploadView(GenericAPIView):
         name = name[: 255 - len(ext)] + ext
 
         upload = TemporaryFileUpload.objects.create(
+            submission=submission,
             content=file,
             file_name=name,
             content_type=clean_mime_type(file.content_type),

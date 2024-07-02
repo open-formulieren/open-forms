@@ -929,13 +929,13 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
     def test_file_attachments_in_registration_email(self):
         submission = SubmissionFactory.create()
         attachment1 = TemporaryFileUploadFactory.create(
-            file_name="normalAttachment.png"
+            submission=submission, file_name="normalAttachment.png"
         )
         attachment2 = TemporaryFileUploadFactory.create(
-            file_name="attachmentInFieldset.png"
+            submission=submission, file_name="attachmentInFieldset.png"
         )
         attachment3 = TemporaryFileUploadFactory.create(
-            file_name="attachmentInRepeatingGroup.png"
+            submission=submission, file_name="attachmentInRepeatingGroup.png"
         )
         submission_step = SubmissionStepFactory.create(
             submission=submission,
