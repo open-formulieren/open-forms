@@ -192,6 +192,21 @@ class AuthContextLegalSubjectIdentifier(BaseStaticVariable):
         return auth_context["authorizee"]["legalSubject"]["identifier"]
 
 
+@register_static_variable("auth_context_branch_number")
+class AuthContextBranchNumber(BaseStaticVariable):
+    name = _("Authentication context data: branch number")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Submission | None = None) -> str:
+        if submission is None or not submission.is_authenticated:
+            return ""
+        auth_context = submission.auth_info.to_auth_context_data()
+        if auth_context["source"] != "eherkenning":
+            return ""
+        legal_subject = auth_context["authorizee"]["legalSubject"]
+        return legal_subject.get("branchNumber", "")
+
+
 @register_static_variable("auth_context_acting_subject_identifier_type")
 class AuthContextActingSubjectIdentifierType(BaseStaticVariable):
     name = _("Authentication context data: authorizee, acting subject identifier type")
