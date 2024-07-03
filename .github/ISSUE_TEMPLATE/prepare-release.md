@@ -33,6 +33,7 @@ assignees: sergei-maertens
   - [ ] Ogone
   - [ ] Objects API (registration)
   - [ ] ZGW APIs (registration)
+  - [ ] Form imports (registration)
 
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
