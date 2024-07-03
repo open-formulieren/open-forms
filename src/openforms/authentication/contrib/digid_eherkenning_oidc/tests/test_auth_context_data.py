@@ -122,6 +122,29 @@ class EHerkenningAuthContextTests(
         )
         self.assertNotIn("representee", auth_context)
 
+    @mock_eherkenning_config(branch_number_claim=["vestiging"])
+    def test_record_vestiging_restriction(self):
+        self._login_and_start_form(
+            "eherkenning_oidc",
+            username="eherkenning-vestiging",
+            password="eherkenning-vestiging",
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertEqual(auth_context["source"], "eherkenning")
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {
+                "identifierType": "kvkNummer",
+                "identifier": "12345678",
+                "branchNumber": "123456789012",
+            },
+        )
+
 
 @override_settings(ALLOWED_HOSTS=["*"])
 class DigiDMachtigenAuthContextTests(
@@ -308,3 +331,26 @@ class EHerkenningBewindvoeringAuthContextTests(
         with self.subTest("legacy structure"):
             machtigen = submission.auth_info.machtigen
             self.assertEqual(machtigen, {"identifier_value": "12345678"})
+
+    @mock_eherkenning_bewindvoering_config(branch_number_claim=["vestiging"])
+    def test_record_vestiging_restriction(self):
+        self._login_and_start_form(
+            "eherkenning_bewindvoering_oidc",
+            username="eherkenning-vestiging",
+            password="eherkenning-vestiging",
+        )
+
+        submission = Submission.objects.get()
+        self.assertTrue(submission.is_authenticated)
+        auth_context = submission.auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertEqual(auth_context["source"], "eherkenning")
+        self.assertEqual(
+            auth_context["authorizee"]["legalSubject"],
+            {
+                "identifierType": "kvkNummer",
+                "identifier": "12345678",
+                "branchNumber": "123456789012",
+            },
+        )
