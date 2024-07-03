@@ -314,7 +314,7 @@ export const withInitialValues = {
     });
 
     await step('Form variable dropdown values', async () => {
-      const formVariableDropdowns = await canvas.findAllByLabelText('Form variable');
+      const formVariableDropdowns = await canvas.findAllByLabelText('Formuliervariabele');
 
       await waitFor(async () => {
         await expect(formVariableDropdowns[0]).toHaveValue('name');
@@ -324,7 +324,7 @@ export const withInitialValues = {
     });
 
     await step('DMN variable dropdown values', async () => {
-      const dmnVariableDropdowns = await canvas.findAllByLabelText('DMN variable');
+      const dmnVariableDropdowns = await canvas.findAllByLabelText('DMN-variabele');
 
       await waitFor(async () => {
         await expect(dmnVariableDropdowns[0]).toHaveValue('camundaVar');
@@ -415,13 +415,13 @@ export const DefinitionChangeResetsMapping = {
 
     await canvas.findByRole('option', {name: 'Invoice Classification'});
 
-    const formVariableDropdowns = canvas.getAllByRole('combobox', {name: 'Form variable'});
+    const formVariableDropdowns = canvas.getAllByRole('combobox', {name: 'Formuliervariabele'});
     expect(formVariableDropdowns).toHaveLength(3);
 
     const definitionDropdown = canvas.getByLabelText('Beslisdefinitie-ID');
     await userEvent.selectOptions(definitionDropdown, 'invoiceClassification');
 
-    expect(canvas.queryAllByRole('combobox', {name: 'Form variable'})).toHaveLength(0);
+    expect(canvas.queryAllByRole('combobox', {name: 'Formuliervariabele'})).toHaveLength(0);
   },
 };
 
@@ -507,7 +507,7 @@ export const VersionChangePartiallyResetsMapping = {
       // wait until options have loaded/rendered
       await canvas.findAllByRole('option', {name: 'Surname'});
 
-      const dmnVarDropdowns = canvas.getAllByRole('combobox', {name: 'DMN variable'});
+      const dmnVarDropdowns = canvas.getAllByRole('combobox', {name: 'DMN-variabele'});
       expect(dmnVarDropdowns).toHaveLength(3);
       // check their values
       expect(dmnVarDropdowns[0]).toHaveValue('firstName');
@@ -522,7 +522,7 @@ export const VersionChangePartiallyResetsMapping = {
       // wait until options have loaded/rendered
       await canvas.findAllByRole('option', {name: 'Full name'});
 
-      const dmnVarDropdowns = canvas.getAllByRole('combobox', {name: 'DMN variable'});
+      const dmnVarDropdowns = canvas.getAllByRole('combobox', {name: 'DMN-variabele'});
       expect(dmnVarDropdowns).toHaveLength(3);
       // check their values
       expect(dmnVarDropdowns[0]).toHaveValue('');

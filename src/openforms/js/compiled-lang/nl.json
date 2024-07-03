@@ -128,7 +128,7 @@
   "0M2B7B": [
     {
       "type": 0,
-      "value": "DMN variabele"
+      "value": "DMN-variabele"
     }
   ],
   "0OP7ho": [
@@ -230,7 +230,7 @@
   "1lMaOI": [
     {
       "type": 0,
-      "value": "Open Formulieren-variabele"
+      "value": "Formuliervariabele"
     }
   ],
   "1pC7IP": [
@@ -472,7 +472,7 @@
   "4sFGgA": [
     {
       "type": 0,
-      "value": "The expressions here are extracted from the selected decision definition. It's possible certain inputs are displayed here that are already provided by a dependency of the selected decision, due to the complexity of the input expression."
+      "value": "De expressies hieronder komen uit de geselecteerde beslisdefinitie. Het is mogelijk dat sommige inputs zichtbaar zijn die al ingevuld worden door een eerdere definitie. Dit komt door de complexiteit van de expressie."
     }
   ],
   "5/5LjA": [
@@ -678,7 +678,7 @@
   "6jv6nd": [
     {
       "type": 0,
-      "value": "Data type"
+      "value": "Datatype"
     }
   ],
   "6k14SS": [
@@ -814,7 +814,7 @@
   "7cfkp6": [
     {
       "type": 0,
-      "value": "Expected input expressions"
+      "value": "Verwachtte input-expressies"
     }
   ],
   "7di6Fm": [
@@ -848,7 +848,7 @@
   "8/Nzyy": [
     {
       "type": 0,
-      "value": "Changing the Objects API group will remove the existing variables mapping. Are you sure you want to continue?"
+      "value": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
     }
   ],
   "833GAg": [
@@ -1401,16 +1401,33 @@
   ],
   "D6NRQk": [
     {
-      "type": 0,
-      "value": "Detected problems in "
-    },
-    {
-      "type": 1,
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "1 logicaregel met problemen."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "style": null,
+              "type": 2,
+              "value": "count"
+            },
+            {
+              "type": 0,
+              "value": " logicaregels met problemen."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
       "value": "count"
-    },
-    {
-      "type": 0,
-      "value": " logic rule(s)."
     }
   ],
   "DEAqyQ": [
@@ -1440,7 +1457,7 @@
   "DRG6XN": [
     {
       "type": 0,
-      "value": "invalid input mapping(s)"
+      "value": "ongeldige invoerparameters"
     }
   ],
   "DRidde": [
@@ -1730,7 +1747,7 @@
   "GBsms3": [
     {
       "type": 0,
-      "value": "No form variable specified (anymore)."
+      "value": "Formuliervariabele ontbreekt."
     }
   ],
   "GFXEAX": [
@@ -2524,19 +2541,19 @@
   "R7XVbR": [
     {
       "type": 0,
-      "value": "Main/representee"
+      "value": "Ingelogde/vertegenwoordigde"
     }
   ],
   "R8/zGm": [
     {
       "type": 0,
-      "value": "Form variable"
+      "value": "Formuliervariabele"
     }
   ],
   "RELMCa": [
     {
       "type": 0,
-      "value": "Which Objects API group to use."
+      "value": "Selecteer de Objecten API-groep."
     }
   ],
   "RN628y": [
@@ -2822,7 +2839,7 @@
   "UjvOBe": [
     {
       "type": 0,
-      "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
+      "value": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
     }
   ],
   "UlVtQd": [
@@ -4015,7 +4032,7 @@
   "gheRkp": [
     {
       "type": 0,
-      "value": "Detected some problems in this action: "
+      "value": "Er zijn problemen in deze actie: "
     },
     {
       "type": 1,
@@ -4119,7 +4136,7 @@
   "hhoWxC": [
     {
       "type": 0,
-      "value": "If left blank, then the most recent version is used."
+      "value": "Als je dit leeg laat, dan wordt de nieuwste versie gebruikt."
     }
   ],
   "huHjRm": [
@@ -4227,7 +4244,7 @@
   "ipGvSb": [
     {
       "type": 0,
-      "value": "Expression"
+      "value": "Expressie"
     }
   ],
   "iq0ppL": [
@@ -4291,7 +4308,7 @@
   "jLv6k8": [
     {
       "type": 0,
-      "value": "DMN variable"
+      "value": "DMN-variabele"
     }
   ],
   "jU/t8O": [
@@ -4571,7 +4588,7 @@
   "mgs/Xe": [
     {
       "type": 0,
-      "value": "Objects API group"
+      "value": "Objecten API-groep"
     }
   ],
   "mpzdoT": [
@@ -4965,7 +4982,7 @@
   "sCkGL9": [
     {
       "type": 0,
-      "value": "invalid output mapping(s)"
+      "value": "ongeldige uitvoerparameters"
     }
   ],
   "sFHD3/": [
@@ -5049,7 +5066,7 @@
   "t5fg/K": [
     {
       "type": 0,
-      "value": "one or more actions are invalid"
+      "value": "één of meer acties zijn ongeldig"
     }
   ],
   "t9+e9k": [
@@ -5133,7 +5150,7 @@
   "uO3byK": [
     {
       "type": 0,
-      "value": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
+      "value": "UUID van het 'ProductAanvraag'-objecttype in de Objecttypen API. Het objecttype moet de volgende drie attributen hebben: \"submission_id\", \"type\" (het type productaanvraag) en \"data\" (de ingevoerde formuliergegevens)"
     }
   ],
   "uVVO4b": [
@@ -5437,7 +5454,7 @@
   "yIPUtA": [
     {
       "type": 0,
-      "value": "Authorizee"
+      "value": "Gemachtigde"
     }
   ],
   "yL9Ql7": [
