@@ -31,7 +31,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 WORKDIR /app
 
 # Ensure we use the latest version of pip
-RUN pip install pip -U
+RUN pip install 'pip<24.1' -U
 COPY ./requirements /app/requirements
 
 ARG TARGET_ENVIRONMENT=production
