@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest.mock import patch
 
 from django.test import TestCase, override_settings
 
@@ -8,7 +7,6 @@ from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ZgwConfig
 from ..plugin import ZaakOptionsSerializer
 from .factories import ZGWApiGroupConfigFactory
 
@@ -64,7 +62,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             ztc_service=catalogi_service,
         )
 
-    def test_no_zgw_api_group_and_no_default(self):
+    def test_no_zgw_api_group(self):
         # No zgw_api_group provided
         serializer = ZaakOptionsSerializer(
             data={
@@ -73,19 +71,10 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
             }
         )
 
-        # No ZgwConfig.default_zgw_api_group configured
-        with patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.ZgwConfig.get_solo",
-            return_value=ZgwConfig(),
-        ):
-            is_valid = serializer.is_valid()
+        is_valid = serializer.is_valid()
 
         self.assertFalse(is_valid)
         self.assertIn("zgw_api_group", serializer.errors)
-        self.assertEqual(
-            "No ZGW API set was configured on the form and no default was specified globally.",
-            serializer.errors["zgw_api_group"][0],
-        )
 
     def test_existing_provided_variable_in_specific_zaaktype(self):
         data = {

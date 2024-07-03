@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -13,7 +14,7 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
 from .client import get_catalogi_client
-from .models import ZGWApiGroupConfig, ZgwConfig
+from .models import ZGWApiGroupConfig
 
 
 class MappedVariablePropertySerializer(serializers.Serializer):
@@ -33,10 +34,11 @@ class MappedVariablePropertySerializer(serializers.Serializer):
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
-        queryset=ZGWApiGroupConfig.objects.all(),
-        help_text=_("Which ZGW API set to use."),  # type: ignore
-        label=_("ZGW API set"),  # type: ignore
-        required=False,
+        queryset=ZGWApiGroupConfig.objects.exclude(
+            Q(zrc_service=None) | Q(drc_service=None) | Q(ztc_service=None)
+        ),
+        help_text=_("Which ZGW API set to use."),
+        label=_("ZGW API set"),
     )
     zaaktype = serializers.URLField(
         required=True, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
@@ -102,30 +104,43 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
     )
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if getattr(self, "swagger_fake_view", False) or not self.context.get(
+            "is_import", False
+        ):
+            return fields
+
+        # If in an import context, we don't want to error on missing groups.
+        # Instead, we will try to set one if possible in the `validate` method.
+        fields["zgw_api_group"].required = False
+        return fields
+
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        from .plugin import ZGWRegistration  # circular import
-
-        # First checking that a ZGWApiGroupConfig is available:
-        if attrs.get("zgw_api_group") is None:
-            config = ZgwConfig.get_solo()
-            assert isinstance(config, ZgwConfig)
-            if config.default_zgw_api_group is None:
-                raise serializers.ValidationError(
-                    {
-                        "zgw_api_group": _(
-                            "No ZGW API set was configured on the form and no default "
-                            "was specified globally."
-                        )
-                    },
-                    code="invalid",
-                )
-
-        # We know it exists thanks to the previous check
-        group_config = ZGWRegistration.get_zgw_config(attrs)
-
         validate_business_logic = self.context.get("validate_business_logic", True)
         if not validate_business_logic:
             return attrs
+
+        if self.context.get("is_import", False) and attrs.get("zgw_api_group") is None:
+            existing_group = (
+                ZGWApiGroupConfig.objects.order_by("pk")
+                .exclude(
+                    Q(zrc_service=None) | Q(drc_service=None) | Q(ztc_service=None)
+                )
+                .first()
+            )
+            if existing_group is None:
+                raise serializers.ValidationError(
+                    {
+                        "zgw_api_group": _(
+                            "You must create a valid ZGW API Group config (with the necessary services) before importing."
+                        )
+                    }
+                )
+            else:
+                attrs["zgw_api_group"] = existing_group
+
+        group_config = attrs["zgw_api_group"]
 
         # Run all validations against catalogi API in the same connection pool.
         with get_catalogi_client(group_config) as client:

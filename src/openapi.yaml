@@ -3836,9 +3836,8 @@ paths:
         schema:
           type: integer
           title: ZGW API set
-        description: The primary key of the ZGW API set to use. If provided, the informatieobjecttypen
-          from the Catalogi API in this set will be returned. Otherwise, the Catalogi
-          API in the default ZGW API set will be used to find informatieobjecttypen.
+        description: The primary key of the ZGW API set to use. The informatieobjecttypen
+          from the Catalogi API in this set will be returned.
       tags:
       - registration
       security:

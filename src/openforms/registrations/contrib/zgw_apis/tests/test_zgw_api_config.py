@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from django.test import TestCase
 
 import requests_mock
@@ -14,7 +12,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 
-from ..models import ZgwConfig
 from ..plugin import ZGWRegistration
 from .factories import ZGWApiGroupConfigFactory
 
@@ -547,14 +544,3 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         plugin = ZGWRegistration("zgw")
         with self.assertRaises(InvalidPluginConfiguration):
             plugin.check_config()
-
-    def test_get_zgw_config(self, m):
-        plugin = ZGWRegistration("zgw")
-
-        with patch(
-            "openforms.registrations.contrib.zgw_apis.models.ZgwConfig.get_solo",
-            return_value=ZgwConfig(default_zgw_api_group=self.zgw_group1),
-        ):
-            api_group = plugin.get_zgw_config({})
-
-        self.assertEqual(api_group, self.zgw_group1)

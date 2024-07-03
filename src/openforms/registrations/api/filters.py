@@ -9,7 +9,7 @@ from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.registrations.contrib.zgw_apis.client import get_catalogi_client
-from openforms.registrations.contrib.zgw_apis.models import ZGWApiGroupConfig, ZgwConfig
+from openforms.registrations.contrib.zgw_apis.models import ZGWApiGroupConfig
 
 from ..registry import register
 
@@ -18,9 +18,8 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.all(),
         help_text=_(
-            "The primary key of the ZGW API set to use. If provided, the informatieobjecttypen from the Catalogi API "
-            "in this set will be returned. Otherwise, the Catalogi API in the default ZGW API set will be used to find "
-            "informatieobjecttypen."
+            "The primary key of the ZGW API set to use. The informatieobjecttypen from the Catalogi API "
+            "in this set will be returned."
         ),
         label=_("ZGW API set"),
         required=False,
@@ -51,6 +50,13 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
                 )
             )
 
+        if registration_backend == "zgw-create-zaak" and "zgw_api_group" not in attrs:
+            raise serializers.ValidationError(
+                _(
+                    "'zgw_api_group' is required when 'registration_backend' is set to 'zgw-create-zaak'."
+                )
+            )
+
         return attrs
 
     def get_fields(self):
@@ -63,15 +69,8 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
         registration_backend: str = self.validated_data.get("registration_backend")
 
         if registration_backend == "zgw-create-zaak":
-            zgw_api_group: ZGWApiGroupConfig | None = self.validated_data.get(
-                "zgw_api_group"
-            )
-            if zgw_api_group is not None:
-                return get_catalogi_client(zgw_api_group)
-            config = ZgwConfig.get_solo()
-            assert isinstance(config, ZgwConfig)
-            if group := config.default_zgw_api_group:
-                return get_catalogi_client(group)
+            zgw_api_group: ZGWApiGroupConfig = self.validated_data["zgw_api_group"]
+            return get_catalogi_client(zgw_api_group)
         elif registration_backend == "objects_api":
             objects_api_group: ObjectsAPIGroupConfig = self.validated_data[
                 "objects_api_group"

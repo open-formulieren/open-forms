@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import requests_mock
 from furl import furl
 from rest_framework import status
@@ -9,7 +7,6 @@ from zgw_consumers.test import generate_oas_component
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
-from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
@@ -125,37 +122,6 @@ class GetInformatieObjecttypesView(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_retrieve_without_explicit_zgw_api_group(self, m):
-        user = StaffUserFactory.create()
-        url = furl(reverse("api:iotypen-list"))
-        url.args["registration_backend"] = "zgw-create-zaak"
-        self.client.force_login(user)
-
-        self.install_mocks(m)
-
-        with patch(
-            "openforms.registrations.api.filters.ZgwConfig.get_solo",
-            return_value=ZgwConfig(default_zgw_api_group=self.zgw_group1),
-        ):
-            response = self.client.get(url.url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        data = response.json()
-
-        self.assertEqual(len(data), 2)
-
-    def test_retrieve_without_explicit_zgw_api_group_no_default(self, m):
-        user = StaffUserFactory.create()
-        url = furl(reverse("api:iotypen-list"))
-        url.args["registration_backend"] = "zgw-create-zaak"
-        self.client.force_login(user)
-
-        response = self.client.get(url.url)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), [])
-
     def test_retrieve_with_explicit_zgw_api_group(self, m):
         user = StaffUserFactory.create()
         url = furl(reverse("api:iotypen-list"))
@@ -177,6 +143,16 @@ class GetInformatieObjecttypesView(APITestCase):
         user = StaffUserFactory.create()
         url = furl(reverse("api:iotypen-list"))
         url.args["zgw_api_group"] = "INVALID"
+        url.args["registration_backend"] = "zgw-create-zaak"
+        self.client.force_login(user)
+
+        response = self.client.get(url.url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_missing_zgw_api_group(self, m):
+        user = StaffUserFactory.create()
+        url = furl(reverse("api:iotypen-list"))
         url.args["registration_backend"] = "zgw-create-zaak"
         self.client.force_login(user)
 

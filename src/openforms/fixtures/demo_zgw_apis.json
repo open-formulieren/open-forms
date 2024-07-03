@@ -54,14 +54,13 @@
         }
     },
     {
-        "model": "zgw_apis.zgwconfig",
+        "model": "zgw_apis.zgwapigroupconfig",
         "pk": 1,
         "fields": {
+            "name": "test ZGW API group",
             "zrc_service": 1,
             "drc_service": 2,
             "ztc_service": 3,
-            "zaaktype": "https://test.openzaak.nl/catalogi/api/v1/zaaktypen/53340e34-7581-4b04-884f-8ff7e6a73c2c",
-            "informatieobjecttype": "https://test.openzaak.nl/catalogi/api/v1/informatieobjecttypen/1db73aba-cef4-42ec-bdf0-cd4c7c4f2514",
             "organisatie_rsin": "000000000"
         }
     }

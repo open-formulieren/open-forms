@@ -1,13 +1,6 @@
 from django.contrib import admin
 
-from solo.admin import SingletonModelAdmin
-
-from .models import ZGWApiGroupConfig, ZgwConfig
-
-
-@admin.register(ZgwConfig)
-class ZgwConfigAdmin(SingletonModelAdmin):
-    pass
+from .models import ZGWApiGroupConfig
 
 
 @admin.register(ZGWApiGroupConfig)
