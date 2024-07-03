@@ -317,6 +317,10 @@ class AuthInfo(BaseAuthInfo):
                         },
                     },
                 }
+                if branch_number := self.legal_subject_service_restriction:
+                    eh_context["authorizee"]["legalSubject"][
+                        "branchNumber"
+                    ] = branch_number
                 return eh_context
 
             # EHerkenning with machtigen/mandate
@@ -340,6 +344,10 @@ class AuthInfo(BaseAuthInfo):
                     },
                     "mandate": self.mandate_context,
                 }
+                if branch_number := self.legal_subject_service_restriction:
+                    ehm_context["authorizee"]["legalSubject"][
+                        "branchNumber"
+                    ] = branch_number
                 return ehm_context
             case _:  # pragma: no cover
                 raise RuntimeError(f"Unknown attribute: {self.attribute}")

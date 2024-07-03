@@ -23,6 +23,7 @@ class FormAuth(BaseAuth):
     acting_subject_identifier_value: NotRequired[str]
     legal_subject_identifier_type: NotRequired[str]
     legal_subject_identifier_value: NotRequired[str]
+    legal_subject_service_restriction: NotRequired[str]
     mandate_context: NotRequired[JSONObject]
 
     # deprecated
