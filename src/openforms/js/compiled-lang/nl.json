@@ -2777,6 +2777,12 @@
       "value": "De placeholder-tekst die verschijnt als dit veld leeg is."
     }
   ],
+  "Tw9+0D": [
+    {
+      "type": 0,
+      "value": "Weergave"
+    }
+  ],
   "U/t6b+": [
     {
       "type": 0,
@@ -2861,6 +2867,12 @@
     {
       "type": 0,
       "value": "Bestand"
+    }
+  ],
+  "V2/ceD": [
+    {
+      "type": 0,
+      "value": "Instellingen (verouderd)"
     }
   ],
   "V21YkS": [
@@ -3878,6 +3890,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "fGTdJz": [
+    {
+      "type": 0,
+      "value": "Het afleiden van adres via tekstveld-componenten is verouderd. Gebruik in de plaats de 'AddressNL'-component (in de 'Speciale velden' groep)."
     }
   ],
   "fLCWjk": [

@@ -2777,6 +2777,12 @@
       "value": "The placeholder text that will appear when this field is empty."
     }
   ],
+  "Tw9+0D": [
+    {
+      "type": 0,
+      "value": "Layout"
+    }
+  ],
   "U/t6b+": [
     {
       "type": 0,
@@ -2861,6 +2867,12 @@
     {
       "type": 0,
       "value": "File"
+    }
+  ],
+  "V2/ceD": [
+    {
+      "type": 0,
+      "value": "Configuration (deprecated)"
     }
   ],
   "V21YkS": [
@@ -3873,6 +3885,12 @@
     {
       "type": 0,
       "value": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "fGTdJz": [
+    {
+      "type": 0,
+      "value": "Deriving the location via text fields is deprecated. Use the AddressNL component instead."
     }
   ],
   "fLCWjk": [
