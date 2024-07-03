@@ -1818,6 +1818,12 @@
       "value": "Geef de grootte van elke kolom op. De som van alle breedtes moet 100% zijn."
     }
   ],
+  "GsAN0n": [
+    {
+      "type": 0,
+      "value": "Eén kolom"
+    }
+  ],
   "H3dRU6": [
     {
       "type": 0,
@@ -2708,6 +2714,12 @@
     {
       "type": 0,
       "value": "Editor openen"
+    }
+  ],
+  "T2dCIS": [
+    {
+      "type": 0,
+      "value": "Twee kolommen"
     }
   ],
   "TB/ku3": [
