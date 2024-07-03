@@ -50,6 +50,13 @@ class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
                 )
             )
 
+        if registration_backend == "zgw-create-zaak" and "zgw_api_group" not in attrs:
+            raise serializers.ValidationError(
+                _(
+                    "'zgw_api_group' is required when 'registration_backend' is set to 'zgw-create-zaak'."
+                )
+            )
+
         return attrs
 
     def get_fields(self):

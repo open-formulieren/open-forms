@@ -150,6 +150,16 @@ class GetInformatieObjecttypesView(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_missing_zgw_api_group(self, m):
+        user = StaffUserFactory.create()
+        url = furl(reverse("api:iotypen-list"))
+        url.args["registration_backend"] = "zgw-create-zaak"
+        self.client.force_login(user)
+
+        response = self.client.get(url.url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_missing_objects_api_group(self, m):
         user = StaffUserFactory.create()
         url = furl(reverse("api:iotypen-list"))
