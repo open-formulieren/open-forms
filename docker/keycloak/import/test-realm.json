@@ -461,6 +461,35 @@
     "notBefore" : 0,
     "groups" : [ ]
   }, {
+    "id" : "44be45f6-a7ae-42c2-9486-30f078cf5b39",
+    "createdTimestamp" : 1719999585061,
+    "username" : "eherkenning-vestiging",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "attributes" : {
+      "service_uuid" : [ "81216fa4-80a1-4686-a8ac-5c8e5c030c93" ],
+      "representeeBSN" : [ "000000000" ],
+      "legalSubjectID" : [ "12345678" ],
+      "actingSubjectID" : [ "4B75A0EA107B3D36" ],
+      "service_id" : [ "urn:etoegang:DV:00000001002308836000:services:9113" ],
+      "name_qualifier" : [ "urn:etoegang:1.9:EntityConcernedID:KvKnr" ],
+      "vestiging" : [ "123456789012" ]
+    },
+    "credentials" : [ {
+      "id" : "5e4a5b82-f5b1-48b6-9335-e25d3b417cef",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1719999593682,
+      "secretData" : "{\"value\":\"etDGywOL01Nr9RD1tG2x95/A37HEsf0zk2Kol8GNIJ0=\",\"salt\":\"pnnxOICMkQRoCM/ywGSOww==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-test" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "a28aac19-6ac5-4ce5-bbe3-b6c24051914a",
     "createdTimestamp" : 1707141299906,
     "username" : "service-account-testid",
@@ -1344,6 +1373,21 @@
         "id.token.claim" : "true",
         "access.token.claim" : "true",
         "claim.name" : "service_id",
+        "jsonType.label" : "String"
+      }
+    }, {
+      "id" : "5ba6ed6e-e6c5-4c74-9049-185c875df8ad",
+      "name" : "vestiging",
+      "protocol" : "openid-connect",
+      "protocolMapper" : "oidc-usermodel-attribute-mapper",
+      "consentRequired" : false,
+      "config" : {
+        "introspection.token.claim" : "true",
+        "userinfo.token.claim" : "true",
+        "user.attribute" : "vestiging",
+        "id.token.claim" : "true",
+        "access.token.claim" : "true",
+        "claim.name" : "vestiging",
         "jsonType.label" : "String"
       }
     }, {

@@ -43,13 +43,15 @@ VCR.py). The primary reason this setup exists, is for automated testing reasons.
 
 - `testuser` / `testuser`, has the `bsn`, `kvk`, `name_qualifier`, `legalSubjectID` and
   `actingSubjectID` attributes (authentication plugins: DigiD, eHerkenning)
-- `digid-machtigen` / `digid-machtigen`, has the `aanvrager.bsn`, `gemachtigde.bsn` and
-  `service_id` attributes (for DigiD machtigen)
-- `eherkenning-bewindvoering` / `eherkenning-bewindvoering`, has the `legalSubjectID`
-  (kvk), `actingSubjectID` (pseudo ID), `representeeBSN`, `service_id`, `service_uuid`,
-  and `name_qualifier`  attributes (for eHerkenning bewindvoering)
-- `admin` / `admin`, intended to create as django user (can be made staff). The email
-  address is `admin@example.com`.
+- `digid-machtigen` / `digid-machtigen`, has the `aanvrager.bsn`, `gemachtigde.bsn` and `service_id`
+  attributes (for DigiD machtigen)
+- `eherkenning-bewindvoering` / `eherkenning-bewindvoering`, has the `legalSubjectID` (kvk),
+  `actingSubjectID` (pseudo ID), `representeeBSN`, `service_id`, `service_uuid`, and
+  `name_qualifier` attributes (for eHerkenning bewindvoering)
+- `eherkenning-vestiging` / `eherkenning-vestiging`, has the `vestiging` attribute plus the
+  attributes from `eherkenning-bewindvoering`.
+- `admin` / `admin`, intended to create as django user (can be made staff). The email address is
+  `admin@example.com`.
 
 ## Exporting the Realm
 

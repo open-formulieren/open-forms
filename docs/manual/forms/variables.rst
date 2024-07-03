@@ -112,7 +112,8 @@ authenticatiecontextdatamodel_. De structuur is als volgt:
         "authorizee": {
             "legalSubject": {
                 "identifierType": "string",
-                "identifier": "string"
+                "identifier": "string",
+                "branchNumber": "string"
             },
             "actingSubject": {
                 "identifierType": "string",
@@ -168,6 +169,10 @@ De onderdelen van deze structuur worden ook als individuele variabelen aangebode
 ``auth_context_legal_subject_identifier``
     Identificatie van de (wettelijke) vertegenwoordiger. Leeg indien het formulier
     zonder inloggen gestart is.
+
+``auth_context_branch_number``
+    Vestigingsnummer waarvoor de medewerker ingelogd is. Leeg indien het geen
+    eHerkenning-login betreft.
 
 ``auth_context_acting_subject_identifier_type``
     In de praktijk zal de waarde altijd ``opaque`` of leeg zijn. Geeft aan hoe de

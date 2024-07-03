@@ -212,7 +212,7 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
     def transform_claims(self, normalized_claims: EHClaims) -> FormAuth:
-        return {
+        form_auth: FormAuth = {
             "plugin": self.identifier,
             # TODO: look at `identifier_type_claim` and return kvk or rsin accordingly.
             # Currently we have no support for RSIN at all, so that will need to be
@@ -225,6 +225,9 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication[EHClaims]):
                 "acting_subject_claim"
             ],
         }
+        if service_restriction := normalized_claims.get("branch_number_claim", ""):
+            form_auth["legal_subject_service_restriction"] = service_restriction
+        return form_auth
 
 
 class DigiDmachtigenClaims(TypedDict):
@@ -340,7 +343,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(
                 }
             )
 
-        return {
+        form_auth: FormAuth = {
             "plugin": self.identifier,
             "attribute": self.provides_auth,
             "value": normalized_claims["representee_claim"],
@@ -367,6 +370,10 @@ class EHerkenningBewindvoeringOIDCAuthentication(
                 "identifier_value": authorizee,
             },
         }
+
+        if service_restriction := normalized_claims.get("branch_number_claim", ""):
+            form_auth["legal_subject_service_restriction"] = service_restriction
+        return form_auth
 
     def get_label(self) -> str:
         return "eHerkenning bewindvoering"

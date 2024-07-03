@@ -81,6 +81,30 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
         auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
+        self.assertNotIn("branchNumber", auth_context["authorizee"]["legalSubject"])
+
+    def test_plain_eherkenning_auth_with_service_restriction(self):
+        auth_info = AuthInfo(
+            submission=SubmissionFactory.build(),
+            plugin="dummy",
+            attribute=AuthAttribute.kvk,
+            value="90002768",
+            attribute_hashed=False,
+            loa=AssuranceLevels.substantial,
+            legal_subject_identifier_type="",
+            legal_subject_identifier_value="",
+            legal_subject_service_restriction="123123123123",
+            acting_subject_identifier_type=ActingSubjectIdentifierType.opaque,
+            acting_subject_identifier_value=(
+                "4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018"
+                "@2D8FF1EF10279BC2643F376D89835151"
+            ),
+        )
+
+        auth_context = auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertIn("branchNumber", auth_context["authorizee"]["legalSubject"])
 
     def test_eherkenning_machtigen_bewindvoering_auth(self):
         auth_info = AuthInfo(
@@ -111,3 +135,36 @@ class AuthContextDataTests(AuthContextAssertMixin, SimpleTestCase):
         auth_context = auth_info.to_auth_context_data()
 
         self.assertValidContext(auth_context)
+        self.assertNotIn("branchNumber", auth_context["authorizee"]["legalSubject"])
+
+    def test_eherkenning_machtigen_bewindvoering_auth_with_service_restriction(self):
+        auth_info = AuthInfo(
+            submission=SubmissionFactory.build(),
+            plugin="dummy",
+            attribute=AuthAttribute.bsn,
+            value="999991607",
+            attribute_hashed=False,
+            loa=AssuranceLevels.substantial,
+            legal_subject_identifier_type=LegalSubjectIdentifierType.kvk,
+            legal_subject_identifier_value="90002768",
+            legal_subject_service_restriction="123123123123",
+            acting_subject_identifier_type=ActingSubjectIdentifierType.opaque,
+            acting_subject_identifier_value=(
+                "4B75A0EA107B3D36C82FD675B5B78CC2F181B22E33D85F2D4A5DA63452EE3018"
+                "@2D8FF1EF10279BC2643F376D89835151"
+            ),
+            mandate_context={
+                "role": "bewindvoerder",
+                "services": [
+                    {
+                        "id": "urn:etoegang:DV:00000001002308836000:services:9113",
+                        "uuid": "34085d78-21aa-4481-a219-b28d7f3282fc",
+                    }
+                ],
+            },
+        )
+
+        auth_context = auth_info.to_auth_context_data()
+
+        self.assertValidContext(auth_context)
+        self.assertIn("branchNumber", auth_context["authorizee"]["legalSubject"])

@@ -39,6 +39,7 @@ class DigiDMachtigenContext(DigiDContext):
 class EHerkenningLegalSubject(TypedDict):
     identifierType: Literal["kvkNummer"]
     identifier: str
+    branchNumber: NotRequired[str]
 
 
 class EHerkenningActingSubject(TypedDict):

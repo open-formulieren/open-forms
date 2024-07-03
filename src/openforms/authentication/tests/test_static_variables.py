@@ -77,3 +77,62 @@ class TestStaticVariables(TestCase):
         }
 
         self.assertEqual(static_data["language_code"], "nl")
+
+    def test_branch_number_variable(self):
+        cases = (
+            (
+                AuthInfoFactory.create(
+                    is_digid=True,
+                    legal_subject_service_restriction="foo",
+                ),
+                "",
+            ),
+            (
+                AuthInfoFactory.create(
+                    is_digid_machtigen=True,
+                    legal_subject_service_restriction="foo",
+                ),
+                "",
+            ),
+            (
+                AuthInfoFactory.create(
+                    is_eh=True,
+                    legal_subject_service_restriction="123456789012",
+                ),
+                "123456789012",
+            ),
+            (
+                AuthInfoFactory.create(
+                    is_eh_bewindvoering=True,
+                    legal_subject_service_restriction="123456789012",
+                ),
+                "123456789012",
+            ),
+            (
+                AuthInfoFactory.create(
+                    is_eh=True,
+                    legal_subject_service_restriction="",
+                ),
+                "",
+            ),
+            (
+                AuthInfoFactory.create(
+                    is_eh_bewindvoering=True,
+                    legal_subject_service_restriction="",
+                ),
+                "",
+            ),
+        )
+        for auth_info, expected in cases:
+            with self.subTest(
+                attribute=auth_info.attribute,
+                service_restriction=auth_info.legal_subject_service_restriction,
+            ):
+                static_data = {
+                    variable.key: variable.initial_value
+                    for variable in get_static_variables(
+                        submission=auth_info.submission
+                    )
+                }
+
+                self.assertEqual(static_data["auth_context_branch_number"], expected)
