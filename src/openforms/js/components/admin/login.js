@@ -5,11 +5,22 @@ const addAdminLoginExpand = () => {
   const loginForm = document.querySelector('#login-form');
 
   if (defaultLoginToggle && loginForm) {
-    defaultLoginToggle.addEventListener('click', e => {
-      e.preventDefault();
+    const showLoginForm = () => {
       loginForm.classList.toggle('login-form--enabled');
       defaultLoginToggle.classList.toggle('admin-login-option--disabled');
+    };
+
+    // bind click event
+    defaultLoginToggle.addEventListener('click', e => {
+      e.preventDefault();
+      showLoginForm();
     });
+
+    // if the form is bound, there is feedback, so toggle it to visible
+    const {bound, wizardstep} = defaultLoginToggle.dataset;
+    if (bound === 'true' || wizardstep !== 'auth') {
+      showLoginForm();
+    }
   }
 };
 
