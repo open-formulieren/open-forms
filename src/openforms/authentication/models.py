@@ -183,6 +183,16 @@ class AuthInfo(BaseAuthInfo):
         max_length=250,
         blank=True,
     )
+    # generic field for "service restriction", but in practice this means
+    # vestiging/branch number for eHerkenning.
+    legal_subject_service_restriction = models.CharField(
+        verbose_name=_("legal subject service restriction"),
+        help_text=_(
+            "Optional service restriction information within the bigger legal subject."
+        ),
+        max_length=250,  # the 250 is quite arbitrary, branch number is 12 chars
+        blank=True,
+    )
 
     mandate_context = models.JSONField(
         verbose_name=_("mandate context"),
@@ -230,7 +240,7 @@ class AuthInfo(BaseAuthInfo):
                     "legal_subject_identifier_value",
                 ),
             ),
-            # presence of a legal subject implies a mandata context
+            # presence of a legal subject implies a mandate context
             models.CheckConstraint(
                 name="mandate_context_not_null",
                 check=(
