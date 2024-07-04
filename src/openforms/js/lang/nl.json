@@ -1926,8 +1926,8 @@
   "i7Vmcf": {
     "defaultMessage": "Label",
     "description": "DMN Input clause label header",
-    "originalDefault": "Label",
-    "isTranslated": true
+    "isTranslated": true,
+    "originalDefault": "Label"
   },
   "iHpAYZ": {
     "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsvariabelen en de resulterende JSON wordt vervolgens naar de Objecten API gestuurd met een PATCH call om de betalingsvelden bij te werken.",
