@@ -3,27 +3,12 @@
 from django.db import migrations
 
 
-def attach_default_zgw_group(apps, _):
-    ZgwConfig = apps.get_model("zgw_apis", "ZgwConfig")
-    ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
-
-    # There should be at most one (since it was created by migration 0007_move_singleton_data). But in case that there
-    # are multiple, we just pick one.
-    zgw_api_group = ZGWApiGroupConfig.objects.first()
-    if not zgw_api_group:
-        return
-
-    solo_config = ZgwConfig.objects.get()
-    solo_config.default_zgw_api_group = zgw_api_group
-    solo_config.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ("zgw_apis", "0008_auto_20230608_1443"),
     ]
 
-    operations = [
-        migrations.RunPython(attach_default_zgw_group, migrations.RunPython.noop),
-    ]
+    # RunPython operation removed as part of 2.7 release cycle, which requires 2.6.7 to
+    # be run first.
+    operations = []
