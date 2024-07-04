@@ -10,31 +10,27 @@ assignees: sergei-maertens
   - [ ] ...
 - [ ] Re-generate VCR cassettes for API tests (see instructions on Taiga). You can find all test
       cases with `grep OFVCRMixin -r src`
-
-  - [ ] Appoinments: Qmatic
-  - [ ] Suwinet
-  - DigiD/eHerkenning (Signicat)
-
-    - [ ] `openforms.authentication.contrib.digid.tests.test_signicat_integration`
-    - [ ] `openforms.authentication.contrib.eherkenning.tests.test_signicat_integration`
-
-  - OIDC based authentication flows
-
-    - [ ] `openforms.authentication.tests.test_oidc`
-    - [ ] `openforms.authentication.contrib.digid_eherkenning_oidc`
-    - [ ] `openforms.authentication.contrib.org_oidc`
-    - [ ] `openforms.authentication.contrib.org_oidc`
+  - [ ] Accounts (`openforms.accounts.tests.test_oidc`)
+  - Appoinments: Qmatic (`openforms.appointments.contrib.qmatic`) (no testenv available anymore)
+  - Authentication plugins
+    - [ ] DigiD (Signicat): `openforms.authentication.contrib.digid.tests.test_signicat_integration`
+    - [ ] eHerkenning
+          (Signicat):`openforms.authentication.contrib.eherkenning.tests.test_signicat_integration`
+    - [ ] DigiD/EH via OIDC: `openforms.authentication.contrib.digid_eherkenning_oidc`
+    - [ ] Org via OIDC: `openforms.authentication.contrib.org_oidc`
     - [ ] `openforms.tests.test_registrator_prefill`
-
-  - [ ] Haal Centraal BRP Personen bevragen
-  - [ ] `soap.tests.test_client`
-  - [ ] BRK (Kadaster)
-  - [ ] KVK
-  - [ ] Ogone
-  - [ ] Objects API (registration)
-  - [ ] ZGW APIs (registration)
-  - [ ] Form imports (registration)
-
+  - General purpose clients
+    - [ ] `openforms.contrib.brk`
+    - [ ] `openforms.contrib.haal_centraal.tests.test_integration`
+    - [ ] `openforms.contrib.kvk`
+    - [ ] `soap.tests.test_client`
+    - `suwinet.tests.test_client` (testenv access has been retracted and won't be reinstated)
+  - [ ] Form imports: `openforms.forms.tests.test_import_export`
+  - Payment plugins
+    - [ ] Ogone legacy: `openforms.payments.contrib.ogone.tests.test_client`
+  - Registration plugins:
+    - [ ] Objects API: `openforms.registrations.contrib.objects_api`
+    - [ ] ZGW APIs: `openforms.registrations.contrib.zgw_apis`
 - [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
 - [ ] Check translations
