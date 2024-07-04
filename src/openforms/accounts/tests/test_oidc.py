@@ -1,3 +1,16 @@
+"""
+Test authentication to the admin with OpenID Connect.
+
+Some of hese tests use VCR. When re-recording, making sure to:
+
+.. code-block:: bash
+
+    cd docker
+    docker compose -f docker-compose.keycloak.yml up
+
+to bring up a Keycloak instance.
+"""
+
 from functools import partial
 from pathlib import Path
 
