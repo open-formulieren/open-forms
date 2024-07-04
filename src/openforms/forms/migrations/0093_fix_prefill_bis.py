@@ -2,8 +2,6 @@
 
 from django.db import migrations
 
-from openforms.forms.migration_operations import ConvertComponentsOperation
-
 
 class Migration(migrations.Migration):
 
@@ -11,10 +9,4 @@ class Migration(migrations.Migration):
         ("forms", "0092_formstatistics"),
     ]
 
-    operations = [
-        ConvertComponentsOperation("textfield", "alter_prefill_default_values"),
-        ConvertComponentsOperation("date", "alter_prefill_default_values"),
-        ConvertComponentsOperation("datetime", "alter_prefill_default_values"),
-        ConvertComponentsOperation("postcode", "alter_prefill_default_values"),
-        ConvertComponentsOperation("bsn", "alter_prefill_default_values"),
-    ]
+    operations = []
