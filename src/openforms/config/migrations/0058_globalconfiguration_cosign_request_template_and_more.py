@@ -2,48 +2,13 @@
 
 import functools
 
-from django.conf import settings
-from django.core.cache import caches
 from django.db import migrations
-from django.db.migrations.state import StateApps
-from django.utils import translation
-from django.utils.encoding import force_str
 
 import tinymce.models
 
 import openforms.config.models.config
 import openforms.emails.validators
 import openforms.template.validators
-
-
-def set_correct_default_templates(apps: StateApps, _):
-    """
-    Set up the correct default co-sign request templates.
-
-    This data migration does two things:
-
-    1. Ensure that each localized field name has the correct localized content, since
-       migrations don't use the real fields which use translation.overide to get the
-       default value.
-    2. Update the template to take into account the (legacy)
-       show_form_link_in_cosign_email config option.
-    """
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    if not GlobalConfiguration.objects.exists():
-        return
-
-    _render = openforms.config.models.config._render
-    config = GlobalConfiguration.objects.get()
-    context = {"omit_form_link": not config.show_form_link_in_cosign_email}
-
-    for lang_code, _ in settings.LANGUAGES:
-        field_name = f"cosign_request_template_{lang_code}"
-        with translation.override(lang_code):
-            default_value = _render("emails/co_sign/request.html", context=context)
-            setattr(config, field_name, force_str(default_value))
-
-    config.save()
-    caches[settings.SOLO_CACHE].clear()
 
 
 class Migration(migrations.Migration):
@@ -112,10 +77,8 @@ class Migration(migrations.Migration):
                 verbose_name="co-sign request template",
             ),
         ),
-        migrations.RunPython(
-            set_correct_default_templates,
-            migrations.RunPython.noop,
-        ),
+        # RunPython operation removed, it was executed as part of the required 2.6.7
+        # upgrade.
         migrations.RemoveField(
             model_name="globalconfiguration",
             name="show_form_link_in_cosign_email",

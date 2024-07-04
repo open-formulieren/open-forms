@@ -3,63 +3,12 @@
 from django.db import migrations
 
 
-def move_singleton_data_to_zgw_api_set_model(apps, _):
-    ZgwConfig = apps.get_model("zgw_apis", "ZgwConfig")
-    ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
-
-    solo_model = ZgwConfig.objects.first()
-    if not solo_model:
-        return
-
-    new_config_set = ZGWApiGroupConfig(
-        name="ZGW API",
-        zrc_service=solo_model.zrc_service,
-        drc_service=solo_model.drc_service,
-        ztc_service=solo_model.ztc_service,
-        zaaktype=solo_model.zaaktype,
-        informatieobjecttype=solo_model.informatieobjecttype,
-        organisatie_rsin=solo_model.organisatie_rsin,
-        zaak_vertrouwelijkheidaanduiding=solo_model.zaak_vertrouwelijkheidaanduiding,
-        doc_vertrouwelijkheidaanduiding=solo_model.doc_vertrouwelijkheidaanduiding,
-        auteur=solo_model.auteur,
-    )
-    new_config_set.save()
-
-
-def reconfigure_zgw_solo_model(apps, _):
-    ZgwConfig = apps.get_model("zgw_apis", "ZgwConfig")
-    ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
-
-    solo_model = ZgwConfig.objects.first()
-    zgw_api_group = ZGWApiGroupConfig.objects.all().order_by("pk").first()
-
-    if not solo_model or not zgw_api_group:
-        return
-
-    solo_model.zrc_service = zgw_api_group.zrc_service
-    solo_model.drc_service = zgw_api_group.drc_service
-    solo_model.ztc_service = zgw_api_group.ztc_service
-    solo_model.zaaktype = zgw_api_group.zaaktype
-    solo_model.informatieobjecttype = zgw_api_group.informatieobjecttype
-    solo_model.organisatie_rsin = zgw_api_group.organisatie_rsin
-    solo_model.zaak_vertrouwelijkheidaanduiding = (
-        zgw_api_group.zaak_vertrouwelijkheidaanduiding
-    )
-    solo_model.doc_vertrouwelijkheidaanduiding = (
-        zgw_api_group.doc_vertrouwelijkheidaanduiding
-    )
-    solo_model.auteur = zgw_api_group.auteur
-    solo_model.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ("zgw_apis", "0006_zgwapigroupconfig"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            move_singleton_data_to_zgw_api_set_model, reconfigure_zgw_solo_model
-        ),
-    ]
+    # RunPython operation removed as part of 2.7 release cycle, which requires 2.6.7 to
+    # be run first.
+    operations = []
