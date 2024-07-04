@@ -15,7 +15,7 @@ const BaseFileField = Formio.Components.components.file;
  *         An async response data wrapper if the registration backend supports
  *         informatieobjecttypen, null otherwise.
  */
-const getInformatieObjectTypen = async (backend, options) => {
+export const getInformatieObjectTypen = async (backend, options) => {
   switch (backend) {
     case 'zgw-create-zaak': {
       return await get('/api/v2/registration/plugins/zgw-api/informatieobjecttypen', {

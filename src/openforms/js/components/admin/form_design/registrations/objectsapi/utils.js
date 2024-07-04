@@ -1,5 +1,14 @@
 import React from 'react';
 
+const getOptionsFromSchema = (enums, enumNames) => {
+  const finalOptions = [];
+  Object.keys(enums).forEach(key => {
+    finalOptions.push({value: enums[key], label: enumNames[key]});
+  });
+
+  return finalOptions;
+};
+
 // TODO This is duplicated from the ZGW registration, but will be cleaned up
 // with the backend UI refactor.
 
@@ -100,4 +109,4 @@ const asJsonSchema = (variable, components) => {
   };
 };
 
-export {getChoicesFromSchema, getErrorMarkup, getFieldErrors, asJsonSchema};
+export {getOptionsFromSchema, getChoicesFromSchema, getErrorMarkup, getFieldErrors, asJsonSchema};

@@ -33,3 +33,8 @@ export const mockTargetPathsPost = paths =>
       return res(ctx.json(paths[variableJsonSchemaType]));
     }
   );
+
+export const mockInformatieobjecttypenGet = informatieobjecttypen =>
+  rest.get(`${API_BASE_URL}/api/v2/registration/informatieobjecttypen`, (req, res, ctx) => {
+    return res(ctx.json(informatieobjecttypen));
+  });

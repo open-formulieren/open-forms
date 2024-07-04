@@ -2,17 +2,20 @@ import {produce} from 'immer';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
+import {useUpdateEffect} from 'react-use';
 
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
+import InformatieObjecttypeSelect from './InformatieObjecttypeSelect';
 import ObjectTypeSelect from './ObjectTypeSelect';
 import ObjectTypeVersionSelect from './ObjectTypeVersionSelect';
-import {useGetAvailableObjectTypes} from './hooks';
-import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
+import {useGetAvailableInformatieObjecttypen, useGetAvailableObjectTypes} from './hooks';
+import {getErrorMarkup, getFieldErrors, getOptionsFromSchema} from './utils';
 
 const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}) => {
   const intl = useIntl();
@@ -33,12 +36,14 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
   // Track available object types and versions in this component so the state can be
   // shared.
   const availableObjectTypesState = useGetAvailableObjectTypes(objectsApiGroup);
+  const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(objectsApiGroup);
 
   const buildErrorsComponent = field => {
     const rawErrors = getFieldErrors(name, index, validationErrors, field);
     return rawErrors ? getErrorMarkup(rawErrors) : null;
   };
 
+  // Auto-select a group if only one available:
   useEffect(() => {
     if (schema.properties.objectsApiGroup.enum.length === 1 && objectsApiGroup === '') {
       onFieldChange({
@@ -47,20 +52,38 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
     }
   }, []);
 
-  const clearMappingOnChange = message => {
+  // Resetting values if necessary:
+  useUpdateEffect(() => {
+    onChange(
+      produce(formData, draft => {
+        draft.variablesMapping = [];
+        draft.geometryVariableKey = '';
+        delete draft.objecttype;
+        delete draft.objecttypeVersion;
+        delete draft.informatieobjecttypeSubmissionReport;
+        delete draft.informatieobjecttypeSubmissionCsv;
+        delete draft.informatieobjecttypeAttachment;
+      })
+    );
+  }, [objectsApiGroup]);
+
+  useUpdateEffect(() => {
+    onChange(
+      produce(formData, draft => {
+        draft.variablesMapping = [];
+        draft.objecttypeVersion = '';
+      })
+    );
+  }, [objecttype]);
+
+  const warningOnChange = message => {
     return event => {
       if (variablesMapping.length === 0) {
         onFieldChange(event);
       } else {
         const confirmSwitch = window.confirm(message);
         if (confirmSwitch) {
-          const {name, value} = event.target;
-          onChange(
-            produce(formData, draft => {
-              draft.variablesMapping = [];
-              draft[name] = value;
-            })
-          );
+          onFieldChange(event);
         }
       }
     };
@@ -95,22 +118,21 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         displayLabel
         required
       >
-        <Select
-          id="root_objectsApiGroup"
+        <ReactSelect
           name="objectsApiGroup"
-          choices={getChoicesFromSchema(
+          value={objectsApiGroup}
+          options={getOptionsFromSchema(
             schema.properties.objectsApiGroup.enum,
             schema.properties.objectsApiGroup.enumNames
           )}
-          value={objectsApiGroup}
-          onChange={clearMappingOnChange(
+          onChange={warningOnChange(
             intl.formatMessage({
               defaultMessage: `Changing the Objects API group will remove the existing variables mapping.
             Are you sure you want to continue?`,
               description: 'Changing Objects API group warning message',
             })
           )}
-          allowBlank
+          emptyValue=""
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -133,7 +155,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         <ObjectTypeSelect
           availableObjectTypesState={availableObjectTypesState}
           objecttype={objecttype}
-          onChange={clearMappingOnChange(
+          onChange={warningOnChange(
             intl.formatMessage({
               defaultMessage: `Changing the objecttype will remove the existing variables mapping.
             Are you sure you want to continue?`,
@@ -188,10 +210,10 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         errors={buildErrorsComponent('informatieobjecttypeSubmissionReport')}
         displayLabel
       >
-        <TextInput
-          id="root_informatieobjecttypeSubmissionReport"
+        <InformatieObjecttypeSelect
           name="informatieobjecttypeSubmissionReport"
-          value={informatieobjecttypeSubmissionReport}
+          availableInformatieObjecttypenState={availableInformatieObjecttypenState}
+          informatieObjecttype={informatieobjecttypeSubmissionReport}
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -241,10 +263,10 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         errors={buildErrorsComponent('informatieobjecttypeSubmissionCsv')}
         displayLabel
       >
-        <TextInput
-          id="root_informatieobjecttypeSubmissionCsv"
+        <InformatieObjecttypeSelect
           name="informatieobjecttypeSubmissionCsv"
-          value={informatieobjecttypeSubmissionCsv}
+          availableInformatieObjecttypenState={availableInformatieObjecttypenState}
+          informatieObjecttype={informatieobjecttypeSubmissionCsv}
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -264,10 +286,10 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         errors={buildErrorsComponent('informatieobjecttypeAttachment')}
         displayLabel
       >
-        <TextInput
-          id="root_informatieobjecttypeAttachment"
+        <InformatieObjecttypeSelect
           name="informatieobjecttypeAttachment"
-          value={informatieobjecttypeAttachment}
+          availableInformatieObjecttypenState={availableInformatieObjecttypenState}
+          informatieObjecttype={informatieobjecttypeAttachment}
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>

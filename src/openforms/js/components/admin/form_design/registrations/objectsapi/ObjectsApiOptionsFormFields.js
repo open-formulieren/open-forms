@@ -59,6 +59,7 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
           draft.geometryVariableKey = '';
         } else {
           delete draft.variablesMapping;
+          delete draft.geometryVariableKey;
         }
         delete draft.productaanvraagType;
         delete draft.contentJson;

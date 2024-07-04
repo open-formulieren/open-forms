@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
-import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
 const getObjecttypeVersionsEndpoint = objecttype => {
@@ -42,13 +42,12 @@ const ObjectTypeVersionSelect = ({
     return versions.sort((v1, v2) => v2.version - v1.version);
   }, [selectedObjecttype, objecttypeUrls, objectsApiGroup]);
 
-  const choices =
+  const options =
     loading || error
-      ? LOADING_OPTION
-      : availableVersions.map(version => [
-          version.version,
-          `${version.version} (${version.status})`,
-        ]);
+      ? []
+      : availableVersions.map(version => {
+          return {value: version.version, label: `${version.version} (${version.status})`};
+        });
 
   // ensure that if no valid value is present, the first possible option is set (
   // synchronize the UI state back to the form state)
@@ -68,12 +67,13 @@ const ObjectTypeVersionSelect = ({
   });
 
   return (
-    <Select
-      id="root_objecttypeVersion"
+    <ReactSelect
       name="objecttypeVersion"
-      choices={choices}
-      value={selectedVersion ?? ''}
+      value={selectedVersion}
+      options={options}
       onChange={onChange}
+      isClearable={false}
+      emptyValue=""
     />
   );
 };

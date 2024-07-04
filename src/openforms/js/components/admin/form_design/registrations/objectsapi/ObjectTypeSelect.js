@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types';
 import React, {useEffect} from 'react';
 
-import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 
 const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => {
   const {loading, availableObjecttypes, error} = availableObjectTypesState;
 
-  const choices =
+  const options =
     loading || error
-      ? LOADING_OPTION
-      : availableObjecttypes.map(({uuid, name, dataClassification}) => [
-          uuid,
-          `${name} (${dataClassification})`,
-        ]);
+      ? []
+      : availableObjecttypes.map(({uuid, name, dataClassification}) => {
+          return {value: uuid, label: `${name} (${dataClassification})`};
+        });
 
   // ensure that if no valid value is present, the first possible option is set (
   // synchronize the UI state back to the form state)
@@ -29,18 +28,14 @@ const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => 
     onChange(fakeEvent);
   });
 
-  useEffect(() => {
-    if (loading) return;
-    onChange({target: {name: 'objecttypeVersion', value: ''}});
-  }, [objecttype]);
-
   return (
-    <Select
-      id="root_objecttype"
+    <ReactSelect
       name="objecttype"
-      choices={choices}
       value={objecttype}
+      options={options}
       onChange={onChange}
+      isClearable={false}
+      emptyValue=""
     />
   );
 };

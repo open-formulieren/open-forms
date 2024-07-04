@@ -7,7 +7,12 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
-import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
+import {
+  mockInformatieobjecttypenGet,
+  mockObjecttypeVersionsGet,
+  mockObjecttypesError,
+  mockObjecttypesGet,
+} from './mocks';
 
 // WARNING
 // The `render` function will mutate args, meaning interactions can't be run twice
@@ -78,6 +83,22 @@ export default {
         mockObjecttypeVersionsGet([
           {version: 1, status: 'published'},
           {version: 2, status: 'draft'},
+        ]),
+        mockInformatieobjecttypenGet([
+          {
+            informatieobjecttype: {
+              url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/f9a6cd4c-5f56-4f47-ad12-2e15094f917d',
+              omschrijving: 'Test IOT',
+            },
+            catalogus: {domein: 'Test domain'},
+          },
+          {
+            informatieobjecttype: {
+              url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/c2a25a12-9822-49b6-956b-89f0c39b11fe',
+              omschrijving: 'Test IOT 2',
+            },
+            catalogus: {domein: 'Test domain 2'},
+          },
         ]),
       ],
     },
