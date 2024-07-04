@@ -16,3 +16,27 @@ credentials.
 ## Load fixtures
 
 The fixtures in `open-zaak/fixtures` are automatically loaded when the Open Zaak container starts.
+
+## Dump fixtures
+
+Whenever you make changes in the admin for the tests, you need to dump the fixtures again so that
+bringing up the containers the next time (or in other developers' environments) will still have the
+same data.
+
+Dump the fixtures with (in the `docker` directory):
+
+```bash
+docker compose -f docker-compose.open-zaak.yml run openzaak-web.local \
+    python src/manage.py dumpdata \
+        --indent=4 \
+        --output /app/fixtures/open_zaak_fixtures.json \
+        authorizations.applicatie \
+        vng_api_common.jwtsecret \
+        catalogi
+```
+
+Depending on your OS, you may need to grant extra write permissions:
+
+```bash
+chmod o+rwx ./open-zaak/fixtures
+```
