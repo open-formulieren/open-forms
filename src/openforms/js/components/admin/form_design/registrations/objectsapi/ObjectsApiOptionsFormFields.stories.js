@@ -94,7 +94,7 @@ export const SwitchToV2Empty = {
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('Objects API group');
+    const groupSelect = canvas.getByLabelText('Objecten API-groep');
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
@@ -126,7 +126,7 @@ export const SwitchToV2Existing = {
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('Objects API group');
+    const groupSelect = canvas.getByLabelText('Objecten API-groep');
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Person (open)'}, {timeout: 5000});
@@ -157,7 +157,7 @@ export const SwitchToV2NonExisting = {
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('Objects API group');
+    const groupSelect = canvas.getByLabelText('Objecten API-groep');
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
@@ -187,7 +187,7 @@ export const AutoSelectApiGroup = {
     await userEvent.click(v2Tab);
 
     await waitFor(() => {
-      expect(canvas.getByLabelText('Objects API group')).toHaveValue('1');
+      expect(canvas.getByLabelText('Objecten API-groep')).toHaveValue('1');
     });
   },
 };
@@ -205,7 +205,7 @@ export const APIFetchError = {
     const v2Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('Objects API group');
+    const groupSelect = canvas.getByLabelText('Objecten API-groep');
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     const errorMessage = await canvas.findByText(

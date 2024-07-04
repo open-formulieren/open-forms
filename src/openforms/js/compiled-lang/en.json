@@ -1797,6 +1797,12 @@
       "value": "Specify the size of each column. The sum of all the widths should be 100%."
     }
   ],
+  "GsAN0n": [
+    {
+      "type": 0,
+      "value": "Single column"
+    }
+  ],
   "H3dRU6": [
     {
       "type": 0,
@@ -2691,6 +2697,12 @@
     {
       "type": 0,
       "value": "Open editor"
+    }
+  ],
+  "T2dCIS": [
+    {
+      "type": 0,
+      "value": "Double column"
     }
   ],
   "TB/ku3": [
