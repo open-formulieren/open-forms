@@ -308,8 +308,9 @@
 },
 {
     "model": "token.tokenauth",
-    "pk": "171be5abaf41e7856b423ad513df1ef8f867ff48",
+    "pk": 1,
     "fields": {
+        "token": "171be5abaf41e7856b423ad513df1ef8f867ff48",
         "contact_person": "Admin",
         "email": "admin@example.com",
         "organization": "",

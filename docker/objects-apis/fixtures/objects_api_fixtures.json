@@ -28,8 +28,9 @@
 },
 {
     "model": "token.tokenauth",
-    "pk": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+    "pk": 1,
     "fields": {
+        "token": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
         "contact_person": "Admin",
         "email": "admin@example.com",
         "organization": "",
@@ -43,7 +44,7 @@
     "model": "token.permission",
     "pk": 1,
     "fields": {
-        "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "token_auth": 1,
         "object_type": 1,
         "mode": "read_and_write",
         "use_fields": false,
@@ -54,7 +55,7 @@
     "model": "token.permission",
     "pk": 2,
     "fields": {
-        "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "token_auth": 1,
         "object_type": 2,
         "mode": "read_and_write",
         "use_fields": false,
@@ -65,7 +66,7 @@
     "model": "token.permission",
     "pk": 3,
     "fields": {
-        "token_auth": "7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+        "token_auth": 1,
         "object_type": 3,
         "mode": "read_and_write",
         "use_fields": false,
