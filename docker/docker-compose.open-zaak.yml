@@ -43,6 +43,8 @@ services:
     ports:
       - 8003:8000
     volumes: &openzaak_web_volumes
+      # mount fixtures dir to automatically populate the DB
+      - ./open-zaak/fixtures/:/app/fixtures
       - media:/app/media  # Shared media volume to get access to saved OAS files
       - private-media:/app/private-media
     depends_on:

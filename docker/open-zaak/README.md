@@ -10,12 +10,9 @@ Start an instance in your local environment from the parent directory:
 docker compose -f docker-compose.open-zaak.yml up -d
 ```
 
-This brings up the admin at http://localhost:8003/admin/.
+This brings up the admin at http://localhost:8003/admin/. You can log in with the `admin` / `admin`
+credentials.
 
 ## Load fixtures
 
-Before re-recording the related VCR tests, you must load some fixtures:
-
-```bash
-cat open-zaak/fixtures/open_zaak_fixtures.json | docker compose -f docker-compose.open-zaak.yml exec -T openzaak-web.local src/manage.py loaddata --format=json -
-```
+The fixtures in `open-zaak/fixtures` are automatically loaded when the Open Zaak container starts.
