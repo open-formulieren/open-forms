@@ -20,7 +20,7 @@ services:
       - open-forms-dev
 
   openzaak-web.local:
-    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.11.0}
+    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.13.0}
     environment: &openzaak_web_env
       - DJANGO_SETTINGS_MODULE=openzaak.conf.docker
       - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
@@ -54,7 +54,7 @@ services:
       - open-forms-dev
 
   celery:
-    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.11.0}
+    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.13.0}
     environment: *openzaak_web_env
     volumes: *openzaak_web_volumes
     command: /celery_worker.sh
