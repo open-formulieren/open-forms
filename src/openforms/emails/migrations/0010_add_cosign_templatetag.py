@@ -2,28 +2,6 @@
 
 from django.db import migrations
 
-from openforms.utils.migrations_utils.regex import add_cosign_info_templatetag
-
-
-def add_cosign_template_tag_to_email_confirmation_template(apps, _):
-    ConfirmationEmailTemplate = apps.get_model("emails", "ConfirmationEmailTemplate")
-
-    templates = ConfirmationEmailTemplate.objects.all()
-    if not templates.exists():
-        return
-
-    for template in templates:
-        template.content = add_cosign_info_templatetag(template.content)
-        if template.content_en:
-            template.content_en = add_cosign_info_templatetag(template.content_en)
-
-        if template.content_nl:
-            template.content_nl = add_cosign_info_templatetag(template.content_nl)
-
-    ConfirmationEmailTemplate.objects.bulk_update(
-        templates, fields=["content", "content_en", "content_nl"]
-    )
-
 
 class Migration(migrations.Migration):
 
@@ -31,9 +9,6 @@ class Migration(migrations.Migration):
         ("emails", "0009_auto_20230113_1641"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            add_cosign_template_tag_to_email_confirmation_template,
-            migrations.RunPython.noop,
-        ),
-    ]
+    # RunPython operation removed as part of 2.7 release cycle - existing instances
+    # are guaranteed to have this executed already.
+    operations = []
