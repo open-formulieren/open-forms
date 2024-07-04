@@ -37,6 +37,9 @@ class FillInFormTests(E2ETestCase):
                             "key": "fileUpload",
                             "label": "File Upload",
                             "storage": "url",
+                            "validate": {
+                                "required": True,
+                            },
                         }
                     ]
                 },
