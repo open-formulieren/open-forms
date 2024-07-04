@@ -16,11 +16,9 @@ These tests will potentially start failing once the test certificate expires.
 
 ## Signicat integration tests
 
-The `our_certificate.pem` and `our_keys.pem` files are used by:
+The setup is the same `openforms.authentication.contrib.digid` - the same certificate, key and
+broker metadata are used. The files here are just symlinks to those files.
+
+Tests making use of these files are:
 
 - `src/openforms/authentication/contrib/eherkenning/tests/test_signicat_integration.py`
-
-These must be uploaded with Signicat for live (non-VCR) network communication.
-
-`signicat_metadata.xml` is used by
-`src/openforms/authentication/contrib/eherkenning/tests/test_signicat_integration.py`.
