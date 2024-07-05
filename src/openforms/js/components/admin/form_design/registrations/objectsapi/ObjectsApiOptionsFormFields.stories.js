@@ -7,13 +7,9 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 
+import {mockInformatieobjecttypenGet} from '../mocks';
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
-import {
-  mockInformatieobjecttypenGet,
-  mockObjecttypeVersionsGet,
-  mockObjecttypesError,
-  mockObjecttypesGet,
-} from './mocks';
+import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
 
 // WARNING
 // The `render` function will mutate args, meaning interactions can't be run twice

@@ -9,6 +9,7 @@ const InformatieObjecttypeSelect = ({
   availableInformatieObjecttypenState,
   informatieObjecttype,
   onChange,
+  isClearable = true,
 }) => {
   const {loading, availableInformatieobjecttypen, error} = availableInformatieObjecttypenState;
 
@@ -63,6 +64,7 @@ const InformatieObjecttypeSelect = ({
       htmlId={htmlId}
       onChange={onChange}
       emptyValue=""
+      isClearable={isClearable}
     />
   );
 };
@@ -72,6 +74,7 @@ InformatieObjecttypeSelect.propTypes = {
   availableInformatieObjecttypenState: PropTypes.object.isRequired,
   informatieObjecttype: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  isClearable: PropTypes.bool,
 };
 
 export default InformatieObjecttypeSelect;

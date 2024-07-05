@@ -1,17 +1,5 @@
 import React from 'react';
 
-const getOptionsFromSchema = (enums, enumNames) => {
-  const finalOptions = [];
-  Object.keys(enums).forEach(key => {
-    finalOptions.push({value: enums[key], label: enumNames[key]});
-  });
-
-  return finalOptions;
-};
-
-// TODO This is duplicated from the ZGW registration, but will be cleaned up
-// with the backend UI refactor.
-
 const getChoicesFromSchema = (enums, enumNames) => {
   const finalChoices = [];
   Object.keys(enums).forEach(key => {
@@ -19,6 +7,18 @@ const getChoicesFromSchema = (enums, enumNames) => {
   });
 
   return finalChoices;
+};
+
+// TODO This is duplicated from the ZGW registration, but will be cleaned up
+// with the backend UI refactor.
+
+const getOptionsFromSchema = (enums, enumNames) => {
+  const finalOptions = [];
+  Object.keys(enums).forEach(key => {
+    finalOptions.push({value: enums[key], label: enumNames[key]});
+  });
+
+  return finalOptions;
 };
 
 const getFieldErrors = (name, index, errors, field) => {

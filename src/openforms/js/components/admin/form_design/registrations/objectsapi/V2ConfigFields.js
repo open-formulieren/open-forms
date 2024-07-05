@@ -7,11 +7,10 @@ import {useUpdateEffect} from 'react-use';
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import ReactSelect from 'components/admin/forms/ReactSelect';
-import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
-import InformatieObjecttypeSelect from './InformatieObjecttypeSelect';
+import InformatieObjecttypeSelect from '../InformatieObjecttypeSelect';
 import ObjectTypeSelect from './ObjectTypeSelect';
 import ObjectTypeVersionSelect from './ObjectTypeVersionSelect';
 import {useGetAvailableInformatieObjecttypen, useGetAvailableObjectTypes} from './hooks';
