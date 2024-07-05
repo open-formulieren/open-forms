@@ -14,7 +14,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.2
       x-doelbinding:
       - BRPACT-AanschrijvenZakelijkGerechtigde
       x-gebruiker:
@@ -42,12 +42,12 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 21 Mar 2024 12:12:20 GMT
+      - Fri, 05 Jul 2024 12:15:51 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       Transfer-Encoding:
       - chunked
     status:
       code: 200
-      message: OK
+      message: ''
 version: 1
