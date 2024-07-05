@@ -11,7 +11,7 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.2
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes/39da819c-ac6c-4037-ae2b-6bfc39f6564b/versions
   response:
@@ -20,12 +20,22 @@ interactions:
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
+      Connection:
+      - keep-alive
       Content-Length:
       - '52'
       Content-Type:
       - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Fri, 05 Jul 2024 06:35:12 GMT
       Referrer-Policy:
       - same-origin
+      Server:
+      - nginx/1.27.0
+      Vary:
+      - origin
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:

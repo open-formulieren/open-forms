@@ -11,21 +11,32 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.2
     method: GET
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":2,"next":"http://localhost:8001/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f","uuid":"3edfdaf7-f469-470b-a391-bb7ea015bd6f","name":"Tree","namePlural":"Trees","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f/versions/1"]}]}'
+      string: '{"count":4,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705","uuid":"f1dde4fe-b7f9-46dc-84ae-429ae49e3705","name":"Geo
+        in data","namePlural":"Geo in data","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
+      Connection:
+      - keep-alive
       Content-Length:
-      - '696'
+      - '727'
       Content-Type:
       - application/json
+      Cross-Origin-Opener-Policy:
+      - same-origin
+      Date:
+      - Fri, 05 Jul 2024 06:35:18 GMT
       Referrer-Policy:
       - same-origin
+      Server:
+      - nginx/1.27.0
+      Vary:
+      - origin
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
