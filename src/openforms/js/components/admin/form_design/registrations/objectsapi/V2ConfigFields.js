@@ -125,6 +125,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
             schema.properties.objectsApiGroup.enum,
             schema.properties.objectsApiGroup.enumNames
           )}
+          htmlId="root_objectsApiGroup"
           onChange={warningOnChange(
             intl.formatMessage({
               defaultMessage: `Changing the Objects API group will remove the existing variables mapping.
@@ -155,6 +156,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         <ObjectTypeSelect
           availableObjectTypesState={availableObjectTypesState}
           objecttype={objecttype}
+          htmlId="root_objecttype"
           onChange={warningOnChange(
             intl.formatMessage({
               defaultMessage: `Changing the objecttype will remove the existing variables mapping.
@@ -185,6 +187,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
           availableObjecttypes={availableObjectTypesState.availableObjecttypes}
           selectedObjecttype={objecttype}
           selectedVersion={objecttypeVersion}
+          htmlId="root_objecttypeVersion"
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -212,6 +215,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
       >
         <InformatieObjecttypeSelect
           name="informatieobjecttypeSubmissionReport"
+          htmlId="root_informatieobjecttypeSubmissionReport"
           availableInformatieObjecttypenState={availableInformatieObjecttypenState}
           informatieObjecttype={informatieobjecttypeSubmissionReport}
           onChange={onFieldChange}
@@ -265,6 +269,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
       >
         <InformatieObjecttypeSelect
           name="informatieobjecttypeSubmissionCsv"
+          htmlId="root_informatieobjecttypeSubmissionCsv"
           availableInformatieObjecttypenState={availableInformatieObjecttypenState}
           informatieObjecttype={informatieobjecttypeSubmissionCsv}
           onChange={onFieldChange}
@@ -288,6 +293,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
       >
         <InformatieObjecttypeSelect
           name="informatieobjecttypeAttachment"
+          htmlId="root_informatieobjecttypeAttachment"
           availableInformatieObjecttypenState={availableInformatieObjecttypenState}
           informatieObjecttype={informatieobjecttypeAttachment}
           onChange={onFieldChange}

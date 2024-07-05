@@ -20,6 +20,7 @@ const ObjectTypeVersionSelect = ({
   selectedObjecttype,
   selectedVersion,
   onChange,
+  htmlId,
 }) => {
   const objecttypeUrls = JSON.stringify(availableObjecttypes.map(ot => ot.url).sort());
 
@@ -71,6 +72,7 @@ const ObjectTypeVersionSelect = ({
       name="objecttypeVersion"
       value={selectedVersion}
       options={options}
+      htmlId={htmlId}
       onChange={onChange}
       isClearable={false}
       emptyValue=""

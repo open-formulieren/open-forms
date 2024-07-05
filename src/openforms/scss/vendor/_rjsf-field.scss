@@ -29,6 +29,8 @@
   }
 
   &__input {
+    flex-grow: 1;
+
     input[type='email'] {
       width: var(--of-admin-input-field-size); // override from admin/rjsf default
     }

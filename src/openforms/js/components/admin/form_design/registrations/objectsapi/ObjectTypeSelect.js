@@ -3,7 +3,7 @@ import React, {useEffect} from 'react';
 
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
-const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => {
+const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange, htmlId}) => {
   const {loading, availableObjecttypes, error} = availableObjectTypesState;
 
   const options =
@@ -33,6 +33,7 @@ const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange}) => 
       name="objecttype"
       value={objecttype}
       options={options}
+      htmlId={htmlId}
       onChange={onChange}
       isClearable={false}
       emptyValue=""

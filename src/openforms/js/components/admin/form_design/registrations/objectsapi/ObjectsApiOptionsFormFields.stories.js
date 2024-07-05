@@ -1,5 +1,6 @@
 import {useArgs} from '@storybook/preview-api';
 import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
+import selectEvent from 'react-select-event';
 
 import {FormDecorator} from 'components/admin/form_design/story-decorators';
 import Field from 'components/admin/forms/Field';
@@ -116,13 +117,10 @@ export const SwitchToV2Empty = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('Objecten API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+    await selectEvent.select(groupSelect, 'Objects API group 1');
 
-    await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
-
-    await canvas.findByRole('option', {name: '2 (draft)'});
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
+    expect(await canvas.findByText('Tree (open)', {exact: true})).toBeVisible();
+    expect(await canvas.findByText('2 (draft)', {exact: true})).toBeVisible();
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
@@ -136,6 +134,7 @@ export const SwitchToV2Empty = {
 export const SwitchToV2Existing = {
   args: {
     formData: {
+      objectsApiGroup: 1,
       objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
     },
@@ -148,25 +147,30 @@ export const SwitchToV2Existing = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('Objecten API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+    await selectEvent.select(groupSelect, 'Objects API group 1');
 
-    await canvas.findByRole('option', {name: 'Person (open)'}, {timeout: 5000});
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f2');
-
-    await canvas.findByRole('option', {name: '1 (published)'});
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
+    expect(await canvas.findByText('Person (open)', {exact: true})).toBeVisible();
+    expect(await canvas.findByText('1 (published)', {exact: true})).toBeVisible();
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f2');
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
+    await waitFor(() => {
+      expect(canvas.getByLabelText('Objecttype')).toHaveValue(
+        '2c77babf-a967-4057-9969-0200320d23f2'
+      );
+    });
+
+    await waitFor(() => {
+      expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
+    });
   },
 };
 
 export const SwitchToV2NonExisting = {
   args: {
     formData: {
+      objectsApiGroup: 1,
       objecttype: 'a-non-existing-uuid',
       objecttypeVersion: 1,
     },
@@ -179,13 +183,10 @@ export const SwitchToV2NonExisting = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('Objecten API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+    await selectEvent.select(groupSelect, 'Objects API group 1');
 
-    await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
-
-    await canvas.findByRole('option', {name: '2 (draft)'});
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
+    expect(await canvas.findByText('Tree (open)', {exact: true})).toBeVisible();
+    expect(await canvas.findByText('2 (draft)', {exact: true})).toBeVisible();
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
@@ -208,7 +209,7 @@ export const AutoSelectApiGroup = {
     await userEvent.click(v2Tab);
 
     await waitFor(() => {
-      expect(canvas.getByLabelText('Objecten API-groep')).toHaveValue('1');
+      expect(canvas.getByText('Single Objects API group', {exact: true})).toBeVisible();
     });
   },
 };
@@ -227,7 +228,7 @@ export const APIFetchError = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('Objecten API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+    await selectEvent.select(groupSelect, 'Objects API group 1');
 
     const errorMessage = await canvas.findByText(
       'Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies.'
