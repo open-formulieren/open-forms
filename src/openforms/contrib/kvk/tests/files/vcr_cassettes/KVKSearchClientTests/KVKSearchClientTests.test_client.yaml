@@ -11,17 +11,17 @@ interactions:
       Content-Type:
       - application/hal+json
       User-Agent:
-      - python-requests/2.31.0
+      - python-requests/2.32.2
       apikey:
       - l7xx1f2691f2520d487b902f4e0b57a0b197
     method: GET
     uri: https://api.kvk.nl/test/api/v2/zoeken?kvkNummer=69599084
   response:
     body:
-      string: '{"pagina":1,"resultatenPerPagina":10,"totaal":2,"resultaten":[{"kvkNummer":"69599084","vestigingsnummer":"000038509504","naam":"Test
+      string: '{"pagina":1,"resultatenPerPagina":10,"totaal":2,"resultaten":[{"kvkNummer":"69599084","vestigingsnummer":"000038509520","naam":"Test
+        EMZ Nevenvestiging Govert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht"}},"type":"nevenvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}}},{"kvkNummer":"69599084","vestigingsnummer":"000038509504","naam":"Test
         EMZ Dagobert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Abebe
-        Bikilalaan","plaats":"Amsterdam"}},"type":"hoofdvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}}},{"kvkNummer":"69599084","vestigingsnummer":"000038509520","naam":"Test
-        EMZ Nevenvestiging Govert","adres":{"binnenlandsAdres":{"type":"bezoekadres","straatnaam":"Geneinde","plaats":"Maastricht"}},"type":"nevenvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509520"}}}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"}}}'
+        Bikilalaan","plaats":"Amsterdam"}},"type":"hoofdvestiging","_links":{"basisprofiel":{"href":"https://api.kvk.nl/test/api/v1/basisprofielen/69599084"},"vestigingsprofiel":{"href":"https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"}}}],"_links":{"self":{"href":"https://api.kvk.nl/test/api/v2/zoeken?kvknummer=69599084&pagina=1&resultatenperpagina=10"}}}'
     headers:
       API-Version:
       - 2.0.0
@@ -38,7 +38,7 @@ interactions:
       Content-Type:
       - application/hal+json
       Date:
-      - Thu, 21 Mar 2024 14:00:31 GMT
+      - Fri, 05 Jul 2024 06:43:52 GMT
       Feature-Policy:
       - '''none'''
       Keep-Alive:
