@@ -31,6 +31,16 @@ class CatalogiClient(NLXClient):
         all_data = pagination_helper(self, data)
         return list(all_data)
 
+    def get_all_zaaktypen(self) -> list[dict]:
+        """
+        List all available zaaktypen, consuming pagination if relevant.
+        """
+        response = self.get("zaaktypen")
+        response.raise_for_status()
+        data = response.json()
+        all_data = pagination_helper(self, data)
+        return list(all_data)
+
     def get_all_informatieobjecttypen(self) -> list[dict]:
         response = self.get("informatieobjecttypen")
         response.raise_for_status()

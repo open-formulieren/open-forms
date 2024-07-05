@@ -25,4 +25,8 @@ urlpatterns += [
         "plugins/objects-api/",
         include("openforms.registrations.contrib.objects_api.api.urls"),
     ),
+    path(
+        "plugins/zgw-api/",
+        include("openforms.registrations.contrib.zgw_apis.api.urls"),
+    ),
 ]
