@@ -54,7 +54,7 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
                 "dataClassification": "confidential",
                 "name": "Tree",
                 "namePlural": "Trees",
-                "url": "http://localhost:8001/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
+                "url": "http://objecttypes-web:8000/api/v2/objecttypes/3edfdaf7-f469-470b-a391-bb7ea015bd6f",
                 "uuid": "3edfdaf7-f469-470b-a391-bb7ea015bd6f",
             },
         )
