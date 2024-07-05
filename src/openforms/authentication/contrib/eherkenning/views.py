@@ -131,5 +131,4 @@ class eHerkenningAssertionConsumerServiceView(
         request.session[EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS] = (
             response.get_authn_contexts()
         )
-
         return HttpResponseRedirect(self.get_success_url())

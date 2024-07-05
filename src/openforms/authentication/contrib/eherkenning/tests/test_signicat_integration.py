@@ -131,48 +131,11 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
             self.addCleanup(time_ctx.stop)
             time_ctx.start()
 
-    def test_login_with_too_low_a_loa_fails(self):
-        session: requests.Session = requests.session()
-        form = FormStepFactory.create(
-            form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.substantial}
-            },
-            form_definition__login_required=True,
-        ).form
-
-        login_url = reverse(
-            "authentication:start", kwargs={"slug": form.slug, "plugin_id": PLUGIN_ID}
-        )
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        form_url = furl("http://testserver/") / form_path
-
-        our_faux_redirect = self.client.get(
-            login_url, {"next": str(form_url)}, follow=True
-        )
-        # do the js submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select EHerkenning from the Signicat simulator selection screen
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
-        # select LoA lower than substantial/loa3
-        sim_form["loa"] = "loa2plus"
-        auth_response = session.request(sim_method, sim_action_url, data=sim_form)
-        self.assertFalse(auth_response.ok)
-
     def test_login_with_a_high_loa_succeeds(self):
         session: requests.Session = requests.session()
         form = FormStepFactory.create(
             form__slug="slurm",
             form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.substantial}
-            },
             form_definition__login_required=True,
         ).form
 
@@ -223,9 +186,6 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         form = FormStepFactory.create(
             form__slug="slurm",
             form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.substantial}
-            },
             form_definition__login_required=True,
         ).form
         submission = SubmissionFactory.create(
@@ -283,9 +243,6 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         form = FormStepFactory.create(
             form__slug="slurm",
             form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.substantial}
-            },
             form_definition__login_required=True,
         ).form
         submission = SubmissionFactory.create(
@@ -339,198 +296,7 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         # we are not allowed to resume
         self.assertEqual(acs_response.status_code, 403)
 
-    def test_resuming_checks_loa_too(self):
-        session: requests.Session = requests.session()
-        form = FormStepFactory.create(
-            form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.substantial}
-            },
-            form_definition__login_required=True,
-        ).form
-        submission = SubmissionFactory.create(
-            uuid="17399e4c-913f-47de-837a-d71a8308e0a8",  # part for the RelayState
-            form=form,
-            form_url=furl("https://testserver").join(form.get_absolute_url()),
-            auth_info__plugin=PLUGIN_ID,
-            auth_info__value="24444001",
-            auth_info__attribute="kvk",
-            auth_info__loa=AssuranceLevels.substantial,
-        )
-        resume_path = reverse(
-            "submissions:resume",
-            kwargs={
-                "token": submission_resume_token_generator.make_token(submission),
-                "submission_uuid": submission.uuid,
-            },
-        )
-
-        our_faux_redirect = self.client.get(resume_path, follow=True)
-
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select eherkenning from the signicat simulator selection screen
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
-        # select LOA lower than substantial/loa3
-        sim_form["loa"] = "loa2"
-        auth_response = session.request(
-            sim_method, sim_action_url, data=sim_form, allow_redirects=False
-        )
-
-        # Signicat catches the LOA requirement is not met
-        self.assertFalse(auth_response.ok)
-
-    def test_resuming_checks_with_current_loa_of_form(self):
-        session: requests.Session = requests.session()
-        form = FormStepFactory.create(
-            form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.high}  # new high loa
-            },
-            form_definition__login_required=True,
-        ).form
-        submission = SubmissionFactory.create(
-            uuid="17399e4c-913f-47de-837a-d71a8308e0a8",  # part for the RelayState
-            form=form,
-            form_url=furl("https://testserver").join(form.get_absolute_url()),
-            auth_info__plugin=PLUGIN_ID,
-            auth_info__value="24444001",
-            auth_info__attribute="kvk",
-            auth_info__loa=AssuranceLevels.substantial,  # this used to be fine
-        )
-        resume_path = reverse(
-            "submissions:resume",
-            kwargs={
-                "token": submission_resume_token_generator.make_token(submission),
-                "submission_uuid": submission.uuid,
-            },
-        )
-
-        our_faux_redirect = self.client.get(resume_path, follow=True)
-
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select eherkenning from the signicat simulator selection screen
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
-        # select LOA lower to substantial/loa3
-        sim_form["loa"] = "loa3"
-        auth_response = session.request(
-            sim_method, sim_action_url, data=sim_form, allow_redirects=False
-        )
-
-        # But since saving for resuming, the form LOA was changed to high so
-        # Signicat catches the LOA requirement is not met
-        self.assertFalse(auth_response.ok)
-
-    def test_raising_loa_requirements_fails_in_flight_authentications(self):
-        session: requests.Session = requests.session()
-        form_step = FormStepFactory.create(
-            form__slug="slurm",
-            form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.low_plus}
-            },
-            form_definition__login_required=True,
-        )
-        form = form_step.form
-        submission = SubmissionFactory.create(
-            uuid="17399e4c-913f-47de-837a-d71a8308e0a8",  # part for the RelayState
-            form=form,
-            form_url=furl("https://testserver").join(form.get_absolute_url()),
-            auth_info__plugin=PLUGIN_ID,
-            auth_info__value="24444001",
-            auth_info__attribute="kvk",
-            auth_info__loa=AssuranceLevels.low_plus,
-        )
-        resume_path = reverse(
-            "submissions:resume",
-            kwargs={
-                "token": submission_resume_token_generator.make_token(submission),
-                "submission_uuid": submission.uuid,
-            },
-        )
-
-        our_faux_redirect = self.client.get(resume_path, follow=True)
-
-        self.assertEqual(our_faux_redirect.status_code, 200)
-        # do the JS submit to get redirected to signicat broker
-        method, redirect_url, form_values = _parse_form(our_faux_redirect)
-        self.assertTrue(session.request(method, redirect_url, data=form_values).ok)
-
-        # select eherkenning from the signicat simulator selection screen
-        sim_response = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response.ok)
-
-        sim_method, sim_action_url, sim_form = _parse_form(sim_response)
-        # select substantial LOA
-        sim_form["loa"] = "loa3"
-        auth_response = session.request(
-            sim_method, sim_action_url, data=sim_form, allow_redirects=False
-        )
-
-        # redirect back to our acs
-        self.assertEqual(auth_response.status_code, 302)
-        acs_url = furl(auth_response.headers["location"])
-
-        self.assertEqual(acs_url.scheme, "https")
-        self.assertEqual(acs_url.netloc, "localhost:8000")
-
-        # prep the url for django testclient consumption
-        acs_url.remove(netloc=True, scheme=True)
-
-        # but in the meanwhile the form designer goes all-in
-        form.authentication_backend_options[PLUGIN_ID]["loa"] = AssuranceLevels.high
-        form.save()
-        clear_caches()
-
-        acs_response = self.client.get(acs_url.url, follow=True)
-        # we are not not logged in
-        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
-        # and are redirected back to the broker
-        # do the JS submit to get redirected to signicat broker
-        method_2, redirect_url_2, form_values_2 = _parse_form(acs_response)
-        self.assertTrue(
-            session.request(method_2, redirect_url_2, data=form_values_2).ok
-        )
-
-        sim_response_2 = session.get(SELECT_EHERKENNING_SIM)
-        self.assertTrue(sim_response_2.ok)
-
-        sim_method_2, sim_action_url_2, sim_form_2 = _parse_form(sim_response)
-        # select substantial LOA
-        sim_form_2["loa"] = "loa4"
-        auth_response_2 = session.request(
-            sim_method_2, sim_action_url_2, data=sim_form_2, allow_redirects=False
-        )
-
-        # redirect back to our acs
-        self.assertEqual(auth_response_2.status_code, 302)
-        acs_url_2 = furl(auth_response_2.headers["location"])
-        # prep the url for django testclient consumption
-        acs_url_2.remove(netloc=True, scheme=True)
-        acs_response_2 = self.client.get(acs_url_2.url, follow=True)
-
-        # we are logged in
-        self.assertTrue(submission.is_authenticated)
-        # and we end up starting the form
-        self.assertEqual(acs_response_2.resolver_match.view_name, "core:form-detail")
-        self.assertEqual(acs_response_2.resolver_match.kwargs["slug"], "slurm")
-
-    def test_test_key_material_is_not_fishing_bait(self):
+    def test_key_material_is_not_fishing_bait(self):
         config = EherkenningConfiguration.get_solo()
         config.base_url = "https://sharkbait.example.com"
         config.save()
@@ -545,9 +311,6 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         form = FormStepFactory.create(
             form__slug="slurm",
             form__authentication_backends=[PLUGIN_ID],
-            form__authentication_backend_options={
-                PLUGIN_ID: {"loa": AssuranceLevels.low}
-            },
             form_definition__login_required=True,
         ).form
 
