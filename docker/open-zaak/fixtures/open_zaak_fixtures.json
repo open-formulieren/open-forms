@@ -21,7 +21,7 @@
     "model": "catalogi.catalogus",
     "pk": 1,
     "fields": {
-        "_etag": "f324f0578ac42cf6f2a7f68df8819d29",
+        "_etag": "3b954569daa5871216ebb13dbf11eb9e",
         "naam": "Test catalog",
         "uuid": "bd58635c-793e-446d-a7e0-460d7b04829d",
         "domein": "TEST",
@@ -64,9 +64,9 @@
     "model": "catalogi.informatieobjecttype",
     "pk": 1,
     "fields": {
-        "_etag": "89c597c58e42b804148e6867c3480ed1",
+        "_etag": "bfa6b74c27efa9845576bf1d54281820",
         "datum_begin_geldigheid": "2024-03-19",
-        "datum_einde_geldigheid": null,
+        "datum_einde_geldigheid": "2024-07-10",
         "concept": false,
         "uuid": "7a474713-0833-402a-8441-e467c08ac55b",
         "omschrijving": "PDF Informatieobjecttype",
@@ -108,10 +108,31 @@
     "fields": {
         "_etag": "cf350f1b55d7eb0ccd17cceb88c1c6c8",
         "datum_begin_geldigheid": "2024-03-19",
-        "datum_einde_geldigheid": null,
+        "datum_einde_geldigheid": "2024-07-10",
         "concept": false,
         "uuid": "531f6c1a-97f7-478c-85f0-67d2f23661c7",
         "omschrijving": "Attachment Informatieobjecttype",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 1
+    }
+},
+{
+    "model": "catalogi.informatieobjecttype",
+    "pk": 4,
+    "fields": {
+        "_etag": "35fb6a08e82a1195076f698c3ac1725c",
+        "datum_begin_geldigheid": "2024-07-11",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "29b63e5c-3835-4f68-8fad-f2aea9ae6b71",
+        "omschrijving": "PDF Informatieobjecttype",
         "informatieobjectcategorie": "Test category",
         "trefwoord": "[]",
         "vertrouwelijkheidaanduiding": "openbaar",

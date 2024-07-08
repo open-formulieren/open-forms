@@ -10,8 +10,12 @@ from openforms.api.views import ListMixin
 
 from ..constants import RegistrationAttribute
 from ..registry import register
-from .filters import ListInformatieObjectTypenQueryParamsSerializer
+from .filters import (
+    APIGroupQueryParamsSerializer,
+    ListInformatieObjectTypenQueryParamsSerializer,
+)
 from .serializers import (
+    CatalogusDomainSerializer,
     ChoiceWrapper,
     InformatieObjectTypeChoiceSerializer,
     RegistrationAttributeSerializer,
@@ -58,6 +62,35 @@ class AllAttributesListView(ListMixin, APIView):
 
 @extend_schema_view(
     get=extend_schema(
+        summary=_("List available Catalogus"),
+        parameters=[APIGroupQueryParamsSerializer],
+    ),
+)
+class CatalogusListView(ListMixin, APIView):
+    """
+    List the available Catalogus based on the provided API group.
+    """
+
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = CatalogusDomainSerializer
+
+    def get_objects(self):
+        filter_serializer = APIGroupQueryParamsSerializer(
+            data=self.request.query_params
+        )
+        filter_serializer.is_valid(raise_exception=True)
+
+        client = filter_serializer.get_ztc_client()
+        if not client:
+            return []
+
+        catalogus_data = client.get_all_catalogi()
+        return factory(Catalogus, catalogus_data)
+
+
+@extend_schema_view(
+    get=extend_schema(
         summary=_("List available InformatieObjectTypen"),
         parameters=[ListInformatieObjectTypenQueryParamsSerializer],
     ),
@@ -65,6 +98,10 @@ class AllAttributesListView(ListMixin, APIView):
 class InformatieObjectTypenListView(ListMixin, APIView):
     """
     List the available InformatieObjectTypen based on the configured registration backend and ZGW APIs services.
+
+    Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
+    and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
+    only one entry is returned.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
@@ -86,13 +123,48 @@ class InformatieObjectTypenListView(ListMixin, APIView):
             catalogus["url"]: catalogus for catalogus in catalogus_data
         }
 
-        iotypen_data = client.get_all_informatieobjecttypen()
-        iotypen = [
-            {
-                "informatieobjecttype": factory(InformatieObjectType, iotype),
-                "catalogus": factory(Catalogus, catalogus_mapping[iotype["catalogus"]]),
-            }
-            for iotype in iotypen_data
-        ]
+        if "catalogus_domein" in filter_serializer.validated_data:
+            domein = filter_serializer.validated_data["catalogus_domein"]
+            # `catalogus_rsin` is guaranteed to be present if `catalogus_domein` is:
+            rsin = filter_serializer.validated_data["catalogus_rsin"]
+
+            matching_catalogus: str | None = next(
+                (
+                    catalogus["url"]
+                    for catalogus in catalogus_data
+                    if catalogus["domein"] == domein and catalogus["rsin"] == rsin
+                ),
+                None,
+            )
+
+            if matching_catalogus is None:
+                return []
+
+            iotypen_data = client.get_all_informatieobjecttypen(
+                catalogus=matching_catalogus
+            )
+        else:
+            iotypen_data = client.get_all_informatieobjecttypen()
+
+        iotypen = []
+
+        for iotype in iotypen_data:
+            # fmt: off
+            exists = any(
+                existing_iotype["informatieobjecttype"].omschrijving == iotype["omschrijving"]
+                and existing_iotype["informatieobjecttype"].catalogus == iotype["catalogus"]
+                for existing_iotype in iotypen
+            )
+            # fmt: on
+
+            if not exists:
+                iotypen.append(
+                    {
+                        "informatieobjecttype": factory(InformatieObjectType, iotype),
+                        "catalogus": factory(
+                            Catalogus, catalogus_mapping[iotype["catalogus"]]
+                        ),
+                    }
+                )
 
         return iotypen

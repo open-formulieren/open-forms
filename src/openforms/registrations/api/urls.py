@@ -1,6 +1,11 @@
 from django.urls import include, path
 
-from .views import AllAttributesListView, InformatieObjectTypenListView, PluginListView
+from .views import (
+    AllAttributesListView,
+    CatalogusListView,
+    InformatieObjectTypenListView,
+    PluginListView,
+)
 
 urlpatterns = [
     path("plugins", PluginListView.as_view(), name="registrations-plugin-list"),
@@ -8,6 +13,11 @@ urlpatterns = [
         "attributes",
         AllAttributesListView.as_view(),
         name="registrations-attribute-list",
+    ),
+    path(
+        "catalogus",
+        CatalogusListView.as_view(),
+        name="catalogus-list",
     ),
     path(
         "informatieobjecttypen",
