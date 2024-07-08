@@ -528,3 +528,38 @@ class FileValidationMimeTypeTests(TestCase):
         is_valid, errors = validate_formio_data(component, data, submission=submission)
         self.assertFalse(is_valid)
         self.assertEqual(len(errors["foo"]), 1)
+
+    def test_attach_upload_validates_unknown_file_type(self):
+        submission = SubmissionFactory.create()
+
+        with open(TEST_FILES_DIR / "unknown-type", "rb") as infile:
+            upload = TemporaryFileUploadFactory.create(
+                submission=submission,
+                file_name="unknown-type-file",
+                content=File(infile),
+                content_type="",
+            )
+
+        data = {
+            "foo": [
+                SubmittedFileFactory.create(temporary_upload=upload, type=""),
+            ],
+        }
+
+        component: FileComponent = {
+            "key": "foo",
+            "type": "file",
+            "label": "Test",
+            "storage": "url",
+            "url": "",
+            "useConfigFiletypes": False,
+            "filePattern": "*",
+            "file": {"type": ["*"], "allowedTypesLabels": []},
+        }
+
+        is_valid, errors = validate_formio_data(component, data, submission=submission)
+        error = extract_error(errors["foo"][0], "type")
+
+        self.assertFalse(is_valid)
+        self.assertEqual(error.code, "invalid")
+        self.assertEqual(error, _("Invalid-unknown file type."))
