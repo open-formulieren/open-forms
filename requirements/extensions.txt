@@ -69,7 +69,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   -r requirements/base.txt
     #   elastic-apm

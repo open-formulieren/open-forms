@@ -46,7 +46,7 @@ celery==5.4.0
     #   flower
 celery-once==3.0.1
     # via -r requirements/base.in
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   elastic-apm
     #   requests
