@@ -294,6 +294,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             submitted_data={
                 "field1": "Foo",
             },
+            completed=True,
         )
         # Configure to use the second ZGW API
         SubmissionFileAttachmentFactory.create(
@@ -328,6 +329,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         submission = SubmissionFactory.from_components(
             [{"key": "field1", "type": "file"}],
             submitted_data={"field1": "Foo"},
+            completed=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -416,6 +418,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             submitted_data={
                 "field1": "Foo",
             },
+            completed=True,
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],

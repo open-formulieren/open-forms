@@ -226,6 +226,7 @@ class ZGWBackendTests(TestCase):
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
             language_code="en",
+            completed=True,
         )
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -446,6 +447,7 @@ class ZGWBackendTests(TestCase):
             kvk="12345678",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            completed=True,
         )
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -654,6 +656,7 @@ class ZGWBackendTests(TestCase):
                     "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 }
             },
+            completed=True,
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         zgw_form_options = dict(
@@ -728,6 +731,7 @@ class ZGWBackendTests(TestCase):
             kvk="12345678",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            completed=True,
         )
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
@@ -1163,6 +1167,7 @@ class ZGWBackendTests(TestCase):
                     "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 }
             },
+            completed=True,
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,
@@ -1337,6 +1342,44 @@ class ZGWBackendTests(TestCase):
             self.assertNotIn("vertrouwelijkheidaanduiding", create_eio_body)
             self.assertEqual(create_attachment_body["auteur"], "Aanvrager")
 
+    def test_zgw_backend_document_ontvangstdatum(self, m):
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step__submission__completed_not_preregistered=True,
+            submission_step__submission__with_report=True,
+        )
+        submission = attachment.submission_step.submission
+        zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+        )
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        pre_registration_result = plugin.pre_register_submission(
+            submission, zgw_form_options
+        )
+        submission.registration_result.update(pre_registration_result.data)
+        submission.save()
+        plugin.register_submission(submission, zgw_form_options)
+
+        self.assertEqual(len(m.request_history), 9)
+        (
+            create_zaak,
+            create_pdf_document,
+            relate_pdf_document,
+            get_roltypen,
+            create_rol,
+            get_statustypen,
+            create_status,
+            create_attachment_document,
+            relate_attachment_document,
+        ) = m.request_history
+
+        create_attachment_body = create_attachment_document.json()
+
+        self.assertIsNotNone(create_attachment_body["ontvangstdatum"])
+
     def test_zgw_backend_defaults_empty_string(self, m):
         """Assert that empty strings for new fields are overriden with defaults
 
@@ -1443,6 +1486,7 @@ class ZGWBackendTests(TestCase):
                     "type": "file",
                 },
             ],
+            completed=True,
         )
         zgw_form_options = dict(
             zgw_api_group=self.zgw_group,

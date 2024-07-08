@@ -84,6 +84,7 @@ def create_attachment_document(
             status="definitief",
             filename=submission_attachment.get_display_name(),
             description="Bijgevoegd document",
+            received_date=options["ontvangstdatum"],
             vertrouwelijkheidaanduiding=options.get(
                 "doc_vertrouwelijkheidaanduiding", ""
             ),
