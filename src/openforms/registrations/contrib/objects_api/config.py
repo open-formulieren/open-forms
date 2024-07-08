@@ -234,7 +234,9 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
 
         objects_api_group: ObjectsAPIGroupConfig = attrs["objects_api_group"]
         with get_catalogi_client(objects_api_group) as catalogi_client:
-            informatieobjecttypen = catalogi_client.get_all_informatieobjecttypen()
+            informatieobjecttypen = list(
+                catalogi_client.get_all_informatieobjecttypen()
+            )
 
         for field in (
             "informatieobjecttype_submission_report",

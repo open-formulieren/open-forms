@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Iterator
 
 from zgw_consumers.nlx import NLXClient
 
@@ -21,32 +21,29 @@ def omschrijving_matcher(omschrijving: str):
 
 
 class CatalogiClient(NLXClient):
-    def get_all_catalogi(self) -> list[dict]:
+    def get_all_catalogi(self) -> Iterator[dict]:
         """
         List all available catalogi, consuming pagination if relevant.
         """
         response = self.get("catalogussen")
         response.raise_for_status()
         data = response.json()
-        all_data = pagination_helper(self, data)
-        return list(all_data)
+        yield from pagination_helper(self, data)
 
-    def get_all_zaaktypen(self) -> list[dict]:
+    def get_all_zaaktypen(self) -> Iterator[dict]:
         """
         List all available zaaktypen, consuming pagination if relevant.
         """
         response = self.get("zaaktypen")
         response.raise_for_status()
         data = response.json()
-        all_data = pagination_helper(self, data)
-        return list(all_data)
+        yield from pagination_helper(self, data)
 
-    def get_all_informatieobjecttypen(self) -> list[dict]:
+    def get_all_informatieobjecttypen(self) -> Iterator[dict]:
         response = self.get("informatieobjecttypen")
         response.raise_for_status()
         data = response.json()
-        all_data = pagination_helper(self, data)
-        return list(all_data)
+        yield from pagination_helper(self, data)
 
     def list_statustypen(self, zaaktype: str) -> list[dict]:
         query = {"zaaktype": zaaktype}

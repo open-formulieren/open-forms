@@ -21,6 +21,10 @@ from .serializers import ZaakTypeChoiceSerializer
 class ZaakTypenListView(ListMixin, APIView):
     """
     List the available ZaakTypen based on the configured ZGW API set.
+
+    Each ZaakType is uniquely identified by its 'omschrijving', 'catalogus',
+    and beginning and end date. If multiple same ZaakTypen exist for different dates,
+    only one entry is returned.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
@@ -41,14 +45,23 @@ class ZaakTypenListView(ListMixin, APIView):
         }
 
         zaaktypen_data = client.get_all_zaaktypen()
-        zaaktypen = [
-            {
-                "zaaktype": factory(ZaakType, zaaktype),
-                "catalogus": factory(
-                    Catalogus, catalogus_mapping[zaaktype["catalogus"]]
-                ),
-            }
-            for zaaktype in zaaktypen_data
-        ]
+        zaaktypen = []
+
+        for zaaktype in zaaktypen_data:
+            exists = any(
+                existing_zaaktype["zaaktype"].omschrijving == zaaktype["omschrijving"]
+                and existing_zaaktype["zaaktype"].catalogus == zaaktype["catalogus"]
+                for existing_zaaktype in zaaktypen
+            )
+
+            if not exists:
+                zaaktypen.append(
+                    {
+                        "zaaktype": factory(ZaakType, zaaktype),
+                        "catalogus": factory(
+                            Catalogus, catalogus_mapping[zaaktype["catalogus"]]
+                        ),
+                    }
+                )
 
         return zaaktypen

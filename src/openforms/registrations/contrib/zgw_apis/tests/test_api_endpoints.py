@@ -71,9 +71,11 @@ class ZaakTypenAPIEndpointTests(OFVCRMixin, APITestCase):
             self.endpoint, data={"zgw_api_group": self.zgw_group.pk}
         )
 
-        test_zaaktype = next(
+        test_zaaktypes = [
             obj for obj in response.json() if obj["zaaktype"]["omschrijving"] == "Test"
-        )
+        ]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(test_zaaktype["catalogus"]["domein"], "TEST")
+        # Make sure no duplicate zaaktypens are listed:
+        self.assertEqual(len(test_zaaktypes), 1)
+        self.assertEqual(test_zaaktypes[0]["catalogus"]["domein"], "TEST")
