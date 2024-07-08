@@ -63,4 +63,15 @@ class AnalyticsToolsConfigurationAdmin(TranslationAdmin, SingletonModelAdmin):
                 )
             },
         ),
+        (
+            _("Analytics: Expoints"),
+            {
+                "fields": (
+                    "expoints_organization_name",
+                    "expoints_config_uuid",
+                    "expoints_use_test_mode",
+                    "enable_expoints_analytics",
+                )
+            },
+        ),
     )

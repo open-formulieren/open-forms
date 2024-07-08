@@ -94,6 +94,10 @@ DYNAMIC_TOOL_CONFIGURATION = {
             StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
         ],
     ),
+    AnalyticsTools.expoints: ToolConfiguration(
+        enable_field_name="enable_expoints_analytics",
+        is_enabled_property="is_expoints_enabled",
+    ),
 }
 
 
@@ -254,6 +258,39 @@ class AnalyticsToolsConfiguration(SingletonModel):
         ),
     )
 
+    expoints_organization_name = models.SlugField(
+        _("Expoints organization name"),
+        blank=True,
+        max_length=50,
+        help_text=_(
+            "The name of your organization as registered in Expoints. This is used to construct the URL "
+            "to communicate with Expoints."
+        ),
+    )
+    expoints_config_uuid = models.CharField(
+        _("Expoints configuration identifier"),
+        blank=True,
+        max_length=50,
+        help_text=_(
+            "The UUID used to retrieve the configuration from Expoints to initialize the client satisfaction survey."
+        ),
+    )
+    expoints_use_test_mode = models.BooleanField(
+        _("use Expoints test mode"),
+        default=False,
+        help_text=_(
+            "Indicates whether or not the test mode should be enabled. If enabled, filled out surveys won't actually "
+            "be sent, to avoid cluttering Expoints while testing."
+        ),
+    )
+    enable_expoints_analytics = models.BooleanField(
+        _("enable Expoints analytics"),
+        default=False,
+        help_text=_(
+            "This adds a button at the end of a form to fill in a client satisfaction survey using Expoints."
+        ),
+    )
+
     analytics_cookie_consent_group = models.ForeignKey(
         "cookie_consent.CookieGroup",
         on_delete=models.SET_NULL,
@@ -329,6 +366,14 @@ class AnalyticsToolsConfiguration(SingletonModel):
             and self.enable_govmetric_analytics
         )
 
+    @property
+    def is_expoints_enabled(self) -> bool:
+        return (
+            self.expoints_organization_name
+            and self.expoints_config_uuid
+            and self.enable_expoints_analytics
+        )
+
     def save(self, *args, **kwargs):
         # If instance is being created, we can't find original values
         # (we use the _state API and not self.pk because `SingletonModel` hardcodes the PK).
@@ -401,6 +446,12 @@ class AnalyticsToolsConfiguration(SingletonModel):
             raise ValidationError(
                 _(
                     "If you enable GovMetric, you need to provide the source ID for all languages (the same one can be reused)."
+                )
+            )
+        if self.enable_expoints_analytics and not self.is_expoints_enabled:
+            raise ValidationError(
+                _(
+                    "If you enable Expoints, you need to provide the source ID for all languages (the same one can be reused)."
                 )
             )
         super().clean()
