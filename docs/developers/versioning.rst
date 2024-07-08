@@ -43,10 +43,9 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    =========== =================== ===================
    SDK version minimum API version maximum API version
    =========== =================== ===================
-   1.5.0       2.3.0               n/a
-   2.0.0       2.4.0               n/a
    2.1.0       2.4.0               n/a
    2.2.0       2.4.0               2.6.x
+   2.3.0       2.7.0               n/a
    =========== =================== ===================
 
 End-of-life versions are not listed in this table.
@@ -80,12 +79,6 @@ latest          n/a             `ReDoc <https://redocly.github.io/redoc/?url=htt
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.6.0/src/openapi.yaml>`__
 2.5.0           2024-01-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.5.0/src/openapi.yaml>`__,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.5.0/src/openapi.yaml>`__
-2.4.0           2023-11-09      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.4.0/src/openapi.yaml>`__,
-                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.4.0/src/openapi.yaml>`__
-2.3.1           2023-09-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.1/src/openapi.yaml>`__,
-                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.1/src/openapi.yaml>`__
-2.3.0           2023-08-24      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.0/src/openapi.yaml>`__,
-                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.0/src/openapi.yaml>`__
 ==============  ==============  =============================
 
 See: `All versions and changes <https://github.com/open-formulieren/open-forms/blob/master/CHANGELOG.rst>`_
@@ -95,6 +88,12 @@ See: `All versions and changes <https://github.com/open-formulieren/open-forms/b
 ==============  ==============  =============================
 Version         Release date    API specification
 ==============  ==============  =============================
+2.4.0           2023-11-09      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.4.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.4.0/src/openapi.yaml>`__
+2.3.1           2023-09-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.1/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.1/src/openapi.yaml>`__
+2.3.0           2023-08-24      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.0/src/openapi.yaml>`__,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.3.0/src/openapi.yaml>`__
 2.2.3           2023-09-25      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.2.3/src/openapi.yaml>`__,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.2.3/src/openapi.yaml>`__
 2.2.0           2023-06-23      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/2.2.0/src/openapi.yaml>`__,
@@ -143,9 +142,7 @@ backend version.
    =============== ===========
    Backend version API version
    =============== ===========
+   2.7.x           2.7.y
+   2.6.x           2.6.y
    2.5.x           2.5.y
-   2.4.x           2.4.y
-   2.3.x           2.3.y
-   2.2.x           2.2.y
-   2.1.x           2.1.y
    =============== ===========
