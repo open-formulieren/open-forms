@@ -863,6 +863,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 "https://catalogi.nl/api/v1/informatieobjecttypen/3",
             )
             self.assertNotIn("vertrouwelijkheidaanduiding", attachment1_create_data)
+            self.assertIsNotNone(attachment1_create_data["ontvangstdatum"])
 
         with self.subTest("Document create (attachment 2)"):
             attachment2_create_data = attachment2_create.json()
@@ -878,6 +879,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 "https://catalogi.nl/api/v1/informatieobjecttypen/3",
             )
             self.assertNotIn("vertrouwelijkheidaanduiding", attachment2_create_data)
+            self.assertIsNotNone(attachment2_create_data["ontvangstdatum"])
 
     def test_submission_with_objects_api_backend_attachments_specific_iotypen(self, m):
         submission = SubmissionFactory.from_components(
@@ -898,6 +900,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 },
             ],
             language_code="en",
+            completed=True,
         )
         submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(
@@ -1050,6 +1053,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 ],
             },
             language_code="en",
+            completed=True,
         )
         submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(
@@ -1177,6 +1181,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 ],
             },
             language_code="en",
+            completed=True,
         )
         submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(

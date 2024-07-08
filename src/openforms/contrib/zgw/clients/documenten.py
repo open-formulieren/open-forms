@@ -28,6 +28,7 @@ class DocumentenClient(NLXClient):
         content: ContentFile | BinaryIO,
         status: DocumentStatus,
         filename: str,
+        received_date: str | None = None,
         description: str = "",
         vertrouwelijkheidaanduiding: str = "",
     ):
@@ -46,6 +47,7 @@ class DocumentenClient(NLXClient):
             "inhoud": base64_body,
             "status": status,
             "bestandsnaam": filename,
+            "ontvangstdatum": received_date,
             "beschrijving": description,
             "indicatieGebruiksrecht": False,
             "bestandsomvang": (

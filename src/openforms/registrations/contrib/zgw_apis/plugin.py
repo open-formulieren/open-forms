@@ -22,6 +22,7 @@ from openforms.registrations.contrib.objects_api.client import get_objects_clien
 from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.utils.date import datetime_in_amsterdam
 from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin, PreRegistrationResult
@@ -319,6 +320,14 @@ class ZGWRegistration(BasePlugin):
                     "organisatie_rsin": bronorganisatie,
                     "titel": titel,
                 }
+
+                # this helps the type checker in narrowing the type
+                # and expressing that it should not happen that submission.completed_on is not set
+                assert submission.completed_on is not None
+                doc_options["ontvangstdatum"] = (
+                    datetime_in_amsterdam(submission.completed_on).date().isoformat()
+                )
+
                 if vertrouwelijkheidaanduiding:
                     doc_options["doc_vertrouwelijkheidaanduiding"] = (
                         vertrouwelijkheidaanduiding

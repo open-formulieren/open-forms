@@ -31,6 +31,7 @@ from openforms.submissions.models import (
     SubmissionReport,
 )
 from openforms.typing import JSONObject
+from openforms.utils.date import datetime_in_amsterdam
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
@@ -147,6 +148,14 @@ def register_submission_attachment(
             "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
         },
     )
+
+    # this helps the type checker in narrowing the type
+    # and expressing that it should not happen that submission.completed_on is not set
+    assert submission.completed_on is not None
+    attachment_options["ontvangstdatum"] = (
+        datetime_in_amsterdam(submission.completed_on).date().isoformat()
+    )
+
     component_overwrites = {
         "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
         "titel": attachment.titel,

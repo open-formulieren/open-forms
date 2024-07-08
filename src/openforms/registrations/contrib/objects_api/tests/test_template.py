@@ -35,6 +35,7 @@ class JSONTemplatingTests(TestCase):
             submitted_data={"voorNaam": "Jane", "achterNaam": "Doe"},
             form_definition_kwargs={"slug": "test-step-tralala"},
             auth_info__value="123456789",
+            completed=True,
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         config = ObjectsAPIConfig(
@@ -152,6 +153,7 @@ class JSONTemplatingTests(TestCase):
             form_definition_kwargs={"slug": "test-step-tralala"},
             auth_info__attribute="bsn",
             auth_info__value="123456789",
+            completed=True,
         )
         SubmissionFileAttachmentFactory.create(submission_step=submission.steps[0])
         m.post("https://objecten.nl/api/v1/objects", status_code=201, json={})
