@@ -1,7 +1,11 @@
+from unittest.mock import patch
+
+from django.test import tag
 from django.utils.translation import gettext as _
 
 from rest_framework.test import APIRequestFactory, APITestCase
 
+from ..views import exception_handler
 from . import error_views as views
 
 
@@ -170,3 +174,15 @@ class ExceptionHandlerTests(APITestCase):
                 "detail": _("Everything broke"),
             },
         )
+
+    @tag("gh-4505")
+    @patch.dict("os.environ", {"DEBUG": "no"})
+    def test_assertion_error_crash(self):
+        exc = AssertionError()
+
+        try:
+            result = exception_handler(exc, context={})
+        except Exception:
+            raise self.failureException("Exception handler may not crash")
+
+        self.assertIsNotNone(result)
