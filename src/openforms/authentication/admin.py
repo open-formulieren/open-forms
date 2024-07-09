@@ -13,6 +13,13 @@ class AuthInfoAdminForm(forms.ModelForm):
             "attribute",
             "value",
             "submission",
+            "loa",
+            "acting_subject_identifier_type",
+            "acting_subject_identifier_value",
+            "legal_subject_identifier_type",
+            "legal_subject_identifier_value",
+            "legal_subject_service_restriction",
+            "mandate_context",
             "machtigen",
             "attribute_hashed",
         )
@@ -23,10 +30,66 @@ class AuthInfoAdminForm(forms.ModelForm):
         }
 
 
-class AuthInfoInline(admin.TabularInline):
+class AuthInfoInline(admin.StackedInline):
+    """
+    Display authentication information inline.
+
+    There can only ever  be a single :class:`AuthInfo` instance related to a submission,
+    so a stacked inline with fieldsets makes more sense than a tabular inline.
+    """
+
     model = AuthInfo
     extra = 0
     form = AuthInfoAdminForm
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    (
+                        "submission",
+                        "attribute",
+                        "value",
+                    ),
+                )
+            },
+        ),
+        (
+            _("Means"),
+            {"fields": ("plugin", "loa"), "classes": ("collapse",)},
+        ),
+        (
+            _("Acting subject"),
+            {
+                "fields": (
+                    "acting_subject_identifier_type",
+                    "acting_subject_identifier_value",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Legal subject"),
+            {
+                "fields": (
+                    "legal_subject_identifier_type",
+                    "legal_subject_identifier_value",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Mandate"),
+            {
+                "fields": ("mandate_context", "machtigen"),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Misc"),
+            {"fields": ("attribute_hashed",), "classes": ("collapse in",)},
+        ),
+    )
 
     def has_add_permission(self, request, obj=None):
         return False

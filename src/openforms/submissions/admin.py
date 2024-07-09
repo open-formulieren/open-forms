@@ -228,7 +228,106 @@ class SubmissionAdmin(admin.ModelAdmin):
         "statement_of_truth_accepted",
         "cosign_statement_of_truth_accepted",
         "payment_complete_confirmation_email_sent",
+        "get_price",
+        "get_payment_required",
     ]
+    fieldsets = (
+        (
+            _("Metadata"),
+            {
+                "fields": (
+                    "public_registration_reference",
+                    "uuid",
+                    "form",
+                    "form_url",
+                    "language_code",
+                )
+            },
+        ),
+        (
+            _("Important dates"),
+            {
+                "fields": (
+                    "created_on",
+                    "completed_on",
+                    "suspended_on",
+                )
+            },
+        ),
+        (
+            _("Registration"),
+            {
+                "fields": (
+                    "get_registration_backend",
+                    "registration_status",
+                    "last_register_date",
+                    "registration_attempts",
+                    "finalised_registration_backend_key",
+                    "pre_registration_completed",
+                    "registration_result",
+                )
+            },
+        ),
+        (
+            _("Appointment"),
+            {
+                "fields": (
+                    "get_appointment_status",
+                    "get_appointment_id",
+                    "get_appointment_error_information",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Co-sign"),
+            {
+                "fields": (
+                    "cosign_complete",
+                    "cosign_request_email_sent",
+                    "co_sign_data",
+                    "cosign_confirmation_email_sent",
+                    "cosign_privacy_policy_accepted",
+                    "cosign_statement_of_truth_accepted",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Payment"),
+            {
+                "fields": (
+                    "get_price",
+                    "get_payment_required",
+                    "payment_complete_confirmation_email_sent",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Background tasks"),
+            {
+                "fields": (
+                    "post_completion_task_ids",
+                    "needs_on_completion_retry",
+                    "confirmation_email_sent",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Misc"),
+            {
+                "fields": (
+                    "privacy_policy_accepted",
+                    "statement_of_truth_accepted",
+                    "_is_cleaned",
+                    "previous_submission",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+    )
     raw_id_fields = ("form", "previous_submission")
     actions = [
         "export_csv",
@@ -243,44 +342,44 @@ class SubmissionAdmin(admin.ModelAdmin):
         qs = qs.select_related("form")
         return qs
 
+    @admin.display(description=_("Successfully processed"), boolean=True)
     def successfully_processed(self, obj) -> bool | None:
         if obj.registration_status == RegistrationStatuses.pending:
             return None
         return not obj.needs_on_completion_retry
 
-    successfully_processed.boolean = True
-    successfully_processed.short_description = _("Successfully processed")
-
+    @admin.display(description=_("Registration backend"))
     def get_registration_backend(self, obj):
-        return obj.form.registration_backend
+        return obj.form.registration_backend or "-"
 
-    get_registration_backend.short_description = _("Registration backend")
-
+    @admin.display(description=_("Appointment status"))
     def get_appointment_status(self, obj):
         try:
             return obj.appointment_info.status
         except AppointmentInfo.DoesNotExist:
             return ""
 
-    get_appointment_status.short_description = _("Appointment status")
-
+    @admin.display(description=_("Appointment Id"))
     def get_appointment_id(self, obj):
         try:
             return obj.appointment_info.appointment_id
         except AppointmentInfo.DoesNotExist:
             return ""
 
-    get_appointment_id.short_description = _("Appointment Id")
-
+    @admin.display(description=_("Appointment error information"))
     def get_appointment_error_information(self, obj):
         try:
             return obj.appointment_info.error_information
         except AppointmentInfo.DoesNotExist:
             return ""
 
-    get_appointment_error_information.short_description = _(
-        "Appointment error information"
-    )
+    @admin.display(description=_("Price"), ordering="price")
+    def get_price(self, obj):
+        return obj.price or "-"
+
+    @admin.display(description=_("Payment required"), boolean=True)
+    def get_payment_required(self, obj):
+        return obj.payment_required
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         submission = self.get_object(request, object_id)
@@ -309,34 +408,27 @@ class SubmissionAdmin(admin.ModelAdmin):
         log_export_submissions(queryset.first().form, request.user)
         return export_submissions(queryset, file_type)
 
+    @admin.action(description=_("Export selected %(verbose_name_plural)s as CSV-file."))
     def export_csv(self, request, queryset):
         return self._export(request, queryset, ExportFileTypes.CSV)
 
-    export_csv.short_description = _(
-        "Export selected %(verbose_name_plural)s as CSV-file."
+    @admin.action(
+        description=_("Export selected %(verbose_name_plural)s as Excel-file.")
     )
-
     def export_xlsx(self, request, queryset):
         return self._export(request, queryset, ExportFileTypes.XLSX)
 
-    export_xlsx.short_description = _(
-        "Export selected %(verbose_name_plural)s as Excel-file."
+    @admin.action(
+        description=_("Export selected %(verbose_name_plural)s as JSON-file.")
     )
-
     def export_json(self, request, queryset):
         return self._export(request, queryset, ExportFileTypes.JSON)
 
-    export_json.short_description = _(
-        "Export selected %(verbose_name_plural)s as JSON-file."
-    )
-
+    @admin.action(description=_("Export selected %(verbose_name_plural)s as XML-file."))
     def export_xml(self, request, queryset):
         return self._export(request, queryset, ExportFileTypes.XML)
 
-    export_xml.short_description = _(
-        "Export selected %(verbose_name_plural)s as XML-file."
-    )
-
+    @admin.action(description=_("Retry processing %(verbose_name_plural)s."))
     def retry_processing_submissions(self, request, queryset):
         submissions = queryset.filter(registration_status=RegistrationStatuses.failed)
         messages.success(
@@ -356,10 +448,6 @@ class SubmissionAdmin(admin.ModelAdmin):
 
         for submission in submissions:
             on_post_submission_event(submission.id, PostSubmissionEvents.on_retry)
-
-    retry_processing_submissions.short_description = _(
-        "Retry processing %(verbose_name_plural)s."
-    )
 
 
 @admin.register(SubmissionReport)
