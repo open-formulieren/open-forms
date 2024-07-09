@@ -562,4 +562,10 @@ class FileValidationMimeTypeTests(TestCase):
 
         self.assertFalse(is_valid)
         self.assertEqual(error.code, "blank")
-        self.assertEqual(error, _("Invalid-unknown file type."))
+        self.assertEqual(
+            error,
+            _(
+                "Could not determine the file type. Please make sure the file name "
+                "has an extension."
+            ),
+        )

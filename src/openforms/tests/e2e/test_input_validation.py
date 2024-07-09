@@ -969,7 +969,11 @@ class SingleFileTests(ValidationsTestCase):
             self.assertFileValidationIsAligned(
                 component,
                 ui_files=[TEST_FILES / "unknown-type"],
-                expected_ui_error="Invalid-unknown file type.",
+                expected_ui_error=(
+                    "Het bestandstype kon niet bepaald worden. Controleer of de "
+                    "bestandsnaam met een extensie eindigt (bijvoorbeel '.pdf' of "
+                    "'.png')."
+                ),
                 api_value=[
                     SubmittedFileFactory.create(
                         temporary_upload=temporary_upload,
