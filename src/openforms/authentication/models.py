@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Collection
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
@@ -20,6 +21,8 @@ from .types import (
     EHerkenningContext,
     EHerkenningMachtigenContext,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class BaseAuthInfo(models.Model):
@@ -262,7 +265,12 @@ class AuthInfo(BaseAuthInfo):
         | EHerkenningContext
         | EHerkenningMachtigenContext
     ):
-        assert not self.attribute_hashed
+        if self.attribute_hashed:
+            logger.debug(
+                "Authentication attributes are (already) hashed, using these values "
+                "can lead to unexpected results.",
+                extra={"auth_info": self.pk},
+            )
 
         match (self.attribute, self.legal_subject_identifier_type):
             # DigiD without machtigen/mandate

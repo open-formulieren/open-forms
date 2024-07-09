@@ -2,7 +2,7 @@ from datetime import timedelta
 from decimal import Decimal
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils import timezone
 
 from celery import states
@@ -120,6 +120,28 @@ class SubmissionStatusStatusAndResultTests(APITestCase):
         self.assertEqual(response_data["paymentUrl"], "")
         self.assertEqual(response_data["reportDownloadUrl"], "")
         self.assertEqual(response_data["confirmationPageContent"], "")
+
+    @tag("gh-4505")
+    def test_submission_with_authentication_context(self):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__authentication_backends=["demo"],
+            auth_info__is_digid=True,
+            auth_info__with_hashed_identifying_attributes=True,
+        )
+        assert submission.is_authenticated
+        assert submission.auth_info.attribute_hashed
+        token = submission_status_token_generator.make_token(submission)
+        check_status_url = reverse(
+            "api:submission-status", kwargs={"uuid": submission.uuid, "token": token}
+        )
+
+        with patch("openforms.submissions.status.AsyncResult") as mock_AsyncResult:
+            mock_AsyncResult.return_value.state = states.SUCCESS
+
+            response = self.client.get(check_status_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_in_progress_celery_states(self):
         submission = SubmissionFactory.create(completed=True)

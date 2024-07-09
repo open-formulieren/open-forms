@@ -38,7 +38,8 @@ def exception_handler(exc, context):
         if os.getenv("DEBUG", "").lower() in ["yes", "1", "true"]:
             return None
 
-        logger.exception(exc.args[0], exc_info=1)
+        exc_message = args[0] if (args := exc.args) else type(exc).__name__
+        logger.exception(exc_message, exc_info=True)
 
         # unkown type, so we use the generic Internal Server Error
         exc = drf_exceptions.APIException("Internal Server Error")
