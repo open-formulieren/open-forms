@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-09 10:38+0200\n"
+"POT-Creation-Date: 2024-07-09 14:46+0200\n"
 "PO-Revision-Date: 2024-07-03 16:10+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -187,6 +187,10 @@ msgstr "Analytics: Piwik PRO"
 msgid "Analytics: GovMetric"
 msgstr "Analytics: GovMetric"
 
+#: openforms/analytics_tools/admin.py:67
+msgid "Analytics: Expoints"
+msgstr "Analytics: Expoints"
+
 #: openforms/analytics_tools/api/views.py:11
 msgid "Analytics Tools Configuration"
 msgstr "Analytics tools-configuratie"
@@ -201,91 +205,91 @@ msgstr "Haal informatie op over de analytics-tools voor de frontend."
 msgid "Analytics tools"
 msgstr "Analytics-tools"
 
-#: openforms/analytics_tools/models.py:103
+#: openforms/analytics_tools/models.py:107
 msgid "Google Tag Manager code"
 msgstr "Google Tag Manager code"
 
-#: openforms/analytics_tools/models.py:107
+#: openforms/analytics_tools/models.py:111
 msgid ""
 "Typically looks like 'GTM-XXXX'. Supplying this installs Google Tag Manager."
 msgstr ""
 "Ziet er typisch uit als 'GTM-XXXX'. Schakel Google Tag Manager in door een "
 "waarde op te geven."
 
-#: openforms/analytics_tools/models.py:111
+#: openforms/analytics_tools/models.py:115
 msgid "Google Analytics code"
 msgstr "Google Analytics code"
 
-#: openforms/analytics_tools/models.py:115
+#: openforms/analytics_tools/models.py:119
 msgid ""
 "Typically looks like 'UA-XXXXX-Y'. Supplying this installs Google Analytics."
 msgstr ""
 "Heeft typisch het formaat 'UA-XXXXX-Y'. Schakelt Google Analytics in als een "
 "waarde ingevuld is."
 
-#: openforms/analytics_tools/models.py:119
+#: openforms/analytics_tools/models.py:123
 msgid "enable google analytics"
 msgstr "Google Analytics inschakelen"
 
-#: openforms/analytics_tools/models.py:121
+#: openforms/analytics_tools/models.py:125
 msgid "Enabling this installs Google Analytics"
 msgstr "Door dit in te schakelen wordt Google Analytics geactiveerd"
 
-#: openforms/analytics_tools/models.py:125
+#: openforms/analytics_tools/models.py:129
 msgid "Matomo server URL"
 msgstr "Matomo server-URL"
 
-#: openforms/analytics_tools/models.py:130
+#: openforms/analytics_tools/models.py:134
 msgid "The base URL of your Matomo server, e.g. 'https://matomo.example.com'."
 msgstr ""
 "De basis-URL van uw Matomo server, bijvoorbeeld 'https://matomo.example.com'."
 
-#: openforms/analytics_tools/models.py:134
+#: openforms/analytics_tools/models.py:138
 msgid "Matomo site ID"
 msgstr "Matomo site-ID"
 
-#: openforms/analytics_tools/models.py:137
+#: openforms/analytics_tools/models.py:141
 msgid "The 'idsite' of the website you're tracking in Matomo."
 msgstr "De 'idsite' van de website die u analyseert met Matomo."
 
-#: openforms/analytics_tools/models.py:140
+#: openforms/analytics_tools/models.py:144
 msgid "enable matomo site analytics"
 msgstr "Matomo analytics inschakelen"
 
-#: openforms/analytics_tools/models.py:142
+#: openforms/analytics_tools/models.py:146
 msgid "Enabling this installs Matomo"
 msgstr "Door dit in te schakelen wordt Matomo geactiveerd"
 
-#: openforms/analytics_tools/models.py:146
+#: openforms/analytics_tools/models.py:150
 msgid "Piwik server URL"
 msgstr "Piwik server-URL"
 
-#: openforms/analytics_tools/models.py:151
+#: openforms/analytics_tools/models.py:155
 msgid "The base URL of your Piwik server, e.g. 'https://piwik.example.com'."
 msgstr ""
 "De basis-URL van uw Piwik server, bijvoorbeeld 'https://piwik.example.com'."
 
-#: openforms/analytics_tools/models.py:155
+#: openforms/analytics_tools/models.py:159
 msgid "Piwik site ID"
 msgstr "Piwik site-ID"
 
-#: openforms/analytics_tools/models.py:158
+#: openforms/analytics_tools/models.py:162
 msgid "The 'idsite' of the website you're tracking in Piwik."
 msgstr "De 'idsite'-waarde van de website die je analyseert met Piwik."
 
-#: openforms/analytics_tools/models.py:161
+#: openforms/analytics_tools/models.py:165
 msgid "enable piwik site analytics"
 msgstr "Piwik inschakelen"
 
-#: openforms/analytics_tools/models.py:163
+#: openforms/analytics_tools/models.py:167
 msgid "Enabling this installs Piwik"
 msgstr "Vink dit aan om de Piwik-integratie in te schakelen"
 
-#: openforms/analytics_tools/models.py:167
+#: openforms/analytics_tools/models.py:171
 msgid "Piwik PRO server URL"
 msgstr "Piwik PRO server-URL"
 
-#: openforms/analytics_tools/models.py:172
+#: openforms/analytics_tools/models.py:176
 msgid ""
 "The base URL of your Piwik PRO server, e.g. 'https://your-instance-name."
 "piwik.pro'."
@@ -293,11 +297,11 @@ msgstr ""
 "De basis-URL van uw Piwik PRO server, bijvoorbeeld 'https://your-instance-"
 "name.piwik.pro/'."
 
-#: openforms/analytics_tools/models.py:176
+#: openforms/analytics_tools/models.py:180
 msgid "Piwik PRO site ID"
 msgstr "Piwik PRO site-ID"
 
-#: openforms/analytics_tools/models.py:180
+#: openforms/analytics_tools/models.py:184
 msgid ""
 "The 'idsite' of the website you're tracking in Piwik PRO. https://help.piwik."
 "pro/support/questions/find-website-id/"
@@ -305,27 +309,27 @@ msgstr ""
 "De 'idsite'-waarde van de website die je analyseert met Piwik PRO. Zie ook "
 "https://help.piwik.pro/support/questions/find-website-id/"
 
-#: openforms/analytics_tools/models.py:185
+#: openforms/analytics_tools/models.py:189
 msgid "enable Piwik PRO Site Analytics"
 msgstr "Piwik PRO analytics inschakelen"
 
-#: openforms/analytics_tools/models.py:187
+#: openforms/analytics_tools/models.py:191
 msgid "Enabling this installs Piwik PRO Analytics"
 msgstr "Door dit in te schakelen wordt Piwik PRO analytics geactiveerd."
 
-#: openforms/analytics_tools/models.py:190
+#: openforms/analytics_tools/models.py:194
 msgid "enable piwik Pro Tag Manager"
 msgstr "Piwik PRO Tag Manager inschakelen"
 
-#: openforms/analytics_tools/models.py:192
+#: openforms/analytics_tools/models.py:196
 msgid "Enabling this installs Piwik PRO Tag Manager."
 msgstr "Door dit in te schakelen activeert u Piwik Pro Tag Manager."
 
-#: openforms/analytics_tools/models.py:196
+#: openforms/analytics_tools/models.py:200
 msgid "SiteImprove ID"
 msgstr "SiteImprove ID"
 
-#: openforms/analytics_tools/models.py:200
+#: openforms/analytics_tools/models.py:204
 msgid ""
 "Your SiteImprove ID - you can find this from the embed snippet example, "
 "which should contain a URL like '//siteimproveanalytics.com/js/"
@@ -335,19 +339,19 @@ msgstr ""
 "Deze bevat normaal een URL zoals '//siteimproveanalytics.com/js/"
 "siteanalyze_XXXXX.js'. De XXXXX is uw ID."
 
-#: openforms/analytics_tools/models.py:206
+#: openforms/analytics_tools/models.py:210
 msgid "enable siteImprove analytics"
 msgstr "SiteImprove analytics inschakelen"
 
-#: openforms/analytics_tools/models.py:208
+#: openforms/analytics_tools/models.py:212
 msgid "Enabling this installs SiteImprove"
 msgstr "Door dit in te schakelen activeert u SiteImprove"
 
-#: openforms/analytics_tools/models.py:211
+#: openforms/analytics_tools/models.py:215
 msgid "GovMetric source ID form aborted"
 msgstr "GovMetric source ID (afgebroken formulier)"
 
-#: openforms/analytics_tools/models.py:215
+#: openforms/analytics_tools/models.py:219
 msgid ""
 "Your GovMetric source ID for when a form is aborted - This is created by "
 "KLANTINFOCUS when a list of questions is created. It is a numerical value "
@@ -357,11 +361,11 @@ msgstr ""
 "aangemaakt door KLANTINFOCUS wanneer een vragenlijst gebouwd wordt. Het is "
 "een numerieke waarde die uniek is per vragenlijst."
 
-#: openforms/analytics_tools/models.py:220
+#: openforms/analytics_tools/models.py:224
 msgid "GovMetric secure GUID form aborted"
 msgstr "GovMetric secure GUID (afgebroken formulier)"
 
-#: openforms/analytics_tools/models.py:224
+#: openforms/analytics_tools/models.py:228
 msgid ""
 "Your GovMetric secure GUID for when a form is aborted - This is an optional "
 "value. It is created by KLANTINFOCUS when a list  of questions is created. "
@@ -371,11 +375,11 @@ msgstr ""
 "is niet verplicht en wordt aangemaakt door KLANTINFOCUS wanneer een "
 "vragenlijst gebouwd wordt. Het is een unieke waarde per vragenlijst."
 
-#: openforms/analytics_tools/models.py:230
+#: openforms/analytics_tools/models.py:234
 msgid "GovMetric source ID form finished"
 msgstr "GovMetric source ID (inzending voltooid)"
 
-#: openforms/analytics_tools/models.py:234
+#: openforms/analytics_tools/models.py:238
 msgid ""
 "Your GovMetric source ID for when a form is finished - This is created by "
 "KLANTINFOCUS when a list of questions is created. It is a numerical value "
@@ -385,11 +389,11 @@ msgstr ""
 "KLANTINFOCUS wanneer een vragenlijst gebouwd wordt. Het is een numerieke "
 "waarde die uniek is per vragenlijst."
 
-#: openforms/analytics_tools/models.py:239
+#: openforms/analytics_tools/models.py:243
 msgid "GovMetric secure GUID form finished"
 msgstr "GovMetric secure GUID (inzending voltooid)"
 
-#: openforms/analytics_tools/models.py:243
+#: openforms/analytics_tools/models.py:247
 msgid ""
 "Your GovMetric secure GUID for when a form is finished - This is an optional "
 "value. It is created by KLANTINFOCUS when a list  of questions is created. "
@@ -399,11 +403,11 @@ msgstr ""
 "verplicht en wordt aangemaakt door KLANTINFOCUS wanneer een vragenlijst "
 "gebouwd wordt. Het is een unieke waarde per vragenlijst."
 
-#: openforms/analytics_tools/models.py:249
+#: openforms/analytics_tools/models.py:253
 msgid "enable GovMetric analytics"
 msgstr "GovMetric analytics inschakelen"
 
-#: openforms/analytics_tools/models.py:252
+#: openforms/analytics_tools/models.py:256
 msgid ""
 "This enables GovMetric to collect data while a user fills in a form and it "
 "adds a button at the end of a form to fill in a client satisfaction survey."
@@ -412,7 +416,57 @@ msgstr ""
 "worden. Daarnaast komen knoppen en links beschikbaar voor de eindgebruiker "
 "om een tevredenheidsonderzoek in te vullen."
 
-#: openforms/analytics_tools/models.py:263
+#: openforms/analytics_tools/models.py:262
+msgid "Expoints organization name"
+msgstr "Expoints organisatielabel"
+
+#: openforms/analytics_tools/models.py:266
+msgid ""
+"The name of your organization as registered in Expoints. This is used to "
+"construct the URL to communicate with Expoints."
+msgstr ""
+"De naam/het label van de organisatie zoals deze bij Expoints bekend is. Deze waarde "
+"wordt gebruikt om de URL op te bouwen om met Expoints te verbinden."
+
+#: openforms/analytics_tools/models.py:271
+msgid "Expoints configuration identifier"
+msgstr "Expoints configuratie-ID"
+
+#: openforms/analytics_tools/models.py:275
+msgid ""
+"The UUID used to retrieve the configuration from Expoints to initialize the "
+"client satisfaction survey."
+msgstr ""
+"Het UUID van de configuratie in Expoints om het tevredenheidsonderzoek op te "
+"halen."
+
+#: openforms/analytics_tools/models.py:279
+msgid "use Expoints test mode"
+msgstr "gebruik Expoints testmode"
+
+#: openforms/analytics_tools/models.py:282
+msgid ""
+"Indicates whether or not the test mode should be enabled. If enabled, filled "
+"out surveys won't actually be sent, to avoid cluttering Expoints while "
+"testing."
+msgstr ""
+"Indien aangevinkt, dan wordt de testmode van Expoints ingeschakeld. Ingevulde "
+"tevredenheidsonderzoeken worden dan niet verstuurd naar Expoints om vervuiling "
+"tegen te gaan."
+
+#: openforms/analytics_tools/models.py:287
+msgid "enable Expoints analytics"
+msgstr "Expoints inschakelen"
+
+#: openforms/analytics_tools/models.py:290
+msgid ""
+"This adds a button at the end of a form to fill in a client satisfaction "
+"survey using Expoints."
+msgstr ""
+"Wanneer ingeschakeld, dan wordt een knop toegevoegd op het scherm zodat de gebruiker "
+"een tevredenheidsonderzoek van Expoints kan invullen."
+
+#: openforms/analytics_tools/models.py:300
 msgid ""
 "The cookie group used for analytical cookies. The analytics scripts are "
 "loaded only if this cookie group is accepted by the end-user."
@@ -420,35 +474,42 @@ msgstr ""
 "De cookiegroep voor analytische cookies. De Analytics-scripts worden enkel "
 "ingeladen als de gebruiker de cookies accepteert."
 
-#: openforms/analytics_tools/models.py:269
+#: openforms/analytics_tools/models.py:306
 msgid "Analytics tools configuration"
 msgstr "Analytics tools-configuratie"
 
-#: openforms/analytics_tools/models.py:359
-#: openforms/analytics_tools/models.py:365
-#: openforms/analytics_tools/models.py:371
-#: openforms/analytics_tools/models.py:380
-#: openforms/analytics_tools/models.py:386
-#: openforms/analytics_tools/models.py:392
+#: openforms/analytics_tools/models.py:404
+#: openforms/analytics_tools/models.py:410
+#: openforms/analytics_tools/models.py:416
+#: openforms/analytics_tools/models.py:425
+#: openforms/analytics_tools/models.py:431
+#: openforms/analytics_tools/models.py:437
 #, python-brace-format
 msgid ""
 "If you enable {analytics_tool}, you must fill out all the required fields"
 msgstr ""
 "U moet alle verplichte velden invullen indien u {analytics_tool} inschakelt."
 
-#: openforms/analytics_tools/models.py:397
+#: openforms/analytics_tools/models.py:442
 msgid "Piwik Pro Analytics and Tag Manager can't be both activated"
 msgstr ""
 "Je kan niet tegelijk Piwik Pro Analytics en Piwik Pro Tag Manager "
 "inschakelen."
 
-#: openforms/analytics_tools/models.py:403
+#: openforms/analytics_tools/models.py:448
 msgid ""
 "If you enable GovMetric, you need to provide the source ID for all languages "
 "(the same one can be reused)."
 msgstr ""
 "Wanneer je GovMetric inschakelt, dan moet je een source ID ingegeven voor "
 "elke taaloptie. Je kan hetzelfde ID hergebruiken voor meerdere talen."
+
+#: openforms/analytics_tools/models.py:454
+msgid ""
+"If you enable Expoints, you need to provide the source ID for all languages "
+"(the same one can be reused)."
+msgstr ""
+"Wanneer je Expoints inschakelt, dan moet je alle configuratieinstellingen invullen."
 
 #: openforms/analytics_tools/validators.py:8
 msgid "The URL must not end with a trailing slash ('/')."
@@ -579,11 +640,11 @@ msgstr ""
 "De velden {fields} moeten allemaal een niet-lege waarde hebben zodra één "
 "ervan niet leeg is."
 
-#: openforms/api/views/views.py:61
+#: openforms/api/views/views.py:62
 msgid "Ping the API"
 msgstr "Ping de API"
 
-#: openforms/api/views/views.py:63
+#: openforms/api/views/views.py:64
 msgid ""
 "Pinging the API extends the user session. Note that you must be a staff user "
 "or have active submission(s) in your session."
@@ -1202,7 +1263,7 @@ msgstr "Tijdstip wanneer de afspraakdetails zijn gemaakt "
 msgid "Appointment information"
 msgstr "Afspraakinformatie"
 
-#: openforms/appointments/models.py:112 openforms/authentication/models.py:27
+#: openforms/appointments/models.py:112 openforms/authentication/models.py:30
 msgid "plugin"
 msgstr "plugin"
 
@@ -1312,23 +1373,24 @@ msgstr "De volgende afspraakvelden dienen ingevuld te worden: {fields}"
 msgid "(updated)"
 msgstr "(bijgewerkt)"
 
-#: openforms/authentication/admin.py:56
+#: openforms/authentication/admin.py:58 openforms/authentication/admin.py:119
 msgid "Means"
 msgstr "Middel"
 
-#: openforms/authentication/admin.py:60
+#: openforms/authentication/admin.py:62 openforms/authentication/admin.py:123
 msgid "Acting subject"
 msgstr "Handelende persoon"
 
-#: openforms/authentication/admin.py:69
+#: openforms/authentication/admin.py:72 openforms/authentication/admin.py:132
 msgid "Legal subject"
 msgstr "(Wettelijke) vertegenwoordiger"
 
-#: openforms/authentication/admin.py:77
+#: openforms/authentication/admin.py:82 openforms/authentication/admin.py:140
 msgid "Mandate"
 msgstr "Machtiging"
 
-#: openforms/authentication/admin.py:79
+#: openforms/authentication/admin.py:89 openforms/authentication/admin.py:142
+#: openforms/submissions/admin.py:319
 msgid "Misc"
 msgstr "Overige"
 
@@ -1664,111 +1726,111 @@ msgstr "Doorgaan als medewerker"
 msgid "Use either BSN or KvK"
 msgstr "Geef een BSN of KvK-nummer op"
 
-#: openforms/authentication/models.py:28 openforms/authentication/views.py:258
+#: openforms/authentication/models.py:31 openforms/authentication/views.py:258
 msgid "Identifier of the authentication plugin."
 msgstr "Unieke identificatie van de authenticatieplugin"
 
-#: openforms/authentication/models.py:32
+#: openforms/authentication/models.py:35
 msgid "attribute"
 msgstr "attribuut"
 
-#: openforms/authentication/models.py:33
+#: openforms/authentication/models.py:36
 msgid "Name of the attribute returned by the authentication plugin."
 msgstr "Naam van het attribuut voorzien door de authenticatieplugin"
 
-#: openforms/authentication/models.py:38 openforms/config/models/csp.py:62
+#: openforms/authentication/models.py:41 openforms/config/models/csp.py:62
 #: openforms/submissions/models/submission_value_variable.py:280
 #: openforms/validations/api/views.py:72
 msgid "value"
 msgstr "waarde"
 
-#: openforms/authentication/models.py:39
+#: openforms/authentication/models.py:42
 msgid "Value of the attribute returned by the authentication plugin."
 msgstr "Waarde van het attribuut voorzien door de authenticatieplugin"
 
-#: openforms/authentication/models.py:43
+#: openforms/authentication/models.py:46
 msgid "identifying attributes hashed"
 msgstr "Identificerende attributen gehasht"
 
-#: openforms/authentication/models.py:44
+#: openforms/authentication/models.py:47
 msgid "Are the auth/identifying attributes hashed?"
 msgstr "Zijn de authenticatie-/identificerende gegevens gehasht?"
 
-#: openforms/authentication/models.py:55 openforms/authentication/models.py:56
-#: openforms/authentication/models.py:224
-#: openforms/authentication/models.py:225
+#: openforms/authentication/models.py:58 openforms/authentication/models.py:59
+#: openforms/authentication/models.py:227
+#: openforms/authentication/models.py:228
 msgid "Authentication details"
 msgstr "Authenticatiedetails"
 
-#: openforms/authentication/models.py:130
-#: openforms/authentication/models.py:359 openforms/emails/constants.py:16
+#: openforms/authentication/models.py:133
+#: openforms/authentication/models.py:367 openforms/emails/constants.py:16
 #: openforms/formio/api/serializers.py:33
 msgid "Submission"
 msgstr "Inzending"
 
-#: openforms/authentication/models.py:132
-#: openforms/authentication/models.py:361
+#: openforms/authentication/models.py:135
+#: openforms/authentication/models.py:369
 msgid "Submission related to this authentication information"
 msgstr "Inzending waar deze authenticatiegegevens bijhoren"
 
-#: openforms/authentication/models.py:144
+#: openforms/authentication/models.py:147
 msgid "Level of assurance"
 msgstr "Betrouwbaarheidsniveau"
 
-#: openforms/authentication/models.py:146
+#: openforms/authentication/models.py:149
 msgid ""
 "How certain is the identity provider that this identity belongs to this user."
 msgstr ""
 "Indicatie van de mate van zekerheid over de identiteit van de gebruiker, "
 "afgegeven door de identity provider."
 
-#: openforms/authentication/models.py:156
+#: openforms/authentication/models.py:159
 msgid "acting subject identifier type"
 msgstr "identificatiesoort handelende persoon"
 
-#: openforms/authentication/models.py:158
-#: openforms/authentication/models.py:174
+#: openforms/authentication/models.py:161
+#: openforms/authentication/models.py:177
 msgid "The identifier type determines how to interpret the identifier value."
 msgstr ""
 "De identificatiesoort bepaalt hoe de identificatie geïnterpreteerd moet "
 "worden."
 
-#: openforms/authentication/models.py:165
+#: openforms/authentication/models.py:168
 msgid "acting subject identifier"
 msgstr "identificatie handelende persoon"
 
-#: openforms/authentication/models.py:166
+#: openforms/authentication/models.py:169
 msgid "(Contextually) unique identifier for the acting subject."
 msgstr "Unieke identificatie die de handelende persoon vaststelt."
 
-#: openforms/authentication/models.py:172
+#: openforms/authentication/models.py:175
 msgid "legal subject identifier type"
 msgstr "identificatiesoort (wettelijke) vertegenwoordiger"
 
-#: openforms/authentication/models.py:181
+#: openforms/authentication/models.py:184
 msgid "legal subject identifier"
 msgstr "identificatie (wettelijke) vertegenwoordiger"
 
-#: openforms/authentication/models.py:182
+#: openforms/authentication/models.py:185
 msgid "(Contextually) unique identifier for the legal subject."
 msgstr "Unieke identificatie die de (wettelijke) vertegenwoordiger bepaalt."
 
-#: openforms/authentication/models.py:189
+#: openforms/authentication/models.py:192
 msgid "legal subject service restriction"
 msgstr "dienstverleningbeperking (wettelijke) vertegenwoordiger"
 
-#: openforms/authentication/models.py:191
+#: openforms/authentication/models.py:194
 msgid ""
 "Optional service restriction information within the bigger legal subject."
 msgstr ""
 "Niet-verplichte beperking binnen de hele (wettelijke) vertegenwoordiger, "
 "bijvoorbeeld een vestigingsnummer."
 
-#: openforms/authentication/models.py:198
+#: openforms/authentication/models.py:201
 msgid "mandate context"
 msgstr "machtigingscontext"
 
-#: openforms/authentication/models.py:200
+#: openforms/authentication/models.py:203
 msgid ""
 "If a mandate is in play, then the mandate context must be provided. The "
 "details are tracked here, in line with the authentication context data JSON "
@@ -1779,11 +1841,11 @@ msgstr ""
 "dat overeenkomt met het JSON Schema van het "
 "authenticatiecontextgegevensmodel."
 
-#: openforms/authentication/models.py:210
+#: openforms/authentication/models.py:213
 msgid "machtigen"
 msgstr "machtigen"
 
-#: openforms/authentication/models.py:212
+#: openforms/authentication/models.py:215
 msgid ""
 "Data related to any 'machtiging' (authorising someone else to perform "
 "actions on your behalf)."
@@ -1791,12 +1853,12 @@ msgstr ""
 "Gegevens horend bij een 'machtiging' (iemand anders autoriseren om namens "
 "jou handelingen uit te voeren)."
 
-#: openforms/authentication/models.py:366
-#: openforms/authentication/models.py:367
+#: openforms/authentication/models.py:374
+#: openforms/authentication/models.py:375
 msgid "Registrator authentication details"
 msgstr "Authenticatiedetails van de registrator"
 
-#: openforms/authentication/models.py:372
+#: openforms/authentication/models.py:380
 msgid "Can register submission for customers"
 msgstr "Mag inzendingen opvoeren voor klanten"
 
@@ -2109,6 +2171,7 @@ msgid "Plugin configuration"
 msgstr "Pluginconfiguratie"
 
 #: openforms/config/admin.py:143 openforms/emails/constants.py:10
+#: openforms/submissions/admin.py:258
 #: openforms/submissions/rendering/constants.py:11
 msgid "Registration"
 msgstr "Registratie"
@@ -4396,8 +4459,8 @@ msgstr "URL"
 msgid "File name"
 msgstr "Bestandsnaam"
 
-#: openforms/formio/api/serializers.py:45 openforms/submissions/admin.py:427
-#: openforms/submissions/admin.py:480
+#: openforms/formio/api/serializers.py:45 openforms/submissions/admin.py:515
+#: openforms/submissions/admin.py:568
 msgid "File size"
 msgstr "Bestandsgrootte"
 
@@ -4527,8 +4590,8 @@ msgid ""
 "Could not determine the file type. Please make sure the file name has an "
 "extension."
 msgstr ""
-"Het bestandstype kon niet bepaald worden. Controleer of de bestandsnaam met een "
-"extensie eindigt (bijvoorbeel '.pdf' of '.png')."
+"Het bestandstype kon niet bepaald worden. Controleer of de bestandsnaam met "
+"een extensie eindigt (bijvoorbeel '.pdf' of '.png')."
 
 #: openforms/formio/components/vanilla.py:332
 #, python-brace-format
@@ -9696,52 +9759,89 @@ msgstr "Registratiemoment"
 msgid "In the past 24 hours"
 msgstr "In de afgelopen 24 uur"
 
-#: openforms/submissions/admin.py:252
+#: openforms/submissions/admin.py:236
+msgid "Metadata"
+msgstr "Metadata"
+
+#: openforms/submissions/admin.py:248
+msgid "Important dates"
+msgstr "Belangrijke datums"
+
+#: openforms/submissions/admin.py:272
+msgid "Appointment"
+msgstr "Afspraak"
+
+#: openforms/submissions/admin.py:283
+msgid "Co-sign"
+msgstr "Mede-ondertekenen"
+
+#: openforms/submissions/admin.py:297
+msgid "Payment"
+msgstr "Betaling"
+
+#: openforms/submissions/admin.py:308
+msgid "Background tasks"
+msgstr "Achtergrondtaken"
+
+#: openforms/submissions/admin.py:345
 msgid "Successfully processed"
 msgstr "Successvolle verwerking"
 
-#: openforms/submissions/admin.py:257
+#: openforms/submissions/admin.py:351
 msgid "Registration backend"
 msgstr "registratie backend"
 
-#: openforms/submissions/admin.py:265
+#: openforms/submissions/admin.py:355
 msgid "Appointment status"
 msgstr "Afspraakstatus"
 
-#: openforms/submissions/admin.py:273
+#: openforms/submissions/admin.py:362
 msgid "Appointment Id"
 msgstr "Afspraak ID"
 
-#: openforms/submissions/admin.py:282
+#: openforms/submissions/admin.py:369
 msgid "Appointment error information"
 msgstr "Afspraak foutmelding"
 
-#: openforms/submissions/admin.py:305
+#: openforms/submissions/admin.py:376
+msgid "Price"
+msgstr "Prijs"
+
+#: openforms/submissions/admin.py:380
+msgid "Payment required"
+msgstr "Betaling vereist"
+
+#: openforms/submissions/admin.py:404
 msgid "You can only export the submissions of the same form type."
 msgstr ""
 "Je kan alleen de inzendingen van één enkel formuliertype tegelijk exporteren."
 
-#: openforms/submissions/admin.py:316
+#: openforms/submissions/admin.py:411
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as CSV-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als CSV-bestand."
 
-#: openforms/submissions/admin.py:323
+#: openforms/submissions/admin.py:416
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as Excel-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als Excel-bestand."
 
-#: openforms/submissions/admin.py:330
+#: openforms/submissions/admin.py:422
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as JSON-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als JSON-bestand."
 
-#: openforms/submissions/admin.py:337
+#: openforms/submissions/admin.py:427
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as XML-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als XML-bestand."
 
-#: openforms/submissions/admin.py:345
+#: openforms/submissions/admin.py:431
+#, python-format
+msgid "Retry processing %(verbose_name_plural)s."
+msgstr "Probeer %(verbose_name_plural)s opnieuw te verwerken"
+
+#: openforms/submissions/admin.py:437
 #, python-brace-format
 msgid "Retrying processing flow for {count} {verbose_name}"
 msgid_plural "Retrying processing flow for {count} {verbose_name_plural}"
@@ -9749,12 +9849,7 @@ msgstr[0] "Nieuwe verwerkingspoging voor {count} {verbose_name} wordt gestart."
 msgstr[1] ""
 "Nieuwe verwerkingspoging voor {count} {verbose_name_plural} wordt gestart."
 
-#: openforms/submissions/admin.py:361
-#, python-format
-msgid "Retry processing %(verbose_name_plural)s."
-msgstr "Probeer %(verbose_name_plural)s opnieuw te verwerken"
-
-#: openforms/submissions/admin.py:489
+#: openforms/submissions/admin.py:577
 msgid "Form key"
 msgstr "Formuliersleutel"
 
