@@ -13,7 +13,7 @@ authenticated person filling out the form.
    This service contains sensitive data and requires a connection to an
    external system, offered by `BKWI`_.
 
-.. _`Suwinet`: https://www.bkwi.nl/producten/suwinet-services/
+.. _`Suwinet`: https://bkwi.nl/producten/suwinet-inlezen
 .. _`BKWI`: https://www.bkwi.nl
 
 Configuration
