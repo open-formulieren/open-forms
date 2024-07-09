@@ -138,3 +138,33 @@ class DefaultFormatterTestCase(TestCase):
             formatted_html,
             "1234AA 1",
         )
+
+    def test_addressnl_html(self):
+        component = {
+            "type": "addressNL",
+            "key": "addressNL",
+        }
+
+        value = {
+            "postcode": "1234AA",
+            "houseNumber": "1",
+            "streetName": "test",
+            "houseLetter": "A",
+            "houseNumberAddition": "DD",
+            "city": "Amsterdam",
+        }
+
+        with self.subTest("as_html False"):
+            formatted_value = format_value(component, value, as_html=False)
+
+            self.assertEqual(
+                formatted_value,
+                "test 1A DD\n1234AA Amsterdam",
+            )
+        with self.subTest("as_html True"):
+            formatted_html = format_value(component, value, as_html=True)
+
+            self.assertHTMLEqual(
+                formatted_html,
+                "test 1A DD<br>1234AA Amsterdam",
+            )
