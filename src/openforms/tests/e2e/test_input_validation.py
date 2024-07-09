@@ -1062,6 +1062,7 @@ class SingleAddressNLTests(ValidationsTestCase):
                     "houseLetter": "A",
                     "houseNumberAddition": "",
                 },
+                "Postcode moet bestaan uit vier cijfers gevolgd door twee letters (bijv. 1234 AB).",
             ),
             (
                 "houseNumber",
@@ -1071,6 +1072,7 @@ class SingleAddressNLTests(ValidationsTestCase):
                     "houseLetter": "A",
                     "houseNumberAddition": "",
                 },
+                "Huisnummer moet een nummer zijn met maximaal 5 cijfers (bijv. 456).",
             ),
             (
                 "houseLetter",
@@ -1080,6 +1082,7 @@ class SingleAddressNLTests(ValidationsTestCase):
                     "houseLetter": "89",
                     "houseNumberAddition": "",
                 },
+                "Huisletter moet een enkele letter zijn.",
             ),
             (
                 "houseNumberAddition",
@@ -1089,14 +1092,15 @@ class SingleAddressNLTests(ValidationsTestCase):
                     "houseLetter": "A",
                     "houseNumberAddition": "9999A",
                 },
+                "Huisnummertoevoeging moet bestaan uit maximaal vier letters en cijfers.",
             ),
         ]
 
-        for field_name, invalid_data in test_cases:
+        for field_name, invalid_data, expected_error in test_cases:
             with self.subTest(field_name):
                 self.assertAddressNLValidationIsAligned(
                     component,
                     ui_inputs=invalid_data,
                     api_value=invalid_data,
-                    expected_ui_error="Ongeldig.",
+                    expected_ui_error=expected_error,
                 )
