@@ -305,7 +305,9 @@ class FileSerializer(serializers.Serializer):
     originalName = serializers.CharField()
     size = serializers.IntegerField(min_value=0)
     storage = serializers.ChoiceField(choices=["url"])
-    type = serializers.CharField(allow_blank=True)
+    type = serializers.CharField(
+        error_messages={"blank": _("Invalid-unknown file type.")}
+    )
     url = serializers.URLField()
     data = FileDataSerializer()  # type: ignore
 
@@ -328,9 +330,6 @@ class FileSerializer(serializers.Serializer):
                         nested_key=nested_key,
                     )
                 )
-
-        if attrs["type"] == "":
-            raise serializers.ValidationError({"type": _("Invalid-unknown file type.")})
 
         temporary_upload = temporary_upload_from_url(attrs["url"])
         if temporary_upload is None:

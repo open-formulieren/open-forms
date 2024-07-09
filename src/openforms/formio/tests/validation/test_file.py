@@ -561,5 +561,5 @@ class FileValidationMimeTypeTests(TestCase):
         error = extract_error(errors["foo"][0], "type")
 
         self.assertFalse(is_valid)
-        self.assertEqual(error.code, "invalid")
+        self.assertEqual(error.code, "blank")
         self.assertEqual(error, _("Invalid-unknown file type."))
