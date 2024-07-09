@@ -2922,6 +2922,12 @@
       "value": "Inhoud"
     }
   ],
+  "VNGD7o": [
+    {
+      "type": 0,
+      "value": "Maximaal aantal aangevinkte opties (bijv. 1)"
+    }
+  ],
   "VQYmOD": [
     {
       "type": 0,
@@ -4715,6 +4721,12 @@
     {
       "type": 0,
       "value": "Opslaan"
+    }
+  ],
+  "oGBVo2": [
+    {
+      "type": 0,
+      "value": "Minimaal aantal aangevinkte opties (bijv. 1)"
     }
   ],
   "oWJX5K": [

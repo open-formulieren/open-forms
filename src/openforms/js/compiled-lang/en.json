@@ -2905,6 +2905,12 @@
       "value": "Page content"
     }
   ],
+  "VNGD7o": [
+    {
+      "type": 0,
+      "value": "Maximum selected checkboxes (e.g. 1)"
+    }
+  ],
   "VQYmOD": [
     {
       "type": 0,
@@ -4693,6 +4699,12 @@
     {
       "type": 0,
       "value": "Save"
+    }
+  ],
+  "oGBVo2": [
+    {
+      "type": 0,
+      "value": "Minimum selected checkboxes (e.g. 1)"
     }
   ],
   "oWJX5K": [
