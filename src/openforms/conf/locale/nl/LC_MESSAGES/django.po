@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-04 12:38+0200\n"
+"POT-Creation-Date: 2024-07-09 10:38+0200\n"
 "PO-Revision-Date: 2024-07-03 16:10+0200\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -1059,7 +1059,7 @@ msgstr "Ongeldig antwoord: {exception}"
 #: openforms/registrations/contrib/microsoft_graph/plugin.py:120
 #: openforms/registrations/contrib/objects_api/plugin.py:116
 #: openforms/registrations/contrib/stuf_zds/plugin.py:371
-#: openforms/registrations/contrib/zgw_apis/plugin.py:455
+#: openforms/registrations/contrib/zgw_apis/plugin.py:464
 msgid "Configuration"
 msgstr "Configuratie"
 
@@ -4522,58 +4522,66 @@ msgstr "De waarde is na de maximale tijd"
 msgid "Value is not between mininum and maximum time."
 msgstr "De waarde ligt niet tussen de minimale en maximale tijd."
 
-#: openforms/formio/components/vanilla.py:325
+#: openforms/formio/components/vanilla.py:311
+msgid ""
+"Could not determine the file type. Please make sure the file name has an "
+"extension."
+msgstr ""
+"Het bestandstype kon niet bepaald worden. Controleer of de bestandsnaam met een "
+"extensie eindigt (bijvoorbeel '.pdf' of '.png')."
+
+#: openforms/formio/components/vanilla.py:332
 #, python-brace-format
 msgid "The value of {root_key} must match the value of {nested_key} in 'data'."
 msgstr ""
 "De waarde van {root_key} moet overeenkomen met de waarde van {nested_key} in "
 "'data'."
 
-#: openforms/formio/components/vanilla.py:334
-#: openforms/formio/components/vanilla.py:350
+#: openforms/formio/components/vanilla.py:341
+#: openforms/formio/components/vanilla.py:357
 msgid "Invalid URL."
 msgstr "Ongeldige URL."
 
-#: openforms/formio/components/vanilla.py:338
+#: openforms/formio/components/vanilla.py:345
 msgid "Size does not match the uploaded file."
 msgstr "De grootte komt niet overeen met de bestandsgrootte van de upload."
 
-#: openforms/formio/components/vanilla.py:343
+#: openforms/formio/components/vanilla.py:350
 msgid "Name does not match the uploaded file."
 msgstr "De bestandsnaam komt niet overeen met de upload."
 
-#: openforms/formio/components/vanilla.py:486
+#: openforms/formio/components/vanilla.py:493
 msgid "Checkbox must be checked."
 msgstr "Het selectievakje moet aangevinkt zijn."
 
-#: openforms/formio/components/vanilla.py:517
+#: openforms/formio/components/vanilla.py:524
 #, python-brace-format
 msgid "Ensure this field has at least {min_selected_count} checked options."
 msgstr ""
 "Zorg dat dit veld {min_selected_count} of meer opties aangevinkt heeft."
 
-#: openforms/formio/components/vanilla.py:520
+#: openforms/formio/components/vanilla.py:527
 #, python-brace-format
 msgid ""
 "Ensure this field has no more than {max_selected_count} checked options."
 msgstr ""
 "Zorg dat dit veld {max_selected_count} of minder opties aangevinkt heeft."
 
-#: openforms/formio/components/vanilla.py:746
+#: openforms/formio/components/vanilla.py:753
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "Een lijst van waarden was verwacht, maar kreeg \"{input_type}\"."
 
-#: openforms/formio/components/vanilla.py:747
+#: openforms/formio/components/vanilla.py:754
 msgid "This list may not be empty."
 msgstr "De lijst mag niet leeg zijn."
 
-#: openforms/formio/components/vanilla.py:748
+#: openforms/formio/components/vanilla.py:755
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
 msgstr "Zorg dat dit veld {min_length} of meer waarden heeft."
 
-#: openforms/formio/components/vanilla.py:749
+#: openforms/formio/components/vanilla.py:756
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr "Zorg dat dit veld {max_length} of minder waarden heeft."
@@ -9652,11 +9660,11 @@ msgid "Could not find a roltype with this description related to the zaaktype."
 msgstr ""
 "Kon geen roltype vinden met deze omschrijving binnen het opgegeven zaaktype."
 
-#: openforms/registrations/contrib/zgw_apis/plugin.py:99
+#: openforms/registrations/contrib/zgw_apis/plugin.py:100
 msgid "ZGW API's"
 msgstr "ZGW API's"
 
-#: openforms/registrations/contrib/zgw_apis/plugin.py:271
+#: openforms/registrations/contrib/zgw_apis/plugin.py:272
 msgid "Employee who registered the case on behalf of the customer."
 msgstr "Medewerker die de zaak registreerde voor de klant."
 
@@ -9901,7 +9909,8 @@ msgstr "Bevestigingspagina tekst"
 #: openforms/submissions/api/serializers.py:451
 msgid "Body text of the confirmation page. May contain HTML!"
 msgstr ""
-"Inhoud van de bevestigingspagina. Hierin mogen HTML-karakers worden opgenomen."
+"Inhoud van de bevestigingspagina. Hierin mogen HTML-karakers worden "
+"opgenomen."
 
 #: openforms/submissions/api/serializers.py:454
 msgid "Report download URL"

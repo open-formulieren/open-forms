@@ -936,6 +936,55 @@ class SingleFileTests(ValidationsTestCase):
         # Make sure the frontend did not create one:
         self.assertEqual(TemporaryFileUpload.objects.count(), 1)
 
+    def test_unknown_file_type(self):
+        component = {
+            "type": "file",
+            "key": "unknownFile",
+            "label": "Unknown File",
+            "validate": {"required": True},
+            "storage": "url",
+            "file": {
+                "type": [
+                    "",
+                ],
+                "allowedTypesLabels": [
+                    "*",
+                ],
+            },
+        }
+
+        # The frontend validation will *not* create a TemporaryFileUpload,
+        # as the frontend will block the upload because of the invalid file type.
+        # However the user could do an handcrafted API call.
+        # For this reason, we manually create an invalid TemporaryFileUpload
+        # and use it for the `api_value`:
+
+        with open(TEST_FILES / "unknown-type", "rb") as infile:
+            temporary_upload = TemporaryFileUploadFactory.build(
+                file_name="unknown-type-file",
+                content=File(infile),
+                content_type="",
+            )
+
+            self.assertFileValidationIsAligned(
+                component,
+                ui_files=[TEST_FILES / "unknown-type"],
+                expected_ui_error=(
+                    "Het bestandstype kon niet bepaald worden. Controleer of de "
+                    "bestandsnaam met een extensie eindigt (bijvoorbeel '.pdf' of "
+                    "'.png')."
+                ),
+                api_value=[
+                    SubmittedFileFactory.create(
+                        temporary_upload=temporary_upload,
+                        type="",
+                    )
+                ],
+            )
+
+        # Make sure the frontend did not create one:
+        self.assertEqual(TemporaryFileUpload.objects.count(), 1)
+
 
 class SingleAddressNLTests(ValidationsTestCase):
     fuzzy_match_invalid_param_names = True
