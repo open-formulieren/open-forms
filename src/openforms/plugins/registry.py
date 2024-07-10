@@ -12,10 +12,10 @@ if TYPE_CHECKING:
     from .plugin import AbstractBasePlugin  # noqa: F401
 
 
-PluginT_co = TypeVar("PluginT_co", bound="AbstractBasePlugin")
+PluginT = TypeVar("PluginT", bound="AbstractBasePlugin")
 
 
-class BaseRegistry(Generic[PluginT_co]):
+class BaseRegistry(Generic[PluginT]):
     """
     Base registry class for plugin modules.
     """
@@ -27,14 +27,14 @@ class BaseRegistry(Generic[PluginT_co]):
     The module is the logical group of extra functionality in Open Forms on top of the
     core functionality.
     """
-    _registry: dict[str, PluginT_co]
+    _registry: dict[str, PluginT]
 
     def __init__(self):
         self._registry = {}
 
     def __call__(
         self, unique_identifier: str
-    ) -> Callable[[type[PluginT_co]], type[PluginT_co]]:
+    ) -> Callable[[type[PluginT]], type[PluginT]]:
 
         if len(unique_identifier) > UNIQUE_ID_MAX_LENGTH:
             raise ValueError(
@@ -42,7 +42,7 @@ class BaseRegistry(Generic[PluginT_co]):
                 f"{UNIQUE_ID_MAX_LENGTH} characters."
             )
 
-        def decorator(plugin_cls: type[PluginT_co]) -> type[PluginT_co]:
+        def decorator(plugin_cls: type[PluginT]) -> type[PluginT]:
             if unique_identifier in self._registry:
                 raise ValueError(
                     f"The unique identifier '{unique_identifier}' is already present "
@@ -57,20 +57,20 @@ class BaseRegistry(Generic[PluginT_co]):
 
         return decorator
 
-    def check_plugin(self, plugin: PluginT_co):
+    def check_plugin(self, plugin: PluginT):
         # validation hook
         pass
 
     def __iter__(self):
         return iter(self._registry.values())
 
-    def __getitem__(self, key: str) -> PluginT_co:
+    def __getitem__(self, key: str) -> PluginT:
         return self._registry[key]
 
     def __contains__(self, key: str) -> bool:
         return key in self._registry
 
-    def iter_enabled_plugins(self) -> Iterator[PluginT_co]:
+    def iter_enabled_plugins(self) -> Iterator[PluginT]:
         try:
             with_demos = flag_enabled("ENABLE_DEMO_PLUGINS")
             enable_all = False
