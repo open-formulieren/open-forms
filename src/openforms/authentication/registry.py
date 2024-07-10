@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Iterator
 
-from django.http import HttpRequest
+from rest_framework.request import Request
 
 from openforms.plugins.registry import BaseRegistry
 
@@ -32,10 +32,10 @@ class Registry(BaseRegistry["BasePlugin"]):
 
     def get_options(
         self,
-        request: HttpRequest,
+        request: Request,
         form: Form | None = None,
         is_for_cosign: bool = False,
-    ) -> list["LoginInfo"]:
+    ) -> list[LoginInfo]:
         options = list()
         if is_for_cosign and (not form or not form.cosign_component):
             return options

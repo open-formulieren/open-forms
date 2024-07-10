@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.request import Request
 
 from openforms.authentication.api.serializers import LoginOptionSerializer
 from openforms.authentication.registry import register as auth_register
@@ -24,6 +25,6 @@ class LoginOptionsReadOnlyField(serializers.ListField):
         raise NotImplementedError("read only")
 
     def to_representation(self, form):
-        request = self.context["request"]
+        request: Request = self.context["request"]
         temp = auth_register.get_options(request, form, self.is_for_cosign)
         return super().to_representation(temp)

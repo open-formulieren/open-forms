@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Iterable, Sequence
+from typing import Any, Generic, Iterable, Sequence, TypeVar
 
 from django.utils.encoding import force_str
 from django.utils.html import format_html_join
@@ -9,9 +9,11 @@ from ..typing import Component
 
 logger = logging.getLogger(__name__)
 
+ComponentT = TypeVar("ComponentT", bound=Component)
+
 
 @dataclass
-class FormatterBase:
+class FormatterBase(Generic[ComponentT]):
     as_html: bool = False
     """
     Format for HTML output or not.
@@ -31,10 +33,10 @@ class FormatterBase:
     # currently we're eating them in normalise_value_to_list()
     empty_values: Sequence[Any] = (None, "")
 
-    def is_empty_value(self, component: Component, value: Any):
+    def is_empty_value(self, component: ComponentT, value: Any):
         return value in self.empty_values
 
-    def normalise_value_to_list(self, component: Component, value: Any):
+    def normalise_value_to_list(self, component: ComponentT, value: Any):
         multiple = component.get("multiple", False)
         # this breaks if multiple is true and value not a list
         if multiple:
@@ -55,10 +57,10 @@ class FormatterBase:
         else:
             return self.multiple_separator.join(formatted_values)
 
-    def process_result(self, component: Component, formatted: str) -> str:
+    def process_result(self, component: ComponentT, formatted: str) -> str:
         return formatted
 
-    def __call__(self, component: Component, value: Any) -> str:
+    def __call__(self, component: ComponentT, value: Any) -> str:
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
 
@@ -70,5 +72,5 @@ class FormatterBase:
             component, self.join_formatted_values(component, formatted_values)
         )
 
-    def format(self, component: Component, value: Any) -> str:  # pragma:nocover
+    def format(self, component: ComponentT, value: Any) -> str:  # pragma:nocover
         raise NotImplementedError("%r must implement the 'format' method" % type(self))

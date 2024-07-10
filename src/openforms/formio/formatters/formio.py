@@ -6,11 +6,17 @@ from django.template.defaultfilters import date as fmt_date, time as fmt_time, y
 from django.utils.dateparse import parse_date, parse_time
 from django.utils.formats import number_format
 from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from glom import glom
 
-from ..typing import Component, OptionDict
+from ..typing import (
+    Component,
+    OptionDict,
+    RadioComponent,
+    SelectBoxesComponent,
+    SelectComponent,
+)
 from .base import FormatterBase
 
 logger = logging.getLogger(__name__)
@@ -110,7 +116,7 @@ class CheckboxFormatter(FormatterBase):
 
 
 class SelectBoxesFormatter(FormatterBase):
-    def format(self, component: Component, value: dict[str, bool]) -> str:
+    def format(self, component: SelectBoxesComponent, value: dict[str, bool]) -> str:
         selected_labels = [
             entry["label"] for entry in component["values"] if value.get(entry["value"])
         ]
@@ -118,12 +124,14 @@ class SelectBoxesFormatter(FormatterBase):
 
 
 class SelectFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: SelectComponent, value: str | dict) -> str:
         # grab appointment specific data
         if glom(component, "appointments.showDates", default=False):
+            assert isinstance(value, str)
             return fmt_date(parse_date(value))
         elif glom(component, "appointments.showTimes", default=False):
             # strip the seconds from a full ISO datetime
+            assert isinstance(value, str)
             return fmt_time(datetime.fromisoformat(value))
         elif glom(component, "appointments.showLocations", default=False) or glom(
             component, "appointments.showProducts", default=False
@@ -135,7 +143,9 @@ class SelectFormatter(FormatterBase):
                 return str(value)
         else:
             # regular value select
-            return get_value_label(component["data"]["values"], value)
+            values = component["data"].get("values") or []
+            assert isinstance(value, str)
+            return get_value_label(values, value)
 
 
 class CurrencyFormatter(FormatterBase):
@@ -146,13 +156,13 @@ class CurrencyFormatter(FormatterBase):
 
 
 class RadioFormatter(FormatterBase):
-    def format(self, component: Component, value: str | int) -> str:
+    def format(self, component: RadioComponent, value: str | int) -> str:
         return get_value_label(component["values"], value)
 
 
 class SignatureFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
-        text = _("signature added")
+        text = gettext("signature added")
         if not self.as_html:
             return text
 

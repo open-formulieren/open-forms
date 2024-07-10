@@ -1,0 +1,10 @@
+-c ci.txt
+-r ci.txt
+
+django-stubs
+django-stubs-ext
+djangorestframework-stubs
+types-lxml
+types-pytz
+types-pyyaml
+types-requests

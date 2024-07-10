@@ -13,7 +13,7 @@ the public API better defined and smaller.
 """
 
 import warnings
-from typing import TYPE_CHECKING, Any, Generic, Protocol, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, TypeVar
 
 from django.utils.translation import gettext as _
 
@@ -52,8 +52,6 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     Base class for Formio component plugins.
     """
 
-    is_enabled: bool = True
-
     formatter: type[FormatterProtocol[ComponentT]]
     """
     Specify the callable to use for formatting.
@@ -69,6 +67,10 @@ class BasePlugin(Generic[ComponentT], AbstractBasePlugin):
     """
     Callback to invoke to rewrite plugin configuration for a given HTTP request.
     """
+
+    @property
+    def is_enabled(self) -> Literal[True]:
+        return True
 
     @property
     def verbose_name(self):
@@ -138,10 +140,7 @@ class ComponentRegistry(BaseRegistry[BasePlugin]):
         return formatter(component, value)
 
     def update_config(
-        self,
-        component: Component,
-        submission: "Submission",
-        data: DataMapping | None = None,
+        self, component: Component, submission: "Submission", data: DataMapping
     ) -> None:
         """
         Mutate the component configuration in place.

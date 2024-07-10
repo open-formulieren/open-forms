@@ -1,4 +1,5 @@
 -c ci.txt
+-r ci.txt
 
 # Helpers
 pip-tools~=7.0

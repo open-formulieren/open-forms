@@ -21,36 +21,29 @@ cd $toplevel
 export CUSTOM_COMPILE_COMMAND="./bin/compile_dependencies.sh"
 
 # Base (& prod) deps
-pip-compile \
-    --no-emit-index-url \
-    --allow-unsafe \
-    "$@" \
-    requirements/base.in
+pip-compile "$@" requirements/base.in
 
 # Dependencies for testing
 pip-compile \
-    --no-emit-index-url \
     --output-file requirements/ci.txt \
-    --allow-unsafe \
     "$@" \
-    requirements/base.txt \
     requirements/test-tools.in \
     requirements/docs.in
 
+# Type checking deps - CI + stub packages
+pip-compile \
+    --output-file requirements/type-checking.txt \
+    "$@" \
+    requirements/type-checking.in
+
 # Dev dependencies - exact same set as CI + some extra tooling
 pip-compile \
-    --no-emit-index-url \
     --output-file requirements/dev.txt \
-    --allow-unsafe \
     "$@" \
-    requirements/ci.txt \
     requirements/dev.in
 
 # Dependencies for custom extensions
 pip-compile \
-    --no-emit-index-url \
     --output-file requirements/extensions.txt \
-    --allow-unsafe \
     "$@" \
-    requirements/base.txt \
     requirements/extensions.in

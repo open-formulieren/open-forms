@@ -9,7 +9,7 @@ class PluginBaseSerializer(serializers.Serializer):
         label=_("ID"),
         help_text=_("The unique plugin identifier"),
     )
-    label = serializers.CharField(
+    label = serializers.CharField(  # type: ignore - label is a serializers.Field(...) kwarg
         source="verbose_name",
         label=_("Label"),
         help_text=_("The human-readable name for a plugin."),
