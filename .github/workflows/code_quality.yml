@@ -159,14 +159,7 @@ jobs:
           pip install uv
           uv pip install \
             --system \
-            -r requirements/ci.txt \
-            django-stubs \
-            django-stubs-ext \
-            djangorestframework-stubs \
-            types-lxml \
-            types-pytz \
-            types-pyyaml \
-            types-requests
+            -r requirements/type-checking.txt
       - uses: jakebailey/pyright-action@v1
         with:
           version: 1.1.369
