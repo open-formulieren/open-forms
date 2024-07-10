@@ -21,12 +21,18 @@ include = [
     "src/openforms/validations/registry.py",
     "src/openforms/variables/base.py",
     "src/openforms/variables/registry.py",
+    # Formio tooling
+    "src/openforms/formio/typing/",
+    "src/openforms/formio/formatters/",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers
     "src/openforms/typing.py",
 ]
-exclude = ["**/__pycache__"]
+exclude = [
+    "**/__pycache__",
+    "src/openforms/formio/formatters/tests/"
+]
 ignore = []
 
 pythonVersion = "3.10"
