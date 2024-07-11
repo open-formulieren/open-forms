@@ -7,7 +7,7 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 
-import {mockInformatieobjecttypenGet} from '../mocks';
+import {mockCatalogiGet, mockInformatieobjecttypenGet} from '../mocks';
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
 
@@ -87,14 +87,24 @@ export default {
               url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/f9a6cd4c-5f56-4f47-ad12-2e15094f917d',
               omschrijving: 'Test IOT',
             },
-            catalogus: {domein: 'Test domain'},
+            catalogus: {domein: 'Test domain', rsin: '000000000'},
           },
           {
             informatieobjecttype: {
               url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/c2a25a12-9822-49b6-956b-89f0c39b11fe',
               omschrijving: 'Test IOT 2',
             },
-            catalogus: {domein: 'Test domain 2'},
+            catalogus: {domein: 'Test domain 2', rsin: '000000000'},
+          },
+        ]),
+        mockCatalogiGet([
+          {
+            domein: 'Test domain',
+            rsin: '000000000',
+          },
+          {
+            domein: 'Test domain 2',
+            rsin: '000000000',
           },
         ]),
       ],
@@ -121,7 +131,11 @@ export const SwitchToV2Empty = {
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
+    await waitFor(() => {
+      expect(canvas.getByLabelText('Objecttype')).toHaveValue(
+        '2c77babf-a967-4057-9969-0200320d23f1'
+      );
+    });
     // While it's a number input, the value is still a string in the DOM api
     expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
   },
@@ -231,5 +245,32 @@ export const APIFetchError = {
     );
 
     expect(errorMessage).toBeVisible();
+  },
+};
+
+export const CatalogusSelect = {
+  args: {
+    formData: {
+      objectsApiGroup: 1,
+      objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
+      objecttypeVersion: 1,
+    },
+  },
+  play: async ({canvasElement}) => {
+    window.confirm = fn(() => true);
+    const canvas = within(canvasElement);
+
+    const v2Tab = canvas.getByRole('tab', {selected: false});
+    await userEvent.click(v2Tab);
+
+    const catalogSelect = canvas.getByLabelText('Catalog');
+    await selectEvent.select(catalogSelect, 'Test domain (RSIN: 000000000)');
+
+    const IOTPDFSelect = canvas.getByLabelText('Informatieobjecttype inzendings-PDF');
+    await selectEvent.select(IOTPDFSelect, 'Test IOT');
+
+    await selectEvent.select(catalogSelect, 'Test domain 2 (RSIN: 000000000)');
+
+    await selectEvent.select(IOTPDFSelect, 'Test IOT 2');
   },
 };

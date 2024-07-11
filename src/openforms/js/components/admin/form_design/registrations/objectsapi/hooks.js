@@ -1,6 +1,9 @@
 import useAsync from 'react-use/esm/useAsync';
 
-import {REGISTRATION_OBJECTTYPES_ENDPOINT} from 'components/admin/form_design/constants';
+import {
+  REGISTRATION_CATALOGI_ENDPOINT,
+  REGISTRATION_OBJECTTYPES_ENDPOINT,
+} from 'components/admin/form_design/constants';
 import {getInformatieObjectTypen} from 'components/form/file';
 import {get} from 'utils/fetch';
 
@@ -27,20 +30,52 @@ export const useGetAvailableObjectTypes = objectsApiGroup => {
   };
 };
 
-export const useGetAvailableInformatieObjecttypen = objectsApiGroup => {
+export const useGetAvailableCatalogi = objectsApiGroup => {
+  const {
+    loading,
+    value: availableCatalogi = [],
+    error,
+  } = useAsync(async () => {
+    if (!objectsApiGroup) return [];
+    const response = await get(REGISTRATION_CATALOGI_ENDPOINT, {
+      objects_api_group: objectsApiGroup,
+    });
+    if (!response.ok) {
+      throw new Error('Loading available catalogi failed');
+    }
+    return response.data;
+  }, [objectsApiGroup]);
+
+  return {
+    loading,
+    availableCatalogi,
+    error,
+  };
+};
+
+export const useGetAvailableInformatieObjecttypen = (
+  objectsApiGroup,
+  catalogusDomein = '',
+  catalogusRsin = ''
+) => {
   const {
     loading,
     value: availableInformatieobjecttypen = [],
     error,
   } = useAsync(async () => {
-    if (!objectsApiGroup) return [];
-    const response = await getInformatieObjectTypen('objects_api', {objectsApiGroup});
+    if (!objectsApiGroup || !catalogusDomein || !catalogusRsin) return [];
 
+    const response = await getInformatieObjectTypen(
+      'objects_api',
+      {objectsApiGroup},
+      catalogusDomein,
+      catalogusRsin
+    );
     if (!response.ok) {
       throw new Error('Loading available informatieobjecttypen failed');
     }
     return response.data;
-  }, [objectsApiGroup]);
+  }, [objectsApiGroup, catalogusDomein, catalogusRsin]);
 
   return {
     loading,

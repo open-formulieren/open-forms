@@ -60,6 +60,12 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
         } else {
           delete draft.variablesMapping;
           delete draft.geometryVariableKey;
+          delete draft.catalogusDomein;
+          delete draft.catalogusRsin;
+          // These are stored as URLs for v1, so delete them as well:
+          delete draft.informatieobjecttypeSubmissionReport;
+          delete draft.informatieobjecttypeSubmissionCsv;
+          delete draft.informatieobjecttypeAttachment;
         }
         delete draft.productaanvraagType;
         delete draft.contentJson;

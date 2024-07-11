@@ -10,10 +10,15 @@ import ReactSelect from 'components/admin/forms/ReactSelect';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorMessage from 'components/errors/ErrorMessage';
 
+import CatalogiSelect from '../CatalogiSelect';
 import InformatieObjecttypeSelect from '../InformatieObjecttypeSelect';
 import ObjectTypeSelect from './ObjectTypeSelect';
 import ObjectTypeVersionSelect from './ObjectTypeVersionSelect';
-import {useGetAvailableInformatieObjecttypen, useGetAvailableObjectTypes} from './hooks';
+import {
+  useGetAvailableCatalogi,
+  useGetAvailableInformatieObjecttypen,
+  useGetAvailableObjectTypes,
+} from './hooks';
 import {getErrorMarkup, getFieldErrors, getOptionsFromSchema} from './utils';
 
 const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}) => {
@@ -24,6 +29,8 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
     objectsApiGroup = '',
     objecttype = '',
     objecttypeVersion = '',
+    catalogusDomein = '',
+    catalogusRsin = '',
     informatieobjecttypeSubmissionReport = '',
     uploadSubmissionCsv = false,
     informatieobjecttypeSubmissionCsv = '',
@@ -35,7 +42,12 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
   // Track available object types and versions in this component so the state can be
   // shared.
   const availableObjectTypesState = useGetAvailableObjectTypes(objectsApiGroup);
-  const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(objectsApiGroup);
+  const availableCatalogiState = useGetAvailableCatalogi(objectsApiGroup);
+  const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(
+    objectsApiGroup,
+    catalogusDomein,
+    catalogusRsin
+  );
 
   const buildErrorsComponent = field => {
     const rawErrors = getFieldErrors(name, index, validationErrors, field);
@@ -59,6 +71,8 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         draft.geometryVariableKey = '';
         delete draft.objecttype;
         delete draft.objecttypeVersion;
+        delete draft.catalogusDomein;
+        delete draft.catalogusRsin;
         delete draft.informatieobjecttypeSubmissionReport;
         delete draft.informatieobjecttypeSubmissionCsv;
         delete draft.informatieobjecttypeAttachment;
@@ -74,6 +88,16 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
       })
     );
   }, [objecttype]);
+
+  useUpdateEffect(() => {
+    onChange(
+      produce(formData, draft => {
+        delete draft.informatieobjecttypeSubmissionReport;
+        delete draft.informatieobjecttypeSubmissionCsv;
+        delete draft.informatieobjecttypeAttachment;
+      })
+    );
+  }, [catalogusDomein, catalogusRsin]);
 
   const warningOnChange = message => {
     return event => {
@@ -188,6 +212,45 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
           selectedVersion={objecttypeVersion}
           htmlId="root_objecttypeVersion"
           onChange={onFieldChange}
+        />
+      </CustomFieldTemplate>
+      <CustomFieldTemplate
+        id="root_catalogus"
+        label={intl.formatMessage({
+          defaultMessage: 'Catalog',
+          description: 'Objects API registration options "Catalog" label',
+        })}
+        rawDescription={intl.formatMessage({
+          defaultMessage: 'Which Catalog to use.',
+          description: 'Objects API registration options "Catalog" description',
+        })}
+        rawErrors={getFieldErrors(name, index, validationErrors, [
+          'catalogusDomein',
+          'catalogusRsin',
+        ])}
+        errors={buildErrorsComponent(['catalogusDomein', 'catalogusRsin'])}
+        displayLabel
+        required
+      >
+        <CatalogiSelect
+          name="catalogus"
+          htmlId="root_catalogus"
+          availableCatalogiState={availableCatalogiState}
+          catalogusDomein={catalogusDomein}
+          catalogusRsin={catalogusRsin}
+          onChange={({catalogusDomein, catalogusRsin}) => {
+            onChange(
+              produce(formData, draft => {
+                if (catalogusDomein === '' && catalogusRsin === '') {
+                  delete draft.catalogusDomein;
+                  delete draft.catalogusRsin;
+                } else {
+                  draft.catalogusDomein = catalogusDomein;
+                  draft.catalogusRsin = catalogusRsin;
+                }
+              })
+            );
+          }}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate

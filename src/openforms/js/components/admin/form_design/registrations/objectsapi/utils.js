@@ -24,10 +24,12 @@ const getOptionsFromSchema = (enums, enumNames) => {
 const getFieldErrors = (name, index, errors, field) => {
   const errorMessages = [];
 
+  if (!Array.isArray(field)) field = [field];
+
   for (const [errorName, errorReason] of errors) {
     if (errorName.startsWith(name)) {
       const errorNameBits = errorName.split('.');
-      if (errorNameBits[2] === String(index) && errorNameBits.at(-1) === field) {
+      if (errorNameBits[2] === String(index) && field.includes(errorNameBits.at(-1))) {
         errorMessages.push(errorReason);
       }
     }

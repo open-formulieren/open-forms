@@ -11,20 +11,36 @@ const BaseFileField = Formio.Components.components.file;
  *
  * @param  {String} backend The registration backend identifier to query for.
  * @param  {Object} options The specified configuration options for the specified backend.
+ * @param  {Object} catalogusDomein The catalogus domein the informatieobjecttypen should belong to.
+ * @param  {Object} catalogusRsin The catalogus RSIN the informatieobjecttypen should belong to.
  * @return {Promise<{ok: boolean, status: number, data?: any} | null>}
  *         An async response data wrapper if the registration backend supports
  *         informatieobjecttypen, null otherwise.
  */
-export const getInformatieObjectTypen = async (backend, options) => {
+export const getInformatieObjectTypen = async (
+  backend,
+  options,
+  catalogusDomein = '',
+  catalogusRsin = ''
+) => {
+  const extraOptions = {};
+
+  if (catalogusDomein && catalogusRsin) {
+    extraOptions.catalogus_domein = catalogusDomein;
+    extraOptions.catalogus_rsin = catalogusRsin;
+  }
+
   switch (backend) {
     case 'zgw-create-zaak': {
       return await get('/api/v2/registration/plugins/zgw-api/informatieobjecttypen', {
         zgw_api_group: options.zgwApiGroup,
+        ...extraOptions,
       });
     }
     case 'objects_api':
       return await get('/api/v2/registration/plugins/objects-api/informatieobjecttypen', {
         objects_api_group: options.objectsApiGroup,
+        ...extraOptions,
       });
     default:
       return null;

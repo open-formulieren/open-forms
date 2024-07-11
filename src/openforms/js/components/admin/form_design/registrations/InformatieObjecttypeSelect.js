@@ -21,13 +21,13 @@ const InformatieObjecttypeSelect = ({
     const optionsMapping = availableInformatieobjecttypen.reduce((accumulator, temp) => {
       const {
         catalogus: {domein},
-        informatieobjecttype: {url, omschrijving},
+        informatieobjecttype: {omschrijving},
       } = temp;
       if (!accumulator[domein]) {
         accumulator[domein] = [];
       }
 
-      accumulator[domein].push({value: url, label: omschrijving});
+      accumulator[domein].push({value: omschrijving, label: omschrijving});
       return accumulator;
     }, {});
 
@@ -45,13 +45,13 @@ const InformatieObjecttypeSelect = ({
 
     // check if a valid option is selected, if this is the case -> do nothing
     const isOptionPresent = availableInformatieobjecttypen.find(
-      iot => iot.informatieobjecttype.url === informatieObjecttype
+      iot => iot.informatieobjecttype.omschrijving === informatieObjecttype
     );
     if (isOptionPresent) return;
 
     // otherwise select the first possible option and persist that back into the state
     const fakeEvent = {
-      target: {name, value: availableInformatieobjecttypen[0].informatieobjecttype.url},
+      target: {name, value: availableInformatieobjecttypen[0].informatieobjecttype.omschrijving},
     };
     onChange(fakeEvent);
   }, []);
