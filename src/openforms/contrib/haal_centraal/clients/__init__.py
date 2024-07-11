@@ -25,8 +25,6 @@ def get_brp_client(submission: Submission | None = None, **kwargs: Any) -> BRPCl
 
     config = HaalCentraalConfig.get_solo()
     global_config = GlobalConfiguration.get_solo()
-    assert isinstance(config, HaalCentraalConfig)
-    assert isinstance(global_config, GlobalConfiguration)
     if not (service := config.brp_personen_service):
         raise NoServiceConfigured("No BRP service configured!")
 

@@ -341,9 +341,6 @@ class StufZDSRegistration(BasePlugin):
             )
 
     def check_config(self):
-        config = StufZDSConfig.get_solo()
-        assert isinstance(config, StufZDSConfig)
-
         options: ZaakOptions = {
             "omschrijving": "MyForm",
             "zds_zaaktype_code": "test",

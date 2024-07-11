@@ -26,7 +26,6 @@ def setup_test_data(live_server_url: str):
     call_command("loaddata", "cookie_consent", stdout=StringIO())
 
     config = AnalyticsToolsConfiguration.get_solo()
-    assert isinstance(config, AnalyticsToolsConfiguration)
 
     # configure an analytics provider so that the JS snippets are not empty
     config.matomo_url = f"{live_server_url}/static"

@@ -613,7 +613,6 @@ class Form(models.Model):
 
         # otherwise, check the global configuration
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         return getattr(config, field_name)
 
     def activate(self):

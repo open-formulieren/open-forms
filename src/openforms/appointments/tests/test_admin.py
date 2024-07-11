@@ -202,7 +202,6 @@ class AppointmentsConfigAdminTests(WebTest):
                 )
 
             config = AppointmentsConfig.get_solo()
-            assert isinstance(config, AppointmentsConfig)
             config.plugin = "test"
             config.save()
 

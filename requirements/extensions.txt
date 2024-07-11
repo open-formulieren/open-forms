@@ -291,7 +291,7 @@ django-log-outgoing-requests==0.6.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-modeltranslation==0.18.12
+django-modeltranslation==0.19.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -340,7 +340,7 @@ django-simple-certmanager==2.0.0
     #   -r requirements/base.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.1.0
+django-solo==2.3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -833,7 +833,7 @@ simplejson==3.17.6
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mail-parser
-six==1.15.0
+six==1.16.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -890,6 +890,8 @@ typing-extensions==4.11.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   asgiref
+    #   django-modeltranslation
+    #   django-solo
     #   mozilla-django-oidc-db
     #   qrcode
     #   schwifty

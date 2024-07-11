@@ -381,7 +381,6 @@ class File(BasePlugin[FileComponent]):
         # check if we need to apply "filePattern" modifications
         if component.get("useConfigFiletypes", False):
             config = GlobalConfiguration.get_solo()
-            assert isinstance(config, GlobalConfiguration)
             mimetypes: list[str] = config.form_upload_default_file_types  # type: ignore
             component["filePattern"] = ",".join(mimetypes)
             component["file"].update(

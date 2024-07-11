@@ -82,7 +82,6 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         )
 
         config = EherkenningConfiguration.get_solo()
-        assert isinstance(config, EherkenningConfiguration)
         config.certificate = cert
         config.idp_service_entity_id = SIGNICAT_BROKER_BASE / "sp/saml"
         # broker insists using https

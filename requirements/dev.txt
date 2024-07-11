@@ -335,7 +335,7 @@ django-log-outgoing-requests==0.6.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-modeltranslation==0.18.12
+django-modeltranslation==0.19.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -389,7 +389,7 @@ django-simple-certmanager[testutils]==2.0.0
     #   django-digid-eherkenning
     #   django-simple-certmanager
     #   zgw-consumers
-django-solo==2.1.0
+django-solo==2.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1042,7 +1042,7 @@ simplejson==3.17.6
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mail-parser
-six==1.15.0
+six==1.16.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1194,6 +1194,8 @@ typing-extensions==4.11.0
     #   -r requirements/ci.txt
     #   asgiref
     #   black
+    #   django-modeltranslation
+    #   django-solo
     #   mozilla-django-oidc-db
     #   pyee
     #   qrcode

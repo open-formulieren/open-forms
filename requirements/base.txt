@@ -180,7 +180,7 @@ django-jsonform==2.21.2
     #   mozilla-django-oidc-db
 django-log-outgoing-requests==0.6.1
     # via -r requirements/base.in
-django-modeltranslation==0.18.12
+django-modeltranslation==0.19.4
     # via -r requirements/base.in
 django-ordered-model==3.6
     # via
@@ -207,7 +207,7 @@ django-simple-certmanager==2.0.0
     #   -r requirements/base.in
     #   django-digid-eherkenning
     #   zgw-consumers
-django-solo==2.1.0
+django-solo==2.3.0
     # via
     #   -r requirements/base.in
     #   django-camunda
@@ -473,7 +473,7 @@ sentry-sdk[django]==1.27.1
     # via -r requirements/base.in
 simplejson==3.17.6
     # via mail-parser
-six==1.15.0
+six==1.16.0
     # via
     #   bleach
     #   click-repl
@@ -510,6 +510,8 @@ typing-extensions==4.11.0
     # via
     #   -r requirements/base.in
     #   asgiref
+    #   django-modeltranslation
+    #   django-solo
     #   mozilla-django-oidc-db
     #   qrcode
     #   schwifty

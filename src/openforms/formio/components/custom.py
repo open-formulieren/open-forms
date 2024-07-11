@@ -191,7 +191,6 @@ class Map(BasePlugin[Component]):
     def rewrite_for_request(component, request: Request):
         if component.get("useConfigDefaultMapSettings", False):
             config = GlobalConfiguration.get_solo()
-            assert isinstance(config, GlobalConfiguration)
             component["defaultZoom"] = config.form_map_default_zoom_level
             component.setdefault("initialCenter", {})
             component["initialCenter"]["lat"] = config.form_map_default_latitude

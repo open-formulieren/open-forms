@@ -23,7 +23,6 @@ from ..models import GlobalConfiguration
 def _ensure_arrayfields(form: WebTestForm, config: GlobalConfiguration | None = None):
     if config is None:
         config = GlobalConfiguration.get_solo()  # type: ignore
-    assert isinstance(config, GlobalConfiguration)
     # set the values manually, normally this is done through JS (django-jsonform takes
     # care of it)
     form["email_template_netloc_allowlist"] = json.dumps(
@@ -61,7 +60,6 @@ class AdminTests(WebTest):
     def test_plugin_configuration(self):
         # mocking the admin/solo machinery is not straightforward here...
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         config.plugin_configuration = {
             "authentication": {
                 "digid": {
@@ -93,7 +91,6 @@ class AdminTests(WebTest):
 
     def test_configuration_save_form_email_can_be_added(self):
         config = GlobalConfiguration.get_solo()
-        assert isinstance(config, GlobalConfiguration)
         url = reverse("admin:config_globalconfiguration_change", args=(1,))
 
         change_page = self.app.get(url)

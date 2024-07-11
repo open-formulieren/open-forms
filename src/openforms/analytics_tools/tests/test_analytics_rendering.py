@@ -25,7 +25,6 @@ class AnalyticsToolsRenderingTest(WebTest):
         form = FormFactory.create()
         cls.url = reverse("forms:form-detail", kwargs={"slug": form.slug})
         config = AnalyticsToolsConfiguration.get_solo()
-        assert isinstance(config, AnalyticsToolsConfiguration)
         config.analytics_cookie_consent_group, _ = CookieGroup.objects.get_or_create(
             varname="analytical"
         )
