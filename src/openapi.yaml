@@ -3795,11 +3795,11 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/catalogus:
+  /api/v2/registration/catalogi:
     get:
-      operationId: registration_catalogus_list
-      description: List the available Catalogus based on the provided API group.
-      summary: List available Catalogus
+      operationId: registration_catalogi_list
+      description: List the available Catalogi based on the provided API group.
+      summary: List available Catalogi
       parameters:
       - in: query
         name: objects_api_group
@@ -3848,7 +3848,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CatalogusDomain'
+                  $ref: '#/components/schemas/Catalogus'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -6813,7 +6813,7 @@ components:
           description: Email given when making the appointment
       required:
       - email
-    CatalogusDomain:
+    Catalogus:
       type: object
       properties:
         domein:
@@ -8386,7 +8386,7 @@ components:
         informatieobjecttype:
           $ref: '#/components/schemas/InformatieObjectType'
         catalogus:
-          $ref: '#/components/schemas/CatalogusDomain'
+          $ref: '#/components/schemas/Catalogus'
       required:
       - catalogus
       - informatieobjecttype

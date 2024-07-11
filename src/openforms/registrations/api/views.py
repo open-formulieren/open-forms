@@ -15,7 +15,7 @@ from .filters import (
     ListInformatieObjectTypenQueryParamsSerializer,
 )
 from .serializers import (
-    CatalogusDomainSerializer,
+    CatalogusSerializer,
     ChoiceWrapper,
     InformatieObjectTypeChoiceSerializer,
     RegistrationAttributeSerializer,
@@ -62,18 +62,18 @@ class AllAttributesListView(ListMixin, APIView):
 
 @extend_schema_view(
     get=extend_schema(
-        summary=_("List available Catalogus"),
+        summary=_("List available Catalogi"),
         parameters=[APIGroupQueryParamsSerializer],
     ),
 )
-class CatalogusListView(ListMixin, APIView):
+class CatalogiListView(ListMixin, APIView):
     """
-    List the available Catalogus based on the provided API group.
+    List the available Catalogi based on the provided API group.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = CatalogusDomainSerializer
+    serializer_class = CatalogusSerializer
 
     def get_objects(self):
         filter_serializer = APIGroupQueryParamsSerializer(

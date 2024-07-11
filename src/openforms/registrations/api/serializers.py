@@ -47,7 +47,7 @@ class InformatieObjectTypeSerializer(APIModelSerializer):
         )
 
 
-class CatalogusDomainSerializer(APIModelSerializer):
+class CatalogusSerializer(APIModelSerializer):
     class Meta:
         model = Catalogus
         fields = ("domein", "rsin")
@@ -55,4 +55,4 @@ class CatalogusDomainSerializer(APIModelSerializer):
 
 class InformatieObjectTypeChoiceSerializer(serializers.Serializer):
     informatieobjecttype = InformatieObjectTypeSerializer()
-    catalogus = CatalogusDomainSerializer()
+    catalogus = CatalogusSerializer()

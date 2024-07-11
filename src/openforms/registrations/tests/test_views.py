@@ -144,7 +144,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 
     VCR_TEST_FILES = Path(__file__).parent / "files"
-    endpoint = reverse_lazy("api:catalogus-list")
+    endpoint = reverse_lazy("api:catalogi-list")
 
     @classmethod
     def setUpTestData(cls):

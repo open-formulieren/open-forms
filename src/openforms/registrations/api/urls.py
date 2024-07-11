@@ -2,7 +2,7 @@ from django.urls import include, path
 
 from .views import (
     AllAttributesListView,
-    CatalogusListView,
+    CatalogiListView,
     InformatieObjectTypenListView,
     PluginListView,
 )
@@ -15,9 +15,9 @@ urlpatterns = [
         name="registrations-attribute-list",
     ),
     path(
-        "catalogus",
-        CatalogusListView.as_view(),
-        name="catalogus-list",
+        "catalogi",
+        CatalogiListView.as_view(),
+        name="catalogi-list",
     ),
     path(
         "informatieobjecttypen",
