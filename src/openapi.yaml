@@ -3795,13 +3795,95 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/catalogus:
+    get:
+      operationId: registration_catalogus_list
+      description: List the available Catalogus based on the provided API group.
+      summary: List available Catalogus
+      parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: integer
+        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+      - in: query
+        name: registration_backend
+        schema:
+          enum:
+          - zgw-create-zaak
+          - email
+          - stuf-zds-create-zaak
+          - objects_api
+          - microsoft-graph
+          - camunda
+          type: string
+          title: Registration backend ID
+          minLength: 1
+        description: |-
+          The ID of the registration backend to use.
+
+          * `zgw-create-zaak` - ZGW API's
+          * `email` - Email registration
+          * `stuf-zds-create-zaak` - StUF-ZDS
+          * `objects_api` - Objects API registration
+          * `microsoft-graph` - Microsoft Graph (OneDrive/SharePoint)
+          * `camunda` - Camunda
+        required: true
+      - in: query
+        name: zgw_api_group
+        schema:
+          type: integer
+          title: ZGW API set
+        description: The primary key of the ZGW API set to use. The informatieobjecttypen
+          from the Catalogi API in this set will be returned.
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CatalogusDomain'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/informatieobjecttypen:
     get:
       operationId: registration_informatieobjecttypen_list
-      description: List the available InformatieObjectTypen based on the configured
-        registration backend and ZGW APIs services.
+      description: |-
+        List the available InformatieObjectTypen based on the configured registration backend and ZGW APIs services.
+
+        Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
+        and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
+        only one entry is returned.
       summary: List available InformatieObjectTypen
       parameters:
+      - in: query
+        name: catalogus_domein
+        schema:
+          type: string
+          minLength: 1
+        description: Filter informatieobjecttypen against this catalogus domein.If
+          provided, the RSIN should also be present.
+      - in: query
+        name: catalogus_rsin
+        schema:
+          type: string
+          minLength: 1
+        description: Filter informatieobjecttypen against this catalogus RSIN.If provided,
+          the RSIN should also be present.
       - in: query
         name: objects_api_group
         schema:
@@ -6736,8 +6818,11 @@ components:
       properties:
         domein:
           type: string
+        rsin:
+          type: string
       required:
       - domein
+      - rsin
     Category:
       type: object
       properties:
