@@ -603,6 +603,12 @@
       "value": "length"
     }
   ],
+  "5p7PF0": [
+    {
+      "type": 0,
+      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -3126,12 +3132,6 @@
       "value": "Indien meerdere unieke identificaties beschikbaar zijn (bijvoorbeeld bij eHerkenning Bewindvoering en DigiD Machtigen), welke prefill-gegevens moeten dan opgehaald worden? Deze voor de machtiger of de gemachtigde?"
     }
   ],
-  "WnKF/i": [
-    {
-      "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen."
-    }
-  ],
   "Wz5QZo": [
     {
       "type": 0,
@@ -3322,12 +3322,6 @@
     {
       "type": 0,
       "value": "Selecteer de plugin om te gebruiken voor prefill."
-    }
-  ],
-  "Yyvvx1": [
-    {
-      "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document."
     }
   ],
   "YzLSHY": [
@@ -3879,12 +3873,6 @@
     {
       "type": 0,
       "value": "Beheer procesvariabelen"
-    }
-  ],
-  "eBtStW": [
-    {
-      "type": 0,
-      "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document."
     }
   ],
   "eJEu3L": [
@@ -4657,6 +4645,12 @@
     {
       "type": 0,
       "value": "Beheer procesvariabelen"
+    }
+  ],
+  "n/+OWz": [
+    {
+      "type": 0,
+      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
     }
   ],
   "n4Y2ex": [
@@ -5649,6 +5643,12 @@
     {
       "type": 0,
       "value": "Gebruik prijsregels om de prijs te bepalen"
+    }
+  ],
+  "zxaohJ": [
+    {
+      "type": 0,
+      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
     }
   ]
 }

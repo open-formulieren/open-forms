@@ -262,7 +262,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF',
+            'Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF',
           description:
             'Objects API registration options "Submission report PDF informatieobjecttype" description',
         })}
@@ -316,7 +316,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV',
+            'Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV',
           description:
             'Objects API registration options "Submission report CSV informatieobjecttype" description',
         })}
@@ -345,7 +345,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments',
+            'Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments',
           description:
             'Objects API registration options "Attachment informatieobjecttype" description',
         })}

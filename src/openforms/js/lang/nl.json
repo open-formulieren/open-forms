@@ -250,6 +250,11 @@
     "description": "Version of the object type in the Object Types API",
     "originalDefault": "Objects API - objecttype version"
   },
+  "5p7PF0": {
+    "defaultMessage": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV",
+    "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" description",
+    "originalDefault": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -1441,11 +1446,6 @@
     "description": "Variable table prefill plugin title",
     "originalDefault": "Prefill plugin"
   },
-  "WnKF/i": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen.",
-    "description": "Objects API registration options \"Attachment informatieobjecttype\" description",
-    "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
-  },
   "Wz5QZo": {
     "defaultMessage": "Actief",
     "description": "Form list 'active' column header",
@@ -1525,11 +1525,6 @@
     "defaultMessage": "Item toevoegen",
     "description": "JSON editor: add array value button",
     "originalDefault": "Add item"
-  },
-  "Yyvvx1": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document.",
-    "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" description",
-    "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
   },
   "YzLSHY": {
     "defaultMessage": "Weet u zeker dat u dit wilt verwijderen?",
@@ -1752,11 +1747,6 @@
     "defaultMessage": "Beheer procesvariabelen",
     "description": "Camunda process var selection modal title",
     "originalDefault": "Manage process variables"
-  },
-  "eBtStW": {
-    "defaultMessage": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document.",
-    "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
-    "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
   },
   "eJEu3L": {
     "defaultMessage": "Weet u zeker dat u deze regel wil verwijderen?",
@@ -2133,6 +2123,11 @@
     "defaultMessage": "Beheer procesvariabelen",
     "description": "Open manage camunda process vars modal button",
     "originalDefault": "Manage process variables"
+  },
+  "n/+OWz": {
+    "defaultMessage": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF",
+    "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
+    "originalDefault": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
   },
   "n4Y2ex": {
     "defaultMessage": "Versie",
@@ -2596,5 +2591,10 @@
     "defaultMessage": "Gebruik prijsregels om de prijs te bepalen",
     "description": "dynamic pricing mode label",
     "originalDefault": "Use logic rules to determine the price"
+  },
+  "zxaohJ": {
+    "defaultMessage": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments",
+    "description": "Objects API registration options \"Attachment informatieobjecttype\" description",
+    "originalDefault": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
   }
 }

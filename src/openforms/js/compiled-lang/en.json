@@ -603,6 +603,12 @@
       "value": "length"
     }
   ],
+  "5p7PF0": [
+    {
+      "type": 0,
+      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -3109,12 +3115,6 @@
       "value": "In case that multiple identifiers are returned (in the case of eHerkenning bewindvoering and DigiD Machtigen), should the prefill data related to the main identifier be used, or that related to the authorised person?"
     }
   ],
-  "WnKF/i": [
-    {
-      "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
-    }
-  ],
   "Wz5QZo": [
     {
       "type": 0,
@@ -3305,12 +3305,6 @@
     {
       "type": 0,
       "value": "Select the plugin to use for the prefill functionality."
-    }
-  ],
-  "Yyvvx1": [
-    {
-      "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
     }
   ],
   "YzLSHY": [
@@ -3857,12 +3851,6 @@
     {
       "type": 0,
       "value": "Manage process variables"
-    }
-  ],
-  "eBtStW": [
-    {
-      "type": 0,
-      "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
     }
   ],
   "eJEu3L": [
@@ -4635,6 +4623,12 @@
     {
       "type": 0,
       "value": "Manage process variables"
+    }
+  ],
+  "n/+OWz": [
+    {
+      "type": 0,
+      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
     }
   ],
   "n4Y2ex": [
@@ -5627,6 +5621,12 @@
     {
       "type": 0,
       "value": "Use logic rules to determine the price"
+    }
+  ],
+  "zxaohJ": [
+    {
+      "type": 0,
+      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
     }
   ]
 }

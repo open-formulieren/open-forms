@@ -1,15 +1,20 @@
+import {produce} from 'immer';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect} from 'react';
 import {useIntl} from 'react-intl';
+import {useUpdateEffect} from 'react-use';
 
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import {Checkbox, NumberInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
-import Select from 'components/admin/forms/Select';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
-import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
+import CatalogiSelect from '../CatalogiSelect';
+import InformatieObjecttypeSelect from '../InformatieObjecttypeSelect';
+import {useGetAvailableCatalogi, useGetAvailableInformatieObjecttypen} from './hooks';
+import {getErrorMarkup, getFieldErrors, getOptionsFromSchema} from './utils';
 
-const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
+const LegacyConfigFields = ({index, name, schema, formData, onFieldChange, onChange}) => {
   const intl = useIntl();
   const validationErrors = useContext(ValidationErrorContext);
 
@@ -17,6 +22,8 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
     objectsApiGroup = '',
     objecttype = '',
     objecttypeVersion = '',
+    catalogusDomein = '',
+    catalogusRsin = '',
     productaanvraagType = '',
     informatieobjecttypeSubmissionReport = '',
     uploadSubmissionCsv = false,
@@ -26,6 +33,13 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
     contentJson = '',
     paymentStatusUpdateJson = '',
   } = formData;
+
+  const availableCatalogiState = useGetAvailableCatalogi(objectsApiGroup);
+  const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(
+    objectsApiGroup,
+    catalogusDomein,
+    catalogusRsin
+  );
 
   const buildErrorsComponent = field => {
     const rawErrors = getFieldErrors(name, index, validationErrors, field);
@@ -39,6 +53,39 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
       });
     }
   }, []);
+
+  // Resetting values if necessary:
+  useUpdateEffect(() => {
+    onChange(
+      produce(formData, draft => {
+        delete draft.objecttype;
+        delete draft.objecttypeVersion;
+        delete draft.catalogusDomein;
+        delete draft.catalogusRsin;
+        delete draft.informatieobjecttypeSubmissionReport;
+        delete draft.informatieobjecttypeSubmissionCsv;
+        delete draft.informatieobjecttypeAttachment;
+      })
+    );
+  }, [objectsApiGroup]);
+
+  useUpdateEffect(() => {
+    onChange(
+      produce(formData, draft => {
+        draft.objecttypeVersion = '';
+      })
+    );
+  }, [objecttype]);
+
+  useUpdateEffect(() => {
+    onChange(
+      produce(formData, draft => {
+        delete draft.informatieobjecttypeSubmissionReport;
+        delete draft.informatieobjecttypeSubmissionCsv;
+        delete draft.informatieobjecttypeAttachment;
+      })
+    );
+  }, [catalogusDomein, catalogusRsin]);
 
   return (
     <>
@@ -57,16 +104,16 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         displayLabel
         required
       >
-        <Select
-          id="root_objectsApiGroup"
+        <ReactSelect
           name="objectsApiGroup"
-          choices={getChoicesFromSchema(
+          value={objectsApiGroup}
+          options={getOptionsFromSchema(
             schema.properties.objectsApiGroup.enum,
             schema.properties.objectsApiGroup.enumNames
           )}
-          value={objectsApiGroup}
+          htmlId="root_objectsApiGroup"
           onChange={onFieldChange}
-          allowBlank
+          emptyValue=""
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -115,6 +162,45 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
+        id="root_catalogus"
+        label={intl.formatMessage({
+          defaultMessage: 'Catalog',
+          description: 'Objects API registration options "Catalog" label',
+        })}
+        rawDescription={intl.formatMessage({
+          defaultMessage: 'Which Catalog to use.',
+          description: 'Objects API registration options "Catalog" description',
+        })}
+        rawErrors={getFieldErrors(name, index, validationErrors, [
+          'catalogusDomein',
+          'catalogusRsin',
+        ])}
+        errors={buildErrorsComponent(['catalogusDomein', 'catalogusRsin'])}
+        displayLabel
+        required
+      >
+        <CatalogiSelect
+          name="catalogus"
+          htmlId="root_catalogus"
+          availableCatalogiState={availableCatalogiState}
+          catalogusDomein={catalogusDomein}
+          catalogusRsin={catalogusRsin}
+          onChange={({catalogusDomein, catalogusRsin}) => {
+            onChange(
+              produce(formData, draft => {
+                if (catalogusDomein === '' && catalogusRsin === '') {
+                  delete draft.catalogusDomein;
+                  delete draft.catalogusRsin;
+                } else {
+                  draft.catalogusDomein = catalogusDomein;
+                  draft.catalogusRsin = catalogusRsin;
+                }
+              })
+            );
+          }}
+        />
+      </CustomFieldTemplate>
+      <CustomFieldTemplate
         id="root_productaanvraagType"
         label={intl.formatMessage({
           defaultMessage: 'Productaanvraag type',
@@ -144,7 +230,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF',
+            'Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF',
           description:
             'Objects API registration options "Submission report PDF informatieobjecttype" description',
         })}
@@ -157,10 +243,11 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         errors={buildErrorsComponent('informatieobjecttypeSubmissionReport')}
         displayLabel
       >
-        <TextInput
-          id="root_informatieobjecttypeSubmissionReport"
+        <InformatieObjecttypeSelect
           name="informatieobjecttypeSubmissionReport"
-          value={informatieobjecttypeSubmissionReport}
+          htmlId="root_informatieobjecttypeSubmissionReport"
+          availableInformatieObjecttypenState={availableInformatieObjecttypenState}
+          informatieObjecttype={informatieobjecttypeSubmissionReport}
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -197,7 +284,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV',
+            'Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV',
           description:
             'Objects API registration options "Submission report CSV informatieobjecttype" description',
         })}
@@ -210,10 +297,11 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         errors={buildErrorsComponent('informatieobjecttypeSubmissionCsv')}
         displayLabel
       >
-        <TextInput
-          id="root_informatieobjecttypeSubmissionCsv"
+        <InformatieObjecttypeSelect
           name="informatieobjecttypeSubmissionCsv"
-          value={informatieobjecttypeSubmissionCsv}
+          htmlId="root_informatieobjecttypeSubmissionCsv"
+          availableInformatieObjecttypenState={availableInformatieObjecttypenState}
+          informatieObjecttype={informatieobjecttypeSubmissionCsv}
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -225,7 +313,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments',
+            'Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments',
           description:
             'Objects API registration options "Attachment informatieobjecttype" description',
         })}
@@ -233,10 +321,11 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         errors={buildErrorsComponent('informatieobjecttypeAttachment')}
         displayLabel
       >
-        <TextInput
-          id="root_informatieobjecttypeAttachment"
+        <InformatieObjecttypeSelect
           name="informatieobjecttypeAttachment"
-          value={informatieobjecttypeAttachment}
+          htmlId="root_informatieobjecttypeAttachment"
+          availableInformatieObjecttypenState={availableInformatieObjecttypenState}
+          informatieObjecttype={informatieobjecttypeAttachment}
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -329,6 +418,7 @@ LegacyConfigFields.propTypes = {
     paymentStatusUpdateJson: PropTypes.string,
   }),
   onFieldChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default LegacyConfigFields;
