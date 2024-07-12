@@ -15,6 +15,7 @@ import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
+import jsonPropTypeValidator from 'utils/JsonPropTypeValidator';
 
 import {FormLogicContext} from './Context';
 import StepSelection, {useFormStep} from './StepSelection';
@@ -259,8 +260,6 @@ const RuleBody = ({
                   )}
                 </DSLEditorNode>
               </div>
-
-              <DataPreview data={jsonLogicTrigger} />
             </div>
             {triggerFromStepIdentifier && !triggerFromStep && (
               <MessageList
@@ -353,7 +352,7 @@ const RuleBody = ({
 RuleBody.propTypes = {
   isCreate: PropTypes.bool.isRequired,
   isAdvanced: PropTypes.bool.isRequired,
-  jsonLogicTrigger: PropTypes.object,
+  jsonLogicTrigger: jsonPropTypeValidator,
   actions: PropTypes.arrayOf(PropTypes.object),
   displayAdvancedOptions: PropTypes.bool,
   setDisplayAdvancedOptions: PropTypes.func.isRequired,
@@ -491,7 +490,7 @@ Rule.propTypes = {
   description: PropTypes.string,
   _mayGenerateDescription: PropTypes.bool.isRequired,
   order: PropTypes.number.isRequired,
-  jsonLogicTrigger: PropTypes.object,
+  jsonLogicTrigger: jsonPropTypeValidator,
   triggerFromStep: PropTypes.string,
   actions: PropTypes.arrayOf(PropTypes.object),
   isAdvanced: PropTypes.bool.isRequired,
