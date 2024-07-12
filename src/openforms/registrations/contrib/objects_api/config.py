@@ -174,6 +174,18 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         allow_blank=True,
     )
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if getattr(self, "swagger_fake_view", False) or not self.context.get(
+            "is_import", False
+        ):
+            return fields
+
+        # If in an import context, we don't want to error on missing groups.
+        # Instead, we will try to set one if possible in the `validate` method.
+        fields["objects_api_group"].required = False
+        return fields
+
     def to_internal_value(self, data: Any) -> Any:
         # Apply conversions when importing forms:
         is_import: bool = self.context.get("is_import", False)
@@ -191,7 +203,35 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
 
         return super().to_internal_value(new_data)
 
+    def _set_group_during_import(self, attrs: dict[str, Any]) -> None:
+        if (
+            self.context.get("is_import", False)
+            and attrs.get("objects_api_group") is None
+        ):
+            existing_group = (
+                ObjectsAPIGroupConfig.objects.order_by("pk")
+                .exclude(
+                    Q(objects_service=None)
+                    | Q(objecttypes_service=None)
+                    | Q(drc_service=None)
+                    | Q(catalogi_service=None)
+                )
+                .first()
+            )
+            if existing_group is None:
+                raise serializers.ValidationError(
+                    {
+                        "objects_api_group": _(
+                            "You must create a valid Objects API Group config (with the necessary services) before importing."
+                        )
+                    }
+                )
+            else:
+                attrs["objects_api_group"] = existing_group
+
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        self._set_group_during_import(attrs)
+
         v1_only_fields = {
             "productaanvraag_type",
             "content_json",
