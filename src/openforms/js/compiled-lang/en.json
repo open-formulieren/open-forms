@@ -265,6 +265,12 @@
       "value": "Service fetch configuration"
     }
   ],
+  "27HfWj": [
+    {
+      "type": 0,
+      "value": "Catalog"
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -2243,6 +2249,12 @@
     {
       "type": 0,
       "value": "Prefill attribute"
+    }
+  ],
+  "NDd+JC": [
+    {
+      "type": 0,
+      "value": "Which Catalog to use."
     }
   ],
   "NE5h2q": [

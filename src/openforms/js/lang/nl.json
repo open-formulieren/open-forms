@@ -114,6 +114,11 @@
     "description": "Service fetch configuration selection modal title",
     "originalDefault": "Service fetch configuration"
   },
+  "27HfWj": {
+    "defaultMessage": "Catalog",
+    "description": "Objects API registration options \"Catalog\" label",
+    "originalDefault": "Catalog"
+  },
   "294MCM": {
     "defaultMessage": "Verwijderd",
     "description": "Form deleted field label",
@@ -1054,6 +1059,11 @@
     "defaultMessage": "Prefill-attribuut",
     "description": "Variable table prefill attribute title",
     "originalDefault": "Prefill attribute"
+  },
+  "NDd+JC": {
+    "defaultMessage": "Which Catalog to use.",
+    "description": "Objects API registration options \"Catalog\" description",
+    "originalDefault": "Which Catalog to use."
   },
   "NE5h2q": {
     "defaultMessage": "Omschrijving",
