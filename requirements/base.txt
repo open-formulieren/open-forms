@@ -43,7 +43,7 @@ celery==5.2.7
     #   flower
 celery-once==3.0.1
     # via -r requirements/base.in
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   django-simple-certmanager
     #   elastic-apm
@@ -263,7 +263,7 @@ html5lib==1.1
     #   weasyprint
 humanize==3.14.0
     # via flower
-idna==2.10
+idna==3.7
     # via requests
 inflection==0.5.1
     # via
@@ -401,7 +401,7 @@ redis==4.5.4
     #   celery-once
     #   django-redis
     #   portalocker
-requests==2.31.0
+requests==2.32.3
     # via
     #   ape-pie
     #   django-camunda
@@ -453,7 +453,7 @@ six==1.15.0
     #   rfc3339-validator
 soupsieve==2.3
     # via beautifulsoup4
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via django
 stringcase==1.2.0
     # via o365
@@ -477,7 +477,7 @@ tzlocal==4.3.1
     # via o365
 uritemplate==3.0.1
     # via drf-spectacular
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   elastic-apm
     #   requests
