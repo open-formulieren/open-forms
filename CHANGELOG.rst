@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.5.12 (2024-07-12)
+===================
+
+Bugfix release to address PDF generation issue.
+
+* [#4191] Fixed missing required ``aoaIdentificatie`` field to ZGW registration.
+* [#4450] Fixed submission PDF rows overlapping when labels wrap onto another line.
+* Updated dependencies to their latest security patches.
+
 2.5.11 (2024-06-20)
 ===================
 
@@ -13,7 +22,6 @@ Hotfix for payment integration in Objects API
   in the registration backend.
 * [#4425] Added missing (audit) logging for payments started from the confirmation
   email link.
-
 
 2.5.10 (2024-06-19)
 ===================
