@@ -1,6 +1,9 @@
+import json
 from contextlib import contextmanager
 
-from playwright.async_api import Page, expect
+from playwright.async_api import Locator, Page, expect
+
+from openforms.typing import JSONValue
 
 
 @contextmanager
@@ -30,3 +33,26 @@ async def click_modal_button(page: Page, button_text: str, **kwargs):
 async def close_modal(page: Page, button_text: str, **kwargs):
     modal = await click_modal_button(page, button_text, **kwargs)
     await expect(modal).to_be_hidden()
+
+
+async def enter_json_in_editor(
+    page: Page, editor: Locator, expression: JSONValue
+) -> None:
+    """
+    Put some JSON into a monaca-json-editor instance.
+
+    :arg locator: The locator (`page.locator(".monaco-editor")`) pointing to the
+      editor instance.
+    :arg expression: The JSON expression. Will be serialized to JSON before putting it
+      in the input.
+    """
+    await expect(editor).to_be_visible()
+    code = json.dumps(expression)
+    # put the code in the clipboard and do a paste event
+    await page.evaluate("text => navigator.clipboard.writeText(text)", code)
+    # click the editor to focus it
+    await editor.click()
+    # select all
+    await page.keyboard.press("ControlOrMeta+KeyA")
+    # and replace with paste
+    await page.keyboard.press("ControlOrMeta+KeyV")

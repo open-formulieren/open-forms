@@ -22,6 +22,7 @@ from ..factories import (
 from .helpers import (
     click_modal_button,
     close_modal,
+    enter_json_in_editor,
     open_component_options_modal,
     phase,
 )
@@ -701,7 +702,8 @@ class FormDesignerRegressionTests(E2ETestCase):
                 await page.locator("[name='triggerFromStep']").select_option(
                     label="Playwright test"
                 )
-                await page.locator("[name='jsonLogicTrigger']").fill('{"==": [1, 1]}')
+                editor = page.locator(".monaco-editor")
+                await enter_json_in_editor(page, editor, {"==": [1, 1]})
 
             with phase("Save logic rule and check state"):
                 await page.get_by_text("Save and continue editing").click()
