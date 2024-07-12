@@ -89,7 +89,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -167,7 +167,7 @@ defusedxml==0.7.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django==4.2.11
+django==4.2.14
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -493,7 +493,7 @@ humanize==3.14.0
     #   flower
 hypothesis==6.84.3
     # via -r requirements/test-tools.in
-idna==2.10
+idna==3.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -815,7 +815,7 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-spec
     #   jsonschema-specifications
-requests==2.31.0
+requests==2.32.3
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -1006,7 +1006,7 @@ uritemplate==3.0.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   drf-spectacular
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

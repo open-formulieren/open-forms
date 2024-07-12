@@ -103,7 +103,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -190,7 +190,7 @@ defusedxml==0.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django==4.2.11
+django==4.2.14
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -554,7 +554,7 @@ hypothesis==6.84.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-idna==2.10
+idna==3.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -937,7 +937,7 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-spec
     #   jsonschema-specifications
-requests==2.31.0
+requests==2.32.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1177,7 +1177,7 @@ uritemplate==3.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

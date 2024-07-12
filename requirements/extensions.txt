@@ -71,7 +71,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-certifi==2023.7.22
+certifi==2024.7.4
     # via
     #   -r requirements/base.txt
     #   elastic-apm
@@ -132,7 +132,7 @@ defusedxml==0.7.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-django==4.2.11
+django==4.2.14
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -413,7 +413,7 @@ humanize==3.14.0
     # via
     #   -r requirements/base.txt
     #   flower
-idna==2.10
+idna==3.7
     # via
     #   -r requirements/base.txt
     #   requests
@@ -653,7 +653,7 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-spec
     #   jsonschema-specifications
-requests==2.31.0
+requests==2.32.3
     # via
     #   -r requirements/base.txt
     #   ape-pie
@@ -780,7 +780,7 @@ uritemplate==3.0.1
     # via
     #   -r requirements/base.txt
     #   drf-spectacular
-urllib3==2.0.7
+urllib3==2.2.2
     # via
     #   -r requirements/base.txt
     #   elastic-apm
