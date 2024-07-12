@@ -1,30 +1,42 @@
+import {JSONEditor} from '@open-formulieren/monaco-json-editor';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {useGlobalState} from 'state-pool';
 
-const DataPreview = ({data}) => {
-  const [visible, setVisible] = useState(false);
+import {currentTheme} from 'utils/theme';
+
+const DataPreview = ({data, maxRows = 20}) => {
+  const [numRows, setNumRows] = useState(1);
+  const [theme] = useGlobalState(currentTheme);
+
   return (
-    <div className="json-data-preview">
-      <a
-        href="#"
-        onClick={e => e.preventDefault() || setVisible(!visible)}
-        className="json-data-preview__toggle"
-      >
-        <FormattedMessage
-          description="JSON data preview visibility toggle"
-          defaultMessage="Toggle DSL preview"
-        />
-      </a>
-      {visible ? (
-        <pre className="json-data-preview__preview">{JSON.stringify(data, null, 2)}</pre>
-      ) : null}
+    <div
+      className="json-data-preview"
+      style={{
+        '--of-json-widget-rows': Math.min(maxRows, numRows),
+        '--of-json-widget-cols': 40,
+      }}
+    >
+      <JSONEditor
+        value={data}
+        theme={theme}
+        readOnly
+        showLines={false}
+        lineCountCallback={(numLines = 1) => setNumRows(numLines)}
+      />
     </div>
   );
 };
 
 DataPreview.propTypes = {
-  data: PropTypes.object,
+  data: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.bool,
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.array,
+  ]),
+  maxRows: PropTypes.number,
 };
 
 export default DataPreview;
