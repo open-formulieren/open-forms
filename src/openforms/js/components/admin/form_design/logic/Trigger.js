@@ -4,7 +4,6 @@ import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 
-import FAIcon from 'components/admin/FAIcon';
 import {FormContext} from 'components/admin/form_design/Context';
 import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import ArrayInput from 'components/admin/forms/ArrayInput';
@@ -18,6 +17,7 @@ import DataPreview from './DataPreview';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import Today from './Today';
+import ToggleCodeIcon from './ToggleCodeIcon';
 import {OPERATORS, TYPE_TO_OPERAND_TYPE, TYPE_TO_OPERATORS} from './constants';
 
 const OperatorSelection = ({name, selectedVariableType, operator, onChange}) => {
@@ -383,19 +383,7 @@ const Trigger = ({name, logic, onChange, error, children}) => {
       {children ? <div className="logic-trigger__children">{children}</div> : null}
 
       <div>
-        <FAIcon
-          icon="code"
-          extraClassname="actions__action icon"
-          title={intl.formatMessage(
-            {
-              description: 'Toggle icon for JSON logic presentation mode.',
-              defaultMessage:
-                '{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}',
-            },
-            {viewMode: viewMode}
-          )}
-          onClick={() => setViewMode(viewMode === 'ui' ? 'json' : 'ui')}
-        />
+        <ToggleCodeIcon viewMode={viewMode} setViewMode={setViewMode} />
       </div>
     </div>
   );

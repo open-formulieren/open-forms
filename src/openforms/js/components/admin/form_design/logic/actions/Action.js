@@ -4,10 +4,10 @@ import React, {useState} from 'react';
 import {useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
-import FAIcon from 'components/admin/FAIcon';
 import WarningIcon from 'components/admin/WarningIcon';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
+import ToggleCodeIcon from 'components/admin/form_design/logic/ToggleCodeIcon';
 import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
 import Select from 'components/admin/forms/Select';
 
@@ -75,19 +75,7 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
 
       <div className="logic-action__action">{actionDisplay}</div>
       <div className="logic-action__view-mode-toggle">
-        <FAIcon
-          icon="code"
-          extraClassname="icon actions__action"
-          title={intl.formatMessage(
-            {
-              description: 'Toggle icon for JSON logic presentation mode.',
-              defaultMessage:
-                '{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}',
-            },
-            {viewMode: viewMode}
-          )}
-          onClick={() => setViewMode(viewMode === 'ui' ? 'json' : 'ui')}
-        />
+        <ToggleCodeIcon viewMode={viewMode} setViewMode={setViewMode} />
       </div>
     </div>
   );

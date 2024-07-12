@@ -6,7 +6,7 @@ const FAIcon = ({icon, title, extraClassname = '', ...props}) => {
   if (extraClassname) {
     className += ` ${extraClassname}`;
   }
-  return <i className={className} title={title} aria-label={title} {...props}></i>;
+  return <i className={className} title={title} {...props}></i>;
 };
 
 FAIcon.propTypes = {
