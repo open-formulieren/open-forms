@@ -34,7 +34,15 @@ const isJsonLogic = jsonExpression => {
   return jsonLogic.is_logic(jsonExpression);
 };
 
-const JsonWidget = ({name, logic, onChange, cols = 60, maxRows = 20, isExpanded = true}) => {
+const JsonWidget = ({
+  name,
+  logic,
+  onChange,
+  cols = 60,
+  maxRows = 20,
+  isExpanded = true,
+  testid,
+}) => {
   const intl = useIntl();
   const [theme] = useGlobalState(currentTheme);
   const [jsonError, setJsonError] = useState('');
@@ -65,7 +73,10 @@ const JsonWidget = ({name, logic, onChange, cols = 60, maxRows = 20, isExpanded 
   };
 
   return (
-    <div className={classNames('json-widget', {'json-widget--collapsed': !isExpanded})}>
+    <div
+      className={classNames('json-widget', {'json-widget--collapsed': !isExpanded})}
+      data-testid={testid}
+    >
       {isExpanded && (
         <div
           className="json-widget__input"
@@ -93,6 +104,7 @@ JsonWidget.propTypes = {
   onChange: PropTypes.func.isRequired,
   cols: PropTypes.number,
   isExpanded: PropTypes.bool,
+  testid: PropTypes.string,
 };
 
 export default JsonWidget;

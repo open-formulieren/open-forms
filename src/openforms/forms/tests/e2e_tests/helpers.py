@@ -56,3 +56,16 @@ async def enter_json_in_editor(
     await page.keyboard.press("ControlOrMeta+KeyA")
     # and replace with paste
     await page.keyboard.press("ControlOrMeta+KeyV")
+
+
+async def check_json_in_editor(editor: Locator, expected_value: JSONValue):
+    await expect(editor).to_be_visible()
+    code_content = editor.locator(".lines-content")
+    code_in_editor = await code_content.text_content() or ""
+    # monaco uses &nbsp; (= "\xa0") for indentation, which we need to strip out
+    code = code_in_editor.replace("\xa0", "")
+    try:
+        _json = json.loads(code)
+    except json.JSONDecodeError as exc:
+        raise AssertionError("code is not valid JSON") from exc
+    assert _json == expected_value, "Code in editor is not equivalent"

@@ -43,6 +43,7 @@ async def browser_page():
             context = await browser.new_context(
                 locale="en-UK",
                 timezone_id="Europe/Amsterdam",
+                permissions=["clipboard-read", "clipboard-write"],
             )
             page = await context.new_page()
             yield page
