@@ -2,6 +2,24 @@
 Changelog
 =========
 
+2.6.12 (2024-07-12)
+===================
+
+Bugfix release to address PDF generation issue.
+
+* [:backend:`4191`] Fixed missing required ``aoaIdentificatie`` field to ZGW registration.
+* [:backend:`4450`] Fixed submission PDF rows overlapping when labels wrap onto another line.
+* Updated dependencies to their latest security patches.
+
+2.5.12 (2024-07-12)
+===================
+
+Bugfix release to address PDF generation issue.
+
+* [:backend:`4191`] Fixed missing required ``aoaIdentificatie`` field to ZGW registration.
+* [:backend:`4450`] Fixed submission PDF rows overlapping when labels wrap onto another line.
+* Updated dependencies to their latest security patches.
+
 2.7.0 "Berlage" (2024-07-09)
 ============================
 
