@@ -1,3 +1,5 @@
+import uuid
+
 from django.test import override_settings
 from django.urls import reverse
 
@@ -1181,6 +1183,38 @@ class FormLogicAPITests(APITestCase):
             "0.jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
         )
         self.assertEqual("invalid", response.json()["invalidParams"][0]["code"])
+
+    def test_create_form_logic_with_bad_variable_reference(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(generate_minimal_setup=True)
+
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        varname = str(uuid.uuid4())  # this will never match a variable
+        form_logic_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "is_advanced": True,
+                "json_logic_trigger": True,
+                "actions": [
+                    {
+                        "formStep": "",
+                        "variable": varname,
+                        "action": {
+                            "type": "variable",
+                            "value": 3,
+                        },
+                    }
+                ],
+            }
+        ]
+
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        errors = response.json()["invalidParams"][0]
+        self.assertEqual(errors["name"], "0.actions.0.variable")
 
     def test_create_form_logic_with_primitive_in_action(self):
         user = SuperUserFactory.create(username="test", password="test")

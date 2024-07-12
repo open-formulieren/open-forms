@@ -234,6 +234,18 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 code="blank",
             )
 
+        # validate variable exists
+        if action_type == LogicActionTypes.variable:
+            form_var = self.context["form_variables"].variables.get(variable)
+            if form_var is None:
+                raise serializers.ValidationError(
+                    {
+                        "variable": _("The variable {varname} does not exist.").format(
+                            varname=variable
+                        ),
+                    }
+                )
+
         # validate format of value for date variable
         if action_type == LogicActionTypes.variable and isinstance(
             action_value, Primitive
