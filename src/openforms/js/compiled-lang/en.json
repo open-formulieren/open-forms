@@ -941,12 +941,6 @@
       "value": "Key"
     }
   ],
-  "9N67XB": [
-    {
-      "type": 0,
-      "value": "Invalid JSON syntax"
-    }
-  ],
   "9RDDDn": [
     {
       "offset": 0,
@@ -2537,6 +2531,38 @@
     {
       "type": 0,
       "value": "Form variable"
+    }
+  ],
+  "RA263v": [
+    {
+      "options": {
+        "json": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Show editor"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "UNKNOWN"
+            }
+          ]
+        },
+        "ui": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Show JSON definition"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "viewMode"
     }
   ],
   "RELMCa": [
@@ -4645,12 +4671,6 @@
     {
       "type": 0,
       "value": "Bronorganisatie"
-    }
-  ],
-  "naInSZ": [
-    {
-      "type": 0,
-      "value": "Toggle DSL preview"
     }
   ],
   "nkr7r0": [

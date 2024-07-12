@@ -404,11 +404,6 @@
     "description": "Label for 'key' in MappingArrayInput table column",
     "originalDefault": "Key"
   },
-  "9N67XB": {
-    "defaultMessage": "Invalid JSON syntax",
-    "description": "Advanced logic rule invalid json message",
-    "originalDefault": "Invalid JSON syntax"
-  },
   "9RDDDn": {
     "defaultMessage": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }",
     "description": "Managed complex Camunda process vars state feedback",
@@ -1218,6 +1213,11 @@
     "defaultMessage": "Form variable",
     "description": "Accessible label for (form) variable dropdown",
     "originalDefault": "Form variable"
+  },
+  "RA263v": {
+    "defaultMessage": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}",
+    "description": "Toggle icon for JSON logic presentation mode.",
+    "originalDefault": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}"
   },
   "RELMCa": {
     "defaultMessage": "Which Objects API group to use.",
@@ -2128,11 +2128,6 @@
     "defaultMessage": "Trigger condition",
     "description": "Logic trigger heading",
     "originalDefault": "Trigger condition"
-  },
-  "naInSZ": {
-    "defaultMessage": "Toggle DSL preview",
-    "description": "JSON data preview visibility toggle",
-    "originalDefault": "Toggle DSL preview"
   },
   "nkr7r0": {
     "defaultMessage": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration.",
