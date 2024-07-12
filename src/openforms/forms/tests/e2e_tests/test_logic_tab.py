@@ -8,10 +8,11 @@ from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 
 from ...models import FormLogic
 from ..factories import FormFactory
-from .helpers import enter_json_in_editor
+from .helpers import enter_json_in_editor, skip_on_webtest
 
 
 class LogicTabTests(E2ETestCase):
+    @skip_on_webtest
     async def test_make_component_not_required_with_logic(self):
         @sync_to_async
         def setUpTestData():

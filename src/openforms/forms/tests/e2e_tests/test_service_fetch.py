@@ -15,7 +15,7 @@ from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ..factories import FormFactory, FormVariableFactory
-from .helpers import check_json_in_editor, enter_json_in_editor
+from .helpers import check_json_in_editor, enter_json_in_editor, skip_on_webtest
 
 
 @contextmanager
@@ -153,6 +153,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
         )
         self.service_url = reverse("api:service-detail", kwargs={"pk": 1})
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_create_new(self):
         @sync_to_async
         def setUpTestData():
@@ -235,6 +236,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await assertState()
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_create_new_jq(self):
         @sync_to_async
         def setUpTestData():
@@ -317,6 +319,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await assertState()
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_save_existing_as_new(self):
         @sync_to_async
         def setUpTestData():
@@ -454,6 +457,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await assertState()
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_update_existing(self):
         @sync_to_async
         def setUpTestData():

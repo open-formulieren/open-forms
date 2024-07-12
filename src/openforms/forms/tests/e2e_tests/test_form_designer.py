@@ -25,6 +25,7 @@ from .helpers import (
     enter_json_in_editor,
     open_component_options_modal,
     phase,
+    skip_on_webtest,
 )
 
 
@@ -660,6 +661,7 @@ class FormDesignerRegressionTests(E2ETestCase):
 
         await assertState()
 
+    @skip_on_webtest
     async def test_logic_rule_trigger_from_step_show_saved_value_in_select(self):
         """
         Regression test for https://github.com/open-formulieren/open-forms/issues/2636

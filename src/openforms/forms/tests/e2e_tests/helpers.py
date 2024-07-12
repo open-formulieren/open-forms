@@ -1,8 +1,10 @@
 import json
 from contextlib import contextmanager
+from unittest import skipIf
 
 from playwright.async_api import Locator, Page, expect
 
+from openforms.tests.e2e.base import BROWSER
 from openforms.typing import JSONValue
 
 
@@ -35,6 +37,19 @@ async def close_modal(page: Page, button_text: str, **kwargs):
     await expect(modal).to_be_hidden()
 
 
+skip_on_webtest = skipIf(
+    BROWSER == "webkit", "Skip test on Webkit browser (because it is known to not work)"
+)
+
+
+def _raise_for_webkit():
+    if BROWSER == "webkit":
+        raise Exception(
+            "This functionality does not work on Webkit with Playwright. Best is to "
+            "conditionally skip the test with @skip_on_webtest."
+        )
+
+
 async def enter_json_in_editor(
     page: Page, editor: Locator, expression: JSONValue
 ) -> None:
@@ -46,6 +61,10 @@ async def enter_json_in_editor(
     :arg expression: The JSON expression. Will be serialized to JSON before putting it
       in the input.
     """
+    # copy-and-paste does work on Webkit, but I can't get selecting all editor content
+    # and replacing it with the pasted content to work :(
+    _raise_for_webkit()
+
     await expect(editor).to_be_visible()
     code = json.dumps(expression)
     # put the code in the clipboard and do a paste event
@@ -59,6 +78,10 @@ async def enter_json_in_editor(
 
 
 async def check_json_in_editor(editor: Locator, expected_value: JSONValue):
+    # copy-and-paste does work on Webkit, but I can't get selecting all editor content
+    # and replacing it with the pasted content to work :(
+    _raise_for_webkit()
+
     await expect(editor).to_be_visible()
     code_content = editor.locator(".lines-content")
     code_in_editor = await code_content.text_content() or ""
