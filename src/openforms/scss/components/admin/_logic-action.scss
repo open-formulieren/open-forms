@@ -6,14 +6,10 @@ $logic-line-breakpoint: 1800px !default;
 .logic-action {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   padding: 1em;
 
   $error-height: $grid-margin-4;
-
-  &__row {
-    display: flex;
-  }
 
   &__actions {
     padding: 0.5em;
@@ -22,27 +18,17 @@ $logic-line-breakpoint: 1800px !default;
   }
 
   &__action {
-    width: calc(100% - 1em);
+    flex-grow: 1;
   }
 
-  &__row--has-errors {
-    .logic-action__actions {
+  &--has-errors {
+    > .actions {
       padding-top: $error-height;
     }
 
     .dsl-editor__node:not(.dsl-editor__node--errors) {
       padding-top: $error-height;
     }
-  }
-
-  &__data-preview {
-    min-width: 200px;
-    @include breakpoint($min: $logic-line-breakpoint) {
-      min-width: 400px;
-    }
-    max-width: 800px;
-    padding-top: 7px;
-    flex-grow: 0;
   }
 
   &__errors {

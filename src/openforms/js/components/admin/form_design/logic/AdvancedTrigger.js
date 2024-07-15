@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import JsonWidget from 'components/admin/forms/JsonWidget';
+import jsonPropTypeValidator from 'utils/JsonPropTypeValidator';
 
 const AdvancedTrigger = ({expandExpression, name, logic, onChange, error}) => {
   return (
@@ -22,7 +23,7 @@ const AdvancedTrigger = ({expandExpression, name, logic, onChange, error}) => {
 AdvancedTrigger.propTypes = {
   expandExpression: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
-  logic: PropTypes.object.isRequired,
+  logic: jsonPropTypeValidator,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.string,
 };

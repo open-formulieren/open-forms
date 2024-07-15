@@ -945,12 +945,6 @@
       "value": "Sleutel"
     }
   ],
-  "9N67XB": [
-    {
-      "type": 0,
-      "value": "Ongeldige JSON-syntaxis"
-    }
-  ],
   "9RDDDn": [
     {
       "offset": 0,
@@ -2554,6 +2548,38 @@
     {
       "type": 0,
       "value": "Formuliervariabele"
+    }
+  ],
+  "RA263v": [
+    {
+      "options": {
+        "json": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Show editor"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "UNKNOWN"
+            }
+          ]
+        },
+        "ui": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Show JSON definition"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "viewMode"
     }
   ],
   "RELMCa": [
@@ -4667,12 +4693,6 @@
     {
       "type": 0,
       "value": "Bronorganisatie"
-    }
-  ],
-  "naInSZ": [
-    {
-      "type": 0,
-      "value": "Toon/verberg DSL weergave"
     }
   ],
   "nkr7r0": [

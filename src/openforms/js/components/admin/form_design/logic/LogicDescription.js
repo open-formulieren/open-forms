@@ -73,7 +73,13 @@ LogicDescriptionInput.propTypes = {
   generationRequest: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
   onDescriptionGenerated: PropTypes.func.isRequired,
-  logicExpression: PropTypes.object,
+  logicExpression: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+    PropTypes.string,
+    PropTypes.bool,
+    PropTypes.number,
+  ]),
 };
 
 export default LogicDescriptionInput;

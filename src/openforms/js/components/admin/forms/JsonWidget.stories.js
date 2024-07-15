@@ -1,25 +1,19 @@
+import {fn} from '@storybook/test';
+
 import JsonWidget from './JsonWidget';
 
 export default {
   title: 'Admin/Custom/JsonWidget',
   component: JsonWidget,
-};
-
-export const Default = {
-  name: 'Default',
-
   args: {
-    name: 'JsonWidget',
-
+    name: 'some-json',
     logic: {
       '==': [1, 1],
     },
-
-    onChange: (...args) => {
-      null;
-    },
-
+    onChange: fn(),
     cols: 40,
     isExpanded: true,
   },
 };
+
+export const Default = {};

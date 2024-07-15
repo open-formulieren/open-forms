@@ -22,8 +22,10 @@ from ..factories import (
 from .helpers import (
     click_modal_button,
     close_modal,
+    enter_json_in_editor,
     open_component_options_modal,
     phase,
+    skip_on_webtest,
 )
 
 
@@ -659,6 +661,7 @@ class FormDesignerRegressionTests(E2ETestCase):
 
         await assertState()
 
+    @skip_on_webtest
     async def test_logic_rule_trigger_from_step_show_saved_value_in_select(self):
         """
         Regression test for https://github.com/open-formulieren/open-forms/issues/2636
@@ -701,7 +704,8 @@ class FormDesignerRegressionTests(E2ETestCase):
                 await page.locator("[name='triggerFromStep']").select_option(
                     label="Playwright test"
                 )
-                await page.locator("[name='jsonLogicTrigger']").fill('{"==": [1, 1]}')
+                editor = page.locator(".monaco-editor")
+                await enter_json_in_editor(page, editor, {"==": [1, 1]})
 
             with phase("Save logic rule and check state"):
                 await page.get_by_text("Save and continue editing").click()

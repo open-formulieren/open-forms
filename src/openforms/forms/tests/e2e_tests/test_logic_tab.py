@@ -8,9 +8,11 @@ from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 
 from ...models import FormLogic
 from ..factories import FormFactory
+from .helpers import enter_json_in_editor, skip_on_webtest
 
 
 class LogicTabTests(E2ETestCase):
+    @skip_on_webtest
     async def test_make_component_not_required_with_logic(self):
         @sync_to_async
         def setUpTestData():
@@ -47,9 +49,8 @@ class LogicTabTests(E2ETestCase):
             await page.get_by_text("Add rule").click()
             await page.get_by_role("button", name="Advanced").click()
 
-            textarea = page.locator("[name='jsonLogicTrigger']")
+            await enter_json_in_editor(page, page.locator(".monaco-editor"), True)
 
-            await textarea.fill("true")
             await page.get_by_text("Add Action").click()
             await page.locator('select[name="action.type"]').select_option(
                 label="change a property of a component."

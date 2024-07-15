@@ -222,10 +222,10 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                 >
                   <JsonWidget
                     name="body"
-                    id="id_body"
                     logic={formik.values.body}
-                    cols={20}
-                    {...formik.getFieldProps('body')}
+                    cols={50}
+                    onChange={formik.getFieldProps('body').onChange}
+                    testid="request-body"
                   />
                 </Field>
               </FormRow>
@@ -277,8 +277,9 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                   <JsonWidget
                     name="jsonLogicExpression"
                     logic={formik.values.jsonLogicExpression || ''}
-                    cols={20}
-                    {...formik.getFieldProps('jsonLogicExpression')}
+                    cols={50}
+                    onChange={formik.getFieldProps('jsonLogicExpression').onChange}
+                    testid="mapping-expression-json-logic"
                   />
                 </Field>
               </FormRow>

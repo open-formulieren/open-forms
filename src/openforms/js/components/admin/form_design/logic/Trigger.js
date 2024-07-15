@@ -1,6 +1,6 @@
 import jsonLogic from 'json-logic-js';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 
@@ -17,6 +17,7 @@ import DataPreview from './DataPreview';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import Today from './Today';
+import ToggleCodeIcon from './ToggleCodeIcon';
 import {OPERATORS, TYPE_TO_OPERAND_TYPE, TYPE_TO_OPERATORS} from './constants';
 
 const OperatorSelection = ({name, selectedVariableType, operator, onChange}) => {
@@ -154,8 +155,10 @@ const reducer = (draft, action) => {
   }
 };
 
-const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children}) => {
+const Trigger = ({name, logic, onChange, error, children}) => {
+  const intl = useIntl();
   const formContext = useContext(FormContext);
+  const [viewMode, setViewMode] = useState('ui');
   const allVariables = formContext.staticVariables.concat(formContext.formVariables);
   const allVariablesObj = allVariables.reduce((obj, variable) => {
     obj[variable.key] = variable;
@@ -313,10 +316,10 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
   // parent component
   useOnChanged(jsonLogicFromState, () => onChange({target: {name, value: jsonLogicFromState}}));
 
-  return (
-    <div className="logic-trigger">
-      <div className="logic-trigger__editor">
-        {error && <div className="logic-trigger__error">{error}</div>}
+  let triggerDisplay;
+  switch (viewMode) {
+    case 'ui': {
+      triggerDisplay = (
         <div className="dsl-editor">
           <DSLEditorNode errors={null}>
             <FormattedMessage description="Logic trigger prefix" defaultMessage="When" />
@@ -358,15 +361,30 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
             <DSLEditorNode errors={null}>{valueInput}</DSLEditorNode>
           ) : null}
         </div>
+      );
+      break;
+    }
+    case 'json': {
+      triggerDisplay = <DataPreview data={logic} />;
+      break;
+    }
+    default: {
+      throw new Error(`Unknown viewMode '${viewMode}'.`);
+    }
+  }
+
+  return (
+    <div className="logic-trigger">
+      <div className="logic-trigger__editor">
+        {error && <div className="logic-trigger__error">{error}</div>}
+        {triggerDisplay}
       </div>
 
       {children ? <div className="logic-trigger__children">{children}</div> : null}
 
-      {withDSLPreview && (
-        <div className="logic-trigger__data-preview">
-          <DataPreview data={jsonLogicFromState} />
-        </div>
-      )}
+      <div>
+        <ToggleCodeIcon viewMode={viewMode} setViewMode={setViewMode} />
+      </div>
     </div>
   );
 };
@@ -376,7 +394,6 @@ Trigger.propTypes = {
   logic: PropTypes.object,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.string,
-  withDSLPreview: PropTypes.bool,
   children: PropTypes.node,
 };
 

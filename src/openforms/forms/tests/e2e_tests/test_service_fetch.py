@@ -15,6 +15,7 @@ from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ..factories import FormFactory, FormVariableFactory
+from .helpers import check_json_in_editor, enter_json_in_editor, skip_on_webtest
 
 
 @contextmanager
@@ -73,15 +74,20 @@ async def fill_in_service_fetch_form(page: Page, data: dict, save_text: str = "S
     )
     await page.locator('input[name="value"]').fill(list(data["headers"].items())[0][1])
 
-    await page.get_by_label("Request body", exact=True).fill(data["request_body"])
+    # get the editor instance for the request body
+    label = page.get_by_text("Request body", exact=True)
+    await expect(label).to_be_visible()
+    editor = page.get_by_test_id("request-body").locator(".monaco-editor")
+    await enter_json_in_editor(page, editor, data["request_body"])
 
     await page.get_by_label("Mapping expression language").select_option(
         data["data_mapping_type"]
     )
     if data["data_mapping_type"] == DataMappingTypes.json_logic:
-        await page.locator('textarea[name="jsonLogicExpression"]').fill(
-            data["mapping_expression"]
+        editor = page.get_by_test_id("mapping-expression-json-logic").locator(
+            ".monaco-editor"
         )
+        await enter_json_in_editor(page, editor, data["mapping_expression"])
     else:
         await page.get_by_label("Mapping expression", exact=True).fill(
             data["mapping_expression"]
@@ -96,7 +102,7 @@ async def check_service_fetch_form_values(page: Page, data: dict):
 
     await expect(
         page.get_by_role("combobox", name="Service").get_by_role(
-            "option", selected="true"
+            "option", selected=True
         )
     ).to_have_text(data["service"])
     await expect(page.get_by_label("Path")).to_have_value(data["path"])
@@ -114,18 +120,18 @@ async def check_service_fetch_form_values(page: Page, data: dict):
         list(data["headers"].items())[0][1]
     )
 
-    # FIXME doesn't seem to work with `get_by_label`
-    await expect(page.locator('textarea[name="body"]')).to_have_value(
-        data["request_body"]
-    )
+    # check contents of JSON in json editor
+    editor = page.get_by_test_id("request-body").locator(".monaco-editor")
+    await check_json_in_editor(editor, data["request_body"])
 
     await expect(page.get_by_label("Mapping expression language")).to_have_value(
         data["data_mapping_type"]
     )
     if data["data_mapping_type"] == DataMappingTypes.json_logic:
-        await expect(
-            page.locator('textarea[name="jsonLogicExpression"]')
-        ).to_have_value(data["mapping_expression"])
+        editor = page.get_by_test_id("mapping-expression-json-logic").locator(
+            ".monaco-editor"
+        )
+        await check_json_in_editor(editor, data["mapping_expression"])
     else:
         await expect(page.get_by_label("Mapping expression", exact=True)).to_have_value(
             data["mapping_expression"]
@@ -147,6 +153,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
         )
         self.service_url = reverse("api:service-detail", kwargs={"pk": 1})
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_create_new(self):
         @sync_to_async
         def setUpTestData():
@@ -187,9 +194,9 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 "path": "bar",
                 "query_params": {"param": ["paramvalue"]},
                 "headers": {"header": "headervalue"},
-                "request_body": '{\n  "foo": "bar"\n}',
+                "request_body": {"foo": "bar"},
                 "data_mapping_type": DataMappingTypes.json_logic,
-                "mapping_expression": '{\n  "==": [\n    1,\n    1\n  ]\n}',
+                "mapping_expression": {"==": [1, 1]},
             }
 
             await fill_in_service_fetch_form(page, data)
@@ -229,6 +236,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await assertState()
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_create_new_jq(self):
         @sync_to_async
         def setUpTestData():
@@ -269,7 +277,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 "path": "bar",
                 "query_params": {"param": ["paramvalue"]},
                 "headers": {"header": "headervalue"},
-                "request_body": '{\n  "foo": "bar"\n}',
+                "request_body": {"foo": "bar"},
                 "data_mapping_type": DataMappingTypes.jq,
                 "mapping_expression": ".foo",
             }
@@ -311,6 +319,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await assertState()
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_save_existing_as_new(self):
         @sync_to_async
         def setUpTestData():
@@ -372,7 +381,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".foo",
                 ),
@@ -387,7 +396,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".bar",
                 ),
@@ -405,7 +414,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".bar",
                 ),
@@ -426,7 +435,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".bar",
                 ),
@@ -448,6 +457,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await assertState()
 
+    @skip_on_webtest
     async def test_service_fetch_configuration_update_existing(self):
         @sync_to_async
         def setUpTestData():
@@ -509,7 +519,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".foo",
                 ),
@@ -524,7 +534,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".bar",
                 ),
@@ -542,7 +552,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".bar",
                 ),
@@ -563,7 +573,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                     path="foo",
                     query_params={"foo": ["bar"]},
                     headers={"header1": "value1"},
-                    request_body='{\n  "foo": "bar"\n}',
+                    request_body={"foo": "bar"},
                     data_mapping_type=DataMappingTypes.jq,
                     mapping_expression=".bar",
                 ),

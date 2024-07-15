@@ -3,14 +3,10 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: center;
+  column-gap: 0.5em;
+  row-gap: 0.5em;
 
   &__node {
-    &:not(:last-child) {
-      margin-right: 0.5em;
-    }
-
-    margin-bottom: 0.5em;
-
     // account for possibly long labels
     select,
     input {

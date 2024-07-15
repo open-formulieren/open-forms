@@ -46,16 +46,6 @@ $logic-line-breakpoint: 1800px !default;
         margin-bottom: 0;
       }
     }
-
-    .json-data-preview {
-      min-width: 200px;
-      @include breakpoint($min: $logic-line-breakpoint) {
-        min-width: 400px;
-      }
-      max-width: 800px;
-      justify-self: flex-end;
-      padding-top: 7px;
-    }
   }
 
   @include element('header') {

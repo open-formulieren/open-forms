@@ -1,17 +1,16 @@
+import {JSONEditor} from '@open-formulieren/monaco-json-editor';
 import classNames from 'classnames';
 import jsonLogic from 'json-logic-js';
+import {isEqual} from 'lodash';
 import PropTypes from 'prop-types';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useIntl} from 'react-intl';
+import {useGlobalState} from 'state-pool';
 
 import jsonPropTypeValidator from 'utils/JsonPropTypeValidator';
+import {currentTheme} from 'utils/theme';
 
-import {TextArea} from './Inputs';
-
-// dump JSON in a readable form
-const jsonFormat = value => {
-  return JSON.stringify(value, null, 2);
-};
+const MIN_LINES = 3;
 
 const isJsonLogic = jsonExpression => {
   // jsonLogic accepts primitives
@@ -35,63 +34,65 @@ const isJsonLogic = jsonExpression => {
   return jsonLogic.is_logic(jsonExpression);
 };
 
-const JsonWidget = ({name, logic, onChange, cols = 60, isExpanded = true}) => {
+const JsonWidget = ({
+  name,
+  logic,
+  onChange,
+  cols = 60,
+  maxRows = 20,
+  isExpanded = true,
+  testid,
+}) => {
   const intl = useIntl();
+  const [theme] = useGlobalState(currentTheme);
   const [jsonError, setJsonError] = useState('');
-  const [editorValue, setEditorValue] = useState(jsonFormat(logic));
+  const [numRows, setNumRows] = useState(MIN_LINES);
+
+  const initialLogicRef = useRef(logic);
 
   useEffect(() => {
-    setEditorValue(jsonFormat(logic));
+    if (isEqual(logic, initialLogicRef.current)) return;
+    console.debug(`external 'logic' prop changes are currently not handled!`);
   }, [logic]);
 
-  const invalidSyntaxMessage = intl.formatMessage({
-    description: 'Advanced logic rule invalid json message',
-    defaultMessage: 'Invalid JSON syntax',
-  });
   const invalidLogicMessage = intl.formatMessage({
     description: 'Advanced logic rule invalid JSON-logic message',
     defaultMessage: 'Invalid JSON logic expression',
   });
 
-  const onJsonChange = event => {
-    const newValue = event.target.value;
-    setEditorValue(newValue);
+  const onJsonChange = value => {
     setJsonError('');
 
-    let updatedJson;
-
-    try {
-      updatedJson = JSON.parse(newValue);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        setJsonError(invalidSyntaxMessage);
-        return;
-      } else {
-        throw error;
-      }
-    }
-
-    if (!isJsonLogic(updatedJson)) {
+    if (!isJsonLogic(value)) {
       setJsonError(invalidLogicMessage);
       return;
     }
 
-    const fakeEvent = {target: {name: name, value: updatedJson}};
+    const fakeEvent = {target: {name: name, value}};
     onChange(fakeEvent);
   };
 
   return (
-    <div className={classNames('json-widget', {'json-widget--collapsed': !isExpanded})}>
-      <div className="json-widget__input">
-        <TextArea
-          name={name}
-          id={`id_${name}`}
-          value={editorValue}
-          onChange={onJsonChange}
-          cols={cols}
-          rows={isExpanded ? Math.min(20, editorValue.split('\n').length) : 1}
-        />
-      </div>
+    <div
+      className={classNames('json-widget', {'json-widget--collapsed': !isExpanded})}
+      data-testid={testid}
+    >
+      {isExpanded && (
+        <div
+          className="json-widget__input"
+          style={{
+            '--of-json-widget-cols': cols,
+            '--of-json-widget-rows': Math.min(maxRows, Math.max(MIN_LINES, numRows)),
+          }}
+        >
+          <JSONEditor
+            defaultValue={JSON.stringify(logic, null, 2)}
+            onChange={onJsonChange}
+            lineCountCallback={(numLines = 1) => setNumRows(numLines)}
+            theme={theme}
+          />
+        </div>
+      )}
       {jsonError.length ? <div className="json-widget__error">{jsonError}</div> : null}
     </div>
   );
@@ -103,6 +104,7 @@ JsonWidget.propTypes = {
   onChange: PropTypes.func.isRequired,
   cols: PropTypes.number,
   isExpanded: PropTypes.bool,
+  testid: PropTypes.string,
 };
 
 export default JsonWidget;

@@ -1,10 +1,11 @@
 @use 'microscope-sass/lib/bem';
+@use './json-editor';
 
 @import '~microscope-sass/lib/color';
 
 .json-widget {
-  textarea {
-    width: var(--of-admin-input-field-size);
+  @include bem.element('input') {
+    @include json-editor.container;
   }
 
   @include bem.modifier('collapsed') {
