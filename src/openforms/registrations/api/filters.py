@@ -14,6 +14,12 @@ from openforms.registrations.contrib.zgw_apis.models import ZGWApiGroupConfig
 from ..registry import register
 
 
+class BaseAPIGroupQueryParamsSerializer(serializers.Serializer):
+
+    def get_ztc_client(self) -> CatalogiClient:
+        raise NotImplementedError()
+
+
 class APIGroupQueryParamsSerializer(serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.all(),
@@ -79,7 +85,7 @@ class APIGroupQueryParamsSerializer(serializers.Serializer):
                 return build_client(service, client_factory=CatalogiClient)
 
 
-class ListInformatieObjectTypenQueryParamsSerializer(APIGroupQueryParamsSerializer):
+class BaseListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
     catalogus_domein = serializers.CharField(
         label=_("catalogus domein"),
         help_text=_(

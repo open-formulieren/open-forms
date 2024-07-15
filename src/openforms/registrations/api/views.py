@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -10,10 +12,7 @@ from openforms.api.views import ListMixin
 
 from ..constants import RegistrationAttribute
 from ..registry import register
-from .filters import (
-    APIGroupQueryParamsSerializer,
-    ListInformatieObjectTypenQueryParamsSerializer,
-)
+from .filters import BaseAPIGroupQueryParamsSerializer
 from .serializers import (
     CatalogusSerializer,
     ChoiceWrapper,
@@ -60,44 +59,26 @@ class AllAttributesListView(ListMixin, APIView):
         return [ChoiceWrapper(choice) for choice in choices]
 
 
-@extend_schema_view(
-    get=extend_schema(
-        summary=_("List available Catalogi"),
-        parameters=[APIGroupQueryParamsSerializer],
-    ),
-)
-class CatalogiListView(ListMixin, APIView):
-    """
-    List the available Catalogi based on the provided API group.
-    """
-
+class BaseCatalogiListView(ListMixin, APIView):
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = CatalogusSerializer
+    filter_serializer_class: ClassVar[type[BaseAPIGroupQueryParamsSerializer]]
 
     def get_objects(self):
-        filter_serializer = APIGroupQueryParamsSerializer(
-            data=self.request.query_params
+        filter_serializer = self.filter_serializer_class(
+            data=self.request.query_params,
         )
         filter_serializer.is_valid(raise_exception=True)
 
         client = filter_serializer.get_ztc_client()
-        if not client:
-            return []
-
         catalogus_data = client.get_all_catalogi()
         return factory(Catalogus, catalogus_data)
 
 
-@extend_schema_view(
-    get=extend_schema(
-        summary=_("List available InformatieObjectTypen"),
-        parameters=[ListInformatieObjectTypenQueryParamsSerializer],
-    ),
-)
-class InformatieObjectTypenListView(ListMixin, APIView):
+class BaseInformatieObjectTypenListView(ListMixin, APIView):
     """
-    List the available InformatieObjectTypen based on the configured registration backend and ZGW APIs services.
+    List the available InformatieObjectTypen.
 
     Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
     and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
@@ -107,16 +88,13 @@ class InformatieObjectTypenListView(ListMixin, APIView):
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = InformatieObjectTypeChoiceSerializer
+    filter_serializer_class: ClassVar[type[BaseAPIGroupQueryParamsSerializer]]
 
     def get_objects(self):
-        filter_serializer = ListInformatieObjectTypenQueryParamsSerializer(
-            data=self.request.query_params
-        )
+        filter_serializer = self.filter_serializer_class(data=self.request.query_params)
         filter_serializer.is_valid(raise_exception=True)
 
         client = filter_serializer.get_ztc_client()
-        if not client:
-            return []
 
         catalogus_data = client.get_all_catalogi()
         catalogus_mapping = {

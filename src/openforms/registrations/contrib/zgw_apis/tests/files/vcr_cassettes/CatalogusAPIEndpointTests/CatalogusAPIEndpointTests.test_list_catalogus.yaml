@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate, br
       Authorization:
-      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcyMDE2MTMyNiwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.6d_Y3TSnD11WCF0lW8Se6WWmOitjmnFG4XT6-wESmt4
+      - Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0X2NsaWVudF9pZCIsImlhdCI6MTcyMTA1ODQwNSwiY2xpZW50X2lkIjoidGVzdF9jbGllbnRfaWQiLCJ1c2VyX2lkIjoiIiwidXNlcl9yZXByZXNlbnRhdGlvbiI6IiJ9.WX7lLhumFkvBlcnQSMRGaAXzO7f3K0L5xPxSD6FS8fg
       Connection:
       - keep-alive
       User-Agent:
@@ -17,7 +17,7 @@ interactions:
   response:
     body:
       string: '{"count":1,"next":null,"previous":null,"results":[{"url":"http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d","domein":"TEST","rsin":"000000000","contactpersoonBeheerNaam":"Test
-        name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"],"naam":"Test
+        name","contactpersoonBeheerTelefoonnummer":"","contactpersoonBeheerEmailadres":"","zaaktypen":["http://localhost:8003/catalogi/api/v1/zaaktypen/1f41885e-23fc-4462-bbc8-80be4ae484dc"],"besluittypen":[],"informatieobjecttypen":["http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7","http://localhost:8003/catalogi/api/v1/informatieobjecttypen/29b63e5c-3835-4f68-8fad-f2aea9ae6b71"],"naam":"Test
         catalog","versie":"","begindatumVersie":null}]}'
     headers:
       API-version:
@@ -25,7 +25,7 @@ interactions:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Content-Length:
-      - '799'
+      - '898'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
