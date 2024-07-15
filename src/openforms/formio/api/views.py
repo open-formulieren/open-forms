@@ -16,7 +16,6 @@ from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.submissions.api.renderers import PlainTextErrorRenderer
 from openforms.submissions.attachments import clean_mime_type
 from openforms.submissions.models import TemporaryFileUpload
-from openforms.submissions.utils import add_upload_to_session
 
 from .serializers import TemporaryFileUploadSerializer
 
@@ -73,8 +72,6 @@ class TemporaryFileUploadView(GenericAPIView):
             content_type=clean_mime_type(file.content_type),
             file_size=file.size,
         )
-        add_upload_to_session(upload, self.request.session)
-
         return Response(
             self.serializer_class(instance=upload, context={"request": request}).data
         )

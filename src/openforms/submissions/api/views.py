@@ -11,7 +11,6 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
 
 from ..models import SubmissionReport, TemporaryFileUpload
-from ..utils import remove_upload_from_session
 from .permissions import (
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
@@ -107,6 +106,4 @@ class TemporaryFileView(DestroyAPIView):
         # delete files from disc as well if they had been already
         # saved when trying to access the next form step
         instance.attachments.all().delete()
-
-        remove_upload_from_session(instance, self.request.session)
         instance.delete()

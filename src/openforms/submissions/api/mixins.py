@@ -11,11 +11,7 @@ from ..models import Submission
 from ..signals import submission_complete
 from ..tasks import on_post_submission_event
 from ..tokens import submission_status_token_generator
-from ..utils import (
-    persist_user_defined_variables,
-    remove_submission_from_session,
-    remove_submission_uploads_from_session,
-)
+from ..utils import persist_user_defined_variables, remove_submission_from_session
 
 
 class SubmissionCompletionMixin:
@@ -46,7 +42,6 @@ class SubmissionCompletionMixin:
         logevent.form_submit_success(submission)
 
         remove_submission_from_session(submission, self.request.session)
-        remove_submission_uploads_from_session(submission, self.request.session)
 
         # after committing the database transaction where the submissions completion is
         # stored, start processing the completion.

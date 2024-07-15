@@ -28,15 +28,10 @@ from openforms.logging import logevent
 from openforms.utils.urls import build_absolute_uri
 from openforms.variables.constants import FormVariableSources
 
-from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from .constants import SUBMISSIONS_SESSION_KEY
 from .exceptions import FormDeactivated, FormMaintenance
 from .form_logic import check_submission_logic
-from .models import (
-    Submission,
-    SubmissionReport,
-    SubmissionValueVariable,
-    TemporaryFileUpload,
-)
+from .models import Submission, SubmissionReport, SubmissionValueVariable
 from .tokens import submission_report_token_generator
 
 logger = logging.getLogger(__name__)
@@ -160,29 +155,6 @@ def remove_submission_from_session(
     Remove the submission UUID from the session if it's present.
     """
     remove_from_session_list(session, SUBMISSIONS_SESSION_KEY, str(submission.uuid))
-
-
-def add_upload_to_session(upload: TemporaryFileUpload, session: SessionBase) -> None:
-    """
-    Store the upload UUID in the request session for authorization checks.
-    """
-    append_to_session_list(session, UPLOADS_SESSION_KEY, str(upload.uuid))
-
-
-def remove_upload_from_session(
-    upload: TemporaryFileUpload, session: SessionBase
-) -> None:
-    """
-    Remove the submission UUID from the session if it's present.
-    """
-    remove_from_session_list(session, UPLOADS_SESSION_KEY, str(upload.uuid))
-
-
-def remove_submission_uploads_from_session(
-    submission: Submission, session: SessionBase
-) -> None:
-    for attachment in submission.get_attachments().filter(temporary_file__isnull=False):
-        remove_upload_from_session(attachment.temporary_file, session)
 
 
 def send_confirmation_email(submission: Submission) -> None:
