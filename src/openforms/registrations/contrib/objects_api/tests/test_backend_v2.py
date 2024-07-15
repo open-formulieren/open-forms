@@ -6,8 +6,6 @@ from django.test import TestCase, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
-from zgw_consumers.constants import APITypes, AuthTypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.authentication.service import AuthAttribute
 from openforms.submissions.tests.factories import (
@@ -16,7 +14,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..registration_variables import PaymentAmount
 from ..submission_registration import ObjectsAPIV2Handler
@@ -44,41 +42,8 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
-            objecttypes_service=ServiceFactory.create(
-                api_root="http://localhost:8001/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
-                auth_type=AuthTypes.api_key,
-            ),
-            objects_service=ServiceFactory.create(
-                api_root="http://localhost:8002/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-                auth_type=AuthTypes.api_key,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="http://localhost:8003/documenten/api/v1/",
-                api_type=APITypes.drc,
-                # See the docker compose fixtures:
-                client_id="test_client_id",
-                secret="test_secret_key",
-                auth_type=AuthTypes.zgw,
-            ),
-            catalogi_service=ServiceFactory.create(
-                api_root="http://localhost:8003/catalogi/api/v1/",
-                api_type=APITypes.ztc,
-                # See the docker compose fixtures:
-                client_id="test_client_id",
-                secret="test_secret_key",
-                auth_type=AuthTypes.zgw,
-            ),
+        self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
         )
 
     def test_submission_with_objects_api_v2(self):
