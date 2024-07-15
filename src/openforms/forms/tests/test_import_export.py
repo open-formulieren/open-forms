@@ -25,7 +25,6 @@ from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupCo
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
-from openforms.translations.tests.utils import make_translated
 from openforms.utils.tests.vcr import OFVCRMixin
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
@@ -559,48 +558,45 @@ class ImportExportTests(TempdirMixin, TestCase):
     @freeze_time()  # export metadata contains a timestamp
     def test_roundtrip_a_translated_form(self):
         self.maxDiff = None
-        TranslatedFormFactory = make_translated(FormFactory)
-        TranslatedFormDefinitionFactory = make_translated(FormDefinitionFactory)
-        TranslatedFormStepFactory = make_translated(FormStepFactory)
-        TranslatedConfirmationEmailTemplateFactory = make_translated(
-            ConfirmationEmailTemplateFactory
-        )
-        other_language = "en"
 
         form: Form
         form_definition: FormDefinition
         form_step: FormStep
         email_template: ConfirmationEmailTemplate
 
-        form = TranslatedFormFactory.create(
-            _language=other_language,
-            translation_enabled=True,
-            name="Some form name translation",
-            submission_confirmation_template="Some submission confirmation template translation",
-            begin_text="Some begin text translation",
-            previous_text="Some previous text translation",
-            change_text="Some change text translation",
-            confirm_text="Some confirm text translation",
+        form = FormFactory.create(
+            # set required untranslated string
+            name="Untranslated form name",
+            submission_confirmation_template="Untranslated submission confirmation template",
+            begin_text="Untranslated begin text",
+            previous_text="Untranslated previous text",
+            change_text="Untranslated change text",
+            confirm_text="Untranslated confirm text",
             explanation_template="Some explanations template",
+            # English translations
+            translation_enabled=True,
+            name_en="Some form name translation",
+            submission_confirmation_template_en="Some submission confirmation template translation",
+            begin_text_en="Some begin text translation",
+            previous_text_en="Some previous text translation",
+            change_text_en="Some change text translation",
+            confirm_text_en="Some confirm text translation",
+            explanation_template_en="Some explanations template",
         )
 
-        # set required untranslated string
-        form.name = "Untranslated form name"
-        form.submission_confirmation_template = (
-            "Untranslated submission confirmation template"
-        )
-        form.begin_text = "Untranslated begin text"
-        form.previous_text = "Untranslated previous text"
-        form.change_text = "Untranslated change text"
-        form.confirm_text = "Untranslated confirm text"
-        form.explanation_template = "Some explanations template"
-        form.save()
-
-        email_template = TranslatedConfirmationEmailTemplateFactory.build(
-            _language=other_language,
+        email_template = ConfirmationEmailTemplateFactory.create(
             form=form,
-            subject="Some confirmation email subject translation",
+            subject="Untranslated confirmation email subject",
             content=dedent(
+                """
+                        Untranslated confirmation email content with the obligatory
+                        {% cosign_information %}
+                        {% appointment_information %}
+                        {% payment_information %}
+                        """
+            ).strip(),
+            subject_en="Some confirmation email subject translation",
+            content_en=dedent(
                 """
                 Some confirmation email content translation with the obligatory
                 {% cosign_information %}
@@ -609,41 +605,27 @@ class ImportExportTests(TempdirMixin, TestCase):
                 """
             ).strip(),
         )
-        email_template.subject = "Untranslated confirmation email subject"
-        email_template.content = dedent(
-            """
-            Untranslated confirmation email content with the obligatory
-            {% cosign_information %}
-            {% appointment_information %}
-            {% payment_information %}
-            """
-        ).strip()
-        email_template.save()
 
-        form_definition = TranslatedFormDefinitionFactory.create(
-            _language=other_language,
-            name="Some form definition name translation",
+        form_definition = FormDefinitionFactory.create(
+            name="Untranslated form definition name",
+            name_en="Some form definition name translation",
         )
-        form_definition.name = "Untranslated form definition name"
-        form_definition.save()
 
-        form_step = TranslatedFormStepFactory.build(
-            _language=other_language,
+        form_step = FormStepFactory.create(
             form=form,
             form_definition=form_definition,
-            previous_text="Some previous step text translation",
-            save_text="Some save step text translation",
-            next_text="Some next step text translation",
+            previous_text="Untranslated previous step text",
+            save_text="Untranslated save step text",
+            next_text="Untranslated next step text",
+            previous_text_en="Some previous step text translation",
+            save_text_en="Some save step text translation",
+            next_text_en="Some next step text translation",
         )
-        form_step.previous_text = "Untranslated previous step text"
-        form_step.save_text = "Untranslated save step text"
-        form_step.next_text = "Untranslated next step text"
-        form_step.save()
 
         original_json = form_to_json(form.pk)
 
         # roundtrip
-        with translation.override(other_language):
+        with translation.override("en"):
             call_command("export", form.pk, self.filepath)
         # language switched back to default
         form.delete()

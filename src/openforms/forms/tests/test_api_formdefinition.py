@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.test import override_settings
 from django.urls import reverse
+from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import status
@@ -13,7 +14,6 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.prefill.models import PrefillConfig
-from openforms.translations.tests.utils import make_translated
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -696,11 +696,8 @@ class FormDefinitionsAPITranslationTests(APITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        TranslatedFormDefinitionFactory = make_translated(FormDefinitionFactory)
-        cls.form_definition = TranslatedFormDefinitionFactory.create(
-            _language="en",
-            name="FormDefinition 1",
-        )
+        with translation.override("en"):
+            cls.form_definition = FormDefinitionFactory.create(name="FormDefinition 1")
 
         cls.user = StaffUserFactory.create(user_permissions=["change_form"])
 
