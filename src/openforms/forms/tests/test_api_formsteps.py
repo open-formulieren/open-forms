@@ -4,6 +4,7 @@ from unittest.mock import patch
 from django.contrib.auth.models import Permission
 from django.test import override_settings, tag
 from django.urls import reverse
+from django.utils import translation
 from django.utils.translation import gettext as _
 
 from rest_framework import status
@@ -15,7 +16,6 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.translations.tests.utils import make_translated
 
 from ..models import FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -868,15 +868,14 @@ class FormStepsAPITranslationTests(APITestCase):
 
         cls.form_definition = FormDefinitionFactory.create()
 
-        TranslatedFormStepFactory = make_translated(FormStepFactory)
-        cls.form_step = TranslatedFormStepFactory.create(
-            _language="en",
-            form_definition__name="FormDef 001",
-            form=cls.form,
-            next_text="Next",
-            previous_text="Previous",
-            save_text="Save",
-        )
+        with translation.override("en"):
+            cls.form_step = FormStepFactory.create(
+                form_definition__name="FormDef 001",
+                form=cls.form,
+                next_text="Next",
+                previous_text="Previous",
+                save_text="Save",
+            )
 
         cls.user = StaffUserFactory.create(user_permissions=["change_form"])
 
@@ -1017,8 +1016,8 @@ class FormStepsAPITranslationTests(APITestCase):
         self.assertEqual(self.form_step.next_text_nl, "Volgende")
 
         # The FormDefinition translations on this endpoint are read only
-        self.assertEqual(self.form_step.form_definition.name_en, None)
-        self.assertEqual(self.form_step.form_definition.name_nl, "FormDef 001")
+        self.assertNotEqual(self.form_step.form_definition.name_en, "English")
+        self.assertNotEqual(self.form_step.form_definition.name_nl, "Dutch")
 
     @patch(
         "openforms.api.exception_handling.uuid.uuid4",

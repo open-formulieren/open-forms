@@ -15,14 +15,11 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
-from openforms.translations.tests.utils import make_translated
 
 from ..api.serializers import FormSerializer
 from ..constants import StatementCheckboxChoices
 from ..models import Form
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
-
-TranslatedFormFactory = make_translated(FormFactory)
 
 
 class FormSerializerTests(APITestCase):
@@ -1268,45 +1265,37 @@ class FormsAPITranslationTests(APITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.en_form = TranslatedFormFactory.create(
-            _language="en",
-            name="Form 1",
-            begin_text="start",
-            previous_text="prev",
-            change_text="change",
-            confirm_text="confirm",
-        )
-
-        TranslatedConfirmationEmailTemplateFactory = make_translated(
-            ConfirmationEmailTemplateFactory
-        )
-        TranslatedConfirmationEmailTemplateFactory.create(
-            _language="en",
-            form=cls.en_form,
-            subject="Initial subject",
-            content="Initial content",
-        )
-
-        TranslatedFormStepFactory = make_translated(FormStepFactory)
-        TranslatedFormStepFactory.create(
-            _language="en",
-            form=cls.en_form,
-            next_text="Next",
-            previous_text="Previous",
-            save_text="Save",
-        )
+        with translation.override("en"):
+            cls.en_form = FormFactory.create(
+                name="Form 1",
+                begin_text="start",
+                previous_text="prev",
+                change_text="change",
+                confirm_text="confirm",
+            )
+            ConfirmationEmailTemplateFactory.create(
+                form=cls.en_form,
+                subject="Initial subject",
+                content="Initial content",
+            )
+            FormStepFactory.create(
+                form=cls.en_form,
+                next_text="Next",
+                previous_text="Previous",
+                save_text="Save",
+            )
 
         cls.user = StaffUserFactory.create(user_permissions=["change_form"])
 
     def test_detail_shows_translated_values_based_on_request_header(self):
-        form = TranslatedFormFactory.create(
-            _language="en",
-            translation_enabled=True,
-            begin_text="start",
-            previous_text="prev",
-            change_text="change",
-            confirm_text="confirm",
-        )
+        with translation.override("en"):
+            form = FormFactory.create(
+                translation_enabled=True,
+                begin_text="start",
+                previous_text="prev",
+                change_text="change",
+                confirm_text="confirm",
+            )
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
@@ -1346,12 +1335,12 @@ class FormsAPITranslationTests(APITestCase):
 
         for en, nl in en_nl_combos:
             with self.subTest(begin_text_en=en, begin_text_nl=nl):
-                form = TranslatedFormFactory.create(
-                    _language="en",
+                form = FormFactory.create(
                     translation_enabled=True,
                     begin_text_en=en,
                     begin_text_nl=nl,  # should always be ignored
-                    previous_text="",
+                    previous_text_en="",
+                    previous_text_nl="",
                     change_text="",
                     confirm_text="",
                 )
