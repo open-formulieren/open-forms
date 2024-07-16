@@ -11,8 +11,6 @@ from django.test import TestCase, override_settings, tag
 from django.utils import translation
 
 from freezegun import freeze_time
-from zgw_consumers.constants import APITypes, AuthTypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
@@ -1669,31 +1667,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             ]
         }
 
-        _credentials = {
-            "auth_type": AuthTypes.zgw,
-            "client_id": "test_client_id",
-            "secret": "test_secret_key",
-        }
-        zaken_service = ServiceFactory.create(
-            api_root="http://localhost:8003/zaken/api/v1/",
-            api_type=APITypes.zrc,
-            **_credentials,
-        )
-        documenten_service = ServiceFactory.create(
-            api_root="http://localhost:8003/documenten/api/v1/",
-            api_type=APITypes.drc,
-            **_credentials,
-        )
-        catalogi_service = ServiceFactory.create(
-            api_root="http://localhost:8003/catalogi/api/v1/",
-            api_type=APITypes.ztc,
-            **_credentials,
-        )
-        zgw_group = ZGWApiGroupConfigFactory.create(
-            zrc_service=zaken_service,
-            drc_service=documenten_service,
-            ztc_service=catalogi_service,
-        )
+        zgw_group = ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
 
         with zipfile.ZipFile(self.filepath, "w") as zip_file:
             for name, data in resources.items():
