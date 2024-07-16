@@ -1,11 +1,13 @@
 import logging
 import uuid
+from pathlib import Path
 
 from django.contrib.auth.hashers import check_password as check_salted_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView, RedirectView
@@ -28,9 +30,9 @@ from openforms.tokens import BaseTokenGenerator
 from .constants import RegistrationStatuses
 from .exceptions import FormDeactivated, FormMaintenance
 from .forms import SearchSubmissionForCosignForm
-from .models import Submission, SubmissionFileAttachment
+from .models import Submission, SubmissionFileAttachment, SubmissionReport
 from .signals import submission_resumed
-from .tokens import submission_resume_token_generator
+from .tokens import submission_report_token_generator, submission_resume_token_generator
 from .utils import add_submmission_to_session, check_form_status
 
 logger = logging.getLogger(__name__)
@@ -190,6 +192,46 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
                 "submission_uuid": str(submission.uuid),
             },
         )
+
+
+class DownloadSubmissionReportView(PrivateMediaView):
+    """
+    Download the PDF report containing the submission data.
+
+    This URL requires a token which is tied to the submission from the session. The
+    token automatically expires after
+    ``settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS`` days.
+    """
+
+    queryset = SubmissionReport.objects.all()
+    pk_url_kwarg = "report_id"
+    file_field = "content"
+    raise_exception = True
+
+    object: SubmissionReport
+
+    def has_permission(self):
+        report: SubmissionReport = self.get_object()
+        token = self.kwargs["token"]
+        return submission_report_token_generator.check_token(report, token)
+
+    def get_sendfile_opts(self) -> dict:
+        path = Path(self.object.content.name)
+        opts = {
+            "attachment": True,
+            "attachment_filename": path.name,
+            "mimetype": "application/pdf",
+        }
+        return opts
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        self.object = self.get_object()
+
+        response = super().get(request, *args, **kwargs)
+
+        self.object.last_accessed = timezone.now()
+        self.object.save()
+        return response
 
 
 class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):

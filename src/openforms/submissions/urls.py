@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    DownloadSubmissionReportView,
     ResumeSubmissionView,
     SearchSubmissionForCosignFormView,
     SubmissionAttachmentDownloadView,
@@ -9,6 +10,11 @@ from .views import (
 app_name = "submissions"
 
 urlpatterns = [
+    path(
+        "pdf/<int:report_id>/<str:token>/download",
+        DownloadSubmissionReportView.as_view(),
+        name="download-submission",
+    ),
     path(
         "<uuid:submission_uuid>/<str:token>/resume",
         ResumeSubmissionView.as_view(),
