@@ -546,7 +546,12 @@ FIXTURE_DIRS = (os.path.join(DJANGO_PROJECT_DIR, "fixtures"),)
 #
 PROJECT_NAME = "Open Formulieren"
 ENVIRONMENT = config("ENVIRONMENT", "")
-SHOW_ALERT = True
+
+# Displaying environment information
+ENVIRONMENT_LABEL = config("ENVIRONMENT_LABEL", ENVIRONMENT)
+ENVIRONMENT_BACKGROUND_COLOR = config("ENVIRONMENT_BACKGROUND_COLOR", "orange")
+ENVIRONMENT_FOREGROUND_COLOR = config("ENVIRONMENT_FOREGROUND_COLOR", "black")
+SHOW_ENVIRONMENT = config("SHOW_ENVIRONMENT", default=True)
 
 if "GIT_SHA" in os.environ:
     GIT_SHA = config("GIT_SHA", "")

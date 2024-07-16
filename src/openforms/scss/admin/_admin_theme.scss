@@ -236,26 +236,16 @@ div.breadcrumbs {
 }
 
 /**
- * Environment banner
+ * Environment information
  */
-.env {
+.env-info {
   display: block;
-  line-height: 35px;
-  text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: $color_secondary;
-  background-color: $color_dark;
-  position: fixed;
-  top: 0;
-  height: 35px;
-  width: 300px;
-  left: 50%;
-  margin-left: -150px;
-  z-index: 1000001;
-  box-shadow:
-    0 4px 8px 0 rgba(0, 0, 0, 0.2),
-    0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  align-self: center;
+  padding-inline: 8px;
+  padding-block: 5px;
+  background-color: var(--of-env-info-background-color, var(--secondary));
+  color: var(--of-env-info-color, var(--primary-fg));
+  border-radius: 3px;
 }
 
 /**

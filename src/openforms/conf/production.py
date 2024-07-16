@@ -47,11 +47,6 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_CONTENT_TYPE_NOSNIFF = True  # Sets X-Content-Type-Options: nosniff
 SECURE_BROWSER_XSS_FILTER = True  # Sets X-XSS-Protection: 1; mode=block
 
-#
-# Custom settings overrides
-#
-SHOW_ALERT = False
-
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #
