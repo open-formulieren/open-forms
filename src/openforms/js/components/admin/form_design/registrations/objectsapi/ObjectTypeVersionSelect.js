@@ -50,22 +50,13 @@ const ObjectTypeVersionSelect = ({
           return {value: version.version, label: `${version.version} (${version.status})`};
         });
 
-  // ensure that if no valid value is present, the first possible option is set (
-  // synchronize the UI state back to the form state)
+  // Auto-select if only one available:
   useEffect(() => {
-    // do nothing if no options have been loaded
-    if (loading || availableVersions.length === 0) return;
+    if (loading || availableVersions.length !== 1) return;
 
-    // check if a valid option is selected, if this is the case -> do nothing
-    const isOptionPresent = availableVersions.find(
-      version => parseInt(version.version) === parseInt(selectedVersion)
-    );
-    if (isOptionPresent) return;
-
-    // otherwise select the first possible option and persist that back into the state
     const fakeEvent = {target: {name: 'objecttypeVersion', value: availableVersions[0].version}};
     onChange(fakeEvent);
-  });
+  }, [loading, availableVersions]);
 
   return (
     <ReactSelect

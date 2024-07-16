@@ -251,7 +251,7 @@
     "originalDefault": "Objects API - objecttype version"
   },
   "5p7PF0": {
-    "defaultMessage": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV",
+    "defaultMessage": "Omschrijving naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document",
     "description": "Objects API registration options \"Submission report CSV informatieobjecttype\" description",
     "originalDefault": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
   },
@@ -2125,7 +2125,7 @@
     "originalDefault": "Manage process variables"
   },
   "n/+OWz": {
-    "defaultMessage": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF",
+    "defaultMessage": "Omschrijving naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document",
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
     "originalDefault": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
   },
@@ -2593,7 +2593,7 @@
     "originalDefault": "Use logic rules to determine the price"
   },
   "zxaohJ": {
-    "defaultMessage": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments",
+    "defaultMessage": "Omschrijving naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen",
     "description": "Objects API registration options \"Attachment informatieobjecttype\" description",
     "originalDefault": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
   }

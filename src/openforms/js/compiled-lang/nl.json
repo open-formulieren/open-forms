@@ -606,7 +606,7 @@
   "5p7PF0": [
     {
       "type": 0,
-      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV"
+      "value": "Omschrijving naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het CSV-document"
     }
   ],
   "5uaKBM": [
@@ -4650,7 +4650,7 @@
   "n/+OWz": [
     {
       "type": 0,
-      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
+      "value": "Omschrijving naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document"
     }
   ],
   "n4Y2ex": [
@@ -5648,7 +5648,7 @@
   "zxaohJ": [
     {
       "type": 0,
-      "value": "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments"
+      "value": "Omschrijving naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor de bijlagen"
     }
   ]
 }

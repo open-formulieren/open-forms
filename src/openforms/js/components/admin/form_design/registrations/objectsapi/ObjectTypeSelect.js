@@ -13,20 +13,14 @@ const ObjectTypeSelect = ({availableObjectTypesState, objecttype, onChange, html
           return {value: uuid, label: `${name} (${dataClassification})`};
         });
 
-  // ensure that if no valid value is present, the first possible option is set (
-  // synchronize the UI state back to the form state)
+  // Auto-select if only one available:
   useEffect(() => {
-    // do nothing if no options have been loaded
-    if (loading || !availableObjecttypes.length) return;
+    console.log(availableObjecttypes);
+    if (loading || availableObjecttypes.length !== 1) return;
 
-    // check if a valid option is selected, if this is the case -> do nothing
-    const isOptionPresent = availableObjecttypes.find(ot => ot.uuid === objecttype);
-    if (isOptionPresent) return;
-
-    // otherwise select the first possible option and persist that back into the state
     const fakeEvent = {target: {name: 'objecttype', value: availableObjecttypes[0].uuid}};
     onChange(fakeEvent);
-  });
+  }, [loading, availableObjecttypes]);
 
   return (
     <ReactSelect

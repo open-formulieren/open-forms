@@ -37,25 +37,6 @@ const InformatieObjecttypeSelect = ({
     }));
   }
 
-  // ensure that if no valid value is present, the first possible option is set (
-  // synchronize the UI state back to the form state)
-  useEffect(() => {
-    // do nothing if no options have been loaded
-    if (loading || !availableInformatieobjecttypen.length) return;
-
-    // check if a valid option is selected, if this is the case -> do nothing
-    const isOptionPresent = availableInformatieobjecttypen.find(
-      iot => iot.informatieobjecttype.omschrijving === informatieObjecttype
-    );
-    if (isOptionPresent) return;
-
-    // otherwise select the first possible option and persist that back into the state
-    const fakeEvent = {
-      target: {name, value: availableInformatieobjecttypen[0].informatieobjecttype.omschrijving},
-    };
-    onChange(fakeEvent);
-  }, []);
-
   return (
     <ReactSelect
       name={name}

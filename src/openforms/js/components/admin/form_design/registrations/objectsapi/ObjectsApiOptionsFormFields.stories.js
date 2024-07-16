@@ -123,10 +123,11 @@ export const SwitchToV2Empty = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('Objecten API-groep');
+    const objecttypeSelect = canvas.getByLabelText('Objecttype');
+    const objecttypeVersionSelect = canvas.getByLabelText('Objecttypeversie');
     await selectEvent.select(groupSelect, 'Objects API group 1');
-
-    expect(await canvas.findByText('Tree (open)', {exact: true})).toBeVisible();
-    expect(await canvas.findByText('2 (draft)', {exact: true})).toBeVisible();
+    await selectEvent.select(objecttypeSelect, 'Tree (open)');
+    await selectEvent.select(objecttypeVersionSelect, '2 (draft)');
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
@@ -193,10 +194,11 @@ export const SwitchToV2NonExisting = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('Objecten API-groep');
+    const objecttypeSelect = canvas.getByLabelText('Objecttype');
+    const objecttypeVersionSelect = canvas.getByLabelText('Objecttypeversie');
     await selectEvent.select(groupSelect, 'Objects API group 1');
-
-    expect(await canvas.findByText('Tree (open)', {exact: true})).toBeVisible();
-    expect(await canvas.findByText('2 (draft)', {exact: true})).toBeVisible();
+    await selectEvent.select(objecttypeSelect, 'Tree (open)');
+    await selectEvent.select(objecttypeVersionSelect, '2 (draft)');
 
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
