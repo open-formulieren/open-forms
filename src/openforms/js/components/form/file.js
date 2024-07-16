@@ -18,15 +18,13 @@ const BaseFileField = Formio.Components.components.file;
 const getInformatieObjectTypen = async (backend, options) => {
   switch (backend) {
     case 'zgw-create-zaak': {
-      return await get('/api/v2/registration/informatieobjecttypen', {
+      return await get('/api/v2/registration/plugins/zgw-api/informatieobjecttypen', {
         zgw_api_group: options.zgwApiGroup,
-        registration_backend: backend,
       });
     }
     case 'objects_api':
-      return await get('/api/v2/registration/informatieobjecttypen', {
+      return await get('/api/v2/registration/plugins/objects-api/informatieobjecttypen', {
         objects_api_group: options.objectsApiGroup,
-        registration_backend: backend,
       });
     default:
       return null;
@@ -60,13 +58,10 @@ const getSetOfBackends = instance => {
  *
  * @return {Promise<{
  *   backendLabel: string;
- *   catalogus: {
- *     domein: string;
- *   },
- *   informatieobjecttype: {
- *     url: string;
- *     omschrijving: string;
- *   }
+ *   catalogusDomein: string;
+ *   catalogusRsin: string;
+ *   url: string;
+ *   omschrijving: string;
  * }>[]}
  * An array of available documenttypes with the relevant backend label attached.
  */
