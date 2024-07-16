@@ -80,6 +80,11 @@ services:
       - USE_LEGACY_OIDC_ENDPOINTS=no
       - USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS=no
       - USE_LEGACY_ORG_OIDC_ENDPOINTS=no
+      # Environment labeling
+      - SHOW_ENVIRONMENT=yes
+      - ENVIRONMENT_LABEL=docker-compose
+      - ENVIRONMENT_BACKGROUND_COLOR=#1d63ed
+      - ENVIRONMENT_FOREGROUND_COLOR=white
     volumes: &web_volumes
       - media:/app/media
       - private_media:/app/private_media

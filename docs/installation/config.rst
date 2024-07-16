@@ -245,6 +245,21 @@ Other settings
 * ``ENVIRONMENT``: Short string to indicate the environment (test, production,
   etc.) Defaults to ``""``.
 
+* ``SHOW_ENVIRONMENT``: Display environment information in the header in the admin.
+  Defaults to ``True``. Environment information is only displayed to logged in users.
+
+* ``ENVIRONMENT_LABEL``: Environment information to display, defaults to the value of
+  ``ENVIRONMENT``. Only displayed when ``SHOW_ENVIRONMENT`` is set to ``True``. You can
+  set this to strings like ``OpenGem PROD`` or simply ``PROD``, depending on your needs.
+
+* ``ENVIRONMENT_BACKGROUND_COLOR``: CSS color value for the environment information
+  background color. Defaults to ``orange``, example values can be specified in HEX
+  format too, e.g.: ``#FF0000`` for red.
+
+* ``ENVIRONMENT_FOREGROUND_COLOR``: CSS color value for the environment information
+  text color. Defaults to ``black``. Follows the same rules as
+  ``ENVIRONMENT_BACKGROUND_COLOR``.
+
 * ``GIT_SHA``: The Git commit hash belonging to the code running the instance.
   Defaults to the automatically determined commit hash, if the application is
   run from a checked out Git repository.
