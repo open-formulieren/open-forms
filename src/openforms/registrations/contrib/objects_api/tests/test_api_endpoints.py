@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from furl import furl
 from rest_framework import status
 from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
@@ -13,10 +12,12 @@ from openforms.utils.tests.vcr import OFVCRMixin
 from ..tests.factories import ObjectsAPIGroupConfigFactory
 from .test_objecttypes_client import get_test_config
 
+TEST_FILES = Path(__file__).parent / "files"
+
 
 class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
-    VCR_TEST_FILES = Path(__file__).parent / "files"
+    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:object-types")
 
     @classmethod
@@ -74,7 +75,7 @@ class ObjecttypesAPIEndpointTests(OFVCRMixin, APITestCase):
 
 class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
-    VCR_TEST_FILES = Path(__file__).parent / "files"
+    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy(
         "api:objects_api:object-type-versions",
         args=["3edfdaf7-f469-470b-a391-bb7ea015bd6f"],
@@ -132,7 +133,7 @@ class ObjecttypeVersionsAPIEndpointTests(OFVCRMixin, APITestCase):
 
 class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
 
-    VCR_TEST_FILES = Path(__file__).parent / "files"
+    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:target-paths")
 
     @classmethod
@@ -207,7 +208,7 @@ class TargetPathsAPIEndpointTests(OFVCRMixin, APITestCase):
 
 class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 
-    VCR_TEST_FILES = Path(__file__).parent / "files"
+    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:catalogi-list")
 
     @classmethod
@@ -260,8 +261,8 @@ class CatalogusAPIEndpointTests(OFVCRMixin, APITestCase):
 
 class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
+    VCR_TEST_FILES = TEST_FILES
     endpoint = reverse_lazy("api:objects_api:iotypen-list")
-    VCR_TEST_FILES = Path(__file__).parent / "files"
 
     @classmethod
     def setUpTestData(cls):
@@ -289,11 +290,9 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
     def test_filter_with_invalid_objects_api_group(self):
         user = StaffUserFactory.create()
-        url = furl(self.endpoint)
-        url.args["objects_api_group"] = "INVALID"
         self.client.force_login(user)
 
-        response = self.client.get(url.url)
+        response = self.client.get(self.endpoint, {"objects_api_group": "INVALID"})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -307,11 +306,11 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
     def test_retrieve_with_explicit_objects_api_group(self):
         user = StaffUserFactory.create()
-        url = furl(self.endpoint)
-        url.args["objects_api_group"] = self.objects_api_group.pk
         self.client.force_login(user)
 
-        response = self.client.get(url.url)
+        response = self.client.get(
+            self.endpoint, {"objects_api_group": self.objects_api_group.pk}
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -319,27 +318,17 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
 
         self.assertEqual(len(data), 3)
 
-    def test_retrieve_filter_by_catalogus_missing_param(self):
-        user = StaffUserFactory.create()
-        url = furl(self.endpoint)
-        url.args["objects_api_group"] = self.objects_api_group.pk
-        url.args["catalogus_domein"] = "TEST"
-        # We don't add `catalogus_rsin` here
-        self.client.force_login(user)
-
-        response = self.client.get(url.url)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
     def test_retrieve_filter_by_catalogus(self):
         user = StaffUserFactory.create()
-        url = furl(self.endpoint)
-        url.args["objects_api_group"] = self.objects_api_group.pk
-        url.args["catalogus_domein"] = "TEST"
-        url.args["catalogus_rsin"] = "000000000"
         self.client.force_login(user)
 
-        response = self.client.get(url.url)
+        response = self.client.get(
+            self.endpoint,
+            {
+                "objects_api_group": self.objects_api_group.pk,
+                "catalogus": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+            },
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

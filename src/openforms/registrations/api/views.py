@@ -6,7 +6,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 from zgw_consumers.api_models.base import factory
-from zgw_consumers.api_models.catalogi import Catalogus, InformatieObjectType
+from zgw_consumers.api_models.catalogi import Catalogus
 
 from openforms.api.views import ListMixin
 
@@ -16,7 +16,7 @@ from .filters import BaseAPIGroupQueryParamsSerializer
 from .serializers import (
     CatalogusSerializer,
     ChoiceWrapper,
-    InformatieObjectTypeChoiceSerializer,
+    InformatieObjectTypeSerializer,
     RegistrationAttributeSerializer,
     RegistrationPluginSerializer,
 )
@@ -87,7 +87,7 @@ class BaseInformatieObjectTypenListView(ListMixin, APIView):
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = InformatieObjectTypeChoiceSerializer
+    serializer_class = InformatieObjectTypeSerializer
     filter_serializer_class: ClassVar[type[BaseAPIGroupQueryParamsSerializer]]
 
     def get_objects(self):
@@ -101,47 +101,34 @@ class BaseInformatieObjectTypenListView(ListMixin, APIView):
             catalogus["url"]: catalogus for catalogus in catalogus_data
         }
 
-        if "catalogus_domein" in filter_serializer.validated_data:
-            domein = filter_serializer.validated_data["catalogus_domein"]
-            # `catalogus_rsin` is guaranteed to be present if `catalogus_domein` is:
-            rsin = filter_serializer.validated_data["catalogus_rsin"]
+        catalogus = filter_serializer.validated_data.get("catalogus_url", "")
 
-            matching_catalogus: str | None = next(
-                (
-                    catalogus["url"]
-                    for catalogus in catalogus_data
-                    if catalogus["domein"] == domein and catalogus["rsin"] == rsin
-                ),
-                None,
-            )
-
-            if matching_catalogus is None:
-                return []
-
-            iotypen_data = client.get_all_informatieobjecttypen(
-                catalogus=matching_catalogus
-            )
-        else:
-            iotypen_data = client.get_all_informatieobjecttypen()
+        iotypen_data = client.get_all_informatieobjecttypen(catalogus=catalogus)
 
         iotypen = []
 
         for iotype in iotypen_data:
             # fmt: off
             exists = any(
-                existing_iotype["informatieobjecttype"].omschrijving == iotype["omschrijving"]
-                and existing_iotype["informatieobjecttype"].catalogus == iotype["catalogus"]
+                existing_iotype["catalogus_domein"] == catalogus_mapping[iotype["catalogus"]]["domein"]
+                and existing_iotype["catalogus_rsin"] == catalogus_mapping[iotype["catalogus"]]["rsin"]
+                and existing_iotype["omschrijving"] == iotype["omschrijving"]
                 for existing_iotype in iotypen
             )
             # fmt: on
 
+            # Filter out duplicate entries, as you can set start/end dates on IOTs:
             if not exists:
                 iotypen.append(
                     {
-                        "informatieobjecttype": factory(InformatieObjectType, iotype),
-                        "catalogus": factory(
-                            Catalogus, catalogus_mapping[iotype["catalogus"]]
-                        ),
+                        "catalogus_domein": catalogus_mapping[iotype["catalogus"]][
+                            "domein"
+                        ],
+                        "catalogus_rsin": catalogus_mapping[iotype["catalogus"]][
+                            "rsin"
+                        ],
+                        "url": iotype["url"],
+                        "omschrijving": iotype["omschrijving"],
                     }
                 )
 

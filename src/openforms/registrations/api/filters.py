@@ -83,34 +83,3 @@ class APIGroupQueryParamsSerializer(serializers.Serializer):
             ]
             if service := objects_api_group.catalogi_service:
                 return build_client(service, client_factory=CatalogiClient)
-
-
-class BaseListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
-    catalogus_domein = serializers.CharField(
-        label=_("catalogus domein"),
-        help_text=_(
-            "Filter informatieobjecttypen against this catalogus domein."
-            "If provided, the RSIN should also be present."
-        ),
-        required=False,
-    )
-
-    catalogus_rsin = serializers.CharField(
-        label=_("catalogus RSIN"),
-        help_text=_(
-            "Filter informatieobjecttypen against this catalogus RSIN."
-            "If provided, the RSIN should also be present."
-        ),
-        required=False,
-    )
-
-    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
-        attrs = super().validate(attrs)
-        if ("catalogus_domein" in attrs) ^ ("catalogus_rsin" in attrs):
-            raise serializers.ValidationError(
-                _(
-                    "'catalogus_domein' and 'catalogus_rsin' should be provided together."
-                )
-            )
-
-        return attrs

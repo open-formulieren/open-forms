@@ -1,12 +1,11 @@
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import serializers
+
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 
-from ....api.filters import (
-    BaseAPIGroupQueryParamsSerializer,
-    BaseListInformatieObjectTypenQueryParamsSerializer,
-)
+from ....api.filters import BaseAPIGroupQueryParamsSerializer
 from ..client import get_catalogi_client
 from ..models import ZGWApiGroupConfig
 
@@ -26,7 +25,9 @@ class APIGroupQueryParamsSerializer(BaseAPIGroupQueryParamsSerializer):
         return get_catalogi_client(zgw_api_group)
 
 
-class ListInformatieObjectTypenQueryParamsSerializer(
-    APIGroupQueryParamsSerializer, BaseListInformatieObjectTypenQueryParamsSerializer
-):
-    pass
+class ListInformatieObjectTypenQueryParamsSerializer(APIGroupQueryParamsSerializer):
+    catalogus_url = serializers.URLField(
+        label=_("catalogus URL"),
+        help_text=_("Filter informatieobjecttypen against this catalogus URL."),
+        required=False,
+    )
