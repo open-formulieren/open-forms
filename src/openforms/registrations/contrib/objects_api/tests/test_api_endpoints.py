@@ -326,7 +326,7 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
             self.endpoint,
             {
                 "objects_api_group": self.objects_api_group.pk,
-                "catalogus": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
+                "catalogus_url": "http://localhost:8003/catalogi/api/v1/catalogussen/bd58635c-793e-446d-a7e0-460d7b04829d",
             },
         )
 
