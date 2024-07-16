@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.conf import settings as django_settings
 from django.template.defaultfilters import filesizeformat
 from django.utils import formats
@@ -5,16 +7,13 @@ from django.utils import formats
 
 def settings(request):
     public_settings = (
-        "GOOGLE_ANALYTICS_ID",
-        "ENVIRONMENT",
-        "SHOW_ALERT",
         "PROJECT_NAME",
         "RELEASE",
         "GIT_SHA",
         "PRIVACY_POLICY_URL",
     )
 
-    context = {
+    context: dict[str, Any] = {
         "settings": dict(
             [(k, getattr(django_settings, k, None)) for k in public_settings]
         ),
