@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 
 from openforms.api.permissions import TimestampedTokenPermission
 
-from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from ..constants import SUBMISSIONS_SESSION_KEY
 from ..form_logic import check_submission_logic
-from ..models import SubmissionStep
+from ..models import SubmissionStep, TemporaryFileUpload
 from ..tokens import (
     submission_report_token_generator,
     submission_status_token_generator,
@@ -81,30 +81,16 @@ class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
         return queryset.filter(uuid__in=active_submissions)
 
 
-class OwnsTemporaryUploadPermission(permissions.BasePermission):
+class OwnsTemporaryUploadPermission(AnyActiveSubmissionPermission):
     """
     Verify the upload is registered in the users session
     """
 
-    def has_permission(self, request: Request, view: APIView) -> bool:
-        active_uploads = request.session.get(UPLOADS_SESSION_KEY)
-        if not active_uploads:
-            return False
-        return True
-
-    def has_object_permission(self, request: Request, view: APIView, obj) -> bool:
-        active_uploads = request.session.get(UPLOADS_SESSION_KEY)
-
-        upload_url_kwarg = view.lookup_url_kwarg or view.lookup_field
-        upload_uuid = view.kwargs[upload_url_kwarg]
-
-        return str(upload_uuid) in active_uploads
-
-    def filter_queryset(self, request: Request, view: APIView, queryset):
-        active_uploads = request.session.get(UPLOADS_SESSION_KEY)
-        if not active_uploads:
-            return queryset.none()
-        return queryset.filter(uuid__in=active_uploads)
+    def has_object_permission(
+        self, request: Request, view: APIView, obj: TemporaryFileUpload
+    ) -> bool:
+        submission_uuid = str(obj.submission.uuid)
+        return owns_submission(request, submission_uuid)
 
 
 class DownloadSubmissionReportPermission(TimestampedTokenPermission):

@@ -17,28 +17,18 @@ from openforms.submissions.attachments import (
     temporary_upload_from_url,
     temporary_upload_uuid_from_url,
 )
-from openforms.submissions.constants import UPLOADS_SESSION_KEY
 from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.models.submission_files import SubmissionFileAttachment
 from openforms.submissions.tests.factories import (
-    SubmissionFactory,
     SubmissionFileAttachmentFactory,
     TemporaryFileUploadFactory,
 )
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.submissions.utils import (
-    add_upload_to_session,
-    append_to_session_list,
-    remove_from_session_list,
-    remove_upload_from_session,
-)
+from openforms.submissions.utils import append_to_session_list, remove_from_session_list
 
 
 @temp_private_root()
 class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.submission = SubmissionFactory.create()
 
     def tearDown(self):
         self._clear_session()
@@ -100,7 +90,7 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         for filename, escaped in tests:
             with self.subTest(filename=filename, escaped=escaped):
                 upload = TemporaryFileUploadFactory.create(file_name=filename)
-                self._add_upload_to_session(upload)
+                self._add_submission_to_session(upload.submission)
                 url = reverse(
                     "api:submissions:temporary-file", kwargs={"uuid": upload.uuid}
                 )
@@ -115,23 +105,24 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     def test_delete_view_requires_registered_uploads(self):
         upload = TemporaryFileUploadFactory.create()
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # add it
-        self._add_upload_to_session(upload)
+        with self.subTest("upload submission not in session"):
+            response = self.client.delete(url)
 
-        dict(self.client.session)
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        with self.subTest("upload submission added to session"):
+            self._add_submission_to_session(upload.submission)
+
+            response = self.client.delete(url)
+
+            self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_view(self):
         upload = TemporaryFileUploadFactory.create()
         path = upload.content.path
         self.assertTrue(os.path.exists(path))
-
-        self._add_upload_to_session(upload)
+        self._add_submission_to_session(upload.submission)
 
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
 
@@ -153,12 +144,10 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         with self.assertRaises(TemporaryFileUpload.DoesNotExist):
             upload.refresh_from_db()
 
-        # 403 (because permission check fails before object is retrieved)
+        # 404 because the object cannot be found anymore
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # gone
-        self.assertEqual([], self.client.session[UPLOADS_SESSION_KEY])
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_instance_method(self):
         upload = TemporaryFileUploadFactory.create()
@@ -193,11 +182,9 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
     def test_delete_temporary_file_attachement_deletes_the_saved_one_as_well(self):
         upload = TemporaryFileUploadFactory.create()
+        self._add_submission_to_session(upload.submission)
         saved_upload = SubmissionFileAttachmentFactory.create(temporary_file=upload)
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
-
-        # add it to the session
-        self._add_upload_to_session(upload)
 
         # make sure the two files exist
         self.assertEqual(TemporaryFileUpload.objects.get(), upload)
@@ -263,17 +250,3 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         # ignore values never added
         remove_from_session_list(session, "my_key", 3)
-
-    def test_session_upload_utils(self):
-        session = self.client.session
-
-        upload_1 = TemporaryFileUploadFactory.create()
-        upload_2 = TemporaryFileUploadFactory.create()
-        add_upload_to_session(upload_1, session)
-        add_upload_to_session(upload_2, session)
-
-        session_uploads = session[UPLOADS_SESSION_KEY]
-        self.assertEqual([str(upload_1.uuid), str(upload_2.uuid)], session_uploads)
-
-        remove_upload_from_session(upload_1, session)
-        self.assertEqual([str(upload_2.uuid)], session_uploads)

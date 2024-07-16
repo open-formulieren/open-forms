@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 SUBMISSIONS_SESSION_KEY = "form-submissions"
-UPLOADS_SESSION_KEY = "form-uploads"
 
 IMAGE_COMPONENTS = ["signature"]
 
