@@ -33,3 +33,24 @@ export const mockTargetPathsPost = paths =>
       return res(ctx.json(paths[variableJsonSchemaType]));
     }
   );
+
+export const mockInformatieobjecttypenGet = informatieobjecttypen =>
+  rest.get(
+    `${API_BASE_URL}/api/v2/registration/plugins/objects-api/informatieobjecttypen`,
+    (req, res, ctx) => {
+      const catalogusUrl = req.url.searchParams.get('catalogus_url');
+      let filteredIots;
+      if (catalogusUrl) {
+        filteredIots = informatieobjecttypen.filter(iot => iot.catalogusUrl === catalogusUrl);
+      } else {
+        filteredIots = informatieobjecttypen;
+      }
+
+      return res(ctx.json(filteredIots));
+    }
+  );
+
+export const mockCatalogiGet = catalogi =>
+  rest.get(`${API_BASE_URL}/api/v2/registration/plugins/objects-api/catalogi`, (req, res, ctx) => {
+    return res(ctx.json(catalogi));
+  });

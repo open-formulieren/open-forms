@@ -7,9 +7,14 @@ import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 
-import {mockCatalogiGet, mockInformatieobjecttypenGet} from '../mocks';
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
-import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
+import {
+  mockCatalogiGet,
+  mockInformatieobjecttypenGet,
+  mockObjecttypeVersionsGet,
+  mockObjecttypesError,
+  mockObjecttypesGet,
+} from './mocks';
 
 // WARNING
 // The `render` function will mutate args, meaning interactions can't be run twice
@@ -83,26 +88,32 @@ export default {
         ]),
         mockInformatieobjecttypenGet([
           {
-            informatieobjecttype: {
-              url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/f9a6cd4c-5f56-4f47-ad12-2e15094f917d',
-              omschrijving: 'Test IOT',
-            },
-            catalogus: {domein: 'Test domain', rsin: '000000000'},
+            url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/f9a6cd4c-5f56-4f47-ad12-2e15094f917d',
+            omschrijving: 'Test IOT',
+            catalogusDomein: 'Test domain',
+            catalogusRsin: '000000000',
+            // Not available at runtime, but allows filtering with the `catalogus_url` query param:
+            catalogusUrl:
+              'http://openzaak.nl/catalogi/api/v1/catalogussen/7b403bcd-1f2e-4b50-8631-eec3d3a44e66',
           },
           {
-            informatieobjecttype: {
-              url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/c2a25a12-9822-49b6-956b-89f0c39b11fe',
-              omschrijving: 'Test IOT 2',
-            },
-            catalogus: {domein: 'Test domain 2', rsin: '000000000'},
+            url: 'https://openzaak.nl/catalogi/api/v1/informatieobjecttypen/c2a25a12-9822-49b6-956b-89f0c39b11fe',
+            omschrijving: 'Test IOT 2',
+            catalogusDomein: 'Test domain 2',
+            catalogusRsin: '000000000',
+            // Not available at runtime, but allows filtering with the `catalogus_url` query param:
+            catalogusUrl:
+              'http://openzaak.nl/catalogi/api/v1/catalogussen/57a48fbd-c443-43d5-bee0-9a9d0086439e',
           },
         ]),
         mockCatalogiGet([
           {
+            url: 'http://openzaak.nl/catalogi/api/v1/catalogussen/7b403bcd-1f2e-4b50-8631-eec3d3a44e66',
             domein: 'Test domain',
             rsin: '000000000',
           },
           {
+            url: 'http://openzaak.nl/catalogi/api/v1/catalogussen/57a48fbd-c443-43d5-bee0-9a9d0086439e',
             domein: 'Test domain 2',
             rsin: '000000000',
           },

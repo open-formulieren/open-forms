@@ -1,7 +1,8 @@
 export const FORM_ENDPOINT = '/api/v2/forms';
 export const FORM_DEFINITIONS_ENDPOINT = '/api/v2/form-definitions';
 export const REGISTRATION_BACKENDS_ENDPOINT = '/api/v2/registration/plugins';
-export const REGISTRATION_CATALOGI_ENDPOINT = '/api/v2/registration/catalogi';
+export const REGISTRATION_OBJECTS_API_CATALOGI_ENDPOINT =
+  '/api/v2/registration/plugins/objects-api/catalogi';
 export const REGISTRATION_OBJECTTYPES_ENDPOINT =
   '/api/v2/registration/plugins/objects-api/object-types';
 export const REGISTRATION_OBJECTS_TARGET_PATHS =

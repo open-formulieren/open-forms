@@ -47,10 +47,18 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
   // shared.
   const availableObjectTypesState = useGetAvailableObjectTypes(objectsApiGroup);
   const availableCatalogiState = useGetAvailableCatalogi(objectsApiGroup);
+
+  let catalogusUrl = '';
+  if (!availableCatalogiState.loading && !availableCatalogiState.error) {
+    const catalogus = availableCatalogiState.availableCatalogi.find(
+      c => c.domein === catalogusDomein && c.rsin === catalogusRsin
+    );
+    if (catalogus) catalogusUrl = catalogus.url;
+  }
+
   const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(
     objectsApiGroup,
-    catalogusDomein,
-    catalogusRsin
+    catalogusUrl
   );
 
   const changeVersion = v => {

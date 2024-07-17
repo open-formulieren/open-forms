@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import ReactSelect from 'components/admin/forms/ReactSelect';
 
@@ -19,15 +19,12 @@ const InformatieObjecttypeSelect = ({
     options = [];
   } else {
     const optionsMapping = availableInformatieobjecttypen.reduce((accumulator, temp) => {
-      const {
-        catalogus: {domein},
-        informatieobjecttype: {omschrijving},
-      } = temp;
-      if (!accumulator[domein]) {
-        accumulator[domein] = [];
+      const {catalogusDomein, omschrijving} = temp;
+      if (!accumulator[catalogusDomein]) {
+        accumulator[catalogusDomein] = [];
       }
 
-      accumulator[domein].push({value: omschrijving, label: omschrijving});
+      accumulator[catalogusDomein].push({value: omschrijving, label: omschrijving});
       return accumulator;
     }, {});
 
