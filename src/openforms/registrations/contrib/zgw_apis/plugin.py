@@ -125,7 +125,10 @@ class ZGWRegistration(BasePlugin):
         # "betrokkeneIdentificatie.emailadres": RegistrationAttribute.initiator_emailadres,
         # Vestiging
         "betrokkeneIdentificatie.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
-        "betrokkeneIdentificatie.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
+        "betrokkeneIdentificatie.handelsnaam": FieldConf(
+            attribute=RegistrationAttribute.initiator_handelsnaam,
+            transform=lambda v: [v],
+        ),
         # Niet Natuurlijk Persoon
         "betrokkeneIdentificatie.statutaireNaam": RegistrationAttribute.initiator_handelsnaam,
         "betrokkeneIdentificatie.innNnpId": FieldConf(
