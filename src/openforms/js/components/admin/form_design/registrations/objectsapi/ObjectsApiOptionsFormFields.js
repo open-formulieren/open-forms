@@ -135,7 +135,7 @@ ObjectsApiOptionsFormFields.propTypes = {
     objecttypeVersion: PropTypes.string,
     productaanvraagType: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
-    uploadSubmissionCsv: PropTypes.string,
+    uploadSubmissionCsv: PropTypes.bool,
     informatieobjecttypeSubmissionCsv: PropTypes.string,
     informatieobjecttypeAttachment: PropTypes.string,
     organisatieRsin: PropTypes.string,

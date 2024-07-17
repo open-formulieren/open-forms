@@ -19,7 +19,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
     objecttypeVersion = '',
     productaanvraagType = '',
     informatieobjecttypeSubmissionReport = '',
-    uploadSubmissionCsv = '',
+    uploadSubmissionCsv = false,
     informatieobjecttypeSubmissionCsv = '',
     informatieobjecttypeAttachment = '',
     organisatieRsin = '',
@@ -182,8 +182,10 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         <Checkbox
           id="root_uploadSubmissionCsv"
           name="uploadSubmissionCsv"
-          value={uploadSubmissionCsv}
-          onChange={onFieldChange}
+          checked={uploadSubmissionCsv}
+          onChange={e =>
+            onFieldChange({target: {name: 'uploadSubmissionCsv', value: !uploadSubmissionCsv}})
+          }
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -319,7 +321,7 @@ LegacyConfigFields.propTypes = {
     objecttypeVersion: PropTypes.string,
     productaanvraagType: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
-    uploadSubmissionCsv: PropTypes.string,
+    uploadSubmissionCsv: PropTypes.bool,
     informatieobjecttypeSubmissionCsv: PropTypes.string,
     informatieobjecttypeAttachment: PropTypes.string,
     organisatieRsin: PropTypes.string,
