@@ -281,7 +281,10 @@ class ZGWRegistration(BasePlugin):
         # "betrokkeneIdentificatie.emailadres": RegistrationAttribute.initiator_emailadres,
         # Vestiging
         "betrokkeneIdentificatie.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
-        "betrokkeneIdentificatie.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
+        "betrokkeneIdentificatie.handelsnaam": FieldConf(
+            attribute=RegistrationAttribute.initiator_handelsnaam,
+            transform=lambda v: [v],
+        ),
         # Niet Natuurlijk Persoon
         "betrokkeneIdentificatie.statutaireNaam": RegistrationAttribute.initiator_handelsnaam,
         "betrokkeneIdentificatie.innNnpId": FieldConf(
@@ -376,8 +379,15 @@ class ZGWRegistration(BasePlugin):
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
 
         if verblijfsadres := betrokkene_identificatie.get("verblijfsadres"):
-            # GH-4191: Required, can currently be empty.
-            verblijfsadres["aoaIdentificatie"] = ""
+            # GH-4191: Required and min length of 1 char, but we don't have a way to get
+            # this value without trying to look up the other details in the BAG API,
+            # which would make BAG integration mandatory... this doesn't seem
+            # intentional. An issue was opened with VNG:
+            # https://github.com/VNG-Realisatie/gemma-zaken/issues/2451
+            #
+            # So, we put a dummy value in here that can be ignored by the received
+            # party...
+            verblijfsadres["aoaIdentificatie"] = "OFWORKAROUND"
 
         with (
             get_documents_client(zgw) as documents_client,
