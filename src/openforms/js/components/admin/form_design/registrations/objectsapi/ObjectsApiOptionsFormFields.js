@@ -9,6 +9,11 @@ import Tab from 'components/admin/form_design/Tab';
 
 import LegacyConfigFields from './LegacyConfigFields';
 import V2ConfigFields from './V2ConfigFields';
+import {
+  useGetAvailableCatalogi,
+  useGetAvailableInformatieObjecttypen,
+  useGetAvailableObjectTypes,
+} from './hooks';
 
 const Wrapper = ({children}) => (
   <form className="rjsf" name="form.registrationBackendOptions">
@@ -36,7 +41,17 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
     description: 'Objects API registration backend: v2 switch warning message',
   });
 
-  const {version = 1} = formData;
+  const {objectsApiGroup = '', catalogusDomein = '', catalogusRsin = '', version = 1} = formData;
+
+  // Track available object types and versions in this component so the state can be
+  // shared.
+  const availableObjectTypesState = useGetAvailableObjectTypes(objectsApiGroup);
+  const availableCatalogiState = useGetAvailableCatalogi(objectsApiGroup);
+  const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(
+    objectsApiGroup,
+    catalogusDomein,
+    catalogusRsin
+  );
 
   const changeVersion = v => {
     const realVersion = v + 1;
@@ -104,6 +119,9 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
               formData={formData}
               onFieldChange={onFieldChange}
               onChange={onChange}
+              availableObjectTypesState={availableObjectTypesState}
+              availableCatalogiState={availableCatalogiState}
+              availableInformatieObjecttypenState={availableInformatieObjecttypenState}
             />
           </Wrapper>
         </TabPanel>
@@ -118,6 +136,9 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
               formData={formData}
               onFieldChange={onFieldChange}
               onChange={onChange}
+              availableObjectTypesState={availableObjectTypesState}
+              availableCatalogiState={availableCatalogiState}
+              availableInformatieObjecttypenState={availableInformatieObjecttypenState}
             />
           </Wrapper>
         </TabPanel>

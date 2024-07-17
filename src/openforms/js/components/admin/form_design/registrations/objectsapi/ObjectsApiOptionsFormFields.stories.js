@@ -132,12 +132,8 @@ export const SwitchToV2Empty = {
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    await waitFor(() => {
-      expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-        '2c77babf-a967-4057-9969-0200320d23f1'
-      );
-    });
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(2);
+    expect(await canvas.findByText('Tree (open)', {exact: true})).toBeVisible();
+    expect(await canvas.findByText('2 (draft)', {exact: true})).toBeVisible();
   },
 };
 
@@ -165,15 +161,8 @@ export const SwitchToV2Existing = {
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    await waitFor(() => {
-      expect(canvas.getByLabelText('Objecttype')).toHaveValue(
-        '2c77babf-a967-4057-9969-0200320d23f2'
-      );
-    });
-
-    await waitFor(() => {
-      expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(1);
-    });
+    expect(await canvas.findByText('Person (open)', {exact: true})).toBeVisible();
+    expect(await canvas.findByText('1 (published)', {exact: true})).toBeVisible();
   },
 };
 
@@ -202,8 +191,8 @@ export const SwitchToV2NonExisting = {
     const v1Tab = canvas.getByRole('tab', {selected: false});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(2);
+    expect(await canvas.findByText('Tree (open)', {exact: true})).toBeVisible();
+    expect(await canvas.findByText('2 (draft)', {exact: true})).toBeVisible();
   },
 };
 

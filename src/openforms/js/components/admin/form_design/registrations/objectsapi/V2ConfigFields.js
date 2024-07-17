@@ -14,14 +14,19 @@ import CatalogiSelect from '../CatalogiSelect';
 import InformatieObjecttypeSelect from '../InformatieObjecttypeSelect';
 import ObjectTypeSelect from './ObjectTypeSelect';
 import ObjectTypeVersionSelect from './ObjectTypeVersionSelect';
-import {
-  useGetAvailableCatalogi,
-  useGetAvailableInformatieObjecttypen,
-  useGetAvailableObjectTypes,
-} from './hooks';
 import {getErrorMarkup, getFieldErrors, getOptionsFromSchema} from './utils';
 
-const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}) => {
+const V2ConfigFields = ({
+  index,
+  name,
+  schema,
+  formData,
+  onFieldChange,
+  onChange,
+  availableObjectTypesState,
+  availableCatalogiState,
+  availableInformatieObjecttypenState,
+}) => {
   const intl = useIntl();
   const validationErrors = useContext(ValidationErrorContext);
 
@@ -38,16 +43,6 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
     organisatieRsin = '',
     variablesMapping = [],
   } = formData;
-
-  // Track available object types and versions in this component so the state can be
-  // shared.
-  const availableObjectTypesState = useGetAvailableObjectTypes(objectsApiGroup);
-  const availableCatalogiState = useGetAvailableCatalogi(objectsApiGroup);
-  const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(
-    objectsApiGroup,
-    catalogusDomein,
-    catalogusRsin
-  );
 
   const buildErrorsComponent = field => {
     const rawErrors = getFieldErrors(name, index, validationErrors, field);
@@ -405,6 +400,9 @@ V2ConfigFields.propTypes = {
   }),
   onFieldChange: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
+  availableObjectTypesState: PropTypes.object.isRequired,
+  availableCatalogiState: PropTypes.object.isRequired,
+  availableInformatieObjecttypenState: PropTypes.object.isRequired,
 };
 
 export default V2ConfigFields;

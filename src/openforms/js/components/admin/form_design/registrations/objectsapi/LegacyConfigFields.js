@@ -5,16 +5,27 @@ import {useIntl} from 'react-intl';
 import {useUpdateEffect} from 'react-use';
 
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
-import {Checkbox, NumberInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
+import {Checkbox, TextArea, TextInput} from 'components/admin/forms/Inputs';
 import ReactSelect from 'components/admin/forms/ReactSelect';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import CatalogiSelect from '../CatalogiSelect';
 import InformatieObjecttypeSelect from '../InformatieObjecttypeSelect';
-import {useGetAvailableCatalogi, useGetAvailableInformatieObjecttypen} from './hooks';
+import ObjectTypeSelect from './ObjectTypeSelect';
+import ObjectTypeVersionSelect from './ObjectTypeVersionSelect';
 import {getErrorMarkup, getFieldErrors, getOptionsFromSchema} from './utils';
 
-const LegacyConfigFields = ({index, name, schema, formData, onFieldChange, onChange}) => {
+const LegacyConfigFields = ({
+  index,
+  name,
+  schema,
+  formData,
+  onFieldChange,
+  onChange,
+  availableObjectTypesState,
+  availableCatalogiState,
+  availableInformatieObjecttypenState,
+}) => {
   const intl = useIntl();
   const validationErrors = useContext(ValidationErrorContext);
 
@@ -33,13 +44,6 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange, onCha
     contentJson = '',
     paymentStatusUpdateJson = '',
   } = formData;
-
-  const availableCatalogiState = useGetAvailableCatalogi(objectsApiGroup);
-  const availableInformatieObjecttypenState = useGetAvailableInformatieObjecttypen(
-    objectsApiGroup,
-    catalogusDomein,
-    catalogusRsin
-  );
 
   const buildErrorsComponent = field => {
     const rawErrors = getFieldErrors(name, index, validationErrors, field);
@@ -132,10 +136,11 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange, onCha
         displayLabel
         required
       >
-        <TextInput
-          id="root_objecttype"
-          name="objecttype"
-          value={objecttype}
+        {/* TODO: fallback to legacy UI if there are loading errors */}
+        <ObjectTypeSelect
+          availableObjectTypesState={availableObjectTypesState}
+          objecttype={objecttype}
+          htmlId="root_objecttype"
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -154,10 +159,13 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange, onCha
         displayLabel
         required
       >
-        <NumberInput
-          id="root_objecttypeVersion"
-          name="objecttypeVersion"
-          value={objecttypeVersion}
+        {/* TODO: fallback to legacy UI if there are loading errors */}
+        <ObjectTypeVersionSelect
+          objectsApiGroup={objectsApiGroup}
+          availableObjecttypes={availableObjectTypesState.availableObjecttypes}
+          selectedObjecttype={objecttype}
+          selectedVersion={objecttypeVersion}
+          htmlId="root_objecttypeVersion"
           onChange={onFieldChange}
         />
       </CustomFieldTemplate>
@@ -419,6 +427,9 @@ LegacyConfigFields.propTypes = {
   }),
   onFieldChange: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
+  availableObjectTypesState: PropTypes.object.isRequired,
+  availableCatalogiState: PropTypes.object.isRequired,
+  availableInformatieObjecttypenState: PropTypes.object.isRequired,
 };
 
 export default LegacyConfigFields;
