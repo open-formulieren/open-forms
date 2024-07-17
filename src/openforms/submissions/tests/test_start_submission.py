@@ -231,3 +231,19 @@ class SubmissionStartTests(APITestCase):
         self.assertEqual(
             SubmissionValueVariableSources.prefill, prefilled_variable.source
         )
+
+    def test_start_submission_with_initial_data_reference(self):
+        body = {
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://testserver.com/my-form",
+            "initialDataReference": "of-or-3452fre3",
+        }
+
+        response = self.client.post(self.endpoint, body)
+
+        submission = Submission.objects.get()
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            submission.initial_data_reference, body["initialDataReference"]
+        )

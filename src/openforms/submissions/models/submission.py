@@ -256,6 +256,16 @@ class Submission(models.Model):
             "Indicates whether sensitive data (if there was any) has been removed from this submission."
         ),
     )
+    initial_data_reference = models.CharField(
+        _("initial data reference"),
+        blank=True,
+        help_text=_(
+            "An identifier that can be passed as a querystring when the form is started. "
+            "Initial form field values are pre-populated from the retrieved data. "
+            "During registration, the object may be updated again (or a new record may be created). "
+            "This can be an object reference in the Objects API, for example."
+        ),
+    )
 
     # TODO: Deprecated, replaced by the PostCompletionMetadata model
     on_completion_task_ids = ArrayField(

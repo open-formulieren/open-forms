@@ -9630,6 +9630,13 @@ components:
           writeOnly: true
           default: false
           description: Whether the submission was started anonymously or not.
+        initialDataReference:
+          type: string
+          description: An identifier that can be passed as a querystring when the
+            form is started. Initial form field values are pre-populated from the
+            retrieved data. During registration, the object may be updated again (or
+            a new record may be created). This can be an object reference in the Objects
+            API, for example.
       required:
       - form
       - formUrl
