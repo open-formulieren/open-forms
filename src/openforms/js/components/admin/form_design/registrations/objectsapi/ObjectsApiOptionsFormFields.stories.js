@@ -137,8 +137,7 @@ export const SwitchToV2Empty = {
         '2c77babf-a967-4057-9969-0200320d23f1'
       );
     });
-    // While it's a number input, the value is still a string in the DOM api
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(2);
   },
 };
 
@@ -173,7 +172,7 @@ export const SwitchToV2Existing = {
     });
 
     await waitFor(() => {
-      expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
+      expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(1);
     });
   },
 };
@@ -204,8 +203,7 @@ export const SwitchToV2NonExisting = {
     await userEvent.click(v1Tab);
 
     expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
-    // While it's a number input, the value is still a string in the DOM api
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
+    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue(2);
   },
 };
 
