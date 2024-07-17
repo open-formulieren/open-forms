@@ -42,6 +42,7 @@ class ZGWApiGroupConfig(models.Model):
         _("name"),
         max_length=255,
         help_text=_("A recognisable name for this set of ZGW APIs."),
+        unique=True,
     )
     zrc_service = models.ForeignKey(
         "zgw_consumers.Service",
