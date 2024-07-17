@@ -9,10 +9,7 @@ from openforms.api.permissions import TimestampedTokenPermission
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..form_logic import check_submission_logic
 from ..models import SubmissionStep, TemporaryFileUpload
-from ..tokens import (
-    submission_report_token_generator,
-    submission_status_token_generator,
-)
+from ..tokens import submission_status_token_generator
 from .validation import is_step_unexpectedly_incomplete
 
 
@@ -91,10 +88,6 @@ class OwnsTemporaryUploadPermission(AnyActiveSubmissionPermission):
     ) -> bool:
         submission_uuid = str(obj.submission.uuid)
         return owns_submission(request, submission_uuid)
-
-
-class DownloadSubmissionReportPermission(TimestampedTokenPermission):
-    token_generator = submission_report_token_generator
 
 
 class SubmissionStatusPermission(TimestampedTokenPermission):

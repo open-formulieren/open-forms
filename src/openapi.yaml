@@ -4302,43 +4302,6 @@ paths:
         schema:
           type: string
         required: true
-  /api/v2/submissions/{report_id}/{token}/download:
-    get:
-      operationId: submissions_download_retrieve
-      description: Download het document met de ingezonden gegevens, in PDF vorm.
-        Dit document kan alleen worden opgevraagd indien het juiste token is meegegeven,
-        die hoort bij de formulier sessie. Het token vervalt automatisch na 1 dag(en).
-      summary: Download the PDF report
-      parameters:
-      - in: path
-        name: report_id
-        schema:
-          type: integer
-        required: true
-      - in: path
-        name: token
-        schema:
-          type: string
-        required: true
-      tags:
-      - submissions
-      responses:
-        '200':
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{submission_uuid}/steps/{step_uuid}:
     get:
       operationId: submissions_steps_retrieve

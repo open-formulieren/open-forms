@@ -25,7 +25,7 @@ class DownloadSubmissionReportTests(APITestCase):
         report = SubmissionReportFactory.create(submission__completed=True)
         token = submission_report_token_generator.make_token(report)
         download_report_url = reverse(
-            "api:submissions:download-submission",
+            "submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},
         )
 
@@ -34,11 +34,29 @@ class DownloadSubmissionReportTests(APITestCase):
 
             self.assertEqual(status.HTTP_200_OK, response.status_code)
 
+    def test_download_response(self):
+        report = SubmissionReportFactory.create(
+            submission__completed=True, content__filename="report.pdf"
+        )
+        token = submission_report_token_generator.make_token(report)
+        download_report_url = reverse(
+            "submissions:download-submission",
+            kwargs={"report_id": report.id, "token": token},
+        )
+
+        response = self.client.get(download_report_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertEqual(
+            response["Content-Disposition"], 'attachment; filename="report.pdf"'
+        )
+
     def test_expired_token(self):
         report = SubmissionReportFactory.create(submission__completed=True)
         token = submission_report_token_generator.make_token(report)
         download_report_url = reverse(
-            "api:submissions:download-submission",
+            "submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},
         )
 
@@ -51,7 +69,7 @@ class DownloadSubmissionReportTests(APITestCase):
         report = SubmissionReportFactory.create(submission__completed=True)
         token = submission_report_token_generator.make_token(report)
         download_report_url = reverse(
-            "api:submissions:download-submission",
+            "submissions:download-submission",
             kwargs={"report_id": report.id, "token": token},
         )
 
@@ -68,7 +86,7 @@ class DownloadSubmissionReportTests(APITestCase):
     def test_wrongly_formatted_token(self):
         report = SubmissionReportFactory.create(submission__completed=True)
         download_report_url = reverse(
-            "api:submissions:download-submission",
+            "submissions:download-submission",
             kwargs={"report_id": report.id, "token": "dummy"},
         )
 
@@ -79,7 +97,7 @@ class DownloadSubmissionReportTests(APITestCase):
     def test_invalid_token_timestamp(self):
         report = SubmissionReportFactory.create(submission__completed=True)
         download_report_url = reverse(
-            "api:submissions:download-submission",
+            "submissions:download-submission",
             kwargs={"report_id": report.id, "token": "$$$-blegh"},
         )
 

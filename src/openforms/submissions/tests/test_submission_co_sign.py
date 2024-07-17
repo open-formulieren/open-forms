@@ -185,7 +185,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         match = resolve(furl(data["reportDownloadUrl"]).path)
 
-        self.assertEqual(match.view_name, "api:submissions:download-submission")
+        self.assertEqual(match.view_name, "submissions:download-submission")
 
         submission.refresh_from_db()
 

@@ -1,56 +1,17 @@
 from django.conf import settings
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework.generics import DestroyAPIView, GenericAPIView
+from rest_framework.generics import DestroyAPIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
 
-from ..models import SubmissionReport, TemporaryFileUpload
-from .permissions import (
-    DownloadSubmissionReportPermission,
-    OwnsTemporaryUploadPermission,
-)
-from .renderers import FileRenderer, PDFRenderer
-
-
-@extend_schema(
-    summary=_("Download the PDF report"),
-    description=_(
-        "Download the PDF report containing the submission data. The endpoint requires "
-        "a token which is tied to the submission from the session. The token automatically expires "
-        "after {expire_days} day(s)."
-    ).format(expire_days=settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS),
-    responses={200: bytes},
-)
-class DownloadSubmissionReportView(GenericAPIView):
-    queryset = SubmissionReport.objects.all()
-    lookup_url_kwarg = "report_id"
-    authentication_classes = ()
-    permission_classes = (DownloadSubmissionReportPermission,)
-    # FIXME: 404s etc. are now also rendered with this, which breaks.
-    renderer_classes = (PDFRenderer,)
-    serializer_class = None
-
-    # see :func:`sendfile.sendfile` for available parameters
-    sendfile_options = None
-
-    def get_sendfile_opts(self) -> dict:
-        return self.sendfile_options or {}
-
-    def get(self, request, report_id: int, token: str, *args, **kwargs):
-        submission_report = self.get_object()
-
-        submission_report.last_accessed = timezone.now()
-        submission_report.save()
-
-        filename = submission_report.content.path
-        sendfile_options = self.get_sendfile_opts()
-        return sendfile(request, filename, **sendfile_options)
+from ..models import TemporaryFileUpload
+from .permissions import OwnsTemporaryUploadPermission
+from .renderers import FileRenderer
 
 
 @extend_schema(

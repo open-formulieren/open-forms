@@ -305,7 +305,7 @@ def check_form_status(
 def get_report_download_url(request: Request, report: SubmissionReport) -> str:
     token = submission_report_token_generator.make_token(report)
     download_url = reverse(
-        "api:submissions:download-submission",
+        "submissions:download-submission",
         kwargs={"report_id": report.id, "token": token},
     )
     return request.build_absolute_uri(download_url)
