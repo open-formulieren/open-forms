@@ -354,7 +354,7 @@ class ZGWBackendTests(TestCase):
                     "geslachtsnaam": "Bar",
                     "verblijfsadres": {
                         "aoaPostcode": "1000 AA",
-                        "aoaIdentificatie": "",
+                        "aoaIdentificatie": "OFWORKAROUND",
                     },
                     "voorletters": "J.W.",
                     "geslachtsaanduiding": "m",
@@ -568,13 +568,13 @@ class ZGWBackendTests(TestCase):
             self.assertEqual(
                 create_rol_body["betrokkeneIdentificatie"],
                 {
-                    "handelsnaam": "ACME",
+                    "handelsnaam": ["ACME"],
                     "vestigingsNummer": "87654321",
                     "innNnpId": "12345678",
                     "statutaireNaam": "ACME",
                     "verblijfsadres": {
                         "aoaPostcode": "1000 AA",
-                        "aoaIdentificatie": "",
+                        "aoaIdentificatie": "OFWORKAROUND",
                     },
                 },
             )
@@ -851,12 +851,12 @@ class ZGWBackendTests(TestCase):
             self.assertEqual(
                 create_rol_body["betrokkeneIdentificatie"],
                 {
-                    "handelsnaam": "ACME",
+                    "handelsnaam": ["ACME"],
                     "innNnpId": "12345678",
                     "statutaireNaam": "ACME",
                     "verblijfsadres": {
                         "aoaPostcode": "1000 AA",
-                        "aoaIdentificatie": "",
+                        "aoaIdentificatie": "OFWORKAROUND",
                     },
                 },
             )
