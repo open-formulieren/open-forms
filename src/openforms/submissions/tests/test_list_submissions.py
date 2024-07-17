@@ -81,6 +81,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
             "url": f"http://testserver{submission_path}",
             "form": f"http://testserver{form_path}",
             "formUrl": "http://formserver/myform",
+            "initialDataReference": "",
             "steps": [
                 {
                     "id": str(self.step.uuid),

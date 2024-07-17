@@ -323,6 +323,7 @@ class SubmissionAdmin(admin.ModelAdmin):
                     "statement_of_truth_accepted",
                     "_is_cleaned",
                     "previous_submission",
+                    "initial_data_reference",
                 ),
                 "classes": ("collapse",),
             },

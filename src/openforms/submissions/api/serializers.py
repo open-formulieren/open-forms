@@ -168,6 +168,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "payment",
             "form_url",
             "anonymous",
+            "initial_data_reference",
         )
         extra_kwargs = {
             "id": {
