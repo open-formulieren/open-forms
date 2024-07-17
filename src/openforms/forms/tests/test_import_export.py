@@ -1430,8 +1430,13 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises(CommandError) as exc:
             call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["objects_api_group"][0]
+        self.assertEqual(error_detail.code, "invalid")
 
     def test_import_form_with_objects_registration_backend_no_matching_group(self):
         resources = {
@@ -1459,14 +1464,24 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
         }
 
         # no matching groups:
-        ObjectsAPIGroupConfigFactory.create_batch(2)
+        ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="http://example1.com"
+        )
+        ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="http://example2.com"
+        )
 
         with zipfile.ZipFile(self.filepath, "w") as zip_file:
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises(CommandError) as exc:
             call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["objects_api_group"][0]
+        self.assertEqual(error_detail.code, "invalid")
 
     def test_import_form_with_objects_registration_backend_available_group(self):
         resources = {
@@ -1640,8 +1655,13 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises(CommandError) as exc:
             call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["zgw_api_group"][0]
+        self.assertEqual(error_detail.code, "invalid")
 
     def test_import_form_with_zgw_registration_backend_available_group(self):
         resources = {
