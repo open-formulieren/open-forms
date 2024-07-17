@@ -6844,6 +6844,8 @@ components:
     Catalogus:
       type: object
       properties:
+        url:
+          type: string
         domein:
           type: string
         rsin:
@@ -6851,6 +6853,7 @@ components:
       required:
       - domein
       - rsin
+      - url
     Category:
       type: object
       properties:

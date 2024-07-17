@@ -41,7 +41,7 @@ class RegistrationAttributeSerializer(serializers.Serializer):
 class CatalogusSerializer(APIModelSerializer):
     class Meta:
         model = Catalogus
-        fields = ("domein", "rsin")
+        fields = ("url", "domein", "rsin")
 
 
 class InformatieObjectTypeSerializer(serializers.Serializer):
