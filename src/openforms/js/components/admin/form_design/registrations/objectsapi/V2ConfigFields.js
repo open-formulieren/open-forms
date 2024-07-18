@@ -23,7 +23,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
     objecttype = '',
     objecttypeVersion = '',
     informatieobjecttypeSubmissionReport = '',
-    uploadSubmissionCsv = '',
+    uploadSubmissionCsv = false,
     informatieobjecttypeSubmissionCsv = '',
     informatieobjecttypeAttachment = '',
     organisatieRsin = '',
@@ -213,8 +213,10 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         <Checkbox
           id="root_uploadSubmissionCsv"
           name="uploadSubmissionCsv"
-          value={uploadSubmissionCsv}
-          onChange={onFieldChange}
+          checked={uploadSubmissionCsv}
+          onChange={e =>
+            onFieldChange({target: {name: 'uploadSubmissionCsv', value: !uploadSubmissionCsv}})
+          }
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -304,7 +306,7 @@ V2ConfigFields.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
-    uploadSubmissionCsv: PropTypes.string,
+    uploadSubmissionCsv: PropTypes.bool,
     informatieobjecttypeSubmissionCsv: PropTypes.string,
     informatieobjecttypeAttachment: PropTypes.string,
     organisatieRsin: PropTypes.string,
