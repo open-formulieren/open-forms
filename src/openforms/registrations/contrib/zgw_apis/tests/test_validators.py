@@ -2,9 +2,6 @@ from pathlib import Path
 
 from django.test import TestCase, override_settings
 
-from zgw_consumers.constants import APITypes, AuthTypes
-from zgw_consumers.test.factories import ServiceFactory
-
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..plugin import ZaakOptionsSerializer
@@ -35,32 +32,7 @@ class OptionsSerializerTests(OFVCRMixin, TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        # create services for the docker-compose Open Zaak instance.
-        _credentials = {
-            "auth_type": AuthTypes.zgw,
-            "client_id": "test_client_id",
-            "secret": "test_secret_key",
-        }
-        zaken_service = ServiceFactory.create(
-            api_root="http://localhost:8003/zaken/api/v1/",
-            api_type=APITypes.zrc,
-            **_credentials,
-        )
-        documenten_service = ServiceFactory.create(
-            api_root="http://localhost:8003/documenten/api/v1/",
-            api_type=APITypes.drc,
-            **_credentials,
-        )
-        catalogi_service = ServiceFactory.create(
-            api_root="http://localhost:8003/catalogi/api/v1/",
-            api_type=APITypes.ztc,
-            **_credentials,
-        )
-        cls.zgw_group = ZGWApiGroupConfigFactory.create(
-            zrc_service=zaken_service,
-            drc_service=documenten_service,
-            ztc_service=catalogi_service,
-        )
+        cls.zgw_group = ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
 
     def test_no_zgw_api_group(self):
         # No zgw_api_group provided

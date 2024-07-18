@@ -1,5 +1,5 @@
-from collections.abc import Mapping
 from typing import Any
+from uuid import UUID
 
 from django.db.models import IntegerChoices, Q
 from django.utils.translation import gettext_lazy as _
@@ -174,24 +174,78 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         allow_blank=True,
     )
 
-    def to_internal_value(self, data: Any) -> Any:
-        # Apply conversions when importing forms:
-        is_import: bool = self.context.get("is_import", False)
-        new_data = data
+    def get_fields(self):
+        fields = super().get_fields()
+        if getattr(self, "swagger_fake_view", False) or not self.context.get(
+            "is_import", False
+        ):
+            return fields
 
-        # We want to be careful, data can be anything. If not a mapping or no objecttype is present,
-        # `super().to_internal_value` will raise an error.
-        if is_import and isinstance(data, Mapping) and "objecttype" in data:
-            try:
-                objecttype_uuid = data["objecttype"].rsplit("/", 1)[1]
-            except IndexError:
-                pass
-            else:
-                new_data = {**data, "objecttype": objecttype_uuid}
+        # If in an import context, we don't want to error on missing groups.
+        # Instead, we will try to set one if possible in the `validate` method.
+        # We also change the `objecttype` field to be any string, as it could be an URL.
+        fields["objects_api_group"].required = False
+        fields["objecttype"] = serializers.CharField()
+        return fields
 
-        return super().to_internal_value(new_data)
+    def _handle_import(self, attrs: dict[str, Any]) -> None:
+        if (
+            self.context.get("is_import", False)
+            and attrs.get("objects_api_group") is None
+        ):
+            existing_groups = (
+                ObjectsAPIGroupConfig.objects.order_by("pk")
+                .exclude(
+                    Q(objects_service=None)
+                    | Q(objecttypes_service=None)
+                    | Q(drc_service=None)
+                    | Q(catalogi_service=None)
+                )
+                .all()
+            )
+
+            if not existing_groups.exists():
+                raise ValidationError(
+                    {
+                        "objects_api_group": _(
+                            "You must create a valid Objects API Group config (with the necessary services) before importing."
+                        )
+                    }
+                )
+
+            # As `objects_api_group` isn't in `attrs`, the objecttype is guaranteed to be an URL
+            # as Objects API groups were added before objecttypes were changed from URL to UUID.
+            # (the conversion is done at the end of this function).
+            matching_group = next(
+                (
+                    group
+                    for group in existing_groups
+                    if attrs["objecttype"].startswith(
+                        group.objecttypes_service.api_root
+                    )
+                ),
+                None,
+            )
+
+            if matching_group is None:
+                raise ValidationError(
+                    {
+                        "objects_api_group": _(
+                            "No Objects API Group config was found matching the configured objecttype URL."
+                        )
+                    }
+                )
+
+            attrs["objects_api_group"] = matching_group
+
+        try:
+            attrs["objecttype"] = UUID(str(attrs["objecttype"]).rsplit("/", 1)[1])
+        except IndexError:
+            pass
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        self._handle_import(attrs)
+
         v1_only_fields = {
             "productaanvraag_type",
             "content_json",

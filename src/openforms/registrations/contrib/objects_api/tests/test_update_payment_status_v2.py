@@ -6,8 +6,6 @@ from django.test import TestCase
 from django.utils import timezone
 
 from freezegun import freeze_time
-from zgw_consumers.constants import APITypes, AuthTypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.payments.constants import PaymentStatus
@@ -16,8 +14,9 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..client import get_objects_client
-from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig, ObjectsAPIRegistrationData
+from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from ..tests.factories import ObjectsAPIGroupConfigFactory
 from ..typing import RegistrationOptionsV2
 
 
@@ -29,25 +28,8 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
     def setUp(self):
         super().setUp()
 
-        self.config_group = ObjectsAPIGroupConfig.objects.create(
-            objecttypes_service=ServiceFactory.create(
-                api_root="http://localhost:8001/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
-                auth_type=AuthTypes.api_key,
-            ),
-            objects_service=ServiceFactory.create(
-                api_root="http://localhost:8002/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-                auth_type=AuthTypes.api_key,
-            ),
+        self.config_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
         )
 
         config_patcher = patch(

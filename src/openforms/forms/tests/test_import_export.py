@@ -11,8 +11,6 @@ from django.test import TestCase, override_settings, tag
 from django.utils import translation
 
 from freezegun import freeze_time
-from zgw_consumers.constants import APITypes, AuthTypes
-from zgw_consumers.test.factories import ServiceFactory
 
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
@@ -21,7 +19,9 @@ from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
-from openforms.registrations.contrib.objects_api.models import ObjectsAPIGroupConfig
+from openforms.registrations.contrib.objects_api.tests.factories import (
+    ObjectsAPIGroupConfigFactory,
+)
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
@@ -1383,44 +1383,132 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
 
     VCR_TEST_FILES = PATH / "files"
 
-    def setUp(self):
-        super().setUp()
+    def test_import_form_with_objects_registration_backend_no_group(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "objects-api-no-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "version": 1,
+                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
 
-        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
-            objecttypes_service=ServiceFactory.create(
-                api_root="http://localhost:8001/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
-                auth_type=AuthTypes.api_key,
-            ),
-            objects_service=ServiceFactory.create(
-                api_root="http://localhost:8002/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-                auth_type=AuthTypes.api_key,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="http://localhost:8003/documenten/api/v1/",
-                api_type=APITypes.drc,
-                # See the docker compose fixtures:
-                client_id="test_client_id",
-                secret="test_secret_key",
-                auth_type=AuthTypes.zgw,
-            ),
-            catalogi_service=ServiceFactory.create(
-                api_root="http://localhost:8003/catalogi/api/v1/",
-                api_type=APITypes.ztc,
-                # See the docker compose fixtures:
-                client_id="test_client_id",
-                secret="test_secret_key",
-                auth_type=AuthTypes.zgw,
-            ),
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        with self.assertRaises(CommandError) as exc:
+            call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["objects_api_group"][0]
+        self.assertEqual(error_detail.code, "invalid")
+
+    def test_import_form_with_objects_registration_backend_no_matching_group(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "objects-api-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "version": 1,
+                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        # no matching groups:
+        ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="http://example1.com"
+        )
+        ObjectsAPIGroupConfigFactory.create(
+            objecttypes_service__api_root="http://example2.com"
+        )
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        with self.assertRaises(CommandError) as exc:
+            call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["objects_api_group"][0]
+        self.assertEqual(error_detail.code, "invalid")
+
+    def test_import_form_with_objects_registration_backend_available_group(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "slug": "objects-api-group",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "registration_backends": [
+                        {
+                            "key": "test-backend",
+                            "name": "Test backend",
+                            "backend": "objects_api",
+                            "options": {
+                                "version": 1,
+                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype_version": 1,
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        objects_api_group_valid = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
+        # irrelevant:
+        ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            objecttypes_service__api_root="http://example.com/",
+        )
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        registration_backend = FormRegistrationBackend.objects.get(key="test-backend")
+        self.assertEqual(
+            registration_backend.options["objects_api_group"],
+            objects_api_group_valid.pk,
         )
 
     def test_import_form_with_objecttype_url_objects_api_registration_backend(self):
@@ -1442,9 +1530,11 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "name": "Test backend",
                             "backend": "objects_api",
                             "options": {
-                                "objects_api_group": self.objects_api_group.pk,
+                                "objects_api_group": ObjectsAPIGroupConfigFactory.create(
+                                    for_test_docker_compose=True
+                                ).pk,
                                 "version": 2,
-                                "objecttype": "https://objecttypen.nl/api/v1/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                                "objecttype": "http://localhost:8001/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
                             },
                         }
@@ -1484,7 +1574,9 @@ class ImportObjectsAPITests(TempdirMixin, OFVCRMixin, TestCase):
                             "name": "Test backend",
                             "backend": "objects_api",
                             "options": {
-                                "objects_api_group": self.objects_api_group.pk,
+                                "objects_api_group": ObjectsAPIGroupConfigFactory.create(
+                                    for_test_docker_compose=True
+                                ).pk,
                                 "version": 2,
                                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                                 "objecttype_version": 1,
@@ -1545,8 +1637,13 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             for name, data in resources.items():
                 zip_file.writestr(f"{name}.json", json.dumps(data))
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises(CommandError) as exc:
             call_command("import", import_file=self.filepath)
+
+        error_detail = exc.exception.args[0].detail["registration_backends"][0][
+            "options"
+        ]["zgw_api_group"][0]
+        self.assertEqual(error_detail.code, "invalid")
 
     def test_import_form_with_zgw_registration_backend_available_group(self):
         resources = {
@@ -1555,7 +1652,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
                     "active": True,
                     "name": "Test Form 1",
                     "internal_name": "Test Form Internal 1",
-                    "slug": "zgw-no-group",
+                    "slug": "zgw-group",
                     "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
                     "registration_backends": [
                         {
@@ -1572,31 +1669,7 @@ class ImportZGWAPITests(TempdirMixin, OFVCRMixin, TestCase):
             ]
         }
 
-        _credentials = {
-            "auth_type": AuthTypes.zgw,
-            "client_id": "test_client_id",
-            "secret": "test_secret_key",
-        }
-        zaken_service = ServiceFactory.create(
-            api_root="http://localhost:8003/zaken/api/v1/",
-            api_type=APITypes.zrc,
-            **_credentials,
-        )
-        documenten_service = ServiceFactory.create(
-            api_root="http://localhost:8003/documenten/api/v1/",
-            api_type=APITypes.drc,
-            **_credentials,
-        )
-        catalogi_service = ServiceFactory.create(
-            api_root="http://localhost:8003/catalogi/api/v1/",
-            api_type=APITypes.ztc,
-            **_credentials,
-        )
-        zgw_group = ZGWApiGroupConfigFactory.create(
-            zrc_service=zaken_service,
-            drc_service=documenten_service,
-            ztc_service=catalogi_service,
-        )
+        zgw_group = ZGWApiGroupConfigFactory.create(for_test_docker_compose=True)
 
         with zipfile.ZipFile(self.filepath, "w") as zip_file:
             for name, data in resources.items():

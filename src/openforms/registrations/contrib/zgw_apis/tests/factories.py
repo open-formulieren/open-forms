@@ -1,5 +1,6 @@
 import factory
-from zgw_consumers.constants import APITypes
+from zgw_consumers.constants import APITypes, AuthTypes
+from zgw_consumers.test.factories import ServiceFactory
 
 from ..models import ZGWApiGroupConfig
 
@@ -18,3 +19,35 @@ class ZGWApiGroupConfigFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = ZGWApiGroupConfig
+
+    class Params:
+        # See the docker compose fixtures for base URLs authentication values:
+        for_test_docker_compose = factory.Trait(
+            zrc_service=factory.SubFactory(
+                ServiceFactory,
+                api_root="http://localhost:8003/zaken/api/v1/",
+                api_type=APITypes.zrc,
+                oas="https://example.com/",
+                auth_type=AuthTypes.zgw,
+                client_id="test_client_id",
+                secret="test_secret_key",
+            ),
+            drc_service=factory.SubFactory(
+                ServiceFactory,
+                api_root="http://localhost:8003/documenten/api/v1/",
+                api_type=APITypes.drc,
+                oas="https://example.com/",
+                auth_type=AuthTypes.zgw,
+                client_id="test_client_id",
+                secret="test_secret_key",
+            ),
+            ztc_service=factory.SubFactory(
+                ServiceFactory,
+                api_root="http://localhost:8003/catalogi/api/v1/",
+                api_type=APITypes.ztc,
+                oas="https://example.com/",
+                auth_type=AuthTypes.zgw,
+                client_id="test_client_id",
+                secret="test_secret_key",
+            ),
+        )
