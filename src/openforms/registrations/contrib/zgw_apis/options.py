@@ -144,7 +144,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
         # Run all validations against catalogi API in the same connection pool.
         with get_catalogi_client(group_config) as client:
-            catalogi = client.get_all_catalogi()
+            catalogi = list(client.get_all_catalogi())
 
             # validate that the zaaktype is in the provided catalogi
             zaaktype_url = attrs["zaaktype"]

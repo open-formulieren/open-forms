@@ -21,7 +21,7 @@
     "model": "catalogi.catalogus",
     "pk": 1,
     "fields": {
-        "_etag": "f324f0578ac42cf6f2a7f68df8819d29",
+        "_etag": "791d4952f712b5831c52e313c4d83f35",
         "naam": "Test catalog",
         "uuid": "bd58635c-793e-446d-a7e0-460d7b04829d",
         "domein": "TEST",
@@ -167,6 +167,36 @@
     }
 },
 {
+    "model": "catalogi.resultaattype",
+    "pk": 2,
+    "fields": {
+        "_etag": "bc9969293fa1c8b678ede579c395b011",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "492db423-2724-4314-b389-12001c1a3477",
+        "zaaktype": 2,
+        "omschrijving": "Geslaagd",
+        "resultaattypeomschrijving": "https://selectielijst.openzaak.nl/api/v1/resultaattypeomschrijvingen/ce8cf476-0b59-496f-8eee-957a7c6e2506",
+        "omschrijving_generiek": "Afgebroken",
+        "selectielijstklasse": "https://selectielijst.openzaak.nl/api/v1/resultaten/afa30940-855b-4a7e-aa21-9e15a8078814",
+        "archiefnominatie": "vernietigen",
+        "archiefactietermijn": "P10Y",
+        "brondatum_archiefprocedure_afleidingswijze": "afgehandeld",
+        "brondatum_archiefprocedure_datumkenmerk": "",
+        "brondatum_archiefprocedure_einddatum_bekend": false,
+        "brondatum_archiefprocedure_objecttype": "",
+        "brondatum_archiefprocedure_registratie": "",
+        "brondatum_archiefprocedure_procestermijn": "P0D",
+        "toelichting": "",
+        "procesobjectaard": "",
+        "indicatie_specifiek": null,
+        "procestermijn": null,
+        "informatieobjecttypen": [],
+        "besluittypen": [],
+        "zaakobjecttypen": []
+    }
+},
+{
     "model": "catalogi.roltype",
     "pk": 1,
     "fields": {
@@ -183,13 +213,26 @@
     "model": "catalogi.roltype",
     "pk": 2,
     "fields": {
-        "_etag": "",
+        "_etag": "34913925acf03cf8ae23c1f251968950",
         "datum_begin_geldigheid": null,
         "datum_einde_geldigheid": null,
         "uuid": "7f1887e8-bf22-47e7-ae52-ed6848d7e70e",
         "omschrijving": "Baliemedewerker",
         "omschrijving_generiek": "klantcontacter",
         "zaaktype": 1
+    }
+},
+{
+    "model": "catalogi.roltype",
+    "pk": 3,
+    "fields": {
+        "_etag": "28d8b8cf715fc41866be5dd72fa1b463",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "488373ab-0910-4ce1-84dc-c3f1bf1e34f4",
+        "omschrijving": "Baliemedewerker",
+        "omschrijving_generiek": "adviseur",
+        "zaaktype": 2
     }
 },
 {
@@ -229,12 +272,48 @@
     }
 },
 {
+    "model": "catalogi.statustype",
+    "pk": 3,
+    "fields": {
+        "_etag": "f1e395c0db5f39bfe642664fc290710a",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "daade401-854b-4f4f-a121-af19dd8fa80d",
+        "zaaktype": 2,
+        "statustype_omschrijving": "Ontvangen",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 1,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
+    "model": "catalogi.statustype",
+    "pk": 4,
+    "fields": {
+        "_etag": "bd18625da317378c4a937abc8ba31387",
+        "datum_begin_geldigheid": null,
+        "datum_einde_geldigheid": null,
+        "uuid": "274992bc-e470-4a89-96ae-103a104e20a2",
+        "zaaktype": 2,
+        "statustype_omschrijving": "Afgerond",
+        "statustype_omschrijving_generiek": "",
+        "statustypevolgnummer": 2,
+        "doorlooptijd": null,
+        "informeren": false,
+        "statustekst": "",
+        "toelichting": null
+    }
+},
+{
     "model": "catalogi.zaaktype",
     "pk": 1,
     "fields": {
-        "_etag": "4b7814375796d28f29fea94ee27127b8",
+        "_etag": "722b91703ec4cfd530a7a656920aae51",
         "datum_begin_geldigheid": "2024-03-26",
-        "datum_einde_geldigheid": null,
+        "datum_einde_geldigheid": "2024-07-07",
         "concept": false,
         "uuid": "1f41885e-23fc-4462-bbc8-80be4ae484dc",
         "identificatie": "ZT-001",
@@ -258,6 +337,52 @@
         "publicatietekst": "",
         "verantwoordingsrelatie": "[]",
         "versiedatum": "2024-03-26",
+        "verantwoordelijke": "Ontwikkelaar",
+        "producten_of_diensten": "[]",
+        "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
+        "selectielijst_procestype_jaar": 2020,
+        "referentieproces_naam": "Testen",
+        "referentieproces_link": "",
+        "broncatalogus_url": "",
+        "broncatalogus_domein": "",
+        "broncatalogus_rsin": "",
+        "bronzaaktype_url": "",
+        "bronzaaktype_identificatie": "",
+        "bronzaaktype_omschrijving": "",
+        "catalogus": 1,
+        "deelzaaktypen": []
+    }
+},
+{
+    "model": "catalogi.zaaktype",
+    "pk": 2,
+    "fields": {
+        "_etag": "865317fef425c7811cc45dc309e38c08",
+        "datum_begin_geldigheid": "2024-07-07",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "119dbe23-cbf2-4759-80e5-29bb28b3d95f",
+        "identificatie": "ZT-001",
+        "zaaktype_omschrijving": "Test",
+        "zaaktype_omschrijving_generiek": "",
+        "vertrouwelijkheidaanduiding": "intern",
+        "doel": "testen",
+        "aanleiding": "integratietests",
+        "toelichting": "",
+        "indicatie_intern_of_extern": "intern",
+        "handeling_initiator": "Formulier indienen",
+        "onderwerp": "Testformulier",
+        "handeling_behandelaar": "Controleren",
+        "doorlooptijd_behandeling": "P1Y",
+        "servicenorm_behandeling": "P0D",
+        "opschorting_en_aanhouding_mogelijk": false,
+        "verlenging_mogelijk": false,
+        "verlengingstermijn": null,
+        "trefwoorden": "[]",
+        "publicatie_indicatie": false,
+        "publicatietekst": "",
+        "verantwoordingsrelatie": "[]",
+        "versiedatum": "2024-07-07",
         "verantwoordelijke": "Ontwikkelaar",
         "producten_of_diensten": "[]",
         "selectielijst_procestype": "https://selectielijst.openzaak.nl/api/v1/procestypen/aa8aa2fd-b9c6-4e34-9a6c-58a677f60ea0",
