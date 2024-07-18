@@ -58,8 +58,7 @@ const getSetOfBackends = instance => {
  *
  * @return {Promise<{
  *   backendLabel: string;
- *   catalogusDomein: string;
- *   catalogusRsin: string;
+ *   catalogusLabel: string;
  *   url: string;
  *   omschrijving: string;
  * }>[]}

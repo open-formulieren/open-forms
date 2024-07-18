@@ -9,8 +9,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from openforms.api.views import ListMixin
+from openforms.contrib.zgw.api.views import (
+    BaseCatalogiListView,
+    BaseInformatieObjectTypenListView,
+)
 
-from ....api.views import BaseCatalogiListView, BaseInformatieObjectTypenListView
 from ..client import get_objecttypes_client
 from ..json_schema import InvalidReference, iter_json_schema_paths, json_schema_matches
 from .filters import (
@@ -140,7 +143,7 @@ class CatalogiListView(BaseCatalogiListView):
 @extend_schema_view(
     get=extend_schema(
         summary=_(
-            "List available InformatieObjectTypen from the provided Objects API group"
+            "List the available InformatieObjectTypen from the provided Objects API group"
         ),
         parameters=[ListInformatieObjectTypenQueryParamsSerializer],
     ),

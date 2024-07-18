@@ -3,21 +3,23 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.contrib.zgw.api.filters import (
+    ProvidesCatalogiClientQueryParamsSerializer,
+)
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 
-from ....api.filters import BaseAPIGroupQueryParamsSerializer
 from ..client import get_catalogi_client
 from ..models import ZGWApiGroupConfig
 
 
-class APIGroupQueryParamsSerializer(BaseAPIGroupQueryParamsSerializer):
+class APIGroupQueryParamsSerializer(ProvidesCatalogiClientQueryParamsSerializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.exclude(drc_service=None),
         help_text=_(
-            "The primary key of the Objects API group to use. The informatieobjecttypen from the Catalogi API "
+            "The primary key of the ZGW API group to use. The informatieobjecttypen from the Catalogi API "
             "in this group will be returned."
         ),
-        label=_("Objects API group"),
+        label=_("ZGW API group"),
     )
 
     def get_ztc_client(self) -> CatalogiClient:

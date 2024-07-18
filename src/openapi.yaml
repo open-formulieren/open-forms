@@ -3856,11 +3856,7 @@ paths:
   /api/v2/registration/plugins/objects-api/catalogi:
     get:
       operationId: registration_plugins_objects_api_catalogi_list
-      description: |-
-        Fetch and serialize a list of objects.
-
-        Alternative to :class:`rest_framework.mixins.ListModelMixin` for non-database
-        backed collections of objects.
+      description: List the available catalogi.
       summary: List available Catalogi from the provided Objects API group
       parameters:
       - in: query
@@ -3901,8 +3897,8 @@ paths:
         Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
         and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
         only one entry is returned.
-      summary: List available InformatieObjectTypen from the provided Objects API
-        group
+      summary: List the available InformatieObjectTypen from the provided Objects
+        API group
       parameters:
       - in: query
         name: catalogus_url
@@ -4060,19 +4056,14 @@ paths:
   /api/v2/registration/plugins/zgw-api/catalogi:
     get:
       operationId: registration_plugins_zgw_api_catalogi_list
-      description: |-
-        Fetch and serialize a list of objects.
-
-        Alternative to :class:`rest_framework.mixins.ListModelMixin` for non-database
-        backed collections of objects.
-      summary: List available Catalogi from the provided ZGW API group
+      description: List the available catalogi.
+      summary: List the available Catalogi from the provided ZGW API group
       parameters:
       - in: query
         name: zgw_api_group
         schema:
           type: integer
-          title: Objects API group
-        description: The primary key of the Objects API group to use. The informatieobjecttypen
+        description: The primary key of the ZGW API group to use. The informatieobjecttypen
           from the Catalogi API in this group will be returned.
         required: true
       tags:
@@ -4106,7 +4097,8 @@ paths:
         Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
         and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
         only one entry is returned.
-      summary: List available InformatieObjectTypen from the provided ZGW API group
+      summary: List the available InformatieObjectTypen from the provided ZGW API
+        group
       parameters:
       - in: query
         name: catalogus_url
@@ -4119,8 +4111,7 @@ paths:
         name: zgw_api_group
         schema:
           type: integer
-          title: Objects API group
-        description: The primary key of the Objects API group to use. The informatieobjecttypen
+        description: The primary key of the ZGW API group to use. The informatieobjecttypen
           from the Catalogi API in this group will be returned.
         required: true
       tags:
@@ -6844,16 +6835,17 @@ components:
     Catalogus:
       type: object
       properties:
-        url:
-          type: string
         domein:
           type: string
         rsin:
           type: string
+        label:
+          type: string
+          description: The display label of the catalogus
       required:
       - domein
+      - label
       - rsin
-      - url
     Category:
       type: object
       properties:
@@ -8408,6 +8400,9 @@ components:
           type: string
         catalogusRsin:
           type: string
+        catalogusLabel:
+          type: string
+          description: The display label of the catalogus
         url:
           type: string
           format: uri
@@ -8415,6 +8410,7 @@ components:
           type: string
       required:
       - catalogusDomein
+      - catalogusLabel
       - catalogusRsin
       - omschrijving
       - url

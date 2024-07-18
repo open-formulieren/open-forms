@@ -4,13 +4,15 @@ from rest_framework import serializers
 from zgw_consumers.client import build_client
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
+from openforms.contrib.zgw.api.filters import (
+    ProvidesCatalogiClientQueryParamsSerializer,
+)
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 
-from ....api.filters import BaseAPIGroupQueryParamsSerializer
 from ..models import ObjectsAPIGroupConfig
 
 
-class APIGroupQueryParamsSerializer(BaseAPIGroupQueryParamsSerializer):
+class APIGroupQueryParamsSerializer(ProvidesCatalogiClientQueryParamsSerializer):
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.exclude(catalogi_service=None),
         help_text=_(
