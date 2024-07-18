@@ -92,6 +92,7 @@ export default {
             omschrijving: 'Test IOT',
             catalogusDomein: 'Test domain',
             catalogusRsin: '000000000',
+            catalogusLabel: 'Test domain (RSIN: 000000000)',
             // Not available at runtime, but allows filtering with the `catalogus_url` query param:
             catalogusUrl:
               'http://openzaak.nl/catalogi/api/v1/catalogussen/7b403bcd-1f2e-4b50-8631-eec3d3a44e66',
@@ -101,6 +102,7 @@ export default {
             omschrijving: 'Test IOT 2',
             catalogusDomein: 'Test domain 2',
             catalogusRsin: '000000000',
+            catalogusLabel: 'Test domain 2 (RSIN: 000000000)',
             // Not available at runtime, but allows filtering with the `catalogus_url` query param:
             catalogusUrl:
               'http://openzaak.nl/catalogi/api/v1/catalogussen/57a48fbd-c443-43d5-bee0-9a9d0086439e',
@@ -111,11 +113,13 @@ export default {
             url: 'http://openzaak.nl/catalogi/api/v1/catalogussen/7b403bcd-1f2e-4b50-8631-eec3d3a44e66',
             domein: 'Test domain',
             rsin: '000000000',
+            label: 'Test domain (RSIN: 000000000)',
           },
           {
             url: 'http://openzaak.nl/catalogi/api/v1/catalogussen/57a48fbd-c443-43d5-bee0-9a9d0086439e',
             domein: 'Test domain 2',
             rsin: '000000000',
+            label: 'Test domain 2 (RSIN: 000000000)',
           },
         ]),
       ],

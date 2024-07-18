@@ -13,26 +13,12 @@ const InformatieObjecttypeSelect = ({
 }) => {
   const {loading, availableInformatieobjecttypen, error} = availableInformatieObjecttypenState;
 
-  let options;
-
-  if (loading || error) {
-    options = [];
-  } else {
-    const optionsMapping = availableInformatieobjecttypen.reduce((accumulator, temp) => {
-      const {catalogusDomein, omschrijving} = temp;
-      if (!accumulator[catalogusDomein]) {
-        accumulator[catalogusDomein] = [];
-      }
-
-      accumulator[catalogusDomein].push({value: omschrijving, label: omschrijving});
-      return accumulator;
-    }, {});
-
-    options = Object.entries(optionsMapping).map(([groupLabel, options]) => ({
-      label: groupLabel,
-      options,
-    }));
-  }
+  const options =
+    loading || error
+      ? []
+      : availableInformatieobjecttypen.map(({omschrijving}) => {
+          return {value: omschrijving, label: omschrijving};
+        });
 
   return (
     <ReactSelect

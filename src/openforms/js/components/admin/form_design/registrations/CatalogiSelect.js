@@ -27,16 +27,9 @@ const CatalogiSelect = ({
   const options =
     loading || error
       ? []
-      : availableCatalogi.map(({domein, rsin}) => {
-          return {value: `${domein}-${rsin}`, label: `${domein} (RSIN: ${rsin})`};
+      : availableCatalogi.map(({domein, rsin, label}) => {
+          return {value: `${domein}-${rsin}`, label};
         });
-
-  // const options =
-  // loading || error
-  //   ? []
-  //   : availableCatalogi.map(({domein, rsin}) => {
-  //       return {domein, rsin, label: `${domein} (RSIN: ${rsin})`};
-  //     });
 
   return (
     <ReactSelect
