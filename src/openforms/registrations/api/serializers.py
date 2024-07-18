@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
-from zgw_consumers.api_models.catalogi import Catalogus, InformatieObjectType
-from zgw_consumers.drf.serializers import APIModelSerializer
 
 from openforms.plugins.api.serializers import PluginBaseSerializer
 
@@ -36,23 +34,3 @@ class RegistrationAttributeSerializer(serializers.Serializer):
         label=_("Label"),
         help_text=_("The human-readable name for an attribute."),
     )
-
-
-class InformatieObjectTypeSerializer(APIModelSerializer):
-    class Meta:
-        model = InformatieObjectType
-        fields = (
-            "url",
-            "omschrijving",
-        )
-
-
-class CatalogusDomainSerializer(APIModelSerializer):
-    class Meta:
-        model = Catalogus
-        fields = ("domein",)
-
-
-class InformatieObjectTypeChoiceSerializer(serializers.Serializer):
-    informatieobjecttype = InformatieObjectTypeSerializer()
-    catalogus = CatalogusDomainSerializer()

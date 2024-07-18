@@ -3,6 +3,9 @@ from django.urls import Resolver404, resolve, reverse
 from asgiref.sync import sync_to_async
 from furl import furl
 
+from openforms.registrations.contrib.objects_api.tests.factories import (
+    ObjectsAPIGroupConfigFactory,
+)
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
@@ -88,7 +91,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 log_flaky()
                 return
 
-            if match.view_name == "api:iotypen-list":
+            if match.view_name == "api:zgw_apis:iotypen-list":
                 requests_to_endpoint.append(request)
 
         async with browser_page() as page:
@@ -135,22 +138,46 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
             str(zgw_api_1.pk),
         )
         self.assertEqual(
-            furl(requests_to_endpoint[0].url).args["registration_backend"],
-            "zgw-create-zaak",
-        )
-        self.assertEqual(
             furl(requests_to_endpoint[1].url).args["zgw_api_group"],
             str(zgw_api_2.pk),
         )
-        self.assertEqual(
-            furl(requests_to_endpoint[1].url).args["registration_backend"],
-            "zgw-create-zaak",
-        )
 
-    async def test_configuration_objects_api_backend(self):
+    async def test_configuration_objects_api_group(self):
+        """
+        Test that the admin editor dynamically changes the request to InformatieObjectTypenListView based on the registration backend configuration.
+
+        The flow in this test is:
+        - Configure the Registration backend to use set 1 of the configured Object apis
+        - Go to the file upload component and check that the query parameter in the request to the informatieobjecttype endpoint is the PK of the right group
+        - Go back to the registration tab and change which Objects API group should be used
+        - Go to the file component and check that the query parameter in the request changes
+        """
+
         @sync_to_async
         def setUpTestData():
-            return FormFactory.create(
+            objects_api_1 = ObjectsAPIGroupConfigFactory.create(
+                name="Group 1",
+                objects_service__api_root="https://objects-1.nl/api/v1/",
+                objects_service__oas="https://objects-1.nl/api/v1/schema/openapi.yaml",
+                objecttypes_service__api_root="https://objecttypes-1.nl/api/v1/",
+                objecttypes_service__oas="https://objecttypes-1.nl/api/v1/schema/openapi.yaml",
+                drc_service__api_root="https://documenten-1.nl/api/v1/",
+                drc_service__oas="https://documenten-1.nl/api/v1/schema/openapi.yaml",
+                catalogi_service__api_root="https://catalogus-1.nl/api/v1/",
+                catalogi_service__oas="https://catalogus-1.nl/api/v1/schema/openapi.yaml",
+            )
+            objects_api_2 = ObjectsAPIGroupConfigFactory.create(
+                name="Group 2",
+                objects_service__api_root="https://objects-2.nl/api/v1/",
+                objects_service__oas="https://objects-2.nl/api/v1/schema/openapi.yaml",
+                objecttypes_service__api_root="https://objecttypes-2.nl/api/v1/",
+                objecttypes_service__oas="https://objecttypes-2.nl/api/v1/schema/openapi.yaml",
+                drc_service__api_root="https://documenten-2.nl/api/v1/",
+                drc_service__oas="https://documenten-2.nl/api/v1/schema/openapi.yaml",
+                catalogi_service__api_root="https://catalogus-2.nl/api/v1/",
+                catalogi_service__oas="https://catalogus-2.nl/api/v1/schema/openapi.yaml",
+            )
+            form = FormFactory.create(
                 name="Configure registration test",
                 name_nl="Configure registration test",
                 generate_minimal_setup=True,
@@ -165,9 +192,18 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                     ],
                 },
             )
+            return {
+                "objects_api_1": objects_api_1,
+                "objects_api_2": objects_api_2,
+                "form": form,
+            }
 
         await create_superuser()
-        form = await setUpTestData()
+        test_data = await setUpTestData()
+        objects_api_1 = test_data["objects_api_1"]
+        objects_api_2 = test_data["objects_api_2"]
+        form = test_data["form"]
+
         admin_url = str(
             furl(self.live_server_url)
             / reverse("admin:forms_form_change", args=(form.pk,))
@@ -184,7 +220,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 log_flaky()
                 return
 
-            if match.view_name == "api:iotypen-list":
+            if match.view_name == "api:objects_api:iotypen-list":
                 requests_to_endpoint.append(request)
 
         async with browser_page() as page:
@@ -192,6 +228,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
 
             await self._admin_login(page)
             await page.goto(str(admin_url))
+            modal = page.locator("css=.formio-dialog-content")
 
             with phase("Configure registration backend"):
                 await page.get_by_role("tab", name="Registration").click()
@@ -201,17 +238,39 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="Objects API registration")
+                await page.get_by_label("Objects API group").select_option(
+                    label="Group 1"
+                )
 
             with phase("Configure upload component"):
                 await page.get_by_role("tab", name="Steps and fields").click()
 
                 await open_component_options_modal(page, label="File upload test")
-                modal = page.locator("css=.formio-dialog-content")
                 await modal.get_by_role("tab", name="Registration").click()
                 await close_modal(page, "Save")
 
-        self.assertEqual(len(requests_to_endpoint), 1)
+            with phase("Update the Objects API group configured"):
+                await page.get_by_role("tab", name="Registration").click()
+                await page.get_by_role(
+                    "combobox", name="Select registration backend"
+                ).select_option(label="Objects API registration")
+                await page.get_by_label("Objects API group").select_option(
+                    label="Group 2"
+                )
+
+            with phase("Reopen the upload component"):
+                await page.get_by_role("tab", name="Steps and fields").click()
+
+                await open_component_options_modal(page, label="File upload test")
+                await modal.get_by_role("tab", name="Registration").click()
+                await close_modal(page, "Save")
+
+        self.assertEqual(len(requests_to_endpoint), 2)
         self.assertEqual(
-            furl(requests_to_endpoint[0].url).args["registration_backend"],
-            "objects_api",
+            furl(requests_to_endpoint[0].url).args["objects_api_group"],
+            str(objects_api_1.pk),
+        )
+        self.assertEqual(
+            furl(requests_to_endpoint[1].url).args["objects_api_group"],
+            str(objects_api_2.pk),
         )

@@ -31,8 +31,15 @@ class CatalogiClient(NLXClient):
         all_data = pagination_helper(self, data)
         return list(all_data)
 
-    def get_all_informatieobjecttypen(self) -> list[dict]:
-        response = self.get("informatieobjecttypen")
+    def get_all_informatieobjecttypen(self, *, catalogus: str = "") -> list[dict]:
+        """List all informatieobjecttypen.
+
+        :arg catalogus: the catalogus URL the informatieobjecttypen should belong to.
+        """
+        params = {}
+        if catalogus:
+            params["catalogus"] = catalogus
+        response = self.get("informatieobjecttypen", params=params)
         response.raise_for_status()
         data = response.json()
         all_data = pagination_helper(self, data)

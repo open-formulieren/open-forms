@@ -3795,71 +3795,6 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
-  /api/v2/registration/informatieobjecttypen:
-    get:
-      operationId: registration_informatieobjecttypen_list
-      description: List the available InformatieObjectTypen based on the configured
-        registration backend and ZGW APIs services.
-      summary: List available InformatieObjectTypen
-      parameters:
-      - in: query
-        name: objects_api_group
-        schema:
-          type: integer
-        description: The primary key of the Objects API group to use. The informatieobjecttypen
-          from the Catalogi API in this group will be returned.
-      - in: query
-        name: registration_backend
-        schema:
-          enum:
-          - zgw-create-zaak
-          - email
-          - stuf-zds-create-zaak
-          - objects_api
-          - microsoft-graph
-          - camunda
-          type: string
-          title: Registration backend ID
-          minLength: 1
-        description: |-
-          The ID of the registration backend to use.
-
-          * `zgw-create-zaak` - ZGW API's
-          * `email` - Email registration
-          * `stuf-zds-create-zaak` - StUF-ZDS
-          * `objects_api` - Objects API registration
-          * `microsoft-graph` - Microsoft Graph (OneDrive/SharePoint)
-          * `camunda` - Camunda
-        required: true
-      - in: query
-        name: zgw_api_group
-        schema:
-          type: integer
-          title: ZGW API set
-        description: The primary key of the ZGW API set to use. The informatieobjecttypen
-          from the Catalogi API in this set will be returned.
-      tags:
-      - registration
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InformatieObjectTypeChoice'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/plugins:
     get:
       operationId: registration_plugins_list
@@ -3908,6 +3843,89 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ProcessDefinition'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/objects-api/catalogi:
+    get:
+      operationId: registration_plugins_objects_api_catalogi_list
+      description: List the available catalogi.
+      summary: List available Catalogi from the provided Objects API group
+      parameters:
+      - in: query
+        name: objects_api_group
+        schema:
+          type: integer
+        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Catalogus'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/objects-api/informatieobjecttypen:
+    get:
+      operationId: registration_plugins_objects_api_informatieobjecttypen_list
+      description: |-
+        List the available InformatieObjectTypen.
+
+        Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
+        and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
+        only one entry is returned.
+      summary: List the available InformatieObjectTypen from the provided Objects
+        API group
+      parameters:
+      - in: query
+        name: catalogus_url
+        schema:
+          type: string
+          format: uri
+          minLength: 1
+        description: Filter informatieobjecttypen against this catalogus URL.
+      - in: query
+        name: objects_api_group
+        schema:
+          type: integer
+        description: The primary key of the Objects API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InformatieObjectType'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -4035,6 +4053,89 @@ paths:
         schema:
           type: string
         required: true
+  /api/v2/registration/plugins/zgw-api/catalogi:
+    get:
+      operationId: registration_plugins_zgw_api_catalogi_list
+      description: List the available catalogi.
+      summary: List the available Catalogi from the provided ZGW API group
+      parameters:
+      - in: query
+        name: zgw_api_group
+        schema:
+          type: integer
+        description: The primary key of the ZGW API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Catalogus'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/registration/plugins/zgw-api/informatieobjecttypen:
+    get:
+      operationId: registration_plugins_zgw_api_informatieobjecttypen_list
+      description: |-
+        List the available InformatieObjectTypen.
+
+        Each InformatieObjectType is uniquely identified by its 'omschrijving', 'catalogus',
+        and beginning and end date. If multiple same InformatieObjectTypen exist for different dates,
+        only one entry is returned.
+      summary: List the available InformatieObjectTypen from the provided ZGW API
+        group
+      parameters:
+      - in: query
+        name: catalogus_url
+        schema:
+          type: string
+          format: uri
+          minLength: 1
+        description: Filter informatieobjecttypen against this catalogus URL.
+      - in: query
+        name: zgw_api_group
+        schema:
+          type: integer
+        description: The primary key of the ZGW API group to use. The informatieobjecttypen
+          from the Catalogi API in this group will be returned.
+        required: true
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InformatieObjectType'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/service-fetch-configurations:
     get:
       operationId: service_fetch_configurations_list
@@ -6731,13 +6832,20 @@ components:
           description: Email given when making the appointment
       required:
       - email
-    CatalogusDomain:
+    Catalogus:
       type: object
       properties:
         domein:
           type: string
+        rsin:
+          type: string
+        label:
+          type: string
+          description: The display label of the catalogus
       required:
       - domein
+      - label
+      - rsin
     Category:
       type: object
       properties:
@@ -8288,23 +8396,24 @@ components:
     InformatieObjectType:
       type: object
       properties:
+        catalogusDomein:
+          type: string
+        catalogusRsin:
+          type: string
+        catalogusLabel:
+          type: string
+          description: The display label of the catalogus
         url:
           type: string
+          format: uri
         omschrijving:
           type: string
       required:
+      - catalogusDomein
+      - catalogusLabel
+      - catalogusRsin
       - omschrijving
       - url
-    InformatieObjectTypeChoice:
-      type: object
-      properties:
-        informatieobjecttype:
-          $ref: '#/components/schemas/InformatieObjectType'
-        catalogus:
-          $ref: '#/components/schemas/CatalogusDomain'
-      required:
-      - catalogus
-      - informatieobjecttype
     Language:
       type: object
       properties:

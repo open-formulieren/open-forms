@@ -3,15 +3,23 @@ from typing import Any
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import authentication, permissions, views
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from openforms.api.views import ListMixin
+from openforms.contrib.zgw.api.views import (
+    BaseCatalogiListView,
+    BaseInformatieObjectTypenListView,
+)
 
 from ..client import get_objecttypes_client
 from ..json_schema import InvalidReference, iter_json_schema_paths, json_schema_matches
+from .filters import (
+    APIGroupQueryParamsSerializer,
+    ListInformatieObjectTypenQueryParamsSerializer,
+)
 from .serializers import (
     ObjectsAPIGroupInputSerializer,
     ObjecttypeSerializer,
@@ -120,3 +128,25 @@ class TargetPathsListView(views.APIView):
 
         output_serializer = TargetPathsSerializer(many=True, instance=return_data)
         return Response(data=output_serializer.data)
+
+
+@extend_schema_view(
+    get=extend_schema(
+        summary=_("List available Catalogi from the provided Objects API group"),
+        parameters=[APIGroupQueryParamsSerializer],
+    ),
+)
+class CatalogiListView(BaseCatalogiListView):
+    filter_serializer_class = APIGroupQueryParamsSerializer
+
+
+@extend_schema_view(
+    get=extend_schema(
+        summary=_(
+            "List the available InformatieObjectTypen from the provided Objects API group"
+        ),
+        parameters=[ListInformatieObjectTypenQueryParamsSerializer],
+    ),
+)
+class InformatieObjectTypenListView(BaseInformatieObjectTypenListView):
+    filter_serializer_class = ListInformatieObjectTypenQueryParamsSerializer

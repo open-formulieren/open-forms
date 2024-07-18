@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .views import ObjecttypesListView, ObjecttypeVersionsListView, TargetPathsListView
+from .views import (
+    CatalogiListView,
+    InformatieObjectTypenListView,
+    ObjecttypesListView,
+    ObjecttypeVersionsListView,
+    TargetPathsListView,
+)
 
 app_name = "objects_api"
 
@@ -19,5 +25,15 @@ urlpatterns = [
         "target-paths",
         TargetPathsListView.as_view(),
         name="target-paths",
+    ),
+    path(
+        "catalogi",
+        CatalogiListView.as_view(),
+        name="catalogi-list",
+    ),
+    path(
+        "informatieobjecttypen",
+        InformatieObjectTypenListView.as_view(),
+        name="iotypen-list",
     ),
 ]
