@@ -34,6 +34,22 @@
     }
 },
 {
+    "model": "catalogi.catalogus",
+    "pk": 2,
+    "fields": {
+        "_etag": "7236b46ee9fd8c1eb24dd69c2e5cd51c",
+        "naam": "Test catalog 2",
+        "uuid": "630271f6-568a-485e-b1c4-4ed2d6ab3a58",
+        "domein": "OTHER",
+        "rsin": "000000000",
+        "contactpersoon_beheer_naam": "Test name",
+        "contactpersoon_beheer_telefoonnummer": "",
+        "contactpersoon_beheer_emailadres": "",
+        "versie": "",
+        "begindatum_versie": null
+    }
+},
+{
     "model": "catalogi.eigenschapspecificatie",
     "pk": 1,
     "fields": {
@@ -142,6 +158,27 @@
         "omschrijving_generiek_hierarchie": "",
         "omschrijving_generiek_opmerking": "",
         "catalogus": 1
+    }
+},
+{
+    "model": "catalogi.informatieobjecttype",
+    "pk": 5,
+    "fields": {
+        "_etag": "c8e3c727b5a6eb192feeb5fdc3c12c67",
+        "datum_begin_geldigheid": "2024-07-19",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "d1cfb1d8-8593-4814-919d-72e38e80388f",
+        "omschrijving": "CSV Informatieobjecttype other catalog",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 2
     }
 },
 {
