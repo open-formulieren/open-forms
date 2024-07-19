@@ -288,7 +288,9 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
 
         objects_api_group: ObjectsAPIGroupConfig = attrs["objects_api_group"]
         with get_catalogi_client(objects_api_group) as catalogi_client:
-            informatieobjecttypen = catalogi_client.get_all_informatieobjecttypen()
+            informatieobjecttypen_urls = [
+                iot["url"] for iot in catalogi_client.get_all_informatieobjecttypen()
+            ]
 
         for field in (
             "informatieobjecttype_submission_report",
@@ -296,10 +298,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "informatieobjecttype_attachment",
         ):
             url = attrs.get(field)
-            if url is not None and not any(
-                informatieobjecttype["url"] == url
-                for informatieobjecttype in informatieobjecttypen
-            ):
+            if url is not None and url not in informatieobjecttypen_urls:
                 raise serializers.ValidationError(
                     {
                         field: _(
