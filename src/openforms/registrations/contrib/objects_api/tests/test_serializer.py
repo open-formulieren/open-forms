@@ -2,12 +2,15 @@ from pathlib import Path
 
 from django.test import TestCase
 
+from rest_framework.settings import api_settings
+
 from openforms.utils.tests.vcr import OFVCRMixin
 
 from ..config import ObjectsAPIOptionsSerializer
 from .factories import ObjectsAPIGroupConfigFactory
 
 FILES_DIR = Path(__file__).parent / "files"
+NON_FIELD_ERRORS_KEY = api_settings.NON_FIELD_ERRORS_KEY
 
 
 class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
@@ -69,6 +72,49 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
         )
         self.assertFalse(options.is_valid())
 
+    def test_catalogus_fields_together(self):
+        options = ObjectsAPIOptionsSerializer(
+            data={
+                "objects_api_group": self.objects_api_group.pk,
+                "version": 2,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 1,
+                "catalogus_domein": "dummy",
+            },
+        )
+
+        self.assertFalse(options.is_valid())
+
+    def test_iot_without_catalogus(self):
+        options = ObjectsAPIOptionsSerializer(
+            data={
+                "objects_api_group": self.objects_api_group.pk,
+                "version": 2,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 1,
+                "informatieobjecttype_attachment": "PDF Informatieobjecttype",
+            },
+        )
+
+        self.assertFalse(options.is_valid())
+        self.assertIn("informatieobjecttype_attachment", options.errors)
+
+    def test_catalogus_not_found(self):
+        options = ObjectsAPIOptionsSerializer(
+            data={
+                "objects_api_group": self.objects_api_group.pk,
+                "version": 2,
+                "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                "objecttype_version": 1,
+                "catalogus_domein": "dummy",
+                "catalogus_rsin": "0",
+            },
+        )
+
+        self.assertFalse(options.is_valid())
+        error = options.errors[NON_FIELD_ERRORS_KEY][0]
+        self.assertEqual(error.code, "not-found")
+
     def test_unknown_informatieobjecttype(self):
         options = ObjectsAPIOptionsSerializer(
             data={
@@ -76,7 +122,9 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
-                "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/1",
+                "catalogus_domein": "TEST",
+                "catalogus_rsin": "000000000",
+                "informatieobjecttype_attachment": "dummy",
             },
         )
 
@@ -141,9 +189,11 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 "version": 2,
                 "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
                 "objecttype_version": 1,
-                "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
-                "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
-                "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+                "catalogus_domein": "TEST",
+                "catalogus_rsin": "000000000",
+                "informatieobjecttype_attachment": "Attachment Informatieobjecttype",
+                "informatieobjecttype_submission_report": "PDF Informatieobjecttype",
+                "informatieobjecttype_submission_csv": "CSV Informatieobjecttype",
             },
         )
 
