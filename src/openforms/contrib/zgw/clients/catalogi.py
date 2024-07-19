@@ -21,24 +21,43 @@ def omschrijving_matcher(omschrijving: str):
 
 
 class CatalogiClient(NLXClient):
-    def get_all_catalogi(self) -> Iterator[dict]:
+    def get_all_catalogi(
+        self,
+        *,
+        domein: str = "",
+        rsin: str = "",
+    ) -> Iterator[dict]:
         """
         List all available catalogi, consuming pagination if relevant.
+
+        :arg domein: filter results matching this domein.
+        :arg rsin: filter results matching this RSIN.
         """
-        response = self.get("catalogussen")
+        query = {}
+        if domein:
+            query["domein"] = domein
+        if rsin:
+            query["rsin"] = rsin
+
+        response = self.get("catalogussen", params=query)
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
 
-    def get_all_informatieobjecttypen(self, *, catalogus: str = "") -> Iterator[dict]:
+    def get_all_informatieobjecttypen(
+        self, *, catalogus: str = "", omschrijving: str = ""
+    ) -> Iterator[dict]:
         """List all informatieobjecttypen.
 
         :arg catalogus: the catalogus URL the informatieobjecttypen should belong to.
+        :arg omschrijving: filter results matching this omschrijving.
         """
-        params = {}
+        query = {}
         if catalogus:
-            params["catalogus"] = catalogus
-        response = self.get("informatieobjecttypen", params=params)
+            query["catalogus"] = catalogus
+        if omschrijving:
+            query["omschrijving"] = omschrijving
+        response = self.get("informatieobjecttypen", params=query)
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)

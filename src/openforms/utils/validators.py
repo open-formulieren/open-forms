@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.deconstruct import deconstructible
+from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -75,6 +76,12 @@ class RSINValidator(Proef11ValidatorBase):
 
 validate_bsn = BSNValidator()
 validate_rsin = RSINValidator()
+
+validate_uppercase = RegexValidator(
+    _lazy_re_compile("^[A-Z]*$"),
+    message=_("Please enter capital letters only."),
+    code="invalid",
+)
 
 
 @deconstructible

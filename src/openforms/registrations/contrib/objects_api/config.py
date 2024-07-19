@@ -5,6 +5,7 @@ from django.db.models import IntegerChoices, Q
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
+from requests import HTTPError
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -13,10 +14,16 @@ from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
-from openforms.utils.validators import validate_rsin
+from openforms.utils.validators import validate_rsin, validate_uppercase
 
 from .client import get_catalogi_client, get_objecttypes_client
 from .models import ObjectsAPIGroupConfig
+
+IOT_FIELDS = (
+    "informatieobjecttype_submission_report",
+    "informatieobjecttype_submission_csv",
+    "informatieobjecttype_attachment",
+)
 
 
 class VersionChoices(IntegerChoices):
@@ -86,10 +93,22 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("objecttype version"),
         help_text=_("Version of the objecttype in the Objecttypes API"),
     )
-    informatieobjecttype_submission_report = serializers.URLField(
+    catalogus_domein = serializers.CharField(
+        label=_("catalogus domein"),
+        validators=[validate_uppercase],
+        help_text=_("Catalogus domein the informatieobjecttypen belong to"),
+        required=False,
+    )
+    catalogus_rsin = serializers.CharField(
+        label=_("catalogus rsin"),
+        validators=[validate_rsin],
+        help_text=_("Catalogus RSIN the informatieobjecttypen belong to"),
+        required=False,
+    )
+    informatieobjecttype_submission_report = serializers.CharField(
         label=_("submission report PDF informatieobjecttype"),
         help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi APIe "
             "to be used for the submission report PDF"
         ),
         required=False,
@@ -102,18 +121,18 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
         default=False,
     )
-    informatieobjecttype_submission_csv = serializers.URLField(
+    informatieobjecttype_submission_csv = serializers.CharField(
         label=_("submission report CSV informatieobjecttype"),
         help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi APIe "
             "to be used for the submission report CSV"
         ),
         required=False,
     )
-    informatieobjecttype_attachment = serializers.URLField(
+    informatieobjecttype_attachment = serializers.CharField(
         label=_("attachment informatieobjecttype"),
         help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "Omschrijving of the INFORMATIEOBJECTTYPE in the Catalogi APIe "
             "to be used for the submission attachments"
         ),
         required=False,
@@ -246,6 +265,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         self._handle_import(attrs)
 
+        # 1. Validate consistency between fields:
         v1_only_fields = {
             "productaanvraag_type",
             "content_json",
@@ -283,30 +303,60 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                     {"version": _("Unknown version: {version}").format(version=version)}
                 )
 
+        if ("catalogus_domein" in attrs) ^ ("catalogus_rsin" in attrs):
+            raise ValidationError(
+                _(
+                    "'catalogus_domein' and 'catalogus_rsin' should be provided together."
+                )
+            )
+
+        for field in IOT_FIELDS:
+            if field in attrs and "catalogus_domein" not in attrs:
+                raise ValidationError(
+                    {field: _("Catalogus domein and RSIN aren't provided.")}
+                )
+
         if not self.context.get("validate_business_logic", True):
             return attrs
 
-        objects_api_group: ObjectsAPIGroupConfig = attrs["objects_api_group"]
-        with get_catalogi_client(objects_api_group) as catalogi_client:
-            informatieobjecttypen_urls = [
-                iot["url"] for iot in catalogi_client.get_all_informatieobjecttypen()
-            ]
+        # 2. Validate business logic: IOT fields:
 
-        for field in (
-            "informatieobjecttype_submission_report",
-            "informatieobjecttype_submission_csv",
-            "informatieobjecttype_attachment",
-        ):
-            url = attrs.get(field)
-            if url is not None and url not in informatieobjecttypen_urls:
-                raise serializers.ValidationError(
-                    {
-                        field: _(
-                            "The provided {field} does not exist in the Catalogi API."
-                        ).format(field=field)
-                    },
-                    code="not-found",
-                )
+        objects_api_group: ObjectsAPIGroupConfig = attrs["objects_api_group"]
+
+        if "catalogus_domein" in attrs:
+            with get_catalogi_client(objects_api_group) as catalogi_client:
+                try:
+                    catalogi = catalogi_client.get_all_catalogi(
+                        domein=attrs["catalogus_domein"], rsin=attrs["catalogus_rsin"]
+                    )
+                    catalogus = next(catalogi)
+                except HTTPError:
+                    # A 400 is raised if the catalogus domein and RSIN doesn't match
+                    raise ValidationError(
+                        _("The provided catalogus domein and RSIN doesn't exist."),
+                        code="not-found",
+                    )
+
+                catalogus_url = catalogus["url"]
+
+                for field in IOT_FIELDS:
+                    if iot_omschrijving := attrs.get(field):
+                        iots = catalogi_client.get_all_informatieobjecttypen(
+                            catalogus=catalogus_url, omschrijving=iot_omschrijving
+                        )
+                        try:
+                            next(iots)
+                        except StopIteration:
+                            raise ValidationError(
+                                {
+                                    field: _(
+                                        "The provided {field} does not exist in the Catalogi API."
+                                    ).format(field=field)
+                                },
+                                code="not-found",
+                            )
+
+        # 3. Validate business logic: Objects APIs fields:
 
         with get_objecttypes_client(objects_api_group) as objecttypes_client:
             objecttypes = objecttypes_client.list_objecttypes()
@@ -321,7 +371,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             )
 
             if matching_objecttype is None:
-                raise serializers.ValidationError(
+                raise ValidationError(
                     {
                         "objecttype": _(
                             "The provided objecttype does not exist in the Objecttypes API."
@@ -338,7 +388,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 objecttype_version["version"] == attrs["objecttype_version"]
                 for objecttype_version in objecttype_versions
             ):
-                raise serializers.ValidationError(
+                raise ValidationError(
                     {
                         "objecttype_version": _(
                             "The provided objecttype version does not exist in the Objecttypes API."
