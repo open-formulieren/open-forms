@@ -238,9 +238,14 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="Objects API registration")
-                await page.get_by_label("Objects API group").select_option(
-                    label="Group 1"
-                )
+
+                group_dropdown = page.get_by_label("Objects API group")
+                await group_dropdown.focus()
+                await page.keyboard.press("ArrowDown")
+                option = page.get_by_text("Group 1", exact=True)
+                await option.scroll_into_view_if_needed()
+                await option.click()
+                await group_dropdown.blur()
 
             with phase("Configure upload component"):
                 await page.get_by_role("tab", name="Steps and fields").click()
@@ -254,9 +259,14 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role(
                     "combobox", name="Select registration backend"
                 ).select_option(label="Objects API registration")
-                await page.get_by_label("Objects API group").select_option(
-                    label="Group 2"
-                )
+
+                group_dropdown = page.get_by_label("Objects API group")
+                await group_dropdown.focus()
+                await page.keyboard.press("ArrowDown")
+                option = page.get_by_text("Group 2", exact=True)
+                await option.scroll_into_view_if_needed()
+                await option.click()
+                await group_dropdown.blur()
 
             with phase("Reopen the upload component"):
                 await page.get_by_role("tab", name="Steps and fields").click()
