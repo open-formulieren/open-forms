@@ -1,6 +1,7 @@
 import dataclasses
 from typing import Iterator
 
+from django.db import models
 from django.http import HttpResponse
 from django.utils.timezone import make_naive
 
@@ -9,7 +10,6 @@ from lxml import etree
 from tablib.formats._json import serialize_objects_handler
 
 from .models import Submission
-from .query import SubmissionQuerySet
 from .rendering.base import Node
 from .rendering.constants import RenderModes
 from .rendering.renderer import Renderer
@@ -39,7 +39,7 @@ def iter_submission_data_nodes(submission: Submission) -> Iterator[Node]:
             yield node
 
 
-def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
+def create_submission_export(queryset: models.QuerySet[Submission]) -> tablib.Dataset:
     """
     Turn a submissions queryset into a tablib dataset for export.
 
@@ -80,7 +80,7 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
 
 
 def export_submissions(
-    queryset: SubmissionQuerySet, file_type: FileType
+    queryset: models.QuerySet[Submission], file_type: FileType
 ) -> HttpResponse:
     export_data = create_submission_export(queryset)
     filename = f"submissions_export.{file_type.extension}"

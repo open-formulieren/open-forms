@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypedDict, TypeVar
 
 from rest_framework import serializers
 
@@ -29,7 +29,11 @@ class PreRegistrationResult:
     data: dict | None = None
 
 
-OptionsT = TypeVar("OptionsT", bound=dict)
+class Options(TypedDict):
+    pass
+
+
+OptionsT = TypeVar("OptionsT", bound=Options)
 
 
 class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):

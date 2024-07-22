@@ -43,7 +43,7 @@ from openforms.variables.constants import FormVariableSources
 
 from ..constants import AttachmentFormat
 from ..models import EmailConfig
-from ..plugin import EmailOptions, EmailRegistration
+from ..plugin import EmailRegistration, Options
 
 TEST_TEMPLATE_NL = """
 {% if payment_received %}
@@ -1071,12 +1071,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         assert submission.payment_required
         assert submission.payment_user_has_paid
-        options: EmailOptions = {
+        options: Options = {
             "to_emails": ["registration@example.com"],
             "attachment_formats": [],
             "payment_emails": ["payments@example.com"],
             "attach_files_to_email": False,
-            "email_subject": None,
         }
         plugin = EmailRegistration("email")
 

@@ -12,6 +12,8 @@ from openforms.emails.validators import URLSanitationValidator
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.translations.utils import ensure_default_language
 
+from .config import Options
+
 
 @ensure_default_language()
 def render_with_language(filename):
@@ -99,7 +101,7 @@ class EmailConfig(SingletonModel):
     def __str__(self):
         return force_str(self._meta.verbose_name)
 
-    def apply_defaults_to(self, options: dict):
+    def apply_defaults_to(self, options: Options):
         # key may be present and have the value None, or may be absent -> .get also returns None
         current_val = options.get("attach_files_to_email")
         if current_val is None:

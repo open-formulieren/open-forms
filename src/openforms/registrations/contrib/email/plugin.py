@@ -1,12 +1,13 @@
 import html
 from mimetypes import types_map
-from typing import Any, TypedDict
+from typing import Any
 
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import get_language_info, gettext_lazy as _
 
+from openforms.config.data import Action
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,
@@ -30,28 +31,18 @@ from openforms.variables.utils import get_variables_for_context
 from ...base import BasePlugin
 from ...registry import register
 from .checks import check_config
-from .config import EmailOptionsSerializer
+from .config import EmailOptionsSerializer, Options
 from .constants import PLUGIN_ID, AttachmentFormat
 from .models import EmailConfig
 from .utils import get_registration_email_templates
 
 
-class EmailOptions(TypedDict):
-    to_emails: list[str]
-    attachment_formats: list[str]
-    payment_emails: list[str]
-    attach_files_to_email: bool | None
-    email_subject: str | None
-
-
 @register(PLUGIN_ID)
-class EmailRegistration(BasePlugin):
+class EmailRegistration(BasePlugin[Options]):
     verbose_name = _("Email registration")
     configuration_options = EmailOptionsSerializer
 
-    def register_submission(
-        self, submission: Submission, options: EmailOptions
-    ) -> None:
+    def register_submission(self, submission: Submission, options: Options) -> None:
         config = EmailConfig.get_solo()
         config.apply_defaults_to(options)
 
@@ -132,7 +123,7 @@ class EmailRegistration(BasePlugin):
         self,
         recipients: list[str],
         submission: Submission,
-        options: EmailOptions,
+        options: Options,
         extra_context: dict[str, Any] | None = None,
         is_payment_update: bool = False,
     ) -> None:
@@ -160,11 +151,10 @@ class EmailRegistration(BasePlugin):
         for attachment_format in attachment_formats:
             mime_type = types_map[f".{attachment_format}"]
             if attachment_format in [AttachmentFormat.csv, AttachmentFormat.xlsx]:
-                export_data = create_submission_export(
-                    Submission.objects.filter(pk=submission.pk).select_related(
-                        "auth_info"
-                    )
-                ).export(attachment_format)
+                qs = Submission.objects.filter(pk=submission.pk).select_related(
+                    "auth_info"
+                )
+                export_data = create_submission_export(qs).export(attachment_format)
 
                 attachment = (
                     f"{submission.form.admin_name} - submission.{attachment_format}",
@@ -195,18 +185,17 @@ class EmailRegistration(BasePlugin):
             },
         )
 
-    def update_payment_status(self, submission: "Submission", options: EmailOptions):
+    def update_payment_status(self, submission: "Submission", options: Options):
         recipients = options.get("payment_emails")
         if not recipients:
             recipients = options["to_emails"]
 
+        order_ids = submission.payments.get_completed_public_order_ids()
         extra_context = {
             # switch in the template
             "payment_received": True,
             # note: it is not a feature (yet) but the model supports multiple payments
-            "payment_order_id": ", ".join(
-                map(str, submission.payments.get_completed_public_order_ids())
-            ),
+            "payment_order_id": ", ".join(order_ids),
         }
         self.send_registration_email(
             recipients, submission, options, extra_context, is_payment_update=True
@@ -215,7 +204,7 @@ class EmailRegistration(BasePlugin):
     def check_config(self):
         check_config()
 
-    def get_config_actions(self) -> list[tuple[str, str]]:
+    def get_config_actions(self) -> list[Action]:
         return [
             (_("Test"), reverse("admin_email_test")),
         ]

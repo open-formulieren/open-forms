@@ -1,6 +1,9 @@
+from typing import TypedDict
+
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from typing_extensions import NotRequired
 
 from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.emails.validators import URLSanitationValidator
@@ -91,3 +94,30 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
                 "email_content_template_text",
             ),
         ]
+
+
+class Options(TypedDict):
+    """
+    Shape of the email registration plugin options.
+
+    This describes the shape of :attr:`EmailOptionsSerializer.validated_data`, after
+    the input data has been cleaned/validated.
+    """
+
+    to_emails: list[str]
+    attachment_formats: NotRequired[list[AttachmentFormat | str]]
+    payment_emails: NotRequired[list[str]]
+    attach_files_to_email: bool | None
+    email_subject: NotRequired[str]
+    email_payment_subject: NotRequired[str]
+    email_content_template_html: NotRequired[str]
+    email_content_template_text: NotRequired[str]
+
+
+# sanity check for development - keep serializer and type definitions in sync
+_serializer_fields = EmailOptionsSerializer._declared_fields.keys()
+_options_keys = Options.__annotations__.keys()
+assert (
+    _serializer_fields == _options_keys
+), "Mismatch between serializer fields and options dictionary keys!"
+del _serializer_fields, _options_keys

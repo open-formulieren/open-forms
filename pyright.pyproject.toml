@@ -24,6 +24,8 @@ include = [
     # Formio tooling
     "src/openforms/formio/typing/",
     "src/openforms/formio/formatters/",
+    # Payments
+    "src/openforms/payments/models.py",
     # Registrations
     "src/openforms/registrations/contrib/email/config.py",
     "src/openforms/registrations/contrib/email/plugin.py",
