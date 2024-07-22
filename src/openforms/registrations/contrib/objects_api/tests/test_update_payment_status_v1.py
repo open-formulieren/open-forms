@@ -1,24 +1,51 @@
 import textwrap
+from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
 from django.test import TestCase
 
-import requests_mock
 from freezegun import freeze_time
 
+from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.utils.tests.vcr import OFVCRMixin
 
+from ..client import get_objects_client
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from .factories import ObjectsAPIGroupConfigFactory
 
+TEST_FILES = Path(__file__).parent / "files"
 
-@requests_mock.Mocker()
-class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
-    def test_update_payment_status(self, m):
+
+class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = TEST_FILES
+
+    def setUp(self):
+        super().setUp()
+
+        self.config_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+        )
+
+        # We manually create the objects instance, to be in the same state after
+        # `plugin.register_submission` was called:
+        with get_objects_client(self.config_group) as client:
+            data = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={},
+                    objecttype_version=1,
+                ),
+                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+            )
+            # Because of the nginx reverse proxy, we need to set the correct
+            # host as this URL will be used by the plugin to update the payment status:
+            self.objects_url = data["url"].replace("objects-web:8000", "localhost:8002")
+
+    def test_update_payment_status(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -29,9 +56,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             registration_success=True,
             submitted_data={"test": "some test data"},
             language_code="en",
-            registration_result={
-                "url": "https://objecten.nl/api/v1/objects/111-222-333"
-            },
+            registration_result={"url": self.objects_url},
             form__payment_backend="demo",
             form__product__price=10.01,
         )
@@ -55,57 +80,33 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             ),
         )
 
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-        )
-
-        m.patch(
-            "https://objecten.nl/api/v1/objects/111-222-333",
-            json={},  # Unused in our case, but required as .json() is called on the response
-            status_code=200,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
-        with freeze_time("2020-02-02"):
-            with patch(
-                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
-            ):
-                plugin.update_payment_status(
-                    submission,
-                    {
-                        "version": 1,
-                        "objects_api_group": config_group,
-                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                        "objecttype_version": 1,
-                    },
-                )
-
-        self.assertEqual(len(m.request_history), 2)
-
-        patch_request = m.request_history[1]
-        body = patch_request.json()
+        with freeze_time("2020-02-02"), patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=config,
+        ):
+            result = plugin.update_payment_status(
+                submission,
+                {
+                    "version": 1,
+                    "objects_api_group": self.config_group,
+                    "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+                    "objecttype_version": 1,
+                },
+            )
 
         self.assertEqual(
-            body["record"]["data"]["payment"],
+            result["record"]["data"]["payment"],
             {
                 "completed": True,
                 "amount": 10.01,
                 "public_order_ids": ["TEST-123"],
             },
         )
-        self.assertEqual(body["record"]["startAt"], "2020-02-02")
+        self.assertEqual(result["record"]["startAt"], "2020-02-02")
 
-    def test_template_overwritten_through_options(self, m):
+    def test_template_overwritten_through_options(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -116,9 +117,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             registration_success=True,
             submitted_data={"test": "some test data"},
             language_code="en",
-            registration_result={
-                "url": "https://objecten.nl/api/v1/objects/111-222-333"
-            },
+            registration_result={"url": self.objects_url},
             form__payment_backend="demo",
             form__product__price=10,
         )
@@ -131,39 +130,21 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
 
         config = ObjectsAPIConfig()
 
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-        )
-
-        m.patch(
-            "https://objecten.nl/api/v1/objects/111-222-333",
-            json={},  # Unused in our case, but required as .json() is called on the response
-            status_code=200,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        with freeze_time("2020-02-02"):
-            with patch(
-                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
-            ):
-                plugin.update_payment_status(
-                    submission,
-                    {
-                        "version": 1,
-                        "objects_api_group": config_group,
-                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                        "objecttype_version": 1,
-                        "payment_status_update_json": textwrap.dedent(
-                            """
+
+        with freeze_time("2020-02-02"), patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=config,
+        ):
+            result = plugin.update_payment_status(
+                submission,
+                {
+                    "version": 1,
+                    "objects_api_group": self.config_group,
+                    "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+                    "objecttype_version": 1,
+                    "payment_status_update_json": textwrap.dedent(
+                        """
                 {
                     "payment": {
                         "completed": {% if payment.completed %}true{% else %}false{% endif %},
@@ -171,26 +152,21 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
                         "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
                     }
                 }"""
-                        ),
-                    },
-                )
-
-        self.assertEqual(len(m.request_history), 2)
-
-        patch_request = m.request_history[1]
-        body = patch_request.json()
+                    ),
+                },
+            )
 
         self.assertEqual(
-            body["record"]["data"]["payment"],
+            result["record"]["data"]["payment"],
             {
                 "completed": True,
                 "amount": 10,
                 "public_order_ids": ["TEST-123"],
             },
         )
-        self.assertEqual(body["record"]["startAt"], "2020-02-02")
+        self.assertEqual(result["record"]["startAt"], "2020-02-02")
 
-    def test_no_template_specified(self, m):
+    def test_no_template_specified(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -201,9 +177,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             registration_success=True,
             submitted_data={"test": "some test data"},
             language_code="en",
-            registration_result={
-                "url": "https://objecten.nl/api/v1/objects/111-222-333"
-            },
+            registration_result={"url": self.objects_url},
         )
         SubmissionPaymentFactory.create(
             submission=submission,
@@ -216,39 +190,20 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(TestCase):
             payment_status_update_json="",
         )
 
-        config_group = ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-        )
-
-        m.patch(
-            "https://objecten.nl/api/v1/objects/111-222-333",
-            json={},  # Unused in our case, but required as .json() is called on the response
-            status_code=200,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
-        with freeze_time("2020-02-02"):
-            with patch(
-                "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
-                return_value=config,
-            ):
-                plugin.update_payment_status(
-                    submission,
-                    {
-                        "version": 1,
-                        "objects_api_group": config_group,
-                        "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-                        "objecttype_version": 1,
-                    },
-                )
+        with freeze_time("2020-02-02"), patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=config,
+        ):
+            result = plugin.update_payment_status(
+                submission,
+                {
+                    "version": 1,
+                    "objects_api_group": self.config_group,
+                    "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+                    "objecttype_version": 1,
+                },
+            )
 
-        self.assertEqual(len(m.request_history), 0)
+        self.assertIsNone(result)

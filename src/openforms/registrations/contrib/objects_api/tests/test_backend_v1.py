@@ -1,13 +1,10 @@
 import textwrap
-from datetime import date
+from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
 from django.test import TestCase, override_settings, tag
 from django.utils import timezone
-
-import requests_mock
-from zgw_consumers.test import generate_oas_component
 
 from openforms.authentication.service import AuthAttribute
 from openforms.payments.constants import PaymentStatus
@@ -16,35 +13,27 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.vcr import OFVCRMixin
 
 from ....constants import RegistrationAttribute
-from ..models import ObjectsAPIConfig, ObjectsAPIRegistrationData
+from ..client import get_documents_client
+from ..models import (
+    ObjectsAPIConfig,
+    ObjectsAPIRegistrationData,
+    ObjectsAPISubmissionAttachment,
+)
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from ..submission_registration import ObjectsAPIV1Handler
 from ..typing import RegistrationOptionsV1
 from .factories import ObjectsAPIGroupConfigFactory
 
-
-def get_create_json(req, ctx):
-    request_body = req.json()
-    return {
-        "url": "https://objecten.nl/api/v1/objects/1",
-        "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-        "type": request_body["type"],
-        "record": {
-            "index": 0,
-            **request_body["record"],  # typeVersion, data and startAt keys
-            "endAt": None,  # see https://github.com/maykinmedia/objects-api/issues/349
-            "registrationAt": date.today().isoformat(),
-            "correctionFor": 0,
-            "correctedBy": "",
-        },
-    }
+TEST_FILES = Path(__file__).parent / "files"
+FIXED_SUBMISSION_UUID = UUID(hex="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
 
-@requests_mock.Mocker()
-class ObjectsAPIBackendV1Tests(TestCase):
+class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
     maxDiff = None
+    VCR_TEST_FILES = TEST_FILES
 
     def setUp(self):
         super().setUp()
@@ -63,8 +52,8 @@ class ObjectsAPIBackendV1Tests(TestCase):
                     "taal": "{{ submission.language_code  }}",
                     "betrokkenen": [
                         {
-                            "inpBsn" : "{{ variables.auth_bsn }}",
-                            "rolOmschrijvingGeneriek" : "initiator"
+                            "inpBsn": "{{ variables.auth_bsn }}",
+                            "rolOmschrijvingGeneriek": "initiator"
                         }
                     ],
                     "pdf": "{{ submission.pdf_url }}",
@@ -87,16 +76,16 @@ class ObjectsAPIBackendV1Tests(TestCase):
         self.addCleanup(config_patcher.stop)
 
         self.objects_api_group = ObjectsAPIGroupConfigFactory.create(
-            objects_service__api_root="https://objecten.nl/api/v1/",
-            objecttypes_service__api_root="https://objecttypen.nl/api/v1/",
-            drc_service__api_root="https://documenten.nl/api/v1/",
-            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
-            informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
+            for_test_docker_compose=True,
+            informatieobjecttype_submission_report="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+            informatieobjecttype_submission_csv="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+            informatieobjecttype_attachment="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             organisatie_rsin="000000000",
         )
 
-    def test_submission_with_objects_api_backend_override_defaults(self, m):
+    def test_submission_with_objects_api_backend_override_defaults(self):
+        """Test that the configured IOTs are used instead of the global defaults on the Objects API group."""
+
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -143,170 +132,90 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 "coordinaat": [52.36673378967122, 4.893164274470299],
             },
             language_code="en",
+            uuid=FIXED_SUBMISSION_UUID,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
-        step_slug = submission_step.form_step.slug
+        submission_step.form_step.slug = "test-slug"
+        submission_step.form_step.save()
 
         objects_form_options = dict(
             version=1,
             objects_api_group=self.objects_api_group,
-            objecttype=UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-            objecttype_version=2,
+            objecttype=UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            objecttype_version=1,
             productaanvraag_type="testproduct",
-            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
+            # `omschrijving` "PDF Informatieobjecttype other catalog":
+            informatieobjecttype_submission_report="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
             upload_submission_csv=True,
-            informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/5",
+            # `omschrijving` "CSV Informatieobjecttype other catalog":
+            informatieobjecttype_submission_csv="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f",
             organisatie_rsin="123456782",
             zaak_vertrouwelijkheidaanduiding="geheim",
             doc_vertrouwelijkheidaanduiding="geheim",
         )
 
-        # Set up API mocks
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        expected_csv_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-        )
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_document_result,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_csv_document_result,
-            additional_matcher=lambda req: "csv" in req.json()["bestandsnaam"],
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
         result = plugin.register_submission(submission, objects_form_options)
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 4)
-        document_create, csv_document_create, _, object_create = m.request_history
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
 
-        with self.subTest("object create call and registration result"):
-            submitted_object_data = object_create.json()
-            expected_object_body = {
-                "type": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-                "record": {
-                    "typeVersion": 2,
-                    "data": {
-                        "bron": {
-                            "naam": "Open Formulieren",
-                            "kenmerk": str(submission.uuid),
-                        },
-                        "type": "testproduct",
-                        "aanvraaggegevens": {
-                            step_slug: {
-                                "voornaam": "Foo",
-                                "achternaam": "Bar",
-                                "tussenvoegsel": "de",
-                                "geboortedatum": "2000-12-31",
-                                "coordinaat": [52.36673378967122, 4.893164274470299],
-                            }
-                        },
-                        "taal": "en",
-                        "betrokkenen": [
-                            {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
-                        ],
-                        "pdf": expected_document_result["url"],
-                        "csv": expected_csv_document_result["url"],
-                        "bijlagen": [],
-                        "payment": {
-                            "completed": False,
-                            "amount": 0,
-                            "public_order_ids": [],
-                        },
-                    },
-                    "startAt": date.today().isoformat(),
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [52.36673378967122, 4.893164274470299],
-                    },
+        self.assertEqual(
+            result["type"],
+            "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
+        )
+        self.assertEqual(result["record"]["typeVersion"], 1)
+        self.assertEqual(
+            result["record"]["data"],
+            {
+                "bron": {
+                    "naam": "Open Formulieren",
+                    "kenmerk": str(FIXED_SUBMISSION_UUID),
                 },
-            }
-            self.assertEqual(object_create.method, "POST")
-            self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-            self.assertEqual(submitted_object_data, expected_object_body)
-
-            # NOTE: the backend adds additional metadata that is not in the request body.
-            expected_result = {
-                "url": "https://objecten.nl/api/v1/objects/1",
-                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                "type": f"https://objecttypen.nl/api/v1/objecttypes/{objects_form_options['objecttype']}",
-                "record": {
-                    "index": 0,
-                    "typeVersion": objects_form_options["objecttype_version"],
-                    "data": submitted_object_data["record"]["data"],
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [52.36673378967122, 4.893164274470299],
-                    },
-                    "startAt": date.today().isoformat(),
-                    "endAt": None,
-                    "registrationAt": date.today().isoformat(),
-                    "correctionFor": 0,
-                    "correctedBy": "",
+                "type": "testproduct",
+                "aanvraaggegevens": {
+                    "test-slug": {
+                        "voornaam": "Foo",
+                        "achternaam": "Bar",
+                        "tussenvoegsel": "de",
+                        "geboortedatum": "2000-12-31",
+                        "coordinaat": [52.36673378967122, 4.893164274470299],
+                    }
                 },
-            }
-            # Result is simply the created object
-            self.assertEqual(result, expected_result)
+                "taal": "en",
+                "betrokkenen": [{"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}],
+                "pdf": registration_data.pdf_url,
+                "csv": registration_data.csv_url,
+                "bijlagen": [],
+                "payment": {
+                    "completed": False,
+                    "amount": 0,
+                    "public_order_ids": [],
+                },
+            },
+        )
 
-        with self.subTest("Document create (PDF summary)"):
-            document_create_body = document_create.json()
+        # Assert that it used the IOTs in the config, not the defaults in the config group:
+        with get_documents_client(self.objects_api_group) as documents_client:
+            csv_document = documents_client.get(registration_data.csv_url).json()
+            pdf_document = documents_client.get(registration_data.pdf_url).json()
 
-            self.assertEqual(document_create.method, "POST")
-            self.assertEqual(
-                document_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(document_create_body["bronorganisatie"], "123456782")
-            self.assertEqual(
-                document_create_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/2",
-            )
-            self.assertEqual(
-                document_create_body["vertrouwelijkheidaanduiding"],
-                "geheim",
-            )
+        self.assertEqual(
+            csv_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f",
+        )
 
-        with self.subTest("Document create (CSV export)"):
-            csv_document_create_body = csv_document_create.json()
-
-            self.assertEqual(csv_document_create.method, "POST")
-            self.assertEqual(
-                csv_document_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            # Overridden informatieobjecttype used
-            self.assertEqual(
-                csv_document_create_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/5",
-            )
+        self.assertEqual(
+            pdf_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
+        )
 
     def test_submission_with_objects_api_backend_override_defaults_upload_csv_default_type(
-        self, m
+        self,
     ):
         submission = SubmissionFactory.from_components(
             [
@@ -322,99 +231,43 @@ class ObjectsAPIBackendV1Tests(TestCase):
         objects_form_options = dict(
             version=1,
             objects_api_group=self.objects_api_group,
-            objecttype=UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
-            objecttype_version=2,
+            objecttype=UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            objecttype_version=1,
             productaanvraag_type="testproduct",
-            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
+            informatieobjecttype_submission_report="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
             upload_submission_csv=True,
             organisatie_rsin="123456782",
             zaak_vertrouwelijkheidaanduiding="geheim",
             doc_vertrouwelijkheidaanduiding="geheim",
         )
 
-        # Set up API mocks
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        expected_csv_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-        )
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_document_result,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_csv_document_result,
-            additional_matcher=lambda req: "csv" in req.json()["bestandsnaam"],
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
         plugin.register_submission(submission, objects_form_options)
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 4)
-        document_create, csv_document_create, _, object_create = m.request_history
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
 
-        with self.subTest("object create call and registration result"):
-            submitted_object_data = object_create.json()
+        with get_documents_client(self.objects_api_group) as documents_client:
+            csv_document = documents_client.get(registration_data.csv_url).json()
+            pdf_document = documents_client.get(registration_data.pdf_url).json()
 
-            self.assertEqual(
-                submitted_object_data["type"],
-                "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            )
-            self.assertEqual(submitted_object_data["record"]["typeVersion"], 2)
-            self.assertEqual(
-                submitted_object_data["record"]["data"]["type"], "testproduct"
-            )
+        self.assertEqual(
+            csv_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+            "should have used the default IOT in the config group",
+        )
 
-        with self.subTest("Document create (PDF summary)"):
-            document_create_body = document_create.json()
-
-            self.assertEqual(document_create_body["bronorganisatie"], "123456782")
-            self.assertEqual(
-                document_create_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/2",
-            )
-            self.assertEqual(
-                document_create_body["vertrouwelijkheidaanduiding"],
-                "geheim",
-            )
-
-        with self.subTest("Document create (CSV export)"):
-            csv_document_create_body = csv_document_create.json()
-
-            self.assertEqual(
-                csv_document_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            # Default informatieobjecttype used
-            self.assertEqual(
-                csv_document_create_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/4",
-            )
+        self.assertEqual(
+            pdf_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
+            "should have used the IOT in the config",
+        )
 
     def test_submission_with_objects_api_backend_override_defaults_do_not_upload_csv(
-        self, m
+        self,
     ):
         submission = SubmissionFactory.from_components(
             [
@@ -427,89 +280,46 @@ class ObjectsAPIBackendV1Tests(TestCase):
             ],
             submitted_data={"voornaam": "Foo"},
         )
-        # Set up API mocks
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_document_result,
-        )
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": False,
             },
         )
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 3)
-        object_create = m.last_request
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
 
-        with self.subTest("object create call and registration result"):
-            submitted_object_data = object_create.json()
+        self.assertEqual(result["record"]["data"]["csv"], "")
 
-            self.assertEqual(submitted_object_data["record"]["data"]["csv"], "")
-            self.assertEqual(
-                submitted_object_data["record"]["data"]["pdf"],
-                expected_document_result["url"],
-            )
+        with get_documents_client(self.objects_api_group) as documents_client:
+            pdf_document = documents_client.get(registration_data.pdf_url).json()
 
-    def test_submission_with_objects_api_backend_missing_csv_iotype(self, m):
+        self.assertEqual(
+            pdf_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+        )
+
+    def test_submission_with_objects_api_backend_missing_csv_iotype(self):
         submission = SubmissionFactory.create(with_report=True, completed=True)
-        # Set up API mocks
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_document_result,
-        )
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "objects_api_group": self.objects_api_group,
                 "upload_submission_csv": True,
@@ -517,20 +327,21 @@ class ObjectsAPIBackendV1Tests(TestCase):
             },
         )
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 3)
-        object_create = m.last_request
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
 
-        with self.subTest("object create call and registration result"):
-            submitted_object_data = object_create.json()
+        self.assertEqual(result["record"]["data"]["csv"], "")
 
-            self.assertEqual(submitted_object_data["record"]["data"]["csv"], "")
-            self.assertEqual(
-                submitted_object_data["record"]["data"]["pdf"],
-                expected_document_result["url"],
-            )
+        with get_documents_client(self.objects_api_group) as documents_client:
+            pdf_document = documents_client.get(registration_data.pdf_url).json()
 
-    def test_submission_with_objects_api_backend_override_content_json(self, m):
+        self.assertEqual(
+            pdf_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+        )
+
+    def test_submission_with_objects_api_backend_override_content_json(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -543,13 +354,16 @@ class ObjectsAPIBackendV1Tests(TestCase):
             ],
             submitted_data={"voornaam": "Foo"},
             language_code="en",
+            uuid=FIXED_SUBMISSION_UUID,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
-        step_slug = submission_step.form_step.slug
+        submission_step.form_step.slug = "test-slug"
+        submission_step.form_step.save()
+
         objects_form_options = dict(
             version=1,
-            objecttype=UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+            objecttype=UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
             objecttype_version=1,
             objects_api_group=self.objects_api_group,
             upload_submission_csv=False,
@@ -567,54 +381,26 @@ class ObjectsAPIBackendV1Tests(TestCase):
             """
             ),
         )
-        # Set up API mocks
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_document_result,
-        )
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(submission, objects_form_options)
+        result = plugin.register_submission(submission, objects_form_options)
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 3)
-
-        with self.subTest("object create call"):
-            object_create = m.last_request
-            expected_record_data = {
+        self.assertEqual(
+            result["record"]["data"],
+            {
                 "bron": {
                     "naam": "Open Formulieren",
-                    "kenmerk": str(submission.uuid),
+                    "kenmerk": str(FIXED_SUBMISSION_UUID),
                 },
                 "type": "terugbelnotitie",
-                "aanvraaggegevens": {step_slug: {"voornaam": "Foo"}},
+                "aanvraaggegevens": {"test-slug": {"voornaam": "Foo"}},
                 "taal": "en",
-            }
+            },
+        )
 
-            self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-            object_create_body = object_create.json()
-            self.assertEqual(object_create_body["record"]["data"], expected_record_data)
-
-    def test_submission_with_objects_api_backend_use_config_defaults(self, m):
+    def test_submission_with_objects_api_backend_use_config_defaults(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -626,95 +412,59 @@ class ObjectsAPIBackendV1Tests(TestCase):
             ],
             submitted_data={"voornaam": "Foo"},
             language_code="en",
+            uuid=FIXED_SUBMISSION_UUID,
         )
         submission_step = submission.steps[0]
         assert submission_step.form_step
-        step_slug = submission_step.form_step.slug
+        submission_step.form_step.slug = "test-slug"
+        submission_step.form_step.save()
 
-        # Set up API mocks
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        expected_csv_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-        )
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_document_result,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_csv_document_result,
-            additional_matcher=lambda req: "csv" in req.json()["bestandsnaam"],
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration, applying default options from the config
         # (while still specifying the required fields):
-        plugin.register_submission(
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
             },
         )
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 3)
-        document_create, _, object_create = m.request_history
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
 
-        with self.subTest("Document create (PDF summary)"):
-            document_create_body = document_create.json()
+        with get_documents_client(self.objects_api_group) as documents_client:
+            pdf_document = documents_client.get(registration_data.pdf_url).json()
 
+        with self.subTest("Document creation (PDF summary)"):
+            self.assertEqual(pdf_document["taal"], "eng")
+            self.assertEqual(pdf_document["bronorganisatie"], "000000000")
             self.assertEqual(
-                document_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+                pdf_document["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
             )
-            self.assertEqual(document_create_body["taal"], "eng")
-            self.assertEqual(document_create_body["bronorganisatie"], "000000000")
+            self.assertEqual(pdf_document["vertrouwelijkheidaanduiding"], "openbaar")
+
+        with self.subTest("Object creation"):
+            self.assertEqual(result["record"]["typeVersion"], 1)
             self.assertEqual(
-                document_create_body["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
-            )
-            self.assertNotIn("vertrouwelijkheidaanduiding", document_create_body)
-
-        with self.subTest("object create call"):
-            object_create_body = object_create.json()
-
-            expected_record_data = {
-                "typeVersion": 1,
-                "data": {
-                    "aanvraaggegevens": {step_slug: {"voornaam": "Foo"}},
+                result["record"]["data"],
+                {
+                    "aanvraaggegevens": {"test-slug": {"voornaam": "Foo"}},
                     "betrokkenen": [
                         {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
                     ],
                     "bijlagen": [],
                     "bron": {
-                        "kenmerk": str(submission.uuid),
+                        "kenmerk": str(FIXED_SUBMISSION_UUID),
                         "naam": "Open Formulieren",
                     },
                     "csv": "",
-                    "pdf": expected_document_result["url"],
+                    "pdf": registration_data.pdf_url,
                     "taal": "en",
                     "type": "terugbelnotitie",
                     "payment": {
@@ -723,12 +473,9 @@ class ObjectsAPIBackendV1Tests(TestCase):
                         "public_order_ids": [],
                     },
                 },
-                "startAt": date.today().isoformat(),
-            }
-            self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-            self.assertEqual(object_create_body["record"], expected_record_data)
+            )
 
-    def test_submission_with_objects_api_backend_attachments(self, m):
+    def test_submission_with_objects_api_backend_attachments(self):
         # Form.io configuration is irrelevant for this test, but normally you'd have
         # set up some file upload components.
         submission = SubmissionFactory.from_components(
@@ -739,156 +486,95 @@ class ObjectsAPIBackendV1Tests(TestCase):
         )
         submission_step = submission.steps[0]
         # Set up two attachments to upload to the documents API
-        SubmissionFileAttachmentFactory.create(
+        file_attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step, file_name="attachment1.jpg"
         )
-        SubmissionFileAttachmentFactory.create(
+        file_attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step, file_name="attachment2.jpg"
         )
 
-        # Set up API mocks
-        pdf, attachment1, attachment2 = [
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            ),
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-            ),
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/3",
-            ),
-        ]
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=pdf,
-            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".pdf"),
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=attachment1,
-            additional_matcher=lambda req: req.json()["bestandsnaam"]
-            == "attachment1.jpg",
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=attachment2,
-            additional_matcher=lambda req: req.json()["bestandsnaam"]
-            == "attachment2.jpg",
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
             },
         )
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 5)
-        (
-            pdf_create,
-            attachment1_create,
-            attachment2_create,
-            _,
-            object_create,
-        ) = m.request_history
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
 
-        with self.subTest("object create call"):
-            record_data = object_create.json()["record"]["data"]
+        with get_documents_client(self.objects_api_group) as documents_client:
+            pdf_document = documents_client.get(registration_data.pdf_url).json()
+            attachment_document_1 = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get(
+                    submission_file_attachment=file_attachment_1
+                ).document_url
+            ).json()
+            attachment_document_2 = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get(
+                    submission_file_attachment=file_attachment_2
+                ).document_url
+            ).json()
 
-            self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-            self.assertEqual(
-                record_data["pdf"],
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            )
-            self.assertEqual(
+        with self.subTest("object creation"):
+            record_data = result["record"]["data"]
+
+            self.assertEqual(record_data["pdf"], registration_data.pdf_url)
+            self.assertCountEqual(
                 record_data["bijlagen"],
-                [
-                    "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-                    "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/3",
-                ],
+                ObjectsAPISubmissionAttachment.objects.values_list(
+                    "document_url", flat=True
+                ),
             )
 
-        with self.subTest("Document create (PDF summary)"):
-            pdf_create_data = pdf_create.json()
+        with self.subTest("Document creation (PDF summary)"):
+            self.assertEqual(pdf_document["bronorganisatie"], "000000000")
+            self.assertEqual(
+                pdf_document["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+            )
+            self.assertEqual(pdf_document["vertrouwelijkheidaanduiding"], "openbaar")
 
+        with self.subTest("Document creation (attachment 1)"):
+            self.assertEqual(attachment_document_1["bronorganisatie"], "000000000")
+            self.assertEqual(attachment_document_1["taal"], "eng")
             self.assertEqual(
-                pdf_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+                attachment_document_1["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             )
-            self.assertEqual(pdf_create_data["bronorganisatie"], "000000000")
             self.assertEqual(
-                pdf_create_data["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                attachment_document_1["vertrouwelijkheidaanduiding"], "openbaar"
             )
-            self.assertNotIn("vertrouwelijkheidaanduiding", pdf_create_data)
-
-        with self.subTest("Document create (attachment 1)"):
-            attachment1_create_data = attachment1_create.json()
-
-            self.assertEqual(
-                attachment1_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(attachment1_create_data["bronorganisatie"], "000000000")
-            self.assertEqual(attachment1_create_data["taal"], "eng")
-            self.assertEqual(
-                attachment1_create_data["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/3",
-            )
-            self.assertNotIn("vertrouwelijkheidaanduiding", attachment1_create_data)
-            self.assertIsNotNone(attachment1_create_data["ontvangstdatum"])
+            self.assertIsNotNone(attachment_document_1["ontvangstdatum"])
 
         with self.subTest("Document create (attachment 2)"):
-            attachment2_create_data = attachment2_create.json()
-
+            self.assertEqual(attachment_document_2["bronorganisatie"], "000000000")
+            self.assertEqual(attachment_document_2["taal"], "eng")
             self.assertEqual(
-                attachment1_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+                attachment_document_2["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             )
-            self.assertEqual(attachment2_create_data["bronorganisatie"], "000000000")
-            self.assertEqual(attachment2_create_data["taal"], "eng")
             self.assertEqual(
-                attachment2_create_data["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/3",
+                attachment_document_2["vertrouwelijkheidaanduiding"], "openbaar"
             )
-            self.assertNotIn("vertrouwelijkheidaanduiding", attachment2_create_data)
-            self.assertIsNotNone(attachment2_create_data["ontvangstdatum"])
+            self.assertIsNotNone(attachment_document_2["ontvangstdatum"])
 
-    def test_submission_with_objects_api_backend_attachments_specific_iotypen(self, m):
+    def test_submission_with_objects_api_backend_attachments_specific_iotypen(self):
         submission = SubmissionFactory.from_components(
             [
                 {
                     "key": "field1",
                     "type": "file",
                     "registration": {
-                        "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+                        # `omschrijving` "Attachment Informatieobjecttype other catalog":
+                        "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
                     },
                 },
                 {
@@ -903,69 +589,19 @@ class ObjectsAPIBackendV1Tests(TestCase):
             completed=True,
         )
         submission_step = submission.steps[0]
-        SubmissionFileAttachmentFactory.create(
+        file_attachment_1 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment1.jpg",
             form_key="field1",
             _component_configuration_path="components.0",
         )
-        SubmissionFileAttachmentFactory.create(
+        file_attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="attachment2.jpg",
             form_key="field2",
             _component_configuration_path="component.1",
         )
 
-        # Set up API mocks
-        pdf, attachment1, attachment2 = [
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            ),
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-            ),
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/3",
-            ),
-        ]
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=pdf,
-            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".pdf"),
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=attachment1,
-            additional_matcher=lambda req: req.json()["bestandsnaam"]
-            == "attachment1.jpg",
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=attachment2,
-            additional_matcher=lambda req: req.json()["bestandsnaam"]
-            == "attachment2.jpg",
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
@@ -974,59 +610,57 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
             },
         )
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 5)
-        attachment1_create = m.request_history[1]
-        attachment2_create = m.request_history[2]
+        with get_documents_client(self.objects_api_group) as documents_client:
+            attachment_document_1 = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get(
+                    submission_file_attachment=file_attachment_1
+                ).document_url
+            ).json()
+            attachment_document_2 = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get(
+                    submission_file_attachment=file_attachment_2
+                ).document_url
+            ).json()
 
-        with self.subTest("Document create (attachment 1)"):
-            attachment1_create_data = attachment1_create.json()
-
+        with self.subTest("Document creation (attachment 1)"):
+            self.assertEqual(attachment_document_1["bronorganisatie"], "000000000")
+            self.assertEqual(attachment_document_1["taal"], "eng")
+            # Use overridden IOType:
             self.assertEqual(
-                attachment1_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+                attachment_document_1["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
             )
-            self.assertEqual(attachment1_create_data["bronorganisatie"], "000000000")
-            self.assertEqual(attachment1_create_data["taal"], "eng")
-            # Use override IOType
             self.assertEqual(
-                attachment1_create_data["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+                attachment_document_1["vertrouwelijkheidaanduiding"], "openbaar"
             )
-            self.assertNotIn("vertrouwelijkheidaanduiding", attachment1_create_data)
 
-        with self.subTest("Document create (attachment 2)"):
-            attachment2_create_data = attachment2_create.json()
-
-            self.assertEqual(
-                attachment1_create.url,
-                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            )
-            self.assertEqual(attachment2_create_data["bronorganisatie"], "000000000")
-            self.assertEqual(attachment2_create_data["taal"], "eng")
+        with self.subTest("Document creation (attachment 2)"):
+            self.assertEqual(attachment_document_2["bronorganisatie"], "000000000")
+            self.assertEqual(attachment_document_2["taal"], "eng")
             # Fallback to default IOType
             self.assertEqual(
-                attachment2_create_data["informatieobjecttype"],
-                "https://catalogi.nl/api/v1/informatieobjecttypen/3",
+                attachment_document_2["informatieobjecttype"],
+                "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             )
-            self.assertNotIn("vertrouwelijkheidaanduiding", attachment2_create_data)
+            self.assertEqual(
+                attachment_document_2["vertrouwelijkheidaanduiding"], "openbaar"
+            )
 
-    def test_submission_with_objects_api_backend_attachments_component_overwrites(
-        self, m
-    ):
+    def test_submission_with_objects_api_backend_attachments_component_overwrites(self):
         submission = SubmissionFactory.from_components(
             [
                 {
                     "key": "fileUpload",
                     "type": "file",
                     "registration": {
-                        "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
-                        "bronorganisatie": "123123123",
+                        # `omschrijving` "Attachment Informatieobjecttype other catalog":
+                        "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
+                        "bronorganisatie": "111222333",
                         "docVertrouwelijkheidaanduiding": "geheim",
                         "titel": "A Custom Title",
                     },
@@ -1063,44 +697,6 @@ class ObjectsAPIBackendV1Tests(TestCase):
             _component_configuration_path="components.0",
         )
 
-        # Set up API mocks
-        pdf, attachment = [
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            ),
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-            ),
-        ]
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=pdf,
-            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".pdf"),
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=attachment,
-            additional_matcher=lambda req: req.json()["bestandsnaam"]
-            == "some-attachment.jpg",
-        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
@@ -1109,36 +705,27 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
             },
         )
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 4)
-        document_create_attachment = m.request_history[1]
+        with get_documents_client(self.objects_api_group) as documents_client:
+            attachment_document = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get().document_url
+            ).json()
 
-        document_create_attachment_body = document_create_attachment.json()
-        self.assertEqual(document_create_attachment.method, "POST")
+        # Check use of overridden settings
         self.assertEqual(
-            document_create_attachment.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            attachment_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
         )
-        # Check use of override settings
-        self.assertEqual(
-            document_create_attachment_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
-        )
-        self.assertEqual(
-            document_create_attachment_body["bronorganisatie"], "123123123"
-        )
-        self.assertEqual(
-            document_create_attachment_body["vertrouwelijkheidaanduiding"], "geheim"
-        )
-        self.assertEqual(document_create_attachment_body["titel"], "A Custom Title")
+        self.assertEqual(attachment_document["bronorganisatie"], "111222333")
+        self.assertEqual(attachment_document["vertrouwelijkheidaanduiding"], "geheim")
+        self.assertEqual(attachment_document["titel"], "A Custom Title")
 
     def test_submission_with_objects_api_backend_attachments_component_inside_fieldset_overwrites(
-        self, m
+        self,
     ):
         submission = SubmissionFactory.from_components(
             [
@@ -1151,8 +738,9 @@ class ObjectsAPIBackendV1Tests(TestCase):
                             "key": "fileUpload",
                             "type": "file",
                             "registration": {
-                                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
-                                "bronorganisatie": "123123123",
+                                # `omschrijving` "Attachment Informatieobjecttype other catalog":
+                                "informatieobjecttype": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
+                                "bronorganisatie": "111222333",
                                 "docVertrouwelijkheidaanduiding": "geheim",
                                 "titel": "A Custom Title",
                             },
@@ -1190,44 +778,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             form_key="fileUpload",
             _component_configuration_path="components.0.components.0",
         )
-        # Set up API mocks
-        pdf, attachment = [
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            ),
-            generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
-            ),
-        ]
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=pdf,
-            additional_matcher=lambda req: req.json()["bestandsnaam"].endswith(".pdf"),
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=attachment,
-            additional_matcher=lambda req: req.json()["bestandsnaam"]
-            == "some-attachment.jpg",
-        )
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
@@ -1236,36 +787,27 @@ class ObjectsAPIBackendV1Tests(TestCase):
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
             },
         )
 
-        # check the requests made
-        self.assertEqual(len(m.request_history), 4)
-        document_create_attachment = m.request_history[1]
+        with get_documents_client(self.objects_api_group) as documents_client:
+            attachment_document = documents_client.get(
+                ObjectsAPISubmissionAttachment.objects.get().document_url
+            ).json()
 
-        document_create_attachment_body = document_create_attachment.json()
-        self.assertEqual(document_create_attachment.method, "POST")
+        # Check use of overridden settings
         self.assertEqual(
-            document_create_attachment.url,
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            attachment_document["informatieobjecttype"],
+            "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
         )
-        # Check use of override settings
-        self.assertEqual(
-            document_create_attachment_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
-        )
-        self.assertEqual(
-            document_create_attachment_body["bronorganisatie"], "123123123"
-        )
-        self.assertEqual(
-            document_create_attachment_body["vertrouwelijkheidaanduiding"], "geheim"
-        )
-        self.assertEqual(document_create_attachment_body["titel"], "A Custom Title")
+        self.assertEqual(attachment_document["bronorganisatie"], "111222333")
+        self.assertEqual(attachment_document["vertrouwelijkheidaanduiding"], "geheim")
+        self.assertEqual(attachment_document["titel"], "A Custom Title")
 
     @override_settings(ESCAPE_REGISTRATION_OUTPUT=True)
-    def test_submission_with_objects_api_escapes_html(self, m):
+    def test_submission_with_objects_api_escapes_html(self):
         content_template = textwrap.dedent(
             """
             {
@@ -1290,63 +832,37 @@ class ObjectsAPIBackendV1Tests(TestCase):
 
         submission_step = submission.steps[0]
         assert submission_step.form_step
-        step_slug = submission_step.form_step.slug
-        # Set up API mocks
-        expected_document_result = generate_oas_component(
-            "documenten",
-            "schemas/EnkelvoudigInformatieObject",
-            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-        )
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=expected_document_result,
-        )
+        submission_step.form_step.slug = "test-slug"
+        submission_step.form_step.save()
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
         # Run the registration
-        plugin.register_submission(
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "content_json": content_template,
                 "upload_submission_csv": False,
             },
         )
 
-        self.assertEqual(len(m.request_history), 3)
-
-        object_create = m.last_request
-        expected_record_data = {
-            "summary": {
-                step_slug: {
-                    "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
+        self.assertEqual(
+            result["record"]["data"],
+            {
+                "summary": {
+                    "test-slug": {
+                        "voornaam": "&lt;script&gt;alert();&lt;/script&gt;",
+                    },
                 },
+                "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
             },
-            "manual_variable": "&lt;script&gt;alert();&lt;/script&gt;",
-        }
-        object_create_body = object_create.json()
-        posted_record_data = object_create_body["record"]["data"]
-        self.assertEqual(object_create.method, "POST")
-        self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertEqual(posted_record_data, expected_record_data)
+        )
 
-    def test_submission_with_payment(self, m):
+    def test_submission_with_payment(self):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -1357,9 +873,6 @@ class ObjectsAPIBackendV1Tests(TestCase):
             registration_success=True,
             submitted_data={"test": "some test data"},
             language_code="en",
-            registration_result={
-                "url": "https://objecten.nl/api/v1/objects/111-222-333"
-            },
             form__payment_backend="demo",
             form__product__price=10,
         )
@@ -1369,46 +882,19 @@ class ObjectsAPIBackendV1Tests(TestCase):
             public_order_id="",
         )
 
-        m.post(
-            "https://objecten.nl/api/v1/objects",
-            status_code=201,
-            json=get_create_json,
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
-        m.post(
-            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
-            status_code=201,
-            json=generate_oas_component(
-                "documenten",
-                "schemas/EnkelvoudigInformatieObject",
-                url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
-            ),
-        )
-
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        plugin.register_submission(
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
             },
         )
 
-        self.assertEqual(len(m.request_history), 3)
-
-        object_create = m.last_request
-        body = object_create.json()
-
         self.assertEqual(
-            body["record"]["data"]["payment"],
+            result["record"]["data"]["payment"],
             {
                 "completed": False,
                 "amount": 10.00,
@@ -1416,7 +902,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             },
         )
 
-    def test_submission_with_auth_context_data(self, m):
+    def test_submission_with_auth_context_data(self):
         # skip document uploads
         self.objects_api_group.informatieobjecttype_submission_report = ""
         self.objects_api_group.save()
@@ -1428,23 +914,14 @@ class ObjectsAPIBackendV1Tests(TestCase):
             auth_info__plugin="demo",
             auth_info__is_eh_bewindvoering=True,
         )
-        m.post(
-            "https://objecten.nl/api/v1/objects", status_code=201, json=get_create_json
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        plugin.register_submission(
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
@@ -1452,8 +929,6 @@ class ObjectsAPIBackendV1Tests(TestCase):
             },
         )
 
-        object_create = m.last_request
-        body = object_create.json()
         # for the values, see openforms.authentication.tests.factories.AuthInfoFactory
         expected = {
             "source": "eherkenning",
@@ -1486,9 +961,9 @@ class ObjectsAPIBackendV1Tests(TestCase):
                 ],
             },
         }
-        self.assertEqual(body["record"]["data"]["auth"], expected)
+        self.assertEqual(result["record"]["data"]["auth"], expected)
 
-    def test_submission_with_auth_context_data_not_authenticated(self, m):
+    def test_submission_with_auth_context_data_not_authenticated(self):
         # skip document uploads
         self.objects_api_group.informatieobjecttype_submission_report = ""
         self.objects_api_group.save()
@@ -1497,23 +972,15 @@ class ObjectsAPIBackendV1Tests(TestCase):
             form__generate_minimal_setup=True,
         )
         assert not submission.is_authenticated
-        m.post(
-            "https://objecten.nl/api/v1/objects", status_code=201, json=get_create_json
-        )
-        m.get(
-            "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377",
-            json={
-                "url": "https://objecttypen.nl/api/v1/objecttypes/f3f1b370-97ed-4730-bc7e-ebb20c230377"
-            },
-            status_code=200,
-        )
+
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-        plugin.register_submission(
+
+        result = plugin.register_submission(
             submission,
             {
                 "version": 1,
                 "objects_api_group": self.objects_api_group,
-                "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
+                "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
                 "objecttype_version": 1,
                 "informatieobjecttype_submission_report": "",
                 "upload_submission_csv": False,
@@ -1521,9 +988,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
             },
         )
 
-        object_create = m.last_request
-        body = object_create.json()
-        self.assertEqual(body["record"]["data"]["auth"], None)
+        self.assertEqual(result["record"]["data"]["auth"], None)
 
 
 class V1HandlerTests(TestCase):
