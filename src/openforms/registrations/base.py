@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from rest_framework import serializers
 
@@ -29,7 +29,10 @@ class PreRegistrationResult:
     data: dict | None = None
 
 
-class BasePlugin(ABC, AbstractBasePlugin):
+OptionsT = TypeVar("OptionsT", bound=dict)
+
+
+class BasePlugin(Generic[OptionsT], ABC, AbstractBasePlugin):
     configuration_options: SerializerCls = EmptyOptions
     """
     A serializer class describing the plugin-specific configuration options.
@@ -46,16 +49,18 @@ class BasePlugin(ABC, AbstractBasePlugin):
     """
 
     @abstractmethod
-    def register_submission(self, submission: Submission, options: dict) -> dict | None:
+    def register_submission(
+        self, submission: Submission, options: OptionsT
+    ) -> dict | None:
         raise NotImplementedError()
 
     def update_payment_status(
-        self, submission: Submission, options: dict
+        self, submission: Submission, options: OptionsT
     ) -> dict | None:
         raise NotImplementedError()
 
     def pre_register_submission(
-        self, submission: Submission, options: dict
+        self, submission: Submission, options: OptionsT
     ) -> PreRegistrationResult:
         """Perform any tasks before registering the submission
 
