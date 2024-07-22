@@ -337,6 +337,11 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         instance.suspended_on = timezone.now()
         if instance.is_authenticated:
             instance.auth_info.hash_identifying_attributes()
+
+        # See GH #4502 - we may not persist this during suspension. It gets set
+        # on-the-fly during logic evaluation.
+        instance.finalised_registration_backend_key = ""
+
         instance = super().update(instance, validated_data)
         transaction.on_commit(lambda: self.notify_suspension(instance, email))
         return instance
