@@ -312,9 +312,9 @@ class SubmissionViewSet(
 
         serializer = get_submission_completion_serializer(submission, request=request)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
 
         status_url = self._complete_submission(submission)
+        serializer.save()
 
         out_serializer = SubmissionCompletionSerializer(
             instance={"status_url": status_url}
