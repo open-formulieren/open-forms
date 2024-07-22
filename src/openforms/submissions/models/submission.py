@@ -335,6 +335,24 @@ class Submission(models.Model):
             started=localize(localtime(self.created_on)) or _("(no timestamp yet)"),
         )
 
+    def save(self, *args, **kwargs):
+        update_fields = kwargs.get("update_fields")
+        save_all_fields = update_fields is None
+        _will_save_backend_key = (
+            save_all_fields or "finalised_registration_backend_key" in update_fields
+        )
+        if (
+            _will_save_backend_key
+            and self.finalised_registration_backend_key
+            and not self.completed_on
+        ):
+            raise ValueError(
+                "'finalised_registration_backend_key' may only be persisted for "
+                "completed submissions"
+            )
+
+        super().save(*args, **kwargs)
+
     def refresh_from_db(self, *args, **kwargs):
         super().refresh_from_db(*args, **kwargs)
         if hasattr(self, "_execution_state"):
