@@ -15,6 +15,7 @@ class _BaseRegistrationOptions(TypedDict, total=False):
     objects_api_group: Required[ObjectsAPIGroupConfig]
     objecttype: Required[UUID]
     objecttype_version: Required[int]
+    update_existing_object: bool
     informatieobjecttype_submission_report: str
     upload_submission_csv: bool
     informatieobjecttype_submission_csv: str

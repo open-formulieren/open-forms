@@ -1070,6 +1070,11 @@
     "description": "Warning that all simple variables are mapped",
     "originalDefault": "All simple variables are mapped to a case property."
   },
+  "Nv0J2Y": {
+    "defaultMessage": "Update existing object",
+    "description": "Objects API registration options \"Update existing object\" label",
+    "originalDefault": "Update existing object"
+  },
   "NwTdLM": {
     "defaultMessage": "Veld waar beschikbare locaties voor een afspraak komen te staan",
     "description": "Locations Component field help text",
@@ -1480,6 +1485,11 @@
     "defaultMessage": "Basis",
     "description": "Service fetch configuration modal basic fieldset title",
     "originalDefault": "Basic"
+  },
+  "XiPZpg": {
+    "defaultMessage": "Indicates whether the (existing) object should be updated and not created",
+    "description": "Objects API registration options \"Upload submission CSV\" description",
+    "originalDefault": "Indicates whether the (existing) object should be updated and not created"
   },
   "XqTjf+": {
     "defaultMessage": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt.",

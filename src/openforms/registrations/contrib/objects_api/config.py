@@ -86,6 +86,13 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("objecttype version"),
         help_text=_("Version of the objecttype in the Objecttypes API"),
     )
+    update_existing_object = serializers.BooleanField(
+        label=_("Update existing object"),
+        help_text=_(
+            "Indicates whether the (existing) object should be updated and not created."
+        ),
+        default=False,
+    )
     informatieobjecttype_submission_report = serializers.URLField(
         label=_("submission report PDF informatieobjecttype"),
         help_text=_(

@@ -2312,6 +2312,12 @@
       "value": "Een korte instructie onder het handtekenvlak."
     }
   ],
+  "Nv0J2Y": [
+    {
+      "type": 0,
+      "value": "Update existing object"
+    }
+  ],
   "NwTdLM": [
     {
       "type": 0,
@@ -3190,6 +3196,12 @@
     {
       "type": 0,
       "value": "Basis"
+    }
+  ],
+  "XiPZpg": [
+    {
+      "type": 0,
+      "value": "Indicates whether the (existing) object should be updated and not created"
     }
   ],
   "Xj1uvL": [

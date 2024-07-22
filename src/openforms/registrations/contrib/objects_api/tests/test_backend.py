@@ -1,10 +1,15 @@
+from pathlib import Path
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import TestCase
 
 import requests_mock
+from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test import generate_oas_component
+from zgw_consumers.test.factories import ServiceFactory
 
+from openforms.registrations.constants import RegistrationAttribute
 from openforms.registrations.contrib.objects_api.models import (
     ObjectsAPIRegistrationData,
     ObjectsAPISubmissionAttachment,
@@ -14,8 +19,9 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig
+from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from .factories import ObjectsAPIGroupConfigFactory
 
@@ -220,3 +226,199 @@ class ObjectsAPIBackendTests(TestCase):
 
         self.assertEqual(registration_data.pdf_url, "https://example.com")
         self.assertEqual(registration_data.csv_url, "")
+
+
+class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
+    VCR_TEST_FILES = Path(__file__).parent / "files"
+
+    def setUp(self):
+        super().setUp()
+
+        config_patcher = patch(
+            "openforms.registrations.contrib.objects_api.models.ObjectsAPIConfig.get_solo",
+            return_value=ObjectsAPIConfig(),
+        )
+        self.mock_get_config = config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
+            objecttypes_service=ServiceFactory.create(
+                api_root="http://localhost:8001/api/v2/",
+                api_type=APITypes.orc,
+                oas="https://example.com/",
+                header_key="Authorization",
+                # See the docker compose fixtures:
+                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
+                auth_type=AuthTypes.api_key,
+            ),
+            objects_service=ServiceFactory.create(
+                api_root="http://localhost:8002/api/v2/",
+                api_type=APITypes.orc,
+                oas="https://example.com/",
+                header_key="Authorization",
+                # See the docker compose fixtures:
+                header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
+                auth_type=AuthTypes.api_key,
+            ),
+            drc_service=ServiceFactory.create(
+                api_root="http://localhost:8003/documenten/api/v1/",
+                api_type=APITypes.drc,
+                # See the docker compose fixtures:
+                client_id="test_client_id",
+                secret="test_secret_key",
+                auth_type=AuthTypes.zgw,
+            ),
+            catalogi_service=ServiceFactory.create(
+                api_root="http://localhost:8003/catalogi/api/v1/",
+                api_type=APITypes.ztc,
+                # See the docker compose fixtures:
+                client_id="test_client_id",
+                secret="test_secret_key",
+                auth_type=AuthTypes.zgw,
+            ),
+        )
+
+    def test_submission_with_objects_api_backend_create_and_update_object(self):
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        with self.subTest("Create an object"):
+            submission_create = SubmissionFactory.from_components(
+                [
+                    {
+                        "key": "voornaam",
+                        "registration": {
+                            "attribute": RegistrationAttribute.initiator_voornamen,
+                        },
+                    },
+                ],
+                submitted_data={"voornaam": "Foo"},
+                form_definition_kwargs={"slug": "fd-create"},
+            )
+            object_create_result = plugin.register_submission(
+                submission_create,
+                {
+                    "version": 1,
+                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                    "objecttype_version": 3,
+                    "objects_api_group": self.objects_api_group,
+                    "update_existing_object": False,
+                },
+            )
+
+            assert object_create_result
+
+            self.assertEqual(
+                object_create_result["record"]["data"]["data"]["fd-create"]["voornaam"],
+                "Foo",
+            )
+
+        with self.subTest("Update the above existing object"):
+            submission_update = SubmissionFactory.from_components(
+                [
+                    {
+                        "key": "voornaam",
+                        "registration": {
+                            "attribute": RegistrationAttribute.initiator_voornamen,
+                        },
+                    },
+                ],
+                submitted_data={"voornaam": "Updated value"},
+                form_definition_kwargs={"slug": "fd-update1"},
+                initial_data_reference=object_create_result["uuid"],
+            )
+            object_update_result = plugin.register_submission(
+                submission_update,
+                {
+                    "version": 1,
+                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                    "objecttype_version": 3,
+                    "objects_api_group": self.objects_api_group,
+                    "update_existing_object": True,
+                },
+            )
+
+            assert object_update_result
+
+            self.assertEqual(
+                object_update_result["record"]["data"]["data"]["fd-update1"][
+                    "voornaam"
+                ],
+                "Updated value",
+            )
+            self.assertEqual(object_update_result["uuid"], object_create_result["uuid"])
+
+        with self.subTest(
+            "Existing object not updated when update_existing_object=False"
+        ):
+            submission_update2 = SubmissionFactory.from_components(
+                [
+                    {
+                        "key": "voornaam",
+                        "registration": {
+                            "attribute": RegistrationAttribute.initiator_voornamen,
+                        },
+                    },
+                ],
+                submitted_data={"voornaam": "Updated value"},
+                form_definition_kwargs={"slug": "fd-update2"},
+                initial_data_reference="095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+            )
+            object_create_result2 = plugin.register_submission(
+                submission_update2,
+                {
+                    "version": 1,
+                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                    "objecttype_version": 3,
+                    "objects_api_group": self.objects_api_group,
+                    "update_existing_object": False,
+                },
+            )
+
+            assert object_create_result2
+
+            self.assertEqual(
+                object_create_result2["record"]["data"]["data"]["fd-update2"][
+                    "voornaam"
+                ],
+                "Updated value",
+            )
+            self.assertNotEqual(
+                object_create_result2["uuid"], object_create_result["uuid"]
+            )
+
+        with self.subTest("Existing object not updated when no data reference"):
+            submission_update2 = SubmissionFactory.from_components(
+                [
+                    {
+                        "key": "voornaam",
+                        "registration": {
+                            "attribute": RegistrationAttribute.initiator_voornamen,
+                        },
+                    },
+                ],
+                submitted_data={"voornaam": "Updated value"},
+                form_definition_kwargs={"slug": "fd-update3"},
+                initial_data_reference="",
+            )
+            object_create_result3 = plugin.register_submission(
+                submission_update2,
+                {
+                    "version": 1,
+                    "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+                    "objecttype_version": 3,
+                    "objects_api_group": self.objects_api_group,
+                    "update_existing_object": True,
+                },
+            )
+
+            assert object_create_result3
+
+            self.assertEqual(
+                object_create_result3["record"]["data"]["data"]["fd-update3"][
+                    "voornaam"
+                ],
+                "Updated value",
+            )
+            self.assertNotEqual(
+                object_create_result3["uuid"], object_create_result["uuid"]
+            )

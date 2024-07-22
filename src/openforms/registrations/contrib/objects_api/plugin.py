@@ -92,15 +92,31 @@ class ObjectsAPIRegistration(BasePlugin):
             objecttype_url = objecttype["url"]
 
         with get_objects_client(options["objects_api_group"]) as objects_client:
-            response = execute_unless_result_exists(
-                partial(
-                    objects_client.create_object,
-                    objecttype_url=objecttype_url,
-                    record_data=record_data,
-                ),
-                submission,
-                "intermediate.objects_api_object",
-            )
+            # update or create the object
+            if not (
+                options.get("update_existing_object")
+                and submission.initial_data_reference
+            ):
+                response = execute_unless_result_exists(
+                    partial(
+                        objects_client.create_object,
+                        objecttype_url=objecttype_url,
+                        record_data=record_data,
+                    ),
+                    submission,
+                    "intermediate.objects_api_object_create",
+                )
+            else:
+                response = execute_unless_result_exists(
+                    partial(
+                        objects_client.update_object,
+                        initial_data_reference=submission.initial_data_reference,
+                        objecttype_url=objecttype_url,
+                        record_data=record_data,
+                    ),
+                    submission,
+                    "intermediate.objects_api_object_update",
+                )
 
         return response
 
