@@ -37,7 +37,7 @@ docker compose -f docker-compose.objects-apis.yml run objecttypes-web \
     python src/manage.py dumpdata \
         --indent=4 \
         --output /app/fixtures/objecttypes_api_fixtures.json \
-        core \
+        core.objecttype \
         token
 ```
 

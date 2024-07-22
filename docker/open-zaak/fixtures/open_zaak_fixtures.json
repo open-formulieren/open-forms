@@ -37,7 +37,7 @@
     "model": "catalogi.catalogus",
     "pk": 2,
     "fields": {
-        "_etag": "7236b46ee9fd8c1eb24dd69c2e5cd51c",
+        "_etag": "bed1ecff53402298e98e22eaa1756480",
         "naam": "Test catalog 2",
         "uuid": "630271f6-568a-485e-b1c4-4ed2d6ab3a58",
         "domein": "OTHER",
@@ -170,6 +170,48 @@
         "concept": false,
         "uuid": "d1cfb1d8-8593-4814-919d-72e38e80388f",
         "omschrijving": "CSV Informatieobjecttype other catalog",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 2
+    }
+},
+{
+    "model": "catalogi.informatieobjecttype",
+    "pk": 6,
+    "fields": {
+        "_etag": "971b792c4044f0924ee98aa262a2cad3",
+        "datum_begin_geldigheid": "2024-07-19",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "f2908f6f-aa07-42ef-8760-74c5234f2d25",
+        "omschrijving": "PDF Informatieobjecttype other catalog",
+        "informatieobjectcategorie": "Test category",
+        "trefwoord": "[]",
+        "vertrouwelijkheidaanduiding": "openbaar",
+        "omschrijving_generiek_informatieobjecttype": "",
+        "omschrijving_generiek_definitie": "",
+        "omschrijving_generiek_herkomst": "",
+        "omschrijving_generiek_hierarchie": "",
+        "omschrijving_generiek_opmerking": "",
+        "catalogus": 2
+    }
+},
+{
+    "model": "catalogi.informatieobjecttype",
+    "pk": 7,
+    "fields": {
+        "_etag": "34514f4c5c5d6d4d09a3ee40891a925e",
+        "datum_begin_geldigheid": "2024-07-19",
+        "datum_einde_geldigheid": null,
+        "concept": false,
+        "uuid": "cd6aeaf2-ca37-416f-b78c-1cc302f81a81",
+        "omschrijving": "Attachment Informatieobjecttype other catalog",
         "informatieobjectcategorie": "Test category",
         "trefwoord": "[]",
         "vertrouwelijkheidaanduiding": "openbaar",

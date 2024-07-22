@@ -27,6 +27,24 @@
     }
 },
 {
+    "model": "core.objecttype",
+    "pk": 4,
+    "fields": {
+        "service": 1,
+        "uuid": "644ab597-e88c-43c0-8321-f12113510b0e",
+        "_name": "Fieldset component"
+    }
+},
+{
+    "model": "core.objecttype",
+    "pk": 5,
+    "fields": {
+        "service": 1,
+        "uuid": "8faed0fa-7864-4409-aa6d-533a37616a9e",
+        "_name": "Accepts everything"
+    }
+},
+{
     "model": "token.tokenauth",
     "pk": 1,
     "fields": {
@@ -68,6 +86,28 @@
     "fields": {
         "token_auth": 1,
         "object_type": 3,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 4,
+    "fields": {
+        "token_auth": 1,
+        "object_type": 4,
+        "mode": "read_and_write",
+        "use_fields": false,
+        "fields": null
+    }
+},
+{
+    "model": "token.permission",
+    "pk": 5,
+    "fields": {
+        "token_auth": 1,
+        "object_type": 5,
         "mode": "read_and_write",
         "use_fields": false,
         "fields": null

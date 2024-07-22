@@ -45,7 +45,7 @@ services:
       - open-forms-dev
 
   objects-web:
-    image: maykinmedia/objects-api:${OBJECTS_VERSION:-2.3.2}
+    image: maykinmedia/objects-api:${OBJECTS_VERSION:-2.4.0}
     environment: &objects_web_env
       - DJANGO_SETINGS_MODULE=objects.conf.docker
       - SECRET_KEY=${SECRET_KEY:-fgv=c0hz&tl*8*3m3893@m+1pstrvidc9e^5@fpspmg%cy$15d}
