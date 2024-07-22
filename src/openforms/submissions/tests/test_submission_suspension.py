@@ -23,7 +23,13 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.constants import LogicActionTypes
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormRegistrationBackendFactory,
+    FormStepFactory,
+)
 from openforms.utils.tests.cache import clear_caches
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -262,3 +268,32 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         # Assert that identifying attribute is hashed
         self.assertNotEqual(submission.auth_info.value, "123456789")
         self.assertTrue(submission.auth_info.attribute_hashed)
+
+    @tag("gh-4502")
+    def test_registration_backend_logic_not_persisted_on_suspend(self):
+        submission = SubmissionFactory.create(form__generate_minimal_setup=True)
+        FormRegistrationBackendFactory.create(
+            key="my-registration",
+            backend="demo",
+            form=submission.form,
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "action": {
+                        "type": LogicActionTypes.set_registration_backend,
+                        "value": "my-registration",
+                    },
+                }
+            ],
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        submission.refresh_from_db()
+        self.assertEqual(submission.finalised_registration_backend_key, "")
