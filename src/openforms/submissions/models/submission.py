@@ -339,6 +339,20 @@ class Submission(models.Model):
                 ),
                 name="registration_status_consistency_check",
             ),
+            models.CheckConstraint(
+                check=(
+                    models.Q(finalised_registration_backend_key="")
+                    | (
+                        ~models.Q(finalised_registration_backend_key="")
+                        & models.Q(completed_on__isnull=False)
+                    )
+                ),
+                name="only_completed_submission_has_finalised_registration_backend_key",
+                violation_error_message=_(
+                    "Only completed submissions may persist a finalised registration "
+                    "backend key."
+                ),
+            ),
         ]
 
     def __str__(self):
@@ -346,24 +360,6 @@ class Submission(models.Model):
             pk=self.pk or _("(unsaved)"),
             started=localize(localtime(self.created_on)) or _("(no timestamp yet)"),
         )
-
-    def save(self, *args, **kwargs):
-        update_fields = kwargs.get("update_fields")
-        save_all_fields = update_fields is None
-        _will_save_backend_key = (
-            save_all_fields or "finalised_registration_backend_key" in update_fields
-        )
-        if (
-            _will_save_backend_key
-            and self.finalised_registration_backend_key
-            and not self.completed_on
-        ):
-            raise ValueError(
-                "'finalised_registration_backend_key' may only be persisted for "
-                "completed submissions"
-            )
-
-        super().save(*args, **kwargs)
 
     def refresh_from_db(self, *args, **kwargs):
         super().refresh_from_db(*args, **kwargs)
