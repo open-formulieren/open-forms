@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import get_language_info, gettext_lazy as _
 
+from openforms.config.models import GlobalConfiguration
 from openforms.emails.constants import (
     X_OF_CONTENT_TYPE_HEADER,
     X_OF_CONTENT_UUID_HEADER,
@@ -55,6 +56,15 @@ class EmailRegistration(BasePlugin):
         config.apply_defaults_to(options)
 
         self.send_registration_email(options["to_emails"], submission, options)
+
+        # ensure that the payment email is also sent if registration is deferred until
+        # payment is completed
+        global_config = GlobalConfiguration.get_solo()
+        if (
+            global_config.wait_for_payment_to_register
+            and submission.payment_user_has_paid
+        ):
+            self.update_payment_status(submission=submission, options=options)
 
     @staticmethod
     def render_registration_email(submission, is_payment_update, extra_context=None):
@@ -185,7 +195,7 @@ class EmailRegistration(BasePlugin):
             },
         )
 
-    def update_payment_status(self, submission: "Submission", options: dict):
+    def update_payment_status(self, submission: "Submission", options: EmailOptions):
         recipients = options.get("payment_emails")
         if not recipients:
             recipients = options["to_emails"]
