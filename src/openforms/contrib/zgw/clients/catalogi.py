@@ -1,4 +1,5 @@
 from typing import Callable, Iterator
+from uuid import UUID
 
 from zgw_consumers.nlx import NLXClient
 
@@ -61,6 +62,11 @@ class CatalogiClient(NLXClient):
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
+
+    def get_informatieobjecttype(self, uuid: str | UUID) -> dict:
+        response = self.get(f"informatieobjecttypen/{uuid}")
+        response.raise_for_status()
+        return response.json()
 
     def list_statustypen(self, zaaktype: str) -> list[dict]:
         query = {"zaaktype": zaaktype}

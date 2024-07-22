@@ -8,6 +8,8 @@ from zgw_consumers.constants import APITypes
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.validators import validate_rsin
 
+from .client import get_catalogi_client
+
 
 def get_content_text() -> str:
     return render_to_string(
@@ -151,18 +153,17 @@ class ObjectsAPIGroupConfig(models.Model):
 
     def apply_defaults_to(self, options) -> None:
         options.setdefault("version", 1)
-        options.setdefault(
-            "informatieobjecttype_submission_report",
-            self.informatieobjecttype_submission_report,
-        )
-        options.setdefault(
-            "informatieobjecttype_submission_csv",
-            self.informatieobjecttype_submission_csv,
-        )
-        options.setdefault(
-            "informatieobjecttype_attachment", self.informatieobjecttype_attachment
-        )
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
+
+        with get_catalogi_client(self) as catalogi_client:
+            for field in (
+                "informatieobjecttype_submission_report",
+                "informatieobjecttype_submission_csv",
+                "informatieobjecttype_attachment",
+            ):
+                uuid: str = getattr(self, field).rsplit("/", 1)[1]
+                iot = catalogi_client.get_informatieobjecttype(uuid)
+                options.setdefault(field, iot["omschrijving"])
 
 
 class ObjectsAPIRegistrationData(models.Model):
