@@ -24,6 +24,11 @@ include = [
     # Formio tooling
     "src/openforms/formio/typing/",
     "src/openforms/formio/formatters/",
+    # Payments
+    "src/openforms/payments/models.py",
+    # Registrations
+    "src/openforms/registrations/contrib/email/config.py",
+    "src/openforms/registrations/contrib/email/plugin.py",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers
@@ -31,7 +36,7 @@ include = [
 ]
 exclude = [
     "**/__pycache__",
-    "src/openforms/formio/formatters/tests/"
+    "src/openforms/formio/formatters/tests/",
 ]
 ignore = []
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 from typing import TYPE_CHECKING
 
@@ -23,7 +25,7 @@ if TYPE_CHECKING:
     from .models import Submission
 
 
-class SubmissionQuerySet(models.QuerySet):
+class SubmissionQuerySet(models.QuerySet["Submission"]):
     def annotate_removal_fields(
         self, limit_field: str, method_field: str = ""
     ) -> "SubmissionQuerySet":
@@ -58,7 +60,7 @@ class SubmissionQuerySet(models.QuerySet):
         return annotation
 
 
-class BaseSubmissionManager(models.Manager):
+class SubmissionManager(models.Manager.from_queryset(SubmissionQuerySet)):
     @transaction.atomic
     def copy(
         self,
@@ -113,6 +115,3 @@ class BaseSubmissionManager(models.Manager):
             )
 
         return new_instance
-
-
-SubmissionManager = BaseSubmissionManager.from_queryset(SubmissionQuerySet)

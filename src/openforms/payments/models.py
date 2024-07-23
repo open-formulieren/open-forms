@@ -16,7 +16,20 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
+class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):
+    def mark_registered(self):
+        qs = self.filter(status=PaymentStatus.completed)
+        return qs.update(status=PaymentStatus.registered)
+
+    def get_completed_public_order_ids(self) -> list[str]:
+        return list(
+            self.filter(
+                status__in=(PaymentStatus.registered, PaymentStatus.completed)
+            ).values_list("public_order_id", flat=True)
+        )
+
+
+class SubmissionPaymentManager(models.Manager.from_queryset(SubmissionPaymentQuerySet)):
     def create_for(
         self,
         submission: Submission,
@@ -63,18 +76,11 @@ class SubmissionPaymentManager(models.Manager["SubmissionPayment"]):
             .replace("{uid}", str(pk if pk is not None else payment.pk))
         )
 
+    if TYPE_CHECKING:
 
-class SubmissionPaymentQuerySet(models.QuerySet["SubmissionPayment"]):
-    def mark_registered(self):
-        qs = self.filter(status=PaymentStatus.completed)
-        return qs.update(status=PaymentStatus.registered)
+        def mark_registered(self) -> int: ...
 
-    def get_completed_public_order_ids(self) -> list[str]:
-        return list(
-            self.filter(
-                status__in=(PaymentStatus.registered, PaymentStatus.completed)
-            ).values_list("public_order_id", flat=True)
-        )
+        def get_completed_public_order_ids(self) -> list[str]: ...
 
 
 class SubmissionPayment(models.Model):
@@ -116,9 +122,8 @@ class SubmissionPayment(models.Model):
         default=PaymentStatus.started,
         help_text=_("Status of the payment process in the configured backend."),
     )
-    objects: SubmissionPaymentManager = SubmissionPaymentManager.from_queryset(
-        SubmissionPaymentQuerySet
-    )()
+
+    objects = SubmissionPaymentManager()
 
     class Meta:
         verbose_name = _("submission payment details")
@@ -133,6 +138,10 @@ class SubmissionPayment(models.Model):
 
     def __str__(self) -> str:
         return f"#{self.public_order_id} '{self.get_status_display()}' {self.amount}"
+
+    if TYPE_CHECKING:
+
+        def get_status_display(self) -> str: ...
 
     @property
     def form(self):

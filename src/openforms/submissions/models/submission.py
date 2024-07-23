@@ -39,11 +39,13 @@ from .submission_step import SubmissionStep
 
 if TYPE_CHECKING:
     from openforms.authentication.models import AuthInfo, RegistratorInfo
+    from openforms.payments.models import SubmissionPaymentManager
 
     from .submission_files import (
         SubmissionFileAttachment,
         SubmissionFileAttachmentQuerySet,
     )
+    from .submission_report import SubmissionReport
     from .submission_value_variable import SubmissionValueVariablesState
 
 logger = logging.getLogger(__name__)
@@ -321,7 +323,10 @@ class Submission(models.Model):
     _prefilled_data = None
     _total_configuration_wrapper = None
 
+    # type hints for (reverse) related fields
     auth_info: AuthInfo
+    report: SubmissionReport
+    payments: SubmissionPaymentManager
 
     class Meta:
         verbose_name = _("submission")
