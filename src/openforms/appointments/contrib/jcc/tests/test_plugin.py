@@ -6,11 +6,11 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
-from hypothesis import given, strategies as st
 from requests.exceptions import RequestException
 from zeep.exceptions import Error as ZeepError
 
 from openforms.formio.service import build_serializer
+from openforms.utils.tests.http import fuzzy_server_error_status_code
 from openforms.utils.tests.logging import disable_logging
 from openforms.utils.xml import fromstring
 from soap.tests.factories import SoapServiceFactory
@@ -557,8 +557,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         self.plugin = JccAppointment("jcc")
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_available_products_server_error(self, m, status_code):
+    def test_get_available_products_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.post(requests_mock.ANY, status_code=status_code)
 
         products = self.plugin.get_available_products()
@@ -573,8 +573,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_available_products()
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_locations_server_error(self, m, status_code):
+    def test_get_locations_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.post(requests_mock.ANY, status_code=status_code)
         product = Product(identifier="k@pu77", name="Kaputt")
 
@@ -596,8 +596,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_locations(products=[product])
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_locations_location_details_server_error(self, m, status_code):
+    def test_get_locations_location_details_server_error(self, m):
         m.post(
             "http://example.com/soap11",
             text=mock_response("getGovLocationsResponse.xml"),
@@ -605,7 +604,7 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         )
 
         def location_details_callback(request, context):
-            context.status_code = status_code
+            context.status_code = fuzzy_server_error_status_code()
             return "<broken />"
 
         m.post(
@@ -619,8 +618,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         self.assertEqual(locations, [])
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_dates_server_error(self, m, status_code):
+    def test_get_dates_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.post(requests_mock.ANY, status_code=status_code)
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
@@ -639,8 +638,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_dates(products=[product], location=location)
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_times_server_error(self, m, status_code):
+    def test_get_times_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.post(requests_mock.ANY, status_code=status_code)
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")

@@ -5,11 +5,14 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 import requests_mock
-from hypothesis import given, strategies as st
 from requests.exceptions import RequestException
 
 from openforms.formio.service import build_serializer
 from openforms.utils.date import TIMEZONE_AMS
+from openforms.utils.tests.http import (
+    fuzzy_client_error_status_code,
+    fuzzy_server_error_status_code,
+)
 from openforms.utils.tests.logging import disable_logging
 
 from ....base import AppointmentDetails, Customer, Location, Product
@@ -398,8 +401,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         self.plugin = QmaticAppointment("qmatic")
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_available_products_server_error(self, m, status_code):
+    def test_get_available_products_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
 
         products = self.plugin.get_available_products()
@@ -407,8 +410,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         self.assertEqual(products, [])
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=400, max_value=499))
-    def test_get_available_products_client_error(self, m, status_code):
+    def test_get_available_products_client_error(self, m):
+        status_code = fuzzy_client_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
 
         products = self.plugin.get_available_products()
@@ -423,8 +426,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_available_products()
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_locations_server_error(self, m, status_code):
+    def test_get_locations_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
 
         locations = self.plugin.get_locations()
@@ -432,8 +435,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         self.assertEqual(locations, [])
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=400, max_value=499))
-    def test_get_locations_client_error(self, m, status_code):
+    def test_get_locations_client_error(self, m):
+        status_code = fuzzy_client_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
 
         locations = self.plugin.get_locations()
@@ -448,8 +451,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_locations()
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_dates_server_error(self, m, status_code):
+    def test_get_dates_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
@@ -459,8 +462,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         self.assertEqual(dates, [])
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=400, max_value=499))
-    def test_get_dates_client_error(self, m, status_code):
+    def test_get_dates_client_error(self, m):
+        status_code = fuzzy_client_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
@@ -479,8 +482,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
             self.plugin.get_dates(products=[product], location=location)
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=500, max_value=511))
-    def test_get_times_server_error(self, m, status_code):
+    def test_get_times_server_error(self, m):
+        status_code = fuzzy_server_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
@@ -492,8 +495,8 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
         self.assertEqual(times, [])
 
     @requests_mock.Mocker()
-    @given(st.integers(min_value=400, max_value=499))
-    def test_get_times_client_error(self, m, status_code):
+    def test_get_times_client_error(self, m):
+        status_code = fuzzy_client_error_status_code()
         m.get(requests_mock.ANY, status_code=status_code)
         product = Product(identifier="k@pu77", name="Kaputt")
         location = Location(identifier="1", name="Bahamas")
