@@ -2,7 +2,6 @@
 -r ci.txt
 
 # Helpers
-pip-tools~=7.0
 bump2version
 gitpython
 
