@@ -14,6 +14,7 @@ build:
     - libxmlsec1-dev
     - libxmlsec1-openssl
     - wget
+    - libmagic1
   tools:
     python: '3.12'
   jobs:
