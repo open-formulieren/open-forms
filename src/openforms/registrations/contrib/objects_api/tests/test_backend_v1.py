@@ -139,21 +139,21 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         submission_step.form_step.slug = "test-slug"
         submission_step.form_step.save()
 
-        objects_form_options = dict(
-            version=1,
-            objects_api_group=self.objects_api_group,
-            objecttype=UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-            objecttype_version=1,
-            productaanvraag_type="testproduct",
+        objects_form_options = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "productaanvraag_type": "testproduct",
             # `omschrijving` "PDF Informatieobjecttype other catalog":
-            informatieobjecttype_submission_report="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
-            upload_submission_csv=True,
+            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
+            "upload_submission_csv": True,
             # `omschrijving` "CSV Informatieobjecttype other catalog":
-            informatieobjecttype_submission_csv="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f",
-            organisatie_rsin="123456782",
-            zaak_vertrouwelijkheidaanduiding="geheim",
-            doc_vertrouwelijkheidaanduiding="geheim",
-        )
+            "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f",
+            "organisatie_rsin": "123456782",
+            "zaak_vertrouwelijkheidaanduiding": "geheim",
+            "doc_vertrouwelijkheidaanduiding": "geheim",
+        }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -228,18 +228,18 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             ],
             submitted_data={"voornaam": "Foo"},
         )
-        objects_form_options = dict(
-            version=1,
-            objects_api_group=self.objects_api_group,
-            objecttype=UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-            objecttype_version=1,
-            productaanvraag_type="testproduct",
-            informatieobjecttype_submission_report="http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
-            upload_submission_csv=True,
-            organisatie_rsin="123456782",
-            zaak_vertrouwelijkheidaanduiding="geheim",
-            doc_vertrouwelijkheidaanduiding="geheim",
-        )
+        objects_form_options = {
+            "version": 1,
+            "objects_api_group": self.objects_api_group,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "productaanvraag_type": "testproduct",
+            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/f2908f6f-aa07-42ef-8760-74c5234f2d25",
+            "upload_submission_csv": True,
+            "organisatie_rsin": "123456782",
+            "zaak_vertrouwelijkheidaanduiding": "geheim",
+            "doc_vertrouwelijkheidaanduiding": "geheim",
+        }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
@@ -361,13 +361,13 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
         submission_step.form_step.slug = "test-slug"
         submission_step.form_step.save()
 
-        objects_form_options = dict(
-            version=1,
-            objecttype=UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
-            objecttype_version=1,
-            objects_api_group=self.objects_api_group,
-            upload_submission_csv=False,
-            content_json=textwrap.dedent(
+        objects_form_options = {
+            "version": 1,
+            "objecttype": UUID("8faed0fa-7864-4409-aa6d-533a37616a9e"),
+            "objecttype_version": 1,
+            "objects_api_group": self.objects_api_group,
+            "upload_submission_csv": False,
+            "content_json": textwrap.dedent(
                 """
                 {
                     "bron": {
@@ -380,7 +380,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 }
             """
             ),
-        )
+        }
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
 
