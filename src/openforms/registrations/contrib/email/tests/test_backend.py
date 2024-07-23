@@ -43,7 +43,7 @@ from openforms.variables.constants import FormVariableSources
 
 from ..constants import AttachmentFormat
 from ..models import EmailConfig
-from ..plugin import EmailRegistration
+from ..plugin import EmailOptions, EmailRegistration
 
 TEST_TEMPLATE_NL = """
 {% if payment_received %}
@@ -1060,3 +1060,28 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             args["extra_headers"][X_OF_EVENT_HEADER],
             EmailEventChoices.registration,
         )
+
+    def test_with_deferred_registration(self):
+        config = GlobalConfiguration.get_solo()
+        config.wait_for_payment_to_register = True
+        config.save()
+        submission = SubmissionFactory.create(
+            with_public_registration_reference=True,
+            with_completed_payment=True,
+        )
+        assert submission.payment_required
+        assert submission.payment_user_has_paid
+        options: EmailOptions = {
+            "to_emails": ["registration@example.com"],
+            "attachment_formats": [],
+            "payment_emails": ["payments@example.com"],
+            "attach_files_to_email": False,
+            "email_subject": None,
+        }
+        plugin = EmailRegistration("email")
+
+        plugin.register_submission(submission, options)
+
+        # Verify that email was sent
+        emails = mail.outbox
+        self.assertEqual(len(emails), 2)
