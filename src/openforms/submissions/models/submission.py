@@ -339,6 +339,20 @@ class Submission(models.Model):
                 ),
                 name="registration_status_consistency_check",
             ),
+            models.CheckConstraint(
+                check=(
+                    models.Q(finalised_registration_backend_key="")
+                    | (
+                        ~models.Q(finalised_registration_backend_key="")
+                        & models.Q(completed_on__isnull=False)
+                    )
+                ),
+                name="only_completed_submission_has_finalised_registration_backend_key",
+                violation_error_message=_(
+                    "Only completed submissions may persist a finalised registration "
+                    "backend key."
+                ),
+            ),
         ]
 
     def __str__(self):
