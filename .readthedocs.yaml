@@ -8,14 +8,14 @@ sphinx:
   configuration: docs/conf.py
 
 build:
-  os: 'ubuntu-20.04'
+  os: 'ubuntu-22.04'
   apt_packages:
     - libxml2-dev
     - libxmlsec1-dev
     - libxmlsec1-openssl
     - wget
   tools:
-    python: '3.10'
+    python: '3.12'
   jobs:
     post_checkout:
       - bash bin/rtd_post_checkout.sh

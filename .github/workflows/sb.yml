@@ -26,7 +26,7 @@ jobs:
         uses: maykinmedia/setup-django-backend@v1.2
         with:
           apt-packages: 'libxml2 libxmlsec1 libxmlsec1-openssl gdal-bin'
-          python-version: '3.10'
+          python-version: '3.12'
           optimize-postgres: 'no'
           setup-node: 'yes'
           npm-ci-flags: '--legacy-peer-deps'

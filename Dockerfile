@@ -9,7 +9,7 @@ FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
 
 # Stage 1 - Backend build environment
 # includes compilers and build tooling to create the environment
-FROM python:3.10-slim-bookworm AS backend-build
+FROM python:3.12-slim-bookworm AS backend-build
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         pkg-config \
@@ -39,7 +39,7 @@ COPY ./patches /tmp/patches
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
     && rm -rf /var/lib/apt/lists/* \
-    && /tmp/patches/apply.sh /usr/local/lib/python3.10/site-packages
+    && /tmp/patches/apply.sh /usr/local/lib/python3.12/site-packages
 
 # Stage 2 - Install frontend deps and build assets
 FROM node:20-bookworm-slim AS frontend-build
@@ -60,7 +60,7 @@ COPY ./src /app/src
 RUN npm run build
 
 # Stage 3 - Build docker image suitable for production
-FROM python:3.10-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 # Stage 3.1 - Set up the needed production dependencies
 # install all the dependencies for GeoDjango
@@ -94,7 +94,7 @@ COPY ./bin/check_celery_worker_liveness.py ./bin/report_component_problems.py ./
 VOLUME ["/app/log", "/app/media", "/app/private_media", "/app/certifi_ca_bundle"]
 
 # copy backend build deps
-COPY --from=backend-build /usr/local/lib/python3.10 /usr/local/lib/python3.10
+COPY --from=backend-build /usr/local/lib/python3.12 /usr/local/lib/python3.12
 COPY --from=backend-build /usr/local/bin/uwsgi /usr/local/bin/uwsgi
 COPY --from=backend-build /usr/local/bin/celery /usr/local/bin/celery
 
