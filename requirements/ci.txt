@@ -434,7 +434,7 @@ faker==23.1.0
     # via
     #   factory-boy
     #   zgw-consumers
-flake8==6.0.0
+flake8==7.1.0
     # via -r requirements/test-tools.in
 flower==2.0.1
     # via
@@ -700,7 +700,7 @@ psycopg==3.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pycodestyle==2.10.0
+pycodestyle==2.12.0
     # via flake8
 pycountry==23.12.11
     # via
@@ -719,7 +719,7 @@ pydyf==0.8.0
     #   weasyprint
 pyee==11.1.0
     # via playwright
-pyflakes==3.0.1
+pyflakes==3.2.0
     # via flake8
 pygments==2.17.2
     # via

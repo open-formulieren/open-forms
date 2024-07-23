@@ -465,7 +465,7 @@ faker==23.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   factory-boy
-flake8==6.0.0
+flake8==7.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -773,7 +773,7 @@ psycopg==3.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pycodestyle==2.10.0
+pycodestyle==2.12.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -798,7 +798,7 @@ pyee==11.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   playwright
-pyflakes==3.0.1
+pyflakes==3.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
