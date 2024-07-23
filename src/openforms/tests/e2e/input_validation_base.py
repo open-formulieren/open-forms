@@ -1,4 +1,4 @@
-from typing import ClassVar, TypedDict
+from typing import ClassVar, NotRequired, TypedDict, Unpack
 
 from django.test import override_settings, tag
 from django.urls import reverse
@@ -7,7 +7,6 @@ from asgiref.sync import async_to_sync
 from furl import furl
 from playwright.async_api import Page, expect
 from rest_framework import status
-from typing_extensions import NotRequired, Unpack
 
 from openforms.formio.typing import Component
 from openforms.forms.models import Form

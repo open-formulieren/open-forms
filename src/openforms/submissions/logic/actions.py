@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Any, Mapping, TypedDict
+from typing import Any, Mapping, Self, TypedDict
 
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 
 from glom import assign
 from json_logic import jsonLogic
-from typing_extensions import Self
 
 from openforms.dmn.service import evaluate_dmn
 from openforms.formio.datastructures import FormioData

@@ -1,8 +1,7 @@
 import logging
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 import requests
-from typing_extensions import NotRequired
 from zgw_consumers.client import build_client
 
 from openforms.pre_requests.clients import PreRequestClientContext, PreRequestMixin

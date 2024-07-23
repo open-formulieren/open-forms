@@ -1,4 +1,5 @@
 import logging
+from typing import override
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
@@ -10,7 +11,6 @@ from flags.state import flag_enabled
 from mozilla_django_oidc_db.backends import OIDCAuthenticationBackend
 from mozilla_django_oidc_db.config import dynamic_setting
 from mozilla_django_oidc_db.utils import obfuscate_claims
-from typing_extensions import override
 
 from openforms.typing import JSONObject
 

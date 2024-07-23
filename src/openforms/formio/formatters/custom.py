@@ -1,12 +1,10 @@
 # TODO implement: iban, bsn, postcode, licenseplate, npFamilyMembers, cosign
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time
 from django.utils.dateparse import parse_date, parse_datetime
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-
-from typing_extensions import NotRequired
 
 from ..typing import AddressNLComponent, Component
 from .base import FormatterBase

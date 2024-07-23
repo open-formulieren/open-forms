@@ -1,7 +1,6 @@
-from typing import Generic, Iterator, TypeVar
+from typing import Generic, Iterator, TypedDict, TypeVar
 
 from ape_pie import APIClient
-from typing_extensions import TypedDict  # py3.11 import from typing
 
 T = TypeVar("T")
 

@@ -1,7 +1,5 @@
 from datetime import date, datetime
-from typing import Literal, TypedDict
-
-from typing_extensions import NotRequired
+from typing import Literal, NotRequired, TypedDict
 
 from openforms.typing import JSONValue
 from openforms.utils.date import datetime_in_amsterdam
