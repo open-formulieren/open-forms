@@ -177,7 +177,7 @@ class StufBGClientTests(SimpleTestCase):
             with self.subTest(attribute=attribute):
                 glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
                 in_request = glom(request_dict, glom_target, default=missing)
-                self.assert_(
+                self.assertTrue(
                     in_request is not missing,
                     f"missing attribute in request {attribute} (as {glom_target})",
                 )
@@ -192,7 +192,7 @@ class StufBGClientTests(SimpleTestCase):
                 if attribute in attributes_not_in_mock_response:
                     continue
                 in_response = glom(response_dict, glom_target, default=missing)
-                self.assert_(
+                self.assertTrue(
                     in_response is not missing,
                     f"missing attribute in response {attribute} (as {glom_target})",
                 )
