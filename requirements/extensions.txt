@@ -809,7 +809,7 @@ semantic-version==2.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-sentry-sdk==1.27.1
+sentry-sdk==2.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

@@ -992,7 +992,7 @@ semantic-version==2.10.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-sentry-sdk==1.27.1
+sentry-sdk==2.10.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
