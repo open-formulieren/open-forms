@@ -3181,12 +3181,6 @@
       "value": "Basic"
     }
   ],
-  "XiPZpg": [
-    {
-      "type": 0,
-      "value": "Indicates whether the (existing) object should be updated and not created"
-    }
-  ],
   "Xj1uvL": [
     {
       "type": 0,
@@ -5627,6 +5621,12 @@
     {
       "type": 0,
       "value": "Use logic rules to determine the price"
+    }
+  ],
+  "zrsWsH": [
+    {
+      "type": 0,
+      "value": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead"
     }
   ]
 }

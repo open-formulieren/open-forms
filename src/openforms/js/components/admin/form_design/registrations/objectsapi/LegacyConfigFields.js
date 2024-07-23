@@ -123,8 +123,8 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         })}
         rawDescription={intl.formatMessage({
           defaultMessage:
-            'Indicates whether the (existing) object should be updated and not created',
-          description: 'Objects API registration options "Upload submission CSV" description',
+            'Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead',
+          description: 'Objects API registration options "Update existing object" description',
         })}
         rawErrors={getFieldErrors(name, index, validationErrors, 'updateExistingObject')}
         errors={buildErrorsComponent('updateExistingObject')}
@@ -133,7 +133,6 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
         <Checkbox
           id="root_updateExistingObject"
           name="updateExistingObject"
-          value={updateExistingObject}
           checked={updateExistingObject}
           onChange={e =>
             onFieldChange({target: {name: 'updateExistingObject', value: !updateExistingObject}})

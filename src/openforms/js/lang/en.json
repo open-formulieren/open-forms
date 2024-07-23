@@ -1474,11 +1474,6 @@
     "description": "Service fetch configuration modal basic fieldset title",
     "originalDefault": "Basic"
   },
-  "XiPZpg": {
-    "defaultMessage": "Indicates whether the (existing) object should be updated and not created",
-    "description": "Objects API registration options \"Upload submission CSV\" description",
-    "originalDefault": "Indicates whether the (existing) object should be updated and not created"
-  },
   "XqTjf+": {
     "defaultMessage": "JSON template for the content of the request sent to the Objects API.",
     "description": "Objects API - JSON content field",
@@ -2578,5 +2573,10 @@
     "defaultMessage": "Use logic rules to determine the price",
     "description": "dynamic pricing mode label",
     "originalDefault": "Use logic rules to determine the price"
+  },
+  "zrsWsH": {
+    "defaultMessage": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead",
+    "description": "Objects API registration options \"Update existing object\" description",
+    "originalDefault": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead"
   }
 }

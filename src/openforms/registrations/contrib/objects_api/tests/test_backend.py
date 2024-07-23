@@ -5,11 +5,10 @@ from uuid import UUID
 from django.test import TestCase
 
 import requests_mock
-from zgw_consumers.constants import APITypes, AuthTypes
 from zgw_consumers.test import generate_oas_component
-from zgw_consumers.test.factories import ServiceFactory
 
-from openforms.registrations.constants import RegistrationAttribute
+from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.forms.tests.factories import FormFactory
 from openforms.registrations.contrib.objects_api.models import (
     ObjectsAPIRegistrationData,
     ObjectsAPISubmissionAttachment,
@@ -18,10 +17,12 @@ from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
+    SubmissionStepFactory,
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..models import ObjectsAPIConfig, ObjectsAPIGroupConfig
+from ..client import get_objects_client
+from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
 from .factories import ObjectsAPIGroupConfigFactory
 
@@ -241,58 +242,46 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
         self.mock_get_config = config_patcher.start()
         self.addCleanup(config_patcher.stop)
 
-        self.objects_api_group = ObjectsAPIGroupConfig.objects.create(
-            objecttypes_service=ServiceFactory.create(
-                api_root="http://localhost:8001/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 171be5abaf41e7856b423ad513df1ef8f867ff48",
-                auth_type=AuthTypes.api_key,
-            ),
-            objects_service=ServiceFactory.create(
-                api_root="http://localhost:8002/api/v2/",
-                api_type=APITypes.orc,
-                oas="https://example.com/",
-                header_key="Authorization",
-                # See the docker compose fixtures:
-                header_value="Token 7657474c3d75f56ae0abd0d1bf7994b09964dca9",
-                auth_type=AuthTypes.api_key,
-            ),
-            drc_service=ServiceFactory.create(
-                api_root="http://localhost:8003/documenten/api/v1/",
-                api_type=APITypes.drc,
-                # See the docker compose fixtures:
-                client_id="test_client_id",
-                secret="test_secret_key",
-                auth_type=AuthTypes.zgw,
-            ),
-            catalogi_service=ServiceFactory.create(
-                api_root="http://localhost:8003/catalogi/api/v1/",
-                api_type=APITypes.ztc,
-                # See the docker compose fixtures:
-                client_id="test_client_id",
-                secret="test_secret_key",
-                auth_type=AuthTypes.zgw,
-            ),
-        )
-
     def test_submission_with_objects_api_backend_create_and_update_object(self):
+        objects_api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True
+        )
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
-
-        with self.subTest("Create an object"):
-            submission_create = SubmissionFactory.from_components(
-                [
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__slug="fd-test",
+            formstep__form_definition__configuration={
+                "components": [
                     {
+                        "type": "textfield",
                         "key": "voornaam",
-                        "registration": {
-                            "attribute": RegistrationAttribute.initiator_voornamen,
+                        "label": "Voornaam",
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.get()
+
+        # We manually create the objects instance as if it was created upfront by some external party
+        with get_objects_client(objects_api_group) as client:
+            created_obj = client.create_object(
+                record_data=prepare_data_for_registration(
+                    data={
+                        "name": {
+                            "voornaam": "My last name",
                         },
                     },
-                ],
-                submitted_data={"voornaam": "Foo"},
-                form_definition_kwargs={"slug": "fd-create"},
+                    objecttype_version=3,
+                ),
+                objecttype_url="http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            )
+
+        with self.subTest("Create an object"):
+            submission_create = SubmissionFactory.create(form=form, completed=True)
+            SubmissionStepFactory.create(
+                submission=submission_create,
+                form_step=form_step,
+                data={"voornaam": "My last name"},
             )
             object_create_result = plugin.register_submission(
                 submission_create,
@@ -300,31 +289,29 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "version": 1,
                     "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
                     "objecttype_version": 3,
-                    "objects_api_group": self.objects_api_group,
+                    "objects_api_group": objects_api_group,
                     "update_existing_object": False,
                 },
             )
 
-            assert object_create_result
+            assert object_create_result is not None
 
+            self.assertNotEqual(object_create_result["uuid"], created_obj["uuid"])
             self.assertEqual(
-                object_create_result["record"]["data"]["data"]["fd-create"]["voornaam"],
-                "Foo",
+                object_create_result["record"]["data"]["data"]["fd-test"]["voornaam"],
+                "My last name",
             )
 
-        with self.subTest("Update the above existing object"):
-            submission_update = SubmissionFactory.from_components(
-                [
-                    {
-                        "key": "voornaam",
-                        "registration": {
-                            "attribute": RegistrationAttribute.initiator_voornamen,
-                        },
-                    },
-                ],
-                submitted_data={"voornaam": "Updated value"},
-                form_definition_kwargs={"slug": "fd-update1"},
-                initial_data_reference=object_create_result["uuid"],
+        with self.subTest("Update existing object"):
+            submission_update = SubmissionFactory.create(
+                form=form,
+                completed=True,
+                initial_data_reference=created_obj["uuid"],
+            )
+            SubmissionStepFactory.create(
+                submission=submission_update,
+                form_step=form_step,
+                data={"voornaam": "Updated value"},
             )
             object_update_result = plugin.register_submission(
                 submission_update,
@@ -332,44 +319,43 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                     "version": 1,
                     "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
                     "objecttype_version": 3,
-                    "objects_api_group": self.objects_api_group,
+                    "objects_api_group": objects_api_group,
                     "update_existing_object": True,
                 },
             )
 
             assert object_update_result
 
+            with get_objects_client(objects_api_group) as client:
+                obj_retrieved = client.get_object(object_uuid=created_obj["uuid"])
+
             self.assertEqual(
-                object_update_result["record"]["data"]["data"]["fd-update1"][
-                    "voornaam"
-                ],
+                obj_retrieved["record"]["data"]["data"]["fd-test"]["voornaam"],
                 "Updated value",
             )
-            self.assertEqual(object_update_result["uuid"], object_create_result["uuid"])
+            self.assertEqual(obj_retrieved["uuid"], object_update_result["uuid"])
 
         with self.subTest(
             "Existing object not updated when update_existing_object=False"
         ):
-            submission_update2 = SubmissionFactory.from_components(
-                [
-                    {
-                        "key": "voornaam",
-                        "registration": {
-                            "attribute": RegistrationAttribute.initiator_voornamen,
-                        },
-                    },
-                ],
-                submitted_data={"voornaam": "Updated value"},
-                form_definition_kwargs={"slug": "fd-update2"},
-                initial_data_reference="095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+            submission_update2 = SubmissionFactory.create(
+                form=form,
+                completed=True,
+                initial_data_reference=created_obj["uuid"],
             )
+            SubmissionStepFactory.create(
+                submission=submission_update2,
+                form_step=form_step,
+                data={"voornaam": "Updated value"},
+            )
+
             object_create_result2 = plugin.register_submission(
                 submission_update2,
                 {
                     "version": 1,
                     "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
                     "objecttype_version": 3,
-                    "objects_api_group": self.objects_api_group,
+                    "objects_api_group": objects_api_group,
                     "update_existing_object": False,
                 },
             )
@@ -377,36 +363,28 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             assert object_create_result2
 
             self.assertEqual(
-                object_create_result2["record"]["data"]["data"]["fd-update2"][
-                    "voornaam"
-                ],
+                object_create_result2["record"]["data"]["data"]["fd-test"]["voornaam"],
                 "Updated value",
             )
-            self.assertNotEqual(
-                object_create_result2["uuid"], object_create_result["uuid"]
-            )
+            self.assertNotEqual(object_create_result2["uuid"], created_obj["uuid"])
 
         with self.subTest("Existing object not updated when no data reference"):
-            submission_update2 = SubmissionFactory.from_components(
-                [
-                    {
-                        "key": "voornaam",
-                        "registration": {
-                            "attribute": RegistrationAttribute.initiator_voornamen,
-                        },
-                    },
-                ],
-                submitted_data={"voornaam": "Updated value"},
-                form_definition_kwargs={"slug": "fd-update3"},
-                initial_data_reference="",
+            submission_update3 = SubmissionFactory.create(
+                form=form, completed=True, initial_data_reference=""
             )
+            SubmissionStepFactory.create(
+                submission=submission_update3,
+                form_step=form_step,
+                data={"voornaam": "Updated value"},
+            )
+
             object_create_result3 = plugin.register_submission(
-                submission_update2,
+                submission_update3,
                 {
                     "version": 1,
                     "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
                     "objecttype_version": 3,
-                    "objects_api_group": self.objects_api_group,
+                    "objects_api_group": objects_api_group,
                     "update_existing_object": True,
                 },
             )
@@ -414,11 +392,7 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
             assert object_create_result3
 
             self.assertEqual(
-                object_create_result3["record"]["data"]["data"]["fd-update3"][
-                    "voornaam"
-                ],
+                object_create_result3["record"]["data"]["data"]["fd-test"]["voornaam"],
                 "Updated value",
             )
-            self.assertNotEqual(
-                object_create_result3["uuid"], object_create_result["uuid"]
-            )
+            self.assertNotEqual(object_create_result3["uuid"], created_obj["uuid"])

@@ -78,6 +78,7 @@ class JSONTemplatingTests(TestCase):
                     "objecttype_version": 300,
                     "informatieobjecttype_submission_report": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                     "informatieobjecttype_attachment": "https://catalogi.nl/api/v1/informatieobjecttypen/2",
+                    "update_existing_object": False,
                 },
             )
 
@@ -196,6 +197,7 @@ class JSONTemplatingTests(TestCase):
                     "objecttype_version": 300,
                     "productaanvraag_type": "tralala-type",
                     "upload_submission_csv": True,
+                    "update_existing_object": False,
                     "informatieobjecttype_submission_csv": "http://oz.nl/informatieobjecttype/1",
                     "informatieobjecttype_submission_report": "http://oz.nl/informatieobjecttype/2",
                     "informatieobjecttype_attachment": "http://oz.nl/informatieobjecttype/3",
@@ -414,6 +416,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                     # skip document uploads
                     "informatieobjecttype_submission_report": "",
                     "upload_submission_csv": False,
+                    "update_existing_object": False,
                     "informatieobjecttype_attachment": "",
                 },
             )
@@ -525,6 +528,7 @@ class JSONTemplatingRegressionTests(SubmissionsMixin, TestCase):
                     # skip document uploads
                     "informatieobjecttype_submission_report": "",
                     "upload_submission_csv": False,
+                    "update_existing_object": False,
                     "informatieobjecttype_attachment": "",
                     "content_json": "{% json_summary %}",
                 },

@@ -79,6 +79,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
             "objecttype_version": 3,
             "upload_submission_csv": True,
+            "update_existing_object": False,
             "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
             "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
             "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
@@ -201,6 +202,7 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
             "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
             "objecttype_version": 1,
             "upload_submission_csv": False,
+            "update_existing_object": False,
             "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
             "organisatie_rsin": "000000000",
             "variables_mapping": [
@@ -282,6 +284,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "location",
@@ -325,6 +328,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "fieldset.textfield",
@@ -364,6 +368,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "textfield",
@@ -391,6 +396,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "public_reference",
@@ -433,6 +439,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "cosign_data",
@@ -491,6 +498,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "cosign_date",
@@ -542,6 +550,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "cosign_date",
@@ -577,6 +586,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "auth_context",
@@ -684,6 +694,7 @@ class V2HandlerTests(TestCase):
             "version": 2,
             "objecttype": UUID("f3f1b370-97ed-4730-bc7e-ebb20c230377"),
             "objecttype_version": 1,
+            "update_existing_object": False,
             "variables_mapping": [
                 {
                     "variable_key": "auth_context",

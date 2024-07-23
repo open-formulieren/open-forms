@@ -16,12 +16,17 @@ class ObjectsClient(NLXClient):
 
         return response.json()
 
-    def update_object(
-        self, objecttype_url: str, record_data: dict, initial_data_reference: str
-    ) -> dict:
-        endpoint = f"objects/{initial_data_reference}"
+    def get_object(self, object_uuid: str) -> dict:
+        endpoint = f"objects/{object_uuid}"
+
+        response = self.get(endpoint, headers=CRS_HEADERS)
+        response.raise_for_status()
+
+        return response.json()
+
+    def update_object(self, record_data: dict, object_uuid: str) -> dict:
+        endpoint = f"objects/{object_uuid}"
         json = {
-            "type": objecttype_url,
             "record": record_data,
         }
 
