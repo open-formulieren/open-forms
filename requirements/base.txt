@@ -154,7 +154,7 @@ django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-digid-eherkenning==0.16.0
     # via -r requirements/base.in
-django-filter==23.2
+django-filter==24.2
     # via -r requirements/base.in
 django-flags==5.0.13
     # via -r requirements/base.in
@@ -338,7 +338,7 @@ openapi-spec-validator==0.6.0
     # via openapi3-parser
 openapi3-parser==1.1.16
     # via -r requirements/base.in
-openpyxl==3.0.7
+openpyxl==3.1.5
     # via tablib
 orderedmultidict==1.0.1
     # via furl
@@ -381,7 +381,7 @@ pyphen==0.14.0
     # via weasyprint
 pypng==0.20220715.0
     # via qrcode
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   celery
     #   django-camunda
@@ -393,7 +393,7 @@ python-dotenv==0.14.0
     # via -r requirements/base.in
 python-magic==0.4.27
     # via -r requirements/base.in
-pytz==2022.2.1
+pytz==2024.1
     # via
     #   django-yubin
     #   flower

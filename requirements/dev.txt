@@ -280,7 +280,7 @@ django-digid-eherkenning==0.16.0
     #   -r requirements/ci.txt
 django-extensions==3.2.3
     # via -r requirements/dev.in
-django-filter==23.2
+django-filter==24.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -481,7 +481,7 @@ fonttools==4.45.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-freezegun==0.3.15
+freezegun==1.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -701,7 +701,7 @@ openapi3-parser==1.1.16
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-openpyxl==3.0.7
+openpyxl==3.1.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -850,7 +850,7 @@ pytest==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -872,7 +872,7 @@ python-magic==0.4.27
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pytz==2022.2.1
+pytz==2024.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1003,7 +1003,6 @@ six==1.16.0
     #   -r requirements/ci.txt
     #   bleach
     #   click-repl
-    #   freezegun
     #   furl
     #   html5lib
     #   isodate

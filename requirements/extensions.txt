@@ -243,7 +243,7 @@ django-digid-eherkenning==0.16.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-filter==23.2
+django-filter==24.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -577,7 +577,7 @@ openapi3-parser==1.1.16
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-openpyxl==3.0.7
+openpyxl==3.1.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -672,7 +672,7 @@ pypng==0.20220715.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   qrcode
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -692,7 +692,7 @@ python-magic==0.4.27
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pytz==2022.2.1
+pytz==2024.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
