@@ -314,11 +314,6 @@
     "description": "Form ID field help text",
     "originalDefault": "Unique identifier for the form"
   },
-  "7Vx5It": {
-    "defaultMessage": "No compatible registration backend configured.",
-    "description": "Registration summary no registration backend fallback message",
-    "originalDefault": "No compatible registration backend configured."
-  },
   "7X6yT4": {
     "defaultMessage": "You are modifying an existing form definition! This change affects <link>{count, plural, one {# form} other {# forms} }</link>",
     "description": "Warning when modifying existing form definitions",
@@ -398,6 +393,11 @@
     "defaultMessage": "Please select the logic type:",
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
+  },
+  "9LdZVP": {
+    "defaultMessage": "Attribute",
+    "description": "Variable prefill attribute label",
+    "originalDefault": "Attribute"
   },
   "9LflJr": {
     "defaultMessage": "Key",
@@ -598,6 +598,11 @@
     "defaultMessage": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?",
     "description": "Admin error for API error when configuring Camunda actions",
     "originalDefault": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+  },
+  "DWhkNq": {
+    "defaultMessage": "Plugin",
+    "description": "Variable prefill plugin label",
+    "originalDefault": "Plugin"
   },
   "DaxIUG": {
     "defaultMessage": "Variable key",
@@ -1039,6 +1044,11 @@
     "description": "Custom confirmation email template explanation",
     "originalDefault": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
   },
+  "Mdnl0l": {
+    "defaultMessage": "Prefill",
+    "description": "Variable table prefill title",
+    "originalDefault": "Prefill"
+  },
   "MnfzL3": {
     "defaultMessage": "Plugin ID",
     "description": "Plugin ID label",
@@ -1048,11 +1058,6 @@
     "defaultMessage": "Form variables configuration",
     "description": "Form variables configuration editor fieldset title",
     "originalDefault": "Form variables configuration"
-  },
-  "MzMXRd": {
-    "defaultMessage": "Prefill attribute",
-    "description": "Variable table prefill attribute title",
-    "originalDefault": "Prefill attribute"
   },
   "NE5h2q": {
     "defaultMessage": "Description",
@@ -1109,10 +1114,10 @@
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
   },
-  "OibWN2": {
-    "defaultMessage": "Prefill identifier role",
-    "description": "Variable table identifier role attribute title",
-    "originalDefault": "Prefill identifier role"
+  "Oi+DV0": {
+    "defaultMessage": "<code>{attr}</code> from <code>{plugin}</code> (of the {role})",
+    "description": "Prefill configuration summary",
+    "originalDefault": "<code>{attr}</code> from <code>{plugin}</code> (of the {role})"
   },
   "OmQdqG": {
     "defaultMessage": "Cache timeout",
@@ -1208,6 +1213,11 @@
     "defaultMessage": "Payment backend options",
     "description": "Payment backend options label",
     "originalDefault": "Payment backend options"
+  },
+  "QsrtPz": {
+    "defaultMessage": "Prefill configuration",
+    "description": "Variable prefill configuration modal title",
+    "originalDefault": "Prefill configuration"
   },
   "R78GMf": {
     "defaultMessage": "Confidentiality",
@@ -1364,6 +1374,11 @@
     "description": "Changing objecttype warning message",
     "originalDefault": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
   },
+  "Uq9Hbx": {
+    "defaultMessage": "-",
+    "description": "Registration summary no registration backend fallback message",
+    "originalDefault": "-"
+  },
   "V21YkS": {
     "defaultMessage": "Confirm",
     "description": "Camunda process variables confirm button",
@@ -1423,11 +1438,6 @@
     "defaultMessage": "Logic",
     "description": "Form logic tab title",
     "originalDefault": "Logic"
-  },
-  "WjDh7l": {
-    "defaultMessage": "Prefill plugin",
-    "description": "Variable table prefill plugin title",
-    "originalDefault": "Prefill plugin"
   },
   "WnKF/i": {
     "defaultMessage": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments",
@@ -1618,6 +1628,11 @@
     "defaultMessage": "{varName}: registration configuration for {backendName}",
     "description": "Variable registration configuration modal title",
     "originalDefault": "{varName}: registration configuration for {backendName}"
+  },
+  "bmlODS": {
+    "defaultMessage": "Identifier role",
+    "description": "Variable prefill identifier role label",
+    "originalDefault": "Identifier role"
   },
   "bnxtnX": {
     "defaultMessage": "Full request",
@@ -1843,6 +1858,11 @@
     "defaultMessage": "Detected some problems in this action: {problems}.",
     "description": "Logic action warning icon text",
     "originalDefault": "Detected some problems in this action: {problems}."
+  },
+  "gqVGbb": {
+    "defaultMessage": "Edit prefill configuration",
+    "description": "'Edit variable prefill' icon label",
+    "originalDefault": "Edit prefill configuration"
   },
   "gr7edY": {
     "defaultMessage": "App version",
@@ -2353,6 +2373,11 @@
     "defaultMessage": "Component where the last name should be entered",
     "description": "Last Name Component field help text",
     "originalDefault": "Component where the last name should be entered"
+  },
+  "tJQoMq": {
+    "defaultMessage": "There are errors in the prefill configuration.",
+    "description": "Prefill configuration errors icon text",
+    "originalDefault": "There are errors in the prefill configuration."
   },
   "tLL2x4": {
     "defaultMessage": "Change form",

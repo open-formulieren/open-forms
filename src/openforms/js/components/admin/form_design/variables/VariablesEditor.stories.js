@@ -507,7 +507,7 @@ export const ConfigurePrefill = {
     await userEvent.click(userDefinedVarsTab);
 
     // open modal for configuration
-    const editIcon = canvas.getByTitle('Edit prefill configuration');
+    const editIcon = canvas.getByTitle('Prefill instellen');
     await userEvent.click(editIcon);
 
     const pluginDropdown = await screen.findByLabelText('Plugin');
@@ -566,7 +566,7 @@ export const WithValidationErrors = {
     await userEvent.click(userDefinedVarsTab);
 
     // open modal for configuration
-    const editIcon = canvas.getByTitle('Edit prefill configuration');
+    const editIcon = canvas.getByTitle('Prefill instellen');
     await userEvent.click(editIcon);
   },
 };

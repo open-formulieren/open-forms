@@ -741,12 +741,6 @@
       "value": "Maximum date"
     }
   ],
-  "7Vx5It": [
-    {
-      "type": 0,
-      "value": "No compatible registration backend configured."
-    }
-  ],
   "7X6yT4": [
     {
       "type": 0,
@@ -933,6 +927,12 @@
     {
       "type": 0,
       "value": "Please select the logic type:"
+    }
+  ],
+  "9LdZVP": [
+    {
+      "type": 0,
+      "value": "Attribute"
     }
   ],
   "9LflJr": [
@@ -1437,6 +1437,12 @@
     {
       "type": 0,
       "value": "Could not retrieve the decision definitions IDs/versions. Is the selected DMN plugin running and properly configured?"
+    }
+  ],
+  "DWhkNq": [
+    {
+      "type": 0,
+      "value": "Plugin"
     }
   ],
   "DaxIUG": [
@@ -2233,6 +2239,12 @@
       "value": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
     }
   ],
+  "Mdnl0l": [
+    {
+      "type": 0,
+      "value": "Prefill"
+    }
+  ],
   "MnfzL3": [
     {
       "type": 0,
@@ -2243,12 +2255,6 @@
     {
       "type": 0,
       "value": "Form variables configuration"
-    }
-  ],
-  "MzMXRd": [
-    {
-      "type": 0,
-      "value": "Prefill attribute"
     }
   ],
   "NE5h2q": [
@@ -2353,10 +2359,42 @@
       "value": ". Extend your session if you wish to continue."
     }
   ],
-  "OibWN2": [
+  "Oi+DV0": [
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "attr"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
     {
       "type": 0,
-      "value": "Prefill identifier role"
+      "value": " from "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "plugin"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " (of the "
+    },
+    {
+      "type": 1,
+      "value": "role"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "OlPsaw": [
@@ -2519,6 +2557,12 @@
     {
       "type": 0,
       "value": "Payment backend options"
+    }
+  ],
+  "QsrtPz": [
+    {
+      "type": 0,
+      "value": "Prefill configuration"
     }
   ],
   "R/XadM": [
@@ -2893,6 +2937,12 @@
       "value": "Minimum time"
     }
   ],
+  "Uq9Hbx": [
+    {
+      "type": 0,
+      "value": "-"
+    }
+  ],
   "Uu+81U": [
     {
       "type": 0,
@@ -3095,12 +3145,6 @@
     {
       "type": 0,
       "value": "Logic"
-    }
-  ],
-  "WjDh7l": [
-    {
-      "type": 0,
-      "value": "Prefill plugin"
     }
   ],
   "WkBjB5": [
@@ -3549,6 +3593,12 @@
     {
       "type": 1,
       "value": "backendName"
+    }
+  ],
+  "bmlODS": [
+    {
+      "type": 0,
+      "value": "Identifier role"
     }
   ],
   "bnxtnX": [
@@ -4075,6 +4125,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "gqVGbb": [
+    {
+      "type": 0,
+      "value": "Edit prefill configuration"
     }
   ],
   "gr7edY": [
@@ -5113,6 +5169,12 @@
     {
       "type": 0,
       "value": "Component where the last name should be entered"
+    }
+  ],
+  "tJQoMq": [
+    {
+      "type": 0,
+      "value": "There are errors in the prefill configuration."
     }
   ],
   "tLL2x4": [
