@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import FAIcon from 'components/admin/FAIcon';
+import {FAIcon} from 'components/admin/icons';
 
 const LogicTypeSelection = ({onChange, onCancel}) => {
   const intl = useIntl();

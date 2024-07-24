@@ -4,13 +4,12 @@ import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
-import FAIcon from 'components/admin/FAIcon';
 import {FormContext} from 'components/admin/form_design/Context';
 import LiteralValueInput from 'components/admin/form_design/logic/LiteralValueInput';
 import Field from 'components/admin/forms/Field';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
+import {DeleteIcon, FAIcon} from 'components/admin/icons';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {get} from 'utils/fetch';
 

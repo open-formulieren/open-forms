@@ -7,13 +7,12 @@ import useAsync from 'react-use/esm/useAsync';
 import useMountedState from 'react-use/esm/useMountedState';
 import {useImmerReducer} from 'use-immer';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
-import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
 import MessageList from 'components/admin/MessageList';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import {DeleteIcon, FAIcon} from 'components/admin/icons';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 import jsonPropTypeValidator from 'utils/JsonPropTypeValidator';
 

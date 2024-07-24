@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
-import FAIcon from 'components/admin/FAIcon';
+import {DeleteIcon, ErrorIcon, FAIcon} from 'components/admin/icons';
 
 const FormStepNavItem = ({
   name,
@@ -54,9 +53,7 @@ const FormStepNavItem = ({
         />
       </div>
       <button type="button" onClick={onActivate} className="button button--plain">
-        {hasErrors ? (
-          <FAIcon icon="exclamation-circle" title={iconTitle} extraClassname="icon icon--danger" />
-        ) : null}
+        {hasErrors ? <ErrorIcon text={iconTitle} extraClassname="icon icon--danger" /> : null}
         {name}
       </button>
       <div className="actions">

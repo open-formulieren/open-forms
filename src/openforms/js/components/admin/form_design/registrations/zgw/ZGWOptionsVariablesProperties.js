@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
 import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import {FormContext} from 'components/admin/form_design/Context';
 import {getComponentDatatype} from 'components/admin/form_design/variables/utils';
@@ -13,6 +12,7 @@ import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import {TextInput} from 'components/admin/forms/Inputs';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import {DeleteIcon} from 'components/admin/icons';
 import {FormModal} from 'components/admin/modals';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
 

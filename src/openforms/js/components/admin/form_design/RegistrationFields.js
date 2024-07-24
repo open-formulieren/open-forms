@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
 import FormRjsfWrapper from 'components/admin/RJSFWrapper';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
-import {Input, TextInput} from 'components/admin/forms/Inputs';
+import {TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
+import {DeleteIcon} from 'components/admin/icons';
 
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 

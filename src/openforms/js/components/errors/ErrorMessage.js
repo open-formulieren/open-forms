@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import FAIcon from 'components/admin/FAIcon';
+import {ErrorIcon} from 'components/admin/icons';
 
 const ErrorMessage = ({children}) => {
   if (!children) return null;
   return (
     <div className="error-message">
       <span className="error-message__icon icon icon--danger icon--as-lead">
-        <FAIcon icon="exclamation-circle" title="error" />
+        <ErrorIcon text="error" />
       </span>
       <div className="error-message__children">{children}</div>
     </div>

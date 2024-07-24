@@ -13,9 +13,9 @@ import useAsync from 'react-use/esm/useAsync';
 import {useImmerReducer} from 'use-immer';
 
 import Loader from 'components/admin/Loader';
-import WarningIcon from 'components/admin/WarningIcon';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
+import {WarningIcon} from 'components/admin/icons';
 import {APIError, NotAuthenticatedError} from 'utils/exception';
 import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef} from 'react';
 import {defineMessage, useIntl} from 'react-intl';
 
-import FAIcon from 'components/admin/FAIcon';
+import {FAIcon} from 'components/admin/icons';
 
 import {PrefixContext} from './Context';
 

@@ -7,9 +7,9 @@ import semverValid from 'semver/functions/valid';
 
 import Loader from 'components/admin/Loader';
 import User from 'components/admin/User';
-import WarningIcon from 'components/admin/WarningIcon';
 import {APIContext} from 'components/admin/form_design/Context';
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import {WarningIcon} from 'components/admin/icons';
 import {get, post} from 'utils/fetch';
 
 const checkVersionsCompatible = (version1, version2) => {

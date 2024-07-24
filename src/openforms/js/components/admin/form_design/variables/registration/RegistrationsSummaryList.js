@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import FAIcon from 'components/admin/FAIcon';
 import {FormContext} from 'components/admin/form_design/Context';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import SubmitRow from 'components/admin/forms/SubmitRow';
+import {EditIcon} from 'components/admin/icons';
 import {FormModal} from 'components/admin/modals';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
@@ -42,13 +42,11 @@ const RegistrationSummary = ({
           <span>{name}</span>
         </div>
         <span>
-          <FAIcon
-            icon="edit"
-            title={intl.formatMessage({
+          <EditIcon
+            label={intl.formatMessage({
               defaultMessage: 'Edit variable registration',
               description: "'Edit variable registration' icon label",
             })}
-            extraClassname="fa-lg actions__action"
             onClick={() => setModalOpen(!modalOpen)}
           />
         </span>

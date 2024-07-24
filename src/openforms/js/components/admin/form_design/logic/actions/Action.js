@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import {useIntl} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
-import WarningIcon from 'components/admin/WarningIcon';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
 import ToggleCodeIcon from 'components/admin/form_design/logic/ToggleCodeIcon';
 import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
 import Select from 'components/admin/forms/Select';
+import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
 import {ActionComponent, detectProblems} from './Actions';
 import {ActionError, Action as ActionType} from './types';

@@ -5,9 +5,9 @@ import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import FAIcon from './FAIcon';
 import TinyMCEEditor from './form_design/Editor';
 import Field from './forms/Field';
+import {FAIcon} from './icons';
 
 /*
  Adapted from:
