@@ -9,6 +9,7 @@ import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations'
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import {FormModal} from 'components/admin/modals';
+import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 /**
  *
@@ -67,31 +68,38 @@ const RegistrationSummary = ({
         isOpen={modalOpen}
         closeModal={() => setModalOpen(false)}
       >
-        <Formik
-          initialValues={backend.options}
-          onSubmit={(values, actions) => {
-            const updatedBackend = {...backend, options: values};
-            onChange({
-              target: {name: `form.registrationBackends.${backendIndex}`, value: updatedBackend},
-            });
-            actions.setSubmitting(false);
-            setModalOpen(false);
-          }}
+        <ErrorBoundary
+          errorMessage={intl.formatMessage({
+            description: 'Registration summary error message',
+            defaultMessage: 'Something went wrong while rendering the registration options',
+          })}
         >
-          {({handleSubmit}) => (
-            <>
-              {variableConfigurationEditor}
-              <SubmitRow>
-                <SubmitAction
-                  onClick={event => {
-                    event.preventDefault();
-                    handleSubmit(event);
-                  }}
-                />
-              </SubmitRow>
-            </>
-          )}
-        </Formik>
+          <Formik
+            initialValues={backend.options}
+            onSubmit={(values, actions) => {
+              const updatedBackend = {...backend, options: values};
+              onChange({
+                target: {name: `form.registrationBackends.${backendIndex}`, value: updatedBackend},
+              });
+              actions.setSubmitting(false);
+              setModalOpen(false);
+            }}
+          >
+            {({handleSubmit}) => (
+              <>
+                {variableConfigurationEditor}
+                <SubmitRow>
+                  <SubmitAction
+                    onClick={event => {
+                      event.preventDefault();
+                      handleSubmit(event);
+                    }}
+                  />
+                </SubmitRow>
+              </>
+            )}
+          </Formik>
+        </ErrorBoundary>
       </FormModal>
     </>
   );

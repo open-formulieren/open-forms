@@ -970,6 +970,11 @@
     "description": "Form theme field help text",
     "originalDefault": "Optional theme to use for styling."
   },
+  "L9L8X7": {
+    "defaultMessage": "Something went wrong while rendering the registration options",
+    "description": "Registration summary error message",
+    "originalDefault": "Something went wrong while rendering the registration options"
+  },
   "LD3weJ": {
     "defaultMessage": "Geavanceerde instellingen",
     "description": "Advanced configuration tab title",
