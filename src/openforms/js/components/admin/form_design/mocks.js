@@ -54,3 +54,10 @@ export const mockDMNParametersGet = definitionsParams =>
     const {inputs, outputs} = versionedParams ?? unVersionedParams;
     return res(ctx.json({inputs, outputs}));
   });
+
+export const mockPrefillAttributesGet = pluginAttributes =>
+  rest.get(`${API_BASE_URL}/api/v2/prefill/plugins/:plugin/attributes`, (req, res, ctx) => {
+    const {plugin} = req.params;
+    const attributeList = pluginAttributes[plugin] || [];
+    return res(ctx.json(attributeList));
+  });
