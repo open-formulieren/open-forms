@@ -152,7 +152,7 @@ django-csp==3.8
     # via -r requirements/base.in
 django-csp-reports==1.8.1
     # via -r requirements/base.in
-django-digid-eherkenning==0.16.0
+django-digid-eherkenning==0.17.1
     # via -r requirements/base.in
 django-filter==24.2
     # via -r requirements/base.in
@@ -194,7 +194,7 @@ django-sendfile2==0.7.1
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
-django-simple-certmanager==2.0.0
+django-simple-certmanager==2.3.0
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning

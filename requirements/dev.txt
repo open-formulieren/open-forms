@@ -274,7 +274,7 @@ django-csp-reports==1.8.1
     #   -r requirements/ci.txt
 django-debug-toolbar==4.3.0
     # via -r requirements/dev.in
-django-digid-eherkenning==0.16.0
+django-digid-eherkenning==0.17.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -365,7 +365,7 @@ django-sessionprofile==2.0.0
     #   django-digid-eherkenning
 django-silk==5.1.0
     # via -r requirements/dev.in
-django-simple-certmanager==2.0.0
+django-simple-certmanager==2.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
