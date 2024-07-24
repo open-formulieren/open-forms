@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypeAlias, TypedDict
+from typing import TYPE_CHECKING, Literal, Required, TypeAlias, TypedDict
 from uuid import UUID
-
-from typing_extensions import Required
 
 ConfigVersion: TypeAlias = Literal[1, 2]
 

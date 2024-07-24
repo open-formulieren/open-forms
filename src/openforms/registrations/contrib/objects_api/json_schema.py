@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import itertools
 from dataclasses import dataclass, field, replace
-from typing import Iterator, Literal, overload
+from typing import Iterator, Literal, Self, overload
 
 from jsonschema_specifications import REGISTRY
 from referencing import Resource
 from referencing.exceptions import Unresolvable
 from referencing.jsonschema import DRAFT202012, ObjectSchema
-from typing_extensions import Self
 
 
 @dataclass

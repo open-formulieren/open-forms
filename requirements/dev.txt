@@ -25,11 +25,6 @@ asn1crypto==1.5.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   webauthn
-async-timeout==4.0.2
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   redis
 attrs==23.2.0
     # via
     #   -c requirements/ci.txt
@@ -285,7 +280,7 @@ django-digid-eherkenning==0.16.0
     #   -r requirements/ci.txt
 django-extensions==3.2.3
     # via -r requirements/dev.in
-django-filter==23.2
+django-filter==24.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -358,7 +353,7 @@ django-relativedelta==2.0.0
     #   zgw-consumers
 django-rosetta==0.9.8
     # via -r requirements/dev.in
-django-sendfile2==0.7.0
+django-sendfile2==0.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -459,12 +454,6 @@ et-xmlfile==1.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   openpyxl
-exceptiongroup==1.0.4
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   hypothesis
-    #   pytest
 face==20.1.1
     # via
     #   -c requirements/ci.txt
@@ -479,7 +468,7 @@ faker==23.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   factory-boy
-flake8==6.0.0
+flake8==7.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -492,7 +481,7 @@ fonttools==4.45.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-freezegun==0.3.15
+freezegun==1.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -547,11 +536,6 @@ imagesize==1.4.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-importlib-resources==6.4.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   schwifty
 inflection==0.5.1
     # via
     #   -c requirements/ci.txt
@@ -584,7 +568,7 @@ josepy==1.14.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   mozilla-django-oidc
-jq==1.3.0
+jq==1.7.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -717,7 +701,7 @@ openapi3-parser==1.1.16
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-openpyxl==3.0.7
+openpyxl==3.1.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -796,11 +780,11 @@ prompt-toolkit==3.0.27
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   click-repl
-psycopg2==2.8.6
+psycopg==3.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pycodestyle==2.10.0
+pycodestyle==2.12.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -826,7 +810,7 @@ pyee==11.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   playwright
-pyflakes==3.0.1
+pyflakes==3.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -866,7 +850,7 @@ pytest==7.4.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -888,7 +872,7 @@ python-magic==0.4.27
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-pytz==2022.2.1
+pytz==2024.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -982,12 +966,12 @@ rstr==3.2.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   schwifty
-ruamel-yaml==0.17.32
+ruamel-yaml==0.18.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   prance
-ruamel-yaml-clib==0.2.7
+ruamel-yaml-clib==0.2.8
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1019,7 +1003,6 @@ six==1.16.0
     #   -r requirements/ci.txt
     #   bleach
     #   click-repl
-    #   freezegun
     #   furl
     #   html5lib
     #   isodate
@@ -1142,12 +1125,6 @@ tinycss2==1.1.0
     #   weasyprint
 toml==0.10.2
     # via autopep8
-tomli==1.2.1
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   black
-    #   pytest
 tornado==6.4.1
     # via
     #   -c requirements/ci.txt
@@ -1157,14 +1134,10 @@ typing-extensions==4.11.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   asgiref
-    #   black
-    #   django-modeltranslation
-    #   django-solo
     #   mozilla-django-oidc-db
+    #   psycopg
     #   pyee
     #   qrcode
-    #   schwifty
     #   zgw-consumers
 tzdata==2023.3
     # via

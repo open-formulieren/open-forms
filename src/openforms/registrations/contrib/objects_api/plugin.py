@@ -2,12 +2,10 @@ from __future__ import annotations
 
 import logging
 from functools import partial
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, override
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
-from typing_extensions import override
 
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables

@@ -1,6 +1,4 @@
-from typing import Literal, TypedDict
-
-from typing_extensions import NotRequired
+from typing import Literal, NotRequired, TypedDict
 
 from .base import Component, OptionDict
 from .dates import DatePickerConfig

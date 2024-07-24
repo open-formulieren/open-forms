@@ -93,7 +93,9 @@ class SubmissionStatusPermissionTests(APITestCase):
     def test_invalid_token_timestamp(self):
         submission = SubmissionFactory.create(completed=True, metadata__tasks_ids=[])
         # can't reverse because bad format lol
-        check_status_url = f"/api/v2/submissions/{submission.uuid}/$$$-{'a'*20}/status"
+        check_status_url = (
+            f"/api/v2/submissions/{submission.uuid}/$$$-{'a' * 20}/status"
+        )
 
         response = self.client.get(check_status_url)
 

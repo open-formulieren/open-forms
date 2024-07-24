@@ -4,13 +4,12 @@ from collections import defaultdict
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, Generic, Iterator, TypeVar, cast
+from typing import Any, Generic, Iterator, TypeVar, cast, override
 
 from django.db.models import F
 
 import glom
 from glom import PathAccessError
-from typing_extensions import override
 
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration

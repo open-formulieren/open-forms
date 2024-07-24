@@ -1,4 +1,4 @@
-from typing_extensions import NotRequired
+from typing import NotRequired
 
 from .base import Component
 from .dates import DatePickerConfig, DatePickerCustomOptions

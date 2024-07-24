@@ -22,11 +22,6 @@ asn1crypto==1.5.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   webauthn
-async-timeout==4.0.2
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   redis
 attrs==23.2.0
     # via
     #   -c requirements/base.txt
@@ -260,7 +255,7 @@ django-digid-eherkenning==0.16.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-filter==23.2
+django-filter==24.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -329,7 +324,7 @@ django-relativedelta==2.0.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-django-sendfile2==0.7.0
+django-sendfile2==0.7.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -425,10 +420,6 @@ et-xmlfile==1.1.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   openpyxl
-exceptiongroup==1.0.4
-    # via
-    #   hypothesis
-    #   pytest
 face==20.1.1
     # via
     #   -c requirements/base.txt
@@ -443,7 +434,7 @@ faker==23.1.0
     # via
     #   factory-boy
     #   zgw-consumers
-flake8==6.0.0
+flake8==7.1.0
     # via -r requirements/test-tools.in
 flower==2.0.1
     # via
@@ -454,7 +445,7 @@ fonttools==4.45.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-freezegun==0.3.15
+freezegun==1.5.1
     # via -r requirements/test-tools.in
 frozendict==2.3.4
     # via
@@ -493,11 +484,6 @@ idna==3.7
     #   yarl
 imagesize==1.4.1
     # via sphinx
-importlib-resources==6.4.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   schwifty
 inflection==0.5.1
     # via
     #   -c requirements/base.txt
@@ -522,7 +508,7 @@ josepy==1.14.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc
-jq==1.3.0
+jq==1.7.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -643,7 +629,7 @@ openapi3-parser==1.1.16
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-openpyxl==3.0.7
+openpyxl==3.1.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -710,11 +696,11 @@ prompt-toolkit==3.0.27
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   click-repl
-psycopg2==2.8.6
+psycopg==3.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pycodestyle==2.10.0
+pycodestyle==2.12.0
     # via flake8
 pycountry==23.12.11
     # via
@@ -733,7 +719,7 @@ pydyf==0.8.0
     #   weasyprint
 pyee==11.1.0
     # via playwright
-pyflakes==3.0.1
+pyflakes==3.2.0
     # via flake8
 pygments==2.17.2
     # via
@@ -764,7 +750,7 @@ pyquery==1.4.1
     # via -r requirements/test-tools.in
 pytest==7.4.0
     # via -r requirements/test-tools.in
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -786,7 +772,7 @@ python-magic==0.4.27
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pytz==2022.2.1
+pytz==2024.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -880,12 +866,12 @@ rstr==3.2.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   schwifty
-ruamel-yaml==0.17.32
+ruamel-yaml==0.18.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   prance
-ruamel-yaml-clib==0.2.7
+ruamel-yaml-clib==0.2.8
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -917,7 +903,6 @@ six==1.16.0
     #   -r requirements/base.txt
     #   bleach
     #   click-repl
-    #   freezegun
     #   furl
     #   html5lib
     #   isodate
@@ -994,10 +979,6 @@ tinycss2==1.1.0
     #   -r requirements/base.txt
     #   cssselect2
     #   weasyprint
-tomli==1.2.1
-    # via
-    #   black
-    #   pytest
 tornado==6.4.1
     # via
     #   -c requirements/base.txt
@@ -1007,14 +988,10 @@ typing-extensions==4.11.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   asgiref
-    #   black
-    #   django-modeltranslation
-    #   django-solo
     #   mozilla-django-oidc-db
+    #   psycopg
     #   pyee
     #   qrcode
-    #   schwifty
     #   zgw-consumers
 tzdata==2023.3
     # via

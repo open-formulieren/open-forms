@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, Protocol, TypedDict, TypeVar
+from typing import Any, ClassVar, Generic, NotRequired, Protocol, TypedDict, TypeVar
 
 from django.http import (
     HttpRequest,
@@ -13,7 +13,6 @@ from django.utils.translation import gettext_lazy as _
 from digid_eherkenning.oidc.models import BaseConfig
 from mozilla_django_oidc_db.utils import do_op_logout
 from mozilla_django_oidc_db.views import _RETURN_URL_SESSION_KEY
-from typing_extensions import NotRequired
 
 from openforms.authentication.constants import LegalSubjectIdentifierType
 from openforms.authentication.typing import FormAuth

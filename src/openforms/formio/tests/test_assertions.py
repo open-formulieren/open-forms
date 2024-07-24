@@ -47,29 +47,25 @@ class FormioMixinAssertionsTests(FormioMixin, TestCase):
             self.assertFormioComponent(FORMIO_CONFIGURATION, "bad-key", {})
 
     def test_component_missing_property(self):
-        self._outcome.expectedFailure = True
+        self._outcome.expecting_failure = True
 
-        try:
-            self.assertFormioComponent(
-                FORMIO_CONFIGURATION, "text1", {"missingProperty": "bar"}
-            )
-        except Exception:
-            pass
+        self.assertFormioComponent(
+            FORMIO_CONFIGURATION, "text1", {"missingProperty": "bar"}
+        )
 
-        # internals because of the self.subTest usage
-        self.assertFalse(self._outcome.success)
-        self._outcome.errors = []
+        # Resetting `expecting_failure` to not have the above
+        # assertion silently ignored:
+        self._outcome.expecting_failure = False
+        self.assertIsNotNone(self._outcome.expectedFailure)
 
     def test_component_unexpected_value(self):
-        self._outcome.expectedFailure = True
+        self._outcome.expecting_failure = True
 
-        try:
-            self.assertFormioComponent(
-                FORMIO_CONFIGURATION, "text1", {"defaultValue": "bar"}
-            )
-        except Exception:
-            pass
+        self.assertFormioComponent(
+            FORMIO_CONFIGURATION, "text1", {"defaultValue": "bar"}
+        )
 
-        # internals because of the self.subTest usage
-        self.assertFalse(self._outcome.success)
-        self._outcome.errors = []
+        # Resetting `expecting_failure` to not have the above
+        # assertion silently ignored:
+        self._outcome.expecting_failure = False
+        self.assertIsNotNone(self._outcome.expectedFailure)

@@ -4,12 +4,7 @@ Base types for more specific component types.
 These are common ancestors for all specific component types.
 """
 
-# TODO: on python 3.11+ we can use typing.NotRequired to mark keys that may be absent.
-# For now at least, we use total=False.
-
-from typing import Literal, TypeAlias, TypedDict
-
-from typing_extensions import NotRequired
+from typing import Literal, NotRequired, TypeAlias, TypedDict
 
 from openforms.typing import JSONValue
 
@@ -69,13 +64,6 @@ class Component(TypedDict):
     Components are of a particular type, used as unique lookup keys in registries.
     Additionally, some common properties are (usually) present that also influence
     certain logic.
-
-    We deliberately document keys here that may be absent, because:
-
-    * we don't run mypy (yet) and type hints are used as just hints/documentation
-    * NotRequired is only available in typing_extensions and Python 3.11+
-    * The ``total=False`` matches Form.io's own typescript types where (almost) every
-      property can be absent.
     """
 
     type: str

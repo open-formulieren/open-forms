@@ -17,7 +17,7 @@ lxml-html-clean
 O365  # microsoft graph
 Pillow  # handle images
 portalocker[redis]
-psycopg2  # database driver
+psycopg  # database driver
 python-dotenv  # environment variables for secrets
 python-decouple  # processing of envvar configs
 python-magic

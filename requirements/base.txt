@@ -10,8 +10,6 @@ asgiref==3.7.2
     # via django
 asn1crypto==1.5.1
     # via webauthn
-async-timeout==4.0.2
-    # via redis
 attrs==23.2.0
     # via
     #   glom
@@ -156,7 +154,7 @@ django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-digid-eherkenning==0.16.0
     # via -r requirements/base.in
-django-filter==23.2
+django-filter==24.2
     # via -r requirements/base.in
 django-flags==5.0.13
     # via -r requirements/base.in
@@ -192,7 +190,7 @@ django-redis==5.3.0
     # via -r requirements/base.in
 django-relativedelta==2.0.0
     # via zgw-consumers
-django-sendfile2==0.7.0
+django-sendfile2==0.7.1
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
@@ -267,8 +265,6 @@ humanize==3.14.0
     # via flower
 idna==3.7
     # via requests
-importlib-resources==6.4.0
-    # via schwifty
 inflection==0.5.1
     # via
     #   django-camunda
@@ -280,7 +276,7 @@ isodate==0.6.1
     #   zeep
 josepy==1.14.0
     # via mozilla-django-oidc
-jq==1.3.0
+jq==1.7.0
     # via -r requirements/base.in
 jsonschema==4.21.1
     # via
@@ -342,7 +338,7 @@ openapi-spec-validator==0.6.0
     # via openapi3-parser
 openapi3-parser==1.1.16
     # via -r requirements/base.in
-openpyxl==3.0.7
+openpyxl==3.1.5
     # via tablib
 orderedmultidict==1.0.1
     # via furl
@@ -367,7 +363,7 @@ prometheus-client==0.13.1
     # via flower
 prompt-toolkit==3.0.27
     # via click-repl
-psycopg2==2.8.6
+psycopg==3.2.1
     # via -r requirements/base.in
 pycountry==23.12.11
     # via schwifty
@@ -385,7 +381,7 @@ pyphen==0.14.0
     # via weasyprint
 pypng==0.20220715.0
     # via qrcode
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   celery
     #   django-camunda
@@ -397,7 +393,7 @@ python-dotenv==0.14.0
     # via -r requirements/base.in
 python-magic==0.4.27
     # via -r requirements/base.in
-pytz==2022.2.1
+pytz==2024.1
     # via
     #   django-yubin
     #   flower
@@ -451,9 +447,9 @@ rpds-py==0.18.0
     #   referencing
 rstr==3.2.2
     # via schwifty
-ruamel-yaml==0.17.32
+ruamel-yaml==0.18.6
     # via prance
-ruamel-yaml-clib==0.2.7
+ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
 schwifty==2024.5.3
     # via -r requirements/base.in
@@ -501,12 +497,9 @@ tornado==6.4.1
 typing-extensions==4.11.0
     # via
     #   -r requirements/base.in
-    #   asgiref
-    #   django-modeltranslation
-    #   django-solo
     #   mozilla-django-oidc-db
+    #   psycopg
     #   qrcode
-    #   schwifty
     #   zgw-consumers
 tzdata==2023.3
     # via
