@@ -12,11 +12,14 @@ export const LOADING_OPTION = [
   ],
 ];
 
+const capfirst = text => `${text[0].toUpperCase()}${text.slice(1)}`;
+
 const Select = ({
   name = 'select',
   choices,
   allowBlank = false,
   translateChoices = false,
+  capfirstChoices = false,
   ...extraProps
 }) => {
   // normalize to array of choices
@@ -27,6 +30,9 @@ const Select = ({
   const intl = useIntl();
   if (translateChoices) {
     choices = choices.map(([value, msg]) => [value, intl.formatMessage(msg)]);
+  }
+  if (capfirstChoices) {
+    choices = choices.map(([value, label]) => [value, capfirst(label)]);
   }
 
   const prefix = useContext(PrefixContext);
