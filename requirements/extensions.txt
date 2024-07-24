@@ -423,7 +423,7 @@ furl==2.1.2
     #   ape-pie
     #   django-digid-eherkenning
     #   open-forms-ext-token-exchange
-glom==20.11.0
+glom==23.5.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
