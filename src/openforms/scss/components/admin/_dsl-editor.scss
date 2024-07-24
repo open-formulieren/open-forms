@@ -14,7 +14,7 @@
     // account for possibly long labels
     select,
     input {
-      max-width: 30em;
+      max-inline-size: var(--of-admin-select-max-inline-size);
     }
 
     label {
