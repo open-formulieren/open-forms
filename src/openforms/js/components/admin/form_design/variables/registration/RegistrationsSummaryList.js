@@ -162,7 +162,7 @@ const RegistrationsSummaryList = ({variable, onFieldChange, registrationBackends
     return (
       <FormattedMessage
         description="Registration summary no registration backend fallback message"
-        defaultMessage="No compatible registration backend configured."
+        defaultMessage="-"
       />
     );
   }
