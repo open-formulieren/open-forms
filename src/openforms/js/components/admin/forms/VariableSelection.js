@@ -39,6 +39,7 @@ const VariableSelection = ({
   return (
     <Select
       id={id}
+      className="form-variable-dropdown"
       name={name}
       choices={choices}
       allowBlank
