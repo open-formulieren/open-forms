@@ -499,7 +499,7 @@ gitdb==4.0.7
     # via gitpython
 gitpython==3.1.41
     # via -r requirements/dev.in
-glom==20.11.0
+glom==23.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

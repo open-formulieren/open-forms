@@ -457,7 +457,7 @@ furl==2.1.2
     #   -r requirements/base.txt
     #   ape-pie
     #   django-digid-eherkenning
-glom==20.11.0
+glom==23.5.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

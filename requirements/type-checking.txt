@@ -492,7 +492,7 @@ furl==2.1.2
     #   -r requirements/ci.txt
     #   ape-pie
     #   django-digid-eherkenning
-glom==20.11.0
+glom==23.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

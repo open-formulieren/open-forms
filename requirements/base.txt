@@ -253,7 +253,7 @@ furl==2.1.2
     #   -r requirements/base.in
     #   ape-pie
     #   django-digid-eherkenning
-glom==20.11.0
+glom==23.5.0
     # via
     #   -r requirements/base.in
     #   mozilla-django-oidc-db

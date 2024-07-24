@@ -58,7 +58,7 @@ default_cke_values = [
 
 
 def hsl_to_rgbhex(hsl_css_color):
-    exp = "^hsl\((\d+), (\d+)%, (\d+)%\)$"
+    exp = r"^hsl\((\d+), (\d+)%, (\d+)%\)$"
     m = re.match(exp, hsl_css_color)
     if m:
         h = int(m.group(1))
