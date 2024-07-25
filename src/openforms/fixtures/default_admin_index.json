@@ -172,6 +172,10 @@
             ],
             [
                 "digid_eherkenning",
+                "configcertificate"
+            ],
+            [
+                "digid_eherkenning",
                 "digidconfiguration"
             ],
             [
