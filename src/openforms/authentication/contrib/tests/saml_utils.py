@@ -24,7 +24,8 @@ def get_artifact_response(filepath: str, context: dict | None = None) -> bytes:
 
 def get_encrypted_attribute(attr: str, identifier: str):
     config = EherkenningConfiguration.get_solo()
-    with config.certificate.public_certificate.open("r") as cert_file:
+    certificate, _ = config.select_certificates()
+    with certificate.public_certificate.open("r") as cert_file:
         cert = cert_file.read()
     return OneLogin_Saml2_Utils.generate_name_id(
         identifier,

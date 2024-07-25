@@ -1,14 +1,15 @@
 from base64 import b64decode
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 import requests_mock
-from digid_eherkenning.choices import DigiDAssuranceLevels
-from digid_eherkenning.models import DigidConfiguration
-from freezegun import freeze_time
+from digid_eherkenning.choices import ConfigTypes, DigiDAssuranceLevels
+from digid_eherkenning.models import ConfigCertificate, DigidConfiguration
 from furl import furl
 from lxml import etree
 from privates.test import temp_private_root
@@ -53,7 +54,6 @@ class DigiDConfigMixin:
         METADATA = TEST_FILES / "metadata.xml"
 
         config = DigidConfiguration.get_solo()
-        config.certificate = cert
         config.base_url = "https://test-sp.nl"
         config.entity_id = "https://test-sp.nl"
         # config.authn_requests_signed =  False
@@ -67,6 +67,12 @@ class DigiDConfigMixin:
         with METADATA.open("rb") as md_file:
             config.idp_metadata_file = File(md_file, METADATA.name)
             config.save()
+
+        config_cert = ConfigCertificate.objects.create(
+            config_type=ConfigTypes.digid, certificate=cert
+        )
+        # Will fail if/when the certificate expires
+        assert config_cert.is_ready_for_authn_requests
 
     def setUp(self):
         super().setUp()
@@ -102,7 +108,6 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
             response.url,
         )
 
-    @freeze_time("2020-04-09T08:31:46Z")
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
         return_value="ONELOGIN_123456",
@@ -117,6 +122,7 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
         )
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}"
+        now = timezone.now()
 
         response = self.client.get(f"{login_url}?next={form_url}", follow=True)
 
@@ -130,19 +136,30 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
         )
         tree = etree.fromstring(saml_request)
 
-        self.assertEqual(
-            tree.attrib,
-            {
-                "ID": "ONELOGIN_123456",
-                "Version": "2.0",
-                "IssueInstant": "2020-04-09T08:31:46Z",
-                "Destination": "https://test-digid.nl/saml/idp/request_authentication",
-                "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
-                "AssertionConsumerServiceURL": "https://test-sp.nl/digid/acs/",
-            },
-        )
+        expected_attributes = {
+            "ID": "ONELOGIN_123456",
+            "Version": "2.0",
+            "Destination": "https://test-digid.nl/saml/idp/request_authentication",
+            "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
+            "AssertionConsumerServiceURL": "https://test-sp.nl/digid/acs/",
+        }
+        for key, expected_value in expected_attributes.items():
+            with self.subTest(attribute=key):
+                value = tree.attrib[key]
 
-    @freeze_time("2020-04-09T08:31:46Z")
+                self.assertEqual(value, expected_value)
+
+        with self.subTest(attribute="IssueInstant"):
+            try:
+                issue_instant = datetime.fromisoformat(tree.attrib["IssueInstant"])
+            except Exception as exc:
+                raise self.failureException("Not a valid timestamp") from exc
+            self.assertTrue(
+                now.replace(microsecond=0)
+                <= issue_instant
+                < (now + timedelta(seconds=3))
+            )
+
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
         return_value="ONELOGIN_123456",
@@ -174,18 +191,6 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
             response.context["form"].initial["SAMLRequest"].encode("utf-8")
         )
         tree = etree.fromstring(saml_request)
-
-        self.assertEqual(
-            tree.attrib,
-            {
-                "ID": "ONELOGIN_123456",
-                "Version": "2.0",
-                "IssueInstant": "2020-04-09T08:31:46Z",
-                "Destination": "https://test-digid.nl/saml/idp/request_authentication",
-                "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
-                "AssertionConsumerServiceURL": "https://test-sp.nl/digid/acs/",
-            },
-        )
 
         auth_context_class_ref = tree.xpath(
             "samlp:RequestedAuthnContext[@Comparison='minimum']/saml:AuthnContextClassRef",
@@ -395,7 +400,6 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
 class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCase):
-    @freeze_time("2020-04-09T08:31:46Z")
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
         return_value="ONELOGIN_123456",

@@ -7,8 +7,8 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 import requests
-from digid_eherkenning.choices import DigiDAssuranceLevels, XMLContentTypes
-from digid_eherkenning.models import DigidConfiguration
+from digid_eherkenning.choices import ConfigTypes, DigiDAssuranceLevels, XMLContentTypes
+from digid_eherkenning.models import ConfigCertificate, DigidConfiguration
 from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
@@ -81,7 +81,6 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         )
 
         config = DigidConfiguration.get_solo()
-        config.certificate = cert
         # broker insists using https
         config.base_url = config.entity_id = "https://localhost:8000"
         # config.authn_requests_signed =  False
@@ -98,6 +97,12 @@ class SignicatDigiDIntegrationTests(OFVCRMixin, TestCase):
         with METADATA.open("rb") as md_file:
             config.idp_metadata_file = File(md_file, METADATA.name)
             config.save()
+
+        config_cert = ConfigCertificate.objects.create(
+            config_type=ConfigTypes.digid, certificate=cert
+        )
+        # Will fail if/when the certificate expires
+        assert config_cert.is_ready_for_authn_requests
 
     def setUp(self):
         super().setUp()
