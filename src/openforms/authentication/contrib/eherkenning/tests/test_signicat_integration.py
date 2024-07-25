@@ -7,8 +7,8 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 import requests
-from digid_eherkenning.choices import AssuranceLevels, XMLContentTypes
-from digid_eherkenning.models import EherkenningConfiguration
+from digid_eherkenning.choices import AssuranceLevels, ConfigTypes, XMLContentTypes
+from digid_eherkenning.models import ConfigCertificate, EherkenningConfiguration
 from freezegun import freeze_time
 from furl import furl
 from privates.test import temp_private_root
@@ -82,7 +82,6 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         )
 
         config = EherkenningConfiguration.get_solo()
-        config.certificate = cert
         config.idp_service_entity_id = SIGNICAT_BROKER_BASE / "sp/saml"
         # broker insists using https
         config.entity_id = "https://localhost:8000/eherkenning"
@@ -98,11 +97,11 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         config.privacy_policy = "https://example.com"
         config.service_language = "nl"
 
-        config.requested_attributes = [
+        config.eh_requested_attributes = [
             "urn:etoegang:1.9:EntityConcernedID:KvKnr",
             "urn:etoegang:1.9:EntityConcernedID:Pseudo",
         ]
-        config.attribute_consuming_service_index = "9052"
+        config.eh_attribute_consuming_service_index = "9052"
         config.eh_service_uuid = "588932b9-28ae-4323-ab6c-fabbddae05cd"
         config.eh_service_instance_uuid = "952cee6a-6553-4f58-922d-dd03486a772c"
         config.eh_loa = AssuranceLevels.low_plus
@@ -112,6 +111,12 @@ class SignicatEHerkenningIntegrationTests(OFVCRMixin, TestCase):
         with METADATA.open("rb") as md_file:
             config.idp_metadata_file = File(md_file, METADATA.name)
             config.save()
+
+        config_cert = ConfigCertificate.objects.create(
+            config_type=ConfigTypes.eherkenning, certificate=cert
+        )
+        # Will fail if/when the certificate expires
+        assert config_cert.is_ready_for_authn_requests
 
     def setUp(self):
         super().setUp()

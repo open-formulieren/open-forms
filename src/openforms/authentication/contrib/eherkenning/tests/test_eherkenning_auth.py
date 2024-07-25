@@ -1,16 +1,18 @@
 import os
 import sys
 from base64 import b64decode
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 import requests_mock
-from digid_eherkenning.models import EherkenningConfiguration
-from freezegun import freeze_time
+from digid_eherkenning.choices import ConfigTypes
+from digid_eherkenning.models import ConfigCertificate, EherkenningConfiguration
 from furl import furl
 from lxml import etree
 from privates.test import temp_private_root
@@ -45,7 +47,6 @@ class EHerkenningConfigMixin:
         METADATA = TEST_FILES / "eherkenning-metadata.xml"
 
         config = EherkenningConfiguration.get_solo()
-        config.certificate = cert
         config.base_url = "https://test-sp.nl"
         config.entity_id = "urn:etoegang:DV:00000001111111111000:entities:9000"
         config.idp_service_entity_id = (
@@ -71,6 +72,12 @@ class EHerkenningConfigMixin:
         with METADATA.open("rb") as md_file:
             config.idp_metadata_file = File(md_file, METADATA.name)
             config.save()
+
+        config_cert = ConfigCertificate.objects.create(
+            config_type=ConfigTypes.eherkenning, certificate=cert
+        )
+        # Will fail if/when the certificate expires
+        assert config_cert.is_ready_for_authn_requests
 
     def setUp(self):
         super().setUp()
@@ -127,7 +134,6 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
             response, str(expected_redirect_url), fetch_redirect_response=False
         )
 
-    @freeze_time("2020-04-09T08:31:46Z")
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
         return_value="ONELOGIN_123456",
@@ -145,6 +151,7 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
         form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
         form_url = f"https://testserver{form_path}"
         login_url = furl(login_url).set({"next": form_url})
+        now = timezone.now()
 
         response = self.client.get(login_url.url, follow=True)
 
@@ -164,19 +171,32 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
         )
         tree = etree.fromstring(saml_request)
 
-        self.assertEqual(
-            tree.attrib,
-            {
-                "ID": "ONELOGIN_123456",
-                "Version": "2.0",
-                "ForceAuthn": "true",
-                "IssueInstant": "2020-04-09T08:31:46Z",
-                "Destination": "https://test-iwelcome.nl/broker/sso/1.13",
-                "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
-                "AssertionConsumerServiceURL": "https://test-sp.nl/eherkenning/acs/",
-                "AttributeConsumingServiceIndex": "8888",
-            },
-        )
+        expected_attributes = {
+            "ID": "ONELOGIN_123456",
+            "Version": "2.0",
+            "ForceAuthn": "true",
+            "Destination": "https://test-iwelcome.nl/broker/sso/1.13",
+            "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
+            "AssertionConsumerServiceURL": "https://test-sp.nl/eherkenning/acs/",
+            "AttributeConsumingServiceIndex": "8888",
+        }
+
+        for key, expected_value in expected_attributes.items():
+            with self.subTest(attribute=key):
+                value = tree.attrib[key]
+
+                self.assertEqual(value, expected_value)
+
+        with self.subTest(attribute="IssueInstant"):
+            try:
+                issue_instant = datetime.fromisoformat(tree.attrib["IssueInstant"])
+            except Exception as exc:
+                raise self.failureException("Not a valid timestamp") from exc
+            self.assertTrue(
+                now.replace(microsecond=0)
+                <= issue_instant
+                < (now + timedelta(seconds=3))
+            )
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
@@ -364,7 +384,6 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
 class CoSignLoginAuthenticationTests(
     SubmissionsMixin, EHerkenningConfigMixin, TestCase
 ):
-    @freeze_time("2020-04-09T08:31:46Z")
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
         return_value="ONELOGIN_123456",

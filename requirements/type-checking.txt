@@ -267,7 +267,7 @@ django-csp-reports==1.8.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.16.0
+django-digid-eherkenning==0.17.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -352,7 +352,7 @@ django-sessionprofile==2.0.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
-django-simple-certmanager==2.0.0
+django-simple-certmanager==2.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
