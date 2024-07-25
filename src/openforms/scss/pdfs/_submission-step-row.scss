@@ -1,8 +1,7 @@
 @import '~microscope-sass/lib/typography';
 
 .submission-step-row {
-  // TODO this fixes overlap on next page but also adds empty pages in case of long values
-  break-inside: avoid-page;
+  break-inside: avoid-page; // needed to avoid spreading labels and their values across two pages
 
   & + & {
     margin-top: 1mm;
@@ -37,22 +36,25 @@
     padding-top: $grid-margin-2;
   }
 
+  &__fieldset-label {
+    @include body();
+    font-size: 1.25em;
+    font-weight: bold;
+  }
+
   &__label {
     @include body();
-    width: 40%;
-    padding-right: 2em;
-    // float is used here, because flexbox/grid/tables are really slow with
-    // weasyprint, especially if large textareas are used
-    // see: https://github.com/open-formulieren/open-forms/issues/4255
-    float: left;
+    font-weight: bold;
   }
 
   &__value {
     @include body();
-    width: 60%;
     word-break: break-all;
-    margin-left: 40%;
-    min-height: 1.5em; // required to ensure styling still works if value has no text
+    margin-bottom: 0.5em;
+
+    &--empty {
+      font-style: italic;
+    }
 
     // wysiwyg content
     p {
@@ -62,12 +64,5 @@
     > * {
       max-width: 100%;
     }
-  }
-
-  // Avoid rows from overlapping in case the field label is more than 1 line (#4450)
-  &::after {
-    content: '';
-    display: table;
-    clear: both;
   }
 }
