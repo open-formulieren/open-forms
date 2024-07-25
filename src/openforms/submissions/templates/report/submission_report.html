@@ -55,13 +55,18 @@
                                     {% if component_node.spans_full_width %}
                                         {{ component_node.display_value }}
                                     {% else %}
-                                        <div class="submission-step-row__label">
-                                            {{ component_node.label }}
-                                        </div>
+                                        {% if component_node.component.type == "fieldset" %}
+                                            <span class="submission-step-row__fieldset-label">{{ component_node.label }}</span>
+                                        {% else %}
+                                            <div class="submission-step-row__label">
+                                                {{ component_node.label }}
+                                            </div>
 
-                                        <div class="submission-step-row__value">
-                                            {{ component_node.display_value }}
-                                        </div>
+                                            <div class="submission-step-row__value{% if not component_node.display_value %} submission-step-row__value--empty{% endif %}">
+                                                {% trans "(not filled in)" as empty_value %}
+                                                {{ component_node.display_value|default:empty_value }}
+                                            </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             {% endif %}
