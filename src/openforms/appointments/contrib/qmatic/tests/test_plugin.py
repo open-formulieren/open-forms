@@ -400,14 +400,21 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
         self.plugin = QmaticAppointment("qmatic")
 
-    @requests_mock.Mocker()
-    def test_get_available_products_server_error(self, m):
-        status_code = fuzzy_server_error_status_code()
-        m.get(requests_mock.ANY, status_code=status_code)
+    def test_get_available_products_server_error(self):
+        cases = {
+            500,
+            fuzzy_server_error_status_code(),
+        }
+        for status_code in cases:
+            with (
+                self.subTest(status_code=status_code),
+                requests_mock.Mocker() as m,
+            ):
+                m.get(requests_mock.ANY, status_code=status_code)
 
-        products = self.plugin.get_available_products()
+                products = self.plugin.get_available_products()
 
-        self.assertEqual(products, [])
+                self.assertEqual(products, [])
 
     @requests_mock.Mocker()
     def test_get_available_products_client_error(self, m):
