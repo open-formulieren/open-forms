@@ -104,6 +104,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         cls.form = form
         cls.fd = fd
 
+    def setUp(self):
+        super().setUp()
+
+        self.addCleanup(GlobalConfiguration.clear_cache)
+
     def test_submission_with_email_backend(self):
         submission = SubmissionFactory.from_components(
             completed=True,
