@@ -900,3 +900,39 @@ class FormVariableViewsetTest(APITestCase):
 
         # The variable is considered valid
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_validate_prefill_consistency(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user)
+        form = FormFactory.create()
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+        data = [
+            {
+                "form": form_url,
+                "form_definition": "",
+                "name": "Variable 1",
+                "key": "variable1",
+                "source": FormVariableSources.user_defined,
+                "dataType": FormVariableDataTypes.string,
+                "prefillPlugin": "demo",
+                "prefillAttribute": "",
+            }
+        ]
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(len(error["invalidParams"]), 1)
+        self.assertEqual(
+            error["invalidParams"][0]["name"],
+            "0.prefillAttribute",
+        )
