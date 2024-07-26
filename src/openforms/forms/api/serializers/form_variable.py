@@ -177,4 +177,18 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
                     }
                 )
 
+        # prefill plugin and attribute must both or both not be set
+        prefill_plugin = attrs.get("prefill_plugin") or ""
+        prefill_attribute = attrs.get("prefill_attribute") or ""
+        if (prefill_plugin and not prefill_attribute) or (
+            not prefill_plugin and prefill_attribute
+        ):
+            raise ValidationError(
+                {
+                    "prefill_attribute": _(
+                        "Prefill plugin and attribute must both be specified."
+                    ),
+                }
+            )
+
         return attrs
