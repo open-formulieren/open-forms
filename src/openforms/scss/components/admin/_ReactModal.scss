@@ -110,6 +110,10 @@
       * {
         box-sizing: initial;
       }
+
+      select {
+        box-sizing: border-box;
+      }
     }
   }
 }
