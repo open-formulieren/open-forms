@@ -87,29 +87,3 @@ The internal page to check the (configuration) status of various plugins current
 checks all plugins sequentially and leads to a slow page.
 
 This should be optimized to only consider enabled plugins and work asynchronously.
-
-**Full submission-data validation using Formio.js**
-
-Status: not planned yet
-
-Formio.js allows you to declare validation rules, which are evaluated client-side.
-However, someone manipulating the APIs can bypass these to some extent. The submission
-completion endpoint should evaluate the same validation rules as Formio does client-side.
-
-This is a topic to investigate. One option that has come up, is to run a nodejs backend
-server to use the actual Formio.js code to run the validations, called by the Python
-backend. Implementing these validations in Python will probably be too much work and
-error-prone.
-
-Additionally, all the form-level logic should also be (re)-evaluated to detect
-inconsistencies.
-
-Frontend
---------
-
-**Use of design tokens**
-
-Status: well underway
-
-Components need to be adopted so we can lift on existing design tokens. Colors have
-almost all been converted and can be overridden by themes.
