@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
@@ -10,6 +9,7 @@ import FormRow from 'components/admin/forms/FormRow';
 import {NumberInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import {DeleteIcon} from 'components/admin/icons';
 import {getTranslatedChoices} from 'utils/i18n';
 
 import DSLEditorNode from './logic/DSLEditorNode';

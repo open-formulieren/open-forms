@@ -741,12 +741,6 @@
       "value": "Maximale datum"
     }
   ],
-  "7Vx5It": [
-    {
-      "type": 0,
-      "value": "Er is geen (relevante) registratiemethode ingesteld."
-    }
-  ],
   "7X6yT4": [
     {
       "type": 0,
@@ -937,6 +931,12 @@
     {
       "type": 0,
       "value": "Kies het soort logica:"
+    }
+  ],
+  "9LdZVP": [
+    {
+      "type": 0,
+      "value": "Attribuut"
     }
   ],
   "9LflJr": [
@@ -1458,6 +1458,12 @@
     {
       "type": 0,
       "value": "Er ging iets fout bij het ophalen van de beschikbare beslisdefinities. Is de geselecteerde DMN-plugin goed ingesteld en beschikbaar?"
+    }
+  ],
+  "DWhkNq": [
+    {
+      "type": 0,
+      "value": "Plugin"
     }
   ],
   "DaxIUG": [
@@ -2254,6 +2260,12 @@
       "value": "Formulierspecifiek sjabloon voor de bevestigingsmail. Indien leeg, dan worden de algemene instellingen gebruikt."
     }
   ],
+  "Mdnl0l": [
+    {
+      "type": 0,
+      "value": "Prefill"
+    }
+  ],
   "MnfzL3": [
     {
       "type": 0,
@@ -2264,12 +2276,6 @@
     {
       "type": 0,
       "value": "Formuliervariabelenconfiguratie"
-    }
-  ],
-  "MzMXRd": [
-    {
-      "type": 0,
-      "value": "Prefill-attribuut"
     }
   ],
   "NE5h2q": [
@@ -2374,10 +2380,42 @@
       "value": ". Verleng uw sessie indien u wenst door te gaan."
     }
   ],
-  "OibWN2": [
+  "Oi+DV0": [
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "attr"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
     {
       "type": 0,
-      "value": "Prefill-bron"
+      "value": " uit "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "plugin"
+        }
+      ],
+      "type": 8,
+      "value": "code"
+    },
+    {
+      "type": 0,
+      "value": " (van de "
+    },
+    {
+      "type": 1,
+      "value": "role"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "OlPsaw": [
@@ -2538,6 +2576,12 @@
       "value": "Betaalprovider backendopties"
     }
   ],
+  "QsrtPz": [
+    {
+      "type": 0,
+      "value": "Prefill-instellingen"
+    }
+  ],
   "R/XadM": [
     {
       "type": 0,
@@ -2553,7 +2597,7 @@
   "R7XVbR": [
     {
       "type": 0,
-      "value": "Ingelogde/vertegenwoordigde"
+      "value": "hoofdentiteit"
     }
   ],
   "R8/zGm": [
@@ -2910,6 +2954,12 @@
       "value": "Minimale tijd"
     }
   ],
+  "Uq9Hbx": [
+    {
+      "type": 0,
+      "value": "-"
+    }
+  ],
   "Uu+81U": [
     {
       "type": 0,
@@ -3112,12 +3162,6 @@
     {
       "type": 0,
       "value": "Logica"
-    }
-  ],
-  "WjDh7l": [
-    {
-      "type": 0,
-      "value": "Prefill-plugin"
     }
   ],
   "WkBjB5": [
@@ -3571,6 +3615,12 @@
     {
       "type": 0,
       "value": "'"
+    }
+  ],
+  "bmlODS": [
+    {
+      "type": 0,
+      "value": "Bronhouder"
     }
   ],
   "bnxtnX": [
@@ -4097,6 +4147,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "gqVGbb": [
+    {
+      "type": 0,
+      "value": "Prefill instellen"
     }
   ],
   "gr7edY": [
@@ -5135,6 +5191,12 @@
     {
       "type": 0,
       "value": "Veld waar de achternaam voor een afspraak komt te staan"
+    }
+  ],
+  "tJQoMq": [
+    {
+      "type": 0,
+      "value": "De prefill-instellingen zijn niet geldig."
     }
   ],
   "tLL2x4": [

@@ -3,7 +3,7 @@ import React from 'react';
 import {useIntl} from 'react-intl';
 import {Tab as ReactTab} from 'react-tabs';
 
-import FAIcon from 'components/admin/FAIcon';
+import {ErrorIcon} from 'components/admin/icons';
 
 const Tab = ({hasErrors = false, children, ...props}) => {
   const intl = useIntl();
@@ -18,9 +18,7 @@ const Tab = ({hasErrors = false, children, ...props}) => {
   return (
     <ReactTab {...allProps}>
       {children}
-      {hasErrors ? (
-        <FAIcon icon="exclamation-circle" extraClassname="react-tabs__error-badge" title={title} />
-      ) : null}
+      {hasErrors ? <ErrorIcon extraClassname="react-tabs__error-badge" texxt={title} /> : null}
     </ReactTab>
   );
 };

@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
+import {DeleteIcon} from 'components/admin/icons';
 
 import Types from '../types';
 

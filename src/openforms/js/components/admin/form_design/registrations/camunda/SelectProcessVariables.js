@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import {DeleteIcon} from 'components/admin/icons';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
 
 const HeadColumns = () => {

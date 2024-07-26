@@ -13,9 +13,9 @@ import useAsync from 'react-use/esm/useAsync';
 import {useImmerReducer} from 'use-immer';
 
 import Loader from 'components/admin/Loader';
-import WarningIcon from 'components/admin/WarningIcon';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
+import {WarningIcon} from 'components/admin/icons';
 import {APIError, NotAuthenticatedError} from 'utils/exception';
 import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';
@@ -774,11 +774,19 @@ function reducer(draft, action) {
       );
       const index = draft.formVariables.findIndex(variable => variable.key === key);
 
-      draft.formVariables[index][propertyName] = propertyValue;
+      // empty property = 'root object'
+      if (propertyName === '') {
+        Object.assign(draft.formVariables[index], propertyValue);
+      } else {
+        draft.formVariables[index][propertyName] = propertyValue;
+      }
 
       // Check if there are errors that need to be reset
       if (draft.formVariables[index].errors) {
-        delete draft.formVariables[index].errors[propertyName];
+        const errorKeys = propertyName === '' ? Object.keys(propertyValue) : [propertyName];
+        for (const errorKey of errorKeys) {
+          delete draft.formVariables[index].errors[errorKey];
+        }
       }
 
       // Check that after the update there are no duplicate keys.

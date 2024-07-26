@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import {useIntl} from 'react-intl';
 
-import FAIcon from 'components/admin/FAIcon';
+import {FAIcon} from 'components/admin/icons';
 
 const ToggleCodeIcon = ({viewMode, setViewMode}) => {
   const intl = useIntl();

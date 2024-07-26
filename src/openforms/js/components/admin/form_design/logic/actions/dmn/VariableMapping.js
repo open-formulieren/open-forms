@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
-import WarningIcon from 'components/admin/WarningIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
+import {DeleteIcon, WarningIcon} from 'components/admin/icons';
 
 import {detectMappingProblems} from './utils';
 

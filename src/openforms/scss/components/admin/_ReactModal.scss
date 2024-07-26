@@ -99,5 +99,17 @@
       flex-shrink: 0;
       bottom: 1px;
     }
+
+    // bootstrap styles compete with django .form-row styles...
+    .form-row {
+      display: block;
+      margin-inline-start: 0;
+      margin-inline-end: 0;
+
+      &,
+      * {
+        box-sizing: initial;
+      }
+    }
   }
 }

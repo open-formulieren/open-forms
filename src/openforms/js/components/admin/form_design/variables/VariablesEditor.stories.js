@@ -1,5 +1,6 @@
-import {expect, screen, userEvent, within} from '@storybook/test';
+import {expect, fn, screen, userEvent, within} from '@storybook/test';
 
+import {mockPrefillAttributesGet} from 'components/admin/form_design/mocks';
 import {BACKEND_OPTIONS_FORMS} from 'components/admin/form_design/registrations';
 import {mockTargetPathsPost} from 'components/admin/form_design/registrations/objectsapi/mocks';
 
@@ -112,11 +113,32 @@ export default {
         type: 'textfield',
       },
     },
+    availablePrefillPlugins: [
+      {id: 'stuf-bg', label: 'StUF-BG'},
+      {id: 'haalcentraal', label: 'BRP Personen (HaalCentraal)'},
+    ],
+    onChange: fn(),
+    onAdd: fn(),
+    onDelete: fn(),
+    onFieldChange: fn(),
   },
-  argTypes: {
-    onChange: {action: true},
-    onAdd: {action: true},
-    onDelete: {action: true},
+  parameters: {
+    msw: {
+      handlers: {
+        prefill: [
+          mockPrefillAttributesGet({
+            'stuf-bg': [
+              {id: 'bsn', label: 'BSN'},
+              {id: 'postcode', label: 'Postcode'},
+            ],
+            haalcentraal: [
+              {id: 'bsn', label: 'BSN'},
+              {id: 'verblijfsAdres.postcode', label: 'Verblijfsadres > Postcode'},
+            ],
+          }),
+        ],
+      },
+    },
   },
 };
 
@@ -473,5 +495,78 @@ export const WithObjectsAPIAndTestRegistrationBackends = {
         }),
       ],
     },
+  },
+};
+
+export const ConfigurePrefill = {
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+    expect(userDefinedVarsTab).toBeVisible();
+    await userEvent.click(userDefinedVarsTab);
+
+    // open modal for configuration
+    const editIcon = canvas.getByTitle('Prefill instellen');
+    await userEvent.click(editIcon);
+
+    const pluginDropdown = await screen.findByLabelText('Plugin');
+    expect(pluginDropdown).toBeVisible();
+    expect(await within(pluginDropdown).findByRole('option', {name: 'StUF-BG'})).toBeVisible();
+  },
+};
+
+export const WithValidationErrors = {
+  args: {
+    variables: [
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: 'http://localhost:8000/api/v2/form-definitions/6de1ea5a',
+        name: 'Form.io component',
+        key: 'formioComponent',
+        source: 'component',
+        prefillPlugin: '',
+        prefillAttribute: '',
+        prefillIdentifierRole: 'main',
+        dataType: 'string',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: '',
+      },
+      {
+        form: 'http://localhost:8000/api/v2/forms/36612390',
+        formDefinition: undefined,
+        name: 'User defined',
+        key: 'userDefined',
+        source: 'user_defined',
+        prefillPlugin: 'bad-plugin',
+        prefillAttribute: 'bad-attribute',
+        prefillIdentifierRole: 'invalid',
+        dataType: 'array',
+        dataFormat: undefined,
+        isSensitiveData: false,
+        serviceFetchConfiguration: undefined,
+        initialValue: [],
+        errors: {
+          name: ['A validation error for the name.'],
+          key: 'The key must be unique.',
+          prefillPlugin: ['Invalid plugin selected.'],
+          prefillAttribute: ['Invalid attribute selected.'],
+          prefillIdentifierRole: ['Invalid identifier role.'],
+        },
+      },
+    ],
+  },
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+
+    const userDefinedVarsTab = await canvas.findByRole('tab', {name: 'Gebruikersvariabelen'});
+    expect(userDefinedVarsTab).toBeVisible();
+    await userEvent.click(userDefinedVarsTab);
+
+    // open modal for configuration
+    const editIcon = canvas.getByTitle('Prefill instellen');
+    await userEvent.click(editIcon);
   },
 };

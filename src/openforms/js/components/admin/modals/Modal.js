@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactModal from 'react-modal';
 
-import FAIcon from 'components/admin/FAIcon';
+import {FAIcon} from 'components/admin/icons';
 
 const CONTENT_CLASS_NAME = 'react-modal__content';
 

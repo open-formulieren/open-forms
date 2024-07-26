@@ -3,9 +3,9 @@ import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import {DeleteIcon} from 'components/admin/icons';
 import {jsonComplex as COMPLEX_JSON_TYPES} from 'components/admin/json_editor/types';
 import {FormModal} from 'components/admin/modals';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';

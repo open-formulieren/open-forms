@@ -2,19 +2,17 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
-import useAsync from 'react-use/esm/useAsync';
 
-import DeleteIcon from 'components/admin/DeleteIcon';
-import FAIcon from 'components/admin/FAIcon';
 import {FormContext} from 'components/admin/form_design/Context';
 import LiteralValueInput from 'components/admin/form_design/logic/LiteralValueInput';
 import Field from 'components/admin/forms/Field';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
+import {DeleteIcon, FAIcon} from 'components/admin/icons';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
-import {get} from 'utils/fetch';
 
-import {DATATYPES_CHOICES, IDENTIFIER_ROLE_CHOICES} from './constants';
+import {DATATYPES_CHOICES} from './constants';
+import {PrefillSummary} from './prefill';
 import RegistrationSummaryList from './registration';
 import Variable from './types';
 import {variableHasErrors} from './utils';
@@ -41,7 +39,7 @@ const Td = ({variable, fieldName}) => {
   const intl = useIntl();
 
   const field = variable[fieldName];
-  let fieldErrors = variable.errors ? variable.errors[fieldName] : [];
+  let fieldErrors = variable?.errors?.[fieldName] ?? [];
 
   if (!Array.isArray(fieldErrors)) fieldErrors = [fieldErrors];
 
@@ -67,7 +65,6 @@ Td.propTypes = {
 };
 
 const VariableRow = ({index, variable, onFieldChange}) => {
-  const intl = useIntl();
   const formContext = useContext(FormContext);
   const formSteps = formContext.formSteps;
 
@@ -89,12 +86,13 @@ const VariableRow = ({index, variable, onFieldChange}) => {
       <td>{variable.name}</td>
       <Td variable={variable} fieldName="key" />
       <td>{getFormDefinitionName(variable.formDefinition)}</td>
-      <td>{variable.prefillPlugin}</td>
-      <td>{variable.prefillAttribute}</td>
       <td>
-        {intl.formatMessage(
-          IDENTIFIER_ROLE_CHOICES[variable.prefillIdentifierRole] || IDENTIFIER_ROLE_CHOICES.main
-        )}
+        <PrefillSummary
+          plugin={variable.prefillPlugin}
+          attribute={variable.prefillAttribute}
+          identifierRole={variable.prefillIdentifierRole}
+          errors={variable.errors}
+        />
       </td>
       <td>
         <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
@@ -115,12 +113,6 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
     defaultMessage: 'Are you sure you want to delete this variable?',
   });
 
-  const formContext = useContext(FormContext);
-
-  const {availablePrefillPlugins} = formContext.plugins;
-  const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
-  const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
-
   const onValueChanged = e => {
     onChange(variable.key, e.target.name, e.target.value);
   };
@@ -130,20 +122,6 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
     let updatedKey = _.camelCase(variable.name).replace(/^[0-9]*/, '');
     onChange(variable.key, 'key', updatedKey);
   };
-
-  const {loading} = useAsync(async () => {
-    setPrefillAttributeChoices([]);
-    // Load the possible prefill attributes
-    if (!variable.prefillPlugin) return;
-
-    const url = `/api/v2/prefill/plugins/${variable.prefillPlugin}/attributes`;
-    const response = await get(url);
-    if (!response.ok) {
-      console.error(response.data);
-    }
-
-    setPrefillAttributeChoices(response.data.map(attribute => [attribute.id, attribute.label]));
-  }, [variable.prefillPlugin]);
 
   // Cast booleans to strings, otherwise they don't display properly in the select widget
   const initialValue =
@@ -176,39 +154,23 @@ const EditableVariableRow = ({index, variable, onDelete, onChange, onFieldChange
           <TextInput name="key" value={variable.key} noVTextField={true} disabled={true} />
         </Field>
       </td>
+
       <td>
-        <Field name="prefillPlugin" errors={variable.errors?.prefillPlugin}>
-          <Select
-            name="prefillPlugin"
-            choices={prefillPluginChoices}
-            value={variable.prefillPlugin || ''}
-            onChange={onValueChanged}
-            allowBlank
-          />
-        </Field>
+        <PrefillSummary
+          plugin={variable.prefillPlugin}
+          attribute={variable.prefillAttribute}
+          identifierRole={variable.prefillIdentifierRole}
+          errors={variable.errors}
+          onChange={({plugin, attribute, identifierRole}) =>
+            onChange(variable.key, '', {
+              prefillPlugin: plugin,
+              prefillAttribute: attribute,
+              prefillIdentifierRole: identifierRole,
+            })
+          }
+        />
       </td>
-      <td>
-        <Field name="prefillAttribute" errors={variable.errors?.prefillAttribute}>
-          <Select
-            name="prefillAttribute"
-            choices={prefillAttributeChoices}
-            value={variable.prefillAttribute || ''}
-            onChange={onValueChanged}
-            disabled={loading || !variable.prefillPlugin}
-          />
-        </Field>
-      </td>
-      <td>
-        <Field name="prefillIdentifierRole" errors={variable.errors?.prefillIdentifierRole}>
-          <Select
-            name="prefillIdentifierRole"
-            choices={Object.entries(IDENTIFIER_ROLE_CHOICES)}
-            value={variable.prefillIdentifierRole || 'main'}
-            onChange={onValueChanged}
-            translateChoices
-          />
-        </Field>
-      </td>
+
       <td>
         <RegistrationSummaryList variable={variable} onFieldChange={onFieldChange} />
       </td>
@@ -272,26 +234,7 @@ const VariablesTable = ({variables, editable, onDelete, onChange, onFieldChange}
       )}
       <HeadColumn
         content={
-          <FormattedMessage
-            defaultMessage="Prefill plugin"
-            description="Variable table prefill plugin title"
-          />
-        }
-      />
-      <HeadColumn
-        content={
-          <FormattedMessage
-            defaultMessage="Prefill attribute"
-            description="Variable table prefill attribute title"
-          />
-        }
-      />
-      <HeadColumn
-        content={
-          <FormattedMessage
-            defaultMessage="Prefill identifier role"
-            description="Variable table identifier role attribute title"
-          />
+          <FormattedMessage defaultMessage="Prefill" description="Variable table prefill title" />
         }
       />
       <HeadColumn

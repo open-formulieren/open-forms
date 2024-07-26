@@ -4,8 +4,6 @@ import React from 'react';
 import {IconNo, IconUnknown, IconYes} from 'components/admin/BooleanIcons';
 import {getBEMClassName} from 'utils/bem';
 
-import ChangelistColumn from './ChangelistColumn';
-
 const ChangelistTableWrapper = ({headColumns, children: body, extraModifiers = []}) => (
   <div className={getBEMClassName('changelist', ['react', ...extraModifiers])}>
     <div className="results">
