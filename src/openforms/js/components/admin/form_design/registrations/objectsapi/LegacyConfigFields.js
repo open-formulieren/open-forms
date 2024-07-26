@@ -18,6 +18,7 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
     objecttype = '',
     objecttypeVersion = '',
     productaanvraagType = '',
+    updateExistingObject = false,
     informatieobjecttypeSubmissionReport = '',
     uploadSubmissionCsv = false,
     informatieobjecttypeSubmissionCsv = '',
@@ -112,6 +113,30 @@ const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
           name="objecttypeVersion"
           value={objecttypeVersion}
           onChange={onFieldChange}
+        />
+      </CustomFieldTemplate>
+      <CustomFieldTemplate
+        id="root_updateExistingObject"
+        label={intl.formatMessage({
+          defaultMessage: 'Update existing object',
+          description: 'Objects API registration options "Update existing object" label',
+        })}
+        rawDescription={intl.formatMessage({
+          defaultMessage:
+            'Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead',
+          description: 'Objects API registration options "Update existing object" description',
+        })}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'updateExistingObject')}
+        errors={buildErrorsComponent('updateExistingObject')}
+        displayLabel
+      >
+        <Checkbox
+          id="root_updateExistingObject"
+          name="updateExistingObject"
+          checked={updateExistingObject}
+          onChange={e =>
+            onFieldChange({target: {name: 'updateExistingObject', value: !updateExistingObject}})
+          }
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
@@ -319,6 +344,7 @@ LegacyConfigFields.propTypes = {
     version: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
+    updateExistingObject: PropTypes.bool,
     productaanvraagType: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
     uploadSubmissionCsv: PropTypes.bool,

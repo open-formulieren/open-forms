@@ -23,6 +23,7 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
     objecttype = '',
     objecttypeVersion = '',
     informatieobjecttypeSubmissionReport = '',
+    updateExistingObject = false,
     uploadSubmissionCsv = false,
     informatieobjecttypeSubmissionCsv = '',
     informatieobjecttypeAttachment = '',
@@ -167,6 +168,30 @@ const V2ConfigFields = ({index, name, schema, formData, onFieldChange, onChange}
         />
       </CustomFieldTemplate>
       <CustomFieldTemplate
+        id="root_updateExistingObject"
+        label={intl.formatMessage({
+          defaultMessage: 'Update existing object',
+          description: 'Objects API registration options "Update existing object" label',
+        })}
+        rawDescription={intl.formatMessage({
+          defaultMessage:
+            'Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead',
+          description: 'Objects API registration options "Update existing object" description',
+        })}
+        rawErrors={getFieldErrors(name, index, validationErrors, 'updateExistingObject')}
+        errors={buildErrorsComponent('updateExistingObject')}
+        displayLabel
+      >
+        <Checkbox
+          id="root_updateExistingObject"
+          name="updateExistingObject"
+          checked={updateExistingObject}
+          onChange={e =>
+            onFieldChange({target: {name: 'updateExistingObject', value: !updateExistingObject}})
+          }
+        />
+      </CustomFieldTemplate>
+      <CustomFieldTemplate
         id="root_informatieobjecttypeSubmissionReport"
         label={intl.formatMessage({
           defaultMessage: 'Submission report PDF informatieobjecttype',
@@ -306,6 +331,7 @@ V2ConfigFields.propTypes = {
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
+    updateExistingObject: PropTypes.bool,
     uploadSubmissionCsv: PropTypes.bool,
     informatieobjecttypeSubmissionCsv: PropTypes.string,
     informatieobjecttypeAttachment: PropTypes.string,

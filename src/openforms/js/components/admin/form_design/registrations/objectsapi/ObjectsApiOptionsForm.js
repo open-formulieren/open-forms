@@ -28,6 +28,7 @@ ObjectsApiOptionsForm.propTypes = {
     version: PropTypes.number,
     objecttype: PropTypes.string,
     objecttypeVersion: PropTypes.string,
+    updateExistingObject: PropTypes.bool,
     productaanvraagType: PropTypes.string,
     informatieobjecttypeSubmissionReport: PropTypes.string,
     uploadSubmissionCsv: PropTypes.bool,

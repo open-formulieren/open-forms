@@ -2297,6 +2297,12 @@
       "value": "A short instruction shown below the signature pad."
     }
   ],
+  "Nv0J2Y": [
+    {
+      "type": 0,
+      "value": "Update existing object"
+    }
+  ],
   "NwTdLM": [
     {
       "type": 0,
@@ -5621,6 +5627,12 @@
     {
       "type": 0,
       "value": "Use logic rules to determine the price"
+    }
+  ],
+  "zrsWsH": [
+    {
+      "type": 0,
+      "value": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead"
     }
   ]
 }

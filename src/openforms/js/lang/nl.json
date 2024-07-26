@@ -1075,6 +1075,11 @@
     "description": "Warning that all simple variables are mapped",
     "originalDefault": "All simple variables are mapped to a case property."
   },
+  "Nv0J2Y": {
+    "defaultMessage": "Update existing object",
+    "description": "Objects API registration options \"Update existing object\" label",
+    "originalDefault": "Update existing object"
+  },
   "NwTdLM": {
     "defaultMessage": "Veld waar beschikbare locaties voor een afspraak komen te staan",
     "description": "Locations Component field help text",
@@ -2591,5 +2596,10 @@
     "defaultMessage": "Gebruik prijsregels om de prijs te bepalen",
     "description": "dynamic pricing mode label",
     "originalDefault": "Use logic rules to determine the price"
+  },
+  "zrsWsH": {
+    "defaultMessage": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead",
+    "description": "Objects API registration options \"Update existing object\" description",
+    "originalDefault": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead"
   }
 }

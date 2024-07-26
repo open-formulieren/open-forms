@@ -84,13 +84,20 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
     objecttype_version = serializers.IntegerField(
         label=_("objecttype version"),
-        help_text=_("Version of the objecttype in the Objecttypes API"),
+        help_text=_("Version of the objecttype in the Objecttypes API."),
+    )
+    update_existing_object = serializers.BooleanField(
+        label=_("Update existing object"),
+        help_text=_(
+            "Indicates whether the existing object should be updated (if it exists), instead of creating a new one."
+        ),
+        default=False,
     )
     informatieobjecttype_submission_report = serializers.URLField(
         label=_("submission report PDF informatieobjecttype"),
         help_text=_(
             "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
-            "to be used for the submission report PDF"
+            "to be used for the submission report PDF."
         ),
         required=False,
     )
@@ -98,7 +105,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("Upload submission CSV"),
         help_text=_(
             "Indicates whether or not the submission CSV should be uploaded as "
-            "a Document in Documenten API and attached to the ProductAanvraag"
+            "a Document in Documenten API and attached to the ProductAanvraag."
         ),
         default=False,
     )
@@ -106,7 +113,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("submission report CSV informatieobjecttype"),
         help_text=_(
             "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
-            "to be used for the submission report CSV"
+            "to be used for the submission report CSV."
         ),
         required=False,
     )
@@ -114,21 +121,21 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("attachment informatieobjecttype"),
         help_text=_(
             "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
-            "to be used for the submission attachments"
+            "to be used for the submission attachments."
         ),
         required=False,
     )
     organisatie_rsin = serializers.CharField(
         label=_("organisation RSIN"),
         validators=[validate_rsin],
-        help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT"),
+        help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT."),
         required=False,
     )
 
     # V1 only fields:
     productaanvraag_type = serializers.CharField(
         label=_("productaanvraag type"),
-        help_text=_("The type of ProductAanvraag"),
+        help_text=_("The type of ProductAanvraag."),
         required=False,
     )
     content_json = serializers.CharField(
