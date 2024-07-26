@@ -1505,6 +1505,7 @@ class AppointmentFormTests(E2ETestCase):
             await page.goto(str(admin_url))
 
             await page.get_by_label("Appointment enabled").click()
+            await expect(page.get_by_label("Appointment enabled")).to_be_checked()
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()

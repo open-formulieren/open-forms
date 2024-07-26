@@ -536,6 +536,11 @@ CSRF_COOKIE_SAMESITE = config(
 X_FRAME_OPTIONS = "DENY"
 
 #
+# TESTING
+#
+TEST_RUNNER = "openforms.tests.runner.RandomStateRunner"
+
+#
 # FIXTURES
 #
 
