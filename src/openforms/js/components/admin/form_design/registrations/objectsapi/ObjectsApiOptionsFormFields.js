@@ -1,25 +1,23 @@
-import {produce} from 'immer';
+import {useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
-import React from 'react';
+import {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {TabList, TabPanel, Tabs} from 'react-tabs';
 
-import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import Tab from 'components/admin/form_design/Tab';
+import {
+  ValidationErrorContext,
+  ValidationErrorsProvider,
+} from 'components/admin/forms/ValidationErrors';
 
 import LegacyConfigFields from './LegacyConfigFields';
 import V2ConfigFields from './V2ConfigFields';
 
-const Wrapper = ({children}) => (
-  <form className="rjsf" name="form.registrationBackendOptions">
-    <CustomFieldTemplate displayLabel={false} errors={null}>
-      <fieldset id="root">{children}</fieldset>
-    </CustomFieldTemplate>
-  </form>
-);
-
-const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) => {
+const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
   const intl = useIntl();
+  const {values, setValues} = useFormikContext();
+  const validationErrors = useContext(ValidationErrorContext);
+  const {version = 1} = values;
 
   const v1SwitchMessage = intl.formatMessage({
     defaultMessage: `Switching to the legacy registration options will remove the existing variables mapping.
@@ -36,47 +34,43 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
     description: 'Objects API registration backend: v2 switch warning message',
   });
 
-  const {version = 1} = formData;
+  const changeVersion = tabIndex => {
+    const newVersion = tabIndex + 1;
 
-  const changeVersion = v => {
-    const realVersion = v + 1;
+    // change form fields values depending on the newly selected version
+    const newValues = {...values, version: newVersion};
 
-    if (realVersion === 1) {
-      const confirmV1Switch = window.confirm(v1SwitchMessage);
-      if (!confirmV1Switch) return;
+    switch (newVersion) {
+      case 1: {
+        const confirmV1Switch = window.confirm(v1SwitchMessage);
+        if (!confirmV1Switch) return;
+        delete newValues.variablesMapping;
+        break;
+      }
+      case 2: {
+        const confirmV2Switch = window.confirm(v2SwitchMessage);
+        if (!confirmV2Switch) return;
+        newValues.variablesMapping = [];
+        newValues.geometryVariableKey = '';
+        delete newValues.productaanvraagType;
+        delete newValues.contentJson;
+        delete newValues.paymentStatusUpdateJson;
+        break;
+      }
+      default: {
+        break;
+      }
     }
 
-    if (realVersion === 2) {
-      const confirmV2Switch = window.confirm(v2SwitchMessage);
-      if (!confirmV2Switch) return;
-    }
-
-    onChange(
-      produce(formData, draft => {
-        draft.version = realVersion;
-        if (realVersion === 2) {
-          draft.variablesMapping = [];
-          draft.geometryVariableKey = '';
-        } else {
-          delete draft.variablesMapping;
-        }
-        delete draft.productaanvraagType;
-        delete draft.contentJson;
-        delete draft.paymentStatusUpdateJson;
-      })
-    );
+    setValues(newValues);
   };
 
-  const onFieldChange = event => {
-    const {name, value} = event.target;
-    const updatedFormData = produce(formData, draft => {
-      draft[name] = value;
-    });
-    onChange(updatedFormData);
-  };
+  const relevantErrors = validationErrors
+    .filter(([key]) => key.startsWith(`${name}.`))
+    .map(([key, msg]) => [key.slice(name.length + 1), msg]);
 
   return (
-    <>
+    <ValidationErrorsProvider errors={relevantErrors}>
       <Tabs selectedIndex={version - 1} onSelect={changeVersion}>
         <TabList>
           <Tab>
@@ -95,55 +89,28 @@ const ObjectsApiOptionsFormFields = ({index, name, schema, formData, onChange}) 
 
         {/* Legacy format, template based */}
         <TabPanel>
-          <Wrapper>
-            <LegacyConfigFields
-              index={index}
-              name={name}
-              schema={schema}
-              formData={formData}
-              onFieldChange={onFieldChange}
-            />
-          </Wrapper>
+          <LegacyConfigFields apiGroupChoices={apiGroupChoices} />
         </TabPanel>
 
         {/* Tight objecttypes integration */}
         <TabPanel>
-          <Wrapper>
-            <V2ConfigFields
-              index={index}
-              name={name}
-              schema={schema}
-              formData={formData}
-              onFieldChange={onFieldChange}
-              onChange={onChange}
-            />
-          </Wrapper>
+          <V2ConfigFields apiGroupChoices={apiGroupChoices} />
         </TabPanel>
       </Tabs>
-    </>
+    </ValidationErrorsProvider>
   );
 };
 
 ObjectsApiOptionsFormFields.propTypes = {
-  index: PropTypes.number,
   name: PropTypes.string,
-  schema: PropTypes.any,
-  formData: PropTypes.shape({
-    objectsApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    version: PropTypes.number,
-    objecttype: PropTypes.string,
-    objecttypeVersion: PropTypes.string,
-    updateExistingObject: PropTypes.bool,
-    productaanvraagType: PropTypes.string,
-    informatieobjecttypeSubmissionReport: PropTypes.string,
-    uploadSubmissionCsv: PropTypes.bool,
-    informatieobjecttypeSubmissionCsv: PropTypes.string,
-    informatieobjecttypeAttachment: PropTypes.string,
-    organisatieRsin: PropTypes.string,
-    contentJson: PropTypes.string,
-    paymentStatusUpdateJson: PropTypes.string,
-  }),
-  onChange: PropTypes.func.isRequired,
+  apiGroupChoices: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.number, // value
+        PropTypes.string, // label
+      ])
+    )
+  ).isRequired,
 };
 
 export default ObjectsApiOptionsFormFields;

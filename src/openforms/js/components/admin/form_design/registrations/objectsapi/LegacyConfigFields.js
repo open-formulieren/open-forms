@@ -1,360 +1,191 @@
+import {useField} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect} from 'react';
-import {useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
-import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
-import {Checkbox, NumberInput, TextArea, TextInput} from 'components/admin/forms/Inputs';
-import Select from 'components/admin/forms/Select';
-import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
+import {TextArea, TextInput} from 'components/admin/forms/Inputs';
+import ErrorBoundary from 'components/errors/ErrorBoundary';
 
-import {getChoicesFromSchema, getErrorMarkup, getFieldErrors} from './utils';
+import {
+  InformatieobjecttypeAttachment,
+  InformatieobjecttypeSubmissionCsv,
+  InformatieobjecttypeSubmissionReport,
+  ObjectTypeSelect,
+  ObjectTypeVersionSelect,
+  ObjectsAPIGroup,
+  OrganisationRSIN,
+  UpdateExistingObject,
+  UploadSubmissionCsv,
+} from './fields';
 
-const LegacyConfigFields = ({index, name, schema, formData, onFieldChange}) => {
-  const intl = useIntl();
-  const validationErrors = useContext(ValidationErrorContext);
+const LegacyConfigFields = ({apiGroupChoices}) => (
+  <>
+    <Fieldset>
+      <ObjectsAPIGroup apiGroupChoices={apiGroupChoices} />
+      <ErrorBoundary
+        errorMessage={
+          <FormattedMessage
+            description="Legacy Objects API registrations options: unknown error"
+            defaultMessage={`Something went wrong retrieving the available object types and/or versions.
+              Please check that the services in the selected API group are configured correctly.`}
+          />
+        }
+      >
+        <ObjectTypeSelect />
+        <ObjectTypeVersionSelect />
+      </ErrorBoundary>
+    </Fieldset>
 
-  const {
-    objectsApiGroup = '',
-    objecttype = '',
-    objecttypeVersion = '',
-    productaanvraagType = '',
-    updateExistingObject = false,
-    informatieobjecttypeSubmissionReport = '',
-    uploadSubmissionCsv = false,
-    informatieobjecttypeSubmissionCsv = '',
-    informatieobjecttypeAttachment = '',
-    organisatieRsin = '',
-    contentJson = '',
-    paymentStatusUpdateJson = '',
-  } = formData;
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Objects registration: object definition"
+          defaultMessage="Object and/or product request definition"
+        />
+      }
+      collapsible
+      initialCollapsed={false}
+    >
+      <ProductAanvraag />
+      <ContentJSON />
+      <PaymentStatusUpdateJSON />
+    </Fieldset>
 
-  const buildErrorsComponent = field => {
-    const rawErrors = getFieldErrors(name, index, validationErrors, field);
-    return rawErrors ? getErrorMarkup(rawErrors) : null;
-  };
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Objects registration: document types"
+          defaultMessage="Document types"
+        />
+      }
+      collapsible
+      fieldNames={[
+        'informatieobjecttypeSubmissionReport',
+        'informatieobjecttypeSubmissionCsv',
+        'informatieobjecttypeAttachment',
+      ]}
+    >
+      <InformatieobjecttypeSubmissionReport />
+      <InformatieobjecttypeSubmissionCsv />
+      <InformatieobjecttypeAttachment />
+    </Fieldset>
 
-  useEffect(() => {
-    if (schema.properties.objectsApiGroup.enum.length === 1 && objectsApiGroup === '') {
-      onFieldChange({
-        target: {name: 'objectsApiGroup', value: schema.properties.objectsApiGroup.enum[0]},
-      });
-    }
-  }, []);
+    <Fieldset
+      title={
+        <FormattedMessage
+          description="Objects registration: other options"
+          defaultMessage="Other options"
+        />
+      }
+      collapsible
+      fieldNames={['organisatieRsin']}
+    >
+      <UploadSubmissionCsv />
+      <UpdateExistingObject />
+      <OrganisationRSIN />
+    </Fieldset>
+  </>
+);
 
+LegacyConfigFields.propTypes = {
+  apiGroupChoices: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.number, // value
+        PropTypes.string, // label
+      ])
+    )
+  ).isRequired,
+};
+
+const ProductAanvraag = () => {
+  const [fieldProps] = useField('productaanvraagType');
   return (
-    <>
-      <CustomFieldTemplate
-        id="root_objectsApiGroup"
-        label={intl.formatMessage({
-          defaultMessage: 'Objects API group',
-          description: 'Objects API group',
-        })}
-        rawDescription={intl.formatMessage({
-          description: 'Objects API group selection',
-          defaultMessage: 'Which Objects API group to use.',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'objectsApiGroup')}
-        errors={buildErrorsComponent('objectsApiGroup')}
-        displayLabel
-        required
+    <FormRow>
+      {/*TODO: errors*/}
+      <Field
+        name="productaanvraagType"
+        label={
+          <FormattedMessage
+            description="Legacy objects API registration options: 'productaanvraagType' label"
+            defaultMessage="Product request type"
+          />
+        }
+        helpText={
+          <FormattedMessage
+            description="Legacy objects API registration options: 'productaanvraagType' helpText"
+            defaultMessage="Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
+          />
+        }
       >
-        <Select
-          id="root_objectsApiGroup"
-          name="objectsApiGroup"
-          choices={getChoicesFromSchema(
-            schema.properties.objectsApiGroup.enum,
-            schema.properties.objectsApiGroup.enumNames
-          )}
-          value={objectsApiGroup}
-          onChange={onFieldChange}
-          allowBlank
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_objecttype"
-        label={intl.formatMessage({
-          defaultMessage: 'Objecttype',
-          description: 'Objects API registration options "Objecttype" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage:
-            'UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: "submission_id", "type" (the type of productaanvraag) and "data" (the submitted form data)',
-          description: 'Objects API registration options "Objecttype" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'objecttype')}
-        errors={buildErrorsComponent('objecttype')}
-        displayLabel
-        required
-      >
-        <TextInput
-          id="root_objecttype"
-          name="objecttype"
-          value={objecttype}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_objecttypeVersion"
-        label={intl.formatMessage({
-          defaultMessage: 'Objecttype version',
-          description: 'Objects API registration options "Objecttype version" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage: 'Version of the objecttype in the Objecttypes API',
-          description: 'Objects API registration options "Objecttype version" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'objecttypeVersion')}
-        errors={buildErrorsComponent('objecttypeVersion')}
-        displayLabel
-        required
-      >
-        <NumberInput
-          id="root_objecttypeVersion"
-          name="objecttypeVersion"
-          value={objecttypeVersion}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_updateExistingObject"
-        label={intl.formatMessage({
-          defaultMessage: 'Update existing object',
-          description: 'Objects API registration options "Update existing object" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage:
-            'Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead',
-          description: 'Objects API registration options "Update existing object" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'updateExistingObject')}
-        errors={buildErrorsComponent('updateExistingObject')}
-        displayLabel
-      >
-        <Checkbox
-          id="root_updateExistingObject"
-          name="updateExistingObject"
-          checked={updateExistingObject}
-          onChange={e =>
-            onFieldChange({target: {name: 'updateExistingObject', value: !updateExistingObject}})
-          }
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_productaanvraagType"
-        label={intl.formatMessage({
-          defaultMessage: 'Productaanvraag type',
-          description: 'Objects API registration options "Productaanvraag type" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage: 'The type of ProductAanvraag',
-          description: 'Objects API registration options "Productaanvraag type" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'productaanvraagType')}
-        errors={buildErrorsComponent('productaanvraagType')}
-        displayLabel
-      >
-        <TextInput
-          id="root_productaanvraagType"
-          name="productaanvraagType"
-          value={productaanvraagType}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_informatieobjecttypeSubmissionReport"
-        label={intl.formatMessage({
-          defaultMessage: 'Submission report PDF informatieobjecttype',
-          description:
-            'Objects API registration options "Submission report PDF informatieobjecttype" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF',
-          description:
-            'Objects API registration options "Submission report PDF informatieobjecttype" description',
-        })}
-        rawErrors={getFieldErrors(
-          name,
-          index,
-          validationErrors,
-          'informatieobjecttypeSubmissionReport'
-        )}
-        errors={buildErrorsComponent('informatieobjecttypeSubmissionReport')}
-        displayLabel
-      >
-        <TextInput
-          id="root_informatieobjecttypeSubmissionReport"
-          name="informatieobjecttypeSubmissionReport"
-          value={informatieobjecttypeSubmissionReport}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_uploadSubmissionCsv"
-        label={intl.formatMessage({
-          defaultMessage: 'Upload submission CSV',
-          description: 'Objects API registration options "Upload submission CSV" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage:
-            'Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag',
-          description: 'Objects API registration options "Upload submission CSV" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'uploadSubmissionCsv')}
-        errors={buildErrorsComponent('uploadSubmissionCsv')}
-        displayLabel
-      >
-        <Checkbox
-          id="root_uploadSubmissionCsv"
-          name="uploadSubmissionCsv"
-          checked={uploadSubmissionCsv}
-          onChange={e =>
-            onFieldChange({target: {name: 'uploadSubmissionCsv', value: !uploadSubmissionCsv}})
-          }
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_informatieobjecttypeSubmissionCsv"
-        label={intl.formatMessage({
-          defaultMessage: 'Submission report CSV informatieobjecttype',
-          description:
-            'Objects API registration options "Submission report CSV informatieobjecttype" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report CSV',
-          description:
-            'Objects API registration options "Submission report CSV informatieobjecttype" description',
-        })}
-        rawErrors={getFieldErrors(
-          name,
-          index,
-          validationErrors,
-          'informatieobjecttypeSubmissionCsv'
-        )}
-        errors={buildErrorsComponent('informatieobjecttypeSubmissionCsv')}
-        displayLabel
-      >
-        <TextInput
-          id="root_informatieobjecttypeSubmissionCsv"
-          name="informatieobjecttypeSubmissionCsv"
-          value={informatieobjecttypeSubmissionCsv}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_informatieobjecttypeAttachment"
-        label={intl.formatMessage({
-          defaultMessage: 'Attachment informatieobjecttype',
-          description: 'Objects API registration options "Attachment informatieobjecttype" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage:
-            'URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission attachments',
-          description:
-            'Objects API registration options "Attachment informatieobjecttype" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'informatieobjecttypeAttachment')}
-        errors={buildErrorsComponent('informatieobjecttypeAttachment')}
-        displayLabel
-      >
-        <TextInput
-          id="root_informatieobjecttypeAttachment"
-          name="informatieobjecttypeAttachment"
-          value={informatieobjecttypeAttachment}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_organisatieRsin"
-        label={intl.formatMessage({
-          defaultMessage: 'Organisation RSIN',
-          description: 'Objects API registration options "Organisation RSIN" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage: 'RSIN of organization, which creates the INFORMATIEOBJECT',
-          description: 'Objects API registration options "Organisation RSIN" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'organisatieRsin')}
-        errors={buildErrorsComponent('organisatieRsin')}
-        displayLabel
-      >
-        <TextInput
-          id="root_organisatieRsin"
-          name="organisatieRsin"
-          value={organisatieRsin}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_contentJson"
-        label={intl.formatMessage({
-          defaultMessage: 'JSON content field',
-          description: 'Objects API registration options "JSON content field" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage: 'JSON template for the body of the request sent to the Objects API.',
-          description: 'Objects API registration options "JSON content field" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'contentJson')}
-        errors={buildErrorsComponent('contentJson')}
-        displayLabel
-      >
-        <TextArea
-          id="root_contentJson"
-          name="contentJson"
-          value={contentJson}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-      <CustomFieldTemplate
-        id="root_paymentStatusUpdateJson"
-        label={intl.formatMessage({
-          defaultMessage: 'Payment status update JSON template',
-          description:
-            'Objects API registration options "Payment status update JSON template" label',
-        })}
-        rawDescription={intl.formatMessage({
-          defaultMessage:
-            'This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field.',
-          description:
-            'Objects API registration options "Payment status update JSON template" description',
-        })}
-        rawErrors={getFieldErrors(name, index, validationErrors, 'paymentStatusUpdateJson')}
-        errors={buildErrorsComponent('paymentStatusUpdateJson')}
-        displayLabel
-      >
-        <TextArea
-          id="root_paymentStatusUpdateJson"
-          name="paymentStatusUpdateJson"
-          value={paymentStatusUpdateJson}
-          onChange={onFieldChange}
-        />
-      </CustomFieldTemplate>
-    </>
+        <TextInput id="id_productaanvraagType" {...fieldProps} />
+      </Field>
+    </FormRow>
   );
 };
 
-LegacyConfigFields.propTypes = {
-  index: PropTypes.number,
-  name: PropTypes.string,
-  schema: PropTypes.any,
-  formData: PropTypes.shape({
-    objectsApiGroup: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    version: PropTypes.number,
-    objecttype: PropTypes.string,
-    objecttypeVersion: PropTypes.string,
-    updateExistingObject: PropTypes.bool,
-    productaanvraagType: PropTypes.string,
-    informatieobjecttypeSubmissionReport: PropTypes.string,
-    uploadSubmissionCsv: PropTypes.bool,
-    informatieobjecttypeSubmissionCsv: PropTypes.string,
-    informatieobjecttypeAttachment: PropTypes.string,
-    organisatieRsin: PropTypes.string,
-    contentJson: PropTypes.string,
-    paymentStatusUpdateJson: PropTypes.string,
-  }),
-  onFieldChange: PropTypes.func.isRequired,
+const JSONTemplateField = ({name, label, helpText}) => {
+  const [fieldProps] = useField(name);
+  return (
+    <FormRow>
+      {/*TODO: errors*/}
+      <Field name={name} label={label} helpText={helpText}>
+        <TextArea
+          id={`id_${name}`}
+          rows={5}
+          cols={85}
+          {...fieldProps}
+          style={{fontFamily: 'monospace'}}
+        />
+      </Field>
+    </FormRow>
+  );
 };
+
+JSONTemplateField.propTypes = {
+  name: PropTypes.oneOf(['contentJson', 'paymentStatusUpdateJson']).isRequired,
+  label: PropTypes.node.isRequired,
+  helpText: PropTypes.node,
+};
+
+const ContentJSON = () => (
+  <JSONTemplateField
+    name="contentJson"
+    label={
+      <FormattedMessage
+        description="Legacy objects API registration options: 'contentJSON' label"
+        defaultMessage="JSON content template"
+      />
+    }
+    helpText={
+      <FormattedMessage
+        description="Legacy objects API registration options: 'contentJSON' helpText"
+        defaultMessage="JSON template for the body of the request sent to the Objects API."
+      />
+    }
+  />
+);
+
+const PaymentStatusUpdateJSON = () => (
+  <JSONTemplateField
+    name="paymentStatusUpdateJson"
+    label={
+      <FormattedMessage
+        description="Legacy objects API registration options: 'paymentStatusUpdateJson' label"
+        defaultMessage="Payment status update JSON template"
+      />
+    }
+    helpText={
+      <FormattedMessage
+        description="Legacy objects API registration options: 'paymentStatusUpdateJson' helpText"
+        defaultMessage={`This template is evaluated with the submission data when
+        the payment is received. The resulting JSON is sent to the objects API to
+        update (the payment fields of) the earlier created object.`}
+      />
+    }
+  />
+);
 
 export default LegacyConfigFields;
