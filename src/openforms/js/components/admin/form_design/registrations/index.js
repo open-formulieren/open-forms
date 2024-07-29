@@ -49,4 +49,12 @@ export const BACKEND_OPTIONS_FORMS = {
     form: ZGWOptionsForm,
     onStepEdit: onZGWStepEdit,
   },
+  'stuf-zds-create-zaak:ext-utrecht': {
+    uiSchema: {
+      paymentStatusUpdateXml: {
+        'ui:widget': 'textarea',
+        'ui:rows': '10',
+      },
+    },
+  },
 };
