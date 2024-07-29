@@ -115,5 +115,10 @@
         box-sizing: border-box;
       }
     }
+
+    input[type='url'],
+    input[type='text'] {
+      inline-size: var(--of-admin-input-field-size);
+    }
   }
 }
