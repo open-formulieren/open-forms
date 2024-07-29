@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  flask_app:
+    build: ./stuf-zds
+    ports:
+      - "80:80"
+    volumes:
+      - ./stuf-zds/:/app/
+      - ../src/stuf/stuf_zds/templates/stuf_zds/soap/response-mock/:/app/templates/
