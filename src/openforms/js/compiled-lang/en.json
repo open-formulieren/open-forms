@@ -197,10 +197,22 @@
       "value": "Confirm"
     }
   ],
+  "1HfdUc": [
+    {
+      "type": 0,
+      "value": "The API group specifies which objects and objecttypes services to use."
+    }
+  ],
   "1I9Slb": [
     {
       "type": 0,
       "value": "DMN configuration:"
+    }
+  ],
+  "1M3VJC": [
+    {
+      "type": 0,
+      "value": "Configure options"
     }
   ],
   "1Vvryq": [
@@ -325,6 +337,12 @@
     {
       "type": 0,
       "value": "Validation"
+    }
+  ],
+  "2k1bnf": [
+    {
+      "type": 0,
+      "value": "API group"
     }
   ],
   "2sbkGI": [
@@ -495,12 +513,6 @@
     {
       "type": 0,
       "value": "Name"
-    }
-  ],
-  "51k2La": [
-    {
-      "type": 0,
-      "value": "JSON content field"
     }
   ],
   "5AC1+x": [
@@ -835,12 +847,6 @@
       "value": "(missing label)"
     }
   ],
-  "8/Nzyy": [
-    {
-      "type": 0,
-      "value": "Changing the Objects API group will remove the existing variables mapping. Are you sure you want to continue?"
-    }
-  ],
   "833GAg": [
     {
       "type": 0,
@@ -979,6 +985,12 @@
       "value": "varCount"
     }
   ],
+  "9WZkZg": [
+    {
+      "type": 0,
+      "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
+    }
+  ],
   "9bGp7h": [
     {
       "type": 0,
@@ -1007,12 +1019,6 @@
     {
       "type": 0,
       "value": "Errored Submissions Removal Limit"
-    }
-  ],
-  "A/vedA": [
-    {
-      "type": 0,
-      "value": "JSON template for the body of the request sent to the Objects API."
     }
   ],
   "A1tDIH": [
@@ -1055,6 +1061,12 @@
     {
       "type": 0,
       "value": "Configure"
+    }
+  ],
+  "AHsD4C": [
+    {
+      "type": 0,
+      "value": "Something went wrong retrieving the available object type versions."
     }
   ],
   "ALLoNx": [
@@ -1403,6 +1415,12 @@
       "value": " logic rule(s)."
     }
   ],
+  "D717gY": [
+    {
+      "type": 0,
+      "value": "Other options"
+    }
+  ],
   "DEAqyQ": [
     {
       "type": 0,
@@ -1485,6 +1503,12 @@
     {
       "type": 0,
       "value": "Logic"
+    }
+  ],
+  "DyF32d": [
+    {
+      "type": 0,
+      "value": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request."
     }
   ],
   "E/biiX": [
@@ -1631,6 +1655,12 @@
     {
       "type": 0,
       "value": "the array"
+    }
+  ],
+  "F9ew4C": [
+    {
+      "type": 0,
+      "value": "Version"
     }
   ],
   "FH2sxf": [
@@ -1845,12 +1875,6 @@
       "value": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
-  "HKA7Ic": [
-    {
-      "type": 0,
-      "value": "Productaanvraag type"
-    }
-  ],
   "HNoGb8": [
     {
       "type": 0,
@@ -1911,6 +1935,12 @@
     {
       "type": 0,
       "value": "Select form definition"
+    }
+  ],
+  "I6wBDK": [
+    {
+      "type": 0,
+      "value": "Object and/or product request definition"
     }
   ],
   "I7lkuw": [
@@ -2031,6 +2061,12 @@
     {
       "type": 0,
       "value": "Last Name Component"
+    }
+  ],
+  "K/Oijt": [
+    {
+      "type": 0,
+      "value": "Organisation RSIN"
     }
   ],
   "K1A6QK": [
@@ -2303,22 +2339,10 @@
       "value": "A short instruction shown below the signature pad."
     }
   ],
-  "Nv0J2Y": [
-    {
-      "type": 0,
-      "value": "Update existing object"
-    }
-  ],
   "NwTdLM": [
     {
       "type": 0,
       "value": "Component where locations for an appointment will be shown"
-    }
-  ],
-  "NwxORf": [
-    {
-      "type": 0,
-      "value": "Upload submission CSV"
     }
   ],
   "O/wKJh": [
@@ -2621,10 +2645,10 @@
       "value": "viewMode"
     }
   ],
-  "RELMCa": [
+  "RM89fL": [
     {
       "type": 0,
-      "value": "Which Objects API group to use."
+      "value": "Something went wrong retrieving the available object types."
     }
   ],
   "RN628y": [
@@ -2911,12 +2935,6 @@
     {
       "type": 0,
       "value": "All Submissions Removal Limit"
-    }
-  ],
-  "UjvOBe": [
-    {
-      "type": 0,
-      "value": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
     }
   ],
   "UlVtQd": [
@@ -3453,6 +3471,12 @@
       "value": "Set the registration backend to use for the submission"
     }
   ],
+  "ZzjFxE": [
+    {
+      "type": 0,
+      "value": "Changing the api group will remove the existing variables mapping. Are you sure you want to continue?"
+    }
+  ],
   "a4gS07": [
     {
       "type": 0,
@@ -3551,6 +3575,12 @@
       "value": "Display in summaries and confirmations"
     }
   ],
+  "b06rv0": [
+    {
+      "type": 0,
+      "value": "Document types"
+    }
+  ],
   "b5Bxb/": [
     {
       "type": 0,
@@ -3593,6 +3623,12 @@
     {
       "type": 1,
       "value": "backendName"
+    }
+  ],
+  "bjIQDR": [
+    {
+      "type": 0,
+      "value": "Objecttype"
     }
   ],
   "bmlODS": [
@@ -3759,6 +3795,12 @@
       "value": "Integer"
     }
   ],
+  "crEWfn": [
+    {
+      "type": 0,
+      "value": "Product request type"
+    }
+  ],
   "ctoEdl": [
     {
       "type": 0,
@@ -3793,6 +3835,30 @@
     {
       "type": 0,
       "value": "Remove item"
+    }
+  ],
+  "dGBYF7": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(Hide)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(Show)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "collapsed"
     }
   ],
   "dJNdhr": [
@@ -3891,12 +3957,6 @@
       "value": "configured"
     }
   ],
-  "dwkDsV": [
-    {
-      "type": 0,
-      "value": "Version of the objecttype in the Objecttypes API"
-    }
-  ],
   "e6SsfR": [
     {
       "type": 0,
@@ -3915,6 +3975,12 @@
       "value": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
     }
   ],
+  "eC2etA": [
+    {
+      "type": 0,
+      "value": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -3925,12 +3991,6 @@
     {
       "type": 0,
       "value": "Advanced options"
-    }
-  ],
-  "eR8wGd": [
-    {
-      "type": 0,
-      "value": "RSIN of organization, which creates the INFORMATIEOBJECT"
     }
   ],
   "eU7+uS": [
@@ -4021,12 +4081,6 @@
     {
       "type": 0,
       "value": "Save the value as this attribute in the registration backend system."
-    }
-  ],
-  "fVNaJK": [
-    {
-      "type": 0,
-      "value": "Objecttype version"
     }
   ],
   "fWcg7I": [
@@ -4187,6 +4241,12 @@
       "value": "Minimal levels of assurance"
     }
   ],
+  "hBxKbW": [
+    {
+      "type": 0,
+      "value": "JSON content template"
+    }
+  ],
   "hJtTwo": [
     {
       "type": 0,
@@ -4235,12 +4295,6 @@
       "value": "Configure"
     }
   ],
-  "hwD3q9": [
-    {
-      "type": 0,
-      "value": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag"
-    }
-  ],
   "hwsnj9": [
     {
       "type": 0,
@@ -4263,12 +4317,6 @@
     {
       "type": 0,
       "value": "Label"
-    }
-  ],
-  "iHpAYZ": [
-    {
-      "type": 0,
-      "value": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field."
     }
   ],
   "iNmPDd": [
@@ -4381,12 +4429,6 @@
     {
       "type": 0,
       "value": "Form definition"
-    }
-  ],
-  "jCUorM": [
-    {
-      "type": 0,
-      "value": "Something went wrong when fectching the available Objecttypes and versions"
     }
   ],
   "jLg5l6": [
@@ -4503,12 +4545,6 @@
       "value": "disabled"
     }
   ],
-  "kQtrKX": [
-    {
-      "type": 0,
-      "value": "The type of ProductAanvraag"
-    }
-  ],
   "kg/eh1": [
     {
       "type": 0,
@@ -4519,6 +4555,12 @@
     {
       "type": 0,
       "value": "Description"
+    }
+  ],
+  "klKZV5": [
+    {
+      "type": 0,
+      "value": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead."
     }
   ],
   "klYCow": [
@@ -4553,12 +4595,6 @@
       ],
       "type": 8,
       "value": "code"
-    }
-  ],
-  "l/mtou": [
-    {
-      "type": 0,
-      "value": "Payment status update JSON template"
     }
   ],
   "l1fi1t": [
@@ -4675,12 +4711,6 @@
       "value": "House number"
     }
   ],
-  "mgs/Xe": [
-    {
-      "type": 0,
-      "value": "Objects API group"
-    }
-  ],
   "mpzdoT": [
     {
       "type": 0,
@@ -4739,6 +4769,12 @@
     {
       "type": 0,
       "value": "Bronorganisatie"
+    }
+  ],
+  "neCqv9": [
+    {
+      "type": 0,
+      "value": "The registration result will be an object from the selected type."
     }
   ],
   "nkr7r0": [
@@ -4949,6 +4985,12 @@
       "value": "Confirm"
     }
   ],
+  "q3kxsb": [
+    {
+      "type": 0,
+      "value": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+    }
+  ],
   "qUYLVg": [
     {
       "type": 0,
@@ -5021,10 +5063,10 @@
       "value": "Data type"
     }
   ],
-  "rJTe9U": [
+  "rQy+Yq": [
     {
       "type": 0,
-      "value": "Objecttype"
+      "value": "Upload submission CSV"
     }
   ],
   "rRB7WE": [
@@ -5037,6 +5079,12 @@
     {
       "type": 0,
       "value": "Float"
+    }
+  ],
+  "rVV0i6": [
+    {
+      "type": 0,
+      "value": "Update existing object"
     }
   ],
   "rZfe8Z": [
@@ -5195,6 +5243,12 @@
       "value": "The earliest possible value that can be entered."
     }
   ],
+  "tg+6bo": [
+    {
+      "type": 0,
+      "value": "Payment status update JSON template"
+    }
+  ],
   "tjRtQk": [
     {
       "type": 0,
@@ -5219,6 +5273,12 @@
       "value": "Name"
     }
   ],
+  "u3P/1E": [
+    {
+      "type": 0,
+      "value": "RSIN of the organization, which creates and owns the INFORMATIEOBJECTs."
+    }
+  ],
   "u5XYQh": [
     {
       "type": 0,
@@ -5241,12 +5301,6 @@
     {
       "type": 0,
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
-    }
-  ],
-  "uO3byK": [
-    {
-      "type": 0,
-      "value": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
     }
   ],
   "uVVO4b": [
@@ -5501,6 +5555,12 @@
       "value": "Zoom level"
     }
   ],
+  "xyVtKp": [
+    {
+      "type": 0,
+      "value": "Plugin configuration: Objects API"
+    }
+  ],
   "y2I3Eu": [
     {
       "type": 0,
@@ -5557,6 +5617,12 @@
     {
       "type": 0,
       "value": "Translations"
+    }
+  ],
+  "yLt2lv": [
+    {
+      "type": 0,
+      "value": "JSON template for the body of the request sent to the Objects API."
     }
   ],
   "yQUV3M": [
@@ -5625,12 +5691,6 @@
       "value": "Use globally configured map component settings"
     }
   ],
-  "zF8YEc": [
-    {
-      "type": 0,
-      "value": "Organisation RSIN"
-    }
-  ],
   "zGMQ75": [
     {
       "type": 0,
@@ -5647,6 +5707,12 @@
     {
       "type": 0,
       "value": "N/A"
+    }
+  ],
+  "zQcTdi": [
+    {
+      "type": 0,
+      "value": "Something went wrong retrieving the available object types and/or versions. Please check that the services in the selected API group are configured correctly."
     }
   ],
   "zUVGyl": [
@@ -5689,12 +5755,6 @@
     {
       "type": 0,
       "value": "Use logic rules to determine the price"
-    }
-  ],
-  "zrsWsH": [
-    {
-      "type": 0,
-      "value": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead"
     }
   ]
 }
