@@ -2,6 +2,29 @@
 Changelog
 =========
 
+2.7.1 (2024-07-29)
+==================
+
+First bugfix release for 2.7.x.
+
+* [:backend:`4533`] Fixed Objects API registration options checkboxes not toggling.
+* [:backend:`4516`] Fixed imports (and error feedback) of legacy exports with Objects
+  API registration backends. It should now be more clear that admins possibly need to
+  check the Objects API groups configuration.
+* [:backend:`4191`] Fixed the datatype of ``vestiging`` field in ZGW registration
+  rollen/betrokkenen.
+* [:backend:`4334`] Fixed the email registration plugin not sending a payment-received
+  email when "wait for payment to register" is enabled. This behaviour is to ensure that
+  financial departments can always be informed of payment administration.
+* [:backend:`4502`] Fixed a problem where the registration-backend routing logic is not
+  calculated again after pausing and resuming a submission.
+* [:backend:`4560`] Fixed more PDF generation overlapping content issues. The layout no
+  longer uses two columns, but just stacks the labels and answers below each other since
+  a compromise was not feasible.
+* [:backend:`4519`] Fixed form variable dropdowns taking up too much horizontal space.
+* Backend checks of form component validation configuration are mandatory. All
+  components support the same set of validation mechanism in frontend and backend.
+
 2.7.0 "Berlage" (2024-07-09)
 ============================
 
@@ -19,6 +42,8 @@ Upgrade notes
 
 * ⚠️ The feature flag to disable backend validation is now removed, instances relying
   on it should verify that their forms still work now that validation is enforced.
+
+* NOTE ABOUT OBJECTS API GROUPS AND OBJECTTYPES SERVICE.
 
 * We're consolidating the OpenID Connect *Redirect URI* endpoints into a single
   endpoint: ``/auth/oidc/callback/``. The legacy endpoints are still enabled,
