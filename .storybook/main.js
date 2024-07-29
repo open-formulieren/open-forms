@@ -13,6 +13,7 @@ const config = {
     {from: '../static/fonts', to: 'static/fonts'},
     {from: '../static/img', to: 'static/img'},
     // required in dev mode due to style-loader usage
+    {from: '../static/admin', to: 'admin'},
     {from: '../static/fonts', to: 'fonts'},
     {from: '../static/img', to: 'img'},
     {from: '../public', to: ''},
