@@ -2,6 +2,25 @@
 Changelog
 =========
 
+2.6.13 (2024-07-29)
+===================
+
+Bugfix release.
+
+* [#4191] Fixed the datatype of ``vestiging`` field in ZGW registration
+  rollen/betrokkenen.
+* [#4334] Fixed the email registration plugin not sending a payment-received
+  email when "wait for payment to register" is enabled. This behaviour is to ensure that
+  financial departments can always be informed of payment administration.
+* [#4502] Fixed a problem where the registration-backend routing logic is not
+  calculated again after pausing and resuming a submission.
+* [#4560] Fixed more PDF generation overlapping content issues. The layout no
+  longer uses two columns, but just stacks the labels and answers below each other since
+  a compromise was not feasible.
+* [#4519] Fixed form variable dropdowns taking up too much horizontal space.
+* Backend checks of form component validation configuration are mandatory. All
+  components support the same set of validation mechanism in frontend and backend.
+
 2.6.12 (2024-07-12)
 ===================
 
