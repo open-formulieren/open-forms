@@ -1,41 +1,64 @@
 import {Formik} from 'formik';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
-import {FormattedMessage} from 'react-intl';
+import React, {useContext, useState} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import Field from 'components/admin/forms/Field';
 import SubmitRow from 'components/admin/forms/SubmitRow';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import {ErrorIcon} from 'components/admin/icons';
 import {FormModal} from 'components/admin/modals';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
-import {getChoicesFromSchema} from './utils';
+import {filterErrors, getChoicesFromSchema} from './utils';
 
 const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange}) => {
+  const intl = useIntl();
   const [modalOpen, setModalOpen] = useState(false);
+  const validationErrors = useContext(ValidationErrorContext);
   const {objectsApiGroup} = schema.properties;
   const apiGroupChoices = getChoicesFromSchema(objectsApiGroup.enum, objectsApiGroup.enumNames);
+  const numErrors = filterErrors(name, validationErrors).length;
   return (
     <Field name={name} label={label}>
       <>
-        <button
-          type="button"
-          className="button"
-          onClick={e => {
-            e.preventDefault();
-            setModalOpen(true);
-          }}
-          // admin style overrides...
-          style={{
-            paddingInline: '15px',
-            paddingBlock: '10px',
-          }}
-        >
-          <FormattedMessage
-            description="Link label to open registration options modal"
-            defaultMessage="Configure options"
-          />
-        </button>
+        <span style={{display: 'inline-flex', gap: '10px', alignItems: 'center'}}>
+          <button
+            type="button"
+            className="button"
+            onClick={e => {
+              e.preventDefault();
+              setModalOpen(true);
+            }}
+            // admin style overrides...
+            style={{
+              paddingInline: '15px',
+              paddingBlock: '10px',
+            }}
+          >
+            <FormattedMessage
+              description="Link label to open registration options modal"
+              defaultMessage="Configure options"
+            />
+          </button>
+
+          {numErrors > 0 && (
+            <ErrorIcon
+              text={intl.formatMessage(
+                {
+                  description: 'Objects API registration validation errors icon next to button',
+                  defaultMessage: `{numErrors, plural,
+              one {There is a validation error.}
+              other {There are {numErrors} validation errors.}
+            }`,
+                },
+                {numErrors}
+              )}
+              extraClassname="fa-lg icon icon--danger icon--compact icon--no-pointer"
+            />
+          )}
+        </span>
 
         <FormModal
           isOpen={modalOpen}

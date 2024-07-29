@@ -8,7 +8,6 @@ const UpdateExistingObject = () => {
   const [fieldProps] = useField({name: 'updateExistingObject', type: 'checkbox'});
   return (
     <FormRow>
-      {/*TODO: errors*/}
       <Checkbox
         id="id_updateExistingObject"
         label={

@@ -51,7 +51,6 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
             defaultMessage="The API group specifies which objects and objecttypes services to use."
           />
         }
-        // errors={errors.objectsApiGroup}
       >
         <Select
           allowBlank

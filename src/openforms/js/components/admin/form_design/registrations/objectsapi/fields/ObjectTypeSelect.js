@@ -79,7 +79,6 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
             defaultMessage="The registration result will be an object from the selected type."
           />
         }
-        // errors={errors.objecttype}
       >
         <Select
           required

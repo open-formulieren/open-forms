@@ -1619,6 +1619,11 @@
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
   },
+  "aDFrqO": {
+    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
+    "description": "Objects API registration validation errors icon next to button",
+    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
+  },
   "aUChz/": {
     "defaultMessage": "Product veld",
     "description": "Products Component field label",

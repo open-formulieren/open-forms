@@ -10,7 +10,6 @@ const DocumentType = ({name, label, helpText}) => {
   const [fieldProps] = useField(name);
   return (
     <FormRow>
-      {/*TODO: errors*/}
       <Field name={name} label={label} helpText={helpText}>
         <TextInput id={`id_${name}`} {...fieldProps} />
       </Field>

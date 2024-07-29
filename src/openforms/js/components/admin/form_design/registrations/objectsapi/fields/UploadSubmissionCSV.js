@@ -8,7 +8,6 @@ const UploadSubmissionCsv = () => {
   const [fieldProps] = useField({name: 'uploadSubmissionCsv', type: 'checkbox'});
   return (
     <FormRow>
-      {/*TODO: errors*/}
       <Checkbox
         id="id_uploadSubmissionCsv"
         label={

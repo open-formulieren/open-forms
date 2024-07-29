@@ -12,6 +12,7 @@ import {
 
 import LegacyConfigFields from './LegacyConfigFields';
 import V2ConfigFields from './V2ConfigFields';
+import {filterErrors} from './utils';
 
 const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
   const intl = useIntl();
@@ -65,10 +66,7 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
     setValues(newValues);
   };
 
-  const relevantErrors = validationErrors
-    .filter(([key]) => key.startsWith(`${name}.`))
-    .map(([key, msg]) => [key.slice(name.length + 1), msg]);
-
+  const relevantErrors = filterErrors(name, validationErrors);
   return (
     <ValidationErrorsProvider errors={relevantErrors}>
       <Tabs selectedIndex={version - 1} onSelect={changeVersion}>

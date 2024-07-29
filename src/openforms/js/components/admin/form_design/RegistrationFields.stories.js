@@ -4,11 +4,13 @@ import {
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
+import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
 
 import RegistrationFields from './RegistrationFields';
 
 export default {
   title: 'Form design / Registration / RegistrationFields',
+  decorators: [ValidationErrorsDecorator],
   component: RegistrationFields,
   args: {
     availableBackends: [
@@ -261,6 +263,9 @@ export const ConfiguredBackends = {
           folderPath: '',
         },
       },
+    ],
+    validationErrors: [
+      ['form.registrationBackends.3.options.objectsApiGroup', 'You shall not pass.'],
     ],
   },
 };

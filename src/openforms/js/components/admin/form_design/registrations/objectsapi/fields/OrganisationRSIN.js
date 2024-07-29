@@ -9,7 +9,6 @@ const OrganisationRSIN = () => {
   const [fieldProps] = useField('organisatieRsin');
   return (
     <FormRow>
-      {/*TODO: errors*/}
       <Field
         name="organisatieRsin"
         label={

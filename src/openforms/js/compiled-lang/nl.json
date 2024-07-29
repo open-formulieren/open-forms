@@ -3527,6 +3527,40 @@
       "value": "-attribuut"
     }
   ],
+  "aDFrqO": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There is a validation error."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There are "
+            },
+            {
+              "type": 1,
+              "value": "numErrors"
+            },
+            {
+              "type": 0,
+              "value": " validation errors."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numErrors"
+    }
+  ],
   "aUChz/": [
     {
       "type": 0,

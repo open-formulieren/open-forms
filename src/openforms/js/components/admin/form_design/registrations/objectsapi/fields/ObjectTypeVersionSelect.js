@@ -61,7 +61,6 @@ const ObjectTypeVersionSelect = () => {
             defaultMessage="Version"
           />
         }
-        // errors={errors.objecttypeVersion}
       >
         <Select
           required
