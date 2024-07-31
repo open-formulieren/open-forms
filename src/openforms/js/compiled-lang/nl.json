@@ -86,7 +86,7 @@
   "/fAEsY": [
     {
       "type": 0,
-      "value": "informatieobjecttype CSV-document met inzendingsgegevens"
+      "value": "Informatieobjecttype CSV-document met inzendingsgegevens"
     }
   ],
   "/gcLcC": [
@@ -197,10 +197,22 @@
       "value": "Bevestigen"
     }
   ],
+  "1HfdUc": [
+    {
+      "type": 0,
+      "value": "De API-groep bepaalt welke services voor de objecten- en objecttypen-API's gebruikt wordt."
+    }
+  ],
   "1I9Slb": [
     {
       "type": 0,
       "value": "DMN-configuratie:"
+    }
+  ],
+  "1M3VJC": [
+    {
+      "type": 0,
+      "value": "Opties instellen"
     }
   ],
   "1Vvryq": [
@@ -325,6 +337,12 @@
     {
       "type": 0,
       "value": "Validatie"
+    }
+  ],
+  "2k1bnf": [
+    {
+      "type": 0,
+      "value": "API-groep"
     }
   ],
   "2sbkGI": [
@@ -495,12 +513,6 @@
     {
       "type": 0,
       "value": "Naam"
-    }
-  ],
-  "51k2La": [
-    {
-      "type": 0,
-      "value": "JSON-inhoud sjabloon"
     }
   ],
   "5AC1+x": [
@@ -839,12 +851,6 @@
       "value": "(label ontbreekt)"
     }
   ],
-  "8/Nzyy": [
-    {
-      "type": 0,
-      "value": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
-    }
-  ],
   "833GAg": [
     {
       "type": 0,
@@ -983,6 +989,12 @@
       "value": "varCount"
     }
   ],
+  "9WZkZg": [
+    {
+      "type": 0,
+      "value": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
+    }
+  ],
   "9bGp7h": [
     {
       "type": 0,
@@ -1011,12 +1023,6 @@
     {
       "type": 0,
       "value": "Bewaartermijn voor niet voltooide inzendingen inzendingen"
-    }
-  ],
-  "A/vedA": [
-    {
-      "type": 0,
-      "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt."
     }
   ],
   "A1tDIH": [
@@ -1059,6 +1065,12 @@
     {
       "type": 0,
       "value": "Instellen"
+    }
+  ],
+  "AHsD4C": [
+    {
+      "type": 0,
+      "value": "Er ging iets fout bij het ophalen van de objecttypeversies."
     }
   ],
   "ALLoNx": [
@@ -1424,6 +1436,12 @@
       "value": "count"
     }
   ],
+  "D717gY": [
+    {
+      "type": 0,
+      "value": "Overige instellingen"
+    }
+  ],
   "DEAqyQ": [
     {
       "type": 0,
@@ -1508,6 +1526,12 @@
       "value": "Logica"
     }
   ],
+  "DyF32d": [
+    {
+      "type": 0,
+      "value": "Geeft aan of de inzendingsgegevens als CSV-bestand in de Documenten API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens."
+    }
+  ],
   "E/biiX": [
     {
       "type": 0,
@@ -1523,7 +1547,7 @@
   "E5rUfM": [
     {
       "type": 0,
-      "value": "Prefill-bron"
+      "value": "Bronhouder"
     }
   ],
   "E8Tuiq": [
@@ -1652,6 +1676,12 @@
     {
       "type": 0,
       "value": "de lijst"
+    }
+  ],
+  "F9ew4C": [
+    {
+      "type": 0,
+      "value": "Versie"
     }
   ],
   "FH2sxf": [
@@ -1866,12 +1896,6 @@
       "value": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
-  "HKA7Ic": [
-    {
-      "type": 0,
-      "value": "Productaanvraagtype"
-    }
-  ],
   "HNoGb8": [
     {
       "type": 0,
@@ -1932,6 +1956,12 @@
     {
       "type": 0,
       "value": "Selecteer formulierdefinitie"
+    }
+  ],
+  "I6wBDK": [
+    {
+      "type": 0,
+      "value": "Object- en/of productaanvraagdefinitie"
     }
   ],
   "I7lkuw": [
@@ -2054,6 +2084,12 @@
       "value": "Achternaam veld"
     }
   ],
+  "K/Oijt": [
+    {
+      "type": 0,
+      "value": "RSIN organisatie"
+    }
+  ],
   "K1A6QK": [
     {
       "type": 0,
@@ -2155,7 +2191,7 @@
   "L9L8X7": [
     {
       "type": 0,
-      "value": "Something went wrong while rendering the registration options"
+      "value": "Er ging iets fout bij het weergeven van de registratie-opties."
     }
   ],
   "LD3weJ": [
@@ -2324,22 +2360,10 @@
       "value": "Een korte instructie onder het handtekenvlak."
     }
   ],
-  "Nv0J2Y": [
-    {
-      "type": 0,
-      "value": "Update existing object"
-    }
-  ],
   "NwTdLM": [
     {
       "type": 0,
       "value": "Veld waar beschikbare locaties voor een afspraak komen te staan"
-    }
-  ],
-  "NwxORf": [
-    {
-      "type": 0,
-      "value": "CSV-inzendingsbestand uploaden"
     }
   ],
   "O/wKJh": [
@@ -2638,10 +2662,10 @@
       "value": "viewMode"
     }
   ],
-  "RELMCa": [
+  "RM89fL": [
     {
       "type": 0,
-      "value": "Selecteer de Objecten API-groep."
+      "value": "Er ging iets fout bij het ophalen van de objecttypes."
     }
   ],
   "RN628y": [
@@ -2653,7 +2677,7 @@
   "RPzjrJ": [
     {
       "type": 0,
-      "value": "Main/machtiger"
+      "value": "Hoofdentiteit"
     }
   ],
   "RcVlPF": [
@@ -2928,12 +2952,6 @@
     {
       "type": 0,
       "value": "Bewaartermijn van inzendingen"
-    }
-  ],
-  "UjvOBe": [
-    {
-      "type": 0,
-      "value": "Let op! Als je een ander objecttype selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
     }
   ],
   "UlVtQd": [
@@ -3471,6 +3489,12 @@
       "value": "Zet registratieplugin voor de inzending"
     }
   ],
+  "ZzjFxE": [
+    {
+      "type": 0,
+      "value": "Let op! Als je een andere groep selecteert, dan worden de bestaande koppelingen gereset. Ben je zeker dat je door wil gaan?"
+    }
+  ],
   "a4gS07": [
     {
       "type": 0,
@@ -3501,6 +3525,40 @@
     {
       "type": 0,
       "value": "-attribuut"
+    }
+  ],
+  "aDFrqO": [
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There is a validation error."
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "There are "
+            },
+            {
+              "type": 1,
+              "value": "numErrors"
+            },
+            {
+              "type": 0,
+              "value": " validation errors."
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numErrors"
     }
   ],
   "aUChz/": [
@@ -3569,6 +3627,12 @@
       "value": "Weergave in overzichten en bevestigingen"
     }
   ],
+  "b06rv0": [
+    {
+      "type": 0,
+      "value": "Documenttypen"
+    }
+  ],
   "b5Bxb/": [
     {
       "type": 0,
@@ -3615,6 +3679,12 @@
     {
       "type": 0,
       "value": "'"
+    }
+  ],
+  "bjIQDR": [
+    {
+      "type": 0,
+      "value": "Objecttype"
     }
   ],
   "bmlODS": [
@@ -3781,6 +3851,12 @@
       "value": "Geheel getal (integer)"
     }
   ],
+  "crEWfn": [
+    {
+      "type": 0,
+      "value": "Productaanvraagtype"
+    }
+  ],
   "ctoEdl": [
     {
       "type": 0,
@@ -3815,6 +3891,30 @@
     {
       "type": 0,
       "value": "Item verwijderen"
+    }
+  ],
+  "dGBYF7": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(Verbergen)"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "(Tonen)"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "collapsed"
     }
   ],
   "dJNdhr": [
@@ -3913,12 +4013,6 @@
       "value": "configured"
     }
   ],
-  "dwkDsV": [
-    {
-      "type": 0,
-      "value": "Versie van het objecttype in de Objecttypen-API"
-    }
-  ],
   "e6SsfR": [
     {
       "type": 0,
@@ -3937,6 +4031,12 @@
       "value": "URL naar het INFORMATIEOBJECTTYPE in een Catalogi API die wordt gebruikt voor het PDF-document."
     }
   ],
+  "eC2etA": [
+    {
+      "type": 0,
+      "value": "Naam van het productaanvraagtype. Deze naam is in het JSON-inhoudsjabloon beschikbaar als de 'productaanvraag_type' variabele."
+    }
+  ],
   "eJEu3L": [
     {
       "type": 0,
@@ -3947,12 +4047,6 @@
     {
       "type": 0,
       "value": "Geavanceerde opties"
-    }
-  ],
-  "eR8wGd": [
-    {
-      "type": 0,
-      "value": "RSIN van de organisatie die het INFORMATIEOBJECT aanmaakt"
     }
   ],
   "eU7+uS": [
@@ -4043,12 +4137,6 @@
     {
       "type": 0,
       "value": "Sla de waarde op onder het geselecteerde attribuut in de geselecteerde registratieplugin."
-    }
-  ],
-  "fVNaJK": [
-    {
-      "type": 0,
-      "value": "Objecttypeversie"
     }
   ],
   "fWcg7I": [
@@ -4209,6 +4297,12 @@
       "value": "Minimale betrouwbaarheidsniveaus"
     }
   ],
+  "hBxKbW": [
+    {
+      "type": 0,
+      "value": "JSON-inhoud sjabloon"
+    }
+  ],
   "hJtTwo": [
     {
       "type": 0,
@@ -4257,12 +4351,6 @@
       "value": "Configureren"
     }
   ],
-  "hwD3q9": [
-    {
-      "type": 0,
-      "value": "Geeft aan of de inzendingsgegevens als CSV in de Documenten API moet geüpload worden. De resource-URL wordt dan toegevoegd aan de objectgegevens."
-    }
-  ],
   "hwsnj9": [
     {
       "type": 0,
@@ -4285,12 +4373,6 @@
     {
       "type": 0,
       "value": "Label"
-    }
-  ],
-  "iHpAYZ": [
-    {
-      "type": 0,
-      "value": "Dit sjabloon wordt geëvalueerd met de inzendingsvariabelen en de resulterende JSON wordt vervolgens naar de Objecten API gestuurd met een PATCH call om de betalingsvelden bij te werken."
     }
   ],
   "iNmPDd": [
@@ -4403,12 +4485,6 @@
     {
       "type": 0,
       "value": "(Herbruikbare) stapgegevens"
-    }
-  ],
-  "jCUorM": [
-    {
-      "type": 0,
-      "value": "Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies."
     }
   ],
   "jLg5l6": [
@@ -4525,12 +4601,6 @@
       "value": "uitgeschakeld"
     }
   ],
-  "kQtrKX": [
-    {
-      "type": 0,
-      "value": "Het type ProductAanvraag"
-    }
-  ],
   "kg/eh1": [
     {
       "type": 0,
@@ -4541,6 +4611,12 @@
     {
       "type": 0,
       "value": "Beschrijving"
+    }
+  ],
+  "klKZV5": [
+    {
+      "type": 0,
+      "value": "Geeft aan of een bestaande record (verkregen van de eventuele voor-invulreferentie) bijgewerkt moet worden in plaats van een nieuw object aan te maken. Als er geen bestaand object is, dan wordt een nieuwe aangemaakt."
     }
   ],
   "klYCow": [
@@ -4575,12 +4651,6 @@
       ],
       "type": 8,
       "value": "code"
-    }
-  ],
-  "l/mtou": [
-    {
-      "type": 0,
-      "value": "JSON-sjabloon voor de betaalstatus-update"
     }
   ],
   "l1fi1t": [
@@ -4697,12 +4767,6 @@
       "value": "Huisnummer"
     }
   ],
-  "mgs/Xe": [
-    {
-      "type": 0,
-      "value": "Objecten API-groep"
-    }
-  ],
   "mpzdoT": [
     {
       "type": 0,
@@ -4761,6 +4825,12 @@
     {
       "type": 0,
       "value": "Bronorganisatie"
+    }
+  ],
+  "neCqv9": [
+    {
+      "type": 0,
+      "value": "Het registratieresultaat zal een object van dit type zijn."
     }
   ],
   "nkr7r0": [
@@ -4971,6 +5041,12 @@
       "value": "Bevestigen"
     }
   ],
+  "q3kxsb": [
+    {
+      "type": 0,
+      "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten API gestuurd om de (betaalattributen van) het eerder aangemaakte object bij te werken."
+    }
+  ],
   "qUYLVg": [
     {
       "type": 0,
@@ -5043,10 +5119,10 @@
       "value": "Datatype"
     }
   ],
-  "rJTe9U": [
+  "rQy+Yq": [
     {
       "type": 0,
-      "value": "Objecttype"
+      "value": "CSV-inzendingsbestand uploaden"
     }
   ],
   "rRB7WE": [
@@ -5059,6 +5135,12 @@
     {
       "type": 0,
       "value": "Kommagetal (float)"
+    }
+  ],
+  "rVV0i6": [
+    {
+      "type": 0,
+      "value": "Bestaand object bijwerken"
     }
   ],
   "rZfe8Z": [
@@ -5217,6 +5299,12 @@
       "value": "De minimale tijd die gekozen kan worden."
     }
   ],
+  "tg+6bo": [
+    {
+      "type": 0,
+      "value": "JSON-sjabloon voor de betaalstatus-update"
+    }
+  ],
   "tjRtQk": [
     {
       "type": 0,
@@ -5241,6 +5329,12 @@
       "value": "Naam"
     }
   ],
+  "u3P/1E": [
+    {
+      "type": 0,
+      "value": "RSIN van de organisatie die eigenaar is van en het INFORMATIEOBJECT aanmaakt."
+    }
+  ],
   "u5XYQh": [
     {
       "type": 0,
@@ -5263,12 +5357,6 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
-    }
-  ],
-  "uO3byK": [
-    {
-      "type": 0,
-      "value": "UUID van het 'ProductAanvraag'-objecttype in de Objecttypen API. Het objecttype moet de volgende drie attributen hebben: \"submission_id\", \"type\" (het type productaanvraag) en \"data\" (de ingevoerde formuliergegevens)"
     }
   ],
   "uVVO4b": [
@@ -5523,6 +5611,12 @@
       "value": "Zoomniveau"
     }
   ],
+  "xyVtKp": [
+    {
+      "type": 0,
+      "value": "Plugin-instellingen: Objecten API"
+    }
+  ],
   "y2I3Eu": [
     {
       "type": 0,
@@ -5579,6 +5673,12 @@
     {
       "type": 0,
       "value": "Vertalingen"
+    }
+  ],
+  "yLt2lv": [
+    {
+      "type": 0,
+      "value": "JSON-sjabloon voor de inhoud van het verzoek wat naar de Objecten API gestuurd wordt."
     }
   ],
   "yQUV3M": [
@@ -5647,12 +5747,6 @@
       "value": "Gebruik algemene kaartinstellingen"
     }
   ],
-  "zF8YEc": [
-    {
-      "type": 0,
-      "value": "Organisatie-RSIN"
-    }
-  ],
   "zGMQ75": [
     {
       "type": 0,
@@ -5669,6 +5763,12 @@
     {
       "type": 0,
       "value": "n.v.t."
+    }
+  ],
+  "zQcTdi": [
+    {
+      "type": 0,
+      "value": "Er ging iets fout bij het ophalen van de beschikbare objecttypen en/of -versies. Controleer of de services in de geselecteerde api-groep correct ingesteld zijn."
     }
   ],
   "zUVGyl": [
@@ -5711,12 +5811,6 @@
     {
       "type": 0,
       "value": "Gebruik prijsregels om de prijs te bepalen"
-    }
-  ],
-  "zrsWsH": [
-    {
-      "type": 0,
-      "value": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead"
     }
   ]
 }

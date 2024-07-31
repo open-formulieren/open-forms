@@ -89,10 +89,20 @@
     "description": "Camunda complex process variables confirm button",
     "originalDefault": "Confirm"
   },
+  "1HfdUc": {
+    "defaultMessage": "The API group specifies which objects and objecttypes services to use.",
+    "description": "Objects API group field help text",
+    "originalDefault": "The API group specifies which objects and objecttypes services to use."
+  },
   "1I9Slb": {
     "defaultMessage": "DMN configuration:",
     "description": "Configuration button DMN label",
     "originalDefault": "DMN configuration:"
+  },
+  "1M3VJC": {
+    "defaultMessage": "Configure options",
+    "description": "Link label to open registration options modal",
+    "originalDefault": "Configure options"
   },
   "1fD+K4": {
     "defaultMessage": "Incomplete Submissions Removal Method",
@@ -143,6 +153,11 @@
     "defaultMessage": "Cancel",
     "description": "Cancel link",
     "originalDefault": "Cancel"
+  },
+  "2k1bnf": {
+    "defaultMessage": "API group",
+    "description": "Objects API group field label",
+    "originalDefault": "API group"
   },
   "2uIYst": {
     "defaultMessage": "The process definition for which to start a process instance.",
@@ -203,11 +218,6 @@
     "defaultMessage": "Name",
     "description": "Form name field label",
     "originalDefault": "Name"
-  },
-  "51k2La": {
-    "defaultMessage": "JSON content field",
-    "description": "Objects API registration options \"JSON content field\" label",
-    "originalDefault": "JSON content field"
   },
   "5AC1+x": {
     "defaultMessage": "The value of the selected field will be the process variable value.",
@@ -339,11 +349,6 @@
     "description": "Variable table registration title",
     "originalDefault": "Registration"
   },
-  "8/Nzyy": {
-    "defaultMessage": "Changing the Objects API group will remove the existing variables mapping. Are you sure you want to continue?",
-    "description": "Changing Objects API group warning message",
-    "originalDefault": "Changing the Objects API group will remove the existing variables mapping. Are you sure you want to continue?"
-  },
   "833GAg": {
     "defaultMessage": "Input mapping",
     "description": "Input mapping title",
@@ -409,6 +414,11 @@
     "description": "Managed complex Camunda process vars state feedback",
     "originalDefault": "{varCount, plural, =0 {} one {(1 variable defined)} other {({varCount} variables defined)} }"
   },
+  "9WZkZg": {
+    "defaultMessage": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?",
+    "description": "Objects API registration options: warning message when changing the object type",
+    "originalDefault": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
+  },
   "9bGp7h": {
     "defaultMessage": "Active",
     "description": "Form active field label",
@@ -428,11 +438,6 @@
     "defaultMessage": "Errored Submissions Removal Limit",
     "description": "Errored Submissions Removal Limit field label",
     "originalDefault": "Errored Submissions Removal Limit"
-  },
-  "A/vedA": {
-    "defaultMessage": "JSON template for the body of the request sent to the Objects API.",
-    "description": "Objects API registration options \"JSON content field\" description",
-    "originalDefault": "JSON template for the body of the request sent to the Objects API."
   },
   "A1tDIH": {
     "defaultMessage": "Name",
@@ -458,6 +463,11 @@
     "defaultMessage": "Configure",
     "description": "Button to open service fetch configuration modal",
     "originalDefault": "Configure"
+  },
+  "AHsD4C": {
+    "defaultMessage": "Something went wrong retrieving the available object type versions.",
+    "description": "Objects API registrations options: object type version select error",
+    "originalDefault": "Something went wrong retrieving the available object type versions."
   },
   "APOVFs": {
     "defaultMessage": "Form details",
@@ -579,6 +589,11 @@
     "description": "Logic tab warning icon message",
     "originalDefault": "Detected problems in {count} logic rule(s)."
   },
+  "D717gY": {
+    "defaultMessage": "Other options",
+    "description": "Objects registration: other options",
+    "originalDefault": "Other options"
+  },
   "DEAqyQ": {
     "defaultMessage": "Boolean",
     "description": "JSON variable type \"boolean\" representation",
@@ -629,6 +644,11 @@
     "description": "Logic fieldset title",
     "originalDefault": "Logic"
   },
+  "DyF32d": {
+    "defaultMessage": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request.",
+    "description": "Objects API registration: uploadSubmissionCsv helpText",
+    "originalDefault": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the product request."
+  },
   "EBsxTk": {
     "defaultMessage": "Field",
     "description": "Manage process vars component column title",
@@ -668,6 +688,11 @@
     "defaultMessage": "the array",
     "description": "\"array\" operand type",
     "originalDefault": "the array"
+  },
+  "F9ew4C": {
+    "defaultMessage": "Version",
+    "description": "Objects API registration options 'objecttypeVersion' label",
+    "originalDefault": "Version"
   },
   "FH2sxf": {
     "defaultMessage": "This form version was created in an application version different from the current version. There may be missing configuration after restoring.",
@@ -804,11 +829,6 @@
     "description": "Errored Submissions Removal Limit help text",
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
-  "HKA7Ic": {
-    "defaultMessage": "Productaanvraag type",
-    "description": "Objects API registration options \"Productaanvraag type\" label",
-    "originalDefault": "Productaanvraag type"
-  },
   "HXE3Mm": {
     "defaultMessage": "Slug of the form, used in URLs",
     "description": "Form slug field help text",
@@ -848,6 +868,11 @@
     "defaultMessage": "Select form definition",
     "description": "Form definition select label",
     "originalDefault": "Select form definition"
+  },
+  "I6wBDK": {
+    "defaultMessage": "Object and/or product request definition",
+    "description": "Objects registration: object definition",
+    "originalDefault": "Object and/or product request definition"
   },
   "IhIqdj": {
     "defaultMessage": "Decision definition ID",
@@ -918,6 +943,11 @@
     "defaultMessage": "Last Name Component",
     "description": "Last Name Component field label",
     "originalDefault": "Last Name Component"
+  },
+  "K/Oijt": {
+    "defaultMessage": "Organisation RSIN",
+    "description": "Objects API registration options 'organisationRSIN' label",
+    "originalDefault": "Organisation RSIN"
   },
   "K1A6QK": {
     "defaultMessage": "Component {label} requires login, but this form step doesn't have the login marked as required.",
@@ -1074,20 +1104,10 @@
     "description": "Warning that all simple variables are mapped",
     "originalDefault": "All simple variables are mapped to a case property."
   },
-  "Nv0J2Y": {
-    "defaultMessage": "Update existing object",
-    "description": "Objects API registration options \"Update existing object\" label",
-    "originalDefault": "Update existing object"
-  },
   "NwTdLM": {
     "defaultMessage": "Component where locations for an appointment will be shown",
     "description": "Locations Component field help text",
     "originalDefault": "Component where locations for an appointment will be shown"
-  },
-  "NwxORf": {
-    "defaultMessage": "Upload submission CSV",
-    "description": "Objects API registration options \"Upload submission CSV\" label",
-    "originalDefault": "Upload submission CSV"
   },
   "O/wKJh": {
     "defaultMessage": "Value",
@@ -1239,10 +1259,10 @@
     "description": "Toggle icon for JSON logic presentation mode.",
     "originalDefault": "{viewMode, select, ui {Show JSON definition} json {Show editor} other {UNKNOWN}}"
   },
-  "RELMCa": {
-    "defaultMessage": "Which Objects API group to use.",
-    "description": "Objects API group selection",
-    "originalDefault": "Which Objects API group to use."
+  "RM89fL": {
+    "defaultMessage": "Something went wrong retrieving the available object types.",
+    "description": "Objects API registrations options: object type select error",
+    "originalDefault": "Something went wrong retrieving the available object types."
   },
   "RcVlPF": {
     "defaultMessage": "Internal name/title of the form",
@@ -1368,11 +1388,6 @@
     "defaultMessage": "All Submissions Removal Limit",
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
-  },
-  "UjvOBe": {
-    "defaultMessage": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?",
-    "description": "Changing objecttype warning message",
-    "originalDefault": "Changing the objecttype will remove the existing variables mapping. Are you sure you want to continue?"
   },
   "Uq9Hbx": {
     "defaultMessage": "-",
@@ -1569,6 +1584,11 @@
     "description": "action type \"set-registration-backend\" label",
     "originalDefault": "Set the registration backend to use for the submission"
   },
+  "ZzjFxE": {
+    "defaultMessage": "Changing the api group will remove the existing variables mapping. Are you sure you want to continue?",
+    "description": "Objects API registration options: warning message when changing the api group",
+    "originalDefault": "Changing the api group will remove the existing variables mapping. Are you sure you want to continue?"
+  },
   "a4gS07": {
     "defaultMessage": "No (without overview page)",
     "description": "option \"no_without_overview\" of \"submission_allowed\"",
@@ -1583,6 +1603,11 @@
     "defaultMessage": "Mapped to the {geometryPath} attribute",
     "description": "'Mapped to geometry' registration summary message",
     "originalDefault": "Mapped to the {geometryPath} attribute"
+  },
+  "aDFrqO": {
+    "defaultMessage": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }",
+    "description": "Objects API registration validation errors icon next to button",
+    "originalDefault": "{numErrors, plural, one {There is a validation error.} other {There are {numErrors} validation errors.} }"
   },
   "aUChz/": {
     "defaultMessage": "Products Component",
@@ -1609,6 +1634,11 @@
     "description": "action type \"evaluate-dmn\" label",
     "originalDefault": "Evaluate DMN"
   },
+  "b06rv0": {
+    "defaultMessage": "Document types",
+    "description": "Objects registration: document types",
+    "originalDefault": "Document types"
+  },
   "b9D64D": {
     "defaultMessage": "Is sensitive",
     "description": "Is sensitive icon title",
@@ -1628,6 +1658,11 @@
     "defaultMessage": "{varName}: registration configuration for {backendName}",
     "description": "Variable registration configuration modal title",
     "originalDefault": "{varName}: registration configuration for {backendName}"
+  },
+  "bjIQDR": {
+    "defaultMessage": "Objecttype",
+    "description": "Objects API registration options 'Objecttype' label",
+    "originalDefault": "Objecttype"
   },
   "bmlODS": {
     "defaultMessage": "Identifier role",
@@ -1699,6 +1734,11 @@
     "description": "data type int",
     "originalDefault": "Integer"
   },
+  "crEWfn": {
+    "defaultMessage": "Product request type",
+    "description": "Legacy objects API registration options: 'productaanvraagType' label",
+    "originalDefault": "Product request type"
+  },
   "d1W41c": {
     "defaultMessage": "From form field",
     "description": "JSON editor: \"component\" variable source label",
@@ -1708,6 +1748,11 @@
     "defaultMessage": "Export this form",
     "description": "Export form button title",
     "originalDefault": "Export this form"
+  },
+  "dGBYF7": {
+    "defaultMessage": "{collapsed, select, true {(Show)} other {(Hide)}}",
+    "description": "Fieldset collapse link text",
+    "originalDefault": "{collapsed, select, true {(Show)} other {(Hide)}}"
   },
   "dV8M5q": {
     "defaultMessage": "A recognisable name for this backend configuration.",
@@ -1744,11 +1789,6 @@
     "description": "data type date",
     "originalDefault": "Date"
   },
-  "dwkDsV": {
-    "defaultMessage": "Version of the objecttype in the Objecttypes API",
-    "description": "Objects API registration options \"Objecttype version\" description",
-    "originalDefault": "Version of the objecttype in the Objecttypes API"
-  },
   "eBk+W0": {
     "defaultMessage": "Manage process variables",
     "description": "Camunda process var selection modal title",
@@ -1759,6 +1799,11 @@
     "description": "Objects API registration options \"Submission report PDF informatieobjecttype\" description",
     "originalDefault": "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API to be used for the submission report PDF"
   },
+  "eC2etA": {
+    "defaultMessage": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable.",
+    "description": "Legacy objects API registration options: 'productaanvraagType' helpText",
+    "originalDefault": "Name of the product request type. It is available in the JSON template as the 'productaanvraag_type' variable."
+  },
   "eJEu3L": {
     "defaultMessage": "Are you sure you want to delete this rule?",
     "description": "Price rule deletion confirm message",
@@ -1768,11 +1813,6 @@
     "defaultMessage": "Advanced options",
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
-  },
-  "eR8wGd": {
-    "defaultMessage": "RSIN of organization, which creates the INFORMATIEOBJECT",
-    "description": "Objects API registration options \"Organisation RSIN\" description",
-    "originalDefault": "RSIN of organization, which creates the INFORMATIEOBJECT"
   },
   "eU7+uS": {
     "defaultMessage": "Confirm",
@@ -1803,11 +1843,6 @@
     "defaultMessage": "Pricing logic",
     "description": "Dynamic pricing fieldset title",
     "originalDefault": "Pricing logic"
-  },
-  "fVNaJK": {
-    "defaultMessage": "Objecttype version",
-    "description": "Objects API registration options \"Objecttype version\" label",
-    "originalDefault": "Objecttype version"
   },
   "fWcg7I": {
     "defaultMessage": "Object",
@@ -1894,6 +1929,11 @@
     "description": "Minimal levels of assurance label",
     "originalDefault": "Minimal levels of assurance"
   },
+  "hBxKbW": {
+    "defaultMessage": "JSON content template",
+    "description": "Legacy objects API registration options: 'contentJSON' label",
+    "originalDefault": "JSON content template"
+  },
   "hPJb+Q": {
     "defaultMessage": "Add registration backend",
     "description": "Button text to add registration backend",
@@ -1924,11 +1964,6 @@
     "description": "Manage complex process vars configure column title",
     "originalDefault": "Configure"
   },
-  "hwD3q9": {
-    "defaultMessage": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag",
-    "description": "Objects API registration options \"Upload submission CSV\" description",
-    "originalDefault": "Indicates whether or not the submission CSV should be uploaded as a Document in Documenten API and attached to the ProductAanvraag"
-  },
   "hzx+WF": {
     "defaultMessage": "Internal name",
     "description": "Form name field label",
@@ -1943,11 +1978,6 @@
     "defaultMessage": "Label",
     "description": "DMN Input clause label header",
     "originalDefault": "Label"
-  },
-  "iHpAYZ": {
-    "defaultMessage": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field.",
-    "description": "Objects API registration options \"Payment status update JSON template\" description",
-    "originalDefault": "This template is evaluated with the submission data and the resulting JSON is sent to the objects API with a PATCH to update the payment field."
   },
   "iNmPDd": {
     "defaultMessage": "Attachment informatieobjecttype",
@@ -1993,11 +2023,6 @@
     "defaultMessage": "Form definition",
     "description": "Form definition module title",
     "originalDefault": "Form definition"
-  },
-  "jCUorM": {
-    "defaultMessage": "Something went wrong when fectching the available Objecttypes and versions",
-    "description": "Objects API registrations options API error",
-    "originalDefault": "Something went wrong when fectching the available Objecttypes and versions"
   },
   "jLv6k8": {
     "defaultMessage": "DMN variable",
@@ -2064,20 +2089,15 @@
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
   },
-  "kQtrKX": {
-    "defaultMessage": "The type of ProductAanvraag",
-    "description": "Objects API registration options \"Productaanvraag type\" description",
-    "originalDefault": "The type of ProductAanvraag"
+  "klKZV5": {
+    "defaultMessage": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead.",
+    "description": "Objects API registration: updateExistingObject helpText",
+    "originalDefault": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead."
   },
   "koVh3m": {
     "defaultMessage": "Category",
     "description": "Form category field label",
     "originalDefault": "Category"
-  },
-  "l/mtou": {
-    "defaultMessage": "Payment status update JSON template",
-    "description": "Objects API registration options \"Payment status update JSON template\" label",
-    "originalDefault": "Payment status update JSON template"
   },
   "l1fi1t": {
     "defaultMessage": "(missing information)",
@@ -2129,11 +2149,6 @@
     "description": "JSON variable type \"Form field\" representation",
     "originalDefault": "Form field"
   },
-  "mgs/Xe": {
-    "defaultMessage": "Objects API group",
-    "description": "Objects API group",
-    "originalDefault": "Objects API group"
-  },
   "myvtu0": {
     "defaultMessage": "Manage process variables",
     "description": "Open manage camunda process vars modal button",
@@ -2158,6 +2173,11 @@
     "defaultMessage": "Trigger condition",
     "description": "Logic trigger heading",
     "originalDefault": "Trigger condition"
+  },
+  "neCqv9": {
+    "defaultMessage": "The registration result will be an object from the selected type.",
+    "description": "Objects API registration options 'Objecttype' helpText",
+    "originalDefault": "The registration result will be an object from the selected type."
   },
   "nkr7r0": {
     "defaultMessage": "Amount of days when all submissions of this form will be permanently deleted. Leave blank to use value in General Configuration.",
@@ -2254,6 +2274,11 @@
     "description": "Confirm complex Camunda variable definition",
     "originalDefault": "Confirm"
   },
+  "q3kxsb": {
+    "defaultMessage": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object.",
+    "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
+    "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
+  },
   "qUYLVg": {
     "defaultMessage": "Product & payment",
     "description": "Product & payments tab title",
@@ -2304,10 +2329,10 @@
     "description": "Variable table data type title",
     "originalDefault": "Data type"
   },
-  "rJTe9U": {
-    "defaultMessage": "Objecttype",
-    "description": "Objects API registration options \"Objecttype\" label",
-    "originalDefault": "Objecttype"
+  "rQy+Yq": {
+    "defaultMessage": "Upload submission CSV",
+    "description": "Objects API registration: uploadSubmissionCsv label",
+    "originalDefault": "Upload submission CSV"
   },
   "rRB7WE": {
     "defaultMessage": "Registration",
@@ -2318,6 +2343,11 @@
     "defaultMessage": "Float",
     "description": "data type float",
     "originalDefault": "Float"
+  },
+  "rVV0i6": {
+    "defaultMessage": "Update existing object",
+    "description": "Objects API registration: updateExistingObject label",
+    "originalDefault": "Update existing object"
   },
   "rZfe8Z": {
     "defaultMessage": "Sorry, we couldn't do that because you are logged out - this may be because your session expired.",
@@ -2389,6 +2419,11 @@
     "description": "Simple logic type info text",
     "originalDefault": "Select components and conditions using drop-downs to build a JsonLogic expression."
   },
+  "tg+6bo": {
+    "defaultMessage": "Payment status update JSON template",
+    "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' label",
+    "originalDefault": "Payment status update JSON template"
+  },
   "tjRtQk": {
     "defaultMessage": "Submission confirmation email template",
     "description": "Submission confirmation email fieldset title",
@@ -2399,6 +2434,11 @@
     "description": "Manage complex process vars alias column title",
     "originalDefault": "Name"
   },
+  "u3P/1E": {
+    "defaultMessage": "RSIN of the organization, which creates and owns the INFORMATIEOBJECTs.",
+    "description": "Objects API registration options 'organisationRSIN' helpText",
+    "originalDefault": "RSIN of the organization, which creates and owns the INFORMATIEOBJECTs."
+  },
   "uBO/Al": {
     "defaultMessage": "Select a step to view or modify.",
     "description": "No-active-step-selected notice",
@@ -2408,11 +2448,6 @@
     "defaultMessage": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
-  },
-  "uO3byK": {
-    "defaultMessage": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)",
-    "description": "Objects API registration options \"Objecttype\" description",
-    "originalDefault": "UUID of the ProductAanvraag objecttype in the Objecttypes API. The objecttype should have the following three attributes: \"submission_id\", \"type\" (the type of productaanvraag) and \"data\" (the submitted form data)"
   },
   "uiliGe": {
     "defaultMessage": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information.",
@@ -2529,6 +2564,11 @@
     "description": "ZGW API group",
     "originalDefault": "ZGW API group"
   },
+  "xyVtKp": {
+    "defaultMessage": "Plugin configuration: Objects API",
+    "description": "Objects API registration options modal title",
+    "originalDefault": "Plugin configuration: Objects API"
+  },
   "y2I3Eu": {
     "defaultMessage": "Objects API - objecttype",
     "description": "URL to the OBJECT TYPE for the \"Product Request\" in the Object Types API. The object type must contain the following attributes: 1) submission_id 2) type (the type of the \"Product Request\") 3) data (submitted form data).",
@@ -2548,6 +2588,11 @@
     "defaultMessage": "Authorizee",
     "description": "Identifier role (for mandate context) label for authorizee",
     "originalDefault": "Authorizee"
+  },
+  "yLt2lv": {
+    "defaultMessage": "JSON template for the body of the request sent to the Objects API.",
+    "description": "Legacy objects API registration options: 'contentJSON' helpText",
+    "originalDefault": "JSON template for the body of the request sent to the Objects API."
   },
   "yTpHh0": {
     "defaultMessage": "(unset)",
@@ -2569,11 +2614,6 @@
     "description": "Action column header",
     "originalDefault": "Action"
   },
-  "zF8YEc": {
-    "defaultMessage": "Organisation RSIN",
-    "description": "Objects API registration options \"Organisation RSIN\" label",
-    "originalDefault": "Organisation RSIN"
-  },
   "zGMQ75": {
     "defaultMessage": "User defined",
     "description": "User defined variables tab title",
@@ -2589,6 +2629,11 @@
     "description": "Not applicable",
     "originalDefault": "N/A"
   },
+  "zQcTdi": {
+    "defaultMessage": "Something went wrong retrieving the available object types and/or versions. Please check that the services in the selected API group are configured correctly.",
+    "description": "Legacy Objects API registrations options: unknown error",
+    "originalDefault": "Something went wrong retrieving the available object types and/or versions. Please check that the services in the selected API group are configured correctly."
+  },
   "zUVGyl": {
     "defaultMessage": "There are validation errors",
     "description": "Step validation errors icon title",
@@ -2603,10 +2648,5 @@
     "defaultMessage": "Use logic rules to determine the price",
     "description": "dynamic pricing mode label",
     "originalDefault": "Use logic rules to determine the price"
-  },
-  "zrsWsH": {
-    "defaultMessage": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead",
-    "description": "Objects API registration options \"Update existing object\" description",
-    "originalDefault": "Indicates whether the existing object (retrieved from an optional initial data reference) should be updated, instead of creating a new one. If no existing object exists, a new one will be created instead"
   }
 }

@@ -1,53 +1,24 @@
-import {useArgs} from '@storybook/preview-api';
 import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
+import {Form, Formik} from 'formik';
 
-import {FormDecorator} from 'components/admin/form_design/story-decorators';
-import Field from 'components/admin/forms/Field';
-import Fieldset from 'components/admin/forms/Fieldset';
-import FormRow from 'components/admin/forms/FormRow';
+import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
 import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
 
-// WARNING
-// The `render` function will mutate args, meaning interactions can't be run twice
-// Be sure to refresh the page and remove the args in the query parameters
+const NAME = 'form.registrationBackends.0.options';
 
-const render = ({apiGroups}) => {
-  const [{formData}, updateArgs] = useArgs();
-  const onChange = newValues => {
-    updateArgs({formData: newValues});
-  };
-
-  return (
-    <Fieldset>
-      <FormRow>
-        <Field name="dummy" label="">
-          <ObjectsApiOptionsFormFields
-            index={0}
-            name="dummy"
-            schema={{
-              type: 'object',
-              properties: {
-                objectsApiGroup: {
-                  type: 'integer',
-                  enum: apiGroups.map(group => group[0]),
-                  enumNames: apiGroups.map(group => group[1]),
-                },
-              },
-            }}
-            formData={formData}
-            onChange={onChange}
-          />
-        </Field>
-      </FormRow>
-    </Fieldset>
-  );
-};
+const render = ({apiGroups, formData}) => (
+  <Formik initialValues={formData} onSubmit={fn()}>
+    <Form>
+      <ObjectsApiOptionsFormFields index={0} name={NAME} apiGroupChoices={apiGroups} />
+    </Form>
+  </Formik>
+);
 
 export default {
   title: 'Form design/Registration/Objects API',
-  decorators: [FormDecorator],
+  decorators: [ValidationErrorsDecorator],
   render,
   args: {
     apiGroups: [
@@ -91,30 +62,34 @@ export const SwitchToV2Empty = {
     window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
-    const v2Tab = canvas.getByRole('tab', {selected: false});
+    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('Objecten API-groep');
+    const groupSelect = canvas.getByLabelText('API-groep');
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
     expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
 
     await canvas.findByRole('option', {name: '2 (draft)'});
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
+    expect(canvas.getByLabelText('Versie')).toHaveValue('2');
 
-    const v1Tab = canvas.getByRole('tab', {selected: false});
+    const v1Tab = canvas.getByRole('tab', {name: 'Verouderd (sjabloon)'});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
-    // While it's a number input, the value is still a string in the DOM api
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
+    await waitFor(() => {
+      expect(canvas.getByLabelText('Objecttype')).toHaveValue(
+        '2c77babf-a967-4057-9969-0200320d23f1'
+      );
+      expect(canvas.getByLabelText('Versie')).toHaveValue('2');
+    });
   },
 };
 
 export const SwitchToV2Existing = {
   args: {
     formData: {
+      objectsApiGroup: 1,
       objecttype: '2c77babf-a967-4057-9969-0200320d23f2',
       objecttypeVersion: 1,
     },
@@ -123,29 +98,34 @@ export const SwitchToV2Existing = {
     window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
-    const v2Tab = canvas.getByRole('tab', {selected: false});
+    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('Objecten API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+    const groupSelect = canvas.getByLabelText('API-groep');
+    expect(groupSelect).toHaveValue('1');
 
     await canvas.findByRole('option', {name: 'Person (open)'}, {timeout: 5000});
     expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f2');
 
     await canvas.findByRole('option', {name: '1 (published)'});
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
+    expect(canvas.getByLabelText('Versie')).toHaveValue('1');
 
-    const v1Tab = canvas.getByRole('tab', {selected: false});
+    const v1Tab = canvas.getByRole('tab', {name: 'Verouderd (sjabloon)'});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f2');
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('1');
+    await waitFor(() => {
+      expect(canvas.getByLabelText('Objecttype')).toHaveValue(
+        '2c77babf-a967-4057-9969-0200320d23f2'
+      );
+      expect(canvas.getByLabelText('Versie')).toHaveValue('1');
+    });
   },
 };
 
 export const SwitchToV2NonExisting = {
   args: {
     formData: {
+      objectsApiGroup: 1,
       objecttype: 'a-non-existing-uuid',
       objecttypeVersion: 1,
     },
@@ -154,40 +134,25 @@ export const SwitchToV2NonExisting = {
     window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
-    const v2Tab = canvas.getByRole('tab', {selected: false});
+    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
     await userEvent.click(v2Tab);
-
-    const groupSelect = canvas.getByLabelText('Objecten API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     await canvas.findByRole('option', {name: 'Tree (open)'}, {timeout: 5000});
     expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
 
     await canvas.findByRole('option', {name: '2 (draft)'});
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
+    await waitFor(() => {
+      expect(canvas.getByLabelText('Versie')).toHaveValue('2');
+    });
 
-    const v1Tab = canvas.getByRole('tab', {selected: false});
+    const v1Tab = canvas.getByRole('tab', {name: 'Verouderd (sjabloon)'});
     await userEvent.click(v1Tab);
 
-    expect(canvas.getByLabelText('Objecttype')).toHaveValue('2c77babf-a967-4057-9969-0200320d23f1');
-    // While it's a number input, the value is still a string in the DOM api
-    expect(canvas.getByLabelText('Objecttypeversie')).toHaveValue('2');
-  },
-};
-
-export const AutoSelectApiGroup = {
-  args: {
-    apiGroups: [[1, 'Single Objects API group']],
-  },
-  play: async ({canvasElement}) => {
-    window.confirm = fn(() => true);
-    const canvas = within(canvasElement);
-
-    const v2Tab = canvas.getByRole('tab', {selected: false});
-    await userEvent.click(v2Tab);
-
     await waitFor(() => {
-      expect(canvas.getByLabelText('Objecten API-groep')).toHaveValue('1');
+      expect(canvas.getByLabelText('Objecttype')).toHaveValue(
+        '2c77babf-a967-4057-9969-0200320d23f1'
+      );
+      expect(canvas.getByLabelText('Versie')).toHaveValue('2');
     });
   },
 };
@@ -197,21 +162,55 @@ export const APIFetchError = {
     msw: {
       handlers: [mockObjecttypesError()],
     },
+    test: {
+      dangerouslyIgnoreUnhandledErrors: true, // error boundary handles it
+    },
   },
   play: async ({canvasElement}) => {
     window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
-    const v2Tab = canvas.getByRole('tab', {selected: false});
+    const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('Objecten API-groep');
+    const groupSelect = canvas.getByLabelText('API-groep');
     await userEvent.selectOptions(groupSelect, 'Objects API group 1');
 
     const errorMessage = await canvas.findByText(
-      'Er ging iets fout bij het ophalen van de beschikbare objecttypen en versies.'
+      'Er ging iets fout bij het ophalen van de objecttypes.'
     );
 
     expect(errorMessage).toBeVisible();
+  },
+};
+
+export const V1ValidationErrors = {
+  args: {
+    validationErrors: [
+      [`${NAME}.objectsApiGroup`, 'Computer says no'],
+      [`${NAME}.objecttype`, 'Computer says no'],
+      [`${NAME}.objecttypeVersion`, 'Computer says no'],
+      [`${NAME}.productaanvraagType`, 'Computer says no'],
+      [`${NAME}.contentJson`, 'Computer says no'],
+      [`${NAME}.paymentStatusUpdateJson`, 'Computer says no'],
+      [`${NAME}.informatieobjecttypeSubmissionReport`, 'Computer says no'],
+      [`${NAME}.informatieobjecttypeSubmissionCsv`, 'Computer says no'],
+      [`${NAME}.informatieobjecttypeAttachment`, 'Computer says no'],
+      [`${NAME}.organisatieRsin`, 'Computer says no'],
+    ],
+  },
+};
+
+export const V2ValidationErrors = {
+  args: {
+    validationErrors: [
+      [`${NAME}.objectsApiGroup`, 'Some API-group error'],
+      [`${NAME}.objecttype`, 'Computer says no'],
+      [`${NAME}.objecttypeVersion`, 'Computer says no'],
+      [`${NAME}.informatieobjecttypeSubmissionReport`, 'Computer says no'],
+      [`${NAME}.informatieobjecttypeSubmissionCsv`, 'Computer says no'],
+      [`${NAME}.informatieobjecttypeAttachment`, 'Computer says no'],
+      [`${NAME}.organisatieRsin`, 'Computer says no'],
+    ],
   },
 };

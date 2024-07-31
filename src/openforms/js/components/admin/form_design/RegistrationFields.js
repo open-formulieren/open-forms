@@ -160,16 +160,14 @@ const RegistrationFields = ({
   return (
     <>
       {Array.from(configuredBackends.entries()).map(([idx, backend]) => (
-        <>
-          <BackendFields
-            key={backend.key}
-            index={idx}
-            backend={backend}
-            availableBackends={availableBackends}
-            onChange={onChange}
-            onDelete={() => onDelete(backend.key)}
-          />
-        </>
+        <BackendFields
+          key={backend.key}
+          index={idx}
+          backend={backend}
+          availableBackends={availableBackends}
+          onChange={onChange}
+          onDelete={() => onDelete(backend.key)}
+        />
       ))}
       <ButtonContainer
         onClick={() => {
