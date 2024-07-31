@@ -46,6 +46,7 @@ const ObjectsApiOptionsFormFields = ({name, apiGroupChoices}) => {
         const confirmV1Switch = window.confirm(v1SwitchMessage);
         if (!confirmV1Switch) return;
         delete newValues.variablesMapping;
+        delete newValues.geometryVariableKey;
         break;
       }
       case 2: {
