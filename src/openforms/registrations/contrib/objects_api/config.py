@@ -1,4 +1,3 @@
-from typing import Any
 from uuid import UUID
 
 from django.db.models import IntegerChoices, Q
@@ -10,18 +9,54 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
-from openforms.utils.validators import validate_rsin
+from openforms.utils.validators import RSINValidator, validate_rsin
 
 from .client import get_catalogi_client, get_objecttypes_client
 from .models import ObjectsAPIGroupConfig
+from .typing import RegistrationOptions
 
 
 class VersionChoices(IntegerChoices):
     V1 = 1, _("v1, template based")
     V2 = 2, _("v2, variables mapping")
+
+
+class CatalogueSerializer(serializers.Serializer):
+    """
+    Specify which catalogus to use to look up document types.
+
+    This matches the fields ``catalogue_domain`` and ``catalogue_rsin`` on the
+    :class:`ObjectsAPIGroupConfig` model.
+    """
+
+    domain = serializers.CharField(
+        label=_("domain"),
+        required=False,
+        max_length=5,
+        help_text=_(
+            "The 'domein' attribute for the Catalogus resource in the Catalogi API."
+        ),
+        default="",
+    )
+    rsin = serializers.CharField(
+        label=_("RSIN"),
+        required=False,
+        max_length=9,
+        validators=[RSINValidator()],
+        help_text=_(
+            "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
+        ),
+        default="",
+    )
+
+    class Meta:
+        validators = [
+            AllOrNoneTruthyFieldsValidator("domain", "rsin"),
+        ]
 
 
 @extend_schema_serializer(
@@ -63,6 +98,14 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
         label=("Objects API group"),
         help_text=_("Which Objects API group to use."),
+    )
+    catalogue = CatalogueSerializer(
+        label=_("catalogue"),
+        required=False,
+        help_text=_(
+            "The catalogue in the catalogi API from the selected API group. Any "
+            "specified document types will be looked up within this catalogue."
+        ),
     )
     version = serializers.ChoiceField(
         label=_("options version"),
@@ -195,7 +238,9 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         fields["objecttype"] = serializers.CharField()
         return fields
 
-    def _handle_import(self, attrs: dict[str, Any]) -> None:
+    # XXX: fix typehint of attrs, it's a wider version of RegistrationOptions where
+    # the UUID is still a string...
+    def _handle_import(self, attrs) -> None:
         if (
             self.context.get("is_import", False)
             and attrs.get("objects_api_group") is None
@@ -250,7 +295,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         except IndexError:
             pass
 
-    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+    def validate(self, attrs: RegistrationOptions) -> RegistrationOptions:
         self._handle_import(attrs)
 
         v1_only_fields = {
@@ -293,29 +338,9 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         if not self.context.get("validate_business_logic", True):
             return attrs
 
-        objects_api_group: ObjectsAPIGroupConfig = attrs["objects_api_group"]
-        with get_catalogi_client(objects_api_group) as catalogi_client:
-            informatieobjecttypen_urls = [
-                iot["url"] for iot in catalogi_client.get_all_informatieobjecttypen()
-            ]
+        _validate_catalogue_and_document_types(attrs)
 
-        for field in (
-            "informatieobjecttype_submission_report",
-            "informatieobjecttype_submission_csv",
-            "informatieobjecttype_attachment",
-        ):
-            url = attrs.get(field)
-            if url is not None and url not in informatieobjecttypen_urls:
-                raise serializers.ValidationError(
-                    {
-                        field: _(
-                            "The provided {field} does not exist in the Catalogi API."
-                        ).format(field=field)
-                    },
-                    code="not-found",
-                )
-
-        with get_objecttypes_client(objects_api_group) as objecttypes_client:
+        with get_objecttypes_client(attrs["objects_api_group"]) as objecttypes_client:
             objecttypes = objecttypes_client.list_objecttypes()
 
             matching_objecttype = next(
@@ -355,3 +380,60 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 )
 
         return attrs
+
+
+def _validate_catalogue_and_document_types(attrs: RegistrationOptions):
+    api_group = attrs["objects_api_group"]
+    catalogus = None
+    catalogue_option = attrs.get("catalogue")
+
+    domain, rsin = (
+        (
+            catalogue_option["domain"],
+            catalogue_option["rsin"],
+        )
+        if catalogue_option is not None
+        else (
+            api_group.catalogue_domain,
+            api_group.catalogue_rsin,
+        )
+    )
+
+    # validate the catalogue itself - the queryset in the field guarantees that
+    # api_group.catalogi_service is not null.
+    with get_catalogi_client(api_group) as catalogi_client:
+        # DB check constraint + serializer validation guarantee that both or none
+        # are empty at the same time
+        if domain and rsin:
+            catalogus = catalogi_client.find_catalogus(domain=domain, rsin=rsin)
+            if catalogus is None:
+                raise serializers.ValidationError(
+                    {
+                        "catalogue": _(
+                            "The specified catalogue does not exist. Maybe you made a "
+                            "typo in the domain or RSIN?"
+                        ),
+                    },
+                    code="invalid-catalogue",
+                )
+
+            informatieobjecttypen_urls = catalogus["informatieobjecttypen"]
+        else:
+            informatieobjecttypen_urls = [
+                iot["url"] for iot in catalogi_client.get_all_informatieobjecttypen()
+            ]
+
+    for field in (
+        "informatieobjecttype_submission_report",
+        "informatieobjecttype_submission_csv",
+        "informatieobjecttype_attachment",
+    ):
+        url = attrs.get(field)
+        if url and url not in informatieobjecttypen_urls:
+            err_tpl = (
+                _("The provided {field} does not exist in the Catalogi API.")
+                if catalogus is None
+                else _("The provided {field} does not exist in the selected catalogue.")
+            )
+            err_msg = err_tpl.format(field=field)
+            raise serializers.ValidationError({field: err_msg}, code="not-found")

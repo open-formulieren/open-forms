@@ -36,7 +36,7 @@ def validate_catalogue_reference(
                     "The specified catalogue does not exist. Maybe you made a typo in "
                     "the domain or RSIN?"
                 ),
-                code="invalid_catalogus",
+                code="invalid-catalogue",
             )
             raise ValidationError({"catalogus_domain": error})
         return catalogus

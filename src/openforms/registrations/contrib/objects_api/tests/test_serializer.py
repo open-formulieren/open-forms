@@ -148,3 +148,197 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
         )
 
         self.assertTrue(options.is_valid())
+
+    def test_catalogue_reference_badly_formatted_data(self):
+        base = {
+            "objects_api_group": self.objects_api_group.pk,
+            "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            "objecttype_version": 1,
+        }
+
+        with self.subTest("domain without rsin"):
+            serializer = ObjectsAPIOptionsSerializer(
+                data={**base, "catalogue": {"domain": "TEST"}},
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            self.assertIn("catalogue", serializer.errors)
+            error = serializer.errors["catalogue"]["non_field_errors"][0]
+            self.assertIn("domain", error)
+            self.assertIn("rsin", error)
+
+        with self.subTest("rsin without domain"):
+            serializer = ObjectsAPIOptionsSerializer(
+                data={**base, "catalogue": {"rsin": "123456782"}}
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            self.assertIn("catalogue", serializer.errors)
+            error = serializer.errors["catalogue"]["non_field_errors"][0]
+            self.assertIn("domain", error)
+            self.assertIn("rsin", error)
+
+        with self.subTest("invalid RSIN"):
+            serializer = ObjectsAPIOptionsSerializer(
+                data={
+                    "catalogue": {
+                        "domain": "ok",
+                        "rsin": "AAAAAAAAA",
+                    }
+                }
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            self.assertIn("catalogue", serializer.errors)
+            self.assertIn("rsin", serializer.errors["catalogue"])
+
+    def test_catalogue_reference_with_api_calls(self):
+        base = {
+            "objects_api_group": self.objects_api_group.pk,
+            "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+            "objecttype_version": 1,
+        }
+
+        with self.subTest("valid catalogue reference"):
+            serializer1 = ObjectsAPIOptionsSerializer(
+                data={
+                    **base,
+                    "catalogue": {
+                        "domain": "TEST",
+                        "rsin": "000000000",
+                    },
+                }
+            )
+
+            valid1 = serializer1.is_valid()
+
+            self.assertTrue(valid1)
+
+        with self.subTest("invalid catalogus reference"):
+            serializer2 = ObjectsAPIOptionsSerializer(
+                data={
+                    **base,
+                    "catalogue": {
+                        "domain": "Noope",
+                        "rsin": "000000000",
+                    },
+                }
+            )
+
+            valid2 = serializer2.is_valid()
+
+            self.assertFalse(valid2)
+            self.assertIn("catalogue", serializer2.errors)
+            err = serializer2.errors["catalogue"][0]
+            self.assertEqual(err.code, "invalid-catalogue")
+
+    def test_validate_iot_urls_within_catalogue_implicit_catalogue_reference(self):
+        # if no catalogue is referenced in the serializer options, the one from the api
+        # group must be used if it's specified.
+        api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+        )
+
+        for field in (
+            "informatieobjecttype_submission_report",
+            "informatieobjecttype_submission_csv",
+            "informatieobjecttype_attachment",
+        ):
+            with self.subTest(
+                "invalid reference", field=field, catalogue_ref="implicit"
+            ):
+                serializer = ObjectsAPIOptionsSerializer(
+                    data={
+                        "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 1,
+                        "objects_api_group": api_group.pk,
+                        field: (
+                            f"{api_group.catalogi_service.api_root}informatieobjecttypen/"
+                            "d1cfb1d8-8593-4814-919d-72e38e80388f"  # part of catalogue OTHER
+                        ),
+                    }
+                )
+
+                valid = serializer.is_valid()
+
+                self.assertFalse(valid)
+                self.assertIn(field, serializer.errors)
+                err = serializer.errors[field][0]
+                self.assertEqual(err.code, "not-found")
+
+            with self.subTest("valid reference", field=field, catalogue_ref="implicit"):
+                serializer = ObjectsAPIOptionsSerializer(
+                    data={
+                        "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 1,
+                        "objects_api_group": api_group.pk,
+                        field: (
+                            f"{api_group.catalogi_service.api_root}informatieobjecttypen/"
+                            "29b63e5c-3835-4f68-8fad-f2aea9ae6b71"  # part of catalogue TEST
+                        ),
+                    }
+                )
+
+                valid = serializer.is_valid()
+
+                self.assertTrue(valid)
+
+        # check validation with explicit catalogue reference
+        api_group2 = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="",
+            catalogue_rsin="",
+        )
+
+        with self.subTest("invalid reference", catalogue_ref="explicit"):
+            serializer = ObjectsAPIOptionsSerializer(
+                data={
+                    "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                    "objecttype_version": 1,
+                    "objects_api_group": api_group2.pk,
+                    "catalogue": {
+                        "domain": "TEST",
+                        "rsin": "000000000",
+                    },
+                    "informatieobjecttype_attachment": (
+                        f"{api_group2.catalogi_service.api_root}informatieobjecttypen/"
+                        "d1cfb1d8-8593-4814-919d-72e38e80388f"  # part of catalogue OTHER
+                    ),
+                }
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertFalse(valid)
+            self.assertIn("informatieobjecttype_attachment", serializer.errors)
+            err = serializer.errors["informatieobjecttype_attachment"][0]
+            self.assertEqual(err.code, "not-found")
+
+        with self.subTest("valid reference", catalogue_ref="explicit"):
+            serializer = ObjectsAPIOptionsSerializer(
+                data={
+                    "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                    "objecttype_version": 1,
+                    "objects_api_group": api_group2.pk,
+                    "catalogue": {
+                        "domain": "OTHER",
+                        "rsin": "000000000",
+                    },
+                    "informatieobjecttype_submission_report": (
+                        f"{api_group2.catalogi_service.api_root}informatieobjecttypen/"
+                        "d1cfb1d8-8593-4814-919d-72e38e80388f"  # part of catalogue OTHER
+                    ),
+                }
+            )
+
+            valid = serializer.is_valid()
+
+            self.assertTrue(valid)

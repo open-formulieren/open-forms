@@ -9,8 +9,14 @@ if TYPE_CHECKING:
     from .models import ObjectsAPIGroupConfig
 
 
+class CatalogueOption(TypedDict):
+    domain: str
+    rsin: str
+
+
 class _BaseRegistrationOptions(TypedDict, total=False):
     objects_api_group: Required[ObjectsAPIGroupConfig]
+    catalogue: CatalogueOption
     objecttype: Required[UUID]
     objecttype_version: Required[int]
     update_existing_object: Required[bool]
