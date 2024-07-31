@@ -43,7 +43,10 @@ Upgrade notes
 * ⚠️ The feature flag to disable backend validation is now removed, instances relying
   on it should verify that their forms still work now that validation is enforced.
 
-* NOTE ABOUT OBJECTS API GROUPS AND OBJECTTYPES SERVICE.
+* ⚠️ If you make use of the Objects API - even the legacy configuration, you now need
+  to have a valid configuration for the objecttypes API service. The plugin
+  accesses this API during registration. You can configure this for each api group via
+  **Admin > Overige > Objecten API-groepen** after upgrading to 2.7.
 
 * We're consolidating the OpenID Connect *Redirect URI* endpoints into a single
   endpoint: ``/auth/oidc/callback/``. The legacy endpoints are still enabled,
