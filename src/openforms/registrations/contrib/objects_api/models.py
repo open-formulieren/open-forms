@@ -191,6 +191,17 @@ class ObjectsAPIGroupConfig(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def clean(self) -> None:
+        # circular imports otherwise between client/models/validators
+        from .validators import (
+            validate_catalogue_reference,
+            validate_document_type_references,
+        )
+
+        super().clean()
+        validate_catalogue_reference(self)
+        validate_document_type_references(self)
+
     def apply_defaults_to(self, options) -> None:
         options.setdefault("version", 1)
         options.setdefault(
