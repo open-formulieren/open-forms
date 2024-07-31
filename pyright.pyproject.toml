@@ -29,6 +29,8 @@ include = [
     # Registrations
     "src/openforms/registrations/contrib/email/config.py",
     "src/openforms/registrations/contrib/email/plugin.py",
+    "src/openforms/registrations/contrib/objects_api/plugin.py",
+    "src/openforms/registrations/contrib/objects_api/typing.py",
     # our own template app/package on top of Django
     "src/openforms/template",
     # generic typing helpers

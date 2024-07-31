@@ -44,7 +44,7 @@ def build_options(plugin_options: RegistrationOptions, key_mapping: dict) -> dic
 
 
 @register(PLUGIN_IDENTIFIER)
-class ObjectsAPIRegistration(BasePlugin):
+class ObjectsAPIRegistration(BasePlugin[RegistrationOptions]):
     verbose_name = _("Objects API registration")
     configuration_options = ObjectsAPIOptionsSerializer
 
@@ -163,6 +163,7 @@ class ObjectsAPIRegistration(BasePlugin):
             objecttype = objecttypes_client.get_objecttype(options["objecttype"])
             objecttype_url = objecttype["url"]
 
+        assert submission.registration_result is not None
         object_url = submission.registration_result["url"]
         with get_objects_client(options["objects_api_group"]) as objects_client:
             response = objects_client.patch(
