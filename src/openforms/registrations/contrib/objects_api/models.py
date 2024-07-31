@@ -199,8 +199,10 @@ class ObjectsAPIGroupConfig(models.Model):
         )
 
         super().clean()
-        validate_catalogue_reference(self)
-        validate_document_type_references(self)
+
+        catalogus = validate_catalogue_reference(self)
+        if catalogus is not None:
+            validate_document_type_references(self, catalogus)
 
     def apply_defaults_to(self, options) -> None:
         options.setdefault("version", 1)

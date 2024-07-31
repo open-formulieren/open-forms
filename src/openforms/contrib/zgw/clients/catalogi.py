@@ -26,6 +26,7 @@ class Catalogus(TypedDict):
     domein: str
     rsin: str
     naam: NotRequired[str]  # not present in older versions
+    informatieobjecttypen: list[str]
 
 
 class CatalogiClient(NLXClient):

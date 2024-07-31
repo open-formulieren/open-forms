@@ -1,3 +1,4 @@
+from copy import copy
 from pathlib import Path
 
 from django.core.exceptions import ValidationError
@@ -71,3 +72,31 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                 raise self.failureException(
                     "Catalogue exists and should vlaidate"
                 ) from exc
+
+    def test_validate_iot_urls_within_catalogue(self):
+        config = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="OTHER",
+            catalogue_rsin="000000000",
+        )
+        # it exists, just under a different catalogue
+        invalid_url = (
+            f"{config.catalogi_service.api_root}informatieobjecttypen/"
+            "7a474713-0833-402a-8441-e467c08ac55b"
+        )
+        for field in (
+            "informatieobjecttype_submission_report",
+            "informatieobjecttype_submission_csv",
+            "informatieobjecttype_attachment",
+        ):
+            with self.subTest(field=field):
+                _config = copy(config)
+                setattr(_config, field, invalid_url)
+
+                with self.assertRaisesMessage(
+                    ValidationError,
+                    "The document type URL is not in the specified catalogue.",
+                ) as exc_context:
+                    _config.clean()
+
+                self.assertEqual(list(exc_context.exception.error_dict.keys()), [field])
