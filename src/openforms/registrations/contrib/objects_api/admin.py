@@ -19,6 +19,8 @@ class ObjectsAPIGroupConfigAdmin(admin.ModelAdmin):
         "objecttypes_service",
         "drc_service",
         "catalogi_service",
+        "catalogue_domain",
+        "catalogue_rsin",
     )
     list_select_related = (
         "objects_service",
@@ -45,6 +47,17 @@ class ObjectsAPIGroupConfigAdmin(admin.ModelAdmin):
                     "drc_service",
                     "catalogi_service",
                 ]
+            },
+        ),
+        (
+            _("Catalogue"),
+            {
+                "description": _(
+                    "Specify the catalogue in the selected catalogi API service where "
+                    "the document types are defined. If provided, document types will "
+                    "also be validated against the catalogue."
+                ),
+                "fields": ("catalogue_domain", "catalogue_rsin"),
             },
         ),
         (
