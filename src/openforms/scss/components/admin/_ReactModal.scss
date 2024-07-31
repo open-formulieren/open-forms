@@ -120,5 +120,10 @@
     input[type='text'] {
       inline-size: var(--of-admin-input-field-size);
     }
+
+    // BOOTSTRAP + DJANGO ADMIN IS A TERRIBLE IDEA
+    .collapse:not(.show) {
+      display: inherit;
+    }
   }
 }
