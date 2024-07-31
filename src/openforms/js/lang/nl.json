@@ -2295,7 +2295,7 @@
     "originalDefault": "Confirm"
   },
   "q3kxsb": {
-    "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten API gestuurd om de (betaalattributen van) het eerder aangemaakte object bij te werken.",
+    "defaultMessage": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken.",
     "description": "Legacy objects API registration options: 'paymentStatusUpdateJson' helpText",
     "originalDefault": "This template is evaluated with the submission data when the payment is received. The resulting JSON is sent to the objects API to update (the payment fields of) the earlier created object."
   },

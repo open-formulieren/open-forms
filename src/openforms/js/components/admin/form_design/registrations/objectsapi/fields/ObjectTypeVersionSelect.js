@@ -69,7 +69,7 @@ const ObjectTypeVersionSelect = () => {
           id="id_objecttypeVersion"
           {...fieldProps}
           onChange={event => {
-            // overridden to handle the proper data type, since very <option value>
+            // overridden to handle the proper data type, since every <option value>
             // turns into a string in HTML
             const newVersion = parseInt(event.currentTarget.value, 10);
             setValue(newVersion);
