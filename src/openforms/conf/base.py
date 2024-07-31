@@ -626,10 +626,6 @@ MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
 ESCAPE_REGISTRATION_OUTPUT = config("ESCAPE_REGISTRATION_OUTPUT", default=False)
 DISABLE_SENDING_HIDDEN_FIELDS = config("DISABLE_SENDING_HIDDEN_FIELDS", default=False)
 
-LOG_OUTGOING_REQUESTS_MAX_AGE = config(
-    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7
-)  # number of days
-
 # TODO: convert to feature flags so that newly deployed instances get the new behaviour
 # while staying backwards compatible for existing instances
 USE_LEGACY_DIGID_EH_OIDC_ENDPOINTS = config(
@@ -1165,6 +1161,10 @@ MODELTRANSLATION_DEFAULT_LANGUAGE = "nl"
 #
 # Django-log-outgoing-requests
 #
+LOG_OUTGOING_REQUESTS_DB_SAVE = config("LOG_OUTGOING_REQUESTS_DB_SAVE", default=False)
+LOG_OUTGOING_REQUESTS_DB_SAVE_BODY = config(
+    "LOG_OUTGOING_REQUESTS_DB_SAVE_BODY", default=False
+)
 LOG_OUTGOING_REQUESTS_CONTENT_TYPES = [
     ContentType(pattern="application/json", default_encoding="utf-8"),
     ContentType(pattern="application/soap+xml", default_encoding="utf-8"),
@@ -1172,8 +1172,16 @@ LOG_OUTGOING_REQUESTS_CONTENT_TYPES = [
     ContentType(pattern="text/xml", default_encoding="iso-8859-1"),
     ContentType(pattern="text/*", default_encoding="utf-8"),
 ]
-LOG_OUTGOING_REQUESTS_EMIT_BODY = True
+LOG_OUTGOING_REQUESTS_EMIT_BODY = config(
+    "LOG_OUTGOING_REQUESTS_EMIT_BODY", default=True
+)
 LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
+# number of days
+LOG_OUTGOING_REQUESTS_MAX_AGE = config("LOG_OUTGOING_REQUESTS_MAX_AGE", default=7)
+# number of minutes, set to 0 to disable reset
+LOG_OUTGOING_REQUESTS_RESET_DB_SAVE_AFTER = config(
+    "LOG_OUTGOING_REQUESTS_RESET_DB_SAVE_AFTER", default=60
+)
 
 #
 # DJANGO-FLAGS - manage feature flags.
