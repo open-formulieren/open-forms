@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, override
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.data import Action
 from openforms.registrations.utils import execute_unless_result_exists
 from openforms.variables.service import get_static_variables
 
@@ -120,10 +121,16 @@ class ObjectsAPIRegistration(BasePlugin):
         check_config()
 
     @override
-    def get_config_actions(self):
+    def get_config_actions(self) -> list[Action]:
         return [
             (
-                _("Configuration"),
+                _("Manage API groups"),
+                reverse(
+                    "admin:registrations_objects_api_objectsapigroupconfig_changelist"
+                ),
+            ),
+            (
+                _("Defaults configuration"),
                 reverse(
                     "admin:registrations_objects_api_objectsapiconfig_change",
                     args=(ObjectsAPIConfig.singleton_instance_id,),

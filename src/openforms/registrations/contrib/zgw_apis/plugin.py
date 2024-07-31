@@ -471,10 +471,8 @@ class ZGWRegistration(BasePlugin):
     def get_config_actions(self) -> list[Action]:
         return [
             (
-                gettext("Configuration"),
-                reverse(
-                    "admin:zgw_apis_zgwapigroupconfig_changelist",
-                ),
+                _("Manage API groups"),
+                reverse("admin:zgw_apis_zgwapigroupconfig_changelist"),
             ),
         ]
 
