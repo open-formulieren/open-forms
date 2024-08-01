@@ -44,6 +44,23 @@ class ObjectsAPIGroupTests(TestCase):
                 catalogue_domain="", catalogue_rsin="123456782"
             )
 
+    def test_must_specify_catalogue_when_providing_iot_description(self):
+        for field in (
+            "iot_submission_report",
+            "iot_submission_csv",
+            "iot_attachment",
+        ):
+            with (
+                self.subTest(field=field),
+                transaction.atomic(),
+                self.assertRaises(IntegrityError),
+            ):
+                ObjectsAPIGroupConfigFactory.create(
+                    catalogue_domain="",
+                    catalogue_rsin="",
+                    **{field: "some-description"},
+                )
+
 
 class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES

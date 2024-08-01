@@ -64,11 +64,26 @@ class ObjectsAPIGroupConfigAdmin(admin.ModelAdmin):
             _("Default values"),
             {
                 "fields": [
+                    "iot_submission_report",
+                    "iot_submission_csv",
+                    "iot_attachment",
+                    "organisatie_rsin",
+                ]
+            },
+        ),
+        (
+            _("Default values (deprecated)"),
+            {
+                "description": _(
+                    "These configuration fields are deprecated - do not use them for "
+                    "new configurations."
+                ),
+                "fields": [
                     "informatieobjecttype_submission_report",
                     "informatieobjecttype_submission_csv",
                     "informatieobjecttype_attachment",
-                    "organisatie_rsin",
-                ]
+                ],
+                "classes": ("collapse",),
             },
         ),
     ]

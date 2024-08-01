@@ -66,6 +66,12 @@ class ObjectsAPIConfig(SingletonModel):
         verbose_name = _("Objects API configuration")
 
 
+# no catalogus specified, requires both RSIN and domain to be unspecified
+_CATALOGUE_NOT_SET = models.Q(catalogue_domain="", catalogue_rsin="")
+# catalogus specified, requires both RSIN and domain to be set
+_CATALOGUE_SET = ~models.Q(catalogue_domain="") & ~models.Q(catalogue_rsin="")
+
+
 class ObjectsAPIGroupConfig(models.Model):
     # TODO OF 3.0: remove `null=True` from the service fields
     name = models.CharField(
@@ -143,6 +149,49 @@ class ObjectsAPIGroupConfig(models.Model):
         help_text=_("Default RSIN of organization, which creates the INFORMATIEOBJECT"),
     )
 
+    # Replaces informatiobjecttype_submission_report
+    iot_submission_report = models.CharField(
+        _("submission report document type description"),
+        # InformatieObjecttype.omschrijving resource attribute in Catalogi API spec
+        max_length=80,
+        blank=True,
+        help_text=_(
+            "Description of the document type in the Catalogi API to be used for the "
+            "submission report PDF (i.e. the INFORMATIEOBJECTTYPE.omschrijving "
+            "attribute). The appropriate version will automatically be selected based "
+            "on the submission timestamp and validity dates of the "
+            "document type versions."
+        ),
+    )
+    # Replaces informatiobjecttype_submission_csv
+    iot_submission_csv = models.CharField(
+        _("submission report CSV document type description"),
+        # InformatieObjecttype.omschrijving resource attribute in Catalogi API spec
+        max_length=80,
+        blank=True,
+        help_text=_(
+            "Description of the document type in the Catalogi API to be used for the "
+            "submission report CSV (i.e. the INFORMATIEOBJECTTYPE.omschrijving "
+            "attribute). The appropriate version will automatically be selected based "
+            "on the submission timestamp and validity dates of the "
+            "document type versions."
+        ),
+    )
+    # Replaces informatiobjecttype_attachment
+    iot_attachment = models.CharField(
+        _("attachment document type description"),
+        # InformatieObjecttype.omschrijving resource attribute in Catalogi API spec
+        max_length=80,
+        blank=True,
+        help_text=_(
+            "Description of the document type in the Catalogi API to be used for the "
+            "submission attachments (i.e. the INFORMATIEOBJECTTYPE.omschrijving "
+            "attribute). The appropriate version will automatically be selected based "
+            "on the submission timestamp and validity dates of the "
+            "document type versions."
+        ),
+    )
+
     # XXX: the URLFields are to be replaced with charfields storing the omschrijving.
     # DeprecationWarning: remove in OF 3.0
     informatieobjecttype_submission_report = models.URLField(
@@ -178,18 +227,46 @@ class ObjectsAPIGroupConfig(models.Model):
         verbose_name_plural = _("Objects API groups")
         constraints = [
             models.CheckConstraint(
-                check=(
-                    # no catalogus specified at all
-                    models.Q(catalogue_domain="", catalogue_rsin="")
-                    # catalogus specified, requires both RSIN and domain to be set
-                    | (~models.Q(catalogue_domain="") & ~models.Q(catalogue_rsin=""))
-                ),
+                check=_CATALOGUE_NOT_SET | _CATALOGUE_SET,
                 name="catalogue_composite_key",
                 violation_error_message=_(
                     "You must specify both domain and RSIN to uniquely identify a "
                     "catalogue.",
                 ),
-            )
+            ),
+            models.CheckConstraint(
+                check=(
+                    models.Q(iot_submission_report="")
+                    | (~models.Q(iot_submission_report="") & _CATALOGUE_SET)
+                ),
+                name="iot_report_requires_catalogue",
+                violation_error_message=_(
+                    "You must specify a catalogue when specifying the submission "
+                    "report PDF document type.",
+                ),
+            ),
+            models.CheckConstraint(
+                check=(
+                    models.Q(iot_submission_csv="")
+                    | (~models.Q(iot_submission_csv="") & _CATALOGUE_SET)
+                ),
+                name="iot_csv_requires_catalogue",
+                violation_error_message=_(
+                    "You must specify a catalogue when specifying the submission "
+                    "report CSV document type.",
+                ),
+            ),
+            models.CheckConstraint(
+                check=(
+                    models.Q(iot_attachment="")
+                    | (~models.Q(iot_attachment="") & _CATALOGUE_SET)
+                ),
+                name="iot_attachment_requires_catalogue",
+                violation_error_message=_(
+                    "You must specify a catalogue when specifying the submission "
+                    "attachment document type.",
+                ),
+            ),
         ]
 
     def __str__(self) -> str:
