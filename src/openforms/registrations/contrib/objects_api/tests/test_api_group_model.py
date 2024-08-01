@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 
 from openforms.utils.tests.vcr import OFVCRMixin
 
+from ..models import ObjectsAPIGroupConfig
 from .factories import ObjectsAPIGroupConfigFactory
 
 VCR_TEST_FILES = Path(__file__).parent / "files"
@@ -61,6 +62,159 @@ class ObjectsAPIGroupTests(TestCase):
                     catalogue_rsin="",
                     **{field: "some-description"},
                 )
+
+    def test_normalize_documenttype_information(self):
+        with self.subTest("no catalogue/document type anywhere"):
+            api_group: ObjectsAPIGroupConfig = ObjectsAPIGroupConfigFactory.build(
+                catalogue_domain="",
+                catalogue_rsin="",
+                iot_submission_report="",
+                iot_submission_csv="",
+                iot_attachment="",
+            )
+            partial_opts = {
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "",
+            }
+
+            api_group.apply_defaults_to(partial_opts)
+
+            self.assertEqual(
+                partial_opts,
+                {
+                    "catalogue": None,
+                    "iot_submission_report": "",
+                    "iot_submission_csv": "",
+                    "iot_attachment": "",
+                },
+            )
+
+        with self.subTest("default catalogue/document types on API group only"):
+            api_group: ObjectsAPIGroupConfig = ObjectsAPIGroupConfigFactory.build(
+                catalogue_domain="TEST",
+                catalogue_rsin="000000000",
+                iot_submission_report="",
+                iot_submission_csv="",
+                iot_attachment="bijlage",
+            )
+            partial_opts = {
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "",
+            }
+
+            api_group.apply_defaults_to(partial_opts)
+
+            self.assertEqual(
+                partial_opts,
+                {
+                    "catalogue": {
+                        "domain": "TEST",
+                        "rsin": "000000000",
+                    },
+                    "iot_submission_report": "",
+                    "iot_submission_csv": "",
+                    "iot_attachment": "bijlage",
+                },
+            )
+
+        with self.subTest(
+            "default catalogue/document types on API group, override in options"
+        ):
+            api_group: ObjectsAPIGroupConfig = ObjectsAPIGroupConfigFactory.build(
+                catalogue_domain="TEST",
+                catalogue_rsin="000000000",
+                iot_submission_report="some-default",
+                iot_submission_csv="",
+                iot_attachment="bijlage",
+            )
+            partial_opts = {
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "other",
+            }
+
+            api_group.apply_defaults_to(partial_opts)
+
+            self.assertEqual(
+                partial_opts,
+                {
+                    "catalogue": {
+                        "domain": "TEST",
+                        "rsin": "000000000",
+                    },
+                    "iot_submission_report": "some-default",
+                    "iot_submission_csv": "",
+                    "iot_attachment": "other",
+                },
+            )
+
+        with self.subTest("catalogue overriden, defaults set on API group"):
+            api_group: ObjectsAPIGroupConfig = ObjectsAPIGroupConfigFactory.build(
+                catalogue_domain="TEST",
+                catalogue_rsin="000000000",
+                iot_submission_report="",
+                iot_submission_csv="",
+                iot_attachment="bijlage",
+            )
+            partial_opts = {
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "",
+                "catalogue": {
+                    "domain": "OTHER",
+                    "rsin": "000000000",
+                },
+            }
+
+            api_group.apply_defaults_to(partial_opts)
+
+            self.assertEqual(
+                partial_opts,
+                {
+                    "catalogue": {
+                        "domain": "OTHER",
+                        "rsin": "000000000",
+                    },
+                    "iot_submission_report": "",
+                    "iot_submission_csv": "",
+                    "iot_attachment": "",
+                },
+            )
+
+        with self.subTest("catalogue and doctype overriden, defaults set on API group"):
+            api_group: ObjectsAPIGroupConfig = ObjectsAPIGroupConfigFactory.build(
+                catalogue_domain="TEST",
+                catalogue_rsin="000000000",
+                iot_submission_report="some-default",
+                iot_submission_csv="",
+                iot_attachment="bijlage",
+            )
+            partial_opts = {
+                "iot_submission_report": "",
+                "iot_submission_csv": "",
+                "iot_attachment": "attachment",
+                "catalogue": {
+                    "domain": "OTHER",
+                    "rsin": "000000000",
+                },
+            }
+
+            api_group.apply_defaults_to(partial_opts)
+
+            self.assertEqual(
+                partial_opts,
+                {
+                    "catalogue": {
+                        "domain": "OTHER",
+                        "rsin": "000000000",
+                    },
+                    "iot_submission_report": "",
+                    "iot_submission_csv": "",
+                    "iot_attachment": "attachment",
+                },
+            )
 
 
 class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
