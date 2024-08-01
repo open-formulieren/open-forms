@@ -443,12 +443,12 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
                 iot["url"] for iot in client.get_all_informatieobjecttypen()
             ]
 
+        _errors = {}
         for field in (
             "iot_submission_report",
             "iot_submission_csv",
             "iot_attachment",
         ):
-            _errors = {}
             if not (description := attrs[field]):
                 continue
             # catalogue must be specified if making use of the reference-by-description
@@ -471,8 +471,8 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
                     "No document type with description '{description}' found."
                 ).format(description=description)
                 _errors[field] = ErrorDetail(err_msg, code="not-found")
-            if _errors:
-                raise serializers.ValidationError(_errors)
+        if _errors:
+            raise serializers.ValidationError(_errors)
 
     # Remove these legacy fields in Open Forms 3.0
     for field in (

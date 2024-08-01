@@ -232,6 +232,26 @@ class ObjectsAPIGroupTests(TestCase):
 class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
     VCR_TEST_FILES = VCR_TEST_FILES
 
+    def test_validate_no_catalogue_specified(self):
+        config = ObjectsAPIGroupConfigFactory.create(
+            catalogue_domain="", catalogue_rsin=""
+        )
+
+        try:
+            config.clean()
+        except ValidationError as exc:
+            raise self.failureException("Not specifying a catalogue is valid.") from exc
+
+    def test_catalogue_specified_but_catalogi_service_is_missing(self):
+        config = ObjectsAPIGroupConfigFactory.create(
+            catalogi_service=None, catalogue_domain="TEST", catalogue_rsin="000000000"
+        )
+
+        with self.assertRaises(ValidationError) as exc_context:
+            config.clean()
+
+        self.assertIn("catalogi_service", exc_context.exception.error_dict)
+
     def test_validate_catalogue_exists(self):
         # validates against the fixtures in docker/open-zaak
         config = ObjectsAPIGroupConfigFactory.create(
@@ -254,7 +274,7 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                 config.clean()
             except ValidationError as exc:
                 raise self.failureException(
-                    "Catalogue exists and should vlaidate"
+                    "Catalogue exists and should validate"
                 ) from exc
 
     def test_validate_iot_urls_within_catalogue(self):
@@ -284,6 +304,24 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                     _config.clean()
 
                 self.assertEqual(list(exc_context.exception.error_dict.keys()), [field])
+
+        with self.subTest("URL is valid"):
+            config2 = ObjectsAPIGroupConfigFactory.create(
+                for_test_docker_compose=True,
+                catalogue_domain="TEST",
+                catalogue_rsin="000000000",
+            )
+            config2.informatieobjecttype_attachment = (
+                f"{config.catalogi_service.api_root}informatieobjecttypen/"
+                "7a474713-0833-402a-8441-e467c08ac55b"
+            )
+
+            try:
+                config2.clean()
+            except ValidationError as exc:
+                raise self.failureException(
+                    "Expected configuration to be valid"
+                ) from exc
 
     def test_validate_iot_descriptions_within_catalogue(self):
         iot_in_test = "PDF Informatieobjecttype"

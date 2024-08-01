@@ -428,3 +428,34 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 valid = serializer.is_valid()
 
                 self.assertTrue(valid)
+
+    def test_iot_specified_but_catalogue_missing(self):
+        api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="",
+            catalogue_rsin="",
+        )
+
+        cases = (
+            {},
+            {"catalogue": {}},
+        )
+
+        for case in cases:
+            with self.subTest(catalogue=case):
+                serializer = ObjectsAPIOptionsSerializer(
+                    data={
+                        "objects_api_group": api_group.pk,
+                        "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 1,
+                        "iot_attachment": "PDF Informatieobjecttype",
+                        **case,
+                    }
+                )
+
+                valid = serializer.is_valid()
+
+                self.assertFalse(valid)
+                self.assertIn("catalogue", serializer.errors)
+                err = serializer.errors["catalogue"][0]
+                self.assertEqual(err.code, "required")
