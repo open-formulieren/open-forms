@@ -342,3 +342,89 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
             valid = serializer.is_valid()
 
             self.assertTrue(valid)
+
+    def test_validate_iot_descriptions_within_catalogue(self):
+        api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+        )
+
+        for field in (
+            "iot_submission_report",
+            "iot_submission_csv",
+            "iot_attachment",
+        ):
+            with self.subTest(
+                "invalid reference", field=field, catalogue_ref="explicit"
+            ):
+                serializer = ObjectsAPIOptionsSerializer(
+                    data={
+                        "objects_api_group": api_group.pk,
+                        "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 1,
+                        "catalogue": {
+                            "domain": "OTHER",
+                            "rsin": "000000000",
+                        },
+                        field: "PDF Informatieobjecttype",
+                    }
+                )
+
+                valid = serializer.is_valid()
+
+                self.assertFalse(valid)
+                self.assertIn(field, serializer.errors)
+                err = serializer.errors[field][0]
+                self.assertEqual(err.code, "not-found")
+
+            with self.subTest("valid reference", field=field, catalogue_ref="explicit"):
+                serializer = ObjectsAPIOptionsSerializer(
+                    data={
+                        "objects_api_group": api_group.pk,
+                        "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 1,
+                        "catalogue": {
+                            "domain": "TEST",
+                            "rsin": "000000000",
+                        },
+                        field: "PDF Informatieobjecttype",
+                    }
+                )
+
+                valid = serializer.is_valid()
+
+                self.assertTrue(valid)
+
+            with self.subTest(
+                "invalid reference", field=field, catalogue_ref="implicit"
+            ):
+                serializer = ObjectsAPIOptionsSerializer(
+                    data={
+                        "objects_api_group": api_group.pk,
+                        "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 1,
+                        field: "Attachment Informatieobjecttype other catalog",
+                    }
+                )
+
+                valid = serializer.is_valid()
+
+                self.assertFalse(valid)
+                self.assertIn(field, serializer.errors)
+                err = serializer.errors[field][0]
+                self.assertEqual(err.code, "not-found")
+
+            with self.subTest("valid reference", field=field, catalogue_ref="implicit"):
+                serializer = ObjectsAPIOptionsSerializer(
+                    data={
+                        "objects_api_group": api_group.pk,
+                        "objecttype": "8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+                        "objecttype_version": 1,
+                        field: "PDF Informatieobjecttype",
+                    }
+                )
+
+                valid = serializer.is_valid()
+
+                self.assertTrue(valid)

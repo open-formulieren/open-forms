@@ -1,3 +1,4 @@
+import warnings
 from uuid import UUID
 
 from django.db.models import IntegerChoices, Q
@@ -5,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.api.utils import get_from_serializer_data_or_instance
@@ -103,8 +104,9 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         label=_("catalogue"),
         required=False,
         help_text=_(
-            "The catalogue in the catalogi API from the selected API group. Any "
-            "specified document types will be looked up within this catalogue."
+            "The catalogue in the catalogi API from the selected API group. This "
+            "overrides the catalogue specified in the API group, if it's set. When "
+            "specified, the document types specified on the API group are ignored."
         ),
     )
     version = serializers.ChoiceField(
@@ -136,14 +138,6 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         ),
         default=False,
     )
-    informatieobjecttype_submission_report = serializers.URLField(
-        label=_("submission report PDF informatieobjecttype"),
-        help_text=_(
-            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
-            "to be used for the submission report PDF."
-        ),
-        required=False,
-    )
     upload_submission_csv = serializers.BooleanField(
         label=_("Upload submission CSV"),
         help_text=_(
@@ -151,6 +145,59 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "a Document in Documenten API and attached to the ProductAanvraag."
         ),
         default=False,
+    )
+    organisatie_rsin = serializers.CharField(
+        label=_("organisation RSIN"),
+        validators=[validate_rsin],
+        help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT."),
+        required=False,
+    )
+
+    iot_submission_report = serializers.CharField(
+        label=_("submission report document type description"),
+        required=False,
+        max_length=80,
+        default="",
+        help_text=_(
+            "Description of the document type in the Catalogi API to be used for the "
+            "submission report PDF. The appropriate version will automatically be "
+            "selected based on the submission timestamp and validity dates of the "
+            "document type versions."
+        ),
+    )
+    iot_submission_csv = serializers.CharField(
+        label=_("submission report CSV document type description"),
+        required=False,
+        max_length=80,
+        default="",
+        help_text=_(
+            "Description of the document type in the Catalogi API to be used for the "
+            "submission report CSV. The appropriate version will automatically be "
+            "selected based on the submission timestamp and validity dates of the "
+            "document type versions."
+        ),
+    )
+    iot_attachment = serializers.CharField(
+        label=_("attachment document type description"),
+        required=False,
+        max_length=80,
+        default="",
+        help_text=_(
+            "Description of the document type in the Catalogi API to be used for the "
+            "submission attachments. The appropriate version will automatically be "
+            "selected based on the submission timestamp and validity dates of the "
+            "document type versions."
+        ),
+    )
+
+    # DeprecationWarning: remove in OF 3.0
+    informatieobjecttype_submission_report = serializers.URLField(
+        label=_("submission report PDF informatieobjecttype"),
+        help_text=_(
+            "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
+            "to be used for the submission report PDF."
+        ),
+        required=False,
     )
     informatieobjecttype_submission_csv = serializers.URLField(
         label=_("submission report CSV informatieobjecttype"),
@@ -166,12 +213,6 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             "URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
             "to be used for the submission attachments."
         ),
-        required=False,
-    )
-    organisatie_rsin = serializers.CharField(
-        label=_("organisation RSIN"),
-        validators=[validate_rsin],
-        help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT."),
         required=False,
     )
 
@@ -257,7 +298,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             )
 
             if not existing_groups.exists():
-                raise ValidationError(
+                raise serializers.ValidationError(
                     {
                         "objects_api_group": _(
                             "You must create a valid Objects API Group config (with the necessary services) before importing."
@@ -280,7 +321,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             )
 
             if matching_group is None:
-                raise ValidationError(
+                raise serializers.ValidationError(
                     {
                         "objects_api_group": _(
                             "No Objects API Group config was found matching the configured objecttype URL."
@@ -311,7 +352,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             case VersionChoices.V1:
                 v1_forbidden_fields = v2_only_fields.intersection(attrs)
                 if v1_forbidden_fields:
-                    raise ValidationError(
+                    raise serializers.ValidationError(
                         {
                             k: _(
                                 "{field_name} shouldn't be provided when version is 1"
@@ -322,7 +363,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             case VersionChoices.V2:
                 v2_forbidden_fields = v1_only_fields.intersection(attrs)
                 if v2_forbidden_fields:
-                    raise ValidationError(
+                    raise serializers.ValidationError(
                         {
                             k: _(
                                 "{field_name} shouldn't be provided when version is 2"
@@ -331,7 +372,7 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                         }
                     )
             case _:  # pragma: no cover
-                raise ValidationError(
+                raise serializers.ValidationError(
                     {"version": _("Unknown version: {version}").format(version=version)}
                 )
 
@@ -345,6 +386,23 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
 
 
 def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
+    """
+    Validate that the catalogue and document types exist.
+
+    Document type validation is layered - serializer options overrule API group fields.
+    Some notable cases to consider:
+
+    - No serializer catalogue is specified: any document type fields are validated
+      against the API group catalogue.
+    - A serializer catalogue is specified: only document type fields from the serializer
+      are considered, and they are validated against the serializer catalogue. Any
+      defaults specified on the API group are ignored. This implies that document type
+      fields not specified on the serializer that are set on the API group will NOT
+      result in uploads.
+
+    Doing something else would require us to "hoist" configuration from the API group
+    to the serializer and that doesn't seem logical.
+    """
     api_group = attrs["objects_api_group"]
     catalogus = None
     catalogue_option = attrs.get("catalogue")
@@ -363,11 +421,11 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
 
     # validate the catalogue itself - the queryset in the field guarantees that
     # api_group.catalogi_service is not null.
-    with get_catalogi_client(api_group) as catalogi_client:
+    with get_catalogi_client(api_group) as client:
         # DB check constraint + serializer validation guarantee that both or none
         # are empty at the same time
         if domain and rsin:
-            catalogus = catalogi_client.find_catalogus(domain=domain, rsin=rsin)
+            catalogus = client.find_catalogus(domain=domain, rsin=rsin)
             if catalogus is None:
                 raise serializers.ValidationError(
                     {
@@ -382,15 +440,53 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
             informatieobjecttypen_urls = catalogus["informatieobjecttypen"]
         else:
             informatieobjecttypen_urls = [
-                iot["url"] for iot in catalogi_client.get_all_informatieobjecttypen()
+                iot["url"] for iot in client.get_all_informatieobjecttypen()
             ]
 
+        for field in (
+            "iot_submission_report",
+            "iot_submission_csv",
+            "iot_attachment",
+        ):
+            _errors = {}
+            if not (description := attrs[field]):
+                continue
+            # catalogue must be specified if making use of the reference-by-description
+            # config options.
+            if catalogus is None:
+                err_msg = _(
+                    "To look up document types by their description, a catalogue reference "
+                    "is required. Either specify one on the API group or in the plugin "
+                    "options."
+                )
+                raise serializers.ValidationError(
+                    {"catalogue": err_msg}, code="required"
+                )
+
+            versions = client.find_informatieobjecttypen(
+                catalogus=catalogus["url"], description=description
+            )
+            if versions is None:
+                err_msg = _(
+                    "No document type with description '{description}' found."
+                ).format(description=description)
+                _errors[field] = ErrorDetail(err_msg, code="not-found")
+            if _errors:
+                raise serializers.ValidationError(_errors)
+
+    # Remove these legacy fields in Open Forms 3.0
     for field in (
         "informatieobjecttype_submission_report",
         "informatieobjecttype_submission_csv",
         "informatieobjecttype_attachment",
     ):
         url = attrs.get(field)
+        if url:
+            warnings.warn(
+                "URL references to document types are deprecated and will be remove in "
+                "Open Forms 3.0",
+                DeprecationWarning,
+            )
         if url and url not in informatieobjecttypen_urls:
             err_tpl = (
                 _("The provided {field} does not exist in the Catalogi API.")
