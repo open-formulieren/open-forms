@@ -339,50 +339,12 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             return attrs
 
         _validate_catalogue_and_document_types(attrs)
-
-        with get_objecttypes_client(attrs["objects_api_group"]) as objecttypes_client:
-            objecttypes = objecttypes_client.list_objecttypes()
-
-            matching_objecttype = next(
-                (
-                    objecttype
-                    for objecttype in objecttypes
-                    if objecttype["uuid"] == str(attrs["objecttype"])
-                ),
-                None,
-            )
-
-            if matching_objecttype is None:
-                raise serializers.ValidationError(
-                    {
-                        "objecttype": _(
-                            "The provided objecttype does not exist in the Objecttypes API."
-                        )
-                    },
-                    code="not-found",
-                )
-
-            objecttype_versions = objecttypes_client.list_objecttype_versions(
-                objecttype_uuid=matching_objecttype["uuid"]
-            )
-
-            if not any(
-                objecttype_version["version"] == attrs["objecttype_version"]
-                for objecttype_version in objecttype_versions
-            ):
-                raise serializers.ValidationError(
-                    {
-                        "objecttype_version": _(
-                            "The provided objecttype version does not exist in the Objecttypes API."
-                        )
-                    },
-                    code="not-found",
-                )
+        _validate_objecttype_and_version(attrs)
 
         return attrs
 
 
-def _validate_catalogue_and_document_types(attrs: RegistrationOptions):
+def _validate_catalogue_and_document_types(attrs: RegistrationOptions) -> None:
     api_group = attrs["objects_api_group"]
     catalogus = None
     catalogue_option = attrs.get("catalogue")
@@ -437,3 +399,44 @@ def _validate_catalogue_and_document_types(attrs: RegistrationOptions):
             )
             err_msg = err_tpl.format(field=field)
             raise serializers.ValidationError({field: err_msg}, code="not-found")
+
+
+def _validate_objecttype_and_version(attrs: RegistrationOptions) -> None:
+    with get_objecttypes_client(attrs["objects_api_group"]) as objecttypes_client:
+        objecttypes = objecttypes_client.list_objecttypes()
+
+        matching_objecttype = next(
+            (
+                objecttype
+                for objecttype in objecttypes
+                if objecttype["uuid"] == str(attrs["objecttype"])
+            ),
+            None,
+        )
+
+        if matching_objecttype is None:
+            raise serializers.ValidationError(
+                {
+                    "objecttype": _(
+                        "The provided objecttype does not exist in the Objecttypes API."
+                    )
+                },
+                code="not-found",
+            )
+
+        objecttype_versions = objecttypes_client.list_objecttype_versions(
+            objecttype_uuid=matching_objecttype["uuid"]
+        )
+
+        if not any(
+            objecttype_version["version"] == attrs["objecttype_version"]
+            for objecttype_version in objecttype_versions
+        ):
+            raise serializers.ValidationError(
+                {
+                    "objecttype_version": _(
+                        "The provided objecttype version does not exist in the Objecttypes API."
+                    )
+                },
+                code="not-found",
+            )
