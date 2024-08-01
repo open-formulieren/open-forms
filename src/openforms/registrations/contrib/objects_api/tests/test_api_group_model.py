@@ -64,6 +64,13 @@ class ObjectsAPIGroupTests(TestCase):
                 )
 
     def test_normalize_documenttype_information(self):
+        _rest = {
+            "informatieobjecttype_submission_report": "",
+            "informatieobjecttype_submission_csv": "",
+            "informatieobjecttype_attachment": "",
+            "organisatie_rsin": "",
+            "version": 1,
+        }
         with self.subTest("no catalogue/document type anywhere"):
             api_group: ObjectsAPIGroupConfig = ObjectsAPIGroupConfigFactory.build(
                 catalogue_domain="",
@@ -83,6 +90,7 @@ class ObjectsAPIGroupTests(TestCase):
             self.assertEqual(
                 partial_opts,
                 {
+                    **_rest,
                     "catalogue": None,
                     "iot_submission_report": "",
                     "iot_submission_csv": "",
@@ -109,6 +117,7 @@ class ObjectsAPIGroupTests(TestCase):
             self.assertEqual(
                 partial_opts,
                 {
+                    **_rest,
                     "catalogue": {
                         "domain": "TEST",
                         "rsin": "000000000",
@@ -140,6 +149,7 @@ class ObjectsAPIGroupTests(TestCase):
             self.assertEqual(
                 partial_opts,
                 {
+                    **_rest,
                     "catalogue": {
                         "domain": "TEST",
                         "rsin": "000000000",
@@ -173,6 +183,7 @@ class ObjectsAPIGroupTests(TestCase):
             self.assertEqual(
                 partial_opts,
                 {
+                    **_rest,
                     "catalogue": {
                         "domain": "OTHER",
                         "rsin": "000000000",
@@ -206,6 +217,7 @@ class ObjectsAPIGroupTests(TestCase):
             self.assertEqual(
                 partial_opts,
                 {
+                    **_rest,
                     "catalogue": {
                         "domain": "OTHER",
                         "rsin": "000000000",
