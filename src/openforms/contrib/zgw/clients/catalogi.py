@@ -23,10 +23,22 @@ def omschrijving_matcher(omschrijving: str):
 class Catalogus(TypedDict):
     # there are more attributes, but we currently don't use them. See the Catalogi
     # API spec
+    url: str
     domein: str
     rsin: str
     naam: NotRequired[str]  # not present in older versions
     informatieobjecttypen: list[str]
+
+
+class InformatieObjectType(TypedDict):
+    # there are more attributes, but we currently don't use them. See the Catalogi
+    # API spec
+    url: str
+    catalogus: str  # URL pointer to the catalogue
+    omschrijving: str
+    beginGeldigheid: str  # ISO 8601 date string
+    eindeGeldigheid: NotRequired[str | None]  # ISO 8601 date string or empty
+    concept: NotRequired[bool]
 
 
 class CatalogiClient(NLXClient):
@@ -69,6 +81,33 @@ class CatalogiClient(NLXClient):
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
+
+    def find_informatieobjecttypen(
+        self,
+        *,
+        catalogus: str,
+        description: str,
+    ) -> list[InformatieObjectType] | None:
+        """
+        Look up an informatieobjecttype within the specified catalogue.
+
+        The description is unique within a catalogue, but multiple versions may exist.
+        If no results are found, ``None`` is returned.
+        """
+        response = self.get(
+            "informatieobjecttypen",
+            params={
+                "catalogus": catalogus,
+                "omschrijving": description,
+            },
+        )
+        response.raise_for_status()
+        data: PaginatedResponseData[InformatieObjectType] = response.json()
+        if data["count"] == 0:
+            return None
+
+        all_versions = list(pagination_helper(self, data))
+        return all_versions
 
     def list_statustypen(self, zaaktype: str) -> list[dict]:
         query = {"zaaktype": zaaktype}

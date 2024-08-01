@@ -4,6 +4,7 @@ from pathlib import Path
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import TestCase
+from django.utils.translation import gettext as _
 
 from openforms.utils.tests.vcr import OFVCRMixin
 
@@ -117,3 +118,44 @@ class ObjectsAPIGroupValidationTests(OFVCRMixin, TestCase):
                     _config.clean()
 
                 self.assertEqual(list(exc_context.exception.error_dict.keys()), [field])
+
+    def test_validate_iot_descriptions_within_catalogue(self):
+        iot_in_test = "PDF Informatieobjecttype"
+        iot_in_other = "Attachment Informatieobjecttype other catalog"
+        config = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+        )
+
+        for field in (
+            "iot_submission_report",
+            "iot_submission_csv",
+            "iot_attachment",
+        ):
+
+            err = _("No document type with description {description} found.").format(
+                description=iot_in_other
+            )
+
+            with (
+                self.subTest(field=field, valid=False),
+                self.assertRaisesMessage(ValidationError, err) as exc_context,
+            ):
+                invalid_config = copy(config)
+                setattr(invalid_config, field, iot_in_other)
+
+                invalid_config.clean()
+
+            self.assertEqual(list(exc_context.exception.error_dict.keys()), [field])
+
+            with self.subTest(field=field, valid=True):
+                valid_config = copy(config)
+                setattr(valid_config, field, iot_in_test)
+
+                try:
+                    valid_config.clean()
+                except ValidationError as exc:
+                    raise self.failureException(
+                        "Configuration is supposed to be valid"
+                    ) from exc
