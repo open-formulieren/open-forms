@@ -106,7 +106,43 @@ class ObjectsAPIGroupConfig(models.Model):
         related_name="+",
     )
 
+    #
     # Overridable defaults
+    #
+
+    # Specify which catalogus to use to look up document types. See
+    # https://catalogi-api.vng.cloud/ for the API specification. A catalogus is uniquely
+    # identified by the combination (domein, rsin)
+    catalogue_domain = models.CharField(
+        _("catalogus domain"),
+        # blank because: opt-in to new config pattern & may be specified on form-level
+        # options instead of here.
+        blank=True,
+        max_length=5,
+        help_text=_(
+            "The 'domein' attribute for the Catalogus resource in the Catalogi API."
+        ),
+    )
+    catalogue_rsin = models.CharField(
+        _("catalogus RSIN"),
+        # blank because: opt-in to new config pattern & may be specified on form-level
+        # options instead of here.
+        blank=True,
+        max_length=9,
+        help_text=_(
+            "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
+        ),
+        validators=[RSINValidator()],
+    )
+
+    organisatie_rsin = models.CharField(
+        _("organisation RSIN"),
+        max_length=9,
+        blank=True,
+        validators=[validate_rsin],
+        help_text=_("Default RSIN of organization, which creates the INFORMATIEOBJECT"),
+    )
+
     # XXX: the URLFields are to be replaced with charfields storing the omschrijving.
     # DeprecationWarning: remove in OF 3.0
     informatieobjecttype_submission_report = models.URLField(
@@ -135,38 +171,6 @@ class ObjectsAPIGroupConfig(models.Model):
             "Default URL that points to the INFORMATIEOBJECTTYPE in the Catalogi API "
             "to be used for the submission attachments"
         ),
-    )
-    organisatie_rsin = models.CharField(
-        _("organisation RSIN"),
-        max_length=9,
-        blank=True,
-        validators=[validate_rsin],
-        help_text=_("Default RSIN of organization, which creates the INFORMATIEOBJECT"),
-    )
-
-    # Specify which catalogus to use to look up document types. See
-    # https://catalogi-api.vng.cloud/ for the API specification. A catalogus is uniquely
-    # identified by the combination (domein, rsin)
-    catalogue_domain = models.CharField(
-        _("catalogus domain"),
-        # blank because: opt-in to new config pattern & may be specified on form-level
-        # options instead of here.
-        blank=True,
-        max_length=5,
-        help_text=_(
-            "The 'domein' attribute for the Catalogus resource in the Catalogi API."
-        ),
-    )
-    catalogue_rsin = models.CharField(
-        _("catalogus RSIN"),
-        # blank because: opt-in to new config pattern & may be specified on form-level
-        # options instead of here.
-        blank=True,
-        max_length=9,
-        help_text=_(
-            "The 'rsin' attribute for the Catalogus resource in the Catalogi API."
-        ),
-        validators=[RSINValidator()],
     )
 
     class Meta:
