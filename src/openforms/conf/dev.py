@@ -28,6 +28,8 @@ os.environ.setdefault("LOG_REQUESTS", "no")
 os.environ.setdefault("LOG_STDOUT", "1")
 os.environ.setdefault("VCR_RECORD_MODE", "once")
 
+os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development")
+
 from .base import *  # noqa isort:skip
 
 # Feel free to switch dev to sqlite3 for simple projects,
@@ -96,9 +98,6 @@ INSTALLED_APPS += ["django_extensions"]
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += [
     "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer"
 ]
-
-# Django privates
-SENDFILE_BACKEND = "django_sendfile.backends.development"
 
 # Django rosetta
 ROSETTA_SHOW_AT_ADMIN_PANEL = True
