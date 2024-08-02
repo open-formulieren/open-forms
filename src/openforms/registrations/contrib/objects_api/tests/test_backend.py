@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
@@ -8,6 +9,7 @@ import requests_mock
 from zgw_consumers.test import generate_oas_component
 
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
+from openforms.formio.tests.factories import SubmittedFileFactory
 from openforms.forms.tests.factories import FormFactory
 from openforms.registrations.contrib.objects_api.models import (
     ObjectsAPIRegistrationData,
@@ -21,9 +23,10 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.utils.tests.vcr import OFVCRMixin
 
-from ..client import get_objects_client
+from ..client import get_documents_client, get_objects_client
 from ..models import ObjectsAPIConfig
 from ..plugin import PLUGIN_IDENTIFIER, ObjectsAPIRegistration
+from ..typing import RegistrationOptionsV2
 from .factories import ObjectsAPIGroupConfigFactory
 
 
@@ -396,3 +399,74 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 "Updated value",
             )
             self.assertNotEqual(object_create_result3["uuid"], created_obj["uuid"])
+
+    def test_prefer_dynamic_resolution_over_fixed_url(self):
+        # If both the description and URL of a document type are provided, prefer the
+        # description.
+        raise NotImplementedError()
+
+    def test_create_document_documenttype_dynamically_resolved(self):
+        """
+        Test the behaviour when using dynamic resolution of document types.
+        """
+        api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "attachment",
+                    "type": "file",
+                }
+            ],
+            submitted_data={
+                "attachment": [SubmittedFileFactory.build()],
+            },
+            completed=True,
+            # version 531f6c1a-97f7-478c-85f0-67d2f23661c7 of the document type is
+            # valid on this timestamp
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=timezone.utc),
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="attachment1.jpg",
+            form_key="attachment",
+        )
+
+        # version is not relevant, works the same for v1
+        options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": api_group,
+            "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "attachment",
+                    "target_path": ["single_file"],
+                },
+            ],
+            "iot_submission_report": "",
+            "iot_submission_csv": "",
+            "iot_attachment": "Attachment Informatieobjecttype",
+        }
+
+        result = plugin.register_submission(submission, options)
+
+        assert result is not None
+
+        document_url = result["record"]["data"]["single_file"]
+        with get_documents_client(api_group) as client:
+            created_document = client.get(document_url).json()
+
+        self.assertEqual(
+            created_document["informatieobjecttype"],
+            (
+                "http://localhost:8003/catalogi/api/v1/"
+                "informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7"
+            ),
+        )
