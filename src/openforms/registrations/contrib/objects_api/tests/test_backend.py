@@ -403,7 +403,74 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
     def test_prefer_dynamic_resolution_over_fixed_url(self):
         # If both the description and URL of a document type are provided, prefer the
         # description.
-        raise NotImplementedError()
+
+        # this one belongs to catalogue OTHER instead of TEST
+        doctype_to_ignore = (
+            "http://localhost:8003/catalogi/api/v1/"
+            "informatieobjecttypen/d1cfb1d8-8593-4814-919d-72e38e80388f"
+        )
+        api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="TEST",
+            catalogue_rsin="000000000",
+            organisatie_rsin="000000000",
+        )
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "attachment",
+                    "type": "file",
+                }
+            ],
+            submitted_data={
+                "attachment": [SubmittedFileFactory.build()],
+            },
+            completed=True,
+        )
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="attachment1.jpg",
+            form_key="attachment",
+            content_type="application/octet-stream",
+        )
+        # version is not relevant, works the same for v1
+        options = {
+            "version": 2,
+            "objects_api_group": api_group,
+            "objecttype": UUID("527b8408-7421-4808-a744-43ccb7bdaaa2"),
+            "objecttype_version": 1,
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "attachment",
+                    "target_path": ["single_file"],
+                },
+            ],
+            "upload_submission_csv": True,
+        }
+
+        for suffix in ("attachment", "submission_report", "submission_csv"):
+            with self.subTest(document=suffix):
+                attachment.file_name = suffix
+                attachment.save()
+
+                result = plugin.register_submission(
+                    submission,
+                    {
+                        **options,
+                        f"iot_{suffix}": "PDF Informatieobjecttype",
+                        f"informatieobjecttype_{suffix}": doctype_to_ignore,
+                    },
+                )
+
+                assert result is not None
+                document_url = result["record"]["data"]["single_file"]
+                with get_documents_client(api_group) as client:
+                    created_document = client.get(document_url).json()
+
+                document_type = created_document["informatieobjecttype"]
+                self.assertNotEqual(document_type, doctype_to_ignore)
 
     def test_create_document_documenttype_dynamically_resolved(self):
         """
