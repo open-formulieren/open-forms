@@ -16,7 +16,6 @@ import weasyprint  # noqa: F401
 
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SECRET_KEY", "dummy")
-
 os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development")
 
 # Do not log requests in CI/tests:
