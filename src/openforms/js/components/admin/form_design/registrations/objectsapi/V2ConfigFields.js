@@ -6,9 +6,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
-  InformatieobjecttypeAttachment,
-  InformatieobjecttypeSubmissionCsv,
-  InformatieobjecttypeSubmissionReport,
+  DocumentTypesFieldet,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -82,24 +80,7 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         </ErrorBoundary>
       </Fieldset>
 
-      <Fieldset
-        title={
-          <FormattedMessage
-            description="Objects registration: document types"
-            defaultMessage="Document types"
-          />
-        }
-        collapsible
-        fieldNames={[
-          'informatieobjecttypeSubmissionReport',
-          'informatieobjecttypeSubmissionCsv',
-          'informatieobjecttypeAttachment',
-        ]}
-      >
-        <InformatieobjecttypeSubmissionReport />
-        <InformatieobjecttypeSubmissionCsv />
-        <InformatieobjecttypeAttachment />
-      </Fieldset>
+      <DocumentTypesFieldet />
 
       <Fieldset
         title={

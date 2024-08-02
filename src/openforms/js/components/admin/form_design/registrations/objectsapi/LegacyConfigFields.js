@@ -9,9 +9,7 @@ import {TextArea, TextInput} from 'components/admin/forms/Inputs';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
-  InformatieobjecttypeAttachment,
-  InformatieobjecttypeSubmissionCsv,
-  InformatieobjecttypeSubmissionReport,
+  DocumentTypesFieldet,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -53,24 +51,7 @@ const LegacyConfigFields = ({apiGroupChoices}) => (
       <PaymentStatusUpdateJSON />
     </Fieldset>
 
-    <Fieldset
-      title={
-        <FormattedMessage
-          description="Objects registration: document types"
-          defaultMessage="Document types"
-        />
-      }
-      collapsible
-      fieldNames={[
-        'informatieobjecttypeSubmissionReport',
-        'informatieobjecttypeSubmissionCsv',
-        'informatieobjecttypeAttachment',
-      ]}
-    >
-      <InformatieobjecttypeSubmissionReport />
-      <InformatieobjecttypeSubmissionCsv />
-      <InformatieobjecttypeAttachment />
-    </Fieldset>
+    <DocumentTypesFieldet />
 
     <Fieldset
       title={
