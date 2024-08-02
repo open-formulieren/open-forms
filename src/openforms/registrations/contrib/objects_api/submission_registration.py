@@ -14,6 +14,7 @@ from glom import PathAccessError
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
+from openforms.contrib.zgw.clients.catalogi import StandardViolation
 from openforms.contrib.zgw.service import (
     DocumentOptions,
     create_attachment_document,
@@ -38,7 +39,12 @@ from openforms.variables.service import get_static_variables
 from openforms.variables.utils import get_variables_for_context
 
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
-from .client import DocumentenClient, get_documents_client
+from .client import (
+    CatalogiClient,
+    DocumentenClient,
+    get_catalogi_client,
+    get_documents_client,
+)
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
 from .registration_variables import (
     PAYMENT_VARIABLE_NAMES,
@@ -66,6 +72,7 @@ def _resolve_documenttype(
     field: Literal["submission_report", "submission_csv", "attachment"],
     options: RegistrationOptions,
     submission: Submission,
+    catalogi_client: CatalogiClient,
 ) -> str:
     """
     Given the registration options, resolve the documenttype URL to use.
@@ -91,17 +98,47 @@ def _resolve_documenttype(
     if catalogue is None:
         return url_ref
 
+    if not description:
+        return url_ref
+
     # domain and rsin should not be empty, otherwise our validation is broken.
     assert catalogue["domain"] and catalogue["rsin"]
-    breakpoint()
+    assert submission.completed_on is not None
+
+    version_valid_on = datetime_in_amsterdam(submission.completed_on).date()
+    catalogus = catalogi_client.find_catalogus(**catalogue)
+    if catalogus is None:
+        raise RuntimeError(f"Could not resolve catalogue {catalogue}")
+
+    versions = catalogi_client.find_informatieobjecttypen(
+        catalogus=catalogus["url"],
+        description=description,
+        valid_on=version_valid_on,
+    )
+    if versions is None:
+        raise RuntimeError(
+            f"Could not find a document type with description '{description}' that is "
+            f"valid on {version_valid_on.isoformat()}."
+        )
+    if (num := len(versions)) > 1:
+        raise StandardViolation(
+            f"Got {num} document type versions within a catalogue with description "
+            f"{description}. Version (date) ranges may not overlap."
+        )
+
+    version = versions[0]
+    return version["url"]
 
 
 def register_submission_pdf(
     submission: Submission,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
+    catalogi_client: CatalogiClient,
 ) -> str:
-    document_type = _resolve_documenttype("submission_report", options, submission)
+    document_type = _resolve_documenttype(
+        "submission_report", options, submission, catalogi_client
+    )
     if not document_type:
         return ""
 
@@ -123,16 +160,19 @@ def register_submission_csv(
     submission: Submission,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
+    catalogi_client: CatalogiClient,
 ) -> str:
     if not options.get("upload_submission_csv", False):
         return ""
 
-    document_type = _resolve_documenttype("submission_csv", options, submission)
+    document_type = _resolve_documenttype(
+        "submission_csv", options, submission, catalogi_client
+    )
     if not document_type:
         return ""
 
     qs = Submission.objects.filter(pk=submission.pk).select_related("auth_info")
-    submission_csv = create_submission_export(qs).export("csv")  # type: ignore
+    submission_csv = create_submission_export(qs).export("csv")
 
     submission_csv_document = create_csv_document(
         client=documents_client,
@@ -153,8 +193,11 @@ def register_submission_attachment(
     attachment: SubmissionFileAttachment,
     options: RegistrationOptions,
     documents_client: DocumentenClient,
+    catalogi_client: CatalogiClient,
 ) -> str:
-    default_document_type = _resolve_documenttype("attachment", options, submission)
+    default_document_type = _resolve_documenttype(
+        "attachment", options, submission, catalogi_client
+    )
     assert default_document_type, "Registration should have been skipped"
 
     # registration for submissions that aren't completed does not make sense and the
@@ -247,18 +290,27 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
             options.get("catalogue") and options.get("iot_attachment")
         ) or options.get("informatieobjecttype_attachment")
 
+        api_group = options["objects_api_group"]
+
         with (
-            get_documents_client(options["objects_api_group"]) as documents_client,
+            get_documents_client(api_group) as documents_client,
+            get_catalogi_client(api_group) as catalogi_client,
             save_and_raise(registration_data, submission_attachments),
         ):
             if not registration_data.pdf_url:
                 registration_data.pdf_url = register_submission_pdf(
-                    submission, options, documents_client
+                    submission,
+                    options,
+                    documents_client,
+                    catalogi_client,
                 )
 
             if not registration_data.csv_url:
                 registration_data.csv_url = register_submission_csv(
-                    submission, options, documents_client
+                    submission,
+                    options,
+                    documents_client,
+                    catalogi_client,
                 )
 
             if _is_attachment_document_type_configured:
@@ -272,7 +324,11 @@ class ObjectsAPIRegistrationHandler(ABC, Generic[OptionsT]):
                 for attachment in submission.attachments:
                     if attachment not in existing:
                         document_url = register_submission_attachment(
-                            submission, attachment, options, documents_client
+                            submission,
+                            attachment,
+                            options,
+                            documents_client,
+                            catalogi_client,
                         )
                         submission_attachments.append(
                             ObjectsAPISubmissionAttachment(
