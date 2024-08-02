@@ -27,9 +27,11 @@ include = [
     # Payments
     "src/openforms/payments/models.py",
     # Registrations
+    "src/openforms/contrib/zgw/service.py",
     "src/openforms/registrations/contrib/email/config.py",
     "src/openforms/registrations/contrib/email/plugin.py",
     "src/openforms/registrations/contrib/objects_api/plugin.py",
+    "src/openforms/registrations/contrib/objects_api/submission_registration.py",
     "src/openforms/registrations/contrib/objects_api/typing.py",
     # our own template app/package on top of Django
     "src/openforms/template",
