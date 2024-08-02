@@ -1,13 +1,14 @@
+import {getReactSelectStyles} from '@open-formulieren/formio-builder/esm/components/formio/select';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
+import ReactSelect from 'react-select';
 import {usePrevious, useUpdateEffect} from 'react-use';
 import useAsync from 'react-use/esm/useAsync';
 
 import {REGISTRATION_OBJECTTYPES_ENDPOINT} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
 import {get} from 'utils/fetch';
 
 import {useSynchronizeSelect} from './hooks';
@@ -20,14 +21,43 @@ const getAvailableObjectTypes = async apiGroupID => {
   return response.data;
 };
 
+const initialStyles = getReactSelectStyles();
+const styles = {
+  ...initialStyles,
+  control: (...args) => ({
+    ...initialStyles.control(...args),
+    minHeight: '1.875rem',
+    height: '1.875rem',
+  }),
+  valueContainer: (...args) => ({
+    ...initialStyles.valueContainer(...args),
+    height: 'calc(1.875rem - 2px)',
+    padding: '0 6px',
+  }),
+  input: (...args) => ({
+    ...initialStyles.input(...args),
+    margin: '0px',
+  }),
+  indicatorsContainer: baseStyles => ({
+    ...baseStyles,
+    height: 'calc(1.875rem - 2px)',
+    padding: '0 2px',
+  }),
+  dropdownIndicator: (...args) => ({
+    ...initialStyles.dropdownIndicator(...args),
+    padding: '5px 2px',
+  }),
+};
+
 const ObjectTypeSelect = ({onChangeCheck}) => {
-  const [fieldProps] = useField('objecttype');
+  const [fieldProps, , fieldHelpers] = useField('objecttype');
   const {
     values: {objectsApiGroup = null},
     setFieldValue,
     initialValues: {objecttype: initialObjecttype},
   } = useFormikContext();
-  const {value, onChange: onChangeFormik} = fieldProps;
+  const {value} = fieldProps;
+  const {setValue} = fieldHelpers;
 
   const {
     loading,
@@ -40,11 +70,12 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
   if (error) throw error;
 
   const choices = loading
-    ? LOADING_OPTION
+    ? []
     : objectTypes.map(({uuid, name, dataClassification}) => [
         uuid,
         `${name} (${dataClassification})`,
       ]);
+  const options = choices.map(([value, label]) => ({value, label}));
 
   useSynchronizeSelect('objecttype', loading, choices);
 
@@ -56,11 +87,6 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
     if (value === initialObjecttype || value === previousValue) return;
     setFieldValue('objecttypeVersion', undefined); // clears the value
   }, [loading, value]);
-
-  const onChange = event => {
-    const okToProceed = onChangeCheck === undefined || onChangeCheck();
-    if (okToProceed) onChangeFormik(event);
-  };
 
   return (
     <FormRow>
@@ -79,14 +105,24 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
             defaultMessage="The registration result will be an object from the selected type."
           />
         }
+        noManageChildProps
       >
-        <Select
+        {/*https://stackoverflow.com/questions/54218351/changing-height-of-react-select-component*/}
+        <ReactSelect
+          inputId="id_objecttype"
+          className="admin-react-select"
+          styles={styles}
+          menuPlacement="auto"
+          options={options}
+          isLoading={loading}
+          isDisabled={!objectsApiGroup}
           required
-          disabled={!objectsApiGroup}
-          choices={choices}
-          id="id_objecttype"
           {...fieldProps}
-          onChange={onChange}
+          value={options.find(opt => opt.value === value)}
+          onChange={selectedOption => {
+            const okToProceed = onChangeCheck === undefined || onChangeCheck();
+            if (okToProceed) setValue(selectedOption.value);
+          }}
         />
       </Field>
     </FormRow>

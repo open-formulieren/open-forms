@@ -1,0 +1,15 @@
+.admin-react-select {
+  @at-root .react-modal__form .form-row & {
+    &,
+    & * {
+      box-sizing: border-box;
+    }
+  }
+
+  @at-root .flex-container:has(&) {
+    flex-grow: 1;
+    max-inline-size: calc(170px + var(--of-admin-select-max-inline-size));
+  }
+
+  inline-size: clamp(200px, 100%, var(--of-admin-select-max-inline-size));
+}

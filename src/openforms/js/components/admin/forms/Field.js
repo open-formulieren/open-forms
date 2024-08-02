@@ -36,6 +36,7 @@ const Field = ({
   fieldBox = false,
   errorClassPrefix = '',
   errorClassModifier = '',
+  noManageChildProps = false,
 }) => {
   const intl = useIntl();
   const originalName = name;
@@ -44,11 +45,15 @@ const Field = ({
 
   const htmlFor = `id_${name}`;
 
-  const childProps = {id: htmlFor, name: originalName};
-  if (disabled) {
-    childProps.disabled = true;
+  const manageChildProps = !noManageChildProps;
+  let modifiedChildren = children;
+  if (manageChildProps) {
+    const childProps = {id: htmlFor, name: originalName};
+    if (disabled) {
+      childProps.disabled = true;
+    }
+    modifiedChildren = React.cloneElement(children, childProps);
   }
-  const modifiedChildren = React.cloneElement(children, childProps);
   const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
   const className = classNames({
     fieldBox: fieldBox,

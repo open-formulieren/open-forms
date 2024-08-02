@@ -7,6 +7,7 @@
 @import './vendor/tinymce';
 @import './vendor/django-two-factor-auth';
 @import './vendor/design-token-editor';
+@import './vendor/react-select';
 
 #openforms-container {
   @include margin(
