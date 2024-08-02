@@ -62,20 +62,6 @@ def _point_coordinate(value: Any) -> dict[str, Any] | object:
     return {"type": "Point", "coordinates": [value[0], value[1]]}
 
 
-def build_options(
-    plugin_options: RegistrationOptions, key_mapping: dict[str, str]
-) -> dict[str, Any]:
-    """
-    Construct options from plugin options dict, allowing renaming of keys
-    """
-    options = {
-        new_key: plugin_options[key_in_opts]
-        for new_key, key_in_opts in key_mapping.items()
-        if key_in_opts in plugin_options
-    }
-    return options
-
-
 def _resolve_documenttype(
     field: Literal["submission_report", "submission_csv", "attachment"],
     options: RegistrationOptions,
