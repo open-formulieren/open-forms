@@ -365,6 +365,8 @@ Other settings
 
 * ``SUBPATH``: A string with a prefix for all URL paths, for example ``/openforms``. Typically used at the infrastructure level to route to a particular application on the same (sub)domain. Defaults to empty string meaning that Open Forms is hosted at the root (``/``).
 
+* ``SENDFILE_BACKEND``: which backend to use for authorization-secured upload downloads. Defaults to sendfile.backends.nginx. See `django-sendfile2 <https://pypi.org/project/django-sendfile2/>`_` for available backends.
+
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 
 Specifying the environment variables

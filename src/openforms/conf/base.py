@@ -343,7 +343,7 @@ PRIVATE_MEDIA_URL = "/private-media/"
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-SENDFILE_BACKEND = "django_sendfile.backends.nginx"
+SENDFILE_BACKEND = config("SENDFILE_BACKEND", default="django_sendfile.backends.nginx")
 SENDFILE_ROOT = PRIVATE_MEDIA_ROOT
 SENDFILE_URL = PRIVATE_MEDIA_URL
 

@@ -16,6 +16,9 @@ import weasyprint  # noqa: F401
 
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SECRET_KEY", "dummy")
+
+os.environ.setdefault("SENDFILE_BACKEND", "django_sendfile.backends.development")
+
 # Do not log requests in CI/tests:
 #
 # * overhead making tests slower
@@ -47,9 +50,6 @@ ENVIRONMENT = "CI"
 # Django-axes
 #
 AXES_BEHIND_REVERSE_PROXY = False
-
-# Django privates
-SENDFILE_BACKEND = "django_sendfile.backends.development"
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(
