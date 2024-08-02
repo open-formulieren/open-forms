@@ -360,6 +360,12 @@ class Submission(models.Model):
             ),
         ]
 
+    # for testing purposes-need the initial_data_reference
+    # should be removed
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.initial_data_reference = "ac1fa3f8-fb2a-4fcb-b715-d480aceeda10"
+
     def __str__(self):
         return _("{pk} - started on {started}").format(
             pk=self.pk or _("(unsaved)"),

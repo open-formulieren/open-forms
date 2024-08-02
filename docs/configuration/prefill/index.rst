@@ -12,3 +12,4 @@ Prefill plugins
    kvk
    stuf_bg
    suwinet
+   objects_api

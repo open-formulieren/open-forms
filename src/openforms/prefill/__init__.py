@@ -70,7 +70,7 @@ def _fetch_prefill_values(
         plugin = register[plugin_id]
         if not plugin.is_enabled:
             raise PluginNotEnabled()
-
+        breakpoint()
         try:
             values = plugin.get_prefill_values(submission, fields, identifier_role)
         except Exception as e:
