@@ -16,21 +16,21 @@ interactions:
     uri: http://localhost:8001/api/v2/objecttypes?page=1&pageSize=1
   response:
     body:
-      string: '{"count":4,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705","uuid":"f1dde4fe-b7f9-46dc-84ae-429ae49e3705","name":"Geo
-        in data","namePlural":"Geo in data","description":"","dataClassification":"confidential","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-02-08","modifiedAt":"2024-02-08","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/f1dde4fe-b7f9-46dc-84ae-429ae49e3705/versions/1"]}]}'
+      string: '{"count":6,"next":"http://objecttypes-web:8000/api/v2/objecttypes?page=2&pageSize=1","previous":null,"results":[{"url":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","uuid":"8faed0fa-7864-4409-aa6d-533a37616a9e","name":"Accepts
+        everything","namePlural":"Accepts everything","description":"","dataClassification":"open","maintainerOrganization":"","maintainerDepartment":"","contactPerson":"","contactEmail":"","source":"","updateFrequency":"unknown","providerOrganization":"","documentationUrl":"","labels":{},"createdAt":"2024-07-22","modifiedAt":"2024-07-22","allowGeometry":true,"versions":["http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e/versions/1"]}]}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
       Connection:
       - keep-alive
       Content-Length:
-      - '727'
+      - '733'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 05 Jul 2024 06:35:18 GMT
+      - Thu, 08 Aug 2024 12:07:34 GMT
       Referrer-Policy:
       - same-origin
       Server:

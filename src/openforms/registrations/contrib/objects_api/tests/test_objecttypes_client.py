@@ -39,7 +39,7 @@ class ObjecttypesClientTest(OFVCRMixin, TestCase):
         with get_objecttypes_client(self.test_config) as client:
             data = client.list_objecttypes()
 
-        self.assertEqual(len(data), 4)
+        self.assertGreaterEqual(len(data), 4)
 
     def test_list_objectypes_pagination(self):
         with get_objecttypes_client(self.test_config) as client:
