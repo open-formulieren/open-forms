@@ -1,14 +1,13 @@
-import {getReactSelectStyles} from '@open-formulieren/formio-builder/esm/components/formio/select';
 import {useField, useFormikContext} from 'formik';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
-import ReactSelect from 'react-select';
 import {usePrevious, useUpdateEffect} from 'react-use';
 import useAsync from 'react-use/esm/useAsync';
 
 import {REGISTRATION_OBJECTTYPES_ENDPOINT} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
 import {useSynchronizeSelect} from './hooks';
@@ -19,34 +18,6 @@ const getAvailableObjectTypes = async apiGroupID => {
     throw new Error('Loading available object types failed');
   }
   return response.data;
-};
-
-const initialStyles = getReactSelectStyles();
-const styles = {
-  ...initialStyles,
-  control: (...args) => ({
-    ...initialStyles.control(...args),
-    minHeight: '1.875rem',
-    height: '1.875rem',
-  }),
-  valueContainer: (...args) => ({
-    ...initialStyles.valueContainer(...args),
-    height: 'calc(1.875rem - 2px)',
-    padding: '0 6px',
-  }),
-  input: (...args) => ({
-    ...initialStyles.input(...args),
-    margin: '0px',
-  }),
-  indicatorsContainer: baseStyles => ({
-    ...baseStyles,
-    height: 'calc(1.875rem - 2px)',
-    padding: '0 2px',
-  }),
-  dropdownIndicator: (...args) => ({
-    ...initialStyles.dropdownIndicator(...args),
-    padding: '5px 2px',
-  }),
 };
 
 const ObjectTypeSelect = ({onChangeCheck}) => {
@@ -107,18 +78,12 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
         }
         noManageChildProps
       >
-        {/*https://stackoverflow.com/questions/54218351/changing-height-of-react-select-component*/}
         <ReactSelect
-          inputId="id_objecttype"
-          className="admin-react-select"
-          styles={styles}
-          menuPlacement="auto"
+          name="objecttype"
           options={options}
           isLoading={loading}
           isDisabled={!objectsApiGroup}
           required
-          {...fieldProps}
-          value={options.find(opt => opt.value === value)}
           onChange={selectedOption => {
             const okToProceed = onChangeCheck === undefined || onChangeCheck();
             if (okToProceed) setValue(selectedOption.value);
