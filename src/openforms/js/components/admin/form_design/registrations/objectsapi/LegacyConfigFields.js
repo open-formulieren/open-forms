@@ -85,7 +85,6 @@ const ProductAanvraag = () => {
   const [fieldProps] = useField('productaanvraagType');
   return (
     <FormRow>
-      {/*TODO: errors*/}
       <Field
         name="productaanvraagType"
         label={
@@ -111,7 +110,6 @@ const JSONTemplateField = ({name, label, helpText}) => {
   const [fieldProps] = useField(name);
   return (
     <FormRow>
-      {/*TODO: errors*/}
       <Field name={name} label={label} helpText={helpText}>
         <TextArea
           id={`id_${name}`}

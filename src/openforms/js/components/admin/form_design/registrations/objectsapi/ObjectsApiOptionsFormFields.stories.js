@@ -1,5 +1,6 @@
 import {expect, fn, userEvent, waitFor, within} from '@storybook/test';
 import {Form, Formik} from 'formik';
+import selectEvent from 'react-select-event';
 
 import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
 
@@ -66,7 +67,7 @@ export const SwitchToV2Empty = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+    await selectEvent.select(groupSelect, 'Objects API group 1');
 
     const testForm = await canvas.findByTestId('test-form');
     await waitFor(() => {
@@ -181,7 +182,7 @@ export const APIFetchError = {
     await userEvent.click(v2Tab);
 
     const groupSelect = canvas.getByLabelText('API-groep');
-    await userEvent.selectOptions(groupSelect, 'Objects API group 1');
+    await selectEvent.select(groupSelect, 'Objects API group 1');
 
     const errorMessage = await canvas.findByText(
       'Er ging iets fout bij het ophalen van de objecttypes.'
@@ -193,6 +194,9 @@ export const APIFetchError = {
 
 export const V1ValidationErrors = {
   args: {
+    formData: {
+      version: 1,
+    },
     validationErrors: [
       [`${NAME}.objectsApiGroup`, 'Computer says no'],
       [`${NAME}.objecttype`, 'Computer says no'],
@@ -210,6 +214,9 @@ export const V1ValidationErrors = {
 
 export const V2ValidationErrors = {
   args: {
+    formData: {
+      version: 2,
+    },
     validationErrors: [
       [`${NAME}.objectsApiGroup`, 'Some API-group error'],
       [`${NAME}.objecttype`, 'Computer says no'],

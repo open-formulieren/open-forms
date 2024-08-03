@@ -5,7 +5,7 @@ import {useUpdateEffect} from 'react-use';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import Select from 'components/admin/forms/Select';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 
 const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
   const [{onChange: onChangeFormik, ...fieldProps}, , {setValue}] = useField('objectsApiGroup');
@@ -23,17 +23,7 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
     setValues(newValues);
   }, [setValues, value]); // deliberately excluding values!
 
-  const onChange = event => {
-    const okToProceed = onChangeCheck === undefined || onChangeCheck();
-    if (okToProceed) {
-      // overridden to handle the proper data type, since very <option value>
-      // turns into a string in HTML
-      const newValue = event.currentTarget.value;
-      const newId = newValue ? parseInt(newValue, 10) : null;
-      setValue(newId);
-    }
-  };
-
+  const options = apiGroupChoices.map(([value, label]) => ({value, label}));
   return (
     <FormRow>
       <Field
@@ -51,13 +41,16 @@ const ObjectsAPIGroup = ({apiGroupChoices, onChangeCheck}) => {
             defaultMessage="The API group specifies which objects and objecttypes services to use."
           />
         }
+        noManageChildProps
       >
-        <Select
-          allowBlank
-          choices={apiGroupChoices}
-          id="id_objectsApiGroup"
-          {...fieldProps}
-          onChange={onChange}
+        <ReactSelect
+          name="objectsApiGroup"
+          options={options}
+          required
+          onChange={selectedOption => {
+            const okToProceed = onChangeCheck === undefined || onChangeCheck();
+            if (okToProceed) setValue(selectedOption.value);
+          }}
         />
       </Field>
     </FormRow>
