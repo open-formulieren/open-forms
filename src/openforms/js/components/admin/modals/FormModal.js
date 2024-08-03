@@ -22,6 +22,7 @@ const FormModal = ({
     <form
       className="aligned react-modal__form"
       onSubmit={event => onFormSubmit && onFormSubmit(event)}
+      data-testid="modal-form"
     >
       {children}
     </form>

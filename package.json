@@ -115,6 +115,7 @@
     "postcss": "^8.0.8",
     "postcss-loader": "^4.0.1",
     "prettier": "^3.3.0",
+    "react-select-event": "^5.5.1",
     "sass": "^1.32.12",
     "sass-loader": "^12.3.0",
     "semver": "^7.3.7",

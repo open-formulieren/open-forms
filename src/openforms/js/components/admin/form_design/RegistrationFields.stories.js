@@ -301,17 +301,15 @@ export const ObjectsAPI = {
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
 
     // check that the sole api group is automatically selected
-    const apiGroupSelect = await screen.findByLabelText('API-groep');
-    expect(apiGroupSelect).toHaveValue('1');
+    const modalForm = await screen.findByTestId('modal-form');
+    expect(modalForm).toBeVisible();
+    expect(modalForm).toHaveFormValues({objectsApiGroup: '1'});
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Objecttype')).toHaveValue(
-        'd89f3a0e-096b-45ea-afe1-ce211d63d1f2'
-      );
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Versie')).toHaveValue('1');
+      expect(modalForm).toHaveFormValues({
+        objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
+        objecttypeVersion: '1',
+      });
     });
   },
 };
@@ -349,17 +347,15 @@ export const ObjectsAPILegacy = {
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
 
     // check that the sole api group is automatically selected
-    const apiGroupSelect = await screen.findByLabelText('API-groep');
-    expect(apiGroupSelect).toHaveValue('1');
+    const modalForm = await screen.findByTestId('modal-form');
+    expect(modalForm).toBeVisible();
+    expect(modalForm).toHaveFormValues({objectsApiGroup: '1'});
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Objecttype')).toHaveValue(
-        'd89f3a0e-096b-45ea-afe1-ce211d63d1f2'
-      );
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Versie')).toHaveValue('1');
+      expect(modalForm).toHaveFormValues({
+        objecttype: 'd89f3a0e-096b-45ea-afe1-ce211d63d1f2',
+        objecttypeVersion: '1',
+      });
     });
   },
 };
