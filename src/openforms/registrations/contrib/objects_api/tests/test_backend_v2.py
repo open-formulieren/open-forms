@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
@@ -8,6 +9,8 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from openforms.authentication.service import AuthAttribute
+from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -166,6 +169,83 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "coordinates": [52.36673378967122, 4.893164274470299],
             },
         )
+
+    def test_submission_with_objects_api_v2_with_payment_attributes(self):
+        submission = SubmissionFactory.from_components(
+            [],
+            completed=True,
+            submitted_data={},
+        )
+
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+            "objecttype_version": 3,
+            "upload_submission_csv": False,
+            "update_existing_object": False,
+            "variables_mapping": [
+                {
+                    "variable_key": "payment_completed",
+                    "target_path": ["submission_payment_completed"],
+                },
+                {
+                    "variable_key": "payment_amount",
+                    "target_path": ["submission_payment_amount"],
+                },
+                {
+                    "variable_key": "payment_public_order_ids",
+                    "target_path": ["submission_payment_public_ids"],
+                },
+                {
+                    "variable_key": "provider_payment_ids",
+                    "target_path": ["submission_provider_payment_ids"],
+                },
+            ],
+        }
+        submission.price = Decimal("40.00")
+        submission.save()
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            amount=Decimal("25.00"),
+            public_order_id="foo",
+            status=PaymentStatus.completed,
+            provider_payment_id="123456",
+        )
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            amount=Decimal("15.00"),
+            public_order_id="bar",
+            status=PaymentStatus.registered,
+            provider_payment_id="654321",
+        )
+        # failed payment, should be ignored
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            amount=Decimal("15.00"),
+            public_order_id="baz",
+            status=PaymentStatus.failed,
+            provider_payment_id="6789",
+        )
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        self.assertEqual(
+            result["type"],
+            "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        )
+        self.assertEqual(result["record"]["typeVersion"], 3)
+
+        data = result["record"]["data"]
+
+        self.assertEqual(data["submission_payment_completed"], True)
+        self.assertEqual(data["submission_payment_amount"], 40.0)
+        self.assertEqual(data["submission_payment_public_ids"], ["foo", "bar"])
+        self.assertEqual(data["submission_provider_payment_ids"], ["123456", "654321"])
 
     def test_submission_with_file_components(self):
         submission = SubmissionFactory.from_components(

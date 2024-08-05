@@ -143,6 +143,10 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
                     "variable_key": "payment_public_order_ids",
                     "target_path": ["submission_payment_public_ids"],
                 },
+                {
+                    "variable_key": "provider_payment_ids",
+                    "target_path": ["submission_provider_payment_ids"],
+                },
                 # fmt: on
             ],
             "geometry_variable_key": "location",
@@ -153,6 +157,7 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
             status=PaymentStatus.completed,
             amount=10.01,
             public_order_id="TEST-123",
+            provider_payment_id="12345",
         )
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -172,3 +177,4 @@ class ObjectsAPIPaymentStatusUpdateV2Tests(OFVCRMixin, TestCase):
             },
         )
         self.assertEqual(result_data["submission_payment_public_ids"], ["TEST-123"])
+        self.assertEqual(result_data["submission_provider_payment_ids"], ["12345"])

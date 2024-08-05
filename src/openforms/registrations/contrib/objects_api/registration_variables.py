@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from django.utils.translation import gettext_lazy as _
 
 from openforms.authentication.service import AuthAttribute, BaseAuth
+from openforms.payments.constants import PaymentStatus
 from openforms.plugins.registry import BaseRegistry
 from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
@@ -94,6 +95,22 @@ class PaymentPublicOrderIds(BaseStaticVariable):
         return submission.payments.get_completed_public_order_ids()
 
 
+@register("provider_payment_ids")
+class ProviderPaymentIds(BaseStaticVariable):
+    name = _("Provider payment IDs")
+    data_type = FormVariableDataTypes.array
+
+    def get_initial_value(self, submission: Submission | None = None):
+        if submission is None:
+            return None
+
+        return list(
+            submission.payments.filter(
+                status__in=(PaymentStatus.registered, PaymentStatus.completed)
+            ).values_list("provider_payment_id", flat=True)
+        )
+
+
 @register("cosign_data")
 class Cosign(BaseStaticVariable):
     name = _("Co-sign data")
@@ -162,3 +179,11 @@ class CosignPseudo(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_cosign_value(submission, AuthAttribute.pseudo)
+
+
+PAYMENT_VARIABLE_NAMES = [
+    "payment_completed",
+    "payment_amount",
+    "payment_public_order_ids",
+    "provider_payment_ids",
+]

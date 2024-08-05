@@ -73,7 +73,8 @@ class ObjectsAPIBackendV1Tests(TestCase):
                     "payment": {
                         "completed": {% if payment.completed %}true{% else %}false{% endif %},
                         "amount": {{ payment.amount }},
-                        "public_order_ids": {{ payment.public_order_ids }}
+                        "public_order_ids": [{% for public_order_id in payment.public_order_ids%}"{{ public_order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+                        "payment_ids": [{% for payment_id in payment.provider_payment_ids%}"{{ payment_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
                     }
                 }"""
             ),
@@ -237,6 +238,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                             "completed": False,
                             "amount": 0,
                             "public_order_ids": [],
+                            "payment_ids": [],
                         },
                     },
                     "startAt": date.today().isoformat(),
@@ -721,6 +723,7 @@ class ObjectsAPIBackendV1Tests(TestCase):
                         "completed": False,
                         "amount": 0,
                         "public_order_ids": [],
+                        "payment_ids": [],
                     },
                 },
                 "startAt": date.today().isoformat(),
@@ -1365,8 +1368,9 @@ class ObjectsAPIBackendV1Tests(TestCase):
         )
         SubmissionPaymentFactory.for_submission(
             submission=submission,
-            status=PaymentStatus.started,
+            status=PaymentStatus.completed,
             public_order_id="",
+            provider_payment_id="123456",
         )
 
         m.post(
@@ -1410,9 +1414,10 @@ class ObjectsAPIBackendV1Tests(TestCase):
         self.assertEqual(
             body["record"]["data"]["payment"],
             {
-                "completed": False,
+                "completed": True,
                 "amount": 10.00,
-                "public_order_ids": [],
+                "public_order_ids": [""],
+                "payment_ids": ["123456"],
             },
         )
 
