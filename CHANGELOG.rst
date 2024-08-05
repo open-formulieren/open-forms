@@ -2,6 +2,12 @@
 Changelog
 =========
 
+2.7.2 (2024-08-05)
+==================
+
+Fixed a build error where some upgrade check scripts were not included in the Docker
+image.
+
 2.7.1 (2024-07-29)
 ==================
 
