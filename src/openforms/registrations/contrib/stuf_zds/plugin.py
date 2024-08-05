@@ -2,6 +2,7 @@ import logging
 import re
 from dataclasses import dataclass
 from functools import partial
+from typing import Any
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -213,6 +214,11 @@ class StufZDSRegistration(BasePlugin):
 
         return PreRegistrationResult(reference=zaak_id)
 
+    def get_extra_data(
+        self, submission: Submission, options: ZaakOptions
+    ) -> dict[str, Any]:
+        return get_unmapped_data(submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE)
+
     def register_submission(
         self, submission: Submission, options: ZaakOptions
     ) -> dict | None:
@@ -241,9 +247,7 @@ class StufZDSRegistration(BasePlugin):
                     REGISTRATION_ATTRIBUTE,
                 )["key"]
 
-            extra_data = get_unmapped_data(
-                submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
-            )
+            extra_data = self.get_extra_data(submission, options)
             # The extraElement tag of StUF-ZDS expects primitive types
             extra_data = flatten_data(extra_data)
 
