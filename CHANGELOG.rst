@@ -2,6 +2,11 @@
 Changelog
 =========
 
+2.7.3 (2024-08-05)
+==================
+
+Fixed a typo in upgrade check script name.
+
 2.7.2 (2024-08-05)
 ==================
 
