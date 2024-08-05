@@ -139,7 +139,15 @@ class SubmissionPayment(models.Model):
                 name="unique_public_order_id",
                 fields=("public_order_id",),
                 condition=~models.Q(public_order_id=""),
-            )
+            ),
+            models.UniqueConstraint(
+                name="unique_plugin_payment",
+                fields=(
+                    "plugin_id",
+                    "provider_payment_id",
+                ),
+                condition=~models.Q(provider_payment_id=""),
+            ),
         ]
 
     def __str__(self) -> str:
