@@ -122,6 +122,12 @@ class SubmissionPayment(models.Model):
         default=PaymentStatus.started,
         help_text=_("Status of the payment process in the configured backend."),
     )
+    provider_payment_id = models.CharField(
+        _("provider payment ID"),
+        max_length=128,
+        blank=True,
+        help_text=_("The ID assigned to the payment by the payment provider."),
+    )
 
     objects = SubmissionPaymentManager()
 
