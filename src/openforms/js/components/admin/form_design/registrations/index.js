@@ -51,9 +51,12 @@ export const BACKEND_OPTIONS_FORMS = {
   },
   'stuf-zds-create-zaak:ext-utrecht': {
     uiSchema: {
-      paymentStatusUpdateXml: {
-        'ui:widget': 'textarea',
-        'ui:rows': '10',
+      paymentStatusUpdateMapping: {
+        'ui:orderable': false,
+        items: {
+          'ui:orderable': false,
+          'ui:removable': false,
+        },
       },
     },
   },
