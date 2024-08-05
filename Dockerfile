@@ -87,7 +87,12 @@ COPY ./bin/celery_beat.sh /celery_beat.sh
 COPY ./bin/celery_flower.sh /celery_flower.sh
 COPY ./bin/dump_configuration.sh /dump_configuration.sh
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle /app/tmp
-COPY ./bin/check_celery_worker_liveness.py ./bin/report_component_problems.py ./bin/
+COPY \
+    ./bin/check_celery_worker_liveness.py \
+    ./bin/report_component_problems.py \
+    ./bin/check_objecttype_urls.py \
+    ./bin/check_zgw_groups.py \
+    ./bin/
 
 # prevent writing to the container layer, which would degrade performance.
 # This also serves as a hint for the intended volumes.
