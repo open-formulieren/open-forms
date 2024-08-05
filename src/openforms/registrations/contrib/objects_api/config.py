@@ -14,7 +14,7 @@ from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.formio.api.fields import FormioVariableKeyField
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
-from openforms.utils.validators import RSINValidator, validate_rsin
+from openforms.utils.validators import RSINValidator, validate_rsin, validate_uppercase
 
 from .client import get_catalogi_client, get_objecttypes_client
 from .models import ObjectsAPIGroupConfig
@@ -42,6 +42,7 @@ class CatalogueSerializer(serializers.Serializer):
             "The 'domein' attribute for the Catalogus resource in the Catalogi API."
         ),
         default="",
+        validators=[validate_uppercase],
     )
     rsin = serializers.CharField(
         label=_("RSIN"),

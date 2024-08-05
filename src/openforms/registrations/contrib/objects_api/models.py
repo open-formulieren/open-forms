@@ -6,7 +6,7 @@ from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
 
 from openforms.template.validators import DjangoTemplateValidator
-from openforms.utils.validators import RSINValidator, validate_rsin
+from openforms.utils.validators import RSINValidator, validate_rsin, validate_uppercase
 
 
 def get_content_text() -> str:
@@ -128,6 +128,7 @@ class ObjectsAPIGroupConfig(models.Model):
         help_text=_(
             "The 'domein' attribute for the Catalogus resource in the Catalogi API."
         ),
+        validators=[validate_uppercase],
     )
     catalogue_rsin = models.CharField(
         _("catalogus RSIN"),

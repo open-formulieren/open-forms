@@ -225,7 +225,7 @@ class ObjectsAPIOptionsSerializerTest(OFVCRMixin, TestCase):
                 data={
                     **base,
                     "catalogue": {
-                        "domain": "Noope",
+                        "domain": "NOOPE",
                         "rsin": "000000000",
                     },
                 }
