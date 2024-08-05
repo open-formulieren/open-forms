@@ -17,6 +17,9 @@ def check_zgw_groups() -> bool:
     from openforms.forms.models import FormRegistrationBackend
     from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 
+    # hack to allow using the model in upgrade checks but preventing usage otherwise
+    ZgwConfig.BLOCK_USAGE = False
+
     zgw_config = ZgwConfig.get_solo()
     default_group = zgw_config.default_zgw_api_group
 
