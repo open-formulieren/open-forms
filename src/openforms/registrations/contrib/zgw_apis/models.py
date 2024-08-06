@@ -20,10 +20,15 @@ class ZgwConfig(SingletonModel):
     global configuration and defaults
     """
 
-    def __init__(self, *args, **kwargs) -> None:
-        raise RuntimeError(
-            f"{self.__class__.__name__} is scheduled for removal and shouldn't be instanciated."
-        )  # pragma: nocover
+    BLOCK_USAGE: bool = True
+
+    def __init__(self, *args, **kwargs) -> None:  # pragma: nocover
+        if self.BLOCK_USAGE:
+            raise RuntimeError(
+                f"{self.__class__.__name__} is scheduled for removal and shouldn't "
+                "be instantiated."
+            )
+        super().__init__(*args, **kwargs)
 
     default_zgw_api_group = models.ForeignKey(
         to="ZGWApiGroupConfig",

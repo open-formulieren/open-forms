@@ -342,11 +342,27 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image-name: ${{ steps.set-output-defaults.outputs.image-name }}
+      version: ${{ steps.vars.outputs.version }}
     steps:
       - name: Set output with default values
         id: set-output-defaults
         run: |
           echo "image-name=${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
+      - id: vars
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name (if present at all)
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          # PRs result in version 'merge' -> transform that into 'latest'
+          [ "$VERSION" == "merge" ] && VERSION=latest
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
   docker_build:
     needs: docker_build_setup
@@ -371,6 +387,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Scan docker image
     needs:
+      - docker_build_setup
       - docker_build
 
     steps:
@@ -378,22 +395,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Derive version
-        id: vars
-        run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-          # PRs result in version 'merge' -> transform that into 'latest'
-          [ "$VERSION" == "merge" ] && VERSION=latest
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
       - name: Download built image
         uses: actions/download-artifact@v4
         with:
-          name: docker-image-all-extensions-${{ steps.vars.outputs.version }}
+          name: docker-image-all-extensions-${{ needs.docker_build_setup.outputs.version }}
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -405,6 +410,41 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results-docker.sarif'
+
+  upgrade_simulation:
+    needs:
+      - docker_build_setup
+      - docker_build
+
+    name: Simulate upgrading instances
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        start: ['2.6.7', '2.6.13']
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download built image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-${{ needs.docker_build_setup.outputs.version }}
+      - name: Load image
+        run: docker image load -i image.tar
+
+      - name: Pull and run old version
+        run: |
+          docker compose pull
+          docker compose run web \
+            python src/manage.py migrate
+        env:
+          TAG: ${{ matrix.start }}
+
+      - name:
+        run: |
+          docker compose run -e RELEASE=${RELEASE} web \
+            python src/manage.py migrate
+        env:
+          RELEASE: '2.7.0'
 
   oas-up-to-date:
     needs: tests
@@ -512,6 +552,7 @@ jobs:
     needs:
       - tests
       - e2etests
+      - docker_build_setup
       - docker_build
       - oas-lint
       - oas-postman
@@ -533,27 +574,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Derive version
-        id: vars
-        run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          # PRs result in version 'merge' -> transform that into 'latest'
-          [ "$VERSION" == "merge" ] && VERSION=latest
-
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-
       - name: Download built image
         uses: actions/download-artifact@v4
         with:
-          name: docker-image-${{ matrix.target.image_tag_prefix }}${{ steps.vars.outputs.version }}
+          name: docker-image-${{ matrix.target.image_tag_prefix }}${{ needs.docker_build_setup.outputs.version }}
 
       - name: Load image
         run: |
@@ -567,7 +591,7 @@ jobs:
       - name: Push the Docker image (production)
         run: docker push $IMAGE_NAME:$TAG
         env:
-          TAG: ${{ matrix.target.image_tag_prefix }}${{ steps.vars.outputs.version }}
+          TAG: ${{ matrix.target.image_tag_prefix }}${{ needs.docker_build_setup.outputs.version }}
 
   update-docker-readme:
     needs:
