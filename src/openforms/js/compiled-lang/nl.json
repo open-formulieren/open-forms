@@ -5044,7 +5044,7 @@
   "q3kxsb": [
     {
       "type": 0,
-      "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten API gestuurd om de (betaalattributen van) het eerder aangemaakte object bij te werken."
+      "value": "Dit sjabloon wordt geëvalueerd met de inzendingsgegevens wanneer de betaling ontvangen is. De resulterende JSON wordt naar de Objecten API gestuurd om (de betaalattributen van) het eerder aangemaakte object bij te werken."
     }
   ],
   "qUYLVg": [

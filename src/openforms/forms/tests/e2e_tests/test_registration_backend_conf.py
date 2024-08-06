@@ -11,7 +11,12 @@ from openforms.registrations.contrib.objects_api.tests.factories import (
 from openforms.registrations.contrib.zgw_apis.tests.factories import (
     ZGWApiGroupConfigFactory,
 )
-from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
+from openforms.tests.e2e.base import (
+    E2ETestCase,
+    browser_page,
+    create_superuser,
+    rs_select_option,
+)
 from openforms.tests.utils import log_flaky
 
 from ..factories import FormFactory
@@ -260,8 +265,9 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("button", name="Configure options").click()
 
                 config_modal = page.get_by_role("dialog")
-                await config_modal.get_by_label("API group").select_option(
-                    label="Group 1"
+                await rs_select_option(
+                    config_modal.get_by_role("combobox", name="API group"),
+                    option_label="Group 1",
                 )
                 await config_modal.get_by_role("button", name="Save").click()
 
@@ -280,8 +286,9 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 await page.get_by_role("button", name="Configure options").click()
 
                 config_modal = page.get_by_role("dialog")
-                await config_modal.get_by_label("API group").select_option(
-                    label="Group 2"
+                await rs_select_option(
+                    config_modal.get_by_role("combobox", name="API group"),
+                    option_label="Group 2",
                 )
                 await config_modal.get_by_role("button", name="Save").click()
 

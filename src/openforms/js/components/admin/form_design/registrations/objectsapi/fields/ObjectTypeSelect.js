@@ -7,7 +7,7 @@ import useAsync from 'react-use/esm/useAsync';
 import {REGISTRATION_OBJECTTYPES_ENDPOINT} from 'components/admin/form_design/constants';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import Select, {LOADING_OPTION} from 'components/admin/forms/Select';
+import ReactSelect from 'components/admin/forms/ReactSelect';
 import {get} from 'utils/fetch';
 
 import {useSynchronizeSelect} from './hooks';
@@ -21,13 +21,14 @@ const getAvailableObjectTypes = async apiGroupID => {
 };
 
 const ObjectTypeSelect = ({onChangeCheck}) => {
-  const [fieldProps] = useField('objecttype');
+  const [fieldProps, , fieldHelpers] = useField('objecttype');
   const {
     values: {objectsApiGroup = null},
     setFieldValue,
     initialValues: {objecttype: initialObjecttype},
   } = useFormikContext();
-  const {value, onChange: onChangeFormik} = fieldProps;
+  const {value} = fieldProps;
+  const {setValue} = fieldHelpers;
 
   const {
     loading,
@@ -40,11 +41,12 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
   if (error) throw error;
 
   const choices = loading
-    ? LOADING_OPTION
+    ? []
     : objectTypes.map(({uuid, name, dataClassification}) => [
         uuid,
         `${name} (${dataClassification})`,
       ]);
+  const options = choices.map(([value, label]) => ({value, label}));
 
   useSynchronizeSelect('objecttype', loading, choices);
 
@@ -56,11 +58,6 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
     if (value === initialObjecttype || value === previousValue) return;
     setFieldValue('objecttypeVersion', undefined); // clears the value
   }, [loading, value]);
-
-  const onChange = event => {
-    const okToProceed = onChangeCheck === undefined || onChangeCheck();
-    if (okToProceed) onChangeFormik(event);
-  };
 
   return (
     <FormRow>
@@ -79,14 +76,18 @@ const ObjectTypeSelect = ({onChangeCheck}) => {
             defaultMessage="The registration result will be an object from the selected type."
           />
         }
+        noManageChildProps
       >
-        <Select
+        <ReactSelect
+          name="objecttype"
+          options={options}
+          isLoading={loading}
+          isDisabled={!objectsApiGroup}
           required
-          disabled={!objectsApiGroup}
-          choices={choices}
-          id="id_objecttype"
-          {...fieldProps}
-          onChange={onChange}
+          onChange={selectedOption => {
+            const okToProceed = onChangeCheck === undefined || onChangeCheck();
+            if (okToProceed) setValue(selectedOption.value);
+          }}
         />
       </Field>
     </FormRow>

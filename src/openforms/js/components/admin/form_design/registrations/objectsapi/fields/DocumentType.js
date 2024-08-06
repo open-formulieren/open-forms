@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
@@ -27,7 +28,7 @@ DocumentType.propTypes = {
   helpText: PropTypes.node,
 };
 
-export const InformatieobjecttypeSubmissionReport = () => (
+const InformatieobjecttypeSubmissionReport = () => (
   <DocumentType
     name="informatieobjecttypeSubmissionReport"
     label={
@@ -45,7 +46,7 @@ export const InformatieobjecttypeSubmissionReport = () => (
   />
 );
 
-export const InformatieobjecttypeSubmissionCsv = () => (
+const InformatieobjecttypeSubmissionCsv = () => (
   <DocumentType
     name="informatieobjecttypeSubmissionCsv"
     label={
@@ -63,7 +64,7 @@ export const InformatieobjecttypeSubmissionCsv = () => (
   />
 );
 
-export const InformatieobjecttypeAttachment = () => (
+const InformatieobjecttypeAttachment = () => (
   <DocumentType
     name="informatieobjecttypeAttachment"
     label={
@@ -81,4 +82,23 @@ export const InformatieobjecttypeAttachment = () => (
   />
 );
 
-export default DocumentType;
+export const DocumentTypesFieldet = () => (
+  <Fieldset
+    title={
+      <FormattedMessage
+        description="Objects registration: document types"
+        defaultMessage="Document types"
+      />
+    }
+    collapsible
+    fieldNames={[
+      'informatieobjecttypeSubmissionReport',
+      'informatieobjecttypeSubmissionCsv',
+      'informatieobjecttypeAttachment',
+    ]}
+  >
+    <InformatieobjecttypeSubmissionReport />
+    <InformatieobjecttypeSubmissionCsv />
+    <InformatieobjecttypeAttachment />
+  </Fieldset>
+);

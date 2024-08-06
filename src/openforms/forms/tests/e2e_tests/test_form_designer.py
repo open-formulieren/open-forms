@@ -8,7 +8,12 @@ from furl import furl
 from playwright.async_api import Page, expect
 
 from openforms.products.tests.factories import ProductFactory
-from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
+from openforms.tests.e2e.base import (
+    E2ETestCase,
+    browser_page,
+    create_superuser,
+    rs_select_option,
+)
 from openforms.utils.tests.cache import clear_caches
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
@@ -772,11 +777,7 @@ class FormDesignerRegressionTests(E2ETestCase):
 
                 # select the validation mode in the dropdown
                 dropdown = page.get_by_role("combobox", name="Mode preset")
-                await dropdown.focus()
-                await page.keyboard.press("ArrowDown")
-                option = page.get_by_text("Relative to variable", exact=True)
-                await option.scroll_into_view_if_needed()
-                await option.click()
+                await rs_select_option(dropdown, option_label="Relative to variable")
 
                 # Fill in years, months, days and submit
                 years = page.get_by_label("Years")

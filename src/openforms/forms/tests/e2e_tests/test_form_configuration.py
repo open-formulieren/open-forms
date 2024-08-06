@@ -4,7 +4,12 @@ from asgiref.sync import sync_to_async
 from furl import furl
 from playwright.async_api import expect
 
-from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
+from openforms.tests.e2e.base import (
+    E2ETestCase,
+    browser_page,
+    create_superuser,
+    rs_select_option,
+)
 
 from ..factories import FormFactory
 from .helpers import close_modal
@@ -40,12 +45,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
             await page.get_by_role("link", name="File").click()
 
             dropdown = page.get_by_role("combobox", name="File types")
-            await dropdown.focus()
-            await page.keyboard.press("ArrowDown")
-            option = page.get_by_text(".pdf", exact=True)
-            await option.scroll_into_view_if_needed()
-            await option.click()
-            await dropdown.blur()
+            await rs_select_option(dropdown, option_label=".pdf")
 
             # Save component
             await close_modal(page, "Save")

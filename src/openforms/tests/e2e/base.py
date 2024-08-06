@@ -1,4 +1,5 @@
 import os
+import re
 from contextlib import asynccontextmanager
 from typing import Any, Literal, TypeAlias
 
@@ -9,7 +10,7 @@ from django.urls import reverse
 from asgiref.sync import sync_to_async
 from furl import furl
 from maykin_2fa.test import disable_admin_mfa
-from playwright.async_api import BrowserType, Page, async_playwright
+from playwright.async_api import BrowserType, Locator, Page, async_playwright, expect
 
 from openforms.accounts.tests.factories import SuperUserFactory
 
@@ -69,3 +70,32 @@ class E2ETestCase(StaticLiveServerTestCase):
         await page.get_by_label("Password").fill("e2tests")
 
         await page.get_by_role("button", name="Log in").click()
+
+
+async def rs_select_option(
+    dropdown: Locator, option_label: str, exact: bool = True
+) -> None:
+    """
+    Select the option with specified label in the react-select dropdown.
+
+    :arg dropdown: The react select dropdown, e.g.
+        ``page.get_by_role("combobox", name="<label>")``.
+    :arg option_label: The label text of the option to select.
+    """
+    page = dropdown.page
+    dropdown_root = dropdown.locator("xpath=../../../..")
+    await expect(dropdown_root).to_be_visible()
+    css_class = re.compile(r"(admin-react-select|formio-builder-select)")
+    await expect(dropdown_root).to_have_class(css_class)
+
+    await dropdown.focus()
+    await page.keyboard.press("ArrowDown")
+
+    listbox = dropdown_root.get_by_role("listbox")
+    await expect(listbox).to_be_visible()
+
+    option = listbox.get_by_role("option", name=option_label, exact=exact)
+    await option.scroll_into_view_if_needed()
+    await option.click()
+
+    await dropdown.blur()
