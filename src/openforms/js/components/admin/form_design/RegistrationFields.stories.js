@@ -1,6 +1,7 @@
 import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
 
 import {
+  mockCataloguesGet,
   mockObjecttypeVersionsGet,
   mockObjecttypesGet,
 } from 'components/admin/form_design/registrations/objectsapi/mocks';
@@ -186,6 +187,7 @@ export default {
             {version: 1, status: 'published'},
             {version: 2, status: 'draft'},
           ]),
+          mockCataloguesGet(),
         ],
       },
     },

@@ -5,3 +5,4 @@ export {DocumentTypesFieldet} from './DocumentType';
 export {default as UpdateExistingObject} from './UpdateExistingObject';
 export {default as UploadSubmissionCsv} from './UploadSubmissionCSV';
 export {default as OrganisationRSIN} from './OrganisationRSIN';
+export {default as CatalogueSelect} from './CatalogueSelect';

@@ -6,6 +6,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
+  CatalogueSelect,
   DocumentTypesFieldet,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
@@ -78,6 +79,19 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         >
           <ObjectTypeVersionSelect />
         </ErrorBoundary>
+      </Fieldset>
+
+      <Fieldset
+        title={
+          <FormattedMessage
+            description="Objects registration: document types"
+            defaultMessage="Document types"
+          />
+        }
+        collapsible
+        fieldNames={['catalogue']}
+      >
+        <CatalogueSelect />
       </Fieldset>
 
       <DocumentTypesFieldet />
