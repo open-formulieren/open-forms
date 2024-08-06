@@ -2,6 +2,17 @@
 Changelog
 =========
 
+2.7.4 (2024-08-06)
+==================
+
+Fixed a crash in upgrade check script and set up CI to prevent these problems in the
+future.
+
+2.7.3 (2024-08-05)
+==================
+
+Fixed a typo in upgrade check script name.
+
 2.7.2 (2024-08-05)
 ==================
 
