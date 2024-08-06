@@ -445,6 +445,8 @@ jobs:
             python src/manage.py migrate
         env:
           RELEASE: '2.7.0'
+          # ensure local image gets used
+          TAG: ${{ needs.docker_build_setup.outputs.version }}
 
   oas-up-to-date:
     needs: tests
