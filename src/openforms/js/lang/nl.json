@@ -1112,6 +1112,11 @@
     "description": "Warning that all simple variables are mapped",
     "originalDefault": "All simple variables are mapped to a case property."
   },
+  "NYJo4j": {
+    "defaultMessage": "Catalogue",
+    "description": "Objects API registration options 'catalogue' label",
+    "originalDefault": "Catalogue"
+  },
   "NwTdLM": {
     "defaultMessage": "Veld waar beschikbare locaties voor een afspraak komen te staan",
     "description": "Locations Component field help text",
