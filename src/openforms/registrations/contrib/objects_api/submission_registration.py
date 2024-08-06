@@ -21,6 +21,7 @@ from openforms.contrib.zgw.service import (
 )
 from openforms.formio.service import FormioData
 from openforms.formio.typing import Component
+from openforms.payments.constants import PaymentStatus
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -38,7 +39,11 @@ from openforms.variables.utils import get_variables_for_context
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from .client import DocumentenClient, get_documents_client
 from .models import ObjectsAPIRegistrationData, ObjectsAPISubmissionAttachment
-from .registration_variables import get_cosign_value, register as variables_registry
+from .registration_variables import (
+    PAYMENT_VARIABLE_NAMES,
+    get_cosign_value,
+    register as variables_registry,
+)
 from .typing import (
     ConfigVersion,
     ObjecttypeVariableMapping,
@@ -289,7 +294,9 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             "amount": str(amount),
             "public_order_ids": submission.payments.get_completed_public_order_ids(),
             "provider_payment_ids": list(
-                submission.payments.values_list("provider_payment_id", flat=True)
+                submission.payments.filter(
+                    status__in=(PaymentStatus.registered, PaymentStatus.completed)
+                ).values_list("provider_payment_id", flat=True)
             ),
         }
 
@@ -512,13 +519,7 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 submission=submission,
                 variables_registry=variables_registry,
             )
-            if variable.key
-            in [
-                "payment_completed",
-                "payment_amount",
-                "payment_public_order_ids",
-                "provider_payment_ids",
-            ]
+            if variable.key in PAYMENT_VARIABLE_NAMES
         }
 
         variables_values = FormioData(values)

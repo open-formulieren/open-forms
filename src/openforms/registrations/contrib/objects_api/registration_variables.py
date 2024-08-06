@@ -179,3 +179,11 @@ class CosignPseudo(BaseStaticVariable):
 
     def get_initial_value(self, submission: Submission | None = None) -> str:
         return get_cosign_value(submission, AuthAttribute.pseudo)
+
+
+PAYMENT_VARIABLE_NAMES = [
+    "payment_completed",
+    "payment_amount",
+    "payment_public_order_ids",
+    "provider_payment_ids",
+]

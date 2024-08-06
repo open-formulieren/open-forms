@@ -153,9 +153,15 @@ class OgoneTests(TestCase):
         # start url
         url = plugin.get_webhook_url(request)
 
-        # bad without data
-        with self.subTest("bad call, no request data"):
+        # bad without orderID
+        with self.subTest("bad call, missing orderID"):
             response = self.client.post(url)
+
+            self.assertEqual(response.status_code, 400)
+
+        # bad without PAYID
+        with self.subTest("bad call, missing PAYID"):
+            response = self.client.post(url, {"orderID": payment.public_order_id})
 
             self.assertEqual(response.status_code, 400)
 
@@ -186,7 +192,7 @@ class OgoneTests(TestCase):
         plugin = register["ogone-legacy"]
 
         # regular apply
-        plugin.apply_status(payment, OgoneStatus.payment_requested)
+        plugin.apply_status(payment, OgoneStatus.payment_requested, "12345")
         self.assertEqual(payment.status, PaymentStatus.completed)
 
         # set a final status registered
@@ -194,6 +200,6 @@ class OgoneTests(TestCase):
         payment.save()
 
         # ignores when try to race/overwrite to completed again
-        plugin.apply_status(payment, OgoneStatus.payment_requested)
+        plugin.apply_status(payment, OgoneStatus.payment_requested, "12345")
         # still registered
         self.assertEqual(payment.status, PaymentStatus.registered)

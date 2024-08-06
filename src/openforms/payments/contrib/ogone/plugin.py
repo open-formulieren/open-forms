@@ -71,7 +71,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
     def handle_return(self, request, payment: SubmissionPayment):
         action = request.query_params.get(RETURN_ACTION_PARAM)
-        payment_id = request.query_params.get(PAYMENT_ID_PARAM)
+        payment_id = request.query_params[PAYMENT_ID_PARAM]
 
         merchant = get_object_or_404(
             OgoneMerchant, id=payment.plugin_options["merchant_id"]
@@ -85,7 +85,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
             logevent.payment_flow_failure(payment, self, e)
             return HttpResponseBadRequest("bad shasign")
 
-        self.apply_status(payment, params.STATUS, payment_id=payment_id)
+        self.apply_status(payment, params.STATUS, payment_id)
 
         token = submission_status_token_generator.make_token(payment.submission)
         status_url = request.build_absolute_uri(
@@ -114,6 +114,11 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
             # we use ParseError in this method because serializers.ValidationError triggers exception serializers
             raise ParseError("missing orderID")
 
+        payment_id = case_insensitive_get(request.data, "PAYID")
+        if not payment_id:
+            # we use ParseError in this method because serializers.ValidationError triggers exception serializers
+            raise ParseError("missing PAYID")
+
         payment = get_object_or_404(SubmissionPayment, public_order_id=order_id)
         merchant = get_object_or_404(
             OgoneMerchant, id=payment.plugin_options["merchant_id"]
@@ -128,15 +133,12 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
             # see note about ParseError above
             raise ParseError("bad shasign")
 
-        self.apply_status(payment, params.STATUS)
+        self.apply_status(payment, params.STATUS, payment_id)
 
         return payment
 
     def apply_status(
-        self,
-        payment: SubmissionPayment,
-        ogone_status: str,
-        payment_id: str | None = None,
+        self, payment: SubmissionPayment, ogone_status: str, payment_id: str
     ) -> None:
         if payment.status in PAYMENT_STATUS_FINAL:
             # shouldn't happen or race-condition
@@ -148,10 +150,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         qs = SubmissionPayment.objects.filter(id=payment.id)
         qs = qs.exclude(status__in=PAYMENT_STATUS_FINAL)
         qs = qs.exclude(status=new_status)
-        if payment_id:
-            res = qs.update(status=new_status, provider_payment_id=payment_id)
-        else:
-            res = qs.update(status=new_status)
+        res = qs.update(status=new_status, provider_payment_id=payment_id)
 
         if res > 0:
             payment.refresh_from_db()
