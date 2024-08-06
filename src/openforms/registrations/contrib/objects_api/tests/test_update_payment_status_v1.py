@@ -65,6 +65,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
             status=PaymentStatus.completed,
             amount=10.01,
             public_order_id="TEST-123",
+            provider_payment_id="12345",
         )
 
         config = ObjectsAPIConfig(
@@ -74,7 +75,8 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                     "payment": {
                         "completed": {% if payment.completed %}true{% else %}false{% endif %},
                         "amount": {{ payment.amount }},
-                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+                        "payment_ids": [{% for payment_id in payment.provider_payment_ids%}"{{ payment_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
                     }
                 }"""
             ),
@@ -102,6 +104,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                 "completed": True,
                 "amount": 10.01,
                 "public_order_ids": ["TEST-123"],
+                "payment_ids": ["12345"],
             },
         )
         self.assertEqual(result["record"]["startAt"], "2020-02-02")
@@ -126,6 +129,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
             status=PaymentStatus.completed,
             amount=10,
             public_order_id="TEST-123",
+            provider_payment_id="12345",
         )
 
         config = ObjectsAPIConfig()
@@ -149,7 +153,8 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                     "payment": {
                         "completed": {% if payment.completed %}true{% else %}false{% endif %},
                         "amount": {{ payment.amount }},
-                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+                        "public_order_ids": [{% for order_id in payment.public_order_ids%}"{{ order_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+                        "payment_ids": [{% for payment_id in payment.provider_payment_ids%}"{{ payment_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
                     }
                 }"""
                     ),
@@ -162,6 +167,7 @@ class ObjectsAPIPaymentStatusUpdateV1Tests(OFVCRMixin, TestCase):
                 "completed": True,
                 "amount": 10,
                 "public_order_ids": ["TEST-123"],
+                "payment_ids": ["12345"],
             },
         )
         self.assertEqual(result["record"]["startAt"], "2020-02-02")

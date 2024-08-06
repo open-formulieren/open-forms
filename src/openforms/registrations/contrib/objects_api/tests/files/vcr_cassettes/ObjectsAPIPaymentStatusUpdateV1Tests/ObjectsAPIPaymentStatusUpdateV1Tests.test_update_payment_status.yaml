@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
-      "record": {"typeVersion": 1, "data": {}, "startAt": "2024-07-22"}}'
+      "record": {"typeVersion": 1, "data": {}, "startAt": "2024-08-06"}}'
     headers:
       Accept:
       - '*/*'
@@ -23,7 +23,7 @@ interactions:
     uri: http://localhost:8002/api/v2/objects
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/55f20625-5ace-4bf4-8d14-4b17e52b2cb5","uuid":"55f20625-5ace-4bf4-8d14-4b17e52b2cb5","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{},"geometry":null,"startAt":"2024-07-22","endAt":null,"registrationAt":"2024-07-22","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/4451a728-282d-4458-9706-bccc4ad9c0a7","uuid":"4451a728-282d-4458-9706-bccc4ad9c0a7","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":1,"typeVersion":1,"data":{},"geometry":null,"startAt":"2024-08-06","endAt":null,"registrationAt":"2024-08-06","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, POST, HEAD, OPTIONS
@@ -38,9 +38,9 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 22 Jul 2024 15:47:00 GMT
+      - Tue, 06 Aug 2024 08:33:38 GMT
       Location:
-      - http://localhost:8002/api/v2/objects/55f20625-5ace-4bf4-8d14-4b17e52b2cb5
+      - http://localhost:8002/api/v2/objects/4451a728-282d-4458-9706-bccc4ad9c0a7
       Referrer-Policy:
       - same-origin
       Server:
@@ -85,7 +85,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 22 Jul 2024 15:47:00 GMT
+      - Tue, 06 Aug 2024 08:33:39 GMT
       Referrer-Policy:
       - same-origin
       Server:
@@ -102,7 +102,8 @@ interactions:
 - request:
     body: '{"type": "http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e",
       "record": {"typeVersion": 1, "data": {"payment": {"completed": true, "amount":
-      10.01, "public_order_ids": ["TEST-123"]}}, "startAt": "2020-02-02"}}'
+      10.01, "public_order_ids": ["TEST-123"], "payment_ids": ["12345"]}}, "startAt":
+      "2020-02-02"}}'
     headers:
       Accept:
       - '*/*'
@@ -115,16 +116,16 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '243'
+      - '269'
       Content-Type:
       - application/json
       User-Agent:
       - python-requests/2.32.2
     method: PATCH
-    uri: http://localhost:8002/api/v2/objects/55f20625-5ace-4bf4-8d14-4b17e52b2cb5
+    uri: http://localhost:8002/api/v2/objects/4451a728-282d-4458-9706-bccc4ad9c0a7
   response:
     body:
-      string: '{"url":"http://objects-web:8000/api/v2/objects/55f20625-5ace-4bf4-8d14-4b17e52b2cb5","uuid":"55f20625-5ace-4bf4-8d14-4b17e52b2cb5","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":2,"typeVersion":1,"data":{"payment":{"completed":true,"amount":10.01,"public_order_ids":["TEST-123"]}},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-07-22","correctionFor":null,"correctedBy":null}}'
+      string: '{"url":"http://objects-web:8000/api/v2/objects/4451a728-282d-4458-9706-bccc4ad9c0a7","uuid":"4451a728-282d-4458-9706-bccc4ad9c0a7","type":"http://objecttypes-web:8000/api/v2/objecttypes/8faed0fa-7864-4409-aa6d-533a37616a9e","record":{"index":2,"typeVersion":1,"data":{"payment":{"completed":true,"amount":10.01,"public_order_ids":["TEST-123"],"payment_ids":["12345"]}},"geometry":null,"startAt":"2020-02-02","endAt":null,"registrationAt":"2024-08-06","correctionFor":null,"correctedBy":null}}'
     headers:
       Allow:
       - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
@@ -133,13 +134,13 @@ interactions:
       Content-Crs:
       - EPSG:4326
       Content-Length:
-      - '468'
+      - '492'
       Content-Type:
       - application/json
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Mon, 22 Jul 2024 15:47:00 GMT
+      - Tue, 06 Aug 2024 08:33:39 GMT
       Referrer-Policy:
       - same-origin
       Server:

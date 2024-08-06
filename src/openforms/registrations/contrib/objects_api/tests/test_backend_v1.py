@@ -62,7 +62,8 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "payment": {
                         "completed": {% if payment.completed %}true{% else %}false{% endif %},
                         "amount": {{ payment.amount }},
-                        "public_order_ids": {{ payment.public_order_ids }}
+                        "public_order_ids": {{ payment.public_order_ids }},
+                        "payment_ids": [{% for payment_id in payment.provider_payment_ids%}"{{ payment_id|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}]
                     }
                 }"""
             ),
@@ -196,6 +197,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                     "completed": False,
                     "amount": 0,
                     "public_order_ids": [],
+                    "payment_ids": [],
                 },
             },
         )
@@ -477,6 +479,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                         "completed": False,
                         "amount": 0,
                         "public_order_ids": [],
+                        "payment_ids": [],
                     },
                 },
             )
@@ -891,6 +894,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
             submission=submission,
             status=PaymentStatus.started,
             public_order_id="",
+            provider_payment_id="123456",
         )
 
         plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
@@ -911,6 +915,7 @@ class ObjectsAPIBackendV1Tests(OFVCRMixin, TestCase):
                 "completed": False,
                 "amount": 10.00,
                 "public_order_ids": [],
+                "payment_ids": ["123456"],
             },
         )
 

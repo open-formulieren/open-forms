@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
@@ -8,6 +9,8 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from openforms.authentication.service import AuthAttribute
+from openforms.payments.constants import PaymentStatus
+from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -157,6 +160,157 @@ class ObjectsAPIBackendV2Tests(OFVCRMixin, TestCase):
                 "submission_payment_completed": False,
                 "submission_payment_amount": None,
                 "submission_payment_public_ids": [],
+                "submission_date": submission_date,
+            },
+        )
+        self.assertEqual(
+            result["record"]["geometry"],
+            {
+                "type": "Point",
+                "coordinates": [52.36673378967122, 4.893164274470299],
+            },
+        )
+
+    def test_submission_with_objects_api_v2_with_payment_attributes(self):
+        submission = SubmissionFactory.from_components(
+            [
+                # fmt: off
+                {
+                    "key": "age",
+                    "type": "number"
+                },
+                {
+                    "key": "lastname",
+                    "type": "textfield",
+                },
+                {
+                    "key": "location",
+                    "type": "map",
+                },
+                # fmt: on
+            ],
+            completed=True,
+            submitted_data={
+                "age": 20,
+                "lastname": "My last name",
+                "location": [52.36673378967122, 4.893164274470299],
+            },
+        )
+
+        v2_options: RegistrationOptionsV2 = {
+            "version": 2,
+            "objects_api_group": self.objects_api_group,
+            # See the docker compose fixtures for more info on these values:
+            "objecttype": UUID("8e46e0a5-b1b4-449b-b9e9-fa3cea655f48"),
+            "objecttype_version": 3,
+            "upload_submission_csv": True,
+            "update_existing_object": False,
+            "informatieobjecttype_submission_report": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/7a474713-0833-402a-8441-e467c08ac55b",
+            "informatieobjecttype_submission_csv": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/b2d83b94-9b9b-4e80-a82f-73ff993c62f3",
+            "informatieobjecttype_attachment": "http://localhost:8003/catalogi/api/v1/informatieobjecttypen/531f6c1a-97f7-478c-85f0-67d2f23661c7",
+            "organisatie_rsin": "000000000",
+            "variables_mapping": [
+                # fmt: off
+                {
+                    "variable_key": "age",
+                    "target_path": ["age"],
+                },
+                {
+                    "variable_key": "lastname",
+                    "target_path": ["name", "last.name"]
+                },
+                {
+                    "variable_key": "now",
+                    "target_path": ["submission_date"],
+                },
+                {
+                    "variable_key": "pdf_url",
+                    "target_path": ["submission_pdf_url"],
+                },
+                {
+                    "variable_key": "csv_url",
+                    "target_path": ["submission_csv_url"],
+                },
+                {
+                    "variable_key": "payment_completed",
+                    "target_path": ["submission_payment_completed"],
+                },
+                {
+                    "variable_key": "payment_amount",
+                    "target_path": ["submission_payment_amount"],
+                },
+                {
+                    "variable_key": "payment_public_order_ids",
+                    "target_path": ["submission_payment_public_ids"],
+                },
+                {
+                    "variable_key": "provider_payment_ids",
+                    "target_path": ["submission_provider_payment_ids"],
+                },
+                {
+                    "variable_key": "cosign_date",
+                    "target_path": ["cosign_date"],
+                },
+                # fmt: on
+            ],
+            "geometry_variable_key": "location",
+        }
+        submission.price = Decimal("40.00")
+        submission.save()
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            amount=Decimal("25.00"),
+            public_order_id="foo",
+            status=PaymentStatus.completed,
+            provider_payment_id="123456",
+        )
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            amount=Decimal("15.00"),
+            public_order_id="bar",
+            status=PaymentStatus.registered,
+            provider_payment_id="654321",
+        )
+        # failed payment, should be ignored
+        SubmissionPaymentFactory.create(
+            submission=submission,
+            amount=Decimal("15.00"),
+            public_order_id="baz",
+            status=PaymentStatus.failed,
+            provider_payment_id="6789",
+        )
+
+        plugin = ObjectsAPIRegistration(PLUGIN_IDENTIFIER)
+
+        # Run the registration
+        result = plugin.register_submission(submission, v2_options)
+
+        registration_data = ObjectsAPIRegistrationData.objects.get(
+            submission=submission
+        )
+
+        self.assertEqual(
+            result["type"],
+            "http://objecttypes-web:8000/api/v2/objecttypes/8e46e0a5-b1b4-449b-b9e9-fa3cea655f48",
+        )
+        self.assertEqual(
+            result["record"]["typeVersion"], v2_options["objecttype_version"]
+        )
+        submission_date = timezone.now().replace(second=0, microsecond=0).isoformat()
+        self.assertEqual(
+            result["record"]["data"],
+            {
+                "age": 20,
+                "cosign_date": None,
+                "name": {
+                    "last.name": "My last name",
+                },
+                "submission_pdf_url": registration_data.pdf_url,
+                "submission_csv_url": registration_data.csv_url,
+                "submission_payment_completed": True,
+                "submission_payment_amount": 40.0,
+                "submission_payment_public_ids": ["foo", "bar"],
+                "submission_provider_payment_ids": ["123456", "654321"],
                 "submission_date": submission_date,
             },
         )
