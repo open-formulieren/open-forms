@@ -44,6 +44,7 @@
                                         {% else %}
                                         {{ label }}
                                         {% endif %}
+                                        {% if not forloop.last %}|{% endif %}
                                     {% endfor %}
                                 </td>
                             </tr>
