@@ -288,6 +288,9 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
             "completed": submission.payment_user_has_paid,
             "amount": str(amount),
             "public_order_ids": submission.payments.get_completed_public_order_ids(),
+            "provider_payment_ids": list(
+                submission.payments.values_list("provider_payment_id", flat=True)
+            ),
         }
 
     @staticmethod
@@ -367,7 +370,6 @@ class ObjectsAPIV1Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV1]):
     def get_update_payment_status_data(
         self, submission: Submission, options: RegistrationOptionsV1
     ) -> dict[str, Any] | None:
-
         if not options["payment_status_update_json"]:
             logger.warning(
                 "Skipping payment status update because no template was configured."
@@ -511,7 +513,12 @@ class ObjectsAPIV2Handler(ObjectsAPIRegistrationHandler[RegistrationOptionsV2]):
                 variables_registry=variables_registry,
             )
             if variable.key
-            in ["payment_completed", "payment_amount", "payment_public_order_ids"]
+            in [
+                "payment_completed",
+                "payment_amount",
+                "payment_public_order_ids",
+                "provider_payment_ids",
+            ]
         }
 
         variables_values = FormioData(values)
