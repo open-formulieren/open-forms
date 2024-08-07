@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, ClassVar
 
 from rest_framework import authentication, permissions
@@ -6,39 +7,43 @@ from rest_framework.views import APIView
 from openforms.api.views import ListMixin
 
 from .filters import ProvidesCatalogiClientQueryParamsSerializer
-from .serializers import CatalogusSerializer, InformatieObjectTypeSerializer
+from .serializers import CatalogueSerializer, InformatieObjectTypeSerializer
 
 
-def _build_catalogus_label(catalogus: dict[str, Any]) -> str:
-    return catalogus.get("naam") or f"{catalogus['domein']} (RSIN: {catalogus['rsin']})"
+@dataclass
+class Catalogue:
+    domain: str
+    rsin: str
+    name: str = ""
+
+    @property
+    def label(self) -> str:
+        return self.name or f"{self.domain} (RSIN: {self.rsin})"
 
 
-class BaseCatalogiListView(ListMixin, APIView):
+class BaseCatalogueListView(ListMixin[Catalogue], APIView):
     """
-    List the available catalogi.
+    List the available catalogues.
     """
 
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = CatalogusSerializer
+    serializer_class = CatalogueSerializer
     filter_serializer_class: ClassVar[type[ProvidesCatalogiClientQueryParamsSerializer]]
 
     def get_objects(self):
-        filter_serializer = self.filter_serializer_class(
-            data=self.request.query_params,
-        )
+        params = self.request.query_params
+        filter_serializer = self.filter_serializer_class(data=params)
         filter_serializer.is_valid(raise_exception=True)
 
         with filter_serializer.get_ztc_client() as client:
             catalogus_data = client.get_all_catalogi()
 
         return [
-            {
-                "domein": catalogus["domein"],
-                "rsin": catalogus["rsin"],
-                "label": _build_catalogus_label(catalogus),
-            }
-            for catalogus in catalogus_data
+            Catalogue(
+                domain=item["domein"], rsin=item["rsin"], name=item.get("naam", "")
+            )
+            for item in catalogus_data
         ]
 
 
@@ -77,14 +82,18 @@ class BaseInformatieObjectTypenListView(ListMixin, APIView):
         iotypen = []
 
         for iotype in iotypen_data.values():
-            catalogus = catalogus_mapping[iotype["catalogus"]]
-            catalogus_label = _build_catalogus_label(catalogus)
+            _catalogus = catalogus_mapping[iotype["catalogus"]]
+            catalogue = Catalogue(
+                domain=_catalogus["domein"],
+                rsin=_catalogus["rsin"],
+                name=_catalogus.get("naam", ""),
+            )
 
             iotypen.append(
                 {
-                    "catalogus_domein": catalogus["domein"],
-                    "catalogus_rsin": catalogus["rsin"],
-                    "catalogus_label": catalogus_label,
+                    "catalogus_domein": catalogue.domain,
+                    "catalogus_rsin": catalogue.rsin,
+                    "catalogus_label": catalogue.label,
                     "url": iotype["url"],
                     "omschrijving": iotype["omschrijving"],
                     # Not taken into account by the serializer, but used to filter duplicates:

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (
-    CatalogiListView,
+    CatalogueListView,
     InformatieObjectTypenListView,
     ObjecttypesListView,
     ObjecttypeVersionsListView,
@@ -27,9 +27,9 @@ urlpatterns = [
         name="target-paths",
     ),
     path(
-        "catalogi",
-        CatalogiListView.as_view(),
-        name="catalogi-list",
+        "catalogues",
+        CatalogueListView.as_view(),
+        name="catalogue-list",
     ),
     path(
         "informatieobjecttypen",

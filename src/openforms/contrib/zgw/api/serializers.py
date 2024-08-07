@@ -3,11 +3,11 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 
-class CatalogusSerializer(serializers.Serializer):
-    domein = serializers.CharField(label=_("domein"))
+class CatalogueSerializer(serializers.Serializer):
+    domain = serializers.CharField(label=_("domain"))
     rsin = serializers.CharField(label=_("rsin"))
-    label = serializers.CharField(
-        label=_("label"), help_text=_("The display label of the catalogus")
+    label = serializers.CharField(  # type: ignore
+        label=_("label"), help_text=_("The display label of the catalogue")
     )
 
 
