@@ -82,12 +82,12 @@ const InformatieobjecttypeAttachment = () => (
   />
 );
 
-export const DocumentTypesFieldet = () => (
+export const LegacyDocumentTypesFieldet = () => (
   <Fieldset
     title={
       <FormattedMessage
-        description="Objects registration: document types"
-        defaultMessage="Document types"
+        description="Objects registration: document types (legacy)"
+        defaultMessage="Document types (legacy)"
       />
     }
     collapsible

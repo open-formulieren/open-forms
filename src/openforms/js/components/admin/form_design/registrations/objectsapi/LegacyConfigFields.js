@@ -10,6 +10,7 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 
 import {
   DocumentTypesFieldet,
+  LegacyDocumentTypesFieldet,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -52,6 +53,8 @@ const LegacyConfigFields = ({apiGroupChoices}) => (
     </Fieldset>
 
     <DocumentTypesFieldet />
+
+    <LegacyDocumentTypesFieldet />
 
     <Fieldset
       title={

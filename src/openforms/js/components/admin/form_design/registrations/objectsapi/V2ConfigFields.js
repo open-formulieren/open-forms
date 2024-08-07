@@ -8,6 +8,7 @@ import ErrorBoundary from 'components/errors/ErrorBoundary';
 import {
   CatalogueSelect,
   DocumentTypesFieldet,
+  LegacyDocumentTypesFieldet,
   ObjectTypeSelect,
   ObjectTypeVersionSelect,
   ObjectsAPIGroup,
@@ -81,20 +82,9 @@ const V2ConfigFields = ({apiGroupChoices}) => {
         </ErrorBoundary>
       </Fieldset>
 
-      <Fieldset
-        title={
-          <FormattedMessage
-            description="Objects registration: document types"
-            defaultMessage="Document types"
-          />
-        }
-        collapsible
-        fieldNames={['catalogue']}
-      >
-        <CatalogueSelect />
-      </Fieldset>
-
       <DocumentTypesFieldet />
+
+      <LegacyDocumentTypesFieldet />
 
       <Fieldset
         title={

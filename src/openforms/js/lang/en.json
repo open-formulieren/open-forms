@@ -829,6 +829,11 @@
     "description": "Errored Submissions Removal Limit help text",
     "originalDefault": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
+  "HNB0l+": {
+    "defaultMessage": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns.",
+    "description": "New document types informative message",
+    "originalDefault": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
+  },
   "HXE3Mm": {
     "defaultMessage": "Slug of the form, used in URLs",
     "description": "Form slug field help text",
@@ -983,6 +988,11 @@
     "defaultMessage": "Manually defined",
     "description": "JSON editor: \"manual\" variable source label",
     "originalDefault": "Manually defined"
+  },
+  "KtVIGz": {
+    "defaultMessage": "Document types (legacy)",
+    "description": "Objects registration: document types (legacy)",
+    "originalDefault": "Document types (legacy)"
   },
   "KzlSYi": {
     "defaultMessage": "Restore",

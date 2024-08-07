@@ -1896,6 +1896,12 @@
       "value": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "HNB0l+": [
+    {
+      "type": 0,
+      "value": "The legacy document types configuration will be ignored as soon as a catalogue is selected, even if you don't select any document type in the dropdowns."
+    }
+  ],
   "HNoGb8": [
     {
       "type": 0,
@@ -2162,6 +2168,12 @@
     {
       "type": 0,
       "value": "Het maximaal aantal bestanden die mogen geüpload worden."
+    }
+  ],
+  "KtVIGz": [
+    {
+      "type": 0,
+      "value": "Document types (legacy)"
     }
   ],
   "KwatvH": [
