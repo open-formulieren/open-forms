@@ -1,4 +1,5 @@
 import {expect, fn, screen, userEvent, waitFor, within} from '@storybook/test';
+import selectEvent from 'react-select-event';
 
 import {
   mockCataloguesGet,
@@ -297,7 +298,7 @@ export const ObjectsAPI = {
     ],
   },
 
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step, args}) => {
     const canvas = within(canvasElement);
 
     await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
@@ -306,6 +307,7 @@ export const ObjectsAPI = {
     const modalForm = await screen.findByTestId('modal-form');
     expect(modalForm).toBeVisible();
     expect(modalForm).toHaveFormValues({objectsApiGroup: '1'});
+    const modal = within(modalForm);
 
     await waitFor(() => {
       expect(modalForm).toHaveFormValues({
@@ -313,6 +315,29 @@ export const ObjectsAPI = {
         objecttypeVersion: '1',
       });
     });
+
+    await step('Select a catalogue for document types', async () => {
+      const fieldsetTitle = modal.getByRole('heading', {name: /Documenttypen/});
+      expect(fieldsetTitle).toBeVisible();
+      await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
+
+      const catalogueSelect = modal.getByLabelText('Catalogue');
+      await selectEvent.select(catalogueSelect, 'Catalogus 2');
+    });
+
+    await step('Submit the form', async () => {
+      await userEvent.click(modal.getByRole('button', {name: 'Opslaan'}));
+      expect(args.onChange).toHaveBeenCalled();
+      const call = args.onChange.mock.calls[0][0];
+      const {catalogue} = call.target.value;
+      expect(catalogue).toMatchObject({
+        rsin: '000000000',
+        domain: 'OTHER',
+      });
+    });
+
+    // re-open modal for visual regression testing snapshots
+    await userEvent.click(canvas.getByRole('button', {name: 'Opties instellen'}));
   },
 };
 
