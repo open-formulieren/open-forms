@@ -20,6 +20,7 @@ const ObjectsApiOptionsForm = ({index, name, label, schema, formData, onChange})
   const {objectsApiGroup} = schema.properties;
   const apiGroupChoices = getChoicesFromSchema(objectsApiGroup.enum, objectsApiGroup.enumNames);
   const numErrors = filterErrors(name, validationErrors).length;
+
   return (
     <Field name={name} label={label}>
       <>
