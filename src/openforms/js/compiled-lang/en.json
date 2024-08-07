@@ -4709,6 +4709,12 @@
       "value": "Is sensitive data"
     }
   ],
+  "mCHS+l": [
+    {
+      "type": 0,
+      "value": "You have selected a catalogue - the document type URLs configured here will be ignored."
+    }
+  ],
   "mH3X/G": [
     {
       "type": 0,

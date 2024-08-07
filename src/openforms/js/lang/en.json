@@ -2134,6 +2134,11 @@
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
   },
+  "mCHS+l": {
+    "defaultMessage": "You have selected a catalogue - the document type URLs configured here will be ignored.",
+    "description": "Objects registration: warning that legacy document types will be ignored",
+    "originalDefault": "You have selected a catalogue - the document type URLs configured here will be ignored."
+  },
   "mH3X/G": {
     "defaultMessage": "today",
     "description": "\"today\" operand type",
