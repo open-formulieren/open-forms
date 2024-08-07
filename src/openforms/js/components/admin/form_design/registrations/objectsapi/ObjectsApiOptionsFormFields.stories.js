@@ -5,7 +5,13 @@ import selectEvent from 'react-select-event';
 import {ValidationErrorsDecorator} from 'components/admin/form_design/story-decorators';
 
 import ObjectsApiOptionsFormFields from './ObjectsApiOptionsFormFields';
-import {mockObjecttypeVersionsGet, mockObjecttypesError, mockObjecttypesGet} from './mocks';
+import {
+  mockCataloguesGet,
+  mockDocumentTypesGet,
+  mockObjecttypeVersionsGet,
+  mockObjecttypesError,
+  mockObjecttypesGet,
+} from './mocks';
 
 const NAME = 'form.registrationBackends.0.options';
 
@@ -51,6 +57,8 @@ export default {
           {version: 1, status: 'published'},
           {version: 2, status: 'draft'},
         ]),
+        mockCataloguesGet(),
+        mockDocumentTypesGet(),
       ],
     },
   },
