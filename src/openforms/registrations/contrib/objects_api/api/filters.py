@@ -5,6 +5,7 @@ from zgw_consumers.client import build_client
 
 from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.contrib.zgw.api.filters import (
+    DocumentTypesFilter,
     ProvidesCatalogiClientQueryParamsSerializer,
 )
 from openforms.contrib.zgw.clients.catalogi import CatalogiClient
@@ -12,7 +13,7 @@ from openforms.contrib.zgw.clients.catalogi import CatalogiClient
 from ..models import ObjectsAPIGroupConfig
 
 
-class APIGroupQueryParamsSerializer(ProvidesCatalogiClientQueryParamsSerializer):
+class ObjectsAPIGroupMixin(serializers.Serializer):
     objects_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ObjectsAPIGroupConfig.objects.exclude(catalogi_service=None),
         help_text=_(
@@ -31,9 +32,13 @@ class APIGroupQueryParamsSerializer(ProvidesCatalogiClientQueryParamsSerializer)
         )
 
 
-class ListInformatieObjectTypenQueryParamsSerializer(APIGroupQueryParamsSerializer):
-    catalogus_url = serializers.URLField(
-        label=_("catalogus URL"),
-        help_text=_("Filter informatieobjecttypen against this catalogus URL."),
-        required=False,
-    )
+class APIGroupQueryParamsSerializer(
+    ObjectsAPIGroupMixin, ProvidesCatalogiClientQueryParamsSerializer
+):
+    pass
+
+
+class ListInformatieObjectTypenQueryParamsSerializer(
+    ObjectsAPIGroupMixin, DocumentTypesFilter
+):
+    pass
