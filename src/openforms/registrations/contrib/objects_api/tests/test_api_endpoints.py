@@ -317,6 +317,15 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         data = response.json()
 
         self.assertEqual(len(data), 3)
+        record = data[0]
+        expected = {
+            "catalogusLabel": str,
+            "omschrijving": str,
+            "url": str,
+        }
+        for key, type in expected.items():
+            with self.subTest(key=key):
+                self.assertIsInstance(record[key], type)
 
     def test_retrieve_filter_by_catalogus(self):
         user = StaffUserFactory.create()
@@ -335,3 +344,12 @@ class GetInformatieObjecttypesViewTests(OFVCRMixin, APITestCase):
         data = response.json()
 
         self.assertEqual(len(data), 3)
+        record = data[0]
+        expected = {
+            "catalogusLabel": str,
+            "omschrijving": str,
+            "url": str,
+        }
+        for key, type in expected.items():
+            with self.subTest(key=key):
+                self.assertIsInstance(record[key], type)
