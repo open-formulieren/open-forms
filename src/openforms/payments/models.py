@@ -122,6 +122,14 @@ class SubmissionPayment(models.Model):
         default=PaymentStatus.started,
         help_text=_("Status of the payment process in the configured backend."),
     )
+    provider_payment_id = models.CharField(
+        _("provider payment ID"),
+        # this is a guess, hopefully payment IDs wont be longer than this, but we might
+        # have to switch to `TextField` if this is the case for other providers
+        max_length=128,
+        blank=True,
+        help_text=_("The ID assigned to the payment by the payment provider."),
+    )
 
     objects = SubmissionPaymentManager()
 
@@ -133,7 +141,15 @@ class SubmissionPayment(models.Model):
                 name="unique_public_order_id",
                 fields=("public_order_id",),
                 condition=~models.Q(public_order_id=""),
-            )
+            ),
+            models.UniqueConstraint(
+                name="unique_plugin_payment",
+                fields=(
+                    "plugin_id",
+                    "provider_payment_id",
+                ),
+                condition=~models.Q(provider_payment_id=""),
+            ),
         ]
 
     def __str__(self) -> str:
