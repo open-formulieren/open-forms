@@ -14,7 +14,6 @@ from glom import PathAccessError
 from openforms.authentication.service import AuthAttribute
 from openforms.contrib.objects_api.helpers import prepare_data_for_registration
 from openforms.contrib.objects_api.rendering import render_to_json
-from openforms.contrib.zgw.clients.catalogi import StandardViolation
 from openforms.contrib.zgw.service import (
     DocumentOptions,
     create_attachment_document,
@@ -92,6 +91,8 @@ def _resolve_documenttype(
         case "attachment":
             description = options["iot_attachment"]
             url_ref = options.get("informatieobjecttype_attachment", "")
+        case _:  # pragma: no cover
+            raise RuntimeError(f"Unhandled field '{field}'.")
 
     # descriptions only work if a catalogue is provided to look up the document type
     # inside it
@@ -119,11 +120,6 @@ def _resolve_documenttype(
         raise RuntimeError(
             f"Could not find a document type with description '{description}' that is "
             f"valid on {version_valid_on.isoformat()}."
-        )
-    if (num := len(versions)) > 1:
-        raise StandardViolation(
-            f"Got {num} document type versions within a catalogue with description "
-            f"{description}. Version (date) ranges may not overlap."
         )
 
     version = versions[0]
