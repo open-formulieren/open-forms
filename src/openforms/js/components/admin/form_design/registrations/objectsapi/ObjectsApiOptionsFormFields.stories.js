@@ -174,21 +174,33 @@ export const APIFetchError = {
       dangerouslyIgnoreUnhandledErrors: true, // error boundary handles it
     },
   },
-  play: async ({canvasElement}) => {
+  play: async ({canvasElement, step}) => {
     window.confirm = fn(() => true);
     const canvas = within(canvasElement);
 
     const v2Tab = canvas.getByRole('tab', {name: 'Variabelekoppelingen'});
     await userEvent.click(v2Tab);
 
-    const groupSelect = canvas.getByLabelText('API-groep');
-    await selectEvent.select(groupSelect, 'Objects API group 1');
+    await step('Retrieving object types', async () => {
+      const groupSelect = canvas.getByLabelText('API-groep');
+      await selectEvent.select(groupSelect, 'Objects API group 1');
 
-    const errorMessage = await canvas.findByText(
-      'Er ging iets fout bij het ophalen van de objecttypes.'
-    );
+      const errorMessage = await canvas.findByText(
+        'Er ging iets fout bij het ophalen van de objecttypes.'
+      );
+      expect(errorMessage).toBeVisible();
+    });
 
-    expect(errorMessage).toBeVisible();
+    await step('Retrieving catalogues and document types', async () => {
+      const fieldsetTitle = canvas.getByRole('heading', {name: /Documenttypen/});
+      expect(fieldsetTitle).toBeVisible();
+      await userEvent.click(within(fieldsetTitle).getByRole('link', {name: '(Tonen)'}));
+
+      const errorMessage = await canvas.findByText(
+        'Something went wrong while retrieving the available catalogues and/or document types.'
+      );
+      expect(errorMessage).toBeVisible();
+    });
   },
 };
 
