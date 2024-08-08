@@ -54,3 +54,12 @@ pip-compile \
     "$@" \
     requirements/base.txt \
     requirements/extensions.in
+
+# Dependencies for (temporary) Utrecht StUF-ZDS extension
+pip-compile \
+    --no-emit-index-url \
+    --output-file requirements/utrecht_zds.txt \
+    --allow-unsafe \
+    "$@" \
+    requirements/base.txt \
+    requirements/utrecht_zds.in
