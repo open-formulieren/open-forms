@@ -7,9 +7,7 @@ from zgw_consumers.nlx import NLXClient
 
 from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
 
-
-class StandardViolation(RuntimeError):
-    pass
+from ..exceptions import StandardViolation
 
 
 def noop_matcher(roltypen: list) -> list:
@@ -83,7 +81,7 @@ class CatalogiClient(NLXClient):
     def request(self, *args, **kwargs):
         response = super().request(*args, **kwargs)
         if not self._api_version:
-            self._determine_api_version(response)
+            self._api_version = self._determine_api_version(response)
         return response
 
     def get_all_catalogi(self) -> Iterator[dict]:
@@ -163,7 +161,6 @@ class CatalogiClient(NLXClient):
         )
 
         # otherwise do the filtering manually
-        # TODO: set up testing for this! probably can only do this with mocks
         if valid_on and not _supports_filtering_valid_on:
             date_str = valid_on.isoformat()
             all_versions = [
@@ -172,6 +169,13 @@ class CatalogiClient(NLXClient):
                 if version["beginGeldigheid"] <= date_str
                 if (end := version.get("eindeGeldigheid")) is None or end > date_str
             ]
+        elif (
+            valid_on and _supports_filtering_valid_on and (num := len(all_versions)) > 1
+        ):
+            raise StandardViolation(
+                f"Got {num} document type versions within a catalogue with description "
+                f"'{description}'. Version (date) ranges may not overlap."
+            )
 
         return all_versions
 
