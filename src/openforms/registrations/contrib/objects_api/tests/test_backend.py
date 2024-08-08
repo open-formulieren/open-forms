@@ -427,6 +427,8 @@ class ObjectsAPIBackendVCRTests(OFVCRMixin, TestCase):
                 "attachment": [SubmittedFileFactory.build()],
             },
             completed=True,
+            # Use a stable timestamp to get stable request params
+            completed_on=datetime(2024, 7, 1, 12, 0, 0).replace(tzinfo=timezone.utc),
         )
         attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
