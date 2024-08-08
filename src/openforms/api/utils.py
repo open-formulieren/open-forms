@@ -1,4 +1,5 @@
 import re
+from collections.abc import Mapping
 from typing import Any
 
 from django.db import models
@@ -23,7 +24,7 @@ def underscore_to_camel(input_: str | int) -> str:
 
 
 def get_from_serializer_data_or_instance(
-    field: str, data: dict, serializer: Serializer
+    field: str, data: Mapping, serializer: Serializer
 ) -> Any:
     if field in data:
         return data[field]

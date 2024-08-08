@@ -1,8 +1,8 @@
-from typing import Callable, Iterator
+from typing import Callable, Iterator, NotRequired, TypedDict
 
 from zgw_consumers.nlx import NLXClient
 
-from openforms.utils.api_clients import pagination_helper
+from openforms.utils.api_clients import PaginatedResponseData, pagination_helper
 
 
 def noop_matcher(roltypen: list) -> list:
@@ -20,6 +20,27 @@ def omschrijving_matcher(omschrijving: str):
     return match_omschrijving
 
 
+class Catalogus(TypedDict):
+    # there are more attributes, but we currently don't use them. See the Catalogi
+    # API spec
+    url: str
+    domein: str
+    rsin: str
+    naam: NotRequired[str]  # not present in older versions
+    informatieobjecttypen: list[str]
+
+
+class InformatieObjectType(TypedDict):
+    # there are more attributes, but we currently don't use them. See the Catalogi
+    # API spec
+    url: str
+    catalogus: str  # URL pointer to the catalogue
+    omschrijving: str
+    beginGeldigheid: str  # ISO 8601 date string
+    eindeGeldigheid: NotRequired[str | None]  # ISO 8601 date string or empty
+    concept: NotRequired[bool]
+
+
 class CatalogiClient(NLXClient):
     def get_all_catalogi(self) -> Iterator[dict]:
         """
@@ -29,6 +50,24 @@ class CatalogiClient(NLXClient):
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
+
+    def find_catalogus(self, *, domain: str, rsin: str) -> Catalogus | None:
+        """
+        Look up the catalogus uniquely identified by domain and rsin.
+
+        If no match is found, ``None`` is returned.
+        """
+        response = self.get("catalogussen", params={"domein": domain, "rsin": rsin})
+        response.raise_for_status()
+        data: PaginatedResponseData[Catalogus] = response.json()
+
+        if (num_results := len(data["results"])) > 1:
+            raise RuntimeError(
+                "Combination of domain + rsin must be unique according to the standard."
+            )
+        if num_results == 0:
+            return None
+        return data["results"][0]
 
     def get_all_informatieobjecttypen(self, *, catalogus: str = "") -> Iterator[dict]:
         """List all informatieobjecttypen.
@@ -42,6 +81,33 @@ class CatalogiClient(NLXClient):
         response.raise_for_status()
         data = response.json()
         yield from pagination_helper(self, data)
+
+    def find_informatieobjecttypen(
+        self,
+        *,
+        catalogus: str,
+        description: str,
+    ) -> list[InformatieObjectType] | None:
+        """
+        Look up an informatieobjecttype within the specified catalogue.
+
+        The description is unique within a catalogue, but multiple versions may exist.
+        If no results are found, ``None`` is returned.
+        """
+        response = self.get(
+            "informatieobjecttypen",
+            params={
+                "catalogus": catalogus,
+                "omschrijving": description,
+            },
+        )
+        response.raise_for_status()
+        data: PaginatedResponseData[InformatieObjectType] = response.json()
+        if data["count"] == 0:
+            return None
+
+        all_versions = list(pagination_helper(self, data))
+        return all_versions
 
     def list_statustypen(self, zaaktype: str) -> list[dict]:
         query = {"zaaktype": zaaktype}
