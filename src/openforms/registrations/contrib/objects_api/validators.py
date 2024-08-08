@@ -40,7 +40,7 @@ def validate_catalogue_reference(
                 ),
                 code="invalid-catalogue",
             )
-            raise ValidationError({"catalogus_domain": error})
+            raise ValidationError({"catalogue_domain": error})
         return catalogus
 
 

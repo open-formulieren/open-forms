@@ -91,3 +91,31 @@ class ObjectsAPIGroupConfigAdminTest(OFVCRMixin, WebTest):
 
             assert response.status_code == 200
             self.assertContains(response, expected_error)
+
+    def test_configure_catalogue_that_doesnt_exist(self):
+        user = SuperUserFactory.create()
+        api_group = ObjectsAPIGroupConfigFactory.create(
+            for_test_docker_compose=True,
+            catalogue_domain="",
+            catalogue_rsin="",
+        )
+        change_url = reverse(
+            "admin:registrations_objects_api_objectsapigroupconfig_change",
+            args=(api_group.pk,),
+        )
+
+        change_page = self.app.get(change_url, user=user)
+        change_form = change_page.forms["objectsapigroupconfig_form"]
+        change_form["catalogue_domain"] = "XXXXX"
+        change_form["catalogue_rsin"] = "111222333"
+
+        response = change_form.submit()
+
+        assert response.status_code == 200
+        self.assertContains(
+            response,
+            _(
+                "The specified catalogue does not exist. Maybe you made a typo in the "
+                "domain or RSIN?"
+            ),
+        )
