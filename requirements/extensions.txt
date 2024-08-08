@@ -135,7 +135,7 @@ diff-match-patch==20230430
     # via
     #   -r requirements/base.txt
     #   django-import-export
-django==4.2.14
+django==4.2.15
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
