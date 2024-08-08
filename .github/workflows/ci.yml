@@ -375,6 +375,9 @@ jobs:
           - env: extensions
             extensions: 'token_exchange,prefill_haalcentraalhr'
             image_tag_prefix: 'all-extensions-'
+          - env: utrecht_zds
+            extensions: 'stuf_zds_payments'
+            image_tag_prefix: 'utrecht-zds-'
     uses: ./.github/workflows/build-image.yml
     with:
       image_name: ${{ needs.docker_build_setup.outputs.image-name }}
@@ -571,6 +574,8 @@ jobs:
             image_tag_prefix: ''
           - env: extensions
             image_tag_prefix: 'all-extensions-'
+          - env: utrecht_zds
+            image_tag_prefix: 'utrecht-zds-'
 
     steps:
       - uses: actions/checkout@v4
